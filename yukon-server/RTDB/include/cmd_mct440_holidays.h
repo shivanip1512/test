@@ -15,7 +15,7 @@ class IM_EX_DEVDB Mct440HolidaysCommand : public DlcCommand
 
 protected:
 
-    typedef boost::function<emetcon_request_ptr (Mct440HolidaysCommand *)> state_t;
+    using state_t = emetcon_request_ptr (Mct440HolidaysCommand::*)(void);
 
     state_t _executionState;
 

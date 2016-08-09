@@ -93,7 +93,7 @@ Mct410Sim::Mct410Sim(int address) :
     }
 }
 
-Mct410Sim::function_reads_t Mct410Sim::makeFunctionReadRange(unsigned readMin, unsigned readMax, boost::function2<bytes, Mct410Sim *, unsigned> fn)
+Mct410Sim::function_reads_t Mct410Sim::makeFunctionReadRange(unsigned readMin, unsigned readMax, std::function<bytes(Mct410Sim*, unsigned)> fn)
 {
     function_reads_t range;
 

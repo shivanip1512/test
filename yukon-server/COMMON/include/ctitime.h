@@ -2,8 +2,6 @@
 
 #include "dlldefs.h"
 
-#include <boost/function.hpp>
-
 #include <string>
 #include <ostream>
 #include <time.h>
@@ -109,7 +107,7 @@ public:
 namespace Cti {
 namespace Time {
 
-    extern IM_EX_CTIBASE boost::function<CtiTime()> MakeNowTime;
+    extern IM_EX_CTIBASE std::function<CtiTime()> MakeNowTime;
 
 }
 }

@@ -66,7 +66,7 @@ protected:
 
     std::vector<unsigned char> assemblePayload();
 
-    typedef boost::function<emetcon_request_ptr (Mct410DisconnectConfigurationCommand *)> state_t;
+    using state_t = emetcon_request_ptr(Mct410DisconnectConfigurationCommand::*)(void);
 
     state_t _executionState;
 

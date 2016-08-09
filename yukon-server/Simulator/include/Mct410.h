@@ -10,7 +10,6 @@
 #include "MctBehavior.h"
 
 #include <boost/ptr_container/ptr_vector.hpp>
-#include <boost/function.hpp>
 #include <boost/bind.hpp>
 
 /*
@@ -24,11 +23,11 @@ class Mct410Sim
 {
 private:
 
-    typedef boost::function1<bytes, Mct410Sim *>        function_read_t;
+    typedef std::function<bytes (Mct410Sim *)>          function_read_t;
     typedef function_read_t                             data_read_t;
-    typedef boost::function2<void,  Mct410Sim *, bytes> function_write_t;
+    typedef std::function<void (Mct410Sim *, bytes)>    function_write_t;
     typedef function_write_t                            data_write_t;
-    typedef boost::function1<void,  Mct410Sim *>        command_t;
+    typedef std::function<void (Mct410Sim *)>           command_t;
 
     typedef std::map<unsigned, function_read_t>  function_reads_t;
     typedef std::map<unsigned, function_write_t> function_writes_t;
@@ -39,7 +38,7 @@ private:
 
     static const function_reads_t  _function_reads;
     static       function_reads_t  initFunctionReads();
-    static       function_reads_t  makeFunctionReadRange(unsigned readMin, unsigned readMax, boost::function2<bytes, Mct410Sim *, unsigned> fn);
+    static       function_reads_t  makeFunctionReadRange(unsigned readMin, unsigned readMax, std::function<bytes (Mct410Sim *, unsigned)> fn);
 
     static const function_writes_t _function_writes;
     static       function_writes_t initFunctionWrites();

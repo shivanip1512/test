@@ -159,7 +159,7 @@ DlcCommand::request_ptr Mct410DisconnectConfigurationCommand::error(const CtiTim
 DlcCommand::emetcon_request_ptr Mct410DisconnectConfigurationCommand::doCommand()
 {
     //  call the current state's member function
-    return _executionState(this);
+    return (this->*_executionState)();
 }
 
 std::vector<unsigned char> Mct410DisconnectConfigurationCommand::assemblePayload()

@@ -142,7 +142,7 @@ void throwForeignKeyViolationException(const SAException &x)
 //  oracle = ORA-00001
 //  sqlsvr = 2627 - Violation of %ls constraint '%.*ls'. Cannot insert duplicate key in object '%.*ls'.
 
-typedef boost::function<void (const SAException &)> ThrowDatabaseExceptionFunc;
+typedef std::function<void (const SAException &)> ThrowDatabaseExceptionFunc;
 typedef std::map<int, ThrowDatabaseExceptionFunc> VendorErrorMap;
 
 const VendorErrorMap sqlServerErrors = boost::assign::map_list_of

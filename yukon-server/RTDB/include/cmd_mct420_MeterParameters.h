@@ -16,7 +16,7 @@ class IM_EX_DEVDB Mct420MeterParametersCommand : public Mct420Command
 
 protected:
 
-    typedef boost::function<emetcon_request_ptr (Mct420MeterParametersCommand *)> state_t;
+    using state_t = emetcon_request_ptr (Mct420MeterParametersCommand::*)(void);
 
     state_t _executionState;
 

@@ -27,7 +27,7 @@ public:
         }
 
     public:
-        const boost::function<void ()> _function;
+        const std::function<void ()> _function;
 
         template <typename F>
         Function( F f ) : _function(f)

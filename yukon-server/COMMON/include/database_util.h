@@ -121,8 +121,8 @@ std::string IM_EX_CTIBASE createIdEqualClause(const std::string &table, const st
  */
 IM_EX_CTIBASE void executeUpsert(
         DatabaseConnection &conn,
-        const boost::function<void (DatabaseWriter &)> &initInserter,
-        const boost::function<void (DatabaseWriter &)> &initUpdater,
+        const std::function<void (DatabaseWriter &)> &initInserter,
+        const std::function<void (DatabaseWriter &)> &initUpdater,
         const TryInsertFirst::Options tryInsertFirst,
         const char* file, const int line, const LogDebug::Options logDebug );
 

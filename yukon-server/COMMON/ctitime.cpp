@@ -614,7 +614,7 @@ CtiTime makeNowTime()
 namespace Cti {
 namespace Time {
 
-    IM_EX_CTIBASE boost::function<CtiTime()> MakeNowTime = makeNowTime;
+    IM_EX_CTIBASE std::function<CtiTime()> MakeNowTime = makeNowTime;
 
 }
 }

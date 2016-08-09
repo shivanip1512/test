@@ -688,7 +688,7 @@ void DeviceConfigCategorySAX2Handler::startElement( const XMLCh * const uri,
                                                     const xercesc::Attributes &  attrs )
 {
     typedef DeviceConfigCategorySAX2Handler This;
-    typedef boost::function<void (This *, const xercesc::Attributes &)> StartElementHandler;
+    typedef std::function<void (This *, const xercesc::Attributes &)> StartElementHandler;
 
     static const std::map<std::string, StartElementHandler> elementHandlers = boost::assign::map_list_of
         ("category", &This::setCurrentCategory)
@@ -714,7 +714,7 @@ void DeviceConfigCategorySAX2Handler::endElement( const XMLCh * const uri,
                                                   const XMLCh * const qname )
 {
     typedef DeviceConfigCategorySAX2Handler This;
-    typedef boost::function<void (This *)> EndElementHandler;
+    typedef std::function<void (This *)> EndElementHandler;
 
     static const std::map<std::string, EndElementHandler> elementHandlers = boost::assign::map_list_of
         ("indexed", &This::popIndexedField);

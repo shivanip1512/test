@@ -39,7 +39,6 @@
 #include "boost/bind.hpp"
 #include "boost/config.hpp"
 #include "boost/crc.hpp"
-#include "boost/function.hpp"
 #include "boost/mem_fn.hpp"
 #include "boost/noncopyable.hpp"
 #include "boost/ptr_container/ptr_map.hpp"

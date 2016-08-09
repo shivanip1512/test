@@ -131,7 +131,7 @@ DlcCommand::request_ptr Mct440HolidaysCommand::error(const CtiTime now, const Yu
 DlcCommand::emetcon_request_ptr Mct440HolidaysCommand::doCommand()
 {
     //  call the current state's member function
-    return _executionState(this);
+    return (this->*_executionState)();
 }
 
 DlcCommand::emetcon_request_ptr Mct440HolidaysCommand::write()

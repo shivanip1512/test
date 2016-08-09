@@ -27,7 +27,7 @@ protected:
         static const std::string voltageprofile;
     };
 
-    typedef boost::function<YukonError_t (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)> ConfigMethod;
+    typedef std::function<YukonError_t (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)> ConfigMethod;
     typedef boost::container::flat_map<std::string, ConfigMethod> ConfigMap;
 
     /// Helper function to bind configuration method.

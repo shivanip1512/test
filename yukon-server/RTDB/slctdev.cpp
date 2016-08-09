@@ -99,9 +99,6 @@
 
 #include "std_helper.h"
 
-#include <boost/assign/list_of.hpp>
-#include <boost/function.hpp>
-
 using namespace Cti::Devices;
 using std::string;
 using std::endl;
@@ -151,168 +148,168 @@ CtiDeviceBase *makeLcu()
     return new CtiDeviceLCU(LcuType);
 }
 
-typedef boost::function<CtiDeviceBase *()> MakeDeviceFunc;
+typedef std::function<CtiDeviceBase *()> MakeDeviceFunc;
 typedef std::map<int, MakeDeviceFunc> DeviceLookup;
 
-const DeviceLookup deviceFactory = boost::assign::map_list_of
+const DeviceLookup deviceFactory {
     //  RTUs
-    (TYPE_WELCORTU,     MakeDeviceFunc(makeDevice<CtiDeviceWelco>))
-    (TYPE_ILEXRTU,      MakeDeviceFunc(makeDevice<CtiDeviceILEX>))
-    (TYPE_DARTRTU,      MakeDeviceFunc(makeDevice<DnpDevice>))
-    (TYPE_DNPRTU,       MakeDeviceFunc(makeDevice<DnpDevice>))
-    (TYPE_SERIESVRTU,   MakeDeviceFunc(makeDevice<CtiDeviceSeriesV>))
-    (TYPE_SERIESVLMIRTU,MakeDeviceFunc(makeDevice<CtiDeviceLMI>))
-    (TYPE_ION7330,      MakeDeviceFunc(makeDevice<CtiDeviceION>))
-    (TYPE_ION7700,      MakeDeviceFunc(makeDevice<CtiDeviceION>))
-    (TYPE_ION8300,      MakeDeviceFunc(makeDevice<CtiDeviceION>))
-    (TYPE_DAVIS,        MakeDeviceFunc(makeDevice<CtiDeviceDavis>))
-    (TYPE_SES92RTU,     MakeDeviceFunc(makeDevice<CtiDeviceRemote>))
-    (TYPE_MODBUS,       MakeDeviceFunc(makeDevice<ModbusDevice>))
-    (TYPE_RTC,          MakeDeviceFunc(makeDevice<CtiDeviceRTC>))
-    (TYPE_RTM,          MakeDeviceFunc(makeDevice<CtiDeviceRTM>))
-    (TYPE_PAGING_RECEIVER,  MakeDeviceFunc(makeDevice<CtiDevicePagingReceiver>))
+    { TYPE_WELCORTU,     MakeDeviceFunc(makeDevice<CtiDeviceWelco>) },
+    { TYPE_ILEXRTU,      MakeDeviceFunc(makeDevice<CtiDeviceILEX>) },
+    { TYPE_DARTRTU,      MakeDeviceFunc(makeDevice<DnpDevice>) },
+    { TYPE_DNPRTU,       MakeDeviceFunc(makeDevice<DnpDevice>) },
+    { TYPE_SERIESVRTU,   MakeDeviceFunc(makeDevice<CtiDeviceSeriesV>) },
+    { TYPE_SERIESVLMIRTU,MakeDeviceFunc(makeDevice<CtiDeviceLMI>) },
+    { TYPE_ION7330,      MakeDeviceFunc(makeDevice<CtiDeviceION>) },
+    { TYPE_ION7700,      MakeDeviceFunc(makeDevice<CtiDeviceION>) },
+    { TYPE_ION8300,      MakeDeviceFunc(makeDevice<CtiDeviceION>) },
+    { TYPE_DAVIS,        MakeDeviceFunc(makeDevice<CtiDeviceDavis>) },
+    { TYPE_SES92RTU,     MakeDeviceFunc(makeDevice<CtiDeviceRemote>) },
+    { TYPE_MODBUS,       MakeDeviceFunc(makeDevice<ModbusDevice>) },
+    { TYPE_RTC,          MakeDeviceFunc(makeDevice<CtiDeviceRTC>) },
+    { TYPE_RTM,          MakeDeviceFunc(makeDevice<CtiDeviceRTM>) },
+    { TYPE_PAGING_RECEIVER,  MakeDeviceFunc(makeDevice<CtiDevicePagingReceiver>) },
     //  Transmitters
-    (TYPE_TCU5000,      MakeDeviceFunc(makeDevice<CtiDeviceTCU>))
-    (TYPE_TCU5500,      MakeDeviceFunc(makeDevice<CtiDeviceTCU>))
-    (TYPE_CCU711,       MakeDeviceFunc(makeDevice<CtiDeviceCCU>))
-    (TYPE_CCU721,       MakeDeviceFunc(makeDevice<Ccu721Device>))
-    (TYPE_CCU710,       MakeDeviceFunc(makeDevice<CtiDeviceCCU710>))
-    (TYPE_CCU700,       MakeDeviceFunc(makeDevice<CtiDeviceCCU710>))
-    (TYPE_REPEATER800,  MakeDeviceFunc(makeDevice<Repeater800Device>))
-    (TYPE_REPEATER850,  MakeDeviceFunc(makeDevice<Repeater850Device>))
-    (TYPE_REPEATER900,  MakeDeviceFunc(makeDevice<Repeater900Device>))
-    (TYPE_TAPTERM,      MakeDeviceFunc(makeDevice<TapPagingTerminal>))
-    (TYPE_SNPP,         MakeDeviceFunc(makeDevice<CtiDeviceSnppPagingTerminal>))
-    (TYPE_RDS,          MakeDeviceFunc(makeDevice<RDSTransmitter>))
-    (TYPE_TNPP,         MakeDeviceFunc(makeDevice<CtiDeviceTnppPagingTerminal>))
-    (TYPE_WCTP,         MakeDeviceFunc(makeDevice<CtiDeviceWctpTerminal>))
-    (TYPE_LCU415,       MakeDeviceFunc(makeLcu<TYPE_LCU415>))
-    (TYPE_LCU415LG,     MakeDeviceFunc(makeLcu<TYPE_LCU415LG>))
-    (TYPE_LCU415ER,     MakeDeviceFunc(makeLcu<TYPE_LCU415ER>))
-    (TYPE_LCUT3026,     MakeDeviceFunc(makeLcu<TYPE_LCUT3026>))
+    { TYPE_TCU5000,      MakeDeviceFunc(makeDevice<CtiDeviceTCU>) },
+    { TYPE_TCU5500,      MakeDeviceFunc(makeDevice<CtiDeviceTCU>) },
+    { TYPE_CCU711,       MakeDeviceFunc(makeDevice<CtiDeviceCCU>) },
+    { TYPE_CCU721,       MakeDeviceFunc(makeDevice<Ccu721Device>) },
+    { TYPE_CCU710,       MakeDeviceFunc(makeDevice<CtiDeviceCCU710>) },
+    { TYPE_CCU700,       MakeDeviceFunc(makeDevice<CtiDeviceCCU710>) },
+    { TYPE_REPEATER800,  MakeDeviceFunc(makeDevice<Repeater800Device>) },
+    { TYPE_REPEATER850,  MakeDeviceFunc(makeDevice<Repeater850Device>) },
+    { TYPE_REPEATER900,  MakeDeviceFunc(makeDevice<Repeater900Device>) },
+    { TYPE_TAPTERM,      MakeDeviceFunc(makeDevice<TapPagingTerminal>) },
+    { TYPE_SNPP,         MakeDeviceFunc(makeDevice<CtiDeviceSnppPagingTerminal>) },
+    { TYPE_RDS,          MakeDeviceFunc(makeDevice<RDSTransmitter>) },
+    { TYPE_TNPP,         MakeDeviceFunc(makeDevice<CtiDeviceTnppPagingTerminal>) },
+    { TYPE_WCTP,         MakeDeviceFunc(makeDevice<CtiDeviceWctpTerminal>) },
+    { TYPE_LCU415,       MakeDeviceFunc(makeLcu<TYPE_LCU415>) },
+    { TYPE_LCU415LG,     MakeDeviceFunc(makeLcu<TYPE_LCU415LG>) },
+    { TYPE_LCU415ER,     MakeDeviceFunc(makeLcu<TYPE_LCU415ER>) },
+    { TYPE_LCUT3026,     MakeDeviceFunc(makeLcu<TYPE_LCUT3026>) },
     //  PLC meters
-    (TYPEDCT501,        MakeDeviceFunc(makeDevice<Dct501Device>))
-    (TYPELMT2,          MakeDeviceFunc(makeDevice<Lmt2Device>))
-    (TYPEMCT210,        MakeDeviceFunc(makeDevice<Mct210Device>))
-    (TYPEMCT213,        MakeDeviceFunc(makeDevice<Mct210Device>))
-    (TYPEMCT212,        MakeDeviceFunc(makeDevice<Mct22xDevice>))
-    (TYPEMCT224,        MakeDeviceFunc(makeDevice<Mct22xDevice>))
-    (TYPEMCT226,        MakeDeviceFunc(makeDevice<Mct22xDevice>))
-    (TYPEMCT240,        MakeDeviceFunc(makeDevice<Mct24xDevice>))
-    (TYPEMCT242,        MakeDeviceFunc(makeDevice<Mct24xDevice>))
-    (TYPEMCT248,        MakeDeviceFunc(makeDevice<Mct24xDevice>))
-    (TYPEMCT250,        MakeDeviceFunc(makeDevice<Mct24xDevice>))
-    (TYPEMCT310,        MakeDeviceFunc(makeDevice<Mct310Device>))
-    (TYPEMCT310ID,      MakeDeviceFunc(makeDevice<Mct310Device>))
-    (TYPEMCT310IDL,     MakeDeviceFunc(makeDevice<Mct310Device>))
-    (TYPEMCT310IL,      MakeDeviceFunc(makeDevice<Mct310Device>))
-    (TYPEMCT318,        MakeDeviceFunc(makeDevice<Mct31xDevice>))
-    (TYPEMCT318L,       MakeDeviceFunc(makeDevice<Mct31xDevice>))
-    (TYPEMCT360,        MakeDeviceFunc(makeDevice<Mct31xDevice>))
-    (TYPEMCT370,        MakeDeviceFunc(makeDevice<Mct31xDevice>))
-    (TYPEMCT410CL,      MakeDeviceFunc(makeDevice<Mct410Device>))
-    (TYPEMCT410FL,      MakeDeviceFunc(makeDevice<Mct410Device>))
-    (TYPEMCT410GL,      MakeDeviceFunc(makeDevice<Mct410Device>))
-    (TYPEMCT410IL,      MakeDeviceFunc(makeDevice<Mct410Device>))
-    (TYPEMCT420CL,      MakeDeviceFunc(makeDevice<Mct420Device>))
-    (TYPEMCT420CD,      MakeDeviceFunc(makeDevice<Mct420Device>))
-    (TYPEMCT420FL,      MakeDeviceFunc(makeDevice<Mct420Device>))
-    (TYPEMCT420FD,      MakeDeviceFunc(makeDevice<Mct420Device>))
-    (TYPEMCT430A,       MakeDeviceFunc(makeDevice<Mct470Device>))
-    (TYPEMCT430A3,      MakeDeviceFunc(makeDevice<Mct470Device>))
-    (TYPEMCT430S4,      MakeDeviceFunc(makeDevice<Mct470Device>))
-    (TYPEMCT430SL,      MakeDeviceFunc(makeDevice<Mct470Device>))
-    (TYPEMCT470,        MakeDeviceFunc(makeDevice<Mct470Device>))
-    (TYPEMCT440_2131B,  MakeDeviceFunc(makeDevice<Mct440_2131BDevice>))
-    (TYPEMCT440_2132B,  MakeDeviceFunc(makeDevice<Mct440_2132BDevice>))
-    (TYPEMCT440_2133B,  MakeDeviceFunc(makeDevice<Mct440_2133BDevice>))
+    { TYPEDCT501,        MakeDeviceFunc(makeDevice<Dct501Device>) },
+    { TYPELMT2,          MakeDeviceFunc(makeDevice<Lmt2Device>) },
+    { TYPEMCT210,        MakeDeviceFunc(makeDevice<Mct210Device>) },
+    { TYPEMCT213,        MakeDeviceFunc(makeDevice<Mct210Device>) },
+    { TYPEMCT212,        MakeDeviceFunc(makeDevice<Mct22xDevice>) },
+    { TYPEMCT224,        MakeDeviceFunc(makeDevice<Mct22xDevice>) },
+    { TYPEMCT226,        MakeDeviceFunc(makeDevice<Mct22xDevice>) },
+    { TYPEMCT240,        MakeDeviceFunc(makeDevice<Mct24xDevice>) },
+    { TYPEMCT242,        MakeDeviceFunc(makeDevice<Mct24xDevice>) },
+    { TYPEMCT248,        MakeDeviceFunc(makeDevice<Mct24xDevice>) },
+    { TYPEMCT250,        MakeDeviceFunc(makeDevice<Mct24xDevice>) },
+    { TYPEMCT310,        MakeDeviceFunc(makeDevice<Mct310Device>) },
+    { TYPEMCT310ID,      MakeDeviceFunc(makeDevice<Mct310Device>) },
+    { TYPEMCT310IDL,     MakeDeviceFunc(makeDevice<Mct310Device>) },
+    { TYPEMCT310IL,      MakeDeviceFunc(makeDevice<Mct310Device>) },
+    { TYPEMCT318,        MakeDeviceFunc(makeDevice<Mct31xDevice>) },
+    { TYPEMCT318L,       MakeDeviceFunc(makeDevice<Mct31xDevice>) },
+    { TYPEMCT360,        MakeDeviceFunc(makeDevice<Mct31xDevice>) },
+    { TYPEMCT370,        MakeDeviceFunc(makeDevice<Mct31xDevice>) },
+    { TYPEMCT410CL,      MakeDeviceFunc(makeDevice<Mct410Device>) },
+    { TYPEMCT410FL,      MakeDeviceFunc(makeDevice<Mct410Device>) },
+    { TYPEMCT410GL,      MakeDeviceFunc(makeDevice<Mct410Device>) },
+    { TYPEMCT410IL,      MakeDeviceFunc(makeDevice<Mct410Device>) },
+    { TYPEMCT420CL,      MakeDeviceFunc(makeDevice<Mct420Device>) },
+    { TYPEMCT420CD,      MakeDeviceFunc(makeDevice<Mct420Device>) },
+    { TYPEMCT420FL,      MakeDeviceFunc(makeDevice<Mct420Device>) },
+    { TYPEMCT420FD,      MakeDeviceFunc(makeDevice<Mct420Device>) },
+    { TYPEMCT430A,       MakeDeviceFunc(makeDevice<Mct470Device>) },
+    { TYPEMCT430A3,      MakeDeviceFunc(makeDevice<Mct470Device>) },
+    { TYPEMCT430S4,      MakeDeviceFunc(makeDevice<Mct470Device>) },
+    { TYPEMCT430SL,      MakeDeviceFunc(makeDevice<Mct470Device>) },
+    { TYPEMCT470,        MakeDeviceFunc(makeDevice<Mct470Device>) },
+    { TYPEMCT440_2131B,  MakeDeviceFunc(makeDevice<Mct440_2131BDevice>) },
+    { TYPEMCT440_2132B,  MakeDeviceFunc(makeDevice<Mct440_2132BDevice>) },
+    { TYPEMCT440_2133B,  MakeDeviceFunc(makeDevice<Mct440_2133BDevice>) },
     //  Other PLC devices
-    (TYPELCR3102,       MakeDeviceFunc(makeDevice<Lcr3102Device>))
-    (TYPEMCTBCAST,      MakeDeviceFunc(makeDevice<MctBroadcastDevice>))
+    { TYPELCR3102,       MakeDeviceFunc(makeDevice<Lcr3102Device>) },
+    { TYPEMCTBCAST,      MakeDeviceFunc(makeDevice<MctBroadcastDevice>) },
     //  RFN meters
-    (TYPE_RFN410FL,     MakeDeviceFunc(makeDevice<Rfn410flDevice>))
-    (TYPE_RFN410FX,     MakeDeviceFunc(makeDevice<Rfn410fxDevice>))
-    (TYPE_RFN410FD,     MakeDeviceFunc(makeDevice<Rfn410fdDevice>))
-    (TYPE_RFN420FL,     MakeDeviceFunc(makeDevice<Rfn420flDevice>))
-    (TYPE_RFN420FX,     MakeDeviceFunc(makeDevice<Rfn420fxDevice>))
-    (TYPE_RFN420FD,     MakeDeviceFunc(makeDevice<Rfn420fdDevice>))
-    (TYPE_RFN420FRX,    MakeDeviceFunc(makeDevice<Rfn420frxDevice>))
-    (TYPE_RFN420FRD,    MakeDeviceFunc(makeDevice<Rfn420frdDevice>))
-    (TYPE_RFN410CL,     MakeDeviceFunc(makeDevice<Rfn410clDevice>))
-    (TYPE_RFN420CL,     MakeDeviceFunc(makeDevice<Rfn420clDevice>))
-    (TYPE_RFN420CD,     MakeDeviceFunc(makeDevice<Rfn420cdDevice>))
-    (TYPE_RFN430A3D,    MakeDeviceFunc(makeDevice<Rfn430a3dDevice>))
-    (TYPE_RFN430A3T,    MakeDeviceFunc(makeDevice<Rfn430a3tDevice>))
-    (TYPE_RFN430A3K,    MakeDeviceFunc(makeDevice<Rfn430a3kDevice>))
-    (TYPE_RFN430A3R,    MakeDeviceFunc(makeDevice<Rfn430a3rDevice>))
-    (TYPE_RFN430KV,     MakeDeviceFunc(makeDevice<Rfn430kvDevice>))
-    (TYPE_RFN430SL0,    MakeDeviceFunc(makeDevice<Rfn430sl0Device>))
-    (TYPE_RFN430SL1,    MakeDeviceFunc(makeDevice<Rfn430sl1Device>))
-    (TYPE_RFN430SL2,    MakeDeviceFunc(makeDevice<Rfn430sl2Device>))
-    (TYPE_RFN430SL3,    MakeDeviceFunc(makeDevice<Rfn430sl3Device>))
-    (TYPE_RFN430SL4,    MakeDeviceFunc(makeDevice<Rfn430sl4Device>))
-    (TYPE_RFN510FL,     MakeDeviceFunc(makeDevice<Rfn510flDevice>))
-    (TYPE_RFN520FAX,    MakeDeviceFunc(makeDevice<Rfn520faxDevice>))
-    (TYPE_RFN520FRX,    MakeDeviceFunc(makeDevice<Rfn520frxDevice>))
-    (TYPE_RFN520FAXD,   MakeDeviceFunc(makeDevice<Rfn520faxdDevice>))
-    (TYPE_RFN520FRXD,   MakeDeviceFunc(makeDevice<Rfn520frxdDevice>))
-    (TYPE_RFN530FAX,    MakeDeviceFunc(makeDevice<Rfn530faxDevice>))
-    (TYPE_RFN530FRX,    MakeDeviceFunc(makeDevice<Rfn530frxDevice>))
-    (TYPE_RFN530S4X,    MakeDeviceFunc(makeDevice<Rfn530s4xDevice>))
-    (TYPE_RFN530S4EAD,  MakeDeviceFunc(makeDevice<Rfn530s4eadDevice>))
-    (TYPE_RFN530S4EAT,  MakeDeviceFunc(makeDevice<Rfn530s4eatDevice>))
-    (TYPE_RFN530S4ERD,  MakeDeviceFunc(makeDevice<Rfn530s4erdDevice>))
-    (TYPE_RFN530S4ERT,  MakeDeviceFunc(makeDevice<Rfn530s4ertDevice>))
+    { TYPE_RFN410FL,     MakeDeviceFunc(makeDevice<Rfn410flDevice>) },
+    { TYPE_RFN410FX,     MakeDeviceFunc(makeDevice<Rfn410fxDevice>) },
+    { TYPE_RFN410FD,     MakeDeviceFunc(makeDevice<Rfn410fdDevice>) },
+    { TYPE_RFN420FL,     MakeDeviceFunc(makeDevice<Rfn420flDevice>) },
+    { TYPE_RFN420FX,     MakeDeviceFunc(makeDevice<Rfn420fxDevice>) },
+    { TYPE_RFN420FD,     MakeDeviceFunc(makeDevice<Rfn420fdDevice>) },
+    { TYPE_RFN420FRX,    MakeDeviceFunc(makeDevice<Rfn420frxDevice>) },
+    { TYPE_RFN420FRD,    MakeDeviceFunc(makeDevice<Rfn420frdDevice>) },
+    { TYPE_RFN410CL,     MakeDeviceFunc(makeDevice<Rfn410clDevice>) },
+    { TYPE_RFN420CL,     MakeDeviceFunc(makeDevice<Rfn420clDevice>) },
+    { TYPE_RFN420CD,     MakeDeviceFunc(makeDevice<Rfn420cdDevice>) },
+    { TYPE_RFN430A3D,    MakeDeviceFunc(makeDevice<Rfn430a3dDevice>) },
+    { TYPE_RFN430A3T,    MakeDeviceFunc(makeDevice<Rfn430a3tDevice>) },
+    { TYPE_RFN430A3K,    MakeDeviceFunc(makeDevice<Rfn430a3kDevice>) },
+    { TYPE_RFN430A3R,    MakeDeviceFunc(makeDevice<Rfn430a3rDevice>) },
+    { TYPE_RFN430KV,     MakeDeviceFunc(makeDevice<Rfn430kvDevice>) },
+    { TYPE_RFN430SL0,    MakeDeviceFunc(makeDevice<Rfn430sl0Device>) },
+    { TYPE_RFN430SL1,    MakeDeviceFunc(makeDevice<Rfn430sl1Device>) },
+    { TYPE_RFN430SL2,    MakeDeviceFunc(makeDevice<Rfn430sl2Device>) },
+    { TYPE_RFN430SL3,    MakeDeviceFunc(makeDevice<Rfn430sl3Device>) },
+    { TYPE_RFN430SL4,    MakeDeviceFunc(makeDevice<Rfn430sl4Device>) },
+    { TYPE_RFN510FL,     MakeDeviceFunc(makeDevice<Rfn510flDevice>) },
+    { TYPE_RFN520FAX,    MakeDeviceFunc(makeDevice<Rfn520faxDevice>) },
+    { TYPE_RFN520FRX,    MakeDeviceFunc(makeDevice<Rfn520frxDevice>) },
+    { TYPE_RFN520FAXD,   MakeDeviceFunc(makeDevice<Rfn520faxdDevice>) },
+    { TYPE_RFN520FRXD,   MakeDeviceFunc(makeDevice<Rfn520frxdDevice>) },
+    { TYPE_RFN530FAX,    MakeDeviceFunc(makeDevice<Rfn530faxDevice>) },
+    { TYPE_RFN530FRX,    MakeDeviceFunc(makeDevice<Rfn530frxDevice>) },
+    { TYPE_RFN530S4X,    MakeDeviceFunc(makeDevice<Rfn530s4xDevice>) },
+    { TYPE_RFN530S4EAD,  MakeDeviceFunc(makeDevice<Rfn530s4eadDevice>) },
+    { TYPE_RFN530S4EAT,  MakeDeviceFunc(makeDevice<Rfn530s4eatDevice>) },
+    { TYPE_RFN530S4ERD,  MakeDeviceFunc(makeDevice<Rfn530s4erdDevice>) },
+    { TYPE_RFN530S4ERT,  MakeDeviceFunc(makeDevice<Rfn530s4ertDevice>) },
     //  RF DA devices
-    (TYPE_RFN1200,      MakeDeviceFunc(makeDevice<RfDaDevice>))
+    { TYPE_RFN1200,      MakeDeviceFunc(makeDevice<RfDaDevice>) },
     //  Electronic meters
-    (TYPE_FULCRUM,      MakeDeviceFunc(makeDevice<CtiDeviceFulcrum>))
-    (TYPE_QUANTUM,      MakeDeviceFunc(makeDevice<CtiDeviceQuantum>))
-    (TYPE_VECTRON,      MakeDeviceFunc(makeDevice<CtiDeviceVectron>))
-    (TYPE_ALPHA_PPLUS,  MakeDeviceFunc(makeDevice<CtiDeviceAlphaPPlus>))
-    (TYPE_TDMARKV,      MakeDeviceFunc(makeDevice<CtiDeviceMarkV>))
-    (TYPE_ALPHA_A1,     MakeDeviceFunc(makeDevice<CtiDeviceAlphaA1>))
-    (TYPE_IPC_430S4E,   MakeDeviceFunc(makeDevice<CtiDeviceLandisGyrS4>))
-    (TYPE_LGS4,         MakeDeviceFunc(makeDevice<CtiDeviceLandisGyrS4>))
-    (TYPE_DR87,         MakeDeviceFunc(makeDevice<CtiDeviceDR87>))
-    (TYPE_KV2,          MakeDeviceFunc(makeDevice<CtiDeviceKV2>))
-    (TYPE_ALPHA_A3,     MakeDeviceFunc(makeDevice<CtiDeviceKV2>))
-    (TYPE_IPC_430SL,    MakeDeviceFunc(makeDevice<CtiDeviceSentinel>))
-    (TYPE_SENTINEL,     MakeDeviceFunc(makeDevice<CtiDeviceSentinel>))
-    (TYPE_IPC_410FL,    MakeDeviceFunc(makeDevice<Ipc410ALDevice>))
-    (TYPE_IPC_420FD,    MakeDeviceFunc(makeDevice<Ipc420ADDevice>))
-    (TYPE_FOCUS,        MakeDeviceFunc(makeDevice<CtiDeviceFocus>))
-    (TYPE_SIXNET,       MakeDeviceFunc(makeDevice<CtiDeviceSixnet>))
+    { TYPE_FULCRUM,      MakeDeviceFunc(makeDevice<CtiDeviceFulcrum>) },
+    { TYPE_QUANTUM,      MakeDeviceFunc(makeDevice<CtiDeviceQuantum>) },
+    { TYPE_VECTRON,      MakeDeviceFunc(makeDevice<CtiDeviceVectron>) },
+    { TYPE_ALPHA_PPLUS,  MakeDeviceFunc(makeDevice<CtiDeviceAlphaPPlus>) },
+    { TYPE_TDMARKV,      MakeDeviceFunc(makeDevice<CtiDeviceMarkV>) },
+    { TYPE_ALPHA_A1,     MakeDeviceFunc(makeDevice<CtiDeviceAlphaA1>) },
+    { TYPE_IPC_430S4E,   MakeDeviceFunc(makeDevice<CtiDeviceLandisGyrS4>) },
+    { TYPE_LGS4,         MakeDeviceFunc(makeDevice<CtiDeviceLandisGyrS4>) },
+    { TYPE_DR87,         MakeDeviceFunc(makeDevice<CtiDeviceDR87>) },
+    { TYPE_KV2,          MakeDeviceFunc(makeDevice<CtiDeviceKV2>) },
+    { TYPE_ALPHA_A3,     MakeDeviceFunc(makeDevice<CtiDeviceKV2>) },
+    { TYPE_IPC_430SL,    MakeDeviceFunc(makeDevice<CtiDeviceSentinel>) },
+    { TYPE_SENTINEL,     MakeDeviceFunc(makeDevice<CtiDeviceSentinel>) },
+    { TYPE_IPC_410FL,    MakeDeviceFunc(makeDevice<Ipc410ALDevice>) },
+    { TYPE_IPC_420FD,    MakeDeviceFunc(makeDevice<Ipc420ADDevice>) },
+    { TYPE_FOCUS,        MakeDeviceFunc(makeDevice<CtiDeviceFocus>) },
+    { TYPE_SIXNET,       MakeDeviceFunc(makeDevice<CtiDeviceSixnet>) },
     //  Load Management load groups
-    (TYPE_LMGROUP_POINT,            MakeDeviceFunc(makeDevice<CtiDeviceGroupPoint>))
-    (TYPE_LMGROUP_EMETCON,          MakeDeviceFunc(makeDevice<CtiDeviceGroupEmetcon>))
-    (TYPE_LMGROUP_RIPPLE,           MakeDeviceFunc(makeDevice<CtiDeviceGroupRipple>))
-    (TYPE_LMGROUP_VERSACOM,         MakeDeviceFunc(makeDevice<CtiDeviceGroupVersacom>))
-    (TYPE_LMGROUP_EXPRESSCOM,       MakeDeviceFunc(makeDevice<CtiDeviceGroupExpresscom>))
-    (TYPE_LMGROUP_RFN_EXPRESSCOM,   MakeDeviceFunc(makeDevice<CtiDeviceGroupRfnExpresscom>))
-    (TYPE_LMGROUP_MCT,              MakeDeviceFunc(makeDevice<CtiDeviceGroupMCT>))
-    (TYPE_LMGROUP_GOLAY,            MakeDeviceFunc(makeDevice<CtiDeviceGroupGolay>))
-    (TYPE_LMGROUP_SADIGITAL,        MakeDeviceFunc(makeDevice<CtiDeviceGroupSADigital>))
-    (TYPE_LMGROUP_SA105,            MakeDeviceFunc(makeDevice<CtiDeviceGroupSA105>))
-    (TYPE_LMGROUP_SA205,            MakeDeviceFunc(makeDevice<CtiDeviceGroupSA205>))
-    (TYPE_LMGROUP_SA305,            MakeDeviceFunc(makeDevice<CtiDeviceGroupSA305>))
+    { TYPE_LMGROUP_POINT,            MakeDeviceFunc(makeDevice<CtiDeviceGroupPoint>) },
+    { TYPE_LMGROUP_EMETCON,          MakeDeviceFunc(makeDevice<CtiDeviceGroupEmetcon>) },
+    { TYPE_LMGROUP_RIPPLE,           MakeDeviceFunc(makeDevice<CtiDeviceGroupRipple>) },
+    { TYPE_LMGROUP_VERSACOM,         MakeDeviceFunc(makeDevice<CtiDeviceGroupVersacom>) },
+    { TYPE_LMGROUP_EXPRESSCOM,       MakeDeviceFunc(makeDevice<CtiDeviceGroupExpresscom>) },
+    { TYPE_LMGROUP_RFN_EXPRESSCOM,   MakeDeviceFunc(makeDevice<CtiDeviceGroupRfnExpresscom>) },
+    { TYPE_LMGROUP_MCT,              MakeDeviceFunc(makeDevice<CtiDeviceGroupMCT>) },
+    { TYPE_LMGROUP_GOLAY,            MakeDeviceFunc(makeDevice<CtiDeviceGroupGolay>) },
+    { TYPE_LMGROUP_SADIGITAL,        MakeDeviceFunc(makeDevice<CtiDeviceGroupSADigital>) },
+    { TYPE_LMGROUP_SA105,            MakeDeviceFunc(makeDevice<CtiDeviceGroupSA105>) },
+    { TYPE_LMGROUP_SA205,            MakeDeviceFunc(makeDevice<CtiDeviceGroupSA205>) },
+    { TYPE_LMGROUP_SA305,            MakeDeviceFunc(makeDevice<CtiDeviceGroupSA305>) },
     //  Capacitor bank controllers
-    (TYPECBCDNP,        MakeDeviceFunc(makeDevice<DnpDevice>))
-    (TYPECBC6510,       MakeDeviceFunc(makeDevice<Cbc6510Device>))
-    (TYPECBC7020,       MakeDeviceFunc(makeDevice<Cbc7020Device>))
-    (TYPECBC8020,       MakeDeviceFunc(makeDevice<Cbc8020Device>))
-    (TYPECBC7010,       MakeDeviceFunc(makeDevice<CtiDeviceCBC>))
-    (TYPEFISHERPCBC,    MakeDeviceFunc(makeDevice<CtiDeviceCBC>))
-    (TYPEVERSACOMCBC,   MakeDeviceFunc(makeDevice<CtiDeviceCBC>))
-    (TYPEEXPRESSCOMCBC, MakeDeviceFunc(makeDevice<CtiDeviceCBC>))
+    { TYPECBCDNP,        MakeDeviceFunc(makeDevice<DnpDevice>) },
+    { TYPECBC6510,       MakeDeviceFunc(makeDevice<Cbc6510Device>) },
+    { TYPECBC7020,       MakeDeviceFunc(makeDevice<Cbc7020Device>) },
+    { TYPECBC8020,       MakeDeviceFunc(makeDevice<Cbc8020Device>) },
+    { TYPECBC7010,       MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },
+    { TYPEFISHERPCBC,    MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },
+    { TYPEVERSACOMCBC,   MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },
+    { TYPEEXPRESSCOMCBC, MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },
     //  Smart sensors
-    (TYPE_FCI,              MakeDeviceFunc(makeDevice<CtiDeviceGridAdvisor>))
-    (TYPE_NEUTRAL_MONITOR,  MakeDeviceFunc(makeDevice<CtiDeviceGridAdvisor>))
+    { TYPE_FCI,              MakeDeviceFunc(makeDevice<CtiDeviceGridAdvisor>) },
+    { TYPE_NEUTRAL_MONITOR,  MakeDeviceFunc(makeDevice<CtiDeviceGridAdvisor>) },
     //  System devices
-    (TYPE_MACRO,        MakeDeviceFunc(makeDevice<CtiDeviceMacro>))
-    (TYPE_SYSTEM,       MakeDeviceFunc(makeDevice<CtiDeviceSystem>))
-    //  (TYPE_VIRTUAL_SYSTEM, )) // These are created by the porter thread which manages them.
-    ;
+    { TYPE_MACRO,        MakeDeviceFunc(makeDevice<CtiDeviceMacro>) },
+    { TYPE_SYSTEM,       MakeDeviceFunc(makeDevice<CtiDeviceSystem>) },
+    //  { TYPE_VIRTUAL_SYSTEM, ) }, // These are created by the porter thread which manages them.
+    };
 
 DLLEXPORT CtiDeviceBase *createDeviceType(int type)
 {

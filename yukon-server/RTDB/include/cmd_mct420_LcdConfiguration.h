@@ -10,7 +10,7 @@ class IM_EX_DEVDB Mct420LcdConfigurationCommand : public Mct420Command
 {
     typedef std::vector<unsigned char> metric_vector_t;
 
-    typedef boost::function<emetcon_request_ptr (Mct420LcdConfigurationCommand *)> state_t;
+    using state_t = emetcon_request_ptr (Mct420LcdConfigurationCommand::*)(void);
 
     enum
     {

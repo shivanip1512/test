@@ -4,6 +4,10 @@
 #include "dlldefs.h"
 #include "readers_writer_lock.h"
 #include "cms/Connection.h"
+#include "cms/MessageListener.h"
+#include "cms/Queue.h"
+#include "cms/Session.h"
+#include "cms/TemporaryQueue.h"
 #include "activemq/commands/DestinationInfo.h"
 #include "boost/thread/mutex.hpp"
 #include "boost/thread/condition_variable.hpp"
@@ -42,7 +46,7 @@ IM_EX_MSG extern ConnectionFactory g_connectionFactory;
 -----------------------------------------------------------------------------*/
 class MessageListener : public cms::MessageListener
 {
-    typedef boost::function<void (const cms::Message*)> Callback;
+    typedef std::function<void (const cms::Message*)> Callback;
     Callback _callback;
 
 public:

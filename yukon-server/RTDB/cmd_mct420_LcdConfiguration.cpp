@@ -117,7 +117,7 @@ DlcCommand::request_ptr Mct420LcdConfigurationCommand::error(const CtiTime now, 
 DlcCommand::emetcon_request_ptr Mct420LcdConfigurationCommand::doCommand()
 {
     //  call the current state's member function
-    return _executionState(this);
+    return (this->*_executionState)();
 }
 
 DlcCommand::emetcon_request_ptr Mct420LcdConfigurationCommand::write1()

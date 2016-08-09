@@ -5,7 +5,6 @@
 #include "ctidate.h"
 #include "dbaccess.h"
 
-#include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <boost/optional.hpp>
 
@@ -98,7 +97,7 @@ namespace {  //  hack to get around multiple linkages when included in multiple 
 
 class Override_CtiTime_Now
 {
-    boost::function<CtiTime()> _oldMakeNow;
+    std::function<CtiTime()> _oldMakeNow;
 
     CtiTime _newNow;
     Cti::Timing::MillisecondTimer _elapsed;
