@@ -209,7 +209,14 @@ public class DeviceConfigController {
         model.addAttribute("deviceCollection", deviceCollection);
         long deviceCount = deviceCollection.getDeviceCount();
         model.addAttribute("deviceCount", deviceCount);
-        
+
+        for(SimpleDevice sd: deviceCollection.getDeviceList()){
+            if(sd.getDeviceType().isRfn() || sd.getDeviceType().isRfMeter()){
+                model.addAttribute("someRF", true);
+                break;
+            }
+        }
+
         return "config/sendConfig.jsp";
     }
     
