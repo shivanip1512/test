@@ -13,6 +13,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -385,24 +386,32 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
         });
 
         for (Long eventId : rfnBroadcastEventId) {
-            SqlStatementBuilder insertSql = new SqlStatementBuilder();
-            insertSql.append("INSERT INTO RfnBroadcastEventSummary");
-            insertSql.append("SELECT RfnBroadcastEventId,");
-            insertSql.append("COUNT(CASE WHEN Result").eq_k(SUCCESS).append("THEN 1 END), ");
-            insertSql.append("COUNT(CASE WHEN Result").eq_k(SUCCESS_UNENROLLED).append(" THEN 1 END), ");
-            insertSql.append("COUNT(CASE WHEN Result").eq_k(FAILURE).append("THEN 1 END), ");
-            insertSql.append("COUNT(CASE WHEN Result").eq_k(UNKNOWN).append("THEN 1 END) ");
-            insertSql.append("FROM RfnBroadcastEventDeviceStatus");
-            insertSql.append("WHERE RfnBroadcastEventId").eq(eventId);
-            insertSql.append("GROUP BY RfnBroadcastEventId");
- 
-           jdbcTemplate.update(insertSql);
-
+            archiveRfnBroadcastEvents(eventId, removeBeforeDate);
         }
+    }
+
+    @Override
+    @Transactional
+    public void archiveRfnBroadcastEvents(Long eventId, DateTime removeBeforeDate) {
+        insertIntoRfnBroadcastEventSummary(eventId);
         removeOlderRfnBroadcastEventStatus(removeBeforeDate);
     }
-    
-    
+
+    private void insertIntoRfnBroadcastEventSummary(Long eventId) {
+        SqlStatementBuilder insertSql = new SqlStatementBuilder();
+        insertSql.append("INSERT INTO RfnBroadcastEventSummary");
+        insertSql.append("SELECT RfnBroadcastEventId,");
+        insertSql.append("COUNT(CASE WHEN Result").eq_k(SUCCESS).append("THEN 1 END), ");
+        insertSql.append("COUNT(CASE WHEN Result").eq_k(SUCCESS_UNENROLLED).append(" THEN 1 END), ");
+        insertSql.append("COUNT(CASE WHEN Result").eq_k(FAILURE).append("THEN 1 END), ");
+        insertSql.append("COUNT(CASE WHEN Result").eq_k(UNKNOWN).append("THEN 1 END) ");
+        insertSql.append("FROM RfnBroadcastEventDeviceStatus");
+        insertSql.append("WHERE RfnBroadcastEventId").eq(eventId);
+        insertSql.append("GROUP BY RfnBroadcastEventId");
+
+        jdbcTemplate.update(insertSql);
+    }
+
     private void removeOlderRfnBroadcastEventStatus(DateTime removeBeforeDate) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM RfnBroadcastEventDeviceStatus ");
@@ -416,7 +425,7 @@ public class PerformanceVerificationDaoImpl implements PerformanceVerificationDa
 
         jdbcTemplate.update(sql);
     }
-    
+
     @Override
     public List<PerformanceVerificationEventMessageStats> getArchiveReports(Range<Instant> range) {
         List<PerformanceVerificationEventMessageStats> reports = new ArrayList<>();

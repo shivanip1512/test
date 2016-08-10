@@ -167,7 +167,6 @@ public class RfnPerformanceVerificationServiceImpl implements RfnPerformanceVeri
     }
     
     @Override
-    @Transactional
     public void archiveVerificationMessage() {
         DateTime removeBeforeDate = new DateTime().plusDays(-180).withTimeAtStartOfDay();
         performanceVerificationDao.archiveRfnBroadcastEventStatus(removeBeforeDate);

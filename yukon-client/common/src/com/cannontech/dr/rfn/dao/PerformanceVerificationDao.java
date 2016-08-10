@@ -107,4 +107,11 @@ public interface PerformanceVerificationDao {
     
     List<PerformanceVerificationEventMessageStats> getArchiveReports(Range<Instant> range);
 
+    /**
+     * Supports archiveRfnBroadcastEventStatus to update
+     * RfnBroadcastEventSummary and deleting data from
+     * RfnBroadcastEventDeviceStatus that is older than 180 days
+     */
+    void archiveRfnBroadcastEvents(Long eventId, DateTime removeBeforeDate);
+
 }
