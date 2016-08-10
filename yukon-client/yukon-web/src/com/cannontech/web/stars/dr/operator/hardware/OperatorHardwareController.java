@@ -354,9 +354,10 @@ public class OperatorHardwareController {
         }
         InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventoryId);
         model.addAttribute("canEnableDisable", !inventory.getHardwareType().isZigbee()
-            && !inventory.getHardwareType().isEcobee());
+            && !inventory.getHardwareType().isEcobee() && !inventory.getHardwareType().isMeter());
         model.addAttribute("canSendShed", !inventory.getHardwareType().isZigbee()
-                           && !inventory.getHardwareType().isEcobee() && !inventory.getHardwareType().isSA());
+            && !inventory.getHardwareType().isEcobee() && !inventory.getHardwareType().isSA()
+            && !inventory.getHardwareType().isMeter());
         if(hardware.getHardwareType() == HardwareType.NON_YUKON_METER){
             return "redirect:/stars/operator/hardware/mp/view";
         }
