@@ -126,7 +126,7 @@ YukonError_t RfnMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiCommandPar
 
 YukonError_t RfnMeterDevice::executeGetConfigBehavior(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
-    if( auto behaviorType = parse.findStringForKey("behaviorType") )
+    if( auto behaviorType = parse.findStringForKey("behavior") )
     {
         if( *behaviorType == "rfndatastreaming" )
         {
