@@ -30,9 +30,7 @@
                                     <option value="${aCommand}">${aCommand.commandName}</option>
                                 </c:when>
                                 <c:otherwise>
-                                    <c:if test="${aCommand != 'VerifyNotOperatedIn'}">
-                                        <option value="${aCommand}" <c:if test="${param.command == aCommand}">selected="selected" </c:if> >${fn:escapeXml(aCommand.commandName)}</option>
-                                    </c:if>
+                                    <option value="${aCommand}" <c:if test="${param.command == aCommand}">selected="selected" </c:if> >${fn:escapeXml(aCommand.commandName)}</option>
                                 </c:otherwise>
                             </c:choose>
                         </c:forEach>
