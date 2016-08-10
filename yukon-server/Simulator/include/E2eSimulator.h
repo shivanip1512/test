@@ -3,15 +3,22 @@
 namespace cms {
 class Session;
 class Message;
+class Destination;
 }
 
 namespace Cti {
+    struct RfnIdentifier;
+
 namespace Messaging {
 namespace ActiveMQ {
     class ManagedConnection;
     class ManagedConsumer;
     class MessageListener;
     class ManagedProducer;
+}
+namespace Rfn {
+    class NetworkManagerRequestHeader;
+    class E2eDataRequestMsg;
 }
 }
 
@@ -40,6 +47,22 @@ private:
     std::unique_ptr<Messaging::ActiveMQ::ManagedProducer> indicationProducer;
 
     void handleE2eDtRequest(const cms::Message *msg);
+
+    void sendNetworkManagerRequestAck(const Messaging::Rfn::NetworkManagerRequestHeader&, const cms::Destination*);
+    void sendE2eDataConfirm(const Messaging::Rfn::E2eDataRequestMsg&);
+
+    struct e2edt_packet
+    {
+        std::vector<unsigned char> payload;
+        unsigned token;
+        unsigned id;
+    };
+
+    std::unique_ptr<e2edt_packet> parseE2eDtRequestPayload(const std::vector<unsigned char>&, const RfnIdentifier&);
+
+    std::vector<unsigned char> buildE2eDtReplyPayload(const e2edt_packet&);
+
+    void sendE2eDataIndication(const Messaging::Rfn::E2eDataRequestMsg &requestMsg, const std::vector<unsigned char>& payload);
 };
 
 }

@@ -86,9 +86,9 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
 
     if( const auto b = dynamic_cast<const cms::BytesMessage*>(msg) )
     {
-        std::vector<unsigned char> payload { 
-            b->getBodyBytes(), 
-            b->getBodyBytes() + b->getBodyLength() };
+        const auto buf = b->getBodyBytes();
+
+        std::vector<unsigned char> payload { buf, buf + b->getBodyLength() };
 
         CTILOG_INFO(dout, "Received BytesMessage on RFN E2E queue, attempting to decode as E2eDataRequest");
 
@@ -104,109 +104,152 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
                 return;
             }
 
+            sendNetworkManagerRequestAck(requestMsg->header, msg->getCMSReplyTo());
+
+            sendE2eDataConfirm(*requestMsg);
+
+            if( auto e2edtRequest = parseE2eDtRequestPayload(requestMsg->payload, requestMsg->rfnIdentifier) )
             {
-                NetworkManagerRequestAck requestAck;
-    
-                requestAck.header = requestMsg->header;
+                //  handle request data, build payload
+                //  For now, just a Fibonacci sequence
+                const std::vector<unsigned char> reply_data { 0x01, 0x01, 0x02, 0x03, 0x05, 0x08, 0x0d, 0x15, 0x22, 0x37, 0x59, 0x90, 0xe9 };
 
-                std::vector<unsigned char> requestAckBytes;
+                e2edt_packet replyPacket;
 
-                nmMessageFactory.serialize(requestAck, requestAckBytes);
+                replyPacket.id    = e2edtRequest->id;
+                replyPacket.token = e2edtRequest->token;
+                replyPacket.payload = reply_data;
 
-                auto tempQueueProducer = createDestinationProducer(*producerSession, msg->getCMSReplyTo());
-                
-                std::unique_ptr<cms::BytesMessage> bytesMsg { producerSession->createBytesMessage() };
+                auto e2edtReply = buildE2eDtReplyPayload(replyPacket);
 
-                bytesMsg->writeBytes(requestAckBytes);
-
-                tempQueueProducer->send(bytesMsg.get());
-            }
-
-            {
-                E2eDataConfirmMsg confirm;
-
-                confirm.applicationServiceId = requestMsg->applicationServiceId;
-                confirm.header               = requestMsg->header;
-                confirm.protocol             = requestMsg->protocol;
-                confirm.replyType            = E2eDataConfirmMsg::ReplyType::OK;
-                confirm.rfnIdentifier        = requestMsg->rfnIdentifier;
-
-                std::vector<unsigned char> confirmBytes;
-
-                e2eMessageFactory.serialize(confirm, confirmBytes);
-
-                std::unique_ptr<cms::BytesMessage> bytesMsg { producerSession->createBytesMessage() };
-
-                bytesMsg->writeBytes(confirmBytes);
-
-                confirmProducer->send(bytesMsg.get());
-            }
-
-            //  parse the payload into the CoAP packet - the MESSAGE_NON and REQUEST_GET are default values that will be overwritten
-            Protocols::scoped_pdu_ptr request_pdu(coap_pdu_init(COAP_MESSAGE_NON, COAP_REQUEST_GET, COAP_INVALID_TID, COAP_MAX_PDU_SIZE));
-
-            coap_pdu_parse(&requestMsg->payload.front(), requestMsg->payload.size(), request_pdu);
-
-            if( request_pdu->hdr->type != COAP_MESSAGE_CON )
-            {
-                CTILOG_INFO(dout, "Received unhandled type ("<< request_pdu->hdr->type <<") for rfnIdentifier "<< requestMsg->rfnIdentifier);
-                return;
-            }
-
-            CTILOG_INFO(dout, "Received CONfirmable packet ("<< request_pdu->hdr->id <<") for rfnIdentifier "<< requestMsg->rfnIdentifier);
-            
-            ///
-            //  Decode the token
-            auto request_token = coap_decode_var_bytes(request_pdu->hdr->token, request_pdu->hdr->token_length);
-
-            //  Extract the data from the packet
-            unsigned char *data;
-            size_t len;
-
-            coap_get_data(request_pdu, &len, &data);
-
-            std::vector<unsigned char> request_data { data, data + len };
-
-            Protocols::scoped_pdu_ptr reply_pdu(coap_pdu_init(COAP_MESSAGE_ACK, COAP_RESPONSE_205_CONTENT, request_pdu->hdr->id, COAP_MAX_PDU_SIZE));
-
-            //  add token to reply
-            unsigned char reply_token_buf[4];
-
-            const unsigned reply_token_len = coap_encode_var_bytes(reply_token_buf, request_token);
-
-            coap_add_token(reply_pdu, reply_token_len, reply_token_buf);
-
-            //  Fibonacci!  1, 1, 2, 3, 5, 8, 13, 21, 34, 55, 89, 144, 233
-            const std::vector<unsigned char> reply_data { 0x01, 0x01, 0x02, 0x03, 0x05, 0x08, 0x0d, 0x15, 0x22, 0x37, 0x59, 0x90, 0xe9 };
-
-            //  add data to reply
-            coap_add_data(reply_pdu, reply_data.size(), reply_data.data());
-
-            const unsigned char *raw_reply_pdu = reinterpret_cast<unsigned char *>(reply_pdu->hdr);
-
-            {
-                E2eDataIndicationMsg indication;
-
-                indication.applicationServiceId = requestMsg->applicationServiceId;
-                indication.highPriority = requestMsg->highPriority;
-                indication.payload.assign( raw_reply_pdu, raw_reply_pdu + reply_pdu->length );
-                indication.protocol = requestMsg->protocol;
-                indication.rfnIdentifier = requestMsg->rfnIdentifier;
-                indication.security = requestMsg->security;
-
-                std::vector<unsigned char> indicationBytes;
-
-                e2eMessageFactory.serialize(indication, indicationBytes);
-
-                std::unique_ptr<cms::BytesMessage> bytesMsg { producerSession->createBytesMessage() };
-
-                bytesMsg->writeBytes(indicationBytes);
-
-                indicationProducer->send(bytesMsg.get());
+                sendE2eDataIndication(*requestMsg, e2edtReply);
             }
         }
     }
 }
+
+
+void E2eSimulator::sendNetworkManagerRequestAck(const NetworkManagerRequestHeader &header, const cms::Destination* tempQueue)
+{
+    NetworkManagerRequestAck requestAck;
+
+    requestAck.header = header;
+
+    std::vector<unsigned char> requestAckBytes;
+
+    nmMessageFactory.serialize(requestAck, requestAckBytes);
+
+    auto tempQueueProducer = createDestinationProducer(*producerSession, tempQueue);
+
+    std::unique_ptr<cms::BytesMessage> bytesMsg { producerSession->createBytesMessage() };
+
+    bytesMsg->writeBytes(requestAckBytes);
+
+    tempQueueProducer->send(bytesMsg.get());
+}
+
+
+void E2eSimulator::sendE2eDataConfirm(const E2eDataRequestMsg& requestMsg)
+{
+    E2eDataConfirmMsg confirm;
+
+    confirm.applicationServiceId = requestMsg.applicationServiceId;
+    confirm.header               = requestMsg.header;
+    confirm.protocol             = requestMsg.protocol;
+    confirm.replyType            = E2eDataConfirmMsg::ReplyType::OK;
+    confirm.rfnIdentifier        = requestMsg.rfnIdentifier;
+
+    std::vector<unsigned char> confirmBytes;
+
+    e2eMessageFactory.serialize(confirm, confirmBytes);
+
+    std::unique_ptr<cms::BytesMessage> bytesMsg { producerSession->createBytesMessage() };
+
+    bytesMsg->writeBytes(confirmBytes);
+
+    confirmProducer->send(bytesMsg.get());
+}
+
+
+auto E2eSimulator::parseE2eDtRequestPayload(const std::vector<unsigned char>& payload, const RfnIdentifier &rfnId) -> std::unique_ptr<e2edt_packet>
+{
+    //  parse the payload into the CoAP packet - the MESSAGE_NON and REQUEST_GET are default values that will be overwritten
+    Protocols::scoped_pdu_ptr request_pdu(coap_pdu_init(COAP_MESSAGE_NON, COAP_REQUEST_GET, COAP_INVALID_TID, COAP_MAX_PDU_SIZE));
+
+    auto mutablePayload = payload;
+
+    coap_pdu_parse(mutablePayload.data(), mutablePayload.size(), request_pdu);
+
+    if( request_pdu->hdr->type != COAP_MESSAGE_CON )
+    {
+        CTILOG_INFO(dout, "Received unhandled type ("<< request_pdu->hdr->type <<") for rfnIdentifier "<< rfnId);
+        return nullptr;
+    }
+
+    CTILOG_INFO(dout, "Received CONfirmable packet ("<< request_pdu->hdr->id <<") for rfnIdentifier "<< rfnId);
+
+    auto e2edtRequest = std::make_unique<e2edt_packet>();
+
+    //  Decode the token
+    e2edtRequest->token = coap_decode_var_bytes(request_pdu->hdr->token, request_pdu->hdr->token_length);
+
+    //  Extract the data from the packet
+    unsigned char *data;
+    size_t len;
+
+    coap_get_data(request_pdu, &len, &data);
+
+    e2edtRequest->payload.assign(data, data + len);
+
+    e2edtRequest->id = request_pdu->hdr->id;
+
+    return e2edtRequest;
+}
+
+
+std::vector<unsigned char> E2eSimulator::buildE2eDtReplyPayload(const e2edt_packet& replyContents)
+{
+    Protocols::scoped_pdu_ptr reply_pdu(coap_pdu_init(COAP_MESSAGE_ACK, COAP_RESPONSE_205_CONTENT, replyContents.id, COAP_MAX_PDU_SIZE));
+
+    //  add token to reply
+    unsigned char reply_token_buf[4];
+
+    const unsigned reply_token_len = coap_encode_var_bytes(reply_token_buf, replyContents.token);
+
+    coap_add_token(reply_pdu, reply_token_len, reply_token_buf);
+
+    //  add data to reply
+    coap_add_data(reply_pdu, replyContents.payload.size(), replyContents.payload.data());
+
+    const unsigned char *raw_reply_pdu = reinterpret_cast<unsigned char *>(reply_pdu->hdr);
+
+    return { raw_reply_pdu,
+             raw_reply_pdu + reply_pdu->length };
+}
+
+
+void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, const std::vector<unsigned char>& payload)
+{
+    E2eDataIndicationMsg indication;
+
+    indication.applicationServiceId = requestMsg.applicationServiceId;
+    indication.highPriority  = requestMsg.highPriority;
+    indication.payload       = payload;
+    indication.protocol      = requestMsg.protocol;
+    indication.rfnIdentifier = requestMsg.rfnIdentifier;
+    indication.security      = requestMsg.security;
+
+    std::vector<unsigned char> indicationBytes;
+
+    e2eMessageFactory.serialize(indication, indicationBytes);
+
+    std::unique_ptr<cms::BytesMessage> bytesMsg { producerSession->createBytesMessage() };
+
+    bytesMsg->writeBytes(indicationBytes);
+
+    indicationProducer->send(bytesMsg.get());
+}
+
 
 }
 }
