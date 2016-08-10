@@ -47,6 +47,24 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     private final static Logger log = YukonLogManager.getLogger(DeviceBehaviorDaoImpl.class);
+    private final static RowMapper<Map.Entry<Integer, Integer>> rowMapperBehaviorIdToDeviceId =
+        new RowMapper<Entry<Integer, Integer>>() {
+            @Override
+            public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Integer behaviorId = rs.getInt("behaviorId");
+                Integer deviceId = rs.getInt("deviceId");
+                return Maps.immutableEntry(behaviorId, deviceId);
+            }
+        };
+    private final static RowMapper<Map.Entry<Integer, Integer>> rowMapperDeviceIdToBehaviorId =
+        new RowMapper<Entry<Integer, Integer>>() {
+            @Override
+            public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Integer deviceId = rs.getInt("deviceId");
+                Integer behaviorId = rs.getInt("behaviorId");
+                return Maps.immutableEntry(deviceId, behaviorId);
+            }
+        };
 
     @Override
     public Multimap<Integer, Integer> getBehaviorIdsToDevicesIdMap(Iterable<Integer> behaviorIds) {
@@ -63,16 +81,8 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             }
         };
 
-        RowMapper<Map.Entry<Integer, Integer>> rowMapper = new RowMapper<Entry<Integer, Integer>>() {
-            @Override
-            public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Integer behaviorId = rs.getInt("behaviorId");
-                Integer deviceId = rs.getInt("deviceId");
-                return Maps.immutableEntry(behaviorId, deviceId);
-            }
-        };
-
-        Multimap<Integer, Integer> retVal = template.multimappedQuery(sqlGenerator, behaviorIds, rowMapper, Functions.identity());
+        Multimap<Integer, Integer> retVal =
+            template.multimappedQuery(sqlGenerator, behaviorIds, rowMapperBehaviorIdToDeviceId, Functions.identity());
         return retVal;
     }
 
@@ -80,7 +90,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     public SetMultimap<Integer, Integer> getDeviceIdsToBehaviorIdMap(Iterable<Integer> deviceIds, BehaviorType type,
             List<BuiltInAttribute> attributes, Integer interval, Integer behaviorId) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
-        
+
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
             public SqlFragmentSource generate(List<Integer> subList) {
@@ -110,18 +120,9 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
                 return sql;
             }
         };
-               
-        RowMapper<Map.Entry<Integer, Integer>> rowMapper = new RowMapper<Entry<Integer, Integer>>() {
-            @Override
-            public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Integer deviceId = rs.getInt("deviceId");
-                Integer behaviorId = rs.getInt("behaviorId");
-                return Maps.immutableEntry(deviceId, behaviorId);
-            }
-        };
 
         Multimap<Integer, Integer> ids =
-            template.multimappedQuery(sqlGenerator, deviceIds, rowMapper, Functions.identity());
+            template.multimappedQuery(sqlGenerator, deviceIds, rowMapperDeviceIdToBehaviorId, Functions.identity());
         SetMultimap<Integer, Integer> retVal = HashMultimap.create();
         retVal.putAll(ids);
 

@@ -75,7 +75,7 @@ public class DataStreamingConfigurationsController {
         Builder<SummarySortBy, Comparator<SummarySearchResult>> summaryBuilder = ImmutableMap.builder();
         summaryBuilder.put(SummarySortBy.deviceName, getDeviceNameComparator());
         summaryBuilder.put(SummarySortBy.deviceType, getDeviceTypeComparator());
-        summaryBuilder.put(SummarySortBy.meterNumber, getMeterNumberComparator());
+        summaryBuilder.put(SummarySortBy.serialNumber, getSerialNumberComparator());
         summaryBuilder.put(SummarySortBy.gatewayName, getGatewayNameComparator());
         summaryBuilder.put(SummarySortBy.gatewayLoading, getGatewayLoadingComparator());
         summaryBuilder.put(SummarySortBy.attributes, getSummaryAttributesComparator());
@@ -237,7 +237,7 @@ public class DataStreamingConfigurationsController {
         
         deviceName,
         deviceType,
-        meterNumber,
+        serialNumber,
         gatewayName,
         gatewayLoading,
         attributes,
@@ -273,13 +273,13 @@ public class DataStreamingConfigurationsController {
         return typeOrdering;
     }
     
-    private Comparator<SummarySearchResult> getMeterNumberComparator() {
+    private Comparator<SummarySearchResult> getSerialNumberComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<SummarySearchResult> meterNumberOrdering = normalStringComparer
             .onResultOf(new Function<SummarySearchResult, String>() {
                 @Override
                 public String apply(SummarySearchResult from) {
-                    return from.getMeter().getName();
+                    return from.getMeter().getRfnIdentifier().getSensorSerialNumber();
                 }
             });
         return meterNumberOrdering;

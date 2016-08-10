@@ -10,7 +10,7 @@
            <th><input type="checkbox" class="js-select-all"></th>
            <tags:sort column="${deviceName}"/>
            <tags:sort column="${deviceType}"/>
-           <tags:sort column="${meterNumber}"/>
+           <tags:sort column="${serialNumber}"/>
            <tags:sort column="${gatewayName}"/>
            <tags:sort column="${gatewayLoading}"/>
            <tags:sort column="${attributes}"/>
@@ -25,7 +25,7 @@
                 <td><input class="js-select-all-item" type="checkbox" name="selectedResult" value="${result.meter.paoIdentifier.paoId}"></td>
                 <td><cti:paoDetailUrl yukonPao="${result.meter}">${result.meter.name}</cti:paoDetailUrl></td>
                 <td>${result.meter.paoIdentifier.paoType.paoTypeName}</td>
-                <td>${result.meter.name}</td>
+                <td>${result.meter.rfnIdentifier.sensorSerialNumber}</td>
                 <td>
                     <a href="${gatewayUrl}">${fn:escapeXml(result.gateway.name)}</a>
                 </td>
