@@ -54,6 +54,8 @@ public class DefaultGatewaySimulatorData {
     private static final RadioType radioType = RadioType.EKANET_915;
     private static final String radioMacAddress = "01:23:45:67:89:ab";
     private static final int dataSequenceCompletionPercentage = 100;
+    private static final double currentDataStreamingLoading = 50;
+    private static final double maxDataStreamingLoading = 100;
     
     static {
         admin.setUsername(adminUser);
@@ -132,8 +134,8 @@ public class DefaultGatewaySimulatorData {
         }
         response.setSequences(sequences);
         
-        response.setCurrentGatewayDataStreamingLoading(50);
-        response.setMaxGatewayDataStreamingCapacity(100);
+        response.setCurrentGatewayDataStreamingLoading(currentDataStreamingLoading);
+        response.setMaxGatewayDataStreamingCapacity(maxDataStreamingLoading);
         
         return response;
     }

@@ -45,6 +45,7 @@ import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersion
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
+import com.cannontech.common.rfn.simulation.SimulatedDataStreamingSettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareVersionReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
@@ -60,7 +61,9 @@ import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.simulators.message.request.DataStreamingSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.GatewaySimulatorStatusRequest;
+import com.cannontech.simulators.message.request.ModifyDataStreamingSimulatorRequest;
 import com.cannontech.simulators.message.request.ModifyGatewaySimulatorRequest;
 import com.cannontech.simulators.message.request.RfnLcrAllDeviceSimulatorStartRequest;
 import com.cannontech.simulators.message.request.RfnLcrAllDeviceSimulatorStopRequest;
@@ -70,6 +73,7 @@ import com.cannontech.simulators.message.request.RfnLcrSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStartRequest;
 import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStopRequest;
+import com.cannontech.simulators.message.response.DataStreamingSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.GatewaySimulatorStatusResponse;
 import com.cannontech.simulators.message.response.RfnLcrSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.RfnMeterDataSimulatorStatusResponse;
@@ -789,9 +793,36 @@ public class NmIntegrationController {
     
     @RequestMapping("viewDataStreamingSimulator")
     public String viewDataStreamingSimulator(ModelMap model, FlashScope flash) {
+        
+        try {
+            DataStreamingSimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(new DataStreamingSimulatorStatusRequest(), DataStreamingSimulatorStatusResponse.class);
+            model.addAttribute("simulatorRunning", response.isRunning());
+        } catch (ExecutionException e) {
+            log.error("Error communicating with Yukon Simulators Service.", e);
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+        }
+        
         model.addAttribute("simulatePorterConfigResponse", dataStreamingDevSettings.isSimulatePorterConfigResponse());
         
-        return "dataStreamingSimulator.jsp";
+        return "rfn/dataStreamingSimulator.jsp";
+    }
+    
+    @RequestMapping("startDataStreamingSimulator")
+    public String startDataStreamingSimulator(FlashScope flash) {
+        try {
+            SimulatedDataStreamingSettings settings = new SimulatedDataStreamingSettings();
+            ModifyDataStreamingSimulatorRequest request = new ModifyDataStreamingSimulatorRequest();
+            request.setSettings(settings);
+            SimulatorResponseBase response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+            if (response.isSuccessful()) {
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.dataStreamingSimulator.simulatorStart"));
+            }
+        } catch (ExecutionException e) {
+            log.error("Error communicating with Yukon Simulators Service.", e);
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+        }
+        
+        return "redirect:viewDataStreamingSimulator";
     }
     
     @RequestMapping("togglePorterResponse")

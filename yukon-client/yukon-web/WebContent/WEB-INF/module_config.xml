@@ -1661,6 +1661,7 @@
               <page name="rfnTest.viewDataSimulator" type="BASIC"/>
               <page name="rfnTest.viewRfDaArchive" type="BASIC"/>
               <page name="rfnTest.viewGatewayDataSimulator" type="BASIC"/>
+              <page name="rfnTest.viewDataStreamingSimulator" type="BASIC"/>
             </pages>
           </page>
           <page name="ecobee.mockTest" type="BASIC"/>

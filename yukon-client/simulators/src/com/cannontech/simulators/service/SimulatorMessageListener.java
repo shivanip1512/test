@@ -87,7 +87,7 @@ public class SimulatorMessageListener {
     
     /**
      * Flags the listener thread to stop. (It may take some time for the thread to "see" the flag, so the thread will
-     * not occur instantaneously.)
+     * not stop instantaneously.)
      */
     public void stop() {
         isActive = false;

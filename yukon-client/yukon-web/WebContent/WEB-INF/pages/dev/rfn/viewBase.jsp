@@ -106,7 +106,8 @@ $(function () { yukon.dev.rfn.init(); });
             <li><a href="viewRfDaArchiveRequest"><i:inline key=".rfDaArchiveRequest.label"/></a></li>
             <li><a href="viewLocationArchiveRequest"><i:inline key=".rfLocationArchiveRequest.label"/></a></li>
             <li><a href="gatewaySimulator"><i:inline key=".gatewaySimulator.label"/></a></li>
-            <li><a href=viewRfnMeterSimulator><i:inline key=".rfnMeterSimulator.label"/></a></li>
+            <li><a href="viewRfnMeterSimulator"><i:inline key=".rfnMeterSimulator.label"/></a></li>
+            <li><a href="viewDataStreamingSimulator"><i:inline key=".dataStreamingSimulator.label"/></a>
             
         </ul>
         <div class="page-action-area stacked">

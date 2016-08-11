@@ -20,31 +20,31 @@ public interface RfnGatewayDataCache {
      * an update from Network Manager.
      * @throws NmCommunicationException if an error occurs retrieving data from Network Manager.
      */
-    public RfnGatewayData get(PaoIdentifier paoIdentifier) throws NmCommunicationException;
+    RfnGatewayData get(PaoIdentifier paoIdentifier) throws NmCommunicationException;
     
     /**
      * Gets RfnGatewayData for a single id. This is a non-blocking call - if no data is present for that id, returns 
      * null immediately and updates the cache in a separate thread.
      */
-    public RfnGatewayData getIfPresent(PaoIdentifier paoIdentifier);
+    RfnGatewayData getIfPresent(PaoIdentifier paoIdentifier);
     
     /**
      * Gets all RfnGatewayData for the specified ids.
      * @throws NmCommunicationException if an error occurs retrieving data from Network Manager.
      */
-    public Collection<RfnGatewayData> getAll(Iterable<? extends PaoIdentifier> paoIdentifiers) 
+    Collection<RfnGatewayData> getAll(Iterable<? extends PaoIdentifier> paoIdentifiers) 
             throws NmCommunicationException;
     
     /**
      * Put an RfnGatewayData value into the cache.
      */
-    public void put(PaoIdentifier paoIdentifier, RfnGatewayData data);
+    void put(PaoIdentifier paoIdentifier, RfnGatewayData data);
     
     /**
      * Remove RfnGatewayData for the specified id from the cache.
      */
-    public void remove(PaoIdentifier paoIdentifier);
+    void remove(PaoIdentifier paoIdentifier);
     
     /** Return underlying loading cache. */
-    public LoadingCache<PaoIdentifier, RfnGatewayData> getCache();
+    LoadingCache<PaoIdentifier, RfnGatewayData> getCache();
 }
