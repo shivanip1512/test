@@ -13350,6 +13350,10 @@
                 <name>Temperature Low</name>
                 <stategroup value="TrueFalse" />
             </point>
+            <point type="Status" offset="64">
+                <name>VAr Reverse Power Flow</name>
+                <stategroup value="TwoStateActive" />
+            </point>
             <point type="Status" offset="65">
                 <name>Phase A Reverse Power Flow</name>
                 <stategroup value="TwoStateActive" />
@@ -13431,6 +13435,11 @@
                 <init>true</init>
                 <name>Door Sensor Damage/Tamper</name>
                 <stategroup value="TwoStateActive" />
+            </point>
+            <point type="Status" offset="126">
+                <init>true</init>
+                <name>Door Status</name>
+                <stategroup value="CBC Door Status" />
             </point>
             <point type="Status" offset="127">
                 <init>true</init>
@@ -13581,6 +13590,14 @@
                 <unitofmeasure value="Volts" />
                 <decimalplaces value="3" />
             </point>
+            <point type="Analog" offset="166">
+                <init>true</init>
+                <name>CBC-8000 Hardware Type ID</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Undefined" />
+                <decimalplaces value="0" />
+                <analogstategroup value="CBC-8 Hardware Type" />
+            </point>
             <point type="Analog" offset="9999">
                 <init>true</init>
                 <name>Firmware Version</name>
@@ -13706,6 +13723,18 @@
                 <multiplier value="1.0" />
                 <unitofmeasure value="Undefined" />
                 <decimalplaces value="0" />
+            </point>
+            <point type="Analog" offset="10390">
+                <name>Adaptive kVAr Percent Bank Size</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Percent" />
+                <decimalplaces value="2" />
+            </point>
+            <point type="Analog" offset="10391">
+                <name>Nominal Secondary Voltage</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Volts" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="10392">
                 <name>Three-Phase Voltage Average Interval</name>
