@@ -13598,6 +13598,12 @@
                 <decimalplaces value="0" />
                 <analogstategroup value="CBC-8 Hardware Type" />
             </point>
+            <point type="Analog" offset="167">
+                <name>SCADA Override Time Remaining</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Minutes" />
+                <decimalplaces value="0" />
+            </point>
             <point type="Analog" offset="9999">
                 <init>true</init>
                 <name>Firmware Version</name>
@@ -13724,6 +13730,12 @@
                 <unitofmeasure value="Undefined" />
                 <decimalplaces value="0" />
             </point>
+            <point type="Analog" offset="10252">
+                <name>SCADA Override Release Time</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Minutes" />
+                <decimalplaces value="0" />
+            </point>
             <point type="Analog" offset="10390">
                 <name>Adaptive kVAr Percent Bank Size</name>
                 <multiplier value="1.0" />
@@ -13744,6 +13756,12 @@
             </point>
             <point type="Analog" offset="10393">
                 <name>Three-Phase Current Average Interval</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Minutes" />
+                <decimalplaces value="0" />
+            </point>
+            <point type="Analog" offset="10466">
+                <name>SCADA Override Countdown Timer</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Minutes" />
                 <decimalplaces value="0" />
