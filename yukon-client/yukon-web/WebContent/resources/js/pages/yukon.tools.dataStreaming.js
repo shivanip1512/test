@@ -34,7 +34,7 @@ yukon.tools.dataStreaming = (function () {
         },
         
         updateCheckboxes: function() {
-            var selectedIds = $('.js-selected-ids').text();
+            var selectedIds = $('.js-selected-ids').val();
             var list = new Array();
             list = selectedIds.split(',');
             $('.js-select-all-item').each(function (index, item) {
@@ -50,6 +50,7 @@ yukon.tools.dataStreaming = (function () {
         checkAll: function() {
             $('.js-select-all-item').prop('checked', true);
             $('.js-select-all').prop('checked', true);
+            $('.js-selected-ids').val($('.js-results-ids').text());
         },
         
         /** Initialize this module. */
@@ -65,7 +66,7 @@ yukon.tools.dataStreaming = (function () {
                 
                 var selected = $(this).prop('checked'),
                     count = parseInt($('.badge').text()),
-                    selectedIds = $('.js-selected-ids').text();
+                    selectedIds = $('.js-selected-ids').val();
 
                 //update the count
                 var newCount = selected ? count + 1 : count - 1
@@ -79,7 +80,7 @@ yukon.tools.dataStreaming = (function () {
                 } else {
                     list.splice(list.indexOf($(this).val()), 1);
                 }
-                $('.js-selected-ids').text(list.join(','));
+                $('.js-selected-ids').val(list.join(','));
             });
             
             /** Select all was clicked, update the selected count and device collection. */
@@ -93,7 +94,7 @@ yukon.tools.dataStreaming = (function () {
                 $('.badge').text(selected ? resultsCount : 0);
                 $('.js-cog-menu').toggleClass('dn', !selected);
                 //update the device Id list
-                $('.js-selected-ids').text(selected ? resultsIds : "");
+                $('.js-selected-ids').val(selected ? resultsIds : "");
 
             });
             
@@ -103,23 +104,20 @@ yukon.tools.dataStreaming = (function () {
             
             /** Configure Data Streaming was selected */
             $(document).on('click', '.js-selected-configure', function (ev) {
-                //send to Configure Data Streaming page with collection parameters
-                var selectedIds = $('.js-selected-ids').text();
-                window.location.href = yukon.url('/bulk/dataStreaming/configure?collectionType=idList&idList.ids=' + selectedIds);
+                $('#redirectUrl').val("/bulk/dataStreaming/configure");
+                $('#createTempGroupForm').submit();
             });
             
             /** Remove Data Streaming was selected */
             $(document).on('click', '.js-selected-remove', function (ev) {
-                //send to Remove Data Streaming page with collection parameters
-                var selectedIds = $('.js-selected-ids').text();
-                window.location.href = yukon.url('/bulk/dataStreaming/remove?collectionType=idList&idList.ids=' + selectedIds);
+                $('#redirectUrl').val("/bulk/dataStreaming/remove");
+                $('#createTempGroupForm').submit();
             });
             
             /** Collection Actions was selected */
             $(document).on('click', '.js-selected-actions', function (ev) {
-                //send to Collection Actions page with collection parameters
-                var selectedIds = $('.js-selected-ids').text();
-                window.location.href = yukon.url('/bulk/collectionActions?collectionType=idList&idList.ids=' + selectedIds);
+                $('#redirectUrl').val("/bulk/collectionActions");
+                $('#createTempGroupForm').submit();
             });
             
             /** Configuration Drop down was changed */

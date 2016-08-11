@@ -24,6 +24,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
@@ -34,6 +38,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
@@ -58,6 +63,9 @@ public class DataStreamingConfigurationsController {
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
+    @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private DeviceDao deviceDao;
     
     private static final List<Integer> intervals = ImmutableList.of(1, 3, 5, 15, 30);
     
@@ -131,6 +139,28 @@ public class DataStreamingConfigurationsController {
         return "../dataStreaming/configurations.jsp";
     }
     
+    @RequestMapping("createTemporaryGroup")
+    public String createTemporaryGroup(HttpServletRequest request) {
+
+        String redirectUrl = request.getParameter("redirectUrl");
+        String ids = request.getParameter("idList.ids");
+        String [] deviceIds = ids.split(",");
+
+        StoredDeviceGroup deviceGroup = tempDeviceGroupService.createTempGroup();
+        List<SimpleDevice> devices = new ArrayList<>();
+
+        for (String deviceId : deviceIds) {
+            int deviceIdInt = Integer.parseInt(deviceId);
+            SimpleDevice device = deviceDao.getYukonDevice(deviceIdInt);
+            devices.add(device);
+        }
+        
+        deviceGroupMemberEditorDao.addDevices(deviceGroup,  devices);
+        
+        return "redirect:" + redirectUrl + "?collectionType=group&group.name=" + deviceGroup.getFullName();
+            
+    }
+    
     @RequestMapping("summary")
     public String summary(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, PagingParameters paging, ModelMap model, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
@@ -142,7 +172,7 @@ public class DataStreamingConfigurationsController {
         model.addAttribute("existingConfigs", existingConfigs);
 
         List<BuiltInAttribute> attributes = new ArrayList<>(dataStreamingAttributeHelper.getAllSupportedAttributes());
-        attributes.sort((BuiltInAttribute a1, BuiltInAttribute a2) -> a1.getDescription().compareTo(a2.getDescription()));
+        attributes.sort((a1, a2) -> a1.getDescription().compareTo(a2.getDescription()));
         model.addAttribute("searchAttributes", attributes);
         
         model.addAttribute("searchIntervals", intervals);

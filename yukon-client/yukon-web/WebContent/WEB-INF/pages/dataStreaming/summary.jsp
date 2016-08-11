@@ -82,12 +82,18 @@
         </tags:sectionContainer2>
 
     </form:form>
+    
+    <cti:url var="action" value="/tools/dataStreaming/createTemporaryGroup" />
+    <form:form id="createTempGroupForm" action="${action}" method="POST">
+        <cti:csrfToken/>
+        <input class="js-selected-ids" type="hidden" id="deviceIds" name="idList.ids" value="${deviceIds}"/>
+        <input type="hidden" id="redirectUrl" name="redirectUrl"/>
+     </form:form>
         
         <h3>
             <i:inline key=".results"/>&nbsp;
             <span class="dn js-results-count">${searchResults.hitCount}</span>
             <span class="dn js-results-ids">${deviceIds}</span>
-            <span class="dn js-selected-ids">${deviceIds}</span>
             <span class="badge">${searchResults.hitCount}</span>
             <span class="fwn"><i:inline key=".devices"/></span>
             <c:if test="${searchResults.hitCount > 0}">
@@ -100,7 +106,7 @@
                 </span>
             </c:if>
         </h3>
-        
+
         <cti:url var="dataUrl" value="/tools/dataStreaming/summaryResults">
             <c:forEach var="gateway" items="${searchFilters.selectedGatewayIds}">
                 <cti:param name="gatewaysSelect" value="${gateway}"/>
@@ -112,11 +118,11 @@
             <cti:param name="selectedInterval" value="${searchFilters.selectedInterval}"/>
             <cti:param name="minLoadPercent" value="${searchFilters.minLoadPercent}"/>
             <cti:param name="maxLoadPercent" value="${searchFilters.maxLoadPercent}"/>
-            <cti:param name="selectedResults" value="${'.js-selected-results'}"/>
         </cti:url>
         <div data-url="${dataUrl}" data-load-event="yukon:tools:dataStreaming:results:load">
             <%@ include file="summaryResults.jsp" %>
         </div>
+        
             
         <cti:includeScript link="/resources/js/pages/yukon.tools.dataStreaming.js"/>
             

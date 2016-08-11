@@ -2,7 +2,9 @@ package com.cannontech.web.bulk;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -56,10 +58,11 @@ public class DataStreamingController {
         model.addAttribute("deviceCollection", deviceCollection);
         
         //check if the selected devices support data streaming
-        List<PaoType> types = new ArrayList<PaoType>();
-        deviceCollection.getDeviceList().forEach(device -> types.add(device.getDeviceType()));
-        List<BuiltInAttribute> attributes = new ArrayList<BuiltInAttribute>(dataStreamingAttributeHelper.getAllSupportedAttributes(types));
-        attributes.sort((BuiltInAttribute a1, BuiltInAttribute a2) -> a1.getDescription().compareTo(a2.getDescription()));
+        Set<PaoType> types = deviceCollection.getDeviceList().stream()
+                .map(device -> device.getDeviceType())
+                .collect(Collectors.toSet());
+        List<BuiltInAttribute> attributes = new ArrayList<>(dataStreamingAttributeHelper.getAllSupportedAttributes(types));
+        attributes.sort((a1, a2) -> a1.getDescription().compareTo(a2.getDescription()));
         boolean dsNotSupported = false;
         if (attributes.size() == 0) {
             dsNotSupported = true;
