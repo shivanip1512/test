@@ -210,8 +210,8 @@ public class DeviceConfigController {
         long deviceCount = deviceCollection.getDeviceCount();
         model.addAttribute("deviceCount", deviceCount);
 
-        for(SimpleDevice sd: deviceCollection.getDeviceList()){
-            if(sd.getDeviceType().isRfn() || sd.getDeviceType().isRfMeter()){
+        for (SimpleDevice sd : deviceCollection.getDeviceList()) {
+            if (sd.getDeviceType().isRfn()) {
                 model.addAttribute("someRF", true);
                 break;
             }
