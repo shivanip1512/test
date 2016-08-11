@@ -3,7 +3,6 @@ package com.cannontech.web.bulk;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
@@ -31,7 +30,9 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingAttributeHelper;
+import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.web.rfn.dataStreaming.model.VerificationInformation;
@@ -150,7 +151,8 @@ public class DataStreamingController {
     }
     
     @RequestMapping(value="remove", method=RequestMethod.POST)
-    public String removeSubmit(ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
+    public String removeSubmit(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+                               FlashScope flash) throws ServletException {
         LiteYukonUser user = userContext.getYukonUser();
 
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
@@ -159,22 +161,22 @@ public class DataStreamingController {
         List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
         
-        String correlationId = UUID.randomUUID().toString();
-        //TODO
-//        try {
-//            dataStreamingService.sendNmConfigurationRemove(deviceIds, correlationId);
-//        } catch (DataStreamingConfigException e) {
-//            //back?
-//        }
-        
-        DataStreamingConfigResult result = dataStreamingService.unassignDataStreamingConfig(deviceCollection, correlationId, user);
-        model.addAttribute("resultsId", result.getResultsId());
-
-        return "redirect:dataStreamingResults";
+        try {
+            DataStreamingConfigResult result = dataStreamingService.unassignDataStreamingConfig(deviceCollection, user);
+            model.addAttribute("resultsId", result.getResultsId());
+            return "redirect:dataStreamingResults";
+        } catch (DataStreamingConfigException e) {
+            flash.setError(e.getMessageSourceResolvable());
+            model.addAttribute("deviceCollection", deviceCollection);
+            return "redirect:dataStreaming/remove.jsp";
+        }
     }
     
     @RequestMapping(value="verification", method=RequestMethod.POST)
-    public String verificationSubmit(@ModelAttribute("verificationInfo") VerificationInformation verificationInfo, ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
+    public String verificationSubmit(@ModelAttribute("verificationInfo") VerificationInformation verificationInfo, 
+                                     ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+                                     FlashScope flash) throws ServletException {
+        
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
         
@@ -183,22 +185,20 @@ public class DataStreamingController {
         List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
         
+        DataStreamingConfig config = verificationInfo.getConfiguration();
         int configId = verificationInfo.getConfiguration().getId();
         
-        String correlationId = UUID.randomUUID().toString();
-        //TODO
-//        try {
-//            dataStreamingService.sendNmConfiguration(verificationInfo.getConfiguration(), deviceIds, correlationId);
-//        } catch (DataStreamingConfigException e) {
-//            //back to verification?
-//        }
-        
-        DataStreamingConfigResult result = dataStreamingService.assignDataStreamingConfig(configId, deviceCollection, correlationId, user);
-        result.setConfigId(configId);
-        
-        model.addAttribute("resultsId", result.getResultsId());
-
-        return "redirect:dataStreamingResults";
+        try {
+            DataStreamingConfigResult result = dataStreamingService.assignDataStreamingConfig(config, deviceCollection, user);
+            result.setConfigId(configId);
+            model.addAttribute("resultsId", result.getResultsId());
+            return "redirect:dataStreamingResults";
+        } catch (DataStreamingConfigException e) {
+            flash.setError(e.getMessageSourceResolvable());
+            model.addAttribute("configuration", config);
+            model.addAttribute("deviceCollection", deviceCollection);
+            return "redirect:configure";
+        }
     }
     
     @RequestMapping("dataStreamingResults")

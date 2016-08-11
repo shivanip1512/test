@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
@@ -283,52 +284,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return verificationInfo;
     }
     
-    @Override
-    public void sendNmConfigurationRemove(List<Integer> deviceIds, String correlationId) throws DataStreamingConfigException {
-        //Remove devices from the list that don't support data streaming
-        removeDataStreamingUnsupportedDevices(deviceIds);
-        
-        DeviceDataStreamingConfig config = new DeviceDataStreamingConfig();
-        config.setDataStreamingOn(false);
-        config.setMetrics(new HashMap<>());
-        
-        List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(deviceIds);
-        Map<RfnIdentifier, Integer> deviceToConfigId = rfnDevices.stream()
-                                                                 .map(device -> device.getRfnIdentifier())
-                                                                 .collect(Collectors.toMap(rfnId -> rfnId, 
-                                                                                           rfnId -> 0));
-        
-        DeviceDataStreamingConfigRequest configRequest = new DeviceDataStreamingConfigRequest();
-        configRequest.setRequestType(DeviceDataStreamingConfigRequestType.CONFIG);
-        configRequest.setExpiration(DateTimeConstants.MINUTES_PER_DAY);
-        configRequest.setConfigs(new DeviceDataStreamingConfig[]{config});
-        configRequest.setDevices(deviceToConfigId);
-        configRequest.setRequestId(correlationId);
-        
-        //Send verification message (Block for response message)
-        DeviceDataStreamingConfigResponse response = dataStreamingCommService.sendConfigRequest(configRequest);
-        
-        processConfigResponse(response);
-    }
-    
-    @Override
-    public void sendNmConfiguration(DataStreamingConfig config, List<Integer> deviceIds, String correlationId) throws DataStreamingConfigException {
-        //Remove devices from the list that don't support data streaming
-        removeDataStreamingUnsupportedDevices(deviceIds);
-        
-        //Create multiple configurations for different device types if necessary
-        //(Some devices may only support some of the configured attributes)
-        Multimap<DataStreamingConfig, Integer> configToDeviceIds = splitConfigForDevices(config, deviceIds, null);
-        
-        //Build config message for NM
-        DeviceDataStreamingConfigRequest configRequest = dataStreamingCommService.buildConfigRequest(configToDeviceIds, correlationId);
-        
-        //Send verification message (Block for response message)
-        DeviceDataStreamingConfigResponse response = dataStreamingCommService.sendConfigRequest(configRequest);
-        
-        processConfigResponse(response);
-    }
-    
     private void processConfigResponse(DeviceDataStreamingConfigResponse response) throws DataStreamingConfigException {
         switch (response.getResponseType()) {
         case ACCEPTED:
@@ -495,10 +450,16 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     
     @Override
     public DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection,
-                                                                 String correlationId, LiteYukonUser user) {
+                                                                 LiteYukonUser user) 
+                                                                 throws DataStreamingConfigException {
+        
+        List<Integer> deviceIds =
+                getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
+        String correlationId = UUID.randomUUID().toString();
+        
+        sendNmConfigurationRemove(deviceIds, correlationId);
+        
         if (isValidPorterConnection()) {
-            List<Integer> deviceIds =
-                    getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
             deviceIds.forEach(id -> {
                 BehaviorReport report;
                 try {
@@ -516,13 +477,18 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
     
     @Override
-    public DataStreamingConfigResult assignDataStreamingConfig(int configId, DeviceCollection deviceCollection, 
-                                                               String correlationId, LiteYukonUser user) {
-        if (isValidPorterConnection()) {
-            List<Integer> deviceIds =
+    public DataStreamingConfigResult assignDataStreamingConfig(DataStreamingConfig config, DeviceCollection deviceCollection, 
+                                                               LiteYukonUser user) throws DataStreamingConfigException {
+        
+        List<Integer> deviceIds =
                 getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
+        String correlationId = UUID.randomUUID().toString();
+        
+        sendNmConfiguration(config, deviceIds, correlationId);
+        
+        if (isValidPorterConnection()) {
             if (!deviceIds.isEmpty()) {
-                deviceBehaviorDao.assignBehavior(configId, BehaviorType.DATA_STREAMING, deviceIds);
+                deviceBehaviorDao.assignBehavior(config.getId(), BehaviorType.DATA_STREAMING, deviceIds);
                 deviceIds.forEach(id -> {
                     BehaviorReport report = buildPendingReport(findDataStreamingConfigurationForDevice(id), id, true);
                     deviceBehaviorDao.saveBehaviorReport(report);
@@ -533,7 +499,58 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             return createNoPorterConnectionResult(deviceCollection);
         }
     }
-
+    
+    @Override
+    public void cancel(String resultId, LiteYukonUser user) {
+        DataStreamingConfigResult result = resultsCache.getResult(resultId);
+        result.getCommandCompletionCallback().cancel();
+        porterConn.cancel(result ,user);
+    }
+    
+    private void sendNmConfiguration(DataStreamingConfig config, List<Integer> deviceIds, String correlationId) throws DataStreamingConfigException {
+        //Remove devices from the list that don't support data streaming
+        removeDataStreamingUnsupportedDevices(deviceIds);
+        
+        //Create multiple configurations for different device types if necessary
+        //(Some devices may only support some of the configured attributes)
+        Multimap<DataStreamingConfig, Integer> configToDeviceIds = splitConfigForDevices(config, deviceIds, null);
+        
+        //Build config message for NM
+        DeviceDataStreamingConfigRequest configRequest = dataStreamingCommService.buildConfigRequest(configToDeviceIds, correlationId);
+        
+        //Send verification message (Block for response message)
+        DeviceDataStreamingConfigResponse response = dataStreamingCommService.sendConfigRequest(configRequest);
+        
+        processConfigResponse(response);
+    }
+    
+    private void sendNmConfigurationRemove(List<Integer> deviceIds, String correlationId) throws DataStreamingConfigException {
+        //Remove devices from the list that don't support data streaming
+        removeDataStreamingUnsupportedDevices(deviceIds);
+        
+        DeviceDataStreamingConfig config = new DeviceDataStreamingConfig();
+        config.setDataStreamingOn(false);
+        config.setMetrics(new HashMap<>());
+        
+        List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(deviceIds);
+        Map<RfnIdentifier, Integer> deviceToConfigId = rfnDevices.stream()
+                                                                 .map(device -> device.getRfnIdentifier())
+                                                                 .collect(Collectors.toMap(rfnId -> rfnId, 
+                                                                                           rfnId -> 0));
+        
+        DeviceDataStreamingConfigRequest configRequest = new DeviceDataStreamingConfigRequest();
+        configRequest.setRequestType(DeviceDataStreamingConfigRequestType.CONFIG);
+        configRequest.setExpiration(DateTimeConstants.MINUTES_PER_DAY);
+        configRequest.setConfigs(new DeviceDataStreamingConfig[]{config});
+        configRequest.setDevices(deviceToConfigId);
+        configRequest.setRequestId(correlationId);
+        
+        //Send verification message (Block for response message)
+        DeviceDataStreamingConfigResponse response = dataStreamingCommService.sendConfigRequest(configRequest);
+        
+        processConfigResponse(response);
+    }
+    
     private DataStreamingConfigResult sendConfiguration(LiteYukonUser user, DeviceCollection deviceCollection, String correlationId) {
         log.info("Attemting to send configuration command to "+deviceCollection.getDeviceCount()+" devices.");
         final DataStreamingConfigResult result = new DataStreamingConfigResult();
@@ -625,13 +642,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         result.setResultsId(resultsId);
         result.complete();
         return result;
-    }
-
-    @Override
-    public void cancel(String key, LiteYukonUser user) {
-        DataStreamingConfigResult result = resultsCache.getResult(key);
-        result.getCommandCompletionCallback().cancel();
-        porterConn.cancel(result ,user);
     }
 
     /**

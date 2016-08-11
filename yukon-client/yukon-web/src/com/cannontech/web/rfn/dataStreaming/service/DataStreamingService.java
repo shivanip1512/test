@@ -37,43 +37,39 @@ public interface DataStreamingService {
     VerificationInformation verifyConfiguration(int configId, List<Integer> deviceIds);
     
     /**
-     * Informs Network Manager of a configuration that Yukon plans to send.
-     * @param correlationId A UUID used to correlate the NM config request and the sync request.
-     * @throws DataStreamingConfigException If the configuration is disallowed or there is an error.
-     */
-    void sendNmConfiguration(DataStreamingConfig config, List<Integer> deviceIds, String correlationId) throws DataStreamingConfigException;
-    
-    /**
-     * Informs Network Manager that Yukon plans to disable data streaming for the specified devices.
-     * @param correlationId A UUID used to correlate the NM config request and the sync request.
-     * @throws DataStreamingConfigException If the configuration is disallowed or there is an error.
-     */
-    void sendNmConfigurationRemove(List<Integer> deviceIds, String correlationId) throws DataStreamingConfigException;
-    
-    /**
      * Assign an existing data streaming configuration to the devices.
      * @param configId The behaviorId of the existing config.
      * @param correlationId A UUID used to correlate the NM config request and the sync request.
      * @return The resultId to look up the results in recentResultsCache.
+     * @throws DataStreamingConfigException If the configuration is disallowed or there is an error.
      */
-    DataStreamingConfigResult assignDataStreamingConfig(int configId, DeviceCollection deviceCollection, 
-                                                        String correlationId, LiteYukonUser user);
+    public DataStreamingConfigResult assignDataStreamingConfig(DataStreamingConfig config, DeviceCollection deviceCollection, 
+                                                               LiteYukonUser user) throws DataStreamingConfigException;
     
     /**
      * Unassign the data streaming configuration currently assigned to the specified devices. (They will no longer 
      * stream data.)
-     * @param correlationId A UUID used to correlate the NM config request and the sync request.
      * @return The resultId to look up the results in recentResultsCache.
+     * @throws DataStreamingConfigException when there is an error communicating to Network Manager, or Network Manager
+     * rejects the configuration request.
      */
-    DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection, String correlationId, LiteYukonUser user);
+    DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection, LiteYukonUser user) throws DataStreamingConfigException;
 
     int saveConfig(DataStreamingConfig config);
 
     DataStreamingConfig findDataStreamingConfiguration(int configId);
-
-    void cancel(String key, LiteYukonUser user);
-
-    DataStreamingConfigResult findDataStreamingResult(String resultKey);
+    
+    /**
+     * Cancels a configuration operation that is in progress.
+     * @param resultId The id of the operation to cancel.
+     */
+    void cancel(String resultId, LiteYukonUser user);
+    
+    /**
+     * Gets the result of a configuration operation.
+     * @param resultId The id of the operation.
+     */
+    DataStreamingConfigResult findDataStreamingResult(String resultId);
 
     /**
      * Returns map of configurations to device collection that contains all assigned devices.
