@@ -369,6 +369,26 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
     
     /**
+     * This method returns true if test shed command can be send else it returns false
+     */
+    public boolean isSupportsShed() {
+        if (isZigbee() || isEcobee() || isSA() || isMeter()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * This method returns true if In-Service and Out-Service command can be send else it returns false
+     */
+    public boolean isSupportsServiceInServiceOut() {
+        if (isZigbee() || isEcobee() || isMeter()) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Returns true if this hardware type is a switch or lcr.
      */
     public boolean isSwitch() {
