@@ -38,7 +38,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     CURRENT_ANGLE_PHASE_B("Current Angle (Phase B)", AttributeGroup.CURRENT, false),   //440 types only
     CURRENT_ANGLE_PHASE_C("Current Angle (Phase C)", AttributeGroup.CURRENT, false),   //440 types only
     CURRENT_WITHOUT_VOLTAGE_FLAG("Current Without Voltage", AttributeGroup.STATUS, false),   //440 types only
-    DEMAND("Demand", AttributeGroup.DEMAND),
+    DEMAND("Demand", AttributeGroup.DEMAND), // Delivered Demand / also instantaneous
     RECEIVED_DEMAND("Received Demand", AttributeGroup.DEMAND),
     DEMAND_PEAK_KVA_COIN("Demand at Peak kVa Coincidental", AttributeGroup.DEMAND),
     DISCONNECT_STATUS("Disconnect Status", AttributeGroup.STATUS),
@@ -65,10 +65,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SUM_KVAH_RATE_B("Sum kVAh Rate B", AttributeGroup.USAGE),
     SUM_KVAH_RATE_C("Sum kVAh Rate C", AttributeGroup.USAGE),
     SUM_KVAH_RATE_D("Sum kVAh Rate D", AttributeGroup.USAGE),
-    KVAR("kVAr", AttributeGroup.REACTIVE),
+    KVAR("kVAr", AttributeGroup.REACTIVE),  // Delivered kVar / also instantaneous
     RECEIVED_KVAR("Received kVAr", AttributeGroup.REACTIVE),
-    // Treating "kVArh" as "Delivered kVArh". May need to created separate attributes in the future.
-    KVARH("kVArh", AttributeGroup.REACTIVE),
+    KVARH("kVArh", AttributeGroup.REACTIVE),    // Delivered kVArh
     KVARH_RATE_A("kVArh Rate A", AttributeGroup.REACTIVE),
     KVARH_RATE_B("kVArh Rate B", AttributeGroup.REACTIVE),
     KVARH_RATE_C("kVArh Rate C", AttributeGroup.REACTIVE),
@@ -114,7 +113,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     RECEIVED_PEAK_DEMAND_RATE_B("Received Peak Demand Rate B", AttributeGroup.DEMAND),
     RECEIVED_PEAK_DEMAND_RATE_C("Received Peak Demand Rate C", AttributeGroup.DEMAND),
     RECEIVED_PEAK_DEMAND_RATE_D("Received Peak Demand Rate D", AttributeGroup.DEMAND),
-    DELIVERED_KVA("Delivered kVA", AttributeGroup.REACTIVE),
+    DELIVERED_KVA("Delivered kVA", AttributeGroup.REACTIVE),    // also instantaneous
     RECEIVED_KVA("Received kVA", AttributeGroup.REACTIVE),
     SUM_KVA("Sum kVA", AttributeGroup.REACTIVE),
     PEAK_KVA("Peak kVA", AttributeGroup.REACTIVE),

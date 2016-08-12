@@ -2333,6 +2333,22 @@
             </modifiers>
         </point>
 
+        <point name="kW"> <!-- Instantaneous Watts-->
+            <uom>W</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        <point name="kVAr"> <!-- Instantaneous Var -->
+            <uom>Var</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        <point name="kVA"> <!-- Instantaneous VA-->
+            <uom>VA</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        
         <point name="Volts Phase A">
             <uom>V</uom>
             <parseSiPrefix/>

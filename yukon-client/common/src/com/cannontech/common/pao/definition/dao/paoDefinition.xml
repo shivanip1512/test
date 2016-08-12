@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-<!-- RF Devices: highest Analog OFFSET=345 @ 2016-07-19 -->
+<!-- RF Devices: highest Analog OFFSET=348 @ 2016-08-12 -->
 <!-- RF Devices: highest Status OFFSET=79 @ 2014-04-30T -->
 
 <!--  Point Name naming convention: 
@@ -9221,6 +9221,25 @@
                 <decimalplaces value="4" />
             </point>
 
+            <point type="Analog" offset="346"> <!-- Instantaneous Watts -->
+                <name>kW</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kW"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="347"> <!-- Instantaneous Var -->
+                <name>kVAr</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVAr"/>
+                <decimalplaces value="3"/>
+            </point>
+            <point type="Analog" offset="348"> <!-- Instantaneous VA -->
+                <name>kVA</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVA"/>
+                <decimalplaces value="3"/>
+            </point>
+
             <point type="Analog" offset="70">
                 <init>true</init>
                 <name>Volts Phase A</name>
@@ -9450,6 +9469,9 @@
             <attribute name="PEAK_DEMAND">
                 <basicLookup point="Peak kW" />
             </attribute>
+            <attribute name="DEMAND">
+                <basicLookup point="kW"/>
+            </attribute>
             <attribute name="RECEIVED_KWH_RATE_A">
                 <basicLookup point="Received kWh (Rate A kWh)" />
             </attribute>
@@ -9497,6 +9519,12 @@
             </attribute>
             <attribute name="POWER_FACTOR_COIN">
                 <basicLookup point="Coincident Power Factor" />
+            </attribute>
+            <attribute name="DELIVERED_KVA">
+                <basicLookup point="kVA"/>
+            </attribute>
+            <attribute name="KVAR">
+                <basicLookup point="kVAr"/>
             </attribute>
             <attribute name="KVAH">
                 <basicLookup point="kVAh"/>
