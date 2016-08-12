@@ -7067,7 +7067,7 @@
         </tags>
     </pao>
 
-    <pao id="RFN_DAILY_VOLTAGE" abstract="true">
+    <pao id="RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE" abstract="true" inherits="SUPPORTS_VOLTAGE_PROFILE_TAG">
         <points>
             <point type="Analog" offset="14">
                 <init>true</init>
@@ -7083,19 +7083,6 @@
                 <unitofmeasure value="Volts" />
                 <decimalplaces value="3" />
             </point>
-        </points>
-        <attributes>
-            <attribute name="MINIMUM_VOLTAGE">
-                <basicLookup point="Daily Min Volts" />
-            </attribute>
-            <attribute name="MAXIMUM_VOLTAGE">
-                <basicLookup point="Daily Max Volts" />
-            </attribute>
-        </attributes>
-    </pao>
-
-    <pao id="RFN_CENTRON_ADV_VOLTAGE" abstract="true" inherits="RFN_DAILY_VOLTAGE, SUPPORTS_VOLTAGE_PROFILE_TAG">
-        <points>
             <point type="Analog" offset="214">
                 <init>true</init>
                 <name>Voltage</name>
@@ -7111,24 +7098,11 @@
             <attribute name="VOLTAGE_PROFILE">
                 <basicLookup point="Voltage" />
             </attribute>
-        </attributes>
-    </pao>
-    <pao id="RFN_FOCUS_ADV_VOLTAGE" abstract="true" inherits="RFN_DAILY_VOLTAGE, SUPPORTS_VOLTAGE_PROFILE_TAG">
-        <points>
-            <point type="Analog" offset="214">
-                <init>true</init>
-                <name>Interval Voltage</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="Volts" />
-                <decimalplaces value="1" />
-            </point>
-        </points>
-        <attributes>
-            <attribute name="VOLTAGE">
-                <basicLookup point="Interval Voltage" />
+            <attribute name="MINIMUM_VOLTAGE">
+                <basicLookup point="Daily Min Volts" />
             </attribute>
-            <attribute name="VOLTAGE_PROFILE">
-                <basicLookup point="Interval Voltage" />
+            <attribute name="MAXIMUM_VOLTAGE">
+                <basicLookup point="Daily Max Volts" />
             </attribute>
         </attributes>
     </pao>
@@ -7391,10 +7365,10 @@
     </pao>
 
     <pao id="RFN_L3_CENTRON" abstract="true"
-        inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_CENTRON_ADV_VOLTAGE" />
+        inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE" />
 
     <pao id="RFN_L3_FOCUS_420FL" abstract="true"
-        inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_FOCUS_ADV_VOLTAGE, RFN_L3_FOCUS_4x0FL_2VOLTAGES" />
+        inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE, RFN_L3_FOCUS_4x0FL_2VOLTAGES" />
 
     <pao id="RFN_L3_FOCUS_410FL" abstract="true"
         inherits="RFN_L2_CENTRON_AND_FOCUS, RFN_L3_FOCUS_4x0FL_2VOLTAGES" />
@@ -8187,7 +8161,7 @@
     </pao>
 
     <pao id="RFN_L5_FOCUS_FR_" abstract="true"
-        inherits="RFN_L3_FOCUS_FX_FD, RFN_FOCUS_ADV_VOLTAGE">
+        inherits="RFN_L3_FOCUS_FX_FD, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE">
         <points>
             <point type="Analog" offset="7"><!-- use SAME OFFSET as other 
                     RFN's Received kVArh -->
@@ -8228,7 +8202,7 @@
         <displayName>RFN-420fL</displayName>
     </pao>
     <pao id="RFN420FX"
-        inherits="RFN410FX, RFN_FOCUS_ADV_VOLTAGE, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, RFN_VOLTAGE_CONFIG">
+        inherits="RFN410FX, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, RFN_VOLTAGE_CONFIG">
         <displayName>RFN-420fX</displayName>
     </pao>
     <pao id="RFN420FD" inherits="RFN420FX, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
@@ -9852,7 +9826,7 @@
     </pao>
 
     <pao id="RFN520_BASE" abstract="true"
-        inherits="RFN_COMMON, RFN_TOU_FOR_ALL_EXCEPT_A3D, RFN_L2_CENTRON_AND_FOCUS, RFN_FOCUS_ADV_VOLTAGE, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS,
+        inherits="RFN_COMMON, RFN_TOU_FOR_ALL_EXCEPT_A3D, RFN_L2_CENTRON_AND_FOCUS, RFN_CENTRON_AND_FOCUS_ADV_VOLTAGE, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS,
             RFN_CONFIGURATION, RFN_VOLTAGE_CONFIG">
     </pao>
     

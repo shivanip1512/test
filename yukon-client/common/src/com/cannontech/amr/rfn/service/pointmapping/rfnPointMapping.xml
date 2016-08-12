@@ -1973,14 +1973,6 @@
         <paoType value="RFN410CL"/>
         <paoType value="RFN420CL"/>
         <paoType value="RFN420CD"/>
-        <point name="Voltage">
-            <uom>V</uom>
-            <parseSiPrefix/>
-            <modifiers match="equal"></modifiers>
-        </point>
-    </pointGroup>
-
-    <pointGroup><!-- INTERVAL VOLTAGE POINT MAPPINGS -->
         <paoType value="RFN420FL"/>
         <paoType value="RFN420FX"/>
         <paoType value="RFN420FD"/>
@@ -1993,17 +1985,13 @@
         <paoType value="RFN520FRXD"/>
         <paoType value="RFN530FAX"/>
         <paoType value="RFN530FRX"/>
-        
-        <!--  We may need to find a different name for this point, waiting for feedback from Jim L. -->
-        <point name="Interval Voltage"> <!--  Interval Voltage -->
+        <point name="Voltage">
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">
-                <modifier>Avg</modifier>
             </modifiers>
         </point>
     </pointGroup>
-
 
     <!-- WATER NODES POINT MAPPING -->
     <pointGroup>
