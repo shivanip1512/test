@@ -3,6 +3,8 @@ package com.cannontech.web.rfn.dataStreaming.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.BooleanUtils;
+
 import com.cannontech.common.i18n.MessageSourceAccessor;
 
 public class DataStreamingConfig implements Cloneable {
@@ -15,6 +17,7 @@ public class DataStreamingConfig implements Cloneable {
     private int selectedConfiguration;
     private String name;
     private String commaDelimitedAttributes;
+    private String commaDelimitedAttributesOnOff;
     private List<DataStreamingAttribute> attributes = new ArrayList<>();
     private MessageSourceAccessor accessor;
     private int numberOfDevices;
@@ -76,10 +79,22 @@ public class DataStreamingConfig implements Cloneable {
      * Returns comma delimited list of attributes
      */
     public String getCommaDelimitedAttributes() {
-        List<String> attList = new ArrayList<String>();
+        List<String> attList = new ArrayList<>();
         attributes.forEach(att -> attList.add(accessor.getMessage(att.getAttribute())));
         commaDelimitedAttributes = String.join(", ",  attList);
         return commaDelimitedAttributes;
+    }
+    
+    public String getCommaDelimitedAttributesOnOff() {
+        if (attributes.isEmpty()) {
+            commaDelimitedAttributesOnOff = "None";
+        } else {
+            List<String> attList = new ArrayList<>();
+            attributes.forEach(att -> attList.add(accessor.getMessage(att.getAttribute()) + " - "
+                + BooleanUtils.toStringOnOff(att.getAttributeOn()).toUpperCase()));
+            commaDelimitedAttributesOnOff = String.join(", ", attList);
+        }
+        return commaDelimitedAttributesOnOff;
     }
 
     public int getId() {
