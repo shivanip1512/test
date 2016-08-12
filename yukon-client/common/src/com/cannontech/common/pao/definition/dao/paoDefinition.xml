@@ -6284,25 +6284,25 @@
                 <name>Over Voltage Measured</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="217">
                 <name>Over Voltage Threshold</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="218">
                 <name>Under Voltage Measured</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="219">
                 <name>Under Voltage Threshold</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Volts" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="239">
                 <init>true</init>
@@ -7114,25 +7114,25 @@
                 <name>Rate A kWh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="27">
                 <name>Rate B kWh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="29">
                 <name>Rate C kWh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="31">
                 <name>Rate D kWh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="Analog" offset="24">
@@ -7140,25 +7140,25 @@
                 <name>Peak kW (Rate A kW)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="26">
                 <name>Peak kW (Rate B kW)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="28">
                 <name>Peak kW (Rate C kW)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="32">
                 <name>Peak kW (Rate D kW)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
 
             <!-- RFN_NET_TOU_METERING -->
@@ -7290,50 +7290,50 @@
                 <name>Received kWh (Rate A kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="126">
                 <name>Received kWh (Rate B kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="127">
                 <name>Received kWh (Rate C kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="128">
                 <name>Received kWh (Rate D kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="Analog" offset="120">
                 <name>Sum kWh (Rate A kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="121">
                 <name>Sum kWh (Rate B kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="122">
                 <name>Sum kWh (Rate C kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="123">
                 <name>Sum kWh (Rate D kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
         </points>
         <attributes>
@@ -7404,7 +7404,7 @@
                 <name>Peak kW (Rate E kW)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="37">
                 <name>Net kWh (Rate E kWh)</name>
@@ -7417,13 +7417,13 @@
                 <name>Rate E kWh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="129">
                 <name>Received kWh (Rate E kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="Analog" offset="112">
@@ -7615,25 +7615,25 @@
                 <name>Total Cumulative Peak kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="176">
                 <name>Phase A kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="177">
                 <name>Phase B kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="178">
                 <name>Phase C kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
         </points>
         <tags>
@@ -7648,25 +7648,25 @@
                 <name>Rate A Cumulative Peak kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="168">
                 <name>Rate B Cumulative Peak kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="169">
                 <name>Rate C Cumulative Peak kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="170">
                 <name>Rate D Cumulative Peak kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
         </points>
     </pao>
@@ -7678,62 +7678,62 @@
                 <name>Peak kVA</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="145">
                 <name>Rate A Peak kVA</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="146">
                 <name>Rate B Peak kVA</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="147">
                 <name>Rate C Peak kVA</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="148">
                 <name>Rate D Peak kVA</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="Analog" offset="179">
                 <name>Coincident Peak kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="206">
                 <name>Rate A Coincident Peak kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="207">
                 <name>Rate B Coincident Peak kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="208">
                 <name>Rate C Coincident Peak kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="209">
                 <name>Rate D Coincident Peak kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="107">
                 <init>false</init>
@@ -7746,162 +7746,162 @@
                 <name>Rate A Coincident kVA</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="211">
                 <name>Rate B Coincident kVA</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="212">
                 <name>Rate C Coincident kVA</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="213">
                 <name>Rate D Coincident kVA</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="Analog" offset="150">
                 <name>kVAh Delivered</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVAh" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="151">
                 <name>kVAh Received</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVAh" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="152">
                 <name>kVAh Sum</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVAh" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="133">
                 <name>Avg Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="108">
                 <init>false</init>
                 <name>Coincident Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="Analog" offset="134">
                 <name>Rate A Avg Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="135">
                 <name>Rate B Avg Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="136">
                 <name>Rate C Avg Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="137">
                 <name>Rate D Avg Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="Analog" offset="138">
                 <name>Rate A Coincident Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="139">
                 <name>Rate B Coincident Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="140">
                 <name>Rate C Coincident Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="141">
                 <name>Rate D Coincident Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="Analog" offset="130">
                 <name>Phase A Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="131">
                 <name>Phase B Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="132">
                 <name>Phase C Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="153">
                 <name>Phase A kVAr</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVAr" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="154">
                 <name>Phase B kVAr</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVAr" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="155">
                 <name>Phase C kVAr</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVAr" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="142">
                 <name>Phase A kVA</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="143">
                 <name>Phase B kVA</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="144">
                 <name>Phase C kVA</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
         </points>
         <attributes>
@@ -7952,50 +7952,50 @@
                 <name>Received kVArh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="165">
                 <name>Sum kVArh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="166">
                 <name>Net kVArh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="156">
                 <name>Peak kVAr</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVAr" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="Analog" offset="157">
                 <name>Rate A Peak kVAr</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVAr" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="158">
                 <name>Rate B Peak kVAr</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVAr" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="159">
                 <name>Rate C Peak kVAr</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVAr" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="160">
                 <name>Rate D Peak kVAr</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVAr" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="Analog" offset="161">
@@ -8168,13 +8168,13 @@
                 <name>Received kVArh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="215">
                 <name>Total kVArh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
         </points>
         <attributes>
@@ -8293,7 +8293,7 @@
                 <name>Last Interval kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="20">
                 <init>true</init>
@@ -8336,28 +8336,28 @@
                 <name>Rate A kWh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="27">
                 <init>true</init>
                 <name>Rate B kWh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="29">
                 <init>true</init>
                 <name>Rate C kWh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="31">
                 <init>true</init>
                 <name>Rate D kWh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="Analog" offset="73">
@@ -8383,7 +8383,7 @@
             </point>
             <!-- <point type="Analog" offset="130"> <init>true</init> <name>Phase 
                 A Power Factor</name> <multiplier value="1.0"/> <unitofmeasure value="PF"/> 
-                <decimalplaces value="4"/> </point> -->
+                <decimalplaces value="3"/> </point> -->
             <point type="Analog" offset="182">
                 <init>true</init>
                 <name>Delivered kWh per Interval</name>
@@ -8583,7 +8583,7 @@
             </point>
             <!-- <point type="Analog" offset="131"> <init>true</init> <name>Phase 
                 B Power Factor</name> <multiplier value="1.0"/> <unitofmeasure value="PF"/> 
-                <decimalplaces value="4"/> </point> -->
+                <decimalplaces value="3"/> </point> -->
             <point type="Analog" offset="71">
                 <init>true</init>
                 <name>Volts Phase B</name>
@@ -8629,7 +8629,7 @@
             </point>
             <!-- <point type="Analog" offset="132"> <init>true</init> <name>Phase 
                 C Power Factor</name> <multiplier value="1.0"/> <unitofmeasure value="PF"/> 
-                <decimalplaces value="4"/> </point> -->
+                <decimalplaces value="3"/> </point> -->
             <point type="Analog" offset="72">
                 <init>true</init>
                 <name>Volts Phase C</name>
@@ -9174,25 +9174,25 @@
                 <name>Received kWh (Rate A kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="126">
                 <name>Received kWh (Rate B kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="127">
                 <name>Received kWh (Rate C kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="128">
                 <name>Received kWh (Rate D kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="Analog" offset="120">
@@ -9200,25 +9200,25 @@
                 <name>Sum kWh (Rate A kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="121">
                 <name>Sum kWh (Rate B kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="122">
                 <name>Sum kWh (Rate C kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="123">
                 <name>Sum kWh (Rate D kWh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="Analog" offset="346"> <!-- Instantaneous Watts -->
@@ -9288,21 +9288,21 @@
                 <name>Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="108">
                 <init>false</init>
                 <name>Coincident Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             
             <point type="Analog" offset="156">
                 <name>Peak kVAr</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVAr" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="197">
                 <name>Coincident Cumulative Peak kVAr</name>
@@ -9605,7 +9605,7 @@
                 <name>Received kVArh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="202">
                 <init>true</init>
@@ -9864,109 +9864,109 @@
                 <name>Voltage Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="328">
                 <name>Voltage Phase B</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="329">
                 <name>Voltage Phase C</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="343">
                 <name>Avg Voltage Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="344">
                 <name>Avg Voltage Phase B</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="345">
                 <name>Avg Voltage Phase C</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="330">
                 <name>Min Voltage Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="331">
                 <name>Min Voltage Phase B</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="332">
                 <name>Min Voltage Phase C</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="333">
                 <name>Max Voltage Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="334">
                 <name>Max Voltage Phase B</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="335">
                 <name>Max Voltage Phase C</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="336">
                 <name>Current Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="337">
                 <name>Current Phase B</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="338">
                 <name>Current Phase C</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="226">
                 <name>Current Angle Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="227">
                 <name>Current Angle Phase B</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="228">
                 <name>Current Angle Phase C</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
         </points>
         <attributes>
@@ -10064,37 +10064,37 @@
                 <name>Voltage</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="342">
                 <name>Avg Voltage</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="330">
                 <name>Min Voltage</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="333">
                 <name>Max Voltage</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="336">
                 <name>Current</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="226">
                 <name>Current Angle</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
         </points>
         <attributes>
@@ -10124,73 +10124,73 @@
                 <name>Delivered kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="7">
                 <name>Received kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="215">
                 <name>Sum kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="166">
                 <name>Net kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="150">
                 <name>Delivered kVAh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="151">
                 <name>Received kVAh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="263">
                 <name>Sum kVAh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="341">
                 <name>Net kVAh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="267">
                 <name>Delivered Peak kVAr</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="269">
                 <name>Sum Peak kVAr</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="270">
                 <name>Delivered Peak kVA</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="272">
                 <name>Sum Peak kVA</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
         </points>
         <attributes>
@@ -10260,67 +10260,67 @@
                 <name>Sum Peak kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="327">
                 <name>Voltage Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="328">
                 <name>Voltage Phase B</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="329">
                 <name>Voltage Phase C</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="336">
                 <name>Current Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="337">
                 <name>Current Phase B</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="338">
                 <name>Current Phase C</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="339">
                 <name>Current Neutral to Ground</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="226">
                 <name>Current Angle Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="227">
                 <name>Current Angle Phase B</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="228">
                 <name>Current Angle Phase C</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
         </points>
         <attributes>
@@ -10367,613 +10367,613 @@
                 <name>Delivered kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="7">
                 <name>Received kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="150">
                 <name>Delivered kVAh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="151">
                 <name>Received kVAh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="264">
                 <name>Received Peak kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="266">
                 <name>Net Peak kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="267">
                 <name>Delivered Peak kVAr</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="268">
                 <name>Received Peak kVAr</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="270">
                 <name>Delivered Peak kVA</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="271">
                 <name>Received Peak kVA</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="215">
                 <name>Sum kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="263">
                 <name>Sum kVAh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="269">
                 <name>Sum Peak kVAr</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="272">
                 <name>Sum Peak kVA</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="25">
                 <name>Rate A kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="24">
                 <name>Peak kW (Rate A kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="120">
                 <name>Sum kWh (Rate A kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="125">
                 <name>Received kWh (Rate A kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="161">
                 <name>Delivered kVArh (Rate A kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="202">
                 <name>Received kVArh (Rate A kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="241">
                 <name>Delivered kVAh (Rate A kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="274">
                 <name>Received kVAh (Rate A kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="278">
                 <name>Sum Peak kW (Rate A kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="282">
                 <name>Sum Peak kVAr (Rate A kVAr)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="284">
                 <name>Sum Peak kVA (Rate A kVA)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="277">
                 <name>Received Peak kW (Rate A kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="279">
                 <name>Net Peak kW (Rate A kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="280">
                 <name>Delivered Peak kVAr (Rate A kVAr)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="281">
                 <name>Received Peak kVAr (Rate A kVAr)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="251">
                 <name>Delivered Peak kVA (Rate A kVA)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="273">
                 <name>Sum kVArh (Rate A kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="275">
                 <name>Sum kVAh (Rate A kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="283">
                 <name>Received Peak kVA (Rate A kVA)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="126">
                 <name>Received kWh (Rate B kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="127">
                 <name>Received kWh (Rate C kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="128">
                 <name>Received kWh (Rate D kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="162">
                 <name>Delivered kVArh (Rate B kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="203">
                 <name>Received kVArh (Rate B kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="242">
                 <name>Delivered kVAh (Rate B kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="285">
                 <name>Sum kVArh (Rate B kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="286">
                 <name>Received kVAh (Rate B kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="287">
                 <name>Sum kVAh (Rate B kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="163">
                 <name>Delivered kVArh (Rate C kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="204">
                 <name>Received kVArh (Rate C kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="243">
                 <name>Delivered kVAh (Rate C kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="297">
                 <name>Sum kVArh (Rate C kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="298">
                 <name>Received kVAh (Rate C kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="299">
                 <name>Sum kVAh (Rate C kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="340">
                 <name>Sum Peak kW (Rate C kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="305">
                 <name>Sum Peak kVAr (Rate C kVAr)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="164">
                 <name>Delivered kVArh (Rate D kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="205">
                 <name>Received kVArh (Rate D kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="307">
                 <name>Sum kVArh (Rate D kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="308">
                 <name>Delivered kVAh (Rate D kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="309">
                 <name>Received kVAh (Rate D kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="310">
                 <name>Sum kVAh (Rate D kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="313">
                 <name>Sum Peak kW (Rate D kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="317">
                 <name>Sum Peak kVAr (Rate D kVAr)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="26">
                 <name>Peak kW (Rate B kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="289">
                 <name>Received Peak kW (Rate B kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="291">
                 <name>Net Peak kW (Rate B kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="292">
                 <name>Delivered Peak kVAr (Rate B kVAr)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="293">
                 <name>Received Peak kVAr (Rate B kVAr)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="252">
                 <name>Delivered Peak kVA (Rate B kVA)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="290">
                 <name>Sum Peak kW (Rate B kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="294">
                 <name>Sum Peak kVAr (Rate B kVAr)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="295">
                 <name>Received Peak kVA (Rate B kVA)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="296">
                 <name>Sum Peak kVA (Rate B kVA)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="28">
                 <name>Peak kW (Rate C kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="301">
                 <name>Received Peak kW (Rate C kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="302">
                 <name>Net Peak kW (Rate C kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="303">
                 <name>Delivered Peak kVAr (Rate C kVAr)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="304">
                 <name>Received Peak kVAr (Rate C kVAr)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="253">
                 <name>Delivered Peak kVA (Rate C kVA)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="306">
                 <name>Received Peak kVA (Rate C kVA)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="32">
                 <name>Peak kW (Rate D kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="312">
                 <name>Received Peak kW (Rate D kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="314">
                 <name>Net Peak kW (Rate D kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="315">
                 <name>Delivered Peak kVAr (Rate D kVAr)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="316">
                 <name>Received Peak kVAr (Rate D kVAr)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="254">
                 <name>Delivered Peak kVA (Rate D kVA)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="318">
                 <name>Received Peak kVA (Rate D kVA)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="27">
                 <name>Rate B kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="121">
                 <name>Sum kWh (Rate B kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="29">
                 <name>Rate C kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="122">
                 <name>Sum kWh (Rate C kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="31">
                 <name>Rate D kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="123">
                 <name>Sum kWh (Rate D kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="319">
                 <name>Received kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>            
             <point type="Analog" offset="320">
                 <name>Sum kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="321">
                 <name>Delivered kVAr</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="322">
                 <name>Received kVAr</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="323">
                 <name>Sum kVAr</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="324">
                 <name>Delivered kVA</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="325">
                 <name>Received kVA</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="326">
                 <name>Sum kVA</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="330">
                 <name>Min Voltage Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="331">
                 <name>Min Voltage Phase B</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="332">
                 <name>Min Voltage Phase C</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="333">
                 <name>Max Voltage Phase A</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="334">
                 <name>Max Voltage Phase B</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="335">
                 <name>Max Voltage Phase C</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="DemandAccumulator" offset="21">
                 <name>Peak kW Frozen</name>
@@ -11337,79 +11337,79 @@
                 <name>Rate A kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="33">
                 <name>Net kWh (Rate A kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="120">
                 <name>Sum kWh (Rate A kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="278">
                 <name>Sum Peak kW (Rate A kW)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="27">
                 <name>Rate B kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="34">
                 <name>Net kWh (Rate B kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="121">
                 <name>Sum kWh (Rate B kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="29">
                 <name>Rate C kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="35">
                 <name>Net kWh (Rate C kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="122">
                 <name>Sum kWh (Rate C kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="31">
                 <name>Rate D kWh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="36">
                 <name>Net kWh (Rate D kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="123">
                 <name>Sum kWh (Rate D kWh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kWh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
         </points>
         <attributes>
@@ -11461,139 +11461,139 @@
                 <name>Sum kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="263">
                 <name>Sum kVAh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="269">
                 <name>Sum Peak kVAr</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="272">
                 <name>Sum Peak kVA</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="166">
                 <name>Net kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="273">
                 <name>Sum kVArh (Rate A kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="275">
                 <name>Sum kVAh (Rate A kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="282">
                 <name>Sum Peak kVAr (Rate A kVAr)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="284">
                 <name>Sum Peak kVA (Rate A kVA)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="230">
                 <name>Net kVArh (Rate A kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="276">
                 <name>Net kVAh (Rate A kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="285">
                 <name>Sum kVArh (Rate B kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="287">
                 <name>Sum kVAh (Rate B kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="231">
                 <name>Net kVArh (Rate B kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="288">
                 <name>Net kVAh (Rate B kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="297">
                 <name>Sum kVArh (Rate C kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="299">
                 <name>Sum kVAh (Rate C kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="232">
                 <name>Net kVArh (Rate C kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="300">
                 <name>Net kVAh (Rate C kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="307">
                 <name>Sum kVArh (Rate D kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="310">
                 <name>Sum kVAh (Rate D kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="233">
                 <name>Net kVArh (Rate D kVArh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="311">
                 <name>Net kVAh (Rate D kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
         </points>
         <attributes>
@@ -11684,31 +11684,31 @@
                 <name>Sum kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="263">
                 <name>Sum kVAh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="269">
                 <name>Sum Peak kVAr</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVAr"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="272">
                 <name>Sum Peak kVA</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="166">
                 <name>Net kVArh</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVArh"/>
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
         </points>
         <attributes>
