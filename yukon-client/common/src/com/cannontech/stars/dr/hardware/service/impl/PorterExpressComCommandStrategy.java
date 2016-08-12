@@ -183,6 +183,8 @@ public class PorterExpressComCommandStrategy implements LmHardwareCommandStrateg
                                               (Integer) parameters.getParams().get(LmHardwareCommandParam.RELAY));
         }
         
+        // waitable determine if the exception has to be thrown or not. 
+        // In case its waitable then a exception will be thrown. 
         boolean waitable = false;
         Boolean waitableParam = parameters.findParam(LmHardwareCommandParam.WAITABLE, Boolean.class);
         if (waitableParam != null) {
