@@ -43,19 +43,33 @@ yukon.tools.map = (function() {
     },
     
     /** @type {Array.<{ol.Layer.Tile|ol.layer.Group}>} - Array of tile layers for our map. */
-    _tiles = [
-        new ol.layer.Tile({ name: 'mqosm', source: new ol.source.MapQuest({ layer: 'osm' }) }),
-        new ol.layer.Tile({ name: 'mqsat', source: new ol.source.MapQuest({ layer: 'sat' }), visible: false }),
-        new ol.layer.Group({
-            name: 'hybrid',
-            layers: [
-                new ol.layer.Tile({ source: new ol.source.MapQuest({layer: 'sat'}) }),
-                new ol.layer.Tile({ source: new ol.source.MapQuest({layer: 'hyb'}) })
-            ],
-            visible: false
-        })
+    _tiles = [   
+          new ol.layer.Tile({ name: 'mqosm',
+              source: new ol.source.XYZ({ name: 'mqosm',
+                  url: yg.map_devices_street_url,
+                  attributions: [new ol.Attribution({
+                      html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
+                    })]
+              })
+          }),
+          new ol.layer.Tile({ name: 'mqsat', visible: false,
+              source: new ol.source.XYZ({ name: 'mqsat', 
+                url: yg.map_devices_satellite_url,
+                attributions: [new ol.Attribution({
+                    html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
+                  })]
+              })
+          }),
+          new ol.layer.Tile({ name: 'hybrid', visible: false,
+              source: new ol.source.XYZ({ name: 'hybrid', 
+                url: yg.map_devices_hybrid_url,
+                attributions: [new ol.Attribution({
+                    html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
+                  })]
+              })
+          })
     ],
-    
+        
     /** 
      * Returns the first layer with name provided.
      * @param {string} name - Name of layer.

@@ -156,6 +156,12 @@ public class MasterConfigMap implements ConfigurationSource {
         String string = getRequiredString(key);
         return Integer.parseInt(string);
     }
+    
+    @Override
+    public boolean getRequiredBoolean(MasterConfigBoolean key) throws UnknownKeyException {
+        String string = getRequiredString(key.name());
+        return Boolean.parseBoolean(string);
+    }
 
     @Override
     public int getInteger(String key, int defaultValue) {

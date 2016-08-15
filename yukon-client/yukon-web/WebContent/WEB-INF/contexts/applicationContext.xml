@@ -1267,4 +1267,7 @@
     <bean class="com.cannontech.web.rfn.dataStreaming.DataStreamingPorterConnection"/>
     <bean class="com.cannontech.web.rfn.dataStreaming.service.impl.DataStreamingServiceImpl"/>
     <bean class="com.cannontech.web.rfn.dataStreaming.service.impl.DataStreamingCommunicationServiceImpl"/>
+    
+    <bean id="mappingService" class="com.cannontech.web.common.mapping.service.impl.MappingServiceImpl"/>
+    
 </beans>

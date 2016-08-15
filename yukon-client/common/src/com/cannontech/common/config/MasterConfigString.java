@@ -33,6 +33,11 @@ public enum MasterConfigString {
 
     MAP_PROJECTION,
     
+    MAP_DEVICES_STREET_URL,
+    MAP_DEVICES_SATELLITE_URL,
+    MAP_DEVICES_HYBRID_URL,
+    MAP_DEVICES_KEY,
+    
     MSP_ALTGROUP_EXTENSION, //YUK-10787
     MSP_SUBSTATIONNAME_EXTENSION, //YUK-10787
     
@@ -60,6 +65,7 @@ public enum MasterConfigString {
         sensitiveData.add(DB_SQLSERVER);
         sensitiveData.add(DB_SQLSERVER_HOST);
         sensitiveData.add(DB_JAVA_URL);
+        sensitiveData.add(MAP_DEVICES_KEY);
         sensitiveData.add(SUPPORT_BUNDLE_FTP_UPLOAD_USER);
         sensitiveData.add(SUPPORT_BUNDLE_FTP_UPLOAD_PASSWORD);
         sensitiveData.add(SUPPORT_BUNDLE_FTP_UPLOAD_HOST);

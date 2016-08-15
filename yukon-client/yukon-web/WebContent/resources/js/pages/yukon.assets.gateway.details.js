@@ -28,23 +28,37 @@ yukon.assets.gateway.details = (function () {
     
     /** @type {Array.<{ol.Layer.Tile|ol.layer.Group}>} - Array of tile layers for our map. */
     _tiles = [ 
-        new ol.layer.Tile({ name: 'mqosm', source: new ol.source.MapQuest({ layer: 'osm' }) }),
-        new ol.layer.Tile({ name: 'mqsat', source: new ol.source.MapQuest({ layer: 'sat' }), visible: false }),
-        new ol.layer.Group({
-            name: 'hybrid',
-            layers: [
-                new ol.layer.Tile({ source: new ol.source.MapQuest({layer: 'sat'}) }),
-                new ol.layer.Tile({ source: new ol.source.MapQuest({layer: 'hyb'}) })
-            ],
-            visible: false
-        })
+          new ol.layer.Tile({ name: 'mqosm',
+              source: new ol.source.XYZ({ name: 'mqosm',
+                  url: yg.map_devices_street_url,
+                  attributions: [new ol.Attribution({
+                      html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
+                    })]
+              })
+          }),
+          new ol.layer.Tile({ name: 'mqsat', visible: false,
+              source: new ol.source.XYZ({ name: 'mqsat', 
+                url: yg.map_devices_satellite_url,
+                attributions: [new ol.Attribution({
+                    html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
+                  })]
+              })
+          }),
+          new ol.layer.Tile({ name: 'hybrid', visible: false,
+              source: new ol.source.XYZ({ name: 'hybrid', 
+                url: yg.map_devices_hybrid_url,
+                attributions: [new ol.Attribution({
+                    html: "© <a href='https://www.mapbox.com/about/maps/'>Mapbox</a> © <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a>"
+                  })]
+              })
+          })
     ],
     
     /** 
      * Gets pao location as geojson format and adds an icon feature to the vector layer for the map.
      */
     _loadIcon = function() {
-        var source = _map.getLayers().getArray()[3].getSource(),
+        var source = _map.getLayers().getArray()[_tiles.length].getSource(),
             fc = yukon.fromJson('#gateway-geojson'),
             feature = fc.features[0],
             src_projection = fc.crs.properties.name,

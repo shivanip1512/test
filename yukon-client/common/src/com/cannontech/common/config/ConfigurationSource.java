@@ -19,6 +19,15 @@ public interface ConfigurationSource {
      * @return the value of the key, never null
      */
     public String getRequiredString(MasterConfigString key) throws UnknownKeyException;
+    
+    /**
+     * Returns value of key from the configuration file. Throws an exception if the key did not
+     * exist in the file.
+     * @param key
+     * @throws UnknownKeyException if key didn't exist
+     * @return the value of the key, never null
+     */
+    public boolean getRequiredBoolean(MasterConfigBoolean key) throws UnknownKeyException; 
 
     /**
      * Returns value of key from the configuration file. Throws an exception if the key did not

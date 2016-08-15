@@ -55,6 +55,18 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>
+  
+  <tag>
+    <name>getMappingUrl</name>
+    <description>Retrieve the mapping Url specified by the viewType (STREET, SATELLITE).</description>
+    <tag-class>com.cannontech.web.taglib.GetMappingUrlTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>viewType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
 
   <!-- Start of user/role/roleproperty tags -->
   <tag>

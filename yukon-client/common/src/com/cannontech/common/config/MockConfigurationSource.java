@@ -86,4 +86,9 @@ public class MockConfigurationSource implements ConfigurationSource {
     public int getInteger(MasterConfigInteger key, int defaultValue) {
         throw new UnsupportedOperationException();
     }
+
+    @Override
+    public boolean getRequiredBoolean(MasterConfigBoolean key) throws UnknownKeyException {
+        throw new UnsupportedOperationException();
+    }
 }
