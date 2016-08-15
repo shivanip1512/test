@@ -38,6 +38,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
+import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigError;
 import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType;
@@ -797,20 +798,37 @@ public class NmIntegrationController {
         try {
             DataStreamingSimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(new DataStreamingSimulatorStatusRequest(), DataStreamingSimulatorStatusResponse.class);
             model.addAttribute("simulatorRunning", response.isRunning());
+            model.addAttribute("settings", response.getSettings());
         } catch (ExecutionException e) {
             log.error("Error communicating with Yukon Simulators Service.", e);
             flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
         }
         
+        model.addAttribute("deviceErrors", DeviceDataStreamingConfigError.values());
         model.addAttribute("simulatePorterConfigResponse", dataStreamingDevSettings.isSimulatePorterConfigResponse());
         
         return "rfn/dataStreamingSimulator.jsp";
     }
     
     @RequestMapping("startDataStreamingSimulator")
-    public String startDataStreamingSimulator(FlashScope flash) {
+    public String startDataStreamingSimulator(Boolean isOverloadGatewaysOnVerification, 
+                                              Boolean isNetworkManagerFailOnVerification,
+                                              Boolean isDeviceErrorOnVerification,
+                                              DeviceDataStreamingConfigError deviceErrorOnVerification, 
+                                              Boolean isOverloadGatewaysOnConfig,
+                                              Boolean isNetworkManagerFailOnConfig,
+                                              Boolean isDeviceErrorOnConfig,
+                                              DeviceDataStreamingConfigError deviceErrorOnConfig,
+                                              FlashScope flash) {
         try {
             SimulatedDataStreamingSettings settings = new SimulatedDataStreamingSettings();
+            settings.setOverloadGatewaysOnVerification(isOverloadGatewaysOnVerification != null ? isOverloadGatewaysOnVerification : false);
+            settings.setNetworkManagerFailOnVerification(isNetworkManagerFailOnVerification != null ? isNetworkManagerFailOnVerification : false);
+            settings.setDeviceErrorOnVerification(isDeviceErrorOnVerification != null ? deviceErrorOnVerification : null);
+            settings.setOverloadGatewaysOnConfig(isOverloadGatewaysOnConfig != null ? isOverloadGatewaysOnConfig : false);
+            settings.setNetworkManagerFailOnConfig(isNetworkManagerFailOnConfig != null ? isNetworkManagerFailOnConfig : false);
+            settings.setDeviceErrorOnConfig(isDeviceErrorOnConfig != null ? deviceErrorOnConfig : null);
+            
             ModifyDataStreamingSimulatorRequest request = new ModifyDataStreamingSimulatorRequest();
             request.setSettings(settings);
             SimulatorResponseBase response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
@@ -825,14 +843,18 @@ public class NmIntegrationController {
         return "redirect:viewDataStreamingSimulator";
     }
     
-    @RequestMapping("togglePorterResponse")
-    public String asdf(ModelMap model, FlashScope flash) {
-        if (dataStreamingDevSettings.isSimulatePorterConfigResponse()) {
-            dataStreamingDevSettings.setSimulatePorterConfigResponse(false);
-            flash.setConfirm(new YukonMessageSourceResolvable(""));
-        } else {
-            dataStreamingDevSettings.setSimulatePorterConfigResponse(true);
-            flash.setConfirm(new YukonMessageSourceResolvable(""));
+    @RequestMapping("stopDataStreamingSimulator")
+    public String startDataStreamingSimulator(FlashScope flash) {
+        try {
+            ModifyDataStreamingSimulatorRequest request = new ModifyDataStreamingSimulatorRequest();
+            request.setStopSimulator(true);
+            SimulatorResponseBase response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+            if (response.isSuccessful()) {
+                flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.dataStreamingSimulator.simulatorStop"));
+            }
+        } catch (ExecutionException e) {
+            log.error("Error communicating with Yukon Simulators Service.", e);
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
         }
         return "redirect:viewDataStreamingSimulator";
     }
