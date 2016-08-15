@@ -8,6 +8,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.config.UnknownKeyException;
+import com.cannontech.web.common.mapping.MappingType;
 import com.cannontech.web.common.mapping.service.MappingService;
 
 
@@ -16,21 +17,21 @@ public class MappingServiceImpl implements MappingService {
     
     @Autowired private ConfigurationSource configSource;
     
-    private final static String MAPPING_STREET_URL = "https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=";
-    private final static String MAPPING_SATELLITE_URL = "https://api.tiles.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.png?access_token=";
-    private final static String MAPPING_HYBRID_URL = "https://api.tiles.mapbox.com/v4/mapbox.streets-satellite/{z}/{x}/{y}.png?access_token=";
-    private final static String MAPPING_DEV_KEY = "pk.eyJ1IjoiZWFzeXVrb25kZXYiLCJhIjoiY2lydzVjbnNyMGo3eHQxbmtidGVoNWt5bSJ9.ddhkDSTm2ONf47E9DVaNFw";
-    private final static String MAPPING_PROD_KEY = "pk.eyJ1IjoiZWFzeXVrb24iLCJhIjoiY2lydzRobnI2MGlrcWZmbTZqYWloYXg5YSJ9.34csPYqVFCEKSvj6nirmgA";
+    private final static String mappingStreetUrl = "https://api.tiles.mapbox.com/v4/mapbox.streets/{z}/{x}/{y}.png?access_token=";
+    private final static String mappingSatelliteUrl = "https://api.tiles.mapbox.com/v4/mapbox.satellite/{z}/{x}/{y}.png?access_token=";
+    private final static String mappingHybridUrl = "https://api.tiles.mapbox.com/v4/mapbox.streets-satellite/{z}/{x}/{y}.png?access_token=";
+    private final static String mappingDevKey = "pk.eyJ1IjoiZWFzeXVrb25kZXYiLCJhIjoiY2lydzVjbnNyMGo3eHQxbmtidGVoNWt5bSJ9.ddhkDSTm2ONf47E9DVaNFw";
+    private final static String mappingProdKey = "pk.eyJ1IjoiZWFzeXVrb24iLCJhIjoiY2lydzRobnI2MGlrcWZmbTZqYWloYXg5YSJ9.34csPYqVFCEKSvj6nirmgA";
 
     @Override
     public String getMappingUrl(String viewType) {
         boolean devMode = configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE);
         boolean disableAnalytics = configSource.getBoolean(MasterConfigBoolean.DISABLE_ANALYTICS);
-        String streetUrl = configSource.getString(MasterConfigString.MAP_DEVICES_STREET_URL, MAPPING_STREET_URL);
-        String satelliteUrl = configSource.getString(MasterConfigString.MAP_DEVICES_SATELLITE_URL, MAPPING_SATELLITE_URL);
-        String hybridUrl = configSource.getString(MasterConfigString.MAP_DEVICES_HYBRID_URL, MAPPING_HYBRID_URL);
-        String devMappingKey = configSource.getString(MasterConfigString.MAP_DEVICES_KEY, MAPPING_DEV_KEY);
-        String prodMappingKey = configSource.getString(MasterConfigString.MAP_DEVICES_KEY, MAPPING_PROD_KEY);
+        String streetUrl = configSource.getString(MasterConfigString.MAP_DEVICES_STREET_URL, mappingStreetUrl);
+        String satelliteUrl = configSource.getString(MasterConfigString.MAP_DEVICES_SATELLITE_URL, mappingSatelliteUrl);
+        String hybridUrl = configSource.getString(MasterConfigString.MAP_DEVICES_HYBRID_URL, mappingHybridUrl);
+        String devMappingKey = configSource.getString(MasterConfigString.MAP_DEVICES_KEY, mappingDevKey);
+        String prodMappingKey = configSource.getString(MasterConfigString.MAP_DEVICES_KEY, mappingProdKey);
         
         if (StringUtils.isBlank(viewType)) {
             throw new IllegalArgumentException("viewType is required");
@@ -50,11 +51,11 @@ public class MappingServiceImpl implements MappingService {
             }
         }
         
-        if (viewType.equalsIgnoreCase("STREET")){
+        if (viewType.equals(MappingType.STREET.name())) {
             mappingUrl = streetUrl + key;
-        } else if (viewType.equalsIgnoreCase("SATELLITE")) {
+        } else if (viewType.equals(MappingType.SATELLITE.name())) {
             mappingUrl = satelliteUrl + key;
-        } else if (viewType.equalsIgnoreCase("HYBRID")) {
+        } else if (viewType.equals(MappingType.HYBRID.name())) {
             mappingUrl = hybridUrl + key;
         }
     
