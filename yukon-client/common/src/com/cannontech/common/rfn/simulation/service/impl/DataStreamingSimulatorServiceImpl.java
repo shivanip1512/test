@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -15,7 +16,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigError;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequest;
@@ -23,6 +27,9 @@ import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamin
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse.ConfigError;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponseType;
 import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfo;
+import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfoRequest;
+import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfoResponse;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.SimulatedDataStreamingSettings;
@@ -35,6 +42,8 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
     private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.dataStreaming.request";
     
     @Autowired private ConnectionFactory connectionFactory;
+    @Autowired private DataStreamingAttributeHelper attributeHelper;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService gatewayService;
     
     private JmsTemplate jmsTemplate;
@@ -92,9 +101,16 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
                         Object message = jmsTemplate.receive(requestQueue);
                         if (message != null && message instanceof ObjectMessage) {
                             log.info("Processing data streaming request.");
-                            ObjectMessage requestMessage = (ObjectMessage) message;
-                            Object response = processRequest(requestMessage.getObject());
-                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response);
+                            ObjectMessage objectMessage = (ObjectMessage) message;
+                            Serializable requestMessage = objectMessage.getObject();
+                            
+                            Object response = null;
+                            if (requestMessage instanceof DeviceDataStreamingConfigRequest) {
+                                response = processConfigRequest((DeviceDataStreamingConfigRequest)objectMessage.getObject());
+                            } else if (requestMessage instanceof GatewayDataStreamingInfoRequest) {
+                                response = processGatewayInfoRequest((GatewayDataStreamingInfoRequest)objectMessage.getObject());
+                            }
+                            jmsTemplate.convertAndSend(objectMessage.getJMSReplyTo(), response);
                         }
                     } catch (Exception e) {
                         log.error("Error occurred in data streaming simulator.", e);
@@ -109,9 +125,51 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         return simulatorThread;
     }
     
-    private DeviceDataStreamingConfigResponse processRequest(Serializable requestMessage) {
-        log.info("Processing request of type" + requestMessage.getClass().getCanonicalName());
-        DeviceDataStreamingConfigRequest request = (DeviceDataStreamingConfigRequest) requestMessage;
+    private GatewayDataStreamingInfoResponse processGatewayInfoRequest(GatewayDataStreamingInfoRequest request) {
+        log.info("Processing gateway info request");
+        
+        Set<PaoType> dataStreamingTypes = attributeHelper.getAllSupportedPaoTypes();
+        List<RfnDevice> dataStreamingDevices = rfnDeviceDao.getDevicesByPaoTypes(dataStreamingTypes);
+        int numberOfDevices = dataStreamingDevices.size();
+        int numberOfGateways = request.getGatewayRfnIdentifiers().size();
+        int numberOfDevicesPerGateway = numberOfDevices / numberOfGateways;
+        
+        final List<List<RfnDevice>> deviceSubLists = new ArrayList<>();
+        if (numberOfDevices > numberOfGateways) {
+            deviceSubLists.addAll(Lists.partition(dataStreamingDevices, numberOfDevicesPerGateway));
+        } else {
+            dataStreamingDevices.forEach(device -> deviceSubLists.add(Lists.newArrayList(device)));
+        }
+        
+        List<RfnIdentifier> gatewayRfnIds = Lists.newArrayList(request.getGatewayRfnIdentifiers());
+        Map<RfnIdentifier, GatewayDataStreamingInfo> gatewayDataStreamingInfos = new HashMap<>();
+        for (int i = 0; i < numberOfGateways; i++) {
+            RfnIdentifier gatewayRfnId = gatewayRfnIds.get(i);
+            GatewayDataStreamingInfo info = new GatewayDataStreamingInfo();
+            info.setGatewayRfnIdentifier(gatewayRfnId);
+            info.setCurrentLoading(1.0);
+            info.setMaxCapacity(10.0);
+            //info.setResultLoading(0.0);
+            
+            Map<RfnIdentifier, Double> deviceRfnIdentifiers = new HashMap<>();
+            if (deviceSubLists.size() > i) {
+                for (RfnDevice device : deviceSubLists.get(i)) {
+                    deviceRfnIdentifiers.put(device.getRfnIdentifier(), 1.0);
+                }
+            }
+            info.setDeviceRfnIdentifiers(deviceRfnIdentifiers);
+            
+            gatewayDataStreamingInfos.put(gatewayRfnId, info);
+        }
+        
+        GatewayDataStreamingInfoResponse response = new GatewayDataStreamingInfoResponse();
+        response.setGatewayDataStreamingInfos(gatewayDataStreamingInfos);
+        return response;
+    }
+    
+    private DeviceDataStreamingConfigResponse processConfigRequest(DeviceDataStreamingConfigRequest request) {
+        log.info("Processing config request");
+        
         switch(request.getRequestType()) {
         case TEST_ONLY:
             return getVerificationResponse(request);
@@ -193,10 +251,15 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         
         int numberOfDevices = devices.size();
         int numberOfDevicesPerGateway = numberOfDevices / gateways.size();
-        List<List<RfnIdentifier>> deviceSubLists = Lists.partition(devices, numberOfDevicesPerGateway);
+        final List<List<RfnIdentifier>> deviceSubLists = new ArrayList<>();
+        if (numberOfDevices > gateways.size()) {
+            deviceSubLists.addAll(Lists.partition(devices, numberOfDevicesPerGateway));
+        } else {
+            devices.forEach(device -> deviceSubLists.add(Lists.newArrayList(device)));
+        }
         
         Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways = new HashMap<>();
-        for (int i = 0; i < gateways.size(); i++) {
+        for (int i = 0; i < deviceSubLists.size(); i++) {
             RfnGateway gateway = gateways.get(i);
             
             GatewayDataStreamingInfo info = new GatewayDataStreamingInfo();
@@ -252,17 +315,22 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         
         int numberOfDevices = devices.size();
         int numberOfDevicesPerGateway = numberOfDevices / gateways.size();
-        List<List<RfnIdentifier>> deviceSubLists = Lists.partition(devices, numberOfDevicesPerGateway);
+        final List<List<RfnIdentifier>> deviceSubLists = new ArrayList<>();
+        if (numberOfDevices > gateways.size()) {
+            deviceSubLists.addAll(Lists.partition(devices, numberOfDevicesPerGateway));
+        } else {
+            devices.forEach(device -> deviceSubLists.add(Lists.newArrayList(device)));
+        }
         
         Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways = new HashMap<>();
-        for (int i = 0; i < gateways.size(); i++) {
+        for (int i = 0; i < deviceSubLists.size(); i++) {
             RfnGateway gateway = gateways.get(i);
             
             GatewayDataStreamingInfo info = new GatewayDataStreamingInfo();
             info.setGatewayRfnIdentifier(gateway.getRfnIdentifier());
             info.setCurrentLoading(1.0);
-            info.setResultLoading(2.0);
             info.setMaxCapacity(10.0);
+            info.setResultLoading(2.0);
             
             Map<RfnIdentifier, Double> deviceRfnIdentifiers = deviceSubLists.get(i).stream()
                     .collect(Collectors.toMap(d -> d, d -> 1.0));
@@ -274,8 +342,8 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         
         DeviceDataStreamingConfigResponse response = new DeviceDataStreamingConfigResponse();
         response.setAffectedGateways(affectedGateways);
-        response.setErrorConfigedDevices(new HashMap<>());
         response.setResponseMessage("Simulated Response!");
+        response.setErrorConfigedDevices(new HashMap<>());
         response.setResponseType(DeviceDataStreamingConfigResponseType.ACCEPTED);
         
         return response;

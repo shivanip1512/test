@@ -1,4 +1,4 @@
-package com.cannontech.web.rfn.dataStreaming;
+package com.cannontech.common.rfn.dataStreaming;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -553,5 +553,12 @@ public class DataStreamingAttributeHelper {
      */
     public Set<BuiltInAttribute> getAllSupportedAttributes() {
         return supportedAttributes;
+    }
+    
+    /**
+     * Gets all PaoTypes that support data streaming for at least one attribute.
+     */
+    public Set<PaoType> getAllSupportedPaoTypes() {
+        return typeToSupportedAttributes.keySet();
     }
 }

@@ -384,6 +384,8 @@
     <bean class="com.cannontech.common.rfn.dao.impl.GatewayCertificateUpdateDaoImpl"/>
     <bean class="com.cannontech.common.rfn.dao.impl.RfnGatewayFirmwareUpgradeDaoImpl"/>
     
+    <bean class="com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper"/>
+    
     <bean class="com.cannontech.common.rfn.simulation.service.impl.RfnGatewaySimulatorServiceImpl"/>
     <bean class="com.cannontech.common.rfn.simulation.service.impl.DataStreamingSimulatorServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.ExiParsingServiceImpl"/>
