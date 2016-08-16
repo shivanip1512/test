@@ -5,10 +5,8 @@ import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -29,7 +27,6 @@ import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -92,10 +89,8 @@ public class ConfigWidget extends WidgetControllerBase {
         try {
             dsConfig = dataStreamingService.findDataStreamingConfigurationForDevice(deviceId);
             dsConfig.setAccessor(accessor);
-        } catch (EmptyResultDataAccessException e) {
-            //just return null
-        } catch (NotFoundException nfe) {
-            Log.warn(nfe.getStackTrace());
+        } catch (NullPointerException npe) {
+            // dsConfig can return null
         }
         mav.addObject("dataStreamingConfig", dsConfig);
         
