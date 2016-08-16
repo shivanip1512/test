@@ -40,8 +40,6 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
-import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.search.result.SearchResults;
@@ -304,7 +302,7 @@ public class DataStreamingConfigurationsController {
         //TODO: Call service to get discrepancies
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<DataStreamingConfig, DeviceCollection> configsAndDevices = dataStreamingService.getAllDataStreamingConfigurationsAndDevices();
-        List<DiscrepancyResult> discrepancies = new ArrayList<DiscrepancyResult>();
+        List<DiscrepancyResult> discrepancies = new ArrayList<>();
         DataStreamingConfig expected = configsAndDevices.keySet().iterator().next();
         expected.setAccessor(accessor);
         for (DataStreamingConfig config : configsAndDevices.keySet()) {
@@ -313,13 +311,7 @@ public class DataStreamingConfigurationsController {
             result.setActual(config);
             result.setExpected(expected);
             result.setStatus(BehaviorReportStatus.CONFIRMED);
-            try {
-            RfnDevice device = rfnDeviceDao.getDeviceForId(configsAndDevices.get(config).getDeviceList().get(0).getDeviceId());
-            result.setMeter(device);
-            } catch (Exception e) {
-                RfnIdentifier rfnIdentifier = new RfnIdentifier("test", "test", "test");
-                result.setMeter(new RfnDevice("test", configsAndDevices.get(config).getDeviceList().get(0).getPaoIdentifier(), rfnIdentifier));
-            }
+            result.setPaoName("Test");
             result.setLastCommunicated(new Instant());
             discrepancies.add(result);
         }
@@ -409,7 +401,7 @@ public class DataStreamingConfigurationsController {
             .onResultOf(new Function<DiscrepancyResult, String>() {
                 @Override
                 public String apply(DiscrepancyResult from) {
-                    return from.getMeter().getName();
+                    return from.getPaoName();
                 }
             });
         return nameOrdering;
