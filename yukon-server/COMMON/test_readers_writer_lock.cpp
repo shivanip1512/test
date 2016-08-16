@@ -4,12 +4,14 @@
 
 #include <sstream>
 
+using namespace std::string_literals;
+
 BOOST_AUTO_TEST_SUITE( test_readers_writer_lock )
 
 class test_readers_writer_lock_t : public Cti::readers_writer_lock_t
 {
 protected:
-    virtual void terminate_program() const { throw "Unit test program kill override"; }
+    virtual void terminate_program() const { throw std::exception("Unit test program kill override"); }
 };
 
 BOOST_AUTO_TEST_CASE(test_lock)
@@ -34,8 +36,12 @@ BOOST_AUTO_TEST_CASE(test_lock)
         lock.acquireWrite();
         BOOST_FAIL("Acquiring write after read did not throw");
     }
-    catch(...)
+    catch(std::exception &e)
     {
+        if( "Unit test program kill override"s != e.what() )
+        {
+            BOOST_FAIL(e.what());
+        }
     }
 
     BOOST_CHECK_EQUAL(static_cast<std::string>(lock), s.str());

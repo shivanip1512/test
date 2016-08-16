@@ -362,7 +362,7 @@ readers should both run.
 
 #define NUMBER_OF_CHILDREN 10
 
-std::vector<int> cf;
+std::array<int, NUMBER_OF_CHILDREN> cf;
 
 extern void lockGuardTestChildRRW(DWORD parentTid, int childIndex);
 BOOST_AUTO_TEST_CASE(test_guard_test_reader_reader_writer_lock)
@@ -384,7 +384,7 @@ BOOST_AUTO_TEST_CASE(test_guard_test_reader_reader_writer_lock)
         // Fire off the children, passing out thread id and child index as an argument
         for (int childIndex=0; childIndex< NUMBER_OF_CHILDREN; ++childIndex)
         {
-            cf.push_back(0);
+            cf[childIndex] = 0;
             testThreads.push_back(boost::thread(&lockGuardTestChildRRW, GetCurrentThreadId(), childIndex));
         }
         f1 = 1;
