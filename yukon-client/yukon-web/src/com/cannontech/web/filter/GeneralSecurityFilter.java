@@ -26,17 +26,20 @@ public class GeneralSecurityFilter implements Filter {
         response.addHeader("X-Content-Type-Options", "nosniff"); // avoid mime sniffing
         response.setHeader("X-XSS-Protection", "1; mode=block"); // avoid XSS attack
         response.setHeader(
-            "Content-Security-Policy",
-                "default-src 'self' http://java.sun.com http://cannontech.com http://docs.spring.io " 
-                        + "https://getbootstrap.com http://www.springframework.org http://api.tiles.mapbox.com/ http://*.tiles.mapbox.com/; " // Trusted sites for source
-                + "script-src 'self' https://api.tiles.mapbox.com 'unsafe-inline' 'unsafe-eval' http://www.google-analytics.com; "
-                + "connect-src 'self' https://api.mapbox.com https://*.tiles.mapbox.com; " 
-                + "img-src 'self' data: http://www.google-analytics.com Access-Control-Allow-Origin: *;" // Access-Control-Allow-Origin: * used for cross origin resource sharing for map images
-                + "style-src 'self' 'unsafe-inline' https://api.tiles.mapbox.com;"
-                + "plugin-types 'none'"
-                + "media-src 'none'"
-                + "child-src 'self'"
-                + "font-src 'self'"); // header blocks popups, plugins and script execution from unknown source 
+            "Content-Security-Policy", // header blocks popups, plugins and script execution from unknown source
+            ContentSecurityPolicyFilterType.DEFAULT_SRC.getValue()
+                + ContentSecurityPolicyFilterType.SCRIPT_SRC.getValue()
+                + ContentSecurityPolicyFilterType.CONNECT_SRC.getValue()
+                + ContentSecurityPolicyFilterType.IMG_SRC.getValue()
+                + ContentSecurityPolicyFilterType.STYLE_SRC.getValue()
+                + ContentSecurityPolicyFilterType.MEDIA_SRC.getValue()
+                + ContentSecurityPolicyFilterType.CHILD_SRC.getValue()
+                + ContentSecurityPolicyFilterType.OBJECT_SRC.getValue()
+                + ContentSecurityPolicyFilterType.FONT_SRC.getValue()
+                + ContentSecurityPolicyFilterType.FRAME_SRC.getValue()
+                + ContentSecurityPolicyFilterType.FRAME_ANCESTORS.getValue()
+                + ContentSecurityPolicyFilterType.FORM_ACTION.getValue()
+                );
         response.setHeader("Strict-Transport-Security", "max-age=31536000; includeSubdomains");//HTTP Strict Transport Security 1 year as max-age
         chain.doFilter(request, servletResponse);
     }
