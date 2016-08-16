@@ -401,8 +401,8 @@ BOOST_AUTO_TEST_CASE(test_guard_test_reader_reader_writer_lock)
 
     }  /* Guard is goes out of scope here */
 
-    Sleep( 10 );
-    /* Worker should have run by now and set f3 */
+    Sleep( 50 );
+    /* Workers should have run by now and set their status to 2 */
     BOOST_CHECK(all_of_equal(cf, 2));
 
     for (int childIndex = 0; childIndex < NUMBER_OF_CHILDREN; ++childIndex)
