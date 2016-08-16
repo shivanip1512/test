@@ -235,6 +235,15 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
+    public Set<RfnGateway> getGatewaysByPaoIdsWithData(Iterable<Integer> paoIds) throws NmCommunicationException {
+        
+        List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoIds(paoIds);
+        Set<RfnGateway> gateways = getGatewaysFromDevicesWithData(devices);
+        
+        return gateways;
+    }
+    
+    @Override
     public Map<Integer, RfnGateway> getAllGatewaysByPaoId() {
         
         Set<RfnGateway> allGateways = getAllGateways();
@@ -246,14 +255,39 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         return paoIdToGateway;
     }
     
+    /**
+     * Builds gateway from RfnDevices. Gateway data may be null, and no exception will be thrown.
+     */
     private Set<RfnGateway> getGatewaysFromDevices(Iterable<RfnDevice> devices) {
         
         Set<RfnGateway> gateways = new HashSet<RfnGateway>();
         for (RfnDevice device : devices) {
             // Get PAO name
             PaoIdentifier paoId = device.getPaoIdentifier();
+
             // Get available RfnGatewayData from cache via non-blocking call. May be null.
             RfnGatewayData data = dataCache.getIfPresent(paoId);
+            
+            //Create gateway object
+            RfnGateway rfnGateway = buildRfnGateway(device, device.getName(), data);
+            gateways.add(rfnGateway);
+        }
+        return gateways;
+    }
+    
+    /**
+     * Builds gateways from RfnDevices. Requires gateway data to be populated, causing an exception to be thrown if the data 
+     * can't be retrieved from Network Manager.
+     * @throws NmCommunicationException 
+     */
+    private Set<RfnGateway> getGatewaysFromDevicesWithData(Iterable<RfnDevice> devices) throws NmCommunicationException {
+        
+        Set<RfnGateway> gateways = new HashSet<RfnGateway>();
+        for (RfnDevice device : devices) {
+            // Get PAO name
+            PaoIdentifier paoId = device.getPaoIdentifier();
+            
+            RfnGatewayData data = dataCache.get(paoId);
             
             //Create gateway object
             RfnGateway rfnGateway = buildRfnGateway(device, device.getName(), data);

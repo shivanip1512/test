@@ -70,7 +70,6 @@ public class DataStreamingController {
         }
         model.addAttribute("dataStreamingNotSupported", dsNotSupported);
 
-
         DataStreamingConfig newConfig = new DataStreamingConfig();
         newConfig.setAccessor(accessor);
         attributes.forEach(a -> {

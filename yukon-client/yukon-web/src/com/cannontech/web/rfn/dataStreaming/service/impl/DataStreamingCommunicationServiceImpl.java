@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
@@ -26,7 +27,11 @@ import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamin
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequest;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequestType;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
+import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfo;
+import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfoRequest;
+import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfoResponse;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
@@ -39,7 +44,8 @@ import com.google.common.collect.Multimap;
 public class DataStreamingCommunicationServiceImpl implements DataStreamingCommunicationService {
     
     private static final Logger log = YukonLogManager.getLogger(DataStreamingCommunicationServiceImpl.class);
-    private static final String configRequestCparm = "DATA_STREAMING_REQUEST";
+    private static final String configRequestCparm = "DATA_STREAMING_CONFIG_REQUEST";
+    private static final String gatewayInfoRequestCparm = "DATA_STREAMING_GATEWAY_INFO_REQUEST";
     private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.dataStreaming.request";
     
     @Autowired private ConfigurationSource configSource;
@@ -48,11 +54,14 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     private RequestReplyTemplate<DeviceDataStreamingConfigResponse> configRequestTemplate;
+    private RequestReplyTemplate<GatewayDataStreamingInfoResponse> gatewayInfoRequestTemplate;
     
     @PostConstruct
     public void init() {
-        configRequestTemplate = new RequestReplyTemplateImpl<>(configRequestCparm, 
-                configSource, connectionFactory, requestQueue, false);
+        configRequestTemplate = new RequestReplyTemplateImpl<>(configRequestCparm, configSource, connectionFactory, 
+                requestQueue, false);
+        gatewayInfoRequestTemplate = new RequestReplyTemplateImpl<>(gatewayInfoRequestCparm, configSource,
+                connectionFactory, requestQueue, false);
     }
     
     @Override
@@ -69,7 +78,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
                                                                String correlationId) {
         
         DeviceDataStreamingConfigRequest request = buildRequest(configToDeviceIds, 
-                                                                DeviceDataStreamingConfigRequestType.TEST_ONLY,
+                                                                DeviceDataStreamingConfigRequestType.CONFIG,
                                                                 correlationId);
         return request;
     }
@@ -128,11 +137,41 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
             response = replyHandler.waitForCompletion();
             log.debug("Data Streaming Config response: " + response);
         } catch (ExecutionException e) {
-            String errorMessage = "Unable to send config due to a communication error between Yukon and Network Manager";
+            String errorMessage = "Unable to send request due to a communication error between Yukon and Network Manager";
             throw new DataStreamingConfigException(errorMessage, e, "commsError"); 
         }
         
         return response;
+    }
+    
+    @Override
+    public Collection<GatewayDataStreamingInfo> getGatewayInfo(Collection<RfnGateway> gateways) throws DataStreamingConfigException {
+        
+        Set<RfnIdentifier> gatewayIds = gateways.stream()
+                                                .map(gateway -> gateway.getRfnIdentifier())
+                                                .collect(Collectors.toSet());
+        
+        GatewayDataStreamingInfoRequest request = new GatewayDataStreamingInfoRequest();
+        request.setGatewayRfnIdentifiers(gatewayIds);
+        
+        log.debug("Sending gateway data streaming info request to Network Manager: " + request);
+        
+        //Send the request
+        BlockingJmsReplyHandler<GatewayDataStreamingInfoResponse> replyHandler = 
+                new BlockingJmsReplyHandler<>(GatewayDataStreamingInfoResponse.class);
+        gatewayInfoRequestTemplate.send(request, replyHandler);
+        
+        //Wait for the response
+        GatewayDataStreamingInfoResponse response;
+        try {
+            response = replyHandler.waitForCompletion();
+            log.debug("Gateway data streaming info response: " + response);
+        } catch (ExecutionException e) {
+            String errorMessage = "Unable to send request due to a communication error between Yukon and Network Manager";
+            throw new DataStreamingConfigException(errorMessage, e, "commsError");
+        }
+        
+        return response.getGatewayDataStreamingInfos().values();
     }
     
     /**

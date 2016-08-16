@@ -59,6 +59,7 @@ import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamin
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse.ConfigError;
 import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfo;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -66,7 +67,6 @@ import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.dev.dataStreaming.DataStreamingFakeData;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingPorterConnection;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
@@ -109,9 +109,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Autowired private IDatabaseCache serverDatabaseCache;
     @Resource(name = "recentResultsCache") private RecentResultsCache<DataStreamingConfigResult> resultsCache;
     @Autowired private RfnDeviceDao rfnDeviceDao;
-    @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
-    @Autowired private DeviceGroupCollectionHelper collectionHelper;
     @Autowired private RfnGatewayService rfnGatewayService;
+    @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
 
     @Override
     public DataStreamingConfigResult findDataStreamingResult(String resultKey) {
@@ -148,7 +147,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             Collection<SimpleMeter> deviceIds = deviceIdsByBehaviorIds.get(config.getId()).stream().map(
                 id -> new SimpleMeter(serverDatabaseCache.getAllPaosMap().get(id).getPaoIdentifier(), "")).collect(
                     Collectors.toList());
-            DeviceCollection collection = collectionHelper.createDeviceGroupCollection(deviceIds.iterator(), "");
+            DeviceCollection collection = deviceGroupCollectionHelper.createDeviceGroupCollection(deviceIds.iterator(), "");
             configToDeviceCollection.put(config, collection);
         });
         return configToDeviceCollection;
@@ -160,23 +159,23 @@ public class DataStreamingServiceImpl implements DataStreamingService {
      * 
      * @return a map of RfnIdentifier to RFNGateway
      */
-    private Map<RfnIdentifier, RfnGateway> getGatewaysForLoadingRange(SummarySearchCriteria criteria) {
+    private Map<RfnIdentifier, RfnGateway> getGatewaysForLoadingRange(SummarySearchCriteria criteria) throws NmCommunicationException {
         List<RfnGateway> gateways = new ArrayList<>();
+        
         if (criteria.isGatewaySelected()) {
-            gateways.addAll(rfnGatewayService.getGatewaysByPaoIds(criteria.getSelectedGatewayIds()));
+            gateways.addAll(rfnGatewayService.getGatewaysByPaoIdsWithData(criteria.getSelectedGatewayIds()));
         } else {
-            gateways.addAll(rfnGatewayService.getAllGateways());
+            gateways.addAll(rfnGatewayService.getAllGatewaysWithData());
         }
+        
         Double min = criteria.getMinLoadPercent() == null ? Double.MIN_VALUE : criteria.getMinLoadPercent();
         Double max = criteria.getMaxLoadPercent() == null ? Double.MAX_VALUE : criteria.getMaxLoadPercent();
         Range<Double> range = Ranges.closed(min, max);
         Iterator<RfnGateway> it = gateways.iterator();
         while (it.hasNext()) {
             RfnGateway gateway = it.next();
-            // remove
-            gateway.setLoadingPercent(DataStreamingFakeData.getLoadingPercentForGateway());
-            // replace with RfnGatewayData.getDataStreamingLoadingPercent();
-            double loadingPercent = gateway.getLoadingPercent();
+            //TODO handle null
+            double loadingPercent = gateway.getData().getDataStreamingLoadingPercent();
             if (!range.contains(loadingPercent)) {
                 it.remove();
             }
@@ -185,15 +184,20 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     @Override
-    public List<SummarySearchResult> search(SummarySearchCriteria criteria) {
+    public List<SummarySearchResult> search(SummarySearchCriteria criteria) throws DataStreamingConfigException {
         log.debug(criteria);
         List<SummarySearchResult> results = new ArrayList<>();
-        DataStreamingFakeData fakeData =
-            new DataStreamingFakeData(deviceBehaviorDao, serverDatabaseCache, rfnDeviceDao);
-        Map<RfnIdentifier, RfnGateway> gateways = getGatewaysForLoadingRange(criteria);
-
-        List<GatewayDataStreamingInfo> gatewayInfos =
-            fakeData.fakeGatewayDataStreamingInfo(new ArrayList<>(gateways.values()));
+        
+        Map<RfnIdentifier, RfnGateway> gateways;
+        try {
+            gateways = getGatewaysForLoadingRange(criteria);
+        } catch (NmCommunicationException e) {
+            throw new DataStreamingConfigException("Communication error requesting gateway data from Network Manager.", e, "commsError");
+        }
+            
+        // Request the gateway info from Network Manager
+        Collection<GatewayDataStreamingInfo> gatewayInfos = dataStreamingCommService.getGatewayInfo(gateways.values());
+        
         if (!gatewayInfos.isEmpty()) {
             Integer selectedConfigId = criteria.isConfigSelected() ? criteria.getSelectedConfiguration() : null;
             List<BuiltInAttribute> attributes = criteria.getBuiltInAttributes();

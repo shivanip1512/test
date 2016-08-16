@@ -48,7 +48,9 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.web.rfn.dataStreaming.model.DiscrepancyResult;
 import com.cannontech.web.rfn.dataStreaming.model.SummarySearchCriteria;
@@ -131,7 +133,7 @@ public class DataStreamingConfigurationsController {
         ConfigurationSortBy sortBy = ConfigurationSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         
-        List<DataStreamingConfig>itemList = Lists.newArrayList(existingConfigs);
+        List<DataStreamingConfig> itemList = Lists.newArrayList(existingConfigs);
 
         Comparator<DataStreamingConfig> comparator = sorters.get(sortBy);
         if (sorting.getDirection() == Direction.desc) {
@@ -180,7 +182,10 @@ public class DataStreamingConfigurationsController {
     }
     
     @RequestMapping("summary")
-    public String summary(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, PagingParameters paging, ModelMap model, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
+    public String summary(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
+                          PagingParameters paging, ModelMap model, YukonUserContext userContext, 
+                          HttpServletRequest request, FlashScope flash) throws ServletException {
+        
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         Collections.sort(gateways);
         model.addAttribute("gateways", gateways);
@@ -194,18 +199,23 @@ public class DataStreamingConfigurationsController {
         model.addAttribute("searchAttributes", attributes);
         
         model.addAttribute("searchIntervals", intervals);
-        getSummaryResults(model, sorting, paging, userContext, request);
+        getSummaryResults(model, flash, sorting, paging, userContext, request);
         
         return "../dataStreaming/summary.jsp";
     }
     
     @RequestMapping("summaryResults")
-    public String summaryResults(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, PagingParameters paging, ModelMap model, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
-        getSummaryResults(model, sorting, paging, userContext, request);
+    public String summaryResults(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
+                                 PagingParameters paging, ModelMap model, YukonUserContext userContext, 
+                                 HttpServletRequest request, FlashScope flash) throws ServletException {
+        
+        getSummaryResults(model, flash, sorting, paging, userContext, request);
         return "../dataStreaming/summaryResults.jsp";
     }
     
-    private void getSummaryResults(ModelMap model, SortingParameters sorting, PagingParameters paging, YukonUserContext userContext, HttpServletRequest request) {
+    private void getSummaryResults(ModelMap model, FlashScope flash, SortingParameters sorting, PagingParameters paging, 
+                                   YukonUserContext userContext, HttpServletRequest request) {
+        
         SearchResults<SummarySearchResult> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
         int itemsPerPage = paging.getItemsPerPage();
@@ -227,6 +237,7 @@ public class DataStreamingConfigurationsController {
         } catch (ServletRequestBindingException e) {
             searchFilter.setMinLoadPercent(null);
         }
+        
         try {
             Double maxPercent = ServletRequestUtils.getDoubleParameter(request,  "maxLoadPercent");
             searchFilter.setMaxLoadPercent(maxPercent);
@@ -234,13 +245,20 @@ public class DataStreamingConfigurationsController {
             searchFilter.setMaxLoadPercent(null);
         }
         model.addAttribute("searchFilters", searchFilter);
-        List<SummarySearchResult> results = getSearchResults(searchFilter, accessor, model);
+        
+        List<SummarySearchResult> results = new ArrayList<>();
+        try {
+            results = getSearchResults(searchFilter, accessor, model);
+        } catch (DataStreamingConfigException e) {
+            flash.setError(e.getMessageSourceResolvable());
+        }
+        
         int endIndex = Math.min(startIndex + itemsPerPage, results.size());
 
         SummarySortBy sortBy = SummarySortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         
-        List<SummarySearchResult>itemList = Lists.newArrayList(results);
+        List<SummarySearchResult> itemList = Lists.newArrayList(results);
 
         Comparator<SummarySearchResult> comparator = summarySorters.get(sortBy);
         if (sorting.getDirection() == Direction.desc) {
@@ -273,7 +291,7 @@ public class DataStreamingConfigurationsController {
         
     }
     
-    private List<SummarySearchResult> getSearchResults(SummarySearchCriteria criteria, MessageSourceAccessor accessor, ModelMap model) {
+    private List<SummarySearchResult> getSearchResults(SummarySearchCriteria criteria, MessageSourceAccessor accessor, ModelMap model) throws DataStreamingConfigException {
         List<SummarySearchResult> results = dataStreamingService.search(criteria);
         for(SummarySearchResult result: results){
             result.getConfig().setAccessor(accessor);
@@ -539,7 +557,7 @@ public class DataStreamingConfigurationsController {
             .onResultOf(new Function<SummarySearchResult, Double>() {
                 @Override
                 public Double apply(SummarySearchResult from) {
-                    return from.getGateway().getLoadingPercent();
+                    return from.getGateway().getData().getDataStreamingLoadingPercent();
                 }
             });
         return doubleOrdering;

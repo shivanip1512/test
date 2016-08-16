@@ -2,11 +2,8 @@ package com.cannontech.web.dev.dataStreaming;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.springframework.context.MessageSourceResolvable;
@@ -24,25 +21,18 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecutionResult;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.streaming.dao.DeviceBehaviorDao;
-import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorReport;
 import com.cannontech.common.device.streaming.model.BehaviorType;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingAttribute;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
-import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfo;
-import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.yukon.IDatabaseCache;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Multimap;
 
 public class DataStreamingFakeData {
 
@@ -73,50 +63,50 @@ public class DataStreamingFakeData {
     }
     
     // fakes nm
-    public List<GatewayDataStreamingInfo> fakeGatewayDataStreamingInfo(List<RfnGateway> gateways) {
-
-        if(gateways.isEmpty()){
-            return new ArrayList<>();
-        }
-        List<Behavior> configs = deviceBehaviorDao.getBehaviorsByType(BehaviorType.DATA_STREAMING);
-        List<Integer> configIds = configs.stream().map(config -> config.getId()).collect(Collectors.toList());
-        Multimap<Integer, Integer> deviceIdsByBehaviorIds = deviceBehaviorDao.getBehaviorIdsToDevicesIdMap(configIds);
-
-        List<LiteYukonPAObject> paos = new ArrayList<>();
-        for (Integer deviceId : deviceIdsByBehaviorIds.values()) {
-            LiteYukonPAObject pao = serverDatabaseCache.getAllPaosMap().get(deviceId);
-            paos.add(pao);
-        }
-
-        double maxCapacity = 10;
-        double currentLoading = 80;
-        Map<? extends YukonPao, RfnIdentifier> identifiersByPao = rfnDeviceDao.getRfnIdentifiersByPao(paos);
-        Map<RfnGateway, GatewayDataStreamingInfo> infos = new HashMap<>();
-        for (RfnGateway gateway : gateways) {
-            GatewayDataStreamingInfo info = new GatewayDataStreamingInfo();
-            info.setDeviceRfnIdentifiers(new HashMap<>());
-            info.setGatewayRfnIdentifier(gateway.getRfnIdentifier());
-            info.setMaxCapacity(maxCapacity);
-            maxCapacity = maxCapacity + 10;
-            info.setCurrentLoading(currentLoading);
-            currentLoading = maxCapacity + 5;
-            infos.put(gateway, info);
-        }
-
-        for (Integer deviceId : deviceIdsByBehaviorIds.values()) {
-            LiteYukonPAObject pao = serverDatabaseCache.getAllPaosMap().get(deviceId);
-            RfnIdentifier identifier = identifiersByPao.get(pao);
-            if (identifier != null) {
-                Random rn = new Random();
-                int randomGatewayId = rn.nextInt((gateways.size() - 1) - 0 + 1) + 0;
-                RfnGateway gateway = gateways.get(randomGatewayId);
-                GatewayDataStreamingInfo info = infos.get(gateway);
-                info.getDeviceRfnIdentifiers().put(identifier, 0.0);
-            }
-        }
-
-        return new ArrayList<>(infos.values());
-    }
+//    public List<GatewayDataStreamingInfo> fakeGatewayDataStreamingInfo(List<RfnGateway> gateways) {
+//
+//        if(gateways.isEmpty()){
+//            return new ArrayList<>();
+//        }
+//        List<Behavior> configs = deviceBehaviorDao.getBehaviorsByType(BehaviorType.DATA_STREAMING);
+//        List<Integer> configIds = configs.stream().map(config -> config.getId()).collect(Collectors.toList());
+//        Multimap<Integer, Integer> deviceIdsByBehaviorIds = deviceBehaviorDao.getBehaviorIdsToDevicesIdMap(configIds);
+//
+//        List<LiteYukonPAObject> paos = new ArrayList<>();
+//        for (Integer deviceId : deviceIdsByBehaviorIds.values()) {
+//            LiteYukonPAObject pao = serverDatabaseCache.getAllPaosMap().get(deviceId);
+//            paos.add(pao);
+//        }
+//
+//        double maxCapacity = 10;
+//        double currentLoading = 80;
+//        Map<? extends YukonPao, RfnIdentifier> identifiersByPao = rfnDeviceDao.getRfnIdentifiersByPao(paos);
+//        Map<RfnGateway, GatewayDataStreamingInfo> infos = new HashMap<>();
+//        for (RfnGateway gateway : gateways) {
+//            GatewayDataStreamingInfo info = new GatewayDataStreamingInfo();
+//            info.setDeviceRfnIdentifiers(new HashMap<>());
+//            info.setGatewayRfnIdentifier(gateway.getRfnIdentifier());
+//            info.setMaxCapacity(maxCapacity);
+//            maxCapacity = maxCapacity + 10;
+//            info.setCurrentLoading(currentLoading);
+//            currentLoading = maxCapacity + 5;
+//            infos.put(gateway, info);
+//        }
+//
+//        for (Integer deviceId : deviceIdsByBehaviorIds.values()) {
+//            LiteYukonPAObject pao = serverDatabaseCache.getAllPaosMap().get(deviceId);
+//            RfnIdentifier identifier = identifiersByPao.get(pao);
+//            if (identifier != null) {
+//                Random rn = new Random();
+//                int randomGatewayId = rn.nextInt((gateways.size() - 1) - 0 + 1) + 0;
+//                RfnGateway gateway = gateways.get(randomGatewayId);
+//                GatewayDataStreamingInfo info = infos.get(gateway);
+//                info.getDeviceRfnIdentifiers().put(identifier, 0.0);
+//            }
+//        }
+//
+//        return new ArrayList<>(infos.values());
+//    }
 
     public void execute(CommandRequestExecution execution, CommandCompletionCallback<CommandRequestDevice> callback,
             List<CommandRequestDevice> commands, LiteYukonUser user) {

@@ -17,5 +17,4 @@ public class DataStreamingConfigException extends DisplayableException {
         super(message, keyBase + key, args);
     }
     
-    
 }

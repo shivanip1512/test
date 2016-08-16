@@ -1,8 +1,12 @@
 package com.cannontech.web.rfn.dataStreaming.service;
 
+import java.util.Collection;
+
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequest;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
+import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfo;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
 import com.google.common.collect.Multimap;
@@ -45,7 +49,11 @@ public interface DataStreamingCommunicationService {
      * @throws DataStreamingConfigException if there was a connection problem sending the request.
      */
     DeviceDataStreamingConfigResponse sendConfigRequest(DeviceDataStreamingConfigRequest request) throws DataStreamingConfigException;
-
     
+    /**
+     * Sends a request for gateway data streaming information to Network Manager for the specified gateways.
+     * @throws DataStreamingConfigException if there was a connection problem sending the request.
+     */
+    Collection<GatewayDataStreamingInfo> getGatewayInfo(Collection<RfnGateway> gateways) throws DataStreamingConfigException;
 
 }

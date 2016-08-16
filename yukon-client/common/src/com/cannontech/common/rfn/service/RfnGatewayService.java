@@ -80,6 +80,13 @@ public interface RfnGatewayService {
     Set<RfnGateway> getGatewaysByPaoIds(Iterable<Integer> paoIds);
     
     /**
+     * Gets all RfnGateways with the specified paoids. If any ids are invalid, they will be ignored. If the gateway
+     * data is not cached, the call will block while it is retrieved.
+     * @throws NmCommunicationException if a communication error occurs when requesting gateway data from Network Manager.
+     */
+    Set<RfnGateway> getGatewaysByPaoIdsWithData(Iterable<Integer> paoIds) throws NmCommunicationException;
+    
+    /**
      * Get a map of paoId to gateway for all gateways. If the gateway data is not cached, it will be set as null in the
      * RfnGateway, and the cache will be updated in a separate thread.
      */
@@ -217,4 +224,5 @@ public interface RfnGatewayService {
      * @return A multimap of color -> gateway name for colors that are duplicated. 
      */
     Multimap<Short, String> getDuplicateColorGateways(Collection<RfnGateway> gateways);
+
 }

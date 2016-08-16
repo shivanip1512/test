@@ -80,7 +80,8 @@ public interface DataStreamingService {
      * Attempts to find data streaming summary based on the search criteria selected by the user.
      * 
      * @return search result.
+     * @throws DataStreamingConfigException if there is a communication error requesting information from Network Manager.
      */
-    List<SummarySearchResult> search(SummarySearchCriteria criteria);
+    List<SummarySearchResult> search(SummarySearchCriteria criteria) throws DataStreamingConfigException;
 
 }

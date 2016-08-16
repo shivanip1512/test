@@ -805,7 +805,6 @@ public class NmIntegrationController {
         }
         
         model.addAttribute("deviceErrors", DeviceDataStreamingConfigError.values());
-        model.addAttribute("simulatePorterConfigResponse", dataStreamingDevSettings.isSimulatePorterConfigResponse());
         
         return "rfn/dataStreamingSimulator.jsp";
     }

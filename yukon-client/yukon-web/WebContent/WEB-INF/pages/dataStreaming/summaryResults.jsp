@@ -31,7 +31,7 @@
                         <td>
                             <a href="${gatewayUrl}">${fn:escapeXml(result.gateway.name)}</a>
                         </td>
-                        <td>${result.gateway.loadingPercent}</td>
+                        <td>${result.gateway.data.dataStreamingLoadingPercent}</td>
                         <td style="max-width:400px;">${result.config.commaDelimitedAttributes}</td>
                         <td>${result.config.selectedInterval}
                             <c:choose>
