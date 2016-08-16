@@ -188,12 +188,12 @@ std::vector<unsigned char> makeDataStreamingResponse(const unsigned char respons
 
     std::vector<unsigned char> response { responseCode };
 
-    const auto toggleChance = gConfigParms.getValueAsDouble("SIMULATOR_RFN_DATA_STREAMING_TOGGLE", 0.33);
-    const auto toggleHappen = dist(rd);
+    const auto mangleChance = gConfigParms.getValueAsDouble("SIMULATOR_RFN_DATA_STREAMING_CONFIG_MANGLE_CHANCE", 0.33);
+    const auto mangleHappen = dist(rd);
 
     const auto& contents = 
-            (toggleChance && toggleHappen < toggleChance) 
-                ? mangleResponse(original, toggleHappen / toggleChance)  //  Normalize to a 0.0-1.0 number again
+            (mangleChance && mangleHappen < mangleChance) 
+                ? mangleResponse(original, mangleHappen / mangleChance)  //  Normalize to a 0.0-1.0 number again
                 : original;
 
     response.push_back(contents.metrics.size());
