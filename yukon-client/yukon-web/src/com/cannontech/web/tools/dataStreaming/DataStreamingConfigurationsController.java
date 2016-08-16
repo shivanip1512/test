@@ -14,20 +14,24 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
@@ -36,6 +40,8 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
+import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.search.result.SearchResults;
@@ -44,6 +50,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
+import com.cannontech.web.rfn.dataStreaming.model.DiscrepancyResult;
 import com.cannontech.web.rfn.dataStreaming.model.SummarySearchCriteria;
 import com.cannontech.web.rfn.dataStreaming.model.SummarySearchResult;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
@@ -66,11 +73,13 @@ public class DataStreamingConfigurationsController {
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     
     private static final List<Integer> intervals = ImmutableList.of(1, 3, 5, 15, 30);
     
     private Map<ConfigurationSortBy, Comparator<DataStreamingConfig>> sorters;
     private Map<SummarySortBy, Comparator<SummarySearchResult>> summarySorters;
+    private Map<DiscrepancySortBy, Comparator<DiscrepancyResult>> discrepancySorters;
 
     
     @PostConstruct
@@ -89,6 +98,15 @@ public class DataStreamingConfigurationsController {
         summaryBuilder.put(SummarySortBy.attributes, getSummaryAttributesComparator());
         summaryBuilder.put(SummarySortBy.interval, getSummaryIntervalComparator());
         summarySorters = summaryBuilder.build();
+        Builder<DiscrepancySortBy, Comparator<DiscrepancyResult>> discrepancyBuilder = ImmutableMap.builder();
+        discrepancyBuilder.put(DiscrepancySortBy.device, getDeviceComparator());
+        discrepancyBuilder.put(DiscrepancySortBy.expectedAttributes, getExpectedAttributesComparator());
+        discrepancyBuilder.put(DiscrepancySortBy.actualAttributes, getActualAttributesComparator());
+        discrepancyBuilder.put(DiscrepancySortBy.expectedInterval, getExpectedIntervalComparator());
+        discrepancyBuilder.put(DiscrepancySortBy.actualInterval, getActualIntervalComparator());
+        discrepancyBuilder.put(DiscrepancySortBy.status, getStatusComparator());
+        discrepancyBuilder.put(DiscrepancySortBy.lastCommunicated, getLastCommunicatedComparator());
+        discrepancySorters = discrepancyBuilder.build();
     }
     
     @RequestMapping("configurations")
@@ -261,6 +279,194 @@ public class DataStreamingConfigurationsController {
             result.getConfig().setAccessor(accessor);
         }
         return results;
+    }
+    
+    @RequestMapping("discrepancies")
+    public String discrepancies(@DefaultSort(dir=Direction.asc, sort="device") SortingParameters sorting, PagingParameters paging, ModelMap model, YukonUserContext userContext) {
+        //TODO: Call service to get discrepancies
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        Map<DataStreamingConfig, DeviceCollection> configsAndDevices = dataStreamingService.getAllDataStreamingConfigurationsAndDevices();
+        List<DiscrepancyResult> discrepancies = new ArrayList<DiscrepancyResult>();
+        DataStreamingConfig expected = configsAndDevices.keySet().iterator().next();
+        expected.setAccessor(accessor);
+        for (DataStreamingConfig config : configsAndDevices.keySet()) {
+            config.setAccessor(accessor);
+            DiscrepancyResult result = new DiscrepancyResult();
+            result.setActual(config);
+            result.setExpected(expected);
+            result.setStatus(BehaviorReportStatus.CONFIRMED);
+            try {
+            RfnDevice device = rfnDeviceDao.getDeviceForId(configsAndDevices.get(config).getDeviceList().get(0).getDeviceId());
+            result.setMeter(device);
+            } catch (Exception e) {
+                RfnIdentifier rfnIdentifier = new RfnIdentifier("test", "test", "test");
+                result.setMeter(new RfnDevice("test", configsAndDevices.get(config).getDeviceList().get(0).getPaoIdentifier(), rfnIdentifier));
+            }
+            result.setLastCommunicated(new Instant());
+            discrepancies.add(result);
+        }
+        
+        SearchResults<DiscrepancyResult> searchResult = new SearchResults<>();
+        int startIndex = paging.getStartIndex();
+        int itemsPerPage = paging.getItemsPerPage();
+        int endIndex = Math.min(startIndex + itemsPerPage, discrepancies.size());
+
+        DiscrepancySortBy sortBy = DiscrepancySortBy.valueOf(sorting.getSort());
+        Direction dir = sorting.getDirection();
+        
+        List<DiscrepancyResult>itemList = Lists.newArrayList(discrepancies);
+
+        Comparator<DiscrepancyResult> comparator = discrepancySorters.get(sortBy);
+        if (sorting.getDirection() == Direction.desc) {
+            comparator = Collections.reverseOrder(comparator);
+        }
+        Collections.sort(itemList, comparator);
+        
+        List<SortableColumn> columns = new ArrayList<>();
+        for (DiscrepancySortBy column : DiscrepancySortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            columns.add(col);
+            model.addAttribute(column.name(), col);
+        }
+        
+        itemList = itemList.subList(startIndex, endIndex);
+        searchResult.setBounds(startIndex, itemsPerPage, discrepancies.size());
+        searchResult.setResultList(itemList);
+
+        model.addAttribute("discrepancies", searchResult);
+        
+        return "../dataStreaming/discrepancies.jsp";
+    }
+    
+    @RequestMapping("discrepancies/{deviceId}/resend")
+    public String resendDevice(@PathVariable int deviceId) {
+        //TODO:  Call service
+        return "redirect:/tools/dataStreaming/discrepancies";
+    }
+    
+    @RequestMapping("discrepancies/{deviceId}/accept")
+    public String acceptDevice(@PathVariable int deviceId) {
+        //TODO:  Call service
+        return "redirect:/tools/dataStreaming/discrepancies";
+    }
+    
+    @RequestMapping("discrepancies/{deviceId}/remove")
+    public String removeDevice(@PathVariable int deviceId) {
+        //TODO:  Call service
+        return "redirect:/tools/dataStreaming/discrepancies";
+    }
+    
+    @RequestMapping("discrepancies/resendAll")
+    public String resendAll() {
+        //TODO:  Call service
+        return "redirect:/tools/dataStreaming/discrepancies";
+    }
+    
+    @RequestMapping("discrepancies/acceptAll")
+    public String acceptAll() {
+        //TODO:  Call service
+        return "redirect:/tools/dataStreaming/discrepancies";
+    }
+    
+    public enum DiscrepancySortBy implements DisplayableEnum {
+        
+        device,
+        expectedAttributes,
+        actualAttributes,
+        expectedInterval,
+        actualInterval,
+        status,
+        lastCommunicated;
+
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.tools.dataStreaming.discrepancies." + name();
+        }
+    }
+    
+    private Comparator<DiscrepancyResult> getDeviceComparator() {
+        Ordering<String> normalStringComparer = Ordering.natural();
+        Ordering<DiscrepancyResult> nameOrdering = normalStringComparer
+            .onResultOf(new Function<DiscrepancyResult, String>() {
+                @Override
+                public String apply(DiscrepancyResult from) {
+                    return from.getMeter().getName();
+                }
+            });
+        return nameOrdering;
+    }
+    
+    private Comparator<DiscrepancyResult> getExpectedAttributesComparator() {
+        Ordering<String> normalStringComparer = Ordering.natural();
+        Ordering<DiscrepancyResult> attOrdering = normalStringComparer
+            .onResultOf(new Function<DiscrepancyResult, String>() {
+                @Override
+                public String apply(DiscrepancyResult from) {
+                    return from.getExpected().getCommaDelimitedAttributesOnOff();
+                }
+            });
+        return attOrdering;
+    }
+    
+    private Comparator<DiscrepancyResult> getActualAttributesComparator() {
+        Ordering<String> normalStringComparer = Ordering.natural();
+        Ordering<DiscrepancyResult> attOrdering = normalStringComparer
+            .onResultOf(new Function<DiscrepancyResult, String>() {
+                @Override
+                public String apply(DiscrepancyResult from) {
+                    return from.getActual().getCommaDelimitedAttributesOnOff();
+                }
+            });
+        return attOrdering;
+    }
+    
+    private Comparator<DiscrepancyResult> getExpectedIntervalComparator() {
+        Ordering<Integer> normalIntComparer = Ordering.natural();
+        Ordering<DiscrepancyResult> intervalOrdering = normalIntComparer
+            .onResultOf(new Function<DiscrepancyResult, Integer>() {
+                @Override
+                public Integer apply(DiscrepancyResult from) {
+                    return from.getExpected().getSelectedInterval();
+                }
+            });
+        return intervalOrdering;
+    }
+    
+    private Comparator<DiscrepancyResult> getActualIntervalComparator() {
+        Ordering<Integer> normalIntComparer = Ordering.natural();
+        Ordering<DiscrepancyResult> intervalOrdering = normalIntComparer
+            .onResultOf(new Function<DiscrepancyResult, Integer>() {
+                @Override
+                public Integer apply(DiscrepancyResult from) {
+                    return from.getActual().getSelectedInterval();
+                }
+            });
+        return intervalOrdering;
+    }
+    
+    private Comparator<DiscrepancyResult> getStatusComparator() {
+        Ordering<String> normalStringComparer = Ordering.natural();
+        Ordering<DiscrepancyResult> statusOrdering = normalStringComparer
+            .onResultOf(new Function<DiscrepancyResult, String>() {
+                @Override
+                public String apply(DiscrepancyResult from) {
+                    return from.getStatus().name();
+                }
+            });
+        return statusOrdering;
+    }
+    
+    private Comparator<DiscrepancyResult> getLastCommunicatedComparator() {
+        Ordering<Instant> instantComparer = Ordering.natural();
+        Ordering<DiscrepancyResult> statusOrdering = instantComparer
+            .onResultOf(new Function<DiscrepancyResult, Instant>() {
+                @Override
+                public Instant apply(DiscrepancyResult from) {
+                    return from.getLastCommunicated();
+                }
+            });
+        return statusOrdering;
     }
     
     public enum SummarySortBy implements DisplayableEnum {

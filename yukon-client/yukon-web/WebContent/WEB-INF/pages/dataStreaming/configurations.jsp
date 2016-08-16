@@ -10,6 +10,8 @@
     <form:form action="${filterUrl}" method="get" commandName="filter">
 
     <div id="page-actions" class="dn">
+        <cti:url var="discrepanciesUrl" value="/tools/dataStreaming/discrepancies"/>
+        <cm:dropdownOption key=".discrepancies" href="${discrepanciesUrl}" icon="icon-error"/>
         <cti:url var="collectionActionsUrl" value="/bulk/deviceSelection"/>
         <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go"/>
         <cti:url var="configureOthersUrl" value="/bulk/deviceSelection?redirectUrl=/bulk/dataStreaming/configure"/>

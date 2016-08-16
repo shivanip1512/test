@@ -224,6 +224,9 @@
       <page name="dataStreaming.summary" type="BASIC">
         <link>/dataStreaming/summary</link>
       </page>
+      <page name="dataStreaming.discrepancies" type="BASIC">
+        <link>/dataStreaming/discrepancies</link>
+      </page>
       <page name="configs" type="BASIC">
         <link>/deviceConfiguration/home</link>
         <pages>

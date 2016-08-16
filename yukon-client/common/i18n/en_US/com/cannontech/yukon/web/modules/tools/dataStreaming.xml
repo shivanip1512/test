@@ -11,6 +11,7 @@
     <entry key="yukon.web.modules.tools.dataStreaming.minute">minute</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.minutes">minutes</entry>
     <!-- cog -->
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies">Data Streaming Discrepancies</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.configureOtherDevices">Configure Other Devices</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.configure">Configure Data Streaming</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.remove">Remove Data Streaming</entry>
@@ -36,6 +37,21 @@
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.gatewayLoading">Gateway Loading %</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.attributes">Attributes</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.interval">Interval</entry>
+    
+    <!-- DATA STREAMING DISCREPANCIES PAGE-->
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.pageName">Data Streaming Discrepancies</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.pageDescription">Data Streaming Discrepancies</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.instructions">Note: This page shows the data streaming discrepancies from what Yukon expects and what Network Manager actually has configured.  The gear icon on the right of each row has the option to Re-send the expected attributes/interval to Network Manager.  The Accept option will accept the actual configuration that Network Manager has to use within Yukon.  The Remove option will remove the data streaming configuration.</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.device">Device</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.expectedAttributes">Expected Attribute(s)</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.actualAttributes">Actual Attribute(s)</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.expectedInterval">Expected Interval</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.actualInterval">Actual Interval</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.status">Status</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.lastCommunicated">Last Communicated</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resendAll.label">Re-send All</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptAll.label">Accept All</entry>
+    
     
     
 </properties>
