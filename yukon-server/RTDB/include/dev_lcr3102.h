@@ -79,7 +79,10 @@ protected:
         DataRead_SubstationDataLen = 9,
 
         DataRead_SoftspecPos       = 0x00,
-        DataRead_SoftspecLen       = 13
+        DataRead_SoftspecLen       = 13,
+
+        DataRead_LoopbackPos       = 0x00,
+        DataRead_LoopbackLen       = 3
     };
 
     enum PointOffsets
@@ -100,6 +103,7 @@ protected:
 
     virtual bool getOperation( const UINT &cmdType, BSTRUCT &b ) const;
 
+    YukonError_t executeLoopback  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
     YukonError_t executeGetValue  ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
     YukonError_t executeScan      ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
     YukonError_t executeGetConfig ( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList ) override;
@@ -131,6 +135,8 @@ protected:
     YukonError_t decodeGetConfigSoftspec  ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     YukonError_t decodeGetConfigAddressing( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
     YukonError_t decodeGetConfigTime      ( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
+
+    YukonError_t decodeLoopback( const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList );
 
     void decodeMessageXfmrHistoricalRuntime( const DSTRUCT DSt, std::vector<point_info> &runtimeHours);
     void decodeMessageDutyCycle            ( const BYTE Message[], int &dutyCycle, int &transformer );
