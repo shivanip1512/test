@@ -2,7 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
-
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="tools" page="dataStreaming.discrepancies">
 
@@ -23,8 +23,11 @@
                 </tr>
             </thead>
             <c:forEach var="discrepancy" items="${discrepancies.resultList}">
+                <cti:url var="detailUrl" value="/meter/home">
+                    <cti:param name="deviceId" value="${discrepancy.deviceId}"/>
+                </cti:url>
                 <tr>
-                    <td><cti:paoDetailUrl yukonPao="${discrepancy.meter}">${discrepancy.meter.name}</cti:paoDetailUrl></td>
+                    <td><a href="${detailUrl}">${fn:escapeXml(discrepancy.paoName)}</a></td>
                     <td>${discrepancy.expected.commaDelimitedAttributesOnOff}</td>
                     <td>${discrepancy.actual.commaDelimitedAttributesOnOff}</td>
                     <td class="wsnw">${discrepancy.expected.selectedInterval}

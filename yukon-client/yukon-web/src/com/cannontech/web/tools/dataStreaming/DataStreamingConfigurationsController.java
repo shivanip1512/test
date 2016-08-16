@@ -24,7 +24,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -73,7 +72,6 @@ public class DataStreamingConfigurationsController {
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceDao deviceDao;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
     
     private static final List<Integer> intervals = ImmutableList.of(1, 3, 5, 15, 30);
     
@@ -312,6 +310,7 @@ public class DataStreamingConfigurationsController {
             result.setExpected(expected);
             result.setStatus(BehaviorReportStatus.CONFIRMED);
             result.setPaoName("Test");
+            result.setDeviceId(configsAndDevices.get(config).getDeviceList().get(0).getDeviceId());
             result.setLastCommunicated(new Instant());
             discrepancies.add(result);
         }
