@@ -45,6 +45,7 @@ public enum DeviceRequestType {
     MULTISPEAK_METER_READ_EVENT("MultiSpeak Meter Read Event", "Command sent to meters due to a MultiSpeak request.",false),
     MULTISPEAK_FORMATTED_BLOCK_READ_EVENT("MultiSpeak FormattedBlock Read Event", "Command sent to meters due to a MultiSpeak FormattedBlock request.",false),
     MULTISPEAK_OUTAGE_DETECTION_PING_COMMAND("Ping Command", "A 'ping' command sent to a meters due to a MultiSpeak OD request.", false),
+    MULTISPEAK_CONNECT_DISCONNECT("MultiSpeak Connect/Disconnect Event", "A 'control connect' or 'control disconnect' command sent to one to many meters.", false),
     ASSET_AVAILABILITY_READ("Asset Availability Read", "Command sent to two-way LCRs to determine their availability.", false),
     LM_DEVICE_DETAILS_ATTRIBUTE_READ("Load Management Details Attribute Read", "Command sent to read two-way LCRs." ,false),
     DATA_STREAMING_CONFIG("Data Streaming Configuration Command", "Command sent to configure RFN data streaming.", false)

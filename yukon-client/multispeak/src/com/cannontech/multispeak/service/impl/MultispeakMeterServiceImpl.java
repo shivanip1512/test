@@ -638,7 +638,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
             final ImmutableMap<Integer, LitePoint> pointLookup = Maps.uniqueIndex(pointsToPaos.keySet(), LitePoint.ID_FUNCTION);
             final ImmutableMap<PaoIdentifier, YukonMeter> meterLookup = PaoUtils.indexYukonPaos(meters);
-            
+            // need to send unkonwn or something if we don't have a point value.
             for (PointValueQualityHolder pointValue : pointValues) {
                 Integer pointId = pointValue.getId();
                 LitePoint litePoint = pointLookup.get(pointId);
@@ -828,7 +828,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             public void receivedLastValue(PaoIdentifier pao, String value) {
                 YukonMeter meter = meterLookup.get(pao);
                 MeterRead meterRead = meterReadProcessingService.createMeterRead(meter);
-
                 // because we were so careful about putting updater or updater chains into the
                 // map, we know we can safely remove it and generate a MeterRead from it
                 // whenever we want; but this happens to be a perfect time
@@ -1138,7 +1137,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
         };
 
-        commandRequestDeviceExecutor.execute(plcCommandRequests, callback, DeviceRequestType.GROUP_CONNECT_DISCONNECT, yukonUserContext.getYukonUser());
+        commandRequestDeviceExecutor.execute(plcCommandRequests, callback, DeviceRequestType.MULTISPEAK_CONNECT_DISCONNECT, yukonUserContext.getYukonUser());
     }
 
     /**
