@@ -3201,7 +3201,7 @@
         <paoType value="RFN520FRX"/>
         <paoType value="RFN520FAXD"/>
         <paoType value="RFN520FRXD"/>
-        <point name="Voltage">
+        <point name="Voltage (Single Phase)">
             <uom>V</uom>
             <parseSiPrefix/>
             <modifiers match="equal">

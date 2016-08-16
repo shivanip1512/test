@@ -10061,7 +10061,7 @@
     <pao id="RFN500_FOCUS_SINGLEPHASE" abstract="true">
         <points>
             <point type="Analog" offset="327">
-                <name>Voltage</name>
+                <name>Voltage (Single Phase)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3" />
@@ -10098,8 +10098,8 @@
             </point>
         </points>
         <attributes>
-            <attribute name="VOLTAGE">
-                <basicLookup point="Voltage"/>
+            <attribute name="VOLTAGE_PHASE_A">
+                <basicLookup point="Voltage (Single Phase)"/>
             </attribute>
             <!-- Already have MINIMUM_VOLTAGE mapped to Daily Min Volts -->
             <!-- <attribute name="MINIMUM_VOLTAGE">
