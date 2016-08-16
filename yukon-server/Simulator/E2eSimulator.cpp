@@ -2,6 +2,8 @@
 
 #include "E2eSimulator.h"
 
+#include "RfnMeter.h"
+
 #include "message_factory.h"
 #include "RfnE2eDataRequestMsg.h"
 #include "RfnE2eDataConfirmMsg.h"
@@ -9,6 +11,8 @@
 #include "NetworkManagerRequest.h"
 
 #include "coap_helper.h"
+
+#include "rfn_asid.h"
 
 #include "amq_util.h"
 #include "amq_connection.h"
@@ -86,9 +90,9 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
 
     if( const auto b = dynamic_cast<const cms::BytesMessage*>(msg) )
     {
-        const auto buf = b->getBodyBytes();
+        const auto buf = std::unique_ptr<unsigned char> { b->getBodyBytes() };
 
-        std::vector<unsigned char> payload { buf, buf + b->getBodyLength() };
+        std::vector<unsigned char> payload { buf.get(), buf.get() + b->getBodyLength() };
 
         CTILOG_INFO(dout, "Received BytesMessage on RFN E2E queue, attempting to decode as E2eDataRequest");
 
@@ -110,15 +114,12 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
 
             if( auto e2edtRequest = parseE2eDtRequestPayload(requestMsg->payload, requestMsg->rfnIdentifier) )
             {
-                //  handle request data, build payload
-                //  For now, just a Fibonacci sequence
-                const std::vector<unsigned char> reply_data { 0x01, 0x01, 0x02, 0x03, 0x05, 0x08, 0x0d, 0x15, 0x22, 0x37, 0x59, 0x90, 0xe9 };
-
                 e2edt_packet replyPacket;
 
-                replyPacket.id    = e2edtRequest->id;
-                replyPacket.token = e2edtRequest->token;
-                replyPacket.payload = reply_data;
+                replyPacket.id      = e2edtRequest->id;
+                replyPacket.token   = e2edtRequest->token;
+                replyPacket.payload = buildRfnResponse(e2edtRequest->payload, requestMsg->applicationServiceId, requestMsg->rfnIdentifier);
+                replyPacket.status  = COAP_RESPONSE_205_CONTENT;
 
                 auto e2edtReply = buildE2eDtReplyPayload(replyPacket);
 
@@ -190,8 +191,9 @@ auto E2eSimulator::parseE2eDtRequestPayload(const std::vector<unsigned char>& pa
 
     auto e2edtRequest = std::make_unique<e2edt_packet>();
 
-    //  Decode the token
-    e2edtRequest->token = coap_decode_var_bytes(request_pdu->hdr->token, request_pdu->hdr->token_length);
+    e2edtRequest->id     = request_pdu->hdr->id;
+    e2edtRequest->status = request_pdu->hdr->code;
+    e2edtRequest->token  = coap_decode_var_bytes(request_pdu->hdr->token, request_pdu->hdr->token_length);
 
     //  Extract the data from the packet
     unsigned char *data;
@@ -201,15 +203,13 @@ auto E2eSimulator::parseE2eDtRequestPayload(const std::vector<unsigned char>& pa
 
     e2edtRequest->payload.assign(data, data + len);
 
-    e2edtRequest->id = request_pdu->hdr->id;
-
     return e2edtRequest;
 }
 
 
 std::vector<unsigned char> E2eSimulator::buildE2eDtReplyPayload(const e2edt_packet& replyContents)
 {
-    Protocols::scoped_pdu_ptr reply_pdu(coap_pdu_init(COAP_MESSAGE_ACK, COAP_RESPONSE_205_CONTENT, replyContents.id, COAP_MAX_PDU_SIZE));
+    Protocols::scoped_pdu_ptr reply_pdu(coap_pdu_init(COAP_MESSAGE_ACK, replyContents.status, replyContents.id, COAP_MAX_PDU_SIZE));
 
     //  add token to reply
     unsigned char reply_token_buf[4];
@@ -250,6 +250,26 @@ void E2eSimulator::sendE2eDataIndication(const E2eDataRequestMsg &requestMsg, co
     indicationProducer->send(bytesMsg.get());
 }
 
+
+std::vector<unsigned char> E2eSimulator::buildRfnResponse(const std::vector<unsigned char> &request, const unsigned char applicationServiceId, const RfnIdentifier& rfnId)
+{
+    switch( applicationServiceId )
+    {
+        case static_cast<unsigned char>(ApplicationServiceIdentifiers::ChannelManager):
+        {
+            if( ! request.empty() )
+            {
+                switch( request[0] )
+                {
+                    case 0x84:
+                    case 0x86:
+                        return RfnMeter::DataStreamingConfig(request, rfnId);
+                }
+            }
+        }
+    }
+    return {};
+}
 
 }
 }

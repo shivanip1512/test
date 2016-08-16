@@ -56,13 +56,16 @@ private:
         std::vector<unsigned char> payload;
         unsigned token;
         unsigned id;
+        unsigned char status;
     };
 
     std::unique_ptr<e2edt_packet> parseE2eDtRequestPayload(const std::vector<unsigned char>&, const RfnIdentifier&);
 
     std::vector<unsigned char> buildE2eDtReplyPayload(const e2edt_packet&);
 
-    void sendE2eDataIndication(const Messaging::Rfn::E2eDataRequestMsg &requestMsg, const std::vector<unsigned char>& payload);
+    void sendE2eDataIndication(const Messaging::Rfn::E2eDataRequestMsg &, const std::vector<unsigned char>&);
+
+    std::vector<unsigned char> buildRfnResponse(const std::vector<unsigned char>& request, const unsigned char applicationServiceId, const RfnIdentifier& rfnId);
 };
 
 }
