@@ -268,7 +268,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             behavior.setValues(values);
             return behavior;
         } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Behavior with deviceId=" + deviceId + " and type=" + type + " doesn't exists");
+            throw new NotFoundException("Behavior with deviceId=" + deviceId + " and type=" + type + " doesn't exist");
         }
     }
     
@@ -348,7 +348,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             return report;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException(
-                "Behavior Report with deviceId=" + deviceId + " and type=" + type + " doesn't exists");
+                    "Behavior Report with deviceId=" + deviceId + " and type=" + type + " doesn't exist");
         }
     }
     
