@@ -3,7 +3,7 @@
 #include "ctitime.h"
 
 #include "dlldefs.h"
-#include "ccusimsvc.h"
+#include "field_simulator_service.h"
 #include "dllbase.h"
 #include "utility.h"
 
@@ -11,14 +11,6 @@
 
 #include <iostream>
 using namespace std;
-
-namespace Cti {
-namespace Simulator {
-
-extern int SimulatorMainFunction(int argc, char** argv);
-
-}
-}
 
 extern bool gQuit;
 extern HANDLE gQuitEvent;
@@ -44,9 +36,14 @@ BOOL WINAPI CtrlHandler(DWORD fdwCtrlType)
     }
 }
 
-IMPLEMENT_SERVICE(CtiSimulatorService, CCUSIMULATOR)
+namespace Cti {
+namespace Simulator {
+        
+extern int SimulatorMainFunction(int argc, char** argv);
 
-CtiSimulatorService::CtiSimulatorService(LPCTSTR szName, LPCTSTR szDisplay, DWORD dwType ) :
+IMPLEMENT_SERVICE(FieldSimulatorService, FIELDSIMULATOR)
+
+FieldSimulatorService::FieldSimulatorService(LPCTSTR szName, LPCTSTR szDisplay, DWORD dwType ) :
 _myargc(0),
 _myargv(NULL),
 _quit(false),
@@ -55,7 +52,7 @@ CService( szName, szDisplay, dwType )
    m_pThis = this;        // Allow the base class to know who this is
 }
 
-void CtiSimulatorService::RunInConsole(DWORD argc, LPTSTR* argv)
+void FieldSimulatorService::RunInConsole(DWORD argc, LPTSTR* argv)
 {
    CService::RunInConsole(argc, argv);
 
@@ -68,22 +65,22 @@ void CtiSimulatorService::RunInConsole(DWORD argc, LPTSTR* argv)
    OnStop();
 }
 
-void CtiSimulatorService::Init()
+void FieldSimulatorService::Init()
 {
 }
 
-void CtiSimulatorService::DeInit()
+void FieldSimulatorService::DeInit()
 {
     CService::DeInit();
 }
 
-void CtiSimulatorService::OnStop()
+void FieldSimulatorService::OnStop()
 {
    SetStatus(SERVICE_STOPPED);
    _quit = true;
 }
 
-void CtiSimulatorService::Run()
+void FieldSimulatorService::Run()
 {
    SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
@@ -100,14 +97,17 @@ void CtiSimulatorService::Run()
    SetStatus(SERVICE_STOP_PENDING, 50, 40000 );
 }
 
-void CtiSimulatorService::ParseArgs(DWORD argc, LPTSTR* argv)
+void FieldSimulatorService::ParseArgs(DWORD argc, LPTSTR* argv)
 {
    //Read the config file name if it is available
    _myargc = argc;
    _myargv = argv;
 }
 
-CtiSimulatorService::~CtiSimulatorService()
+FieldSimulatorService::~FieldSimulatorService()
 {
     _myargv = NULL;
+}
+
+}
 }

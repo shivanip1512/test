@@ -27,13 +27,7 @@
     <ClCompile Include="Ccu721.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ccu_simulator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CcuIDLC.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ccusimsvc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="CommInterface.cpp">
@@ -78,9 +72,6 @@
     <ClCompile Include="ScopedLogger.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Simulator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="simulator_main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -97,6 +88,18 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="E2eSimulator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Grid.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RfnMeter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="field_simulator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="field_simulator_service.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -120,9 +123,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CcuIDLC.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\ccusimsvc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\CommInterface.h">
@@ -176,9 +176,6 @@
     <ClInclude Include="include\ScopedLogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\Simulator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\SimulatorLogger.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -189,6 +186,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\E2eSimulator.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Grid.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\RfnMeter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\field_simulator_service.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 #include "SimulatorUtils.h"
-#include "Simulator.h"
+#include "Grid.h"
 #include "Ccu711.h"
 #include "Ccu721.h"
 #include "DelayBehavior.h"

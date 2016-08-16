@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 #include "Ccu710.h"
-#include "Simulator.h"
+#include "Grid.h"
 
 using namespace std;
 

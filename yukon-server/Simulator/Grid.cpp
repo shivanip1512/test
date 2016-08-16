@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#include "Simulator.h"
+#include "PlcInfrastructure.h"
 
 namespace Cti {
 namespace Simulator {

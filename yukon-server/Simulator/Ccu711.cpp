@@ -12,7 +12,7 @@
 #include "time.h"
 #include "ctidate.h"
 
-#include "simulator.h"
+#include "Grid.h"
 
 #include <boost/scoped_array.hpp>
 

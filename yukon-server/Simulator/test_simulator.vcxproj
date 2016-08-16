@@ -78,7 +78,7 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Debug\test_simulator\I386\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">test_simulator</TargetName>
-    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bin\$(TargetName).exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">bin-debug\$(TargetName).exe</LocalDebuggerCommand>
     <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)</LocalDebuggerWorkingDirectory>
@@ -89,7 +89,7 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Release\test_simulator\I386\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">test_simulator</TargetName>
-    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">bin\$(TargetName).exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(TargetPath)</LocalDebuggerCommand>
     <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(SolutionDir)</LocalDebuggerWorkingDirectory>
@@ -100,7 +100,7 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Debug\test_simulator\AMD64\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">test_simulator</TargetName>
-    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">bin\$(TargetName).exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">bin-debug\$(TargetName).exe</LocalDebuggerCommand>
     <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)</LocalDebuggerWorkingDirectory>
@@ -111,7 +111,7 @@
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Release\test_simulator\AMD64\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">test_simulator</TargetName>
-    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|x64'">bin\$(TargetName).exe</LocalDebuggerCommand>
+    <LocalDebuggerCommand Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetPath)</LocalDebuggerCommand>
     <LocalDebuggerCommandArguments Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     </LocalDebuggerCommandArguments>
     <LocalDebuggerWorkingDirectory Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)</LocalDebuggerWorkingDirectory>
@@ -359,6 +359,7 @@
     </ClCompile>
     <ClCompile Include="FrozenReadParityBehavior.cpp">
     </ClCompile>
+    <ClCompile Include="Grid.cpp" />
     <ClCompile Include="InvalidUsageReadingBehavior.cpp">
     </ClCompile>
     <ClCompile Include="Mct410.cpp">
@@ -374,8 +375,6 @@
     <ClCompile Include="RandomConsumptionBehavior.cpp">
     </ClCompile>
     <ClCompile Include="ScopedLogger.cpp">
-    </ClCompile>
-    <ClCompile Include="Simulator.cpp">
     </ClCompile>
     <ClCompile Include="SimulatorLogger.cpp">
     </ClCompile>

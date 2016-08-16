@@ -4,7 +4,7 @@
 
 #include "ctitime.h"
 
-#include "ccusimsvc.h"
+#include "field_simulator_service.h"
 #include "CServiceConfig.h"
 #include "dllbase.h"
 #include "logManager.h"
@@ -18,14 +18,15 @@ Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
 Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
 using namespace std;
+using Cti::Simulator::FieldSimulatorService;
 
 int install(DWORD dwStart = SERVICE_DEMAND_START);
 int remove();
 
 int RunningInConsole = FALSE;
-LPTSTR szServiceName = "CCUSIMULATOR";
-LPTSTR szDisplayName = "Yukon CCU Simulator Service";
-LPTSTR szDesc = "Simulates the actions of CCU devices";
+LPTSTR szServiceName = "FIELDSIMULATOR";
+LPTSTR szDisplayName = "Yukon Field Simulator Service";
+LPTSTR szDesc = "Simulates the actions of field devices";
 
 extern HANDLE gQuitEvent;
 
@@ -33,7 +34,7 @@ int main(int argc, char* argv[] )
 {
     doutManager.setOutputPath    (gLogDirectory);
     doutManager.setRetentionDays (gLogRetention);
-    doutManager.setOutputFile    ("ccu_simulator");
+    doutManager.setOutputFile    ("field_simulator");
     doutManager.setToStdOut      (true);
 
     doutManager.start(); // fire up the logger thread
@@ -62,7 +63,7 @@ int main(int argc, char* argv[] )
           }
           else
           {
-             CtiSimulatorService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
+             FieldSimulatorService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
 
              RunningInConsole = TRUE;
              service.RunInConsole(argc, argv );
@@ -70,11 +71,11 @@ int main(int argc, char* argv[] )
     }
     else
     {
-          CtiSimulatorService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
+        FieldSimulatorService service(szServiceName, szDisplayName, SERVICE_WIN32_OWN_PROCESS );
 
           //Set up an entry for the one service and go
           BEGIN_SERVICE_MAP
-          SERVICE_MAP_ENTRY(CtiSimulatorService, CCUSIMULATOR)
+          SERVICE_MAP_ENTRY(FieldSimulatorService, FIELDSIMULATOR)
           END_SERVICE_MAP
     }
 
@@ -91,7 +92,7 @@ int install(DWORD dwStart)
 
     CServiceConfig si(szServiceName, szDisplayName, szDesc);
 
-    CTILOG_INFO(dout, "Installing CCU Simulator Service Using LocalSystem Account.");
+    CTILOG_INFO(dout, "Installing Field Simulator Service Using LocalSystem Account.");
 
     // test using the LocalSystem account
     si.Install(SERVICE_WIN32_OWN_PROCESS,
@@ -107,8 +108,10 @@ int remove()
 {
     CTILOG_INFO(dout, "Removing service...");
 
-    CServiceConfig si(szServiceName, szDisplayName);
-    si.Remove();
+    {
+        CServiceConfig si(szServiceName, szDisplayName);
+        si.Remove();
+    }
 
     return 0;
 }

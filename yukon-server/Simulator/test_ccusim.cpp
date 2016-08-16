@@ -3,7 +3,7 @@
 #include "EmetconWords.h"
 #include "SimulatorUtils.h"
 #include "PlcInfrastructure.h"
-#include "Simulator.h"
+#include "Grid.h"
 #include "Ccu710.h"
 
 using namespace std;
