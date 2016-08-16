@@ -1,25 +1,19 @@
 package com.cannontech.web.rfn.dataStreaming.model;
 
+import org.apache.commons.lang3.builder.StandardToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.Instant;
 
 import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
-import com.cannontech.common.rfn.model.RfnDevice;
 
 public class DiscrepancyResult {
-    private RfnDevice meter;
+    private String paoName;
+    private int deviceId;
+    private int behaviorReportId;
     private DataStreamingConfig expected;
     private DataStreamingConfig actual;
     private BehaviorReportStatus status;
     private Instant lastCommunicated;
-    private int behaviorReportId;
-
-    public RfnDevice getMeter() {
-        return meter;
-    }
-
-    public void setMeter(RfnDevice meter) {
-        this.meter = meter;
-    }
 
     public DataStreamingConfig getExpected() {
         return expected;
@@ -59,5 +53,35 @@ public class DiscrepancyResult {
 
     public void setBehaviorReportId(int behaviorReportId) {
         this.behaviorReportId = behaviorReportId;
+    }
+
+    public int getDeviceId() {
+        return deviceId;
+    }
+
+    public void setDeviceId(int deviceId) {
+        this.deviceId = deviceId;
+    }
+
+    public String getPaoName() {
+        return paoName;
+    }
+
+    public void setPaoName(String paoName) {
+        this.paoName = paoName;
+    }
+    
+    @Override
+    public String toString() {
+        StandardToStringStyle style = new StandardToStringStyle();
+        style.setFieldSeparator(", ");
+        style.setUseShortClassName(true);
+        ToStringBuilder builder = new ToStringBuilder(this, style);
+        builder.append("paoName", paoName);
+        builder.append("deviceId", deviceId);
+        builder.append("behaviorReportId", behaviorReportId);
+        builder.append("status", status);
+        builder.append("lastCommunicated", lastCommunicated);
+        return builder.toString();
     }
 }
