@@ -389,7 +389,7 @@ BOOST_AUTO_TEST_CASE(test_guard_test_reader_reader_writer_lock)
         }
         f1 = 1;
 
-        Sleep( 20 );
+        Sleep( 50 );
 
         /* Children should have started and set status to 1 */
         BOOST_CHECK(all_of_equal(cf, 1));
