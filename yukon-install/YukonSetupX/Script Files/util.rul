@@ -11,7 +11,7 @@
 #define NOTIF_NAME		"YukonNotificationServer"
 #define SM_NAME			"YukonServiceMgr"
 #define SYS32			"C:\\WINDOWS\\System32\\"
-#define TOMCAT_REG_KEY	"SOFTWARE\\Apache Software Foundation\\Procrun 2.0\\YukonWebApplicationService\\Parameters\\Java"
+#define TOMCAT_REG_KEY	"SOFTWARE\\Wow6432Node\\Apache Software Foundation\\Procrun 2.0\\YukonWebApplicationService\\Parameters\\Java"
 #define JVM_MX			"JvmMx"
 #define JVM_MS          "JvmMs"
 #define JVM_OPTIONS		"Options"
