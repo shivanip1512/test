@@ -330,6 +330,24 @@ namespace Cti
         }
     };
     
+    //  Euclidean algorithm - https://en.wikipedia.org/wiki/Euclidean_algorithm
+    inline unsigned find_gcd(unsigned x, unsigned y)
+    {
+        if( y == 0 )
+        {
+            return x;
+        }
+
+        if( x > y )
+        {
+            return find_gcd(y, x % y);
+        }
+        else
+        {
+            return find_gcd(x, y % x);
+        }
+    }
+
 namespace Test
 {
     struct use_in_unit_tests_only;  //  tag to prevent unit-test-specific code from being run in production code

@@ -10,6 +10,18 @@
 
 BOOST_AUTO_TEST_SUITE( test_utility )
 
+BOOST_AUTO_TEST_CASE( test_find_gcd )
+{
+    using Cti::find_gcd;
+
+    BOOST_CHECK_EQUAL(    1, find_gcd(3, 7));
+    BOOST_CHECK_EQUAL(    3, find_gcd(3, 15));
+    BOOST_CHECK_EQUAL(   13, find_gcd(13, 13));
+    BOOST_CHECK_EQUAL(    1, find_gcd(37, 600));
+    BOOST_CHECK_EQUAL(   20, find_gcd(20, 100));
+    BOOST_CHECK_EQUAL(18913, find_gcd(624129, 2061517));
+}
+
 struct instance_counter
 {
     static int counter;  //  keeps a counter instance to track construction and destruction
