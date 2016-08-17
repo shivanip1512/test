@@ -27,7 +27,6 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingAttribute;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.util.JsonUtils;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.yukon.IDatabaseCache;
@@ -152,11 +151,8 @@ public class DataStreamingFakeData {
     }
 
     private String getResponseJson(int deviceId) {
-        BehaviorReport report = null;
-        try {
-            report = deviceBehaviorDao.getBehaviorReportByDeviceIdAndType(deviceId, BehaviorType.DATA_STREAMING);
-        } catch (NotFoundException e) {}
-
+        BehaviorReport report = deviceBehaviorDao.findBehaviorReportByDeviceIdAndType(deviceId, BehaviorType.DATA_STREAMING);
+       
         ReportedDataStreamingConfig config = new ReportedDataStreamingConfig();
         boolean streamingEnabled = new Boolean(report.getValuesMap().get(STREAMING_ENABLED_STRING));
         List<ReportedDataStreamingAttribute> reportedAttributes = new ArrayList<>();

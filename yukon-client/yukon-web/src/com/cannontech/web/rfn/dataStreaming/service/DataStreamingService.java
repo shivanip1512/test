@@ -8,6 +8,7 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
+import com.cannontech.web.rfn.dataStreaming.model.DiscrepancyResult;
 import com.cannontech.web.rfn.dataStreaming.model.SummarySearchCriteria;
 import com.cannontech.web.rfn.dataStreaming.model.SummarySearchResult;
 import com.cannontech.web.rfn.dataStreaming.model.VerificationInformation;
@@ -83,5 +84,14 @@ public interface DataStreamingService {
      * @throws DataStreamingConfigException if there is a communication error requesting information from Network Manager.
      */
     List<SummarySearchResult> search(SummarySearchCriteria criteria) throws DataStreamingConfigException;
+
+    /**
+     * Attempts to find discrepancies by comparing behavior to behavior report .
+     * 
+     * @return the list of discrepancies.
+     * @throws DataStreamingConfigException if there is a communication error requesting information from Network
+     *         Manager.
+     */
+    List<DiscrepancyResult> findDiscrepancies();
 
 }

@@ -24,6 +24,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -307,15 +308,21 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }
     
-    @Override 
+    @Override
     public List<RfnDevice> getDevicesByPaoIds(Iterable<Integer> paoIds) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
-        sql.append("from YukonPaObject ypo");
-        sql.append(  "join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
-        sql.append("where PaObjectId").in(paoIds);
-        
-        return jdbcTemplate.query(sql, rfnDeviceRowMapper);
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+
+        return template.query(new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+                sqlBuilder.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+                sqlBuilder.append("from YukonPaObject ypo");
+                sqlBuilder.append("join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
+                sqlBuilder.append("where PaObjectId").in(subList);
+                return sqlBuilder;
+            }
+        }, paoIds, rfnDeviceRowMapper);
     }
     
     @Override

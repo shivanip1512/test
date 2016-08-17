@@ -1,15 +1,14 @@
 package com.cannontech.common.device.streaming.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorReport;
 import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
 import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.SetMultimap;
 
 public interface DeviceBehaviorDao {
 
@@ -62,9 +61,8 @@ public interface DeviceBehaviorDao {
     
     /**
      * Finds the Behavior of the specified type that is assigned to the device.
-     * @throws NotFoundException if no behavior of the specified type is assigned to the device.
      */
-    Behavior getBehaviorByDeviceIdAndType(int deviceId, BehaviorType type);
+    Behavior findBehaviorByDeviceIdAndType(int deviceId, BehaviorType type);
     
     /**
      * Updates behavior report status and timestamp.
@@ -72,17 +70,21 @@ public interface DeviceBehaviorDao {
      */
     void updateBehaviorReportStatus(BehaviorType type, BehaviorReportStatus status, List<Integer> deviceIds);
 
-    BehaviorReport getBehaviorReportByDeviceIdAndType(int deviceId, BehaviorType type);
+    BehaviorReport findBehaviorReportByDeviceIdAndType(int deviceId, BehaviorType type);
 
-  
     /**
      * Returns a multimap of behavior ids to device ids.
      */
     Multimap<Integer, Integer> getBehaviorIdsToDevicesIdMap(Iterable<Integer> behaviorIds);
 
     /**
-     * Returns a multimap of device ids to behavior ids.
+     * Returns a map of device ids to behavior report.
      */
-    SetMultimap<Integer, Integer> getDeviceIdsToBehaviorIdMap(Iterable<Integer> deviceIds, BehaviorType type,
-            List<BuiltInAttribute> attributes, Integer interval, Integer behaviorId);
+    Map<Integer, BehaviorReport> getBehaviorReportsByTypeAndDeviceIds(BehaviorType type, List<Integer> deviceIds);
+
+    /**
+     * Returns a map of device ids to behavior ids.
+     */
+    Map<Integer, Integer> getDeviceIdsToBehaviorIdMap(BehaviorType type, List<BuiltInAttribute> attributes,
+            Integer interval, Integer behaviorId);
 }

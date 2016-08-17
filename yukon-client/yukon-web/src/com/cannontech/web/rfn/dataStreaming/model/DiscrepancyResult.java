@@ -9,7 +9,6 @@ import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
 public class DiscrepancyResult {
     private String paoName;
     private int deviceId;
-    private int behaviorReportId;
     private DataStreamingConfig expected;
     private DataStreamingConfig actual;
     private BehaviorReportStatus status;
@@ -47,14 +46,6 @@ public class DiscrepancyResult {
         this.actual = actual;
     }
 
-    public int getBehaviorReportId() {
-        return behaviorReportId;
-    }
-
-    public void setBehaviorReportId(int behaviorReportId) {
-        this.behaviorReportId = behaviorReportId;
-    }
-
     public int getDeviceId() {
         return deviceId;
     }
@@ -79,7 +70,6 @@ public class DiscrepancyResult {
         ToStringBuilder builder = new ToStringBuilder(this, style);
         builder.append("paoName", paoName);
         builder.append("deviceId", deviceId);
-        builder.append("behaviorReportId", behaviorReportId);
         builder.append("status", status);
         builder.append("lastCommunicated", lastCommunicated);
         return builder.toString();

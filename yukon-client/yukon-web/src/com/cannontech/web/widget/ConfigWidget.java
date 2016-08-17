@@ -85,12 +85,9 @@ public class ConfigWidget extends WidgetControllerBase {
         //check for data streaming config
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        DataStreamingConfig dsConfig = null;
-        try {
-            dsConfig = dataStreamingService.findDataStreamingConfigurationForDevice(deviceId);
+        DataStreamingConfig dsConfig = dataStreamingService.findDataStreamingConfigurationForDevice(deviceId);
+        if (dsConfig != null) {
             dsConfig.setAccessor(accessor);
-        } catch (NullPointerException npe) {
-            // dsConfig can return null
         }
         mav.addObject("dataStreamingConfig", dsConfig);
         

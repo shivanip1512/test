@@ -31,7 +31,6 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
@@ -298,24 +297,18 @@ public class DataStreamingConfigurationsController {
     
     @RequestMapping("discrepancies")
     public String discrepancies(@DefaultSort(dir=Direction.asc, sort="device") SortingParameters sorting, PagingParameters paging, ModelMap model, YukonUserContext userContext) {
-        //TODO: Call service to get discrepancies
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        Map<DataStreamingConfig, DeviceCollection> configsAndDevices = dataStreamingService.getAllDataStreamingConfigurationsAndDevices();
-        List<DiscrepancyResult> discrepancies = new ArrayList<>();
-        DataStreamingConfig expected = configsAndDevices.keySet().iterator().next();
-        expected.setAccessor(accessor);
-        for (DataStreamingConfig config : configsAndDevices.keySet()) {
-            config.setAccessor(accessor);
-            DiscrepancyResult result = new DiscrepancyResult();
-            result.setActual(config);
-            result.setExpected(expected);
-            result.setStatus(BehaviorReportStatus.CONFIRMED);
-            result.setPaoName("Test");
-            result.setDeviceId(configsAndDevices.get(config).getDeviceList().get(0).getDeviceId());
-            result.setLastCommunicated(new Instant());
-            discrepancies.add(result);
+
+        List<DiscrepancyResult> discrepancies = dataStreamingService.findDiscrepancies();
+        for (DiscrepancyResult result : discrepancies) {
+            if (result.getExpected() != null) {
+                result.getExpected().setAccessor(accessor);
+            }
+            if (result.getActual() != null) {
+                result.getActual().setAccessor(accessor);
+            }
         }
-        
+
         SearchResults<DiscrepancyResult> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
         int itemsPerPage = paging.getItemsPerPage();
