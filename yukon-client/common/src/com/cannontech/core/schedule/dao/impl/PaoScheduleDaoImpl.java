@@ -263,9 +263,6 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
         
         int rowsAffected = jdbcTemplate.update(sql);
         
-        LiteYukonPAObject paoObj = cache.getAllPaosMap().get(pao.getPaoId());
-        dbChangeManager.processPaoDbChange(PaoIdentifier.of(pao.getPaoId(), paoObj.getPaoType()), DbChangeType.UPDATE);
-        
         return rowsAffected == 1;
     }
 

@@ -116,6 +116,8 @@ public class BusServiceImpl implements BusService {
 
         paoScheduleDao.deleteAssignmentsForPao(bus.getId());
         paoScheduleDao.assignCommand(assignments);
+        
+        dbChangeManager.processPaoDbChange(PaoIdentifier.of(bus.getPAObjectID(), bus.getPaoType()), DbChangeType.UPDATE);
 
     }
 
