@@ -100,7 +100,7 @@ std::string CtiTableRawPointHistory::getFinalizeSql(const DbClientType clientTyp
         {
             return
                 "declare @maxChangeId numeric;"
-                "select @maxChangeId = max(changeid) from rawpointhistory;"
+                "select @maxChangeId = COALESCE(MAX(changeid), 0) from rawpointhistory;"
                 "insert into RAWPOINTHISTORY (changeid, pointid, timestamp, quality, value, millis)"
                 " select @maxChangeId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)), pointid, timestamp, quality, value, millis"
                 " FROM ##rph;";
@@ -110,10 +110,10 @@ std::string CtiTableRawPointHistory::getFinalizeSql(const DbClientType clientTyp
             return
                 "DECLARE maxChangeId number;"
                     "BEGIN"
-                    " SELECT MAX(changeid) INTO maxChangeId"
+                    " SELECT NVL(MAX(changeid), 0) INTO maxChangeId"
                     " FROM RAWPOINTHISTORY;"
                 "INSERT INTO RAWPOINTHISTORY"
-                    " SELECT maxChangeId + ROW_NUMBER() OVER(ORDER BY (SELECT 1 FROM DUAL)), pointid, timestamp, quality, value, millis"
+                    " SELECT maxChangeId + ROWNUM, pointid, timestamp, quality, value, millis"
                     " FROM Temp_RPH; "
                 "END;";
         }
