@@ -13,6 +13,7 @@
 #define SYS32			"C:\\WINDOWS\\System32\\"
 #define TOMCAT_REG_KEY	"SOFTWARE\\Apache Software Foundation\\Procrun 2.0\\YukonWebApplicationService\\Parameters\\Java"
 #define JVM_MX			"JvmMx"
+#define JVM_MS          "JvmMs"
 #define JVM_OPTIONS		"Options"
 #define JAVA_CALC_HIST  "CalcHist"
 #define IncludeLogs		1303
@@ -21,8 +22,7 @@
 
 //global variable used to store service settings across the upgrade process
 string sServiceSettings(11);
-string sJvmMx, sJvmOptions;
-number nTomcatSettingsExist, nJvmOptionsSize;
+number nTomcatSettingsExist;
 
 //-------------------------------------------------------
 // Helper function to build up a list of the Yukon
@@ -358,47 +358,46 @@ begin
 	endwhile;
 end;
 
-//-------------------------------------------------------
-// Save memory settings and jvm parameters for Tomcat,
-// if they exist.
-//-------------------------------------------------------
-export prototype void SaveJvmParams();
-function void SaveJvmParams()
-string sConfPath, sMemReturnLine, sParamReturnLine, sError, sResult;
-number nLooping, nType, nSize, nResult, nMemLineNumber, nParamLineNumber, nParamsSize;
+export prototype void SetBlankValueInJvmParams();
+function void SetBlankValueInJvmParams()
 begin
-	//TOMCAT SETTINGS - from registry
-	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE); //set registry root
-	
-	nTomcatSettingsExist = RegDBKeyExist(TOMCAT_REG_KEY);
-	
-	if(nTomcatSettingsExist) then
-		RegDBGetKeyValueEx(TOMCAT_REG_KEY, JVM_MX, nType, sJvmMx, nSize);
-		RegDBGetKeyValueEx(TOMCAT_REG_KEY, JVM_OPTIONS, nType, sJvmOptions, nJvmOptionsSize);
-	else
-		//error - no tomcat settings found, update manually
-		MessageBox("Unable to save web server JVM settings. Settings will reset to default values.", WARNING);
-	endif;
-	RegDBSetDefaultRoot(HKEY_CLASSES_ROOT); //set back to default
+    //TOMCAT SETTINGS - from registry
+    RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE); //set registry root
+    
+    nTomcatSettingsExist = RegDBKeyExist(TOMCAT_REG_KEY);
+
+    if(nTomcatSettingsExist) then
+        RegDBSetKeyValueEx(TOMCAT_REG_KEY, JVM_MX, REGDB_STRING, "", -1);
+        RegDBSetKeyValueEx(TOMCAT_REG_KEY, JVM_MS, REGDB_STRING, "", -1);
+    endif;
+    RegDBSetDefaultRoot(HKEY_CLASSES_ROOT); //set back to default
+    
 end;
 
-//------------------------------------------------------------
-// Restore saved memory settings and jvm parameters for Tomcat
-//------------------------------------------------------------
-export prototype void LoadJvmParams();
-function void LoadJvmParams()
-string sConfPath, sReturnLine, sTemp;
-number nResult, nLineNumber, i;
+//-------------------------------------------------------
+// As per YUK-15645, Remove JVM setting while upgrading to 6.5.x version (or new version ) from lower version.
+// Retain the JVM setting while upgrading from 6.5.x to any other new version.
+// return true only if current version is less than 6.5.x
+//-------------------------------------------------------
+export prototype void RemoveJvmParams();
+function void RemoveJvmParams()
+string sOldVersion, sTempOld;
+number nOldV1, nOldV2;
 begin
-	//restore Tomcat settings to registry
-	if(nTomcatSettingsExist) then
-		RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE); //set registry root
-		RegDBSetKeyValueEx(TOMCAT_REG_KEY, JVM_MX, REGDB_NUMBER, sJvmMx, -1);
-		RegDBSetKeyValueEx(TOMCAT_REG_KEY, JVM_OPTIONS, REGDB_STRING_MULTI, sJvmOptions, nJvmOptionsSize);
-		RegDBSetDefaultRoot(HKEY_CLASSES_ROOT); //set back to default
-	endif;
+    sOldVersion = IFX_INSTALLED_VERSION;
+    //split old version into three version components
+    StrSub(sTempOld, sOldVersion, 0, 1);
+    StrToNum(nOldV1, sTempOld);
+    StrSub(sTempOld, sOldVersion, 2, 2);
+    StrToNum(nOldV2, sTempOld);
+        if(nOldV1 < 6) then
+            SetBlankValueInJvmParams();
+        elseif(nOldV1 = 6) then 
+            if(nOldV2 < 5) then
+                SetBlankValueInJvmParams();
+            endif;
+        endif;
 end;
-
 //------------------------------------------------------------
 // Helper function that permits write access to a file for
 // the Users group (essentially everyone).
