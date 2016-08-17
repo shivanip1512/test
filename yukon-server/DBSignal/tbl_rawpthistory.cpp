@@ -14,11 +14,11 @@ using Cti::Database::DatabaseException;
 using DbClientType = DatabaseConnection::ClientType;
 
 CtiTableRawPointHistory::CtiTableRawPointHistory(long pid, int qual, double val, const CtiTime tme, int millis) :
-    _pointId(pid),
-    _quality(qual),
-    _value(val),
-    _time(tme),
-    _millis(validateMillis(millis))
+    pointId(pid),
+    quality(qual),
+    value(val),
+    time(tme),
+    millis(validateMillis(millis))
 {
 }
 
@@ -123,14 +123,14 @@ std::string CtiTableRawPointHistory::getFinalizeSql(const DbClientType clientTyp
 }
             
 
-void CtiTableRawPointHistory::fillInserter(Cti::RowWriter &inserter)
+void CtiTableRawPointHistory::fillInserter(Cti::RowWriter &inserter) const
 {
     inserter
-        << _pointId
-        << _time
-        << _quality
-        << _value
-        << _millis;
+        << pointId
+        << time
+        << quality
+        << value
+        << millis;
 }
 
 int CtiTableRawPointHistory::validateMillis(int millis)
@@ -157,9 +157,9 @@ std::string CtiTableRawPointHistory::toString() const
 {
     return 
         Cti::StreamBuffer{} 
-            << _pointId 
-            << "," << _time
-            << "," << _quality
-            << "," << _value
-            << "," << _millis;
+            << pointId 
+            << "," << time
+            << "," << quality
+            << "," << value
+            << "," << millis;
 }
