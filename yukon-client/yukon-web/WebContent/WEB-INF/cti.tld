@@ -58,7 +58,7 @@
   
   <tag>
     <name>getMappingUrl</name>
-    <description>Retrieve the mapping Url specified by the viewType (STREET, SATELLITE).</description>
+    <description>Retrieve the mapping Url specified by the viewType (STREET, SATELLITE, HYBRID).</description>
     <tag-class>com.cannontech.web.taglib.GetMappingUrlTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
