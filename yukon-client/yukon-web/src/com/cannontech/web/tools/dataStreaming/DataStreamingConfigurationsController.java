@@ -23,6 +23,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -345,6 +346,13 @@ public class DataStreamingConfigurationsController {
 
         model.addAttribute("discrepancies", searchResult);
         
+        List<Integer> deviceIds = new ArrayList<>();
+        discrepancies.forEach(discrepancy -> deviceIds.add(discrepancy.getDeviceId()));
+        String deviceIdList = deviceIds.stream()
+                .map(i -> i.toString())
+                .collect(Collectors.joining(","));
+        model.addAttribute("deviceIds", deviceIdList);
+        
         return "../dataStreaming/discrepancies.jsp";
     }
     
@@ -366,14 +374,28 @@ public class DataStreamingConfigurationsController {
         return "redirect:/tools/dataStreaming/discrepancies";
     }
     
-    @RequestMapping("discrepancies/resendAll")
-    public String resendAll() {
+    @RequestMapping(value="discrepancies/resendAll", method=RequestMethod.POST)
+    public String resendAll(HttpServletRequest request) {
+        List<Integer> deviceList = new ArrayList<>();
+        String ids = request.getParameter("deviceIds");
+        String [] deviceIds = ids.split(",");
+        for (String deviceId : deviceIds) {
+            deviceList.add(Integer.parseInt(deviceId));
+        }
+        
         //TODO:  Call service
+        
         return "redirect:/tools/dataStreaming/discrepancies";
     }
     
-    @RequestMapping("discrepancies/acceptAll")
-    public String acceptAll() {
+    @RequestMapping(value="discrepancies/acceptAll", method=RequestMethod.POST)
+    public String acceptAll(HttpServletRequest request) {
+        List<Integer> deviceList = new ArrayList<>();
+        String ids = request.getParameter("deviceIds");
+        String [] deviceIds = ids.split(",");
+        for (String deviceId : deviceIds) {
+            deviceList.add(Integer.parseInt(deviceId));
+        }
         //TODO:  Call service
         return "redirect:/tools/dataStreaming/discrepancies";
     }

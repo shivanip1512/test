@@ -3,6 +3,8 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="tools" page="dataStreaming.discrepancies">
 
@@ -28,8 +30,8 @@
                 </cti:url>
                 <tr>
                     <td><a href="${detailUrl}">${fn:escapeXml(discrepancy.paoName)}</a></td>
-                    <td>${discrepancy.expected.commaDelimitedAttributesOnOff}</td>
-                    <td>${discrepancy.actual.commaDelimitedAttributesOnOff}</td>
+                    <td class="wrbw">${discrepancy.expected.commaDelimitedAttributesOnOff}</td>
+                    <td class="wrbw">${discrepancy.actual.commaDelimitedAttributesOnOff}</td>
                     <td class="wsnw">${discrepancy.expected.selectedInterval}
                         <c:choose>
                             <c:when test="${discrepancy.expected.selectedInterval > 1}">
@@ -50,29 +52,15 @@
                             </c:otherwise>
                         </c:choose>
                     </td>
-                    <td class="wsnw">${discrepancy.status}</td>
-                    <td class="wsnw"><cti:formatDate value="${discrepancy.lastCommunicated}" type="DATEHM_12" /></td>
+                    <td class="wsnw"><i:inline key=".${discrepancy.status}"/></td>
+                    <td class="wsnw dif"><cti:formatDate value="${discrepancy.lastCommunicated}" type="DATEHM_12" />&nbsp;&nbsp;
                         <cm:dropdown icon="icon-cog" triggerClasses="fr">
-    <%--                         <cti:url var="summaryUrl" value="/tools/dataStreaming/summary?selectedConfiguration=${config.id}"/>
-                            <cm:dropdownOption key=".summary.pageName" href="${summaryUrl}" icon="icon-application-view-columns"/>
-                            <cti:url var="configureUrl" value="/bulk/dataStreaming/configure">
-                                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                                    <cti:param name="${cp.key}" value="${cp.value}"/>
-                                </c:forEach>
-                            </cti:url>
-                            <cm:dropdownOption key=".configure" href="${configureUrl}" icon="icon-cog-edit"/>
-                            <cti:url var="removeUrl" value="/bulk/dataStreaming/remove">
-                                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                                    <cti:param name="${cp.key}" value="${cp.value}"/>
-                                </c:forEach>
-                            </cti:url>                            
+                            <cti:url var="resendUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/resend"/>
+                            <cm:dropdownOption key=".resend" href="${resendUrl}" icon="icon-control-repeat-blue"/>
+                            <cti:url var="acceptUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/accept"/>
+                            <cm:dropdownOption key=".accept" href="${acceptUrl}" icon="icon-accept"/>
+                            <cti:url var="removeUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/remove"/>
                             <cm:dropdownOption key=".remove" href="${removeUrl}" icon="icon-cross"/>
-                            <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
-                                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                                    <cti:param name="${cp.key}" value="${cp.value}"/>
-                                </c:forEach>
-                            </cti:url>
-                            <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go"/> --%>
                         </cm:dropdown>
                    </td>
                 </tr>
@@ -84,10 +72,18 @@
     <div class="page-action-area">
 
         <cti:url var="resendAllUrl" value="/tools/dataStreaming/discrepancies/resendAll"/>
-        <cti:button nameKey="resendAll" href="${resendAllUrl}"/>
+        <form:form id="resendAll" action="${resendAllUrl}" method="POST">
+            <cti:csrfToken/>
+            <input type="hidden" id="deviceIds" name="deviceIds" value="${deviceIds}"/>
+            <cti:button type="submit" nameKey="resendAll" />
+        </form:form>
         
         <cti:url var="acceptAllUrl" value="/tools/dataStreaming/discrepancies/acceptAll"/>
-        <cti:button nameKey="acceptAll" href="${acceptAllUrl}"/>
+        <form:form id="acceptAll" action="${acceptAllUrl}" method="POST">
+            <cti:csrfToken/>
+            <input type="hidden" id="deviceIds" name="deviceIds" value="${deviceIds}"/>
+            <cti:button type="submit" nameKey="acceptAll" />
+        </form:form>
       
     </div>
 

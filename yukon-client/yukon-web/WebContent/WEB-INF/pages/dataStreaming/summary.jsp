@@ -9,12 +9,6 @@
 
 <cti:standardPage module="tools" page="dataStreaming.summary">
 
-<style>
-.inline {
-    display: inline-flex;
-}
-</style>
-
     <cti:url var="action" value="/tools/dataStreaming/summary" />
     <form:form commandName="searchFilters" action="${action}" method="GET">
         <cti:csrfToken />
@@ -57,7 +51,7 @@
                                 </c:forEach>
                             </select>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".filter.attributes" valueClass="inline">
+                        <tags:nameValue2 nameKey=".filter.attributes" valueClass="dif">
                             <select multiple id="attributesSelect" name="attributesSelect" class="js-selected-attInterval" size="6" style="min-width:200px;">
                                 <option value="-1" <c:if test="${searchFilters.selectedAttributes.size() == 0}">selected</c:if>>Any</option>
                                 <c:forEach var="attribute" items="${searchAttributes}">
