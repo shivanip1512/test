@@ -132,13 +132,15 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             if (meter instanceof RfMeterModel) {
                 
                 RfMeterModel rf = (RfMeterModel) meter;
-                
-                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "serialNumber", key + "serialNumber.required");
-                YukonValidationUtils.checkExceedsMaxLength(errors, "serialNumber", rf.getSerialNumber(), 30);
-                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "manufacturer", key + "manufacturer.required");
-                YukonValidationUtils.checkExceedsMaxLength(errors, "manufacturer", rf.getManufacturer(), 60);
-                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "model", key + "model.required");
-                YukonValidationUtils.checkExceedsMaxLength(errors, "model", rf.getModel(), 60);
+                RfnIdentifier rfnId = new RfnIdentifier(rf.getSerialNumber(), rf.getManufacturer(), rf.getModel());
+                if (!rfnId.isBlank()) {
+                    YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "serialNumber", key + "serialNumber.required");
+                    YukonValidationUtils.checkExceedsMaxLength(errors, "serialNumber", rf.getSerialNumber(), 30);
+                    YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "manufacturer", key + "manufacturer.required");
+                    YukonValidationUtils.checkExceedsMaxLength(errors, "manufacturer", rf.getManufacturer(), 60);
+                    YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "model", key + "model.required");
+                    YukonValidationUtils.checkExceedsMaxLength(errors, "model", rf.getModel(), 60);
+                }
             }
         }
     };

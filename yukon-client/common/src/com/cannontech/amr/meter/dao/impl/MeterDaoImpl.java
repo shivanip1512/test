@@ -19,18 +19,18 @@ import com.cannontech.amr.meter.model.IedMeter;
 import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.impl.PaoLoader;
@@ -53,9 +53,9 @@ import com.google.common.collect.Maps;
 
 public class MeterDaoImpl implements MeterDao {
     
-    @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     @Autowired private MeterRowMapper meterRowMapper;
@@ -105,18 +105,10 @@ public class MeterDaoImpl implements MeterDao {
             sql.append("WHERE DeviceId").eq(meter.getDeviceId());
             jdbcTemplate.update(sql);
         } else if (meter instanceof RfnMeter) {
-            // Update the rfn address
-            RfnIdentifier rfn = ((RfnMeter) meter).getRfnIdentifier();
-            sql = new SqlStatementBuilder();
-            sql.append("UPDATE RfnAddress")
-            .set("SerialNumber", rfn.getSensorSerialNumber(),
-                 "Manufacturer", rfn.getSensorManufacturer(),
-                 "Model", rfn.getSensorModel());
-            sql.append("WHERE DeviceId").eq(meter.getDeviceId());
             try {
-                jdbcTemplate.update(sql);
+                rfnDeviceDao.updateDevice(RfnDevice.of((RfnMeter)meter));
             } catch (DataIntegrityViolationException e) {
-                throw new DuplicateException("Duplicate rfn address.", e);
+                throw new DuplicateException("RFN Address was not able to be inserted or updated.", e);
             }
         } else if (meter instanceof IedMeter) {
             // do nothing special

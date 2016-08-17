@@ -1,5 +1,6 @@
 package com.cannontech.common.rfn.model;
 
+import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonDevice;
@@ -83,5 +84,8 @@ public class RfnDevice implements YukonRfn, YukonDevice, DisplayablePao {
         }
         return true;
     }
-    
+ 
+    public static RfnDevice of(RfnMeter rfnMeter) {
+        return new RfnDevice(rfnMeter.getName(), rfnMeter, rfnMeter.getRfnIdentifier());
+    }
 }
