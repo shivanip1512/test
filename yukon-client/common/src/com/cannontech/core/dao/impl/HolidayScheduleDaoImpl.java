@@ -10,17 +10,24 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.holiday.HolidaySchedule;
 import com.cannontech.database.model.Holiday;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private IDatabaseCache cache;
     
     private static final RowMapper<Holiday> holidayRowMapper = new RowMapper<Holiday>() {
         @Override
@@ -113,6 +120,9 @@ public class HolidayScheduleDaoImpl implements HolidayScheduleDao{
         
         sql = "Insert Into CCHolidayStrategyAssignment Values ( ?,?,? )";
         jdbcTemplate.update( sql, paoId, scheduleId, strategyId);
+        
+        LiteYukonPAObject paoObj = cache.getAllPaosMap().get(paoId);
+        dbChangeManager.processPaoDbChange(PaoIdentifier.of(paoId, paoObj.getPaoType()), DbChangeType.UPDATE);
     }
     
     public static Connection getConnection() {

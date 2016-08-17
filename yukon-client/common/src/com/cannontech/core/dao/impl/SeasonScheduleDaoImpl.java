@@ -15,18 +15,25 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.model.Season;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class SeasonScheduleDaoImpl implements SeasonScheduleDao {
     
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private IDatabaseCache cache;
     
     private static final RowMapper<SeasonSchedule> mapper = new RowMapper<SeasonSchedule>() {
         @Override
@@ -195,6 +202,10 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao {
                 jdbcTemplate.update( sql, paoId, actualSeason.getScheduleId(), actualSeason.getSeasonName() , fixedMap.get(actualSeason) );
             }
         }
+                
+        LiteYukonPAObject paoObj = cache.getAllPaosMap().get(paoId);
+        dbChangeManager.processPaoDbChange(PaoIdentifier.of(paoId, paoObj.getPaoType()), DbChangeType.UPDATE);
+
     }
     
     /**
