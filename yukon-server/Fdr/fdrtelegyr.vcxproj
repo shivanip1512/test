@@ -149,7 +149,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Ws2_32.lib;..\lib-debug\cti_fdr.lib;..\Fdr\Telegyr\lib\psapi.lib;..\Fdr\Telegyr\lib\pllib.lib;..\Fdr\Telegyr\lib\apiclilib.lib;wininet.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctisvr.lib;..\lib-debug\ctivg.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctibase.lib;legacy_stdio_definitions.lib;legacy_stdio_wide_specifiers.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;..\lib-debug\cti_fdr.lib;..\Fdr\Telegyr\lib\psapi.lib;..\Fdr\Telegyr\lib\pllib.lib;..\Fdr\Telegyr\lib\apiclilib.lib;wininet.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctisvr.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctibase.lib;legacy_stdio_definitions.lib;legacy_stdio_wide_specifiers.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImportLibrary>$(SolutionDir)lib-debug\$(TargetName).lib</ImportLibrary>
@@ -195,8 +195,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Ws2_32.lib;..\lib\cti_fdr.lib;..\Fdr\Telegyr\lib\psapi.lib;..\Fdr\Telegyr\lib\pllib.lib;..\Fdr\Telegyr\lib\apiclilib.lib;wininet.lib;..\lib\ctiprot.lib;..\lib\ctisvr.lib;..\lib\ctivg.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;legacy_stdio_definitions.lib;legacy_stdio_wide_specifiers.lib;$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalDependencies>Ws2_32.lib;..\lib\cti_fdr.lib;..\Fdr\Telegyr\lib\psapi.lib;..\Fdr\Telegyr\lib\pllib.lib;..\Fdr\Telegyr\lib\apiclilib.lib;wininet.lib;..\lib\ctiprot.lib;..\lib\ctisvr.lib;..\lib\ctivg.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;legacy_stdio_definitions.lib;legacy_stdio_wide_specifiers.lib;$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;..\lib\cti_fdr.lib;..\Fdr\Telegyr\lib\psapi.lib;..\Fdr\Telegyr\lib\pllib.lib;..\Fdr\Telegyr\lib\apiclilib.lib;wininet.lib;..\lib\ctiprot.lib;..\lib\ctisvr.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;legacy_stdio_definitions.lib;legacy_stdio_wide_specifiers.lib;$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -245,7 +244,7 @@
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Ws2_32.lib;..\lib-debug\cti_fdr.lib;..\Fdr\Telegyr\lib\psapi.lib;..\Fdr\Telegyr\lib\pllib.lib;..\Fdr\Telegyr\lib\apiclilib.lib;wininet.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctisvr.lib;..\lib-debug\ctivg.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctibase.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;..\lib-debug\cti_fdr.lib;..\Fdr\Telegyr\lib\psapi.lib;..\Fdr\Telegyr\lib\pllib.lib;..\Fdr\Telegyr\lib\apiclilib.lib;wininet.lib;..\lib-debug\ctiprot.lib;..\lib-debug\ctisvr.lib;..\lib-debug\ctimsg.lib;..\lib-debug\ctibase.lib;$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
@@ -304,7 +303,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ResourceCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>Ws2_32.lib;..\lib\cti_fdr.lib;..\Fdr\Telegyr\lib\psapi.lib;..\Fdr\Telegyr\lib\pllib.lib;..\Fdr\Telegyr\lib\apiclilib.lib;wininet.lib;..\lib\ctiprot.lib;..\lib\ctisvr.lib;..\lib\ctivg.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>Ws2_32.lib;..\lib\cti_fdr.lib;..\Fdr\Telegyr\lib\psapi.lib;..\Fdr\Telegyr\lib\pllib.lib;..\Fdr\Telegyr\lib\apiclilib.lib;wininet.lib;..\lib\ctiprot.lib;..\lib\ctisvr.lib;..\lib\ctimsg.lib;..\lib\ctibase.lib;$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
