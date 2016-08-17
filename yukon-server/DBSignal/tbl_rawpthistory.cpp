@@ -84,9 +84,17 @@ std::string CtiTableRawPointHistory::getInsertSql(const DbClientType clientType,
                     + boost::algorithm::join(std::vector<std::string> { rows, sqlInfix }, ",");
 
         case DbClientType::Oracle:
-            return oraclePrefix 
-                    + boost::algorithm::join(std::vector<std::string> { rows, oracleInfix }, ",") 
-                    + oracleSuffix;
+        {
+            auto sql = oraclePrefix;
+            sql.reserve(sql.size() + oracleInfix.size() * rows + oracleSuffix.size());
+
+            while( rows-- )
+            {
+                sql += oracleInfix;
+            }
+
+            return sql += oracleSuffix;
+        }
     }
 
     throw DatabaseException{ "Invalid client type " + std::to_string(static_cast<unsigned>(clientType)) };
