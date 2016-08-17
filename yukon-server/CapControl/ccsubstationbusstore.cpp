@@ -7755,12 +7755,9 @@ void CtiCCSubstationBusStore::addVectorIdsToSet(const PaoIdVector idVector, PaoI
 void CtiCCSubstationBusStore::handleStrategyDBChange(long reloadId, BYTE reloadAction, unsigned long &msgBitMask, unsigned long &msgSubsBitMask,
                                                  PaoIdSet &modifiedBusIdsSet,  PaoIdSet &modifiedStationIdsSet, CtiMultiMsg_vec &capMessages )
 {
-
     if (reloadAction != ChangeTypeDelete)
     {
         reloadStrategyFromDatabase(reloadId);
-
-        long i=0;
 
         for ( CtiCCSpecialPtr spArea : *_ccSpecialAreas )
         {
@@ -7769,6 +7766,7 @@ void CtiCCSubstationBusStore::handleStrategyDBChange(long reloadId, BYTE reloadA
                 addVectorIdsToSet(spArea->getSubstationIds(), modifiedStationIdsSet);
             }
         }
+
         for ( CtiCCAreaPtr area : *_ccGeoAreas )
         {
             if (!area->getDisableFlag() && area->getStrategy()->getStrategyId() == reloadId)
@@ -7776,31 +7774,30 @@ void CtiCCSubstationBusStore::handleStrategyDBChange(long reloadId, BYTE reloadA
                 addVectorIdsToSet(area->getSubstationIds(), modifiedStationIdsSet);
             }
         }
-        for(i=0;i<_ccSubstationBuses->size();i++)
+
+        for ( CtiCCSubstationBusPtr bus : *_ccSubstationBuses )
         {
-            CtiCCSubstationBus* tempSub = (CtiCCSubstationBus*)(*_ccSubstationBuses)[i];
-            if (tempSub->getStrategy()->getStrategyId() == reloadId)
+            if ( bus->getStrategy()->getStrategyId() == reloadId )
             {
-                modifiedBusIdsSet.insert(reloadId);
-                msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
+                modifiedBusIdsSet.insert( bus->getPaoId() );
+
+                msgBitMask     |= CtiCCSubstationBusMsg::SubBusModified;
                 msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
             }
             else
             {
-                CtiFeeder_vec& tempFeeds = tempSub->getCCFeeders();
-                for (int j = 0; j < tempFeeds.size(); j++)
+                for ( CtiCCFeederPtr feeder : bus->getCCFeeders() )
                 {
-                    CtiCCFeederPtr fdr = (CtiCCFeederPtr)tempFeeds[j];
-                    if (fdr->getStrategy()->getStrategyId() ==  reloadId)
+                    if ( feeder->getStrategy()->getStrategyId() == reloadId )
                     {
-                        modifiedBusIdsSet.insert(reloadId);
-                        msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
+                        modifiedBusIdsSet.insert( bus->getPaoId() );    // bus message updates feeders too
+
+                        msgBitMask     |= CtiCCSubstationBusMsg::SubBusModified;
                         msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
                     }
                 }
             }
         }
-
     }
     else
     {
