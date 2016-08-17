@@ -9,7 +9,7 @@
 #include "server_b.h"
 
 
-class IM_EX_CTIVANGOGH CtiPointConnection
+class CtiPointConnection
 {
 public:
    // Vector of managers who care about this point.

@@ -6,14 +6,13 @@ using namespace std;
 #include "ctitime.h"
 
 #include "dispsvc.h"
-#include "dllvg.h"
 #include "CServiceConfig.h"
-#include "dllbase.h"
 #include "dllbase.h"
 #include "logManager.h"
 #include "utility.h"
 #include "dbghelp.h"
 #include "connection_base.h"
+#include "cparms.h"
 
 // Shutdown logging when this object is destroyed
 Cti::Logging::AutoShutdownLoggers g_autoShutdownLoggers;
@@ -23,6 +22,11 @@ Cti::Messaging::AutoCloseAllConnections g_autoCloseAllConnections;
 
 /* Called when we get an SEH exception.  Generates a minidump. */
 ETN_MINIDUMP_EXCEPTION_FILTER;
+
+extern unsigned gDispatchDebugLevel;
+extern unsigned gDispatchReloadRate;
+
+void InitDispatchGlobals(void);
 
 int main(int argc, char* argv[])
 {
@@ -112,4 +116,24 @@ int main(int argc, char* argv[])
    }
 
    return 0;
+}
+
+void InitDispatchGlobals(void)
+{
+    string str;
+    char var[128];
+
+    strcpy(var, "DISPATCH_RELOAD_RATE");
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        gDispatchReloadRate = std::max((unsigned long)gConfigParms.getValueAsULong(var), (unsigned long)86400);
+    }
+
+    strcpy(var, "DISPATCH_DEBUGLEVEL");
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        char *eptr;
+        gDispatchDebugLevel = strtoul(str.c_str(), &eptr, 16);
+        CTILOG_DEBUG(dout, "DISPATCH_DEBUGLEVEL: 0x"<< hex << gDispatchDebugLevel);
+    }
 }

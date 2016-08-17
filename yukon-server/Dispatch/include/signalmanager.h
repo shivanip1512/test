@@ -11,7 +11,7 @@
 
 #define SIGNAL_MANAGER_MASK (MASK_ANY_ALARM|TAG_ACTIVE_CONDITION)
 
-class IM_EX_CTIVANGOGH CtiSignalManager : private boost::noncopyable
+class CtiSignalManager : private boost::noncopyable
 {
 public:
 

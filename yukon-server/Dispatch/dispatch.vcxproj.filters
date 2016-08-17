@@ -39,6 +39,39 @@
     <ClCompile Include="..\COMMON\boost_assert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tagmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="signalmanager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ptconnect.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pendingopthread.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="pending_info.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="mgr_ptclients.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="exe_ptchg.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ctivangogh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="control_history_association.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_rawpthistory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_signal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\con_mgr_vg.h">
@@ -53,9 +86,6 @@
     <ClInclude Include="include\dispsvc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\dllvg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\exe_ptchg.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -63,9 +93,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\id_vg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\id_vgdll.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\mgr_ptclients.h">
@@ -90,6 +117,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\vgexe_factory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tbl_signal.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\tbl_rawpthistory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

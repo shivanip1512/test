@@ -2,7 +2,6 @@
 
 #include "counter.h"
 #include "cparms.h"
-#include "dllvg.h"
 #include "mgr_ptclients.h"
 #include "msg_cmd.h"
 #include "pendingopthread.h"

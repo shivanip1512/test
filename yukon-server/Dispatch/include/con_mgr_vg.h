@@ -10,7 +10,7 @@
 
 #include "con_mgr.h"
 
-class IM_EX_CTIVANGOGH CtiVanGoghConnectionManager : public CtiConnectionManager
+class CtiVanGoghConnectionManager : public CtiConnectionManager
 {
    /*
     *  These are the items a VanGogh connection might wish to know about were he in a list.

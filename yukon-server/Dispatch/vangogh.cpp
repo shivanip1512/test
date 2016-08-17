@@ -7,14 +7,13 @@
 #include "ctivangogh.h"
 #include "dllbase.h"
 #include "dlldefs.h"
-#include "dllvg.h"
 #include "stdexcepthdlr.h"
 #include "logger.h"
 #include "module_util.h"
 
 using namespace std;
 
-DLLIMPORT extern BOOL  bGCtrlC;
+extern BOOL  bGCtrlC;
 
 static _CRT_ALLOC_HOOK pfnOldCrtAllocHook = NULL;
 

@@ -97,8 +97,6 @@ yukon-server/Calc/Debug
 yukon-server/Calc/Release
 yukon-server/CapControl/Debug
 yukon-server/CapControl/Release
-yukon-server/DBSignal/Debug
-yukon-server/DBSignal/Release
 yukon-server/Database/Debug
 yukon-server/Database/Release
 yukon-server/Debug

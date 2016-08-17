@@ -2,7 +2,7 @@
 
 #include "executorfactory.h"
 
-class IM_EX_CTIVANGOGH CtiVanGoghExecutorFactory : public CtiExecutorFactory
+class CtiVanGoghExecutorFactory : public CtiExecutorFactory
 {
 public:
    typedef CtiExecutorFactory Inherited;

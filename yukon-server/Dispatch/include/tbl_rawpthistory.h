@@ -4,7 +4,7 @@
 #include "row_writer.h"
 #include "database_connection.h"
 
-struct IM_EX_SIGNAL CtiTableRawPointHistory : public Cti::Loggable
+struct CtiTableRawPointHistory : public Cti::Loggable
 {
    const long    pointId;
    const CtiTime time;

@@ -8,7 +8,7 @@
 #include <iostream>
 using namespace std;
 
-DLLIMPORT extern BOOL  bGCtrlC;
+extern BOOL  bGCtrlC;
 extern BOOL CtrlHandler(DWORD fdwCtrlType);
 extern INT DispatchMainFunction(INT argc, CHAR** argv);
 

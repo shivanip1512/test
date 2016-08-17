@@ -6,7 +6,7 @@
 class CtiServer;
 
 
-class IM_EX_CTIVANGOGH CtiPointChangeExecutor : public CtiExecutor
+class CtiPointChangeExecutor : public CtiExecutor
 {
 private:
 

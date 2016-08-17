@@ -6,7 +6,7 @@
 class CtiServer;
 
 
-struct IM_EX_CTIVANGOGH CtiSignalExecutor : public CtiExecutor
+struct CtiSignalExecutor : public CtiExecutor
 {
    CtiSignalExecutor(CtiMessage *p = NULL) :
       CtiExecutor(p);

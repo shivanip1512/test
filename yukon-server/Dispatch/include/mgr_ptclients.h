@@ -17,7 +17,7 @@
 class CtiSignalMsg;
 class CtiPointRegistrationMsg;
 
-class IM_EX_CTIVANGOGH CtiPointClientManager : public CtiPointManager
+class CtiPointClientManager : public CtiPointManager
 {
 public:
     struct ReasonabilityLimitStruct

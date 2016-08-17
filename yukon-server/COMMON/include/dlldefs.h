@@ -3,12 +3,6 @@
 #define DLLEXPORT             __declspec(dllexport)
 #define DLLIMPORT             __declspec(dllimport)
 
-#ifdef _DLL_SIGNAL
-   #define IM_EX_SIGNAL       __declspec(dllexport)
-#else
-   #define IM_EX_SIGNAL       __declspec(dllimport)
-#endif
-
 #ifdef _DLL_CTIPIL
    #define IM_EX_CTIPIL       __declspec(dllexport)
 #else
@@ -25,12 +19,6 @@
    #define IM_EX_CTIBASE      __declspec(dllexport)
 #else
    #define IM_EX_CTIBASE      __declspec(dllimport)
-#endif
-
-#ifdef CTIVANGOGH
-   #define IM_EX_CTIVANGOGH   __declspec(dllexport)
-#else
-   #define IM_EX_CTIVANGOGH   __declspec(dllimport)
 #endif
 
 #ifdef _DLL_SERVICE

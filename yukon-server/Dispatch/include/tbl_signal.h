@@ -11,7 +11,7 @@
 #include <string>
 
 
-class IM_EX_SIGNAL CtiTableSignal : public CtiMemDBObject
+class CtiTableSignal : public CtiMemDBObject
 {
     LONG     _logID;
     LONG     _pointID;

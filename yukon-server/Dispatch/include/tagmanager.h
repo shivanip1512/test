@@ -14,7 +14,7 @@
 #include <set>
 #include <utility>
 
-class IM_EX_CTIVANGOGH CtiTagManager : public CtiThread
+class CtiTagManager : public CtiThread
 {
 protected:
 

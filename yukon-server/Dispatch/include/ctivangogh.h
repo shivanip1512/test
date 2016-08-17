@@ -41,7 +41,7 @@ class CtiPointNumeric;
 class CtiDynamicPointDispatch;
 class CtiPointClientManager;
 
-class IM_EX_CTIVANGOGH CtiVanGogh : public CtiServer
+class CtiVanGogh : public CtiServer
 {
 public:
 

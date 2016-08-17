@@ -1,6 +1,5 @@
 #include "precompiled.h"
 
-#include "dllvg.h"
 #include "pt_base.h"
 #include "logger.h"
 #include "mgr_ptclients.h"
@@ -827,10 +826,7 @@ void CtiPointClientManager::storeDirtyRecords()
     {
         writeRecordsToDB(updateList);
 
-        if( gDispatchDebugLevel & DISPATCH_DEBUG_VERBOSE )
-        {
-            CTILOG_DEBUG(dout, "Updated " << updateList.size() << " dynamic dispatch records");
-        }
+        CTILOG_DEBUG(dout, "Updated " << updateList.size() << " dynamic dispatch records");
     }
 
     removeOldDynamicData();
