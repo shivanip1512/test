@@ -11,7 +11,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
@@ -25,13 +24,11 @@ import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.pao.PaoScheduleAssignment;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class PaoScheduleDaoImpl implements PaoScheduleDao {
 
@@ -42,7 +39,6 @@ public class PaoScheduleDaoImpl implements PaoScheduleDao {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-    @Autowired private IDatabaseCache cache;
 
     static {
         assignmentRowMapper = new YukonRowMapper<PaoScheduleAssignment>() {
