@@ -125,10 +125,12 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
     @Override
     public DataStreamingConfig findDataStreamingConfigurationForDevice(int deviceId) {
-        Behavior behavior = deviceBehaviorDao.getBehaviorByDeviceIdAndType(deviceId, BehaviorType.DATA_STREAMING);
-        if (behavior == null)
+        try {
+            Behavior behavior = deviceBehaviorDao.getBehaviorByDeviceIdAndType(deviceId, BehaviorType.DATA_STREAMING);
+            return convertBehaviorToConfig(behavior);
+        } catch (NotFoundException nfe) {
             return null;
-        return convertBehaviorToConfig(behavior);
+        }
     }
 
     @Override

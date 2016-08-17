@@ -28,6 +28,7 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -267,7 +268,8 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             behavior.setValues(values);
             return behavior;
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            throw new NotFoundException(
+                    "Behavior Report with deviceId=" + deviceId + " and type=" + type + " doesn't exist.");
         }
     }
     
@@ -346,7 +348,8 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             report.setValues(values);
             return report;
         } catch (EmptyResultDataAccessException e) {
-            return null;
+            throw new NotFoundException(
+                    "Behavior Report with deviceId=" + deviceId + " and type=" + type + " doesn't exist.");
         }
     }
     
