@@ -30,7 +30,6 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -326,12 +325,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     @Override
     public BehaviorReport findBehaviorReportByDeviceIdAndType(int deviceId, BehaviorType type) {
         Map<Integer, BehaviorReport> reports = getBehaviorReportsByTypeAndDeviceIds(type, Lists.newArrayList(deviceId));
-        BehaviorReport report = reports.get(deviceId);
-        if (report == null) {
-            throw new NotFoundException(
-                    "Behavior Report with deviceId=" + deviceId + " and type=" + type + " doesn't exist.");
-        }
-        return report;
+        return reports.get(deviceId);
     }
 
     @Override
