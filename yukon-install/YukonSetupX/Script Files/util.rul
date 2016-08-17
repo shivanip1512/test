@@ -377,7 +377,6 @@ end;
 //-------------------------------------------------------
 // As per YUK-15645, Remove JVM setting while upgrading to 6.5.x version (or new version ) from lower version.
 // Retain the JVM setting while upgrading from 6.5.x to any other new version.
-// return true only if current version is less than 6.5.x
 //-------------------------------------------------------
 export prototype void RemoveJvmParams();
 function void RemoveJvmParams()
