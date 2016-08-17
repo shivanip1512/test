@@ -66,7 +66,7 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 		for( int k = 0; k < trendModel.getTrendSeries().length; k++ )
 		{
 			TrendSerie serie = trendModel.getTrendSeries()[k];
-			if(GDSTypesFuncs.isGraphType( serie.getTypeMask()))
+            if (GDSTypesFuncs.isGraphType(serie.getTypeMask()) && !GDSTypesFuncs.isMarkerType(serie.getTypeMask()))
 			{
 //				if( serie.getDataPairArray() != null)// With this check, null data is not represented with correct point
 				{
