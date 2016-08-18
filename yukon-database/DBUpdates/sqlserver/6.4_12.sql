@@ -25,4 +25,4 @@ WHERE p.ServiceFlag = 'N'
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.4', '30-JUN-2016', 'Latest Update', 12, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('6.4', '18-AUG-2016', 'Latest Update', 12, GETDATE());
