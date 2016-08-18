@@ -159,12 +159,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
      * Filters the gateways based on the loading percent selected by the user.
      * 
      * @return a map of RfnIdentifier to RFNGateway
-     */
-    /**
-     * Finds gateways based on the user selected criteria (User can select 1 or more gateways).
-     * Filters the gateways based on the loading percent selected by the user.
-     * 
-     * @return a map of RfnIdentifier to RFNGateway
      * @throws DataStreamingConfigException 
      */
     private Map<RfnIdentifier, RfnGateway> getGatewaysForLoadingRange(SummarySearchCriteria criteria) throws DataStreamingConfigException{
@@ -204,6 +198,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
         Collection<GatewayDataStreamingInfo> gatewayInfos =
             dataStreamingCommService.getGatewayInfo(rfnGatewayService.getAllGateways());
+        
         for (GatewayDataStreamingInfo gatewayInfo : gatewayInfos) {
             for (RfnIdentifier identifier : gatewayInfo.getDeviceRfnIdentifiers().keySet()) {
                 DeviceInfo deviceToGateway = new DeviceInfo();
@@ -213,36 +208,33 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 deviceIdToDeviceInfo.put(deviceToGateway.device.getPaoIdentifier().getPaoId(), deviceToGateway);
             }
         }
+        Integer selectedConfigId = criteria.isConfigSelected() ? criteria.getSelectedConfiguration() : null;
+        List<BuiltInAttribute> attributes = criteria.getBuiltInAttributes();
+        Integer interval = criteria.isConfigIntervalSelected() ? criteria.getSelectedInterval() : null;
+        Map<Integer, Integer> deviceIdsToBehaviorIds =
+            deviceBehaviorDao.getDeviceIdsToBehaviorIdMap(TYPE, attributes, interval, selectedConfigId);
 
-        if (!deviceIdToDeviceInfo.isEmpty()) {
-            Integer selectedConfigId = criteria.isConfigSelected() ? criteria.getSelectedConfiguration() : null;
-            List<BuiltInAttribute> attributes = criteria.getBuiltInAttributes();
-            Integer interval = criteria.isConfigIntervalSelected() ? criteria.getSelectedInterval() : null;
-            Map<Integer, Integer> deviceIdsToBehaviorIds =
-                deviceBehaviorDao.getDeviceIdsToBehaviorIdMap(TYPE, attributes, interval, selectedConfigId);
+        Map<Integer, DataStreamingConfig> configs = deviceIdsToBehaviorIds.values().stream().distinct().collect(
+            Collectors.toMap(id -> id, id -> findDataStreamingConfiguration(id)));
 
-            Map<Integer, DataStreamingConfig> configs = deviceIdsToBehaviorIds.values().stream().distinct().collect(
-                Collectors.toMap(id -> id, id -> findDataStreamingConfiguration(id)));
-
-            for (Map.Entry<Integer, Integer> entry : deviceIdsToBehaviorIds.entrySet()) {
-                int deviceId = entry.getKey();
-                int configId = entry.getValue();
-                DeviceInfo deviceInfo = deviceIdToDeviceInfo.get(deviceId);
-                SummarySearchResult result = new SummarySearchResult();
-                DataStreamingConfig config = configs.get(configId);
-                result.setConfig(config);
-                if (deviceInfo == null) {
-                    result.setMeter(rfnDeviceDao.getDeviceForId(deviceId));
-                    log.error("GatewayDataStreamingInfo didn't include device=" + result.getMeter());
+        for (Map.Entry<Integer, Integer> entry : deviceIdsToBehaviorIds.entrySet()) {
+            int deviceId = entry.getKey();
+            int configId = entry.getValue();
+            DeviceInfo deviceInfo = deviceIdToDeviceInfo.get(deviceId);
+            SummarySearchResult result = new SummarySearchResult();
+            DataStreamingConfig config = configs.get(configId);
+            result.setConfig(config);
+            if (deviceInfo == null) {
+                result.setMeter(rfnDeviceDao.getDeviceForId(deviceId));
+                log.error("GatewayDataStreamingInfo didn't include device=" + result.getMeter());
+                results.add(result);
+            } else {
+                RfnGateway gateway = gatewaysForLoadingRange.get(deviceInfo.gatewayRfnIdentifier);
+                if (gateway != null) {
+                    // gateway is in range selected by the user
+                    result.setMeter(deviceInfo.device);
+                    result.setGateway(gateway);
                     results.add(result);
-                } else {
-                    RfnGateway gateway = gatewaysForLoadingRange.get(deviceInfo.gatewayRfnIdentifier);
-                    if (gateway != null) {
-                        // gateway is in range selected by the user
-                        result.setMeter(deviceInfo.device);
-                        result.setGateway(gateway);
-                        results.add(result);
-                    }
                 }
             }
         }
@@ -270,10 +262,22 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             }
         }
         // deviceId, report
+        // (create getBehaviorReportsByType)
         Map<Integer, BehaviorReport> deviceIdToReport =
             deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, new ArrayList<>(deviceIdToConfig.keySet()));
-        for (int deviceId : deviceIdToConfig.keySet()) {
-
+        
+        Set<Integer> deviceIds = new HashSet<>();
+        deviceIds.addAll(deviceIdToConfig.keySet());
+        deviceIds.addAll(deviceIdToReport.keySet());
+        
+        for (int deviceId : deviceIds) {
+            /*
+             * Assume that each device assigned to a behavior has an entry in behavior report table.
+             * There might be an entry in a behavior report table but device might not be assigned to behavior.
+             * Example: device was unassigned, there will be an entry only in behavior table.
+             *   
+             * Pending entries should only show up after 24 hours.
+             */
             BehaviorReport report = deviceIdToReport.get(deviceId);
 
             // behavior
