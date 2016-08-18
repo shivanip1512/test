@@ -8222,7 +8222,7 @@
         <displayName>RFN-410cL</displayName>
     </pao>
     <pao id="RFN420CL" 
-        inherits="RFN_L3_CENTRON, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, RFN_CENTRON_420_KVAH, RFN_CONFIGURATION, CENTRON_420_DISPLAY_CONFIGURATION, RFN_VOLTAGE_CONFIG">
+        inherits="RFN_L3_CENTRON, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, RFN_CENTRON_420_KVAH_KVA, RFN_CONFIGURATION, CENTRON_420_DISPLAY_CONFIGURATION, RFN_VOLTAGE_CONFIG">
         <displayName>RFN-420cL</displayName>
     </pao>
     <pao id="RFN420CD" inherits="RFN420CL, RFN_DISCONNECT, RFN_DISCONNECT_CONFIG">
@@ -10411,8 +10411,8 @@
                 <unitofmeasure value="kVAr"/>
                 <decimalplaces value="3" />
             </point>
-            <point type="Analog" offset="270">
-                <name>Delivered Peak kVA</name>
+            <point type="Analog" offset="250">
+                <name>Peak kVA</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVA"/>
                 <decimalplaces value="3" />
@@ -14106,7 +14106,7 @@
         </attributes>
     </pao>
 
-    <pao id="RFN_CENTRON_420_KVAH" abstract="true">
+    <pao id="RFN_CENTRON_420_KVAH_KVA" abstract="true">
         <points>
             <point type="Analog" offset="150">
                 <name>kVAh Delivered</name>
@@ -14120,6 +14120,18 @@
                 <unitofmeasure value="kVah" />
                 <decimalplaces value="3" />
             </point>
+            <point type="Analog" offset="324">
+                <name>Delivered kVA</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVA"/>
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="250">
+                <name>Peak kVA</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVA" />
+                <decimalplaces value="3" />
+            </point>
         </points>
         <attributes>
             <attribute name="KVAH">
@@ -14127,6 +14139,12 @@
             </attribute>
             <attribute name="RECEIVED_KVAH">
                 <basicLookup point="kVAh Received" />
+            </attribute>
+            <attribute name="DELIVERED_KVA">
+                <basicLookup point="Delivered kVA"/>
+            </attribute>
+            <attribute name="PEAK_KVA">
+                <basicLookup point="Peak kVA" />
             </attribute>
         </attributes>
     </pao>

@@ -2981,7 +2981,7 @@
         </point>
     </pointGroup>
 
-    <!-- kVah delivered and kVak Received for RFN-C2sX -->
+    <!-- kVah Delivered and kVah Received; Delivered kVA and Peak kVa for RFN-C2sX -->
     <pointGroup>
         <!-- CENTRON -->
         <paoType value="RFN420CL" />
@@ -3003,6 +3003,25 @@
             <modifiers match="equal">
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+        <point name="Delivered kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Peak kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Max</modifier>
             </modifiers>
         </point>
     </pointGroup>
@@ -3604,7 +3623,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Peak kVA">
+        <point name="Peak kVA">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
