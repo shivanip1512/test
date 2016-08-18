@@ -11,6 +11,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.ObjectError;
 import org.springframework.validation.ValidationUtils;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -35,11 +36,20 @@ public class YukonValidationUtils extends ValidationUtils {
     /**
      * Check to ensure that the serial Number of an RFN device is a valid numeric value
      */
-    public static boolean isRfnSerialNumberValid(String serialNumber) {
-        if ((!StringUtils.isEmpty(serialNumber)) && (serialNumber.length() >= 30 || !StringUtils.isNumeric(serialNumber))) {
-            return false;
+    public static boolean isRfnSerialNumberValid(String serialNumber, PaoType paoType) {
+        
+        if (StringUtils.isEmpty(serialNumber)) {
+            return true;
         }
-        return true;
+        
+        if (serialNumber.length() <= 30) {
+            // Only electric meters and lcrs have serial numbers guaranteed to be numeric
+            if (!(paoType.isWaterMeter() || PaoType.getRfDaTypes().contains(paoType))) {
+                return StringUtils.isNumeric(serialNumber);
+            }
+            return true;
+        }
+        return false;
     }
 
     public static boolean checkExceedsMaxLength(Errors errors, String field, String fieldValue, int max) {

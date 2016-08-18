@@ -82,7 +82,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         
         int templateDeviceId = templateDevice.getPAObjectID();
         PaoType paoType = templateDevice.getPaoType();
-        if ((!YukonValidationUtils.isRfnSerialNumberValid(serialNumber))) {
+        if ((!YukonValidationUtils.isRfnSerialNumberValid(serialNumber, paoType))) {
             throw new DeviceCreationException("Device serial number must be numeric and serial number length must be less than 30",
                                               "maxLength");
         }
@@ -159,7 +159,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
                                               "invalidChars");
         }
 
-        if ((!YukonValidationUtils.isRfnSerialNumberValid(rfId.getSensorSerialNumber()))) {
+        if ((!YukonValidationUtils.isRfnSerialNumberValid(rfId.getSensorSerialNumber(), type))) {
             throw new DeviceCreationException("Device serial number must be numeric and serial number length must be less than 30",
                                               "maxLength");
 
