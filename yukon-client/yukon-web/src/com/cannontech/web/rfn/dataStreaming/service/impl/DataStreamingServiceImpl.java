@@ -245,7 +245,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         RfnIdentifier gatewayRfnIdentifier;
         RfnDevice device;
     }
-
+    
     @Override
     public List<DiscrepancyResult> findDiscrepancies() {
         List<DiscrepancyResult> results = new ArrayList<>();
@@ -262,9 +262,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             }
         }
         // deviceId, report
-        // (create getBehaviorReportsByType)
-        Map<Integer, BehaviorReport> deviceIdToReport =
-            deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, new ArrayList<>(deviceIdToConfig.keySet()));
+        Map<Integer, BehaviorReport> deviceIdToReport = deviceBehaviorDao.getBehaviorReportsByType(TYPE);
         
         Set<Integer> deviceIds = new HashSet<>();
         deviceIds.addAll(deviceIdToConfig.keySet());

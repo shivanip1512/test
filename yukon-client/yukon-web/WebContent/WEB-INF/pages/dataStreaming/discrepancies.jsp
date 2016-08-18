@@ -34,11 +34,13 @@
                     <td class="wrbw">${discrepancy.actual.commaDelimitedAttributesOnOff}</td>
                     <td class="wsnw">${discrepancy.expected.selectedInterval}
                         <c:choose>
+                            <c:when test="${discrepancy.expected.selectedInterval == 1}">
+                                <i:inline key=".minute"/>
+                            </c:when>
                             <c:when test="${discrepancy.expected.selectedInterval > 1}">
                                 <i:inline key=".minutes"/>
                             </c:when>
                             <c:otherwise>
-                                <i:inline key=".minute"/>
                             </c:otherwise>
                         </c:choose>
                     </td>

@@ -3,8 +3,10 @@ package com.cannontech.common.device.streaming.dao.impl;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -329,7 +331,8 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     }
 
     @Override
-    public Map<Integer, BehaviorReport> getBehaviorReportsByTypeAndDeviceIds(BehaviorType type, List<Integer> deviceIds) {
+    public Map<Integer, BehaviorReport> getBehaviorReportsByTypeAndDeviceIds(BehaviorType type,
+            List<Integer> deviceIds) {
         ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
             @Override
@@ -346,29 +349,48 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         List<BehaviorReport> reports = template.query(sqlGenerator, deviceIds, new YukonRowMapper<BehaviorReport>() {
             @Override
             public BehaviorReport mapRow(YukonResultSet rs) throws SQLException {
-                BehaviorReport report = new BehaviorReport();
-                report.setId(rs.getInt("BehaviorReportId"));
-                report.setType(rs.getEnum("BehaviorType", BehaviorType.class));
-                report.setDeviceId(rs.getInt("DeviceId"));
-                report.setStatus(rs.getEnum("BehaviorStatus", BehaviorReportStatus.class));
-                report.setTimestamp(rs.getInstant("TimeStamp"));
-                return report;
+                return getBehaviorReportFromResultSet(rs);
             }
         });
 
         Map<Integer, BehaviorReport> behaviorReports = Maps.uniqueIndex(reports, c -> c.getId());
-        Multimap<Integer, NameValue> values = getBehaviorReportValuesByBehaviorReportIds(behaviorReports.keySet());
-        for (Map.Entry<Integer, BehaviorReport> entry : behaviorReports.entrySet()) {
-            Collection<NameValue> nameValues = values.get(entry.getKey());
-            for (NameValue nameValue : nameValues) {
-                entry.getValue().addValue(nameValue.name, nameValue.value);
+        addBehaviorReportValuesToBehaviorReports(behaviorReports);
+        return Maps.uniqueIndex(behaviorReports.values(), c -> c.getDeviceId());
+    }
+
+    @Override
+    public Map<Integer, BehaviorReport> getBehaviorReportsByType(BehaviorType type) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT BehaviorReportId, DeviceId, BehaviorType, BehaviorStatus, TimeStamp");
+        sql.append("FROM BehaviorReport");
+        sql.append("WHERE BehaviorType").eq_k(type);
+
+        List<BehaviorReport> reports = new ArrayList<>();
+
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                reports.add(getBehaviorReportFromResultSet(rs));
             }
-        }
+        });
+
+        Map<Integer, BehaviorReport> behaviorReports = Maps.uniqueIndex(reports, c -> c.getId());
+        addBehaviorReportValuesToBehaviorReports(behaviorReports);
         return Maps.uniqueIndex(behaviorReports.values(), c -> c.getDeviceId());
     }
     
-    private Multimap<Integer, NameValue> getBehaviorReportValuesByBehaviorReportIds(
-            Iterable<Integer> behaviorReportIds) {
+    private BehaviorReport getBehaviorReportFromResultSet(YukonResultSet rs) throws SQLException {
+        BehaviorReport report = new BehaviorReport();
+        report.setId(rs.getInt("BehaviorReportId"));
+        report.setType(rs.getEnum("BehaviorType", BehaviorType.class));
+        report.setDeviceId(rs.getInt("DeviceId"));
+        report.setStatus(rs.getEnum("BehaviorStatus", BehaviorReportStatus.class));
+        report.setTimestamp(rs.getInstant("TimeStamp"));
+        return report;
+    }
+    
+    //populates reports with report values
+    private void addBehaviorReportValuesToBehaviorReports(Map<Integer, BehaviorReport> reports) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
@@ -382,9 +404,17 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             }
         };
 
-        Multimap<Integer, NameValue> retVal = template.multimappedQuery(sqlGenerator, behaviorReportIds,
+        Multimap<Integer, NameValue> values = template.multimappedQuery(sqlGenerator, reports.keySet(),
             rowMapperBehaviorReportIdToReportValues, Functions.identity());
-        return retVal;
+        for(Integer reportId: reports.keySet()){
+            BehaviorReport report = reports.get(reportId);
+            Collection<NameValue> reportValues =  values.get(reportId);
+            Iterator<NameValue> it = reportValues.iterator();
+            while(it.hasNext()){
+                NameValue value = it.next();
+                report.addValue(value.name, value.value);
+            }
+        }
     }
     
     @Override

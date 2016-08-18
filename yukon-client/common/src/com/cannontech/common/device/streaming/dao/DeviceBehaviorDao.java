@@ -87,4 +87,8 @@ public interface DeviceBehaviorDao {
      */
     Map<Integer, Integer> getDeviceIdsToBehaviorIdMap(BehaviorType type, List<BuiltInAttribute> attributes,
             Integer interval, Integer behaviorId);
+    /**
+     * Returns a map of device ids to behavior ids.
+     */
+    Map<Integer, BehaviorReport> getBehaviorReportsByType(BehaviorType type);
 }
