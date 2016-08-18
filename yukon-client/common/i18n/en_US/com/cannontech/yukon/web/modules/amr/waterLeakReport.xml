@@ -59,8 +59,8 @@
     <entry key="yukon.web.modules.amr.waterLeakReport.report.name">Name</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.dba">DBA Name</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.address">Address</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.phoneNumber">Phone</entry>
-    <entry key="yukon.web.modules.amr.waterLeakReport.report.emailAddress">Email</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.phoneNumber">Home Phone</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.dayPhoneNumber">Day Phone</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.serviceLocation">Service Location</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.custNumber">Customer Number</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.acctNumber">Account Number</entry>

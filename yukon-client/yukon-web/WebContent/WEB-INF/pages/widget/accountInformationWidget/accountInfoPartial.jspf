@@ -18,26 +18,12 @@
             <tags:nameValue2 nameKey=".dba">${fn:escapeXml(mspCustomer.DBAName)}</tags:nameValue2>
         </c:if>
         <tags:nameValue2 nameKey=".address"><tags:address address="${custAddress}" /></tags:nameValue2>
-        <c:choose>
-            <c:when test="${not empty mspPhoneNumbers}">
-                <c:forEach items="${mspPhoneNumbers}" var="phoneNumber">
-                    <tags:nameValue2 nameKey=".phoneNumber" >${fn:escapeXml(phoneNumber)}</tags:nameValue2>
-                </c:forEach>
-            </c:when>
-            <c:otherwise>
-                <tags:nameValue2 nameKey=".phoneNumber" ></tags:nameValue2>
-            </c:otherwise>
-        </c:choose>
-        <c:choose>
-            <c:when test="${not empty mspEmailAddresses}">
-                <c:forEach items="${mspEmailAddresses}" var="emailAddress">
-                    <tags:nameValue2 nameKey=".emailAddress">${fn:escapeXml(emailAddress)}</tags:nameValue2>
-                </c:forEach>
-            </c:when>
-            <c:otherwise>
-                <tags:nameValue2 nameKey=".emailAddress"></tags:nameValue2>
-            </c:otherwise>
-        </c:choose>
+        <c:if test="${not empty homePhone}">
+            <tags:nameValue2 nameKey=".phoneNumber" >${fn:escapeXml(homePhone)}</tags:nameValue2>
+        </c:if>
+        <c:if test="${not empty dayPhone}">
+            <tags:nameValue2 nameKey=".dayPhoneNumber" >${fn:escapeXml(dayPhone)}</tags:nameValue2>
+        </c:if>
     </tags:nameValueContainer2>
 </tags:sectionContainer>
 

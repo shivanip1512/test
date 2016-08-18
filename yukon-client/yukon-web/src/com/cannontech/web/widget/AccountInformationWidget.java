@@ -95,8 +95,9 @@ public class AccountInformationWidget extends WidgetControllerBase{
         Meter mspMeter = mspObjectDao.getMspMeter(meter, mspVendor);
         
         mav.addObject("mspCustomer", mspCustomer);
-        mav.addObject("mspPhoneNumbers", multispeakCustomerInfoService.getPhoneNumbers(mspCustomer, userContext));
-        mav.addObject("mspEmailAddresses", multispeakCustomerInfoService.getEmailAddresses(mspCustomer, userContext));
+
+        mav.addObject("homePhone", multispeakFuncs.formatPhone(mspCustomer.getHomeAc(), mspCustomer.getHomePhone()));
+        mav.addObject("dayPhone", multispeakFuncs.formatPhone(mspCustomer.getDayAc(), mspCustomer.getDayPhone()));
 
         mav.addObject("mspServLoc", mspServLoc);
         mav.addObject("mspMeter", mspMeter);
@@ -140,8 +141,8 @@ public class AccountInformationWidget extends WidgetControllerBase{
         add("First Name", mspCustomer.getFirstName(), false, infoList, userContext);
         add("Middle Name", mspCustomer.getMName(), true, infoList, userContext);
         add("DBA", mspCustomer.getDBAName(), false, infoList, userContext);
-        add("Home Phone", formatPhone(mspCustomer.getHomeAc(), mspCustomer.getHomePhone()), true, infoList, userContext);
-        add("Day Phone", formatPhone(mspCustomer.getDayAc(), mspCustomer.getDayPhone()), true, infoList, userContext);
+        add("Home Phone", multispeakFuncs.formatPhone(mspCustomer.getHomeAc(), mspCustomer.getHomePhone()), true, infoList, userContext);
+        add("Day Phone", multispeakFuncs.formatPhone(mspCustomer.getDayAc(), mspCustomer.getDayPhone()), true, infoList, userContext);
         add("Utility", mspCustomer.getUtility(), true, infoList, userContext);
         add("Comments", mspCustomer.getComments(), true, infoList, userContext);
         add("Error String", mspCustomer.getErrorString(), true, infoList, userContext);
@@ -149,7 +150,6 @@ public class AccountInformationWidget extends WidgetControllerBase{
     }
     
     private List<Info> getCustomerContactInfo(Customer mspCustomer, YukonUserContext userContext) {
-        
         
         List<String> phoneNumbers = multispeakCustomerInfoService.getPhoneNumbers(mspCustomer, userContext);
         boolean hasPhones = phoneNumbers.size() > 0;
@@ -365,17 +365,6 @@ public class AccountInformationWidget extends WidgetControllerBase{
         xyz += " Z=" + coordType.getZ();
         xyz += " Bulge=" + coordType.getBulge();
         return xyz;
-    }
-    
-    private String formatPhone(String areaCode, String phone) {
-        String formattedPhone = "";
-        if (!StringUtils.isBlank(areaCode)) {
-            formattedPhone += "(" + areaCode + ") ";
-        }
-        if (!StringUtils.isBlank(phone)) {
-            formattedPhone += phone;
-        }
-        return formattedPhone;
     }
     
     private void add(String label, Object value, Boolean hideIfBlank, List<Info> list, YukonUserContext userContext) {

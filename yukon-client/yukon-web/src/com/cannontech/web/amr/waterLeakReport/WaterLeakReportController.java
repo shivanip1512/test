@@ -76,7 +76,6 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
-import com.cannontech.multispeak.service.MultispeakCustomerInfoService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
@@ -129,7 +128,6 @@ public class WaterLeakReportController {
     @Autowired private PaoDao paoDao;
     @Autowired private WaterMeterLeakService leaksService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private MultispeakCustomerInfoService mspCustomerInfoService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private CronExpressionTagService cronExpressionTagService;
     @Autowired private ScheduledFileExportService scheduledFileExportService;
@@ -148,8 +146,8 @@ public class WaterLeakReportController {
         com.cannontech.msp.beans.v3.Customer mspCustomer;
         com.cannontech.msp.beans.v3.ServiceLocation mspServLoc;
         com.cannontech.msp.beans.v3.Meter mspMeter;
-        List<String> phoneNumbers;
-        List<String> emailAddresses;
+        String homePhone;
+        String dayPhone;
     }
 
     @PostConstruct
@@ -418,16 +416,15 @@ public class WaterLeakReportController {
                 mspMeterAccountInfo.mspCustomer = mspObjectDao.getMspCustomer(meter, mspVendor);
                 mspMeterAccountInfo.mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor);
                 mspMeterAccountInfo.mspMeter = mspObjectDao.getMspMeter(meter, mspVendor);
-                mspMeterAccountInfo.phoneNumbers =
-                    mspCustomerInfoService.getPhoneNumbers(mspMeterAccountInfo.mspCustomer, userContext);
-                mspMeterAccountInfo.emailAddresses =
-                    mspCustomerInfoService.getEmailAddresses(mspMeterAccountInfo.mspCustomer, userContext);
+                mspMeterAccountInfo.homePhone = 
+                    multispeakFuncs.formatPhone(mspMeterAccountInfo.mspCustomer.getHomeAc(), mspMeterAccountInfo.mspCustomer.getHomePhone());
+                mspMeterAccountInfo.dayPhone =
+                    multispeakFuncs.formatPhone(mspMeterAccountInfo.mspCustomer.getDayAc(), mspMeterAccountInfo.mspCustomer.getDayPhone());
                 mspMeterAccountInfoMap.put(paoId, mspMeterAccountInfo);
             }
         }
-
-        model.addAttribute("mspPhoneNumbers", mspMeterAccountInfo.phoneNumbers);
-        model.addAttribute("mspEmailAddresses", mspMeterAccountInfo.emailAddresses);
+        model.addAttribute("homePhone", mspMeterAccountInfo.homePhone);
+        model.addAttribute("dayPhone", mspMeterAccountInfo.dayPhone);
         model.addAttribute("mspCustomer", mspMeterAccountInfo.mspCustomer);
         model.addAttribute("mspServLoc", mspMeterAccountInfo.mspServLoc);
         model.addAttribute("mspMeter", mspMeterAccountInfo.mspMeter);
