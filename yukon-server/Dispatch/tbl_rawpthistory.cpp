@@ -72,7 +72,7 @@ std::string CtiTableRawPointHistory::getInsertSql(const DbClientType clientType,
 {
     const std::string oraclePrefix = "INSERT ALL";
     const std::string oracleInfix  = " INTO Temp_RPH VALUES(?,?,?,?,?)";
-    const std::string oracleSuffix = " SELECT 1 FROM DUAL;";
+    const std::string oracleSuffix = " SELECT 1 FROM DUAL";
 
     const std::string sqlPrefix = "INSERT INTO ##rph (pointid,timestamp,quality,value,millis) VALUES";
     const std::string sqlInfix = " (?,?,?,?,?)";  //  joined by commas
