@@ -40,6 +40,8 @@ class PointResponse
         void updateDelta(long nInAvg, double value);
         void updatePreOpValue(double preOpValue);
 
+        bool isDirty() const;
+        void setDirty( const bool flag );
 
         PointResponse& operator=(const PointResponse& right);
         bool operator != (const PointResponse& right) const;
@@ -52,7 +54,7 @@ class PointResponse
 
         long _busId;
 
-
+        bool _isDirty;
 };
 
 typedef  boost::shared_ptr<PointResponse> PointResponsePtr;

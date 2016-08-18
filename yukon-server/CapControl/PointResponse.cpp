@@ -3,22 +3,23 @@
 #include "PointResponse.h"
 #include "logger.h"
 #include "ccid.h"
+#include "ccutil.h"
 
-#include <math.h>
-
-using std::endl;
+#include <cmath>
 
 extern unsigned long _CC_DEBUG;
 
 namespace Cti {
 namespace CapControl {
 
-PointResponse::PointResponse(long pointId, long deviceId, double preOpValue, double delta, bool staticDelta, long busId) : _pointId(pointId),
-                                                                                                            _deviceId(deviceId),
-                                                                                                            _preOpValue(preOpValue),
-                                                                                                            _delta(delta),
-                                                                                                            _staticDelta(staticDelta),
-                                                                                                            _busId(busId)
+PointResponse::PointResponse(long pointId, long deviceId, double preOpValue, double delta, bool staticDelta, long busId)
+    :   _pointId( pointId ),
+        _deviceId( deviceId ),
+        _preOpValue( preOpValue ),
+        _delta( delta ),
+        _staticDelta( staticDelta ),
+        _busId( busId ),
+        _isDirty( false )
 {
 }
 
@@ -39,6 +40,7 @@ PointResponse& PointResponse::operator=(const PointResponse& right)
         _delta        = right._delta;
         _staticDelta  = right._staticDelta;
         _busId        = right._busId;
+        _isDirty      = right._isDirty;
     }
     return *this;
 }
@@ -78,7 +80,7 @@ double PointResponse::getDelta() const
 
 void PointResponse::setDelta(double delta)
 {
-    _delta = delta;
+    _isDirty |= setVariableIfDifferent( _delta, delta );
 }
 
 bool PointResponse::getStaticDelta() const
@@ -88,7 +90,7 @@ bool PointResponse::getStaticDelta() const
 
 void PointResponse::setStaticDelta(bool staticDelta)
 {
-    _staticDelta = staticDelta;
+    _isDirty |= setVariableIfDifferent( _staticDelta, staticDelta );
 }
 
 void PointResponse::updateDelta(long nInAvg, double value)
@@ -101,7 +103,7 @@ void PointResponse::updateDelta(long nInAvg, double value)
         }
 
         double new_nInAvg = nInAvg != 0 ? nInAvg:1;
-        double fabsy = fabs(_preOpValue - value);
+        double fabsy = std::fabs(_preOpValue - value);
         double delta = ((_delta*(new_nInAvg - 1.0 )) + fabsy) / new_nInAvg;
 
         if (_CC_DEBUG & (CC_DEBUG_MULTIVOLT | CC_DEBUG_IVVC))
@@ -109,13 +111,23 @@ void PointResponse::updateDelta(long nInAvg, double value)
             CTILOG_DEBUG(dout, "Point Delta: Device ID: " << _deviceId <<" Point ID: " << _pointId << " fabs: " << fabsy << " delta: " << delta);
         }
 
-        _delta = delta;
+        setDelta( delta );
     }
 }
 
 void PointResponse::updatePreOpValue(double preOpValue)
 {
-    _preOpValue = preOpValue;
+    _isDirty |= setVariableIfDifferent( _preOpValue, preOpValue );
+}
+
+bool PointResponse::isDirty() const
+{
+    return _isDirty;
+}
+
+void PointResponse::setDirty( const bool flag )
+{
+    _isDirty = flag;
 }
 
 
