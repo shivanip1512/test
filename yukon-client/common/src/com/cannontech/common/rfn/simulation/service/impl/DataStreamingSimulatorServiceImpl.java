@@ -252,14 +252,18 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         int numberOfDevices = devices.size();
         int numberOfDevicesPerGateway = numberOfDevices / gateways.size();
         final List<List<RfnIdentifier>> deviceSubLists = new ArrayList<>();
+        
         if (numberOfDevices > gateways.size()) {
             deviceSubLists.addAll(Lists.partition(devices, numberOfDevicesPerGateway));
         } else {
             devices.forEach(device -> deviceSubLists.add(Lists.newArrayList(device)));
         }
         
+        log.debug("Gateways size: " + gateways.size());
+        log.debug("Device sub list size: " + deviceSubLists.size());
+        
         Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways = new HashMap<>();
-        for (int i = 0; i < deviceSubLists.size(); i++) {
+        for (int i = 0; i < gateways.size() && i < deviceSubLists.size(); i++) {
             RfnGateway gateway = gateways.get(i);
             
             GatewayDataStreamingInfo info = new GatewayDataStreamingInfo();
@@ -278,7 +282,6 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
             
             affectedGateways.put(gateway.getRfnIdentifier(), info);
         }
-        
         
         DeviceDataStreamingConfigResponse response = new DeviceDataStreamingConfigResponse();
         response.setAffectedGateways(affectedGateways);
