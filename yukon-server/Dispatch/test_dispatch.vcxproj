@@ -360,6 +360,8 @@
     <ClCompile Include="ptconnect.cpp" />
     <ClCompile Include="signalmanager.cpp" />
     <ClCompile Include="tagmanager.cpp" />
+    <ClCompile Include="tbl_rawpthistory.cpp" />
+    <ClCompile Include="tbl_signal.cpp" />
     <ClCompile Include="test_main.cpp">
     </ClCompile>
     <ClCompile Include="test_mgr_ptclients.cpp">

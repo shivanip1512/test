@@ -65,6 +65,12 @@
     <ClCompile Include="id_vg.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="tbl_rawpthistory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="tbl_signal.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\con_mgr_vg.h">
