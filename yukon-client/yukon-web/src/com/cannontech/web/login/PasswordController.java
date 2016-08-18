@@ -10,8 +10,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import net.tanesha.recaptcha.ReCaptchaException;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -55,6 +53,8 @@ import com.cannontech.web.stars.service.PasswordResetService;
 import com.cannontech.web.util.TextView;
 import com.cannontech.web.util.YukonUserContextResolver;
 import com.google.common.collect.Maps;
+
+import net.tanesha.recaptcha.ReCaptchaException;
 
 @Controller
 public class PasswordController {
@@ -179,8 +179,19 @@ public class PasswordController {
         Login login = new Login();
         login.setUserId(user.getUserID());
         
+        PasswordPolicy pwp = passwordPolicyService.getPasswordPolicy(user);
+        String tempPW = "";
+        while (tempPW.length() < pwp.getMinPasswordLength() - 2) {
+            tempPW += "a";
+        }
+        tempPW += "A1!"; // covers lower, upper, number, and symbol while
+                         // meeting the minimum length incase the order we check
+                         // password policies changes
+        PasswordPolicyError pwpErr = passwordPolicyService.checkPasswordPolicy(tempPW, user);
+
+        model.addAttribute("minPasswordAgeNotMet", PasswordPolicyError.MIN_PASSWORD_AGE_NOT_MET.equals(pwpErr));
         model.addAttribute("login", login);
-        model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(user));
+        model.addAttribute("passwordPolicy", pwp);
         
         return "changePasswordPopup.jsp";
     }

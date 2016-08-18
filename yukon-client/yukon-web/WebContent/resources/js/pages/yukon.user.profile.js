@@ -31,10 +31,14 @@ yukon.userProfile = (function () {
     
     _submitChangePassword = function (ev) {
         
-        $('#change-password-popup form').ajaxSubmit({
+        $('#change-password-form').ajaxSubmit({
             success: function (result, status, xhr, $form) {
                 $('#change-password-popup').dialog('close');
                 window.location.reload();
+            },
+            error: function (xhr) {
+                var result = xhr.responseText;
+                $('#change-password-popup').html(result);
             }
         });
     },

@@ -6,6 +6,11 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:msgScope paths="changelogin">
+<div id="change-password-popup-alerts">
+    <c:if test="${ minPasswordAgeNotMet }">
+        <tags:alertBox key="yukon.web.modules.passwordPolicyError.MIN_PASSWORD_AGE_NOT_MET"/>
+    </c:if>
+</div>
 <div class="column-12-12">
     <div class="column one">
         <cti:url var="url" value="/login/authenticated/change-password"/>
@@ -14,15 +19,15 @@
             <form:hidden path="userId" cssClass="js-user-id"/>
             <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".oldPassword">
-                        <tags:input path="oldPassword" password="true" inputClass="js-old-password" autocomplete="off"/>
+                        <tags:input path="oldPassword" password="true" inputClass="js-old-password" autocomplete="off" disabled="${ minPasswordAgeNotMet }"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".newPassword">
-                        <tags:input path="password1" password="true" inputClass="js-new-password" autocomplete="off"/>
+                        <tags:input path="password1" password="true" inputClass="js-new-password" autocomplete="off" disabled="${ minPasswordAgeNotMet }"/>
                     </tags:nameValue2>
 
                     <tags:nameValue2 nameKey=".confirmPassword">
                         <tags:input path="password2" password="true" inputClass="js-confirm-password" autocomplete="off"
-                            placeholder="${placeholder}" />
+                            placeholder="${placeholder}" disabled="${ minPasswordAgeNotMet }"/>
                     </tags:nameValue2>
                     <tr>
                     <td></td>
