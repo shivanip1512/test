@@ -95,6 +95,9 @@ public class AccountInformationWidget extends WidgetControllerBase{
         Meter mspMeter = mspObjectDao.getMspMeter(meter, mspVendor);
         
         mav.addObject("mspCustomer", mspCustomer);
+        mav.addObject("mspPhoneNumbers", multispeakCustomerInfoService.getPhoneNumbers(mspCustomer, userContext));
+        mav.addObject("mspEmailAddresses", multispeakCustomerInfoService.getEmailAddresses(mspCustomer, userContext));
+
         mav.addObject("mspServLoc", mspServLoc);
         mav.addObject("mspMeter", mspMeter);
        
