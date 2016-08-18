@@ -1,7 +1,10 @@
 package com.cannontech.web.dev;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -59,7 +62,9 @@ public class PointMappingDecipherController {
         Set<String> baseUnitOfMeasureModifiers = Sets.newHashSet(dataToMatch.getBaseModifiers().split("\\s*,\\s*"));;
         Set<MatchedMapping> mappings = getDecipherMappings(dataToMatch.getUom(), unitOfMeasureModifiers,
             dataToMatch.getBaseUom(), baseUnitOfMeasureModifiers);
-        model.addAttribute("mappings", mappings);
+        List<MatchedMapping> sortedMappings = new ArrayList<MatchedMapping>(mappings);
+        Collections.sort(sortedMappings);
+        model.addAttribute("mappings", sortedMappings);
 
         return "rfn/pointMappingDecipher.jsp";
     }
@@ -159,7 +164,7 @@ public class PointMappingDecipherController {
         }
     }
 
-    public static class MatchedMapping {
+    public static class MatchedMapping implements Comparable<MatchedMapping>{
 
         private PaoType paoType;
         private String pointName;
@@ -228,6 +233,11 @@ public class PointMappingDecipherController {
             }
 
             return sb.toString();
+        }
+
+        @Override
+        public int compareTo(MatchedMapping o) {
+            return this.paoType.compareTo(o.getPaoType());
         }
     }
 
