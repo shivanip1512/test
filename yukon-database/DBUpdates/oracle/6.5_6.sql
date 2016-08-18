@@ -93,4 +93,4 @@ INSERT INTO DeviceTypeCommand VALUES (-1228, -198, 'RFN-530S4eRT', 6, 'Y', -1);
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.5', '27-JUN-2016', 'Latest Update', 6, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('6.5', '18-AUG-2016', 'Latest Update', 6, SYSDATE);
