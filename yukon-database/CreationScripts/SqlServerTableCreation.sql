@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/5/2016 3:59:54 PM                          */
+/* Created on:     8/18/2016 12:36:31 PM                        */
 /*==============================================================*/
 
 
@@ -1813,6 +1813,9 @@ INSERT INTO Command VALUES (-208, 'putconfig time enable', 'Enable Time Control'
 INSERT INTO Command VALUES (-209, 'putconfig time disable', 'Disable Time Control', 'Twoway CBCs');
 INSERT INTO Command VALUES (-210, 'putconfig ovuv enable', 'Enable OVUV', 'Twoway CBCs');
 INSERT INTO Command VALUES (-211, 'putconfig ovuv disable', 'Disable OVUV', 'Twoway CBCs');
+
+INSERT INTO Command VALUES (-212, 'getconfig model', 'Read Meter Config', 'All Two Way LCR');
+INSERT INTO Command VALUES (-213, 'ping', 'Ping', 'All Two Way LCR');
 
 /*==============================================================*/
 /* Table: CommandGroup                                          */
@@ -4625,6 +4628,9 @@ INSERT INTO DeviceTypeCommand VALUES (-1225, -195, 'RFN-530S4eRT', 3, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1226, -196, 'RFN-530S4eRT', 4, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1227, -197, 'RFN-530S4eRT', 5, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1228, -198, 'RFN-530S4eRT', 6, 'Y', -1);
+
+INSERT INTO DeviceTypeCommand VALUES (-1229, -212, 'LCR-3102', 16, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1230, -213, 'LCR-3102', 17, 'Y', -1);
 
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */

@@ -688,6 +688,14 @@ INSERT INTO DeviceTypeCommand VALUES (-1228, -198, 'RFN-530S4eRT', 6, 'Y', -1);
 /* @error ignore-end */
 /* End YUK-15502 */
 
+/* Start YUK-15671 */
+INSERT INTO Command VALUES (-212, 'getconfig model', 'Read Meter Config', 'All Two Way LCR');
+INSERT INTO Command VALUES (-213, 'ping', 'Ping', 'All Two Way LCR');
+
+INSERT INTO DeviceTypeCommand VALUES (-1229, -212, 'LCR-3102', 16, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1230, -213, 'LCR-3102', 17, 'Y', -1);
+/* End YUK-15671 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
