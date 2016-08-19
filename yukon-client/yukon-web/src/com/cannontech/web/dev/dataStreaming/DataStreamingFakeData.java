@@ -3,6 +3,7 @@ package com.cannontech.web.dev.dataStreaming;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
 import org.apache.log4j.Logger;
@@ -32,6 +33,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.yukon.IDatabaseCache;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 
 public class DataStreamingFakeData {
 
@@ -151,8 +153,8 @@ public class DataStreamingFakeData {
     }
 
     private String getResponseJson(int deviceId) {
-        BehaviorReport report = deviceBehaviorDao.findBehaviorReportByDeviceIdAndType(deviceId, BehaviorType.DATA_STREAMING);
-       
+        Map<Integer, BehaviorReport>  reports = deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(BehaviorType.DATA_STREAMING, Lists.newArrayList(deviceId));
+        BehaviorReport report = reports.get(deviceId);
         ReportedDataStreamingConfig config = new ReportedDataStreamingConfig();
         boolean streamingEnabled = new Boolean(report.getValuesMap().get(STREAMING_ENABLED_STRING));
         List<ReportedDataStreamingAttribute> reportedAttributes = new ArrayList<>();

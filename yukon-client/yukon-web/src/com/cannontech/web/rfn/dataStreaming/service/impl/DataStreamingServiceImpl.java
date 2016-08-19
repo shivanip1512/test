@@ -81,6 +81,7 @@ import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.conns.ConnPool;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -132,7 +133,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
     @Override
     public List<DataStreamingConfig> getAllDataStreamingConfigurations() {
-        List<Behavior> behaviors = deviceBehaviorDao.getBehaviorsByType(TYPE);
+        List<Behavior> behaviors = deviceBehaviorDao.getAllBehaviorsByType(TYPE);
         List<DataStreamingConfig> configs = new ArrayList<>();
         behaviors.forEach(behavior -> configs.add(convertBehaviorToConfig(behavior)));
         return configs;
@@ -141,11 +142,13 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Override
     public Map<DataStreamingConfig, DeviceCollection> getAllDataStreamingConfigurationsAndDevices() {
         Map<DataStreamingConfig, DeviceCollection> configToDeviceCollection = new HashMap<>();
-        List<DataStreamingConfig> configs = getAllDataStreamingConfigurations();
-        List<Integer> configIds = configs.stream().map(config -> config.getId()).collect(Collectors.toList());
-        Multimap<Integer, Integer> deviceIdsByBehaviorIds = deviceBehaviorDao.getBehaviorIdsToDevicesIdMap(configIds);
-        configs.forEach(config -> {
-            Collection<SimpleMeter> deviceIds = deviceIdsByBehaviorIds.get(config.getId()).stream().map(
+        Map<Integer, Behavior> deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByType(TYPE);
+        Multimap<DataStreamingConfig, Integer> configsToDeviceIds = HashMultimap.create();
+        for (Entry<Integer, Behavior> entry : deviceIdToBehavior.entrySet()) {
+            configsToDeviceIds.put(convertBehaviorToConfig(entry.getValue()), entry.getKey());
+        }
+        configsToDeviceIds.keySet().forEach(config -> {
+            Collection<SimpleMeter> deviceIds = configsToDeviceIds.get(config).stream().map(
                 id -> new SimpleMeter(serverDatabaseCache.getAllPaosMap().get(id).getPaoIdentifier(), "")).collect(
                     Collectors.toList());
             DeviceCollection collection = deviceGroupCollectionHelper.createDeviceGroupCollection(deviceIds.iterator(), "");
@@ -249,37 +252,29 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Override
     public List<DiscrepancyResult> findDiscrepancies() {
         List<DiscrepancyResult> results = new ArrayList<>();
-        // behaviorId, Behavior
-        Map<Integer, Behavior> behaviors = Maps.uniqueIndex(deviceBehaviorDao.getBehaviorsByType(TYPE), c -> c.getId());
-        Multimap<Integer, Integer> behaviorIdsToDevicesIdsMap =
-            deviceBehaviorDao.getBehaviorIdsToDevicesIdMap(behaviors.keySet());
+        
         // deviceId, config
-        Map<Integer, DataStreamingConfig> deviceIdToConfig = new HashMap<>();
-        for (int behaviorId : behaviorIdsToDevicesIdsMap.keySet()) {
-            DataStreamingConfig config = convertBehaviorToConfig(behaviors.get(behaviorId));
-            for (int deviceId : behaviorIdsToDevicesIdsMap.get(behaviorId)) {
-                deviceIdToConfig.put(deviceId, config);
-            }
-        }
+        Map<Integer, Behavior> deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByType(TYPE);
+
         // deviceId, report
         Map<Integer, BehaviorReport> deviceIdToReport = deviceBehaviorDao.getBehaviorReportsByType(TYPE);
-        
+
         Set<Integer> deviceIds = new HashSet<>();
-        deviceIds.addAll(deviceIdToConfig.keySet());
+        deviceIds.addAll(deviceIdToBehavior.keySet());
         deviceIds.addAll(deviceIdToReport.keySet());
-        
+
         for (int deviceId : deviceIds) {
             /*
              * Assume that each device assigned to a behavior has an entry in behavior report table.
              * There might be an entry in a behavior report table but device might not be assigned to behavior.
-             * Example: device was unassigned, there will be an entry only in behavior table.
-             *   
+             * Example: device was unassigned, there will be an entry only in behavior report table.
              * Pending entries should only show up after 24 hours.
              */
             BehaviorReport report = deviceIdToReport.get(deviceId);
+            Behavior behavior = deviceIdToBehavior.get(deviceId);
 
             // behavior
-            DataStreamingConfig expectedConfig = deviceIdToConfig.get(deviceId);
+            DataStreamingConfig expectedConfig = convertBehaviorToConfig(behavior);
             // behavior report
             DataStreamingConfig actualConfig = convertBehaviorToConfig(report);
 
@@ -506,23 +501,68 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         DataStreamingConfig config = convertBehaviorToConfig(behavior);
         return verifyConfiguration(config, deviceIds);
     }
-    
+     
+    @Override
+    public DataStreamingConfigResult resendAll(LiteYukonUser user) throws DataStreamingConfigException {
+        Map<Integer, Integer> deviceIdsToBehaviorIds =
+            deviceBehaviorDao.getDeviceIdsToBehaviorIdMap(TYPE, null, null, null);
+        return resend(new ArrayList<>(deviceIdsToBehaviorIds.keySet()), user);
+    }
+
+    @Override
+    public DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user)
+            throws DataStreamingConfigException {
+        Collection<SimpleMeter> meters = deviceIds.stream().map(
+            id -> new SimpleMeter(serverDatabaseCache.getAllPaosMap().get(id).getPaoIdentifier(), "")).collect(
+                Collectors.toList());
+        DeviceCollection deviceCollection =
+            deviceGroupCollectionHelper.createDeviceGroupCollection(meters.iterator(), "");
+        
+        if (isValidPorterConnection()) {
+            String correlationId = UUID.randomUUID().toString();
+
+            Map<Integer, Behavior> deviceIdToBehavior =
+                deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, deviceIds);
+            Multimap<DataStreamingConfig, Integer> configsToDeviceIds = HashMultimap.create();
+            for (Entry<Integer, Behavior> entry : deviceIdToBehavior.entrySet()) {
+                configsToDeviceIds.put(convertBehaviorToConfig(entry.getValue()), entry.getKey());
+            }
+            for (DataStreamingConfig config : configsToDeviceIds.keys()) {
+                sendNmConfiguration(config, Lists.newArrayList(configsToDeviceIds.get(config)), correlationId);
+            }
+            Map<Integer, BehaviorReport> reports =
+                deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, deviceIds);
+            deviceIds.forEach(id -> {
+                BehaviorReport report = reports.get(id);
+                if (report == null) {
+                    // shouldn't happen
+                    report = buildPendingReport(id);
+                } else {
+                    report.setStatus(BehaviorReportStatus.PENDING);
+                    report.setTimestamp(new Instant());
+                }
+                deviceBehaviorDao.saveBehaviorReport(report);
+            });
+            return sendConfiguration(user, deviceCollection, correlationId);
+        } else {
+            return createEmptyConnectionResult(deviceCollection, "Porter connection is invalid.");
+        }
+    }
+
     @Override
     public DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection, LiteYukonUser user)
             throws DataStreamingConfigException {
 
-        List<Integer> deviceIds =
-            getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
-        String correlationId = UUID.randomUUID().toString();
-
-        try {
-            sendNmConfigurationRemove(deviceIds, correlationId);
-        } catch (DataStreamingConfigException e) {
-            return createEmptyConnectionResult(deviceCollection, e.getMessage());
-        }
         if (isValidPorterConnection()) {
+            List<Integer> deviceIds =
+                getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
+            String correlationId = UUID.randomUUID().toString();
+
+            sendNmConfigurationRemove(deviceIds, correlationId);
+            Map<Integer, BehaviorReport> reports =
+                deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, deviceIds);
             deviceIds.forEach(id -> {
-                BehaviorReport report = deviceBehaviorDao.findBehaviorReportByDeviceIdAndType(id, TYPE);
+                BehaviorReport report = reports.get(id);
                 if (report == null) {
                     report = buildPendingReport(id);
                 } else {
@@ -542,17 +582,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Override
     public DataStreamingConfigResult assignDataStreamingConfig(DataStreamingConfig config,
             DeviceCollection deviceCollection, LiteYukonUser user) throws DataStreamingConfigException {
-
-        List<Integer> deviceIds =
-            getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
-        String correlationId = UUID.randomUUID().toString();
-        try {
-            sendNmConfiguration(config, deviceIds, correlationId);
-        } catch (DataStreamingConfigException e) {
-            return createEmptyConnectionResult(deviceCollection, e.getMessage());
-        }
-
+        
         if (isValidPorterConnection()) {
+            List<Integer> deviceIds =
+                getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
+            String correlationId = UUID.randomUUID().toString();
+        
+            sendNmConfiguration(config, deviceIds, correlationId);
+         
             if (!deviceIds.isEmpty()) {
                 deviceBehaviorDao.assignBehavior(config.getId(), TYPE, deviceIds);
                 deviceIds.forEach(id -> {

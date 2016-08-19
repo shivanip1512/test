@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
@@ -48,15 +49,6 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private NextValueHelper nextValueHelper;
     private final static Logger log = YukonLogManager.getLogger(DeviceBehaviorDaoImpl.class);
-    private final static RowMapper<Map.Entry<Integer, Integer>> rowMapperBehaviorIdToDeviceId =
-        new RowMapper<Entry<Integer, Integer>>() {
-            @Override
-            public Entry<Integer, Integer> mapRow(ResultSet rs, int rowNum) throws SQLException {
-                Integer behaviorId = rs.getInt("behaviorId");
-                Integer deviceId = rs.getInt("deviceId");
-                return Maps.immutableEntry(behaviorId, deviceId);
-            }
-        };
     private final static RowMapper<Map.Entry<Integer, NameValue>> rowMapperBehaviorReportIdToReportValues =
         new RowMapper<Entry<Integer, NameValue>>() {
             @Override
@@ -67,26 +59,16 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
                 return Maps.immutableEntry(behaviorReportId, new NameValue(name, value));
             }
         };
-
-    @Override
-    public Multimap<Integer, Integer> getBehaviorIdsToDevicesIdMap(Iterable<Integer> behaviorIds) {
-        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
-
-        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+    private final static RowMapper<Map.Entry<Integer, NameValue>> rowMapperBehaviorIdToBehaviorValues =
+        new RowMapper<Entry<Integer, NameValue>>() {
             @Override
-            public SqlFragmentSource generate(List<Integer> subList) {
-                SqlStatementBuilder sql = new SqlStatementBuilder();
-                sql.append("SELECT behaviorId, deviceId");
-                sql.append("FROM DeviceBehaviorMap");
-                sql.append("WHERE behaviorId").in(subList);
-                return sql;
+            public Entry<Integer, NameValue> mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Integer behaviorId = rs.getInt("BehaviorId");
+                String name = rs.getString("Name");
+                String value = rs.getString("Value");
+                return Maps.immutableEntry(behaviorId, new NameValue(name, value));
             }
         };
-
-        Multimap<Integer, Integer> retVal =
-            template.multimappedQuery(sqlGenerator, behaviorIds, rowMapperBehaviorIdToDeviceId, Functions.identity());
-        return retVal;
-    }
 
     @Override
     public Map<Integer, Integer> getDeviceIdsToBehaviorIdMap(BehaviorType type, List<BuiltInAttribute> attributes,
@@ -190,23 +172,24 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     }
     
     @Override
-    public List<Behavior> getBehaviorsByType(BehaviorType type) {
+    public List<Behavior> getAllBehaviorsByType(BehaviorType type) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT BehaviorId");
         sql.append("FROM Behavior");
         sql.append("WHERE BehaviorType").eq_k(type);
 
-        return jdbcTemplate.query(sql, new YukonRowMapper<Behavior>() {
+        List<Behavior> behaviors = jdbcTemplate.query(sql, new YukonRowMapper<Behavior>() {
             @Override
             public Behavior mapRow(YukonResultSet rs) throws SQLException {
                 Behavior behavior = new Behavior();
                 behavior.setId(rs.getInt("BehaviorId"));
                 behavior.setType(type);
-                Map<String, String> values = getBehaviorValuesByBehaviorId(behavior.getId());
-                behavior.setValues(values);
                 return behavior;
             }
         });
+
+        addBehaviorValuesToBehaviors(behaviors);
+        return behaviors;
     }
     
     @Override
@@ -325,9 +308,87 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     }
     
     @Override
-    public BehaviorReport findBehaviorReportByDeviceIdAndType(int deviceId, BehaviorType type) {
-        Map<Integer, BehaviorReport> reports = getBehaviorReportsByTypeAndDeviceIds(type, Lists.newArrayList(deviceId));
-        return reports.get(deviceId);
+    public Map<Integer, Behavior> getBehaviorsByType(BehaviorType type) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT Behavior.BehaviorId, BehaviorType, DeviceId");
+        sql.append("FROM Behavior");
+        sql.append("JOIN DeviceBehaviorMap ON DeviceBehaviorMap.BehaviorId = Behavior.BehaviorId");
+        sql.append("WHERE BehaviorType").eq_k(type);
+        
+        Map<Integer, Behavior> behaviors = new HashMap<>();
+        jdbcTemplate.query(sql,  new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                Behavior report = new Behavior();
+                report.setId(rs.getInt("BehaviorId"));
+                report.setType(rs.getEnum("BehaviorType", BehaviorType.class));
+                int deviceId = rs.getInt("deviceId");
+                behaviors.put(deviceId, report);
+            }
+        });
+
+       addBehaviorValuesToBehaviors(behaviors.values().stream().distinct().collect(Collectors.toList()));
+       return behaviors;
+    }
+    
+    @Override
+    public Map<Integer, Behavior> getBehaviorsByTypeAndDeviceIds(BehaviorType type,
+            List<Integer> deviceIds) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT Behavior.BehaviorId, BehaviorType, DeviceId");
+                sql.append("FROM Behavior");
+                sql.append("JOIN DeviceBehaviorMap ON DeviceBehaviorMap.BehaviorId = Behavior.BehaviorId");
+                sql.append("WHERE BehaviorType").eq_k(type);
+                sql.append("AND DeviceId").in(subList);
+                return sql;
+            }
+        };
+
+        Map<Integer, Behavior> behaviors = new HashMap<>();
+        template.query(sqlGenerator,deviceIds, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                Behavior report = new Behavior();
+                report.setId(rs.getInt("BehaviorId"));
+                report.setType(rs.getEnum("BehaviorType", BehaviorType.class));
+                int deviceId = rs.getInt("deviceId");
+                behaviors.put(deviceId, report);
+            }
+        });
+
+       addBehaviorValuesToBehaviors(behaviors.values().stream().distinct().collect(Collectors.toList()));
+       return behaviors;
+    }
+  
+    private void addBehaviorValuesToBehaviors(List<Behavior> behaviors) {
+        ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
+
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT BehaviorId, Name, Value");
+                sql.append("FROM BehaviorValue");
+                sql.append("WHERE BehaviorId").in(subList);
+                return sql;
+            }
+        };
+
+        Multimap<Integer, NameValue> values = template.multimappedQuery(sqlGenerator,
+            behaviors.stream().map(behavior -> behavior.getId()).collect(Collectors.toList()),
+            rowMapperBehaviorIdToBehaviorValues, Functions.identity());
+        for(Behavior behavior: behaviors){
+            Collection<NameValue> reportValues =  values.get(behavior.getId());
+            Iterator<NameValue> it = reportValues.iterator();
+            while(it.hasNext()){
+                NameValue value = it.next();
+                behavior.addValue(value.name, value.value);
+            }
+        }
     }
 
     @Override
@@ -353,9 +414,8 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             }
         });
 
-        Map<Integer, BehaviorReport> behaviorReports = Maps.uniqueIndex(reports, c -> c.getId());
-        addBehaviorReportValuesToBehaviorReports(behaviorReports);
-        return Maps.uniqueIndex(behaviorReports.values(), c -> c.getDeviceId());
+        addBehaviorReportValuesToBehaviorReports(reports);
+        return Maps.uniqueIndex(reports, c -> c.getDeviceId());
     }
 
     @Override
@@ -374,9 +434,8 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             }
         });
 
-        Map<Integer, BehaviorReport> behaviorReports = Maps.uniqueIndex(reports, c -> c.getId());
-        addBehaviorReportValuesToBehaviorReports(behaviorReports);
-        return Maps.uniqueIndex(behaviorReports.values(), c -> c.getDeviceId());
+        addBehaviorReportValuesToBehaviorReports(reports);
+        return Maps.uniqueIndex(reports, c -> c.getDeviceId());
     }
     
     private BehaviorReport getBehaviorReportFromResultSet(YukonResultSet rs) throws SQLException {
@@ -390,7 +449,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     }
     
     //populates reports with report values
-    private void addBehaviorReportValuesToBehaviorReports(Map<Integer, BehaviorReport> reports) {
+    private void addBehaviorReportValuesToBehaviorReports(List<BehaviorReport> reports) {
         ChunkingMappedSqlTemplate template = new ChunkingMappedSqlTemplate(jdbcTemplate);
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
@@ -404,13 +463,13 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             }
         };
 
-        Multimap<Integer, NameValue> values = template.multimappedQuery(sqlGenerator, reports.keySet(),
+        Multimap<Integer, NameValue> values = template.multimappedQuery(sqlGenerator,
+            reports.stream().map(report -> report.getId()).collect(Collectors.toList()),
             rowMapperBehaviorReportIdToReportValues, Functions.identity());
-        for(Integer reportId: reports.keySet()){
-            BehaviorReport report = reports.get(reportId);
-            Collection<NameValue> reportValues =  values.get(reportId);
+        for (BehaviorReport report : reports) {
+            Collection<NameValue> reportValues = values.get(report.getId());
             Iterator<NameValue> it = reportValues.iterator();
-            while(it.hasNext()){
+            while (it.hasNext()) {
                 NameValue value = it.next();
                 report.addValue(value.name, value.value);
             }

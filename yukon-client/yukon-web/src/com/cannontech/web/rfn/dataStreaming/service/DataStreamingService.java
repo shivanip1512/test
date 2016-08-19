@@ -68,9 +68,26 @@ public interface DataStreamingService {
     
     /**
      * Gets the result of a configuration operation.
-     * @param resultId The id of the operation.
+     * @param result of the operation.
      */
     DataStreamingConfigResult findDataStreamingResult(String resultId);
+    
+    /**
+     * Resends config
+     * 
+     * @param deviceIds - to re-send config to
+     * @throws DataStreamingConfigException if there is a communication error requesting information from Network
+     *         Manager.
+     */
+    DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException;
+
+    /**
+     * Resends config to all devices
+     * 
+     * @throws DataStreamingConfigException if there is a communication error requesting information from Network
+     *         Manager.
+     */
+    DataStreamingConfigResult resendAll(LiteYukonUser user) throws DataStreamingConfigException;
 
     /**
      * Returns map of configurations to device collection that contains all assigned devices.
@@ -93,5 +110,4 @@ public interface DataStreamingService {
      *         Manager.
      */
     List<DiscrepancyResult> findDiscrepancies();
-
 }
