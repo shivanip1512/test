@@ -134,8 +134,8 @@ public class DefaultGatewaySimulatorData {
         }
         response.setSequences(sequences);
         
-        response.setCurrentGatewayDataStreamingLoading(currentDataStreamingLoading);
-        response.setMaxGatewayDataStreamingCapacity(maxDataStreamingLoading);
+        response.setCurrentDataStreamingLoading(currentDataStreamingLoading);
+        response.setMaxDataStreamingCapacity(maxDataStreamingLoading);
         
         return response;
     }

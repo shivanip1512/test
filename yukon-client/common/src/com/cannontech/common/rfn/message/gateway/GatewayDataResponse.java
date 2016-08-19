@@ -43,8 +43,8 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     private Authentication updateServerLogin;
     
     //Data Streaming Information
-    private double maxGatewayDataStreamingCapacity;
-    private double currentGatewayDataStreamingLoading;
+    private double maxDataStreamingCapacity;
+    private double currentDataStreamingLoading;
 
     @Override
     public RfnIdentifier getRfnIdentifier() {
@@ -223,20 +223,20 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         this.updateServerLogin = updateServerLogin;
     }
     
-    public double getMaxGatewayDataStreamingCapacity() {
-        return maxGatewayDataStreamingCapacity;
+    public double getMaxDataStreamingCapacity() {
+        return maxDataStreamingCapacity;
     }
 
-    public void setMaxGatewayDataStreamingCapacity(double maxGatewayDataStreamingCapacity) {
-        this.maxGatewayDataStreamingCapacity = maxGatewayDataStreamingCapacity;
+    public void setMaxDataStreamingCapacity(double maxDataStreamingCapacity) {
+        this.maxDataStreamingCapacity = maxDataStreamingCapacity;
     }
 
-    public double getCurrentGatewayDataStreamingLoading() {
-        return currentGatewayDataStreamingLoading;
+    public double getCurrentDataStreamingLoading() {
+        return currentDataStreamingLoading;
     }
 
-    public void setCurrentGatewayDataStreamingLoading(double currentGatewayDataStreamingLoading) {
-        this.currentGatewayDataStreamingLoading = currentGatewayDataStreamingLoading;
+    public void setCurrentDataStreamingLoading(double currentDataStreamingLoading) {
+        this.currentDataStreamingLoading = currentDataStreamingLoading;
     }
 
     @Override
@@ -248,13 +248,13 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + ((connectionStatus == null) ? 0 : connectionStatus.hashCode());
         result = prime * result + ((connectionType == null) ? 0 : connectionType.hashCode());
         long temp;
-        temp = Double.doubleToLongBits(currentGatewayDataStreamingLoading);
+        temp = Double.doubleToLongBits(currentDataStreamingLoading);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((hardwareVersion == null) ? 0 : hardwareVersion.hashCode());
         result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
         result = prime * result + ((lastCommStatus == null) ? 0 : lastCommStatus.hashCode());
         result = prime * result + (int) (lastCommStatusTimestamp ^ (lastCommStatusTimestamp >>> 32));
-        temp = Double.doubleToLongBits(maxGatewayDataStreamingCapacity);
+        temp = Double.doubleToLongBits(maxDataStreamingCapacity);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((mode == null) ? 0 : mode.hashCode());
         result = prime * result + ((port == null) ? 0 : port.hashCode());
@@ -305,8 +305,8 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         if (connectionType != other.connectionType) {
             return false;
         }
-        if (Double.doubleToLongBits(currentGatewayDataStreamingLoading) != Double
-            .doubleToLongBits(other.currentGatewayDataStreamingLoading)) {
+        if (Double.doubleToLongBits(currentDataStreamingLoading) != Double
+            .doubleToLongBits(other.currentDataStreamingLoading)) {
             return false;
         }
         if (hardwareVersion == null) {
@@ -329,8 +329,8 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         if (lastCommStatusTimestamp != other.lastCommStatusTimestamp) {
             return false;
         }
-        if (Double.doubleToLongBits(maxGatewayDataStreamingCapacity) != Double
-            .doubleToLongBits(other.maxGatewayDataStreamingCapacity)) {
+        if (Double.doubleToLongBits(maxDataStreamingCapacity) != Double
+            .doubleToLongBits(other.maxDataStreamingCapacity)) {
             return false;
         }
         if (mode != other.mode) {
@@ -437,8 +437,8 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
                + ", routeColor=" + routeColor + ", superAdmin=" + superAdmin + ", admin=" + admin
                + ", collectionSchedule=" + collectionSchedule + ", sequences=" + sequences + ", updateServerUrl="
                + updateServerUrl + ", updateServerLogin=" + updateServerLogin + ", maxGatewayDataStreamingCapacity="
-               + maxGatewayDataStreamingCapacity + ", currentGatewayDataStreamingLoading="
-               + currentGatewayDataStreamingLoading + "]";
+               + maxDataStreamingCapacity + ", currentGatewayDataStreamingLoading="
+               + currentDataStreamingLoading + "]";
     }
     
 }

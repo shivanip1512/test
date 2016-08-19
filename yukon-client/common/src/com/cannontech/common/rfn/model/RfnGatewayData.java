@@ -67,8 +67,8 @@ public final class RfnGatewayData {
         routeColor = dataResponse.getRouteColor();
         updateServerUrl = dataResponse.getUpdateServerUrl(); 
         updateServerLogin = dataResponse.getUpdateServerLogin();
-        currentDataStreamingLoading = dataResponse.getCurrentGatewayDataStreamingLoading();
-        maxDataStreamingLoading = dataResponse.getMaxGatewayDataStreamingCapacity();
+        currentDataStreamingLoading = dataResponse.getCurrentDataStreamingLoading();
+        maxDataStreamingLoading = dataResponse.getMaxDataStreamingCapacity();
     }
     
     /** Private constructor for builder */
