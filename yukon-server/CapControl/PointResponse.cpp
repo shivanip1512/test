@@ -23,40 +23,15 @@ PointResponse::PointResponse(long pointId, long deviceId, double preOpValue, dou
 {
 }
 
-
-PointResponse::PointResponse(const PointResponse& pr)
-{
-   operator=(pr);
-}
-
-
-PointResponse& PointResponse::operator=(const PointResponse& right)
-{
-    if (this != &right)
-    {
-        _pointId      = right._pointId;
-        _deviceId     = right._deviceId;
-        _preOpValue   = right._preOpValue;
-        _delta        = right._delta;
-        _staticDelta  = right._staticDelta;
-        _busId        = right._busId;
-        _isDirty      = right._isDirty;
-    }
-    return *this;
-}
-
-
 bool PointResponse::operator != (const PointResponse& right) const
 {
     return ( _pointId != right._pointId || _deviceId != right._deviceId);
 }
 
-
 long PointResponse::getPointId() const
 {
     return _pointId;
 }
-
 
 long PointResponse::getDeviceId() const
 {
@@ -129,7 +104,6 @@ void PointResponse::setDirty( const bool flag )
 {
     _isDirty = flag;
 }
-
 
 }
 }

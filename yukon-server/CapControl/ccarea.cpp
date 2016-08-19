@@ -3,6 +3,7 @@
 #include "ccarea.h"
 #include "ccid.h"
 #include "database_util.h"
+#include "row_reader.h"
 #include "ccsubstationbusstore.h"
 #include "ExecutorFactory.h"
 

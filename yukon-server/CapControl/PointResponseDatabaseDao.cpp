@@ -1,13 +1,12 @@
 #include "precompiled.h"
 
 #include "PointResponseDatabaseDao.h"
-#include "PointResponse.h"
 #include "database_util.h"
+#include "database_reader.h"
 
 #include "ccid.h"
 
 extern unsigned long _CC_DEBUG;
-extern double _IVVC_DEFAULT_DELTA;
 
 using std::vector;
 using std::string;
@@ -94,42 +93,6 @@ vector<PointResponse> PointResponseDatabaseDao::getPointResponsesBySubBusId(int 
     return pointResponses;
 }
 
-vector<PointResponse> PointResponseDatabaseDao::getPointResponsesByDeviceId(int deviceId)
-{
-    DatabaseConnection databaseConnection;
-    static const string sql = _selectSqlForBanksBySubBus + " AND DMPR.DeviceID = ? " + " UNION " + 
-                              _selectSqlForRegulatorsBySubBus + " AND DMPR.DeviceID = ? " + " UNION " + 
-                              _selectSqlForAdditionalBySubBus + " AND DMPR.DeviceID = ? ";
-
-    vector<PointResponse> pointResponses;
-
-    DatabaseReader dbReader(databaseConnection,sql);
-
-    dbReader << deviceId << deviceId << deviceId;
-
-    performDatabaseOperation(dbReader,pointResponses);
-
-    return pointResponses;
-}
-
-vector<PointResponse> PointResponseDatabaseDao::getPointResponsesByPointId(int pointId)
-{
-    DatabaseConnection databaseConnection;
-    static const string sql = _selectSqlForBanksBySubBus + " AND DMPR.PointID = ? " + " UNION " + 
-                              _selectSqlForRegulatorsBySubBus + " AND DMPR.PointID = ? " + " UNION " + 
-                              _selectSqlForAdditionalBySubBus + " AND DMPR.PointID = ? ";
-
-    vector<PointResponse> pointResponses;
-
-    DatabaseReader dbReader(databaseConnection,sql);
-
-    dbReader << pointId << pointId << pointId;
-
-    performDatabaseOperation(dbReader,pointResponses);
-
-    return pointResponses;
-}
-
 vector<PointResponse> PointResponseDatabaseDao::getAllPointResponses()
 {
     DatabaseConnection databaseConnection;
@@ -141,12 +104,6 @@ vector<PointResponse> PointResponseDatabaseDao::getAllPointResponses()
     performDatabaseOperation(dbReader,pointResponses);
 
     return pointResponses;
-}
-
-bool PointResponseDatabaseDao::update(PointResponse pointResponse)
-{
-    DatabaseConnection databaseConnection;
-    return update(databaseConnection,pointResponse);
 }
 
 bool PointResponseDatabaseDao::update(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse)
@@ -178,12 +135,6 @@ bool PointResponseDatabaseDao::update(Cti::Database::DatabaseConnection& databas
     return executeUpdater( dbUpdater, __FILE__, __LINE__, logDebug, LogNoRowsAffected::Disable );
 }
 
-bool PointResponseDatabaseDao::insert(PointResponse pointResponse)
-{
-    DatabaseConnection databaseConnection;
-    return insert(databaseConnection,pointResponse);
-}
-
 bool PointResponseDatabaseDao::insert(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse)
 {
     static const string sql = "INSERT INTO dynamicccmonitorpointresponse values(?, ?, ?, ?, ?)";
@@ -204,12 +155,6 @@ bool PointResponseDatabaseDao::insert(Cti::Database::DatabaseConnection& databas
                << tempString;
 
     return executeCommand( dbInserter, __FILE__, __LINE__, LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) );
-}
-
-bool PointResponseDatabaseDao::save(PointResponse pointResponse)
-{
-    DatabaseConnection databaseConnection;
-    return save(databaseConnection,pointResponse);
 }
 
 bool PointResponseDatabaseDao::save(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse)

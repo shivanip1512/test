@@ -11,50 +11,48 @@ struct PointResponseKey
     PointResponseKey(long dId,long pId) : deviceId(dId), pointId(pId) {}
     bool operator<(const PointResponseKey &rhs) const
     {
-        if( deviceId < rhs.deviceId || (deviceId == rhs.deviceId && pointId < rhs.pointId) )
-        {
-            return true;
-        }
-        else
-            return false;
+        return ( deviceId < rhs.deviceId || (deviceId == rhs.deviceId && pointId < rhs.pointId) );
     }
 };
 
 class PointResponse
 {
-    public:
-        PointResponse(long pointId, long deviceId, double preOpValue, double delta, bool staticDelta, long busId);
-        PointResponse(const PointResponse& pr);
+public:
 
-        long getPointId() const;
-        long getDeviceId() const;
-        double getPreOpValue() const;
-        long getSubBusId() const;
+    PointResponse(long pointId, long deviceId, double preOpValue, double delta, bool staticDelta, long busId);
+    PointResponse(const PointResponse& pr) = default;
 
-        bool getStaticDelta() const;
-        void setStaticDelta(bool staticDelta);
+    long getPointId() const;
+    long getDeviceId() const;
+    double getPreOpValue() const;
+    long getSubBusId() const;
 
-        double getDelta() const;
-        void setDelta(double delta);
+    bool getStaticDelta() const;
+    void setStaticDelta(bool staticDelta);
 
-        void updateDelta(long nInAvg, double value);
-        void updatePreOpValue(double preOpValue);
+    double getDelta() const;
+    void setDelta(double delta);
 
-        bool isDirty() const;
-        void setDirty( const bool flag );
+    void updateDelta(long nInAvg, double value);
+    void updatePreOpValue(double preOpValue);
 
-        PointResponse& operator=(const PointResponse& right);
-        bool operator != (const PointResponse& right) const;
-    private:
-        long _pointId;
-        long _deviceId;
-        double _preOpValue;
-        double _delta;
-        bool _staticDelta;
+    bool isDirty() const;
+    void setDirty( const bool flag );
 
-        long _busId;
+    PointResponse& operator=(const PointResponse& right) = default;
+    bool operator != (const PointResponse& right) const;
 
-        bool _isDirty;
+private:
+
+    long _pointId;
+    long _deviceId;
+    double _preOpValue;
+    double _delta;
+    bool _staticDelta;
+
+    long _busId;
+
+    bool _isDirty;
 };
 
 typedef  boost::shared_ptr<PointResponse> PointResponsePtr;

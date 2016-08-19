@@ -3,6 +3,7 @@
 #include "ccsubstation.h"
 #include "ccid.h"
 #include "database_util.h"
+#include "row_reader.h"
 #include "ccsubstationbusstore.h"
 #include "MsgVerifyBanks.h"
 #include "ExecutorFactory.h"

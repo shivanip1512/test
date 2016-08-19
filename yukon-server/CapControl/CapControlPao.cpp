@@ -7,6 +7,7 @@
 #include "msg_pdata.h"
 #include "ExecutorFactory.h"
 #include "std_helper.h"
+#include "row_reader.h"
 
 using Cti::CapControl::PointIdVector;
 using Cti::CapControl::deserializeFlag;

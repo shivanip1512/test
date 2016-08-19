@@ -2096,18 +2096,9 @@ void CtiCCCapBank::dumpDynamicPointResponseData(Cti::Database::DatabaseConnectio
 
 void CtiCCCapBank::dumpDynamicPointResponseData()
 {
-    //Building Dao manually here because this updating should be handled in the store anyways.
-    PointResponseDaoPtr pointResponseDao = DatabaseDaoFactory().getPointResponseDao();
+    Cti::Database::DatabaseConnection   connection;
 
-    for each (PointResponse pointResponse in getPointResponses())
-    {
-        bool ret = pointResponseDao->save(pointResponse);
-
-        if( (ret == false) && (_CC_DEBUG & CC_DEBUG_DATABASE) )
-        {
-            CTILOG_DEBUG(dout, "Point Response save failed. ");
-        }
-    }
+    dumpDynamicPointResponseData( connection );
 }
 
 
