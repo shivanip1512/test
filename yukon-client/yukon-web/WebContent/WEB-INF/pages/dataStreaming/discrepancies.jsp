@@ -44,13 +44,17 @@
                             </c:otherwise>
                         </c:choose>
                     </td>
-                    <td class="wsnw">${discrepancy.actual.selectedInterval}
+                    <td class="wsnw"><c:if test="${discrepancy.actual.selectedInterval > 0}">${discrepancy.actual.selectedInterval}</c:if>
                         <c:choose>
-                            <c:when test="${discrepancy.actual.selectedInterval > 1}">
-                                <i:inline key=".minutes"/>
+                            <c:when
+                                test="${discrepancy.actual.selectedInterval == 1}">
+                                <i:inline key=".minute" />
+                            </c:when>
+                            <c:when
+                                test="${discrepancy.actual.selectedInterval > 1}">
+                                <i:inline key=".minutes" />
                             </c:when>
                             <c:otherwise>
-                                <i:inline key=".minute"/>
                             </c:otherwise>
                         </c:choose>
                     </td>

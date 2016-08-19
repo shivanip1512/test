@@ -55,6 +55,9 @@ public interface DataStreamingService {
      * rejects the configuration request.
      */
     DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection, LiteYukonUser user) throws DataStreamingConfigException;
+    
+    DataStreamingConfigResult unassignDataStreamingConfig(List<Integer> devicesIds, LiteYukonUser user)
+            throws DataStreamingConfigException;
 
     int saveConfig(DataStreamingConfig config);
 

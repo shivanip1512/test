@@ -16,6 +16,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Instant;
@@ -87,6 +88,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
 import com.google.common.collect.Ranges;
+import com.google.common.collect.Sets;
 
 public class DataStreamingServiceImpl implements DataStreamingService {
 
@@ -148,11 +150,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             configsToDeviceIds.put(convertBehaviorToConfig(entry.getValue()), entry.getKey());
         }
         configsToDeviceIds.keySet().forEach(config -> {
-            Collection<SimpleMeter> deviceIds = configsToDeviceIds.get(config).stream().map(
-                id -> new SimpleMeter(serverDatabaseCache.getAllPaosMap().get(id).getPaoIdentifier(), "")).collect(
-                    Collectors.toList());
-            DeviceCollection collection = deviceGroupCollectionHelper.createDeviceGroupCollection(deviceIds.iterator(), "");
-            configToDeviceCollection.put(config, collection);
+            configToDeviceCollection.put(config, createDeviceCollectionForIds(configsToDeviceIds.get(config)));
         });
         return configToDeviceCollection;
     }
@@ -267,28 +265,56 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             /*
              * Assume that each device assigned to a behavior has an entry in behavior report table.
              * There might be an entry in a behavior report table but device might not be assigned to behavior.
-             * Example: device was unassigned, there will be an entry only in behavior report table.
+             * Example: device was unassigned, there will be an entry only in behavior report table but not in behavior.
              * Pending entries should only show up after 24 hours.
              */
             BehaviorReport report = deviceIdToReport.get(deviceId);
-            Behavior behavior = deviceIdToBehavior.get(deviceId);
+            if (checkPending(report)) {
+                Behavior behavior = deviceIdToBehavior.get(deviceId);
 
-            // behavior
-            DataStreamingConfig expectedConfig = convertBehaviorToConfig(behavior);
-            // behavior report
-            DataStreamingConfig actualConfig = convertBehaviorToConfig(report);
+                // behavior
+                DataStreamingConfig expectedConfig = convertBehaviorToConfig(behavior);
+                // behavior report
+                DataStreamingConfig actualConfig = convertBehaviorToConfig(report);
 
-            DiscrepancyResult result = new DiscrepancyResult();
-            result.setActual(actualConfig);
-            result.setExpected(expectedConfig);
-            result.setStatus(report.getStatus());
-            result.setLastCommunicated(new Instant());
-            result.setPaoName(serverDatabaseCache.getAllPaosMap().get(deviceId).getPaoName());
-            result.setDeviceId(deviceId);
-            results.add(result);
+                if (expectedConfig == null || hasDiscrepancy(expectedConfig.getAttributes(), actualConfig.getAttributes())) {
+                    DiscrepancyResult result = new DiscrepancyResult();
+                    result.setActual(actualConfig);
+                    result.setExpected(expectedConfig);
+                    result.setStatus(report.getStatus());
+                    result.setLastCommunicated(new Instant());
+                    result.setPaoName(serverDatabaseCache.getAllPaosMap().get(deviceId).getPaoName());
+                    result.setDeviceId(deviceId);
+                    results.add(result);
+                }
+            }
         }
 
         return results;
+    }
+    
+ 
+    /**
+     * Pending entries should only show up after 24 hours.
+     * 
+     * @return true - if the behavior can be shown
+     */
+    private boolean checkPending(BehaviorReport report) {
+        if (report.getStatus() == BehaviorReportStatus.PENDING) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Compares expected and actual attributes, returns true if attributes are not equal.
+     */
+    private boolean hasDiscrepancy(List<DataStreamingAttribute> expected, List<DataStreamingAttribute> actual) {
+        // actual can be null if the behavior was assigned and porter didn't update behavior report table.
+        if (actual == null) {
+            return true;
+        }
+        return !Sets.difference(Sets.newHashSet(expected), Sets.newHashSet(actual)).isEmpty();
     }
 
     @Override
@@ -508,16 +534,12 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             deviceBehaviorDao.getDeviceIdsToBehaviorIdMap(TYPE, null, null, null);
         return resend(new ArrayList<>(deviceIdsToBehaviorIds.keySet()), user);
     }
-
+   
     @Override
     public DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user)
             throws DataStreamingConfigException {
-        Collection<SimpleMeter> meters = deviceIds.stream().map(
-            id -> new SimpleMeter(serverDatabaseCache.getAllPaosMap().get(id).getPaoIdentifier(), "")).collect(
-                Collectors.toList());
-        DeviceCollection deviceCollection =
-            deviceGroupCollectionHelper.createDeviceGroupCollection(meters.iterator(), "");
         
+        DeviceCollection deviceCollection = createDeviceCollectionForIds(deviceIds);
         if (isValidPorterConnection()) {
             String correlationId = UUID.randomUUID().toString();
 
@@ -536,7 +558,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 BehaviorReport report = reports.get(id);
                 if (report == null) {
                     // shouldn't happen
-                    report = buildPendingReport(id);
+                    report = buildPendingReport(id, true);
                 } else {
                     report.setStatus(BehaviorReportStatus.PENDING);
                     report.setTimestamp(new Instant());
@@ -564,7 +586,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             deviceIds.forEach(id -> {
                 BehaviorReport report = reports.get(id);
                 if (report == null) {
-                    report = buildPendingReport(id);
+                    report = buildPendingReport(id, false);
                 } else {
                     report.setStatus(BehaviorReportStatus.PENDING);
                     report.setTimestamp(new Instant());
@@ -577,6 +599,13 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         } else {
             return createEmptyConnectionResult(deviceCollection, "Porter connection is invalid.");
         }
+    }
+    
+    @Override
+    public DataStreamingConfigResult unassignDataStreamingConfig(List<Integer> deviceIds, LiteYukonUser user)
+            throws DataStreamingConfigException {
+        DeviceCollection deviceCollection = createDeviceCollectionForIds(deviceIds);
+        return unassignDataStreamingConfig(deviceCollection, user);
     }
 
     @Override
@@ -593,7 +622,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             if (!deviceIds.isEmpty()) {
                 deviceBehaviorDao.assignBehavior(config.getId(), TYPE, deviceIds);
                 deviceIds.forEach(id -> {
-                    BehaviorReport report = buildPendingReport(findDataStreamingConfigurationForDevice(id), id, true);
+                    BehaviorReport report = buildPendingReport(id, true);
                     deviceBehaviorDao.saveBehaviorReport(report);
                 });
             }
@@ -770,7 +799,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
      * DEMAND,7
      */
     private DataStreamingConfig convertBehaviorToConfig(Behavior behavior) {
-        if(behavior == null){
+        if (behavior == null) {
             return null;
         }
         DataStreamingConfig config = new DataStreamingConfig();
@@ -780,13 +809,26 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         int channels = behavior.getIntValue(CHANNELS_STRING);
         for (i = 0; i < channels; i++) {
             String key = CHANNELS_STRING + "." + i;
-            BuiltInAttribute attributeValue = behavior.getEnumValue(key + ATTRIBUTE_STRING, BuiltInAttribute.class);
-            intervalValue = behavior.getIntValue(key + INTERVAL_STRING);
-            DataStreamingAttribute dataStreamingAttribute = new DataStreamingAttribute();
-            dataStreamingAttribute.setAttribute(attributeValue);
-            dataStreamingAttribute.setInterval(intervalValue);
-            dataStreamingAttribute.setAttributeOn(Boolean.TRUE);
-            config.addAttribute(dataStreamingAttribute);
+            boolean attributeEnabled = true;
+            String attributeEnabledValue = behavior.getValue(key + ENABLED_STRING);
+            if (!StringUtils.isEmpty(attributeEnabledValue) && Boolean.parseBoolean(attributeEnabledValue) == false) {
+                attributeEnabled = false;
+            }
+            /**
+             * This method converts behavior and behavior report to config.
+             * Behavior report contains disabled attributes.
+             * Behavior contains only enabled attributes.
+             * Add only enabled attributed to config
+             */
+            if (attributeEnabled) {
+                BuiltInAttribute attributeValue = behavior.getEnumValue(key + ATTRIBUTE_STRING, BuiltInAttribute.class);
+                intervalValue = behavior.getIntValue(key + INTERVAL_STRING);
+                DataStreamingAttribute dataStreamingAttribute = new DataStreamingAttribute();
+                dataStreamingAttribute.setAttribute(attributeValue);
+                dataStreamingAttribute.setInterval(intervalValue);
+                dataStreamingAttribute.setAttributeOn(Boolean.TRUE);
+                config.addAttribute(dataStreamingAttribute);
+            }
         }
         config.setSelectedInterval(intervalValue);
         return config;
@@ -833,7 +875,9 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return report;
     }
 
-    private BehaviorReport buildPendingReport(DataStreamingConfig config, int deviceId, boolean enabled) {
+    /**
+     * Pending report doesn't have channels leaving as is for now untill this is tested with Porter
+        private BehaviorReport buildPendingReport(DataStreamingConfig config, int deviceId, boolean enabled) {
         BehaviorReport report = new BehaviorReport();
         report.setType(TYPE);
         report.setDeviceId(deviceId);
@@ -851,20 +895,22 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             report.addValue(key + ENABLED_STRING, true);
         }
         return report;
-    }
+    }*/
     
     /**
-     * The user is trying to remove data streaming from the device that does NOT have a data streaming assigned.
-     * This method builds a pending report that has steaming enabled set to false and has no channels.
+     * Builds pending report.
+     * 
+     * @param deviceId
+     * @param false - the user is trying to unassign a device that was not assigned to a config
      */
-    private BehaviorReport buildPendingReport(int deviceId) {
+    private BehaviorReport buildPendingReport(int deviceId, boolean enabled) {
         BehaviorReport report = new BehaviorReport();
         report.setType(TYPE);
         report.setDeviceId(deviceId);
         report.setStatus(BehaviorReportStatus.PENDING);
         report.setTimestamp(new Instant());
         report.addValue(CHANNELS_STRING, 0);
-        report.addValue(STREAMING_ENABLED_STRING, false);
+        report.addValue(STREAMING_ENABLED_STRING, enabled);
         return report;
     }
 
@@ -973,6 +1019,19 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             }
             return gatewaysOversubscribed;
         }
+    }
+    
+    /**
+     * Creates devices collection
+     * @param deviceIds - to add to the collection
+     */
+    private DeviceCollection createDeviceCollectionForIds(Collection<Integer> deviceIds) {
+        Collection<SimpleMeter> meters = deviceIds.stream().map(
+            id -> new SimpleMeter(serverDatabaseCache.getAllPaosMap().get(id).getPaoIdentifier(), "")).collect(
+                Collectors.toList());
+        DeviceCollection deviceCollection =
+            deviceGroupCollectionHelper.createDeviceGroupCollection(meters.iterator(), "");
+        return deviceCollection;
     }
     
     /**
