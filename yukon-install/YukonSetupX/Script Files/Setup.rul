@@ -335,7 +335,7 @@ begin
 	//to re-populate the settings lost in the upgrade
 	SaveServiceSettings();
 	
-    //YUK-15645 Remove JVM setting while upgrading to 6.5.x version (or new version ) from lower version.
+    //YUK-15645 Remove JVM setting while upgrading to 6.5.6 version (or new version ) from lower version.
     RemoveJvmParams();
     
 	CopyFile(TARGETDIR + "\\Server\\web\\conf\\server.xml", TARGETDIR + "\\Server\\Config\\Backup\\server_" + CleanupVersionNum(IFX_INSTALLED_VERSION) + ".xml");

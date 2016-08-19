@@ -375,13 +375,13 @@ begin
 end;
 
 //-------------------------------------------------------
-// As per YUK-15645, Remove JVM setting while upgrading to 6.5.x version (or new version ) from lower version.
-// Retain the JVM setting while upgrading from 6.5.x to any other new version.
+// As per YUK-15645, Remove JVM setting while upgrading to 6.5.6 version (or new version ) from lower version.
+// Retain the JVM setting while upgrading from 6.5.6 to any other new version.
 //-------------------------------------------------------
 export prototype void RemoveJvmParams();
 function void RemoveJvmParams()
 string sOldVersion, sTempOld;
-number nOldV1, nOldV2;
+number nOldV1, nOldV2, nOldV3;
 begin
     sOldVersion = IFX_INSTALLED_VERSION;
     //split old version into three version components
@@ -389,11 +389,18 @@ begin
     StrToNum(nOldV1, sTempOld);
     StrSub(sTempOld, sOldVersion, 2, 2);
     StrToNum(nOldV2, sTempOld);
+    StrSub(sTempOld, sOldVersion, 5, 3);
+    StrToNum(nOldV3, sTempOld);
+    
         if(nOldV1 < 6) then
             SetBlankValueInJvmParams();
         elseif(nOldV1 = 6) then 
             if(nOldV2 < 5) then
                 SetBlankValueInJvmParams();
+            elseif(nOldV2 = 5) then
+                if(nOldV3 < 6) then
+                    SetBlankValueInJvmParams();
+                endif;
             endif;
         endif;
 end;
