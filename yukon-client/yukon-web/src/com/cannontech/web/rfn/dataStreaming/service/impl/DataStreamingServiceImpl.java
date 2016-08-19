@@ -369,7 +369,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         case ACCEPTED:
             // NM accepted the configuration. It can now be sent to the devices.
             break;
-        case REJECTED:
+        case CONFIG_ERROR:
             boolean gatewaysOverloaded = false;
             Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways = response.getAffectedGateways();
             for (RfnIdentifier rfnId : affectedGateways.keySet()) {
@@ -397,6 +397,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 }
             }
             break;
+        case INVALID_REQUEST_TYPE:
+        case INVALID_REQUEST_ID:
+        case NO_CONFIGS:
+        case NO_DEVICES:
+            // The request contained unacceptable data
+            String requestError = "Network Manager rejected the request as malformed: " + response.getResponseType();
+            log.error(requestError + ". " + response.getResponseMessage());
+            throw new DataStreamingConfigException(requestError, "badRequest", response.getResponseType());
         case NETWORK_MANAGER_FAILURE:
             // Exception was thrown in NM processing and it couldn't complete the task
             String nmError = "Network Manager encountered an error during data streaming configuration. ";
@@ -671,8 +679,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                                                                                            rfnId -> 0));
         
         DeviceDataStreamingConfigRequest configRequest = new DeviceDataStreamingConfigRequest();
-        configRequest.setRequestType(DeviceDataStreamingConfigRequestType.CONFIG);
-        configRequest.setExpiration(DateTimeConstants.MINUTES_PER_DAY);
+        configRequest.setRequestType(DeviceDataStreamingConfigRequestType.UPDATE);
+        configRequest.setRequestExpiration(DateTimeConstants.MINUTES_PER_DAY);
         configRequest.setConfigs(new DeviceDataStreamingConfig[]{config});
         configRequest.setDevices(deviceToConfigId);
         configRequest.setRequestId(correlationId);
@@ -685,7 +693,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     
     private DataStreamingConfigResult sendConfiguration(LiteYukonUser user, DeviceCollection deviceCollection,
             String correlationId) {
-        log.info("Attemting to send configuration command to " + deviceCollection.getDeviceCount() + " devices.");
+        log.info("Attempting to send configuration command to " + deviceCollection.getDeviceCount() + " devices.");
         final DataStreamingConfigResult result = new DataStreamingConfigResult();
         String resultsId = resultsCache.addResult(result);
         result.setResultsId(resultsId);
@@ -944,8 +952,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 case ACCEPTED:
                     setGatewayLoading(response);
                     break;
-                case REJECTED:
+                case CONFIG_ERROR:
                     handleRejectedResponse(response);
+                    break;
+                case INVALID_REQUEST_TYPE:
+                case INVALID_REQUEST_ID:
+                case NO_CONFIGS:
+                case NO_DEVICES:
+                    handleBadRequestResponse(response);
                     break;
                 case NETWORK_MANAGER_FAILURE:
                     // Exception was thrown in NM processing and it couldn't complete the task
@@ -978,6 +992,13 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     exceptions.add(new DataStreamingConfigException(deviceError , i18nKey, deviceName));
                 }
             }
+        }
+        
+        private void handleBadRequestResponse(DeviceDataStreamingConfigResponse response) {
+            success = false;
+            String requestError = "Network Manager rejected the request as malformed: " + response.getResponseType(); 
+            log.error(requestError + ". " + response.getResponseMessage());
+            exceptions.add(new DataStreamingConfigException(requestError, "badRequest", response.getResponseType()));
         }
         
         private void handleNmErrorResponse(DeviceDataStreamingConfigResponse response) {

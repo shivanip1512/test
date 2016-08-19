@@ -17,13 +17,36 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 public class DeviceDataStreamingConfigRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    private DeviceDataStreamingConfig[] configs;
-    private Map<RfnIdentifier, Integer> devices; // Map<device, configIndex>
-    private int expiration; // Pending time in minutes for data streaming discrepancies. Only use when request type is CONFIG
-    private String requestId; // A randomly generated string to guarantee no duplicates
-    
     private DeviceDataStreamingConfigRequestType requestType;
+    private String requestId; // an unique randomly-generated Id to correlate CONFIRM to UPDATE.
+    private int requestExpiration;  // pending time in minutes for UPDATE; <= 0 indicates pending until confirm.
+
+    private DeviceDataStreamingConfig[] configs;
+    private Map<RfnIdentifier, Integer> devices; // Map<deviceRfnIdentifier, indexOfDeviceDataStreamingConfig>
     
+    public DeviceDataStreamingConfigRequestType getRequestType() {
+        return requestType;
+    }
+    
+    public void setRequestType(DeviceDataStreamingConfigRequestType requestType) {
+        this.requestType = requestType;
+    }
+    
+    public String getRequestId() {
+        return requestId;
+    }
+    
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
+    }
+    
+    public int getRequestExpiration() {
+        return requestExpiration;
+    }
+    
+    public void setRequestExpiration(int requestExpiration) {
+        this.requestExpiration = requestExpiration;
+    }
     
     public DeviceDataStreamingConfig[] getConfigs() {
         return configs;
@@ -41,37 +64,13 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
         this.devices = devices;
     }
 
-    public DeviceDataStreamingConfigRequestType getRequestType() {
-        return requestType;
-    }
-
-    public void setRequestType(DeviceDataStreamingConfigRequestType requestType) {
-        this.requestType = requestType;
-    }
-
-    public int getExpiration() {
-        return expiration;
-    }
-
-    public void setExpiration(int expiration) {
-        this.expiration = expiration;
-    }
-    
-    public String getRequestId() {
-        return requestId;
-    }
-    
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + Arrays.hashCode(configs);
         result = prime * result + ((devices == null) ? 0 : devices.hashCode());
-        result = prime * result + expiration;
+        result = prime * result + requestExpiration;
         result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
         result = prime * result + ((requestType == null) ? 0 : requestType.hashCode());
         return result;
@@ -99,7 +98,7 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
         } else if (!devices.equals(other.devices)) {
             return false;
         }
-        if (expiration != other.expiration) {
+        if (requestExpiration != other.requestExpiration) {
             return false;
         }
         if (requestId == null) {
@@ -117,8 +116,9 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
 
     @Override
     public String toString() {
-        return "DeviceDataStreamingConfigRequest [configs=" + Arrays.toString(configs) + ", devices=" + devices
-               + ", expiration=" + expiration + ", requestId=" + requestId + ", requestType=" + requestType + "]";
+        return "DeviceDataStreamingConfigRequest [requestType=" + requestType + ", requestId=" + requestId
+               + ", requestExpiration=" + requestExpiration + ", configs=" + Arrays.toString(configs) + ", devices="
+               + devices + "]";
     }
 
 }

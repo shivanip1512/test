@@ -171,11 +171,11 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         log.info("Processing config request");
         
         switch(request.getRequestType()) {
-        case TEST_ONLY:
+        case ASSESS:
             return getVerificationResponse(request);
-        case CONFIG:
+        case UPDATE:
             return getConfigResponse(request);
-        case SYNC:
+        case CONFIRM:
             return getSyncResponse(request);
         default:
             throw new IllegalArgumentException("Unsupported request type: " + request.getRequestType());
@@ -237,7 +237,7 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         if (settings.isNetworkManagerFailOnVerification()) {
             response.setResponseType(DeviceDataStreamingConfigResponseType.NETWORK_MANAGER_FAILURE);
         } else if (settings.isOverloadGatewaysOnVerification() || settings.getDeviceErrorOnVerification() != null) {
-            response.setResponseType(DeviceDataStreamingConfigResponseType.REJECTED);
+            response.setResponseType(DeviceDataStreamingConfigResponseType.CONFIG_ERROR);
         } else {
             response.setResponseType(DeviceDataStreamingConfigResponseType.ACCEPTED);
         }
@@ -303,7 +303,7 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         if (settings.isNetworkManagerFailOnConfig()) {
             response.setResponseType(DeviceDataStreamingConfigResponseType.NETWORK_MANAGER_FAILURE);
         } else if (settings.isOverloadGatewaysOnConfig() || settings.getDeviceErrorOnConfig() != null) {
-            response.setResponseType(DeviceDataStreamingConfigResponseType.REJECTED);
+            response.setResponseType(DeviceDataStreamingConfigResponseType.CONFIG_ERROR);
         } else {
             response.setResponseType(DeviceDataStreamingConfigResponseType.ACCEPTED);
         }

@@ -68,7 +68,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     public DeviceDataStreamingConfigRequest buildVerificationRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds) {
         
         DeviceDataStreamingConfigRequest request = buildRequest(configToDeviceIds, 
-                                                                DeviceDataStreamingConfigRequestType.TEST_ONLY,
+                                                                DeviceDataStreamingConfigRequestType.ASSESS,
                                                                 null);
         return request;
     }
@@ -78,7 +78,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
                                                                String correlationId) {
         
         DeviceDataStreamingConfigRequest request = buildRequest(configToDeviceIds, 
-                                                                DeviceDataStreamingConfigRequestType.CONFIG,
+                                                                DeviceDataStreamingConfigRequestType.UPDATE,
                                                                 correlationId);
         return request;
     }
@@ -113,9 +113,9 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         devices.put(rfnId, 0); // Only one config to map to, at index 0
         request.setDevices(devices);
         
-        request.setExpiration(DateTimeConstants.MINUTES_PER_DAY);
+        request.setRequestExpiration(DateTimeConstants.MINUTES_PER_DAY);
         request.setRequestId(correlationId);
-        request.setRequestType(DeviceDataStreamingConfigRequestType.SYNC);
+        request.setRequestType(DeviceDataStreamingConfigRequestType.CONFIRM);
         
         return request;
     }
@@ -212,8 +212,8 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         request.setConfigs(configs);
         request.setDevices(deviceToConfigIdMap);
         request.setRequestType(requestType);
-        if (requestType == DeviceDataStreamingConfigRequestType.CONFIG) {
-            request.setExpiration(DateTimeConstants.MINUTES_PER_DAY);
+        if (requestType == DeviceDataStreamingConfigRequestType.UPDATE) {
+            request.setRequestExpiration(DateTimeConstants.MINUTES_PER_DAY);
             request.setRequestId(correlationId);
         }
         

@@ -412,16 +412,23 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.commsError">A communication error occurred between Yukon and Network Manager.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.unknownError">An unknown error occurred. See logs for additional details.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.networkManagerFailure">Network Manager encountered an error that prevented it from completing the operation.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.badRequest">Network Manager rejected the request as malformed: {0}</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.gatewaysOversubscribed">This configuration would result in gateways exceeding their recommended loading.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.noDevices">None of the selected devices support data streaming.</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.INVALID_RFN_IDENTIFIER">Device "{0}" was not recognized by Network Manager.</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NO_ASSOCIATED_NODE">Device "{0}" has no associated node in Network Manager.</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NO_GATEWAY">Device "{0}" has no associated Gateway in Network Manager.</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.UNSUPPORTED_DEVICE">Device "{0}" does not support data streaming.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NO_SENSOR_IDENTIFIER">Device "{0}" was not recognized by Network Manager.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NO_NODE_FOR_SENSOR">Device "{0}" has no associated node in Network Manager.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NO_GATEWAY_FOR_NODE">Device "{0}" has no associated Gateway in Network Manager.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NO_DATA_STREAMING_METRIC">Device "{0}" does not support data streaming.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.INVALID_CONFIG_INDEX">There was an error in the messaging format (invalid config index).</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.UNSUPPORTED_METRIC_ID">Device "{0}" configured with unsupported metricId.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.UNSUPPORTED_REPORT_INTERVAL">Device "{0}" configured with unsupported report interval.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.TOO_MANY_REPORT_INTERVALS">Device "{0}" configured with too many report intervals.</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.TOO_MANY_CONFIGED_METRICS">Device "{0}" configured with too many metrics.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.TOO_MANY_ENABLED_METRICS">Device "{0}" configured with too many metrics.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NULL_DATA_STREAMING_ON">There was an error in the messaging format (null data streaming on value).</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NULL_METRIC_ID">There was an error in the messaging format (null metric id value).</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NULL_ENABLED">There was an error in the messaging format (null enabled value).</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NULL_INTERVAL">There was an error in the messaging format (null interval value).</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NULL_SEQUENCE_NUMBER">There was an error in the messaging format (null sequence number).</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.OTHER_ERROR">Device "{0}" had an unknown error in Network Manager.</entry>    
     
     <!-- results.jsp -->

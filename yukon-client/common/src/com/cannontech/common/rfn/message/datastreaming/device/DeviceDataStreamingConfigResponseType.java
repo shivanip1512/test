@@ -7,7 +7,13 @@ package com.cannontech.common.rfn.message.datastreaming.device;
  */
 public enum DeviceDataStreamingConfigResponseType {
     ACCEPTED,
-    REJECTED,
+    CONFIG_ERROR,
+    
+    INVALID_REQUEST_TYPE, // i.e., the requestType field is null.
+    INVALID_REQUEST_ID, // i.e., the requestId field is null or more than 255 characters.   
+    NO_CONFIGS, // i.e., the configs field is null or empty.
+    NO_DEVICES, // i.e., the devices field is null or empty.
+    
     NETWORK_MANAGER_FAILURE,
     OTHER_ERROR, // reserved for future use
 }

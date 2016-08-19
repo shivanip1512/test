@@ -16,11 +16,11 @@ public class DeviceDataStreamingInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private RfnIdentifier deviceRfnIdentifier;
-    private double load; // calculated from the config below.
-    private DeviceDataStreamingConfig config;
+    private DeviceDataStreamingConfig config; // the current configuration setting for the device.
+    private double load; // calculated from the above config.
     
-    private RfnIdentifier gatewayRfnIdentifier;
-    private GatewayDataStreamingInfo gatewayDataStreamingInfo;
+    private RfnIdentifier gatewayRfnIdentifier; // the device's primary gateway
+    private GatewayDataStreamingInfo gatewayDataStreamingInfo; 
     
     public RfnIdentifier getDeviceRfnIdentifier() {
         return deviceRfnIdentifier;

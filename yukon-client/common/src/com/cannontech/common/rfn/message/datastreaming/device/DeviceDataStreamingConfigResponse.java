@@ -16,18 +16,27 @@ import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStream
 public class DeviceDataStreamingConfigResponse implements Serializable {
     private static final long serialVersionUID = 1L;
  
+    private String requestId;
     private DeviceDataStreamingConfigResponseType responseType;
     private String responseMessage;
-    private Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways; // Map<Device, GatewayDataStreamingInfo> is provided in both ACCEPTED and REJECTED cases
+    private Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways; // Map<Gateway, GatewayDataStreamingInfo> is provided in both ACCEPTED and REJECTED cases
     
-    private Map<RfnIdentifier, ConfigError> errorConfigedDevices;  // Map<Device, configError> only used when responseType is rejected
-    
+    private Map<RfnIdentifier, ConfigError> errorConfigedDevices; // Map<Device, configError> only used when responseType is REJECTED
+
     public DeviceDataStreamingConfigResponseType getResponseType() {
         return responseType;
     }
 
     public void setResponseType(DeviceDataStreamingConfigResponseType responseType) {
         this.responseType = responseType;
+    }
+
+    public String getRequestId() {
+        return requestId;
+    }
+
+    public void setRequestId(String requestId) {
+        this.requestId = requestId;
     }
 
     public String getResponseMessage() {
@@ -38,14 +47,6 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
         this.responseMessage = responseMessage;
     }
 
-    public Map<RfnIdentifier, ConfigError> getErrorConfigedDevices() {
-        return errorConfigedDevices;
-    }
-
-    public void setErrorConfigedDevices(Map<RfnIdentifier, ConfigError> errorConfigedDevices) {
-        this.errorConfigedDevices = errorConfigedDevices;
-    }
-
     public Map<RfnIdentifier, GatewayDataStreamingInfo> getAffectedGateways() {
         return affectedGateways;
     }
@@ -54,12 +55,21 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
         this.affectedGateways = affectedGateways;
     }
 
+    public Map<RfnIdentifier, ConfigError> getErrorConfigedDevices() {
+        return errorConfigedDevices;
+    }
+
+    public void setErrorConfigedDevices(Map<RfnIdentifier, ConfigError> errorConfigedDevices) {
+        this.errorConfigedDevices = errorConfigedDevices;
+    }
+
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
         result = prime * result + ((affectedGateways == null) ? 0 : affectedGateways.hashCode());
         result = prime * result + ((errorConfigedDevices == null) ? 0 : errorConfigedDevices.hashCode());
+        result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
         result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
         result = prime * result + ((responseType == null) ? 0 : responseType.hashCode());
         return result;
@@ -91,6 +101,13 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
         } else if (!errorConfigedDevices.equals(other.errorConfigedDevices)) {
             return false;
         }
+        if (requestId == null) {
+            if (other.requestId != null) {
+                return false;
+            }
+        } else if (!requestId.equals(other.requestId)) {
+            return false;
+        }
         if (responseMessage == null) {
             if (other.responseMessage != null) {
                 return false;
@@ -106,9 +123,9 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
 
     @Override
     public String toString() {
-        return "DeviceDataStreamingConfigResponse [responseType=" + responseType + ", responseMessage="
-               + responseMessage + ", affectedGateways=" + affectedGateways + ", errorConfigedDevices="
-               + errorConfigedDevices + "]";
+        return "DeviceDataStreamingConfigResponse [requestId=" + requestId + ", responseType=" + responseType
+               + ", responseMessage=" + responseMessage + ", affectedGateways=" + affectedGateways
+               + ", errorConfigedDevices=" + errorConfigedDevices + "]";
     }
 
     public static class ConfigError implements Serializable {
@@ -116,9 +133,10 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
         
         private DeviceDataStreamingConfigError errorType;
         private String errorMessage;
+        
         private RfnIdentifier overSubscribedGatewayRfnIdentifier; // only used when errorType is GATEWAY_OVERLOADED
-        private Set<Integer> unSupportedMetricIDs; // only used when errorType is UNSUPPORTED_METRIC_ID
-        private Set<Short> unSupportedReportIntervals; // only used when errorType is UNSUPPORTED_REPORT_INTERVAL
+        private Set<Integer> unSupportedMetricIds; // only used when errorType is UNSUPPORTED_METRIC_ID
+        private Set<Short> unSupportedIntervals; // only used when errorType is UNSUPPORTED_REPORT_INTERVAL
         
         public DeviceDataStreamingConfigError getErrorType() {
             return errorType;
@@ -144,20 +162,20 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
             this.overSubscribedGatewayRfnIdentifier = overSubscribedGatewayRfnIdentifier;
         }
         
-        public Set<Integer> getUnSupportedMetricIDs() {
-            return unSupportedMetricIDs;
+        public Set<Integer> getUnSupportedMetricIds() {
+            return unSupportedMetricIds;
         }
         
-        public void setUnSupportedMetricIDs(Set<Integer> unSupportedMetricIDs) {
-            this.unSupportedMetricIDs = unSupportedMetricIDs;
+        public void setUnSupportedMetricIds(Set<Integer> unSupportedMetricIds) {
+            this.unSupportedMetricIds = unSupportedMetricIds;
         }
         
-        public Set<Short> getUnSupportedReportIntervals() {
-            return unSupportedReportIntervals;
+        public Set<Short> getUnSupportedIntervals() {
+            return unSupportedIntervals;
         }
         
-        public void setUnSupportedReportIntervals(Set<Short> unSupportedReportIntervals) {
-            this.unSupportedReportIntervals = unSupportedReportIntervals;
+        public void setUnSupportedIntervals(Set<Short> unSupportedIntervals) {
+            this.unSupportedIntervals = unSupportedIntervals;
         }
 
         @Override
@@ -171,9 +189,8 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
                         * result
                         + ((overSubscribedGatewayRfnIdentifier == null) ? 0 : overSubscribedGatewayRfnIdentifier
                             .hashCode());
-            result = prime * result + ((unSupportedMetricIDs == null) ? 0 : unSupportedMetricIDs.hashCode());
-            result =
-                prime * result + ((unSupportedReportIntervals == null) ? 0 : unSupportedReportIntervals.hashCode());
+            result = prime * result + ((unSupportedIntervals == null) ? 0 : unSupportedIntervals.hashCode());
+            result = prime * result + ((unSupportedMetricIds == null) ? 0 : unSupportedMetricIds.hashCode());
             return result;
         }
 
@@ -206,18 +223,18 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
             } else if (!overSubscribedGatewayRfnIdentifier.equals(other.overSubscribedGatewayRfnIdentifier)) {
                 return false;
             }
-            if (unSupportedMetricIDs == null) {
-                if (other.unSupportedMetricIDs != null) {
+            if (unSupportedIntervals == null) {
+                if (other.unSupportedIntervals != null) {
                     return false;
                 }
-            } else if (!unSupportedMetricIDs.equals(other.unSupportedMetricIDs)) {
+            } else if (!unSupportedIntervals.equals(other.unSupportedIntervals)) {
                 return false;
             }
-            if (unSupportedReportIntervals == null) {
-                if (other.unSupportedReportIntervals != null) {
+            if (unSupportedMetricIds == null) {
+                if (other.unSupportedMetricIds != null) {
                     return false;
                 }
-            } else if (!unSupportedReportIntervals.equals(other.unSupportedReportIntervals)) {
+            } else if (!unSupportedMetricIds.equals(other.unSupportedMetricIds)) {
                 return false;
             }
             return true;
@@ -227,8 +244,8 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
         public String toString() {
             return "ConfigError [errorType=" + errorType + ", errorMessage=" + errorMessage
                    + ", overSubscribedGatewayRfnIdentifier=" + overSubscribedGatewayRfnIdentifier
-                   + ", unSupportedMetricIDs=" + unSupportedMetricIDs + ", unSupportedReportIntervals="
-                   + unSupportedReportIntervals + "]";
+                   + ", unSupportedMetricIds=" + unSupportedMetricIds + ", unSupportedIntervals="
+                   + unSupportedIntervals + "]";
         }
         
     }
