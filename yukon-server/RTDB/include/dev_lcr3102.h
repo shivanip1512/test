@@ -82,7 +82,7 @@ protected:
         DataRead_SoftspecLen       = 13,
 
         DataRead_LoopbackPos       = 0x00,
-        DataRead_LoopbackLen       = 3
+        DataRead_LoopbackLen       = 1
     };
 
     enum PointOffsets

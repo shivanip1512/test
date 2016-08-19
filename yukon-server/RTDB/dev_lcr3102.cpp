@@ -964,20 +964,14 @@ YukonError_t Lcr3102Device::decodeGetConfigTime( const INMESS &InMessage, const 
 
 YukonError_t Lcr3102Device::decodeLoopback(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    YukonError_t status = ClientErrors::None;
-    string resultString;
+    auto ReturnMsg = std::make_unique<CtiReturnMsg>(getID(), InMessage.Return.CommandStr);
 
-    CtiReturnMsg *ReturnMsg = NULL;     // Message sent to VanGogh, inherits from Multi
-
-    ReturnMsg = new CtiReturnMsg(getID(), InMessage.Return.CommandStr);
     ReturnMsg->setUserMessageId(InMessage.Return.UserID);
+    ReturnMsg->setResultString(getName() + " / successful ping");
 
-    resultString = getName() + " / successful ping";
-    ReturnMsg->setResultString(resultString);
+    retMsgHandler(InMessage.Return.CommandStr, ClientErrors::None, ReturnMsg.release(), vgList, retList);
 
-    retMsgHandler(InMessage.Return.CommandStr, status, ReturnMsg, vgList, retList);
-
-    return status;
+    return ClientErrors::None;
 }
 
 void Lcr3102Device::decodeMessageXfmrHistoricalRuntime( const DSTRUCT DSt, std::vector<point_info> &runtimeHours)
@@ -1120,45 +1114,28 @@ YukonError_t Lcr3102Device::IntegrityScan(CtiRequestMsg *pReq, CtiCommandParser 
 
 YukonError_t Lcr3102Device::executeLoopback (CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
 {
-    bool found = false;
-    YukonError_t nRet = ClientErrors::None;
-    INT  function;
-    int  i;
+    const auto function = EmetconProtocol::Command_Loop;
 
-    OUTMESS *tmpOut;
-
-    function = EmetconProtocol::Command_Loop;
-    found = getOperation(function, OutMessage->Buffer.BSt);
-
-    if (!found)
+    if (!getOperation(function, OutMessage->Buffer.BSt))
     {
-        nRet = ClientErrors::NoMethod;
-    }
-    else
-    {
-        populateDlcOutMessage(*OutMessage);
-        OutMessage->Sequence = function;     // Helps us figure it out later!
-        OutMessage->Request.RouteID = getRouteID();
-
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
-
-        for (i = 0; i < parse.getiValue("count"); i++)
-        {
-            tmpOut = CTIDBG_new OUTMESS(*OutMessage);
-
-            if (tmpOut != NULL)
-                outList.push_back(tmpOut);
-        }
-
-        if (OutMessage != NULL)
-        {
-            delete OutMessage;
-            OutMessage = NULL;
-        }
+        return ClientErrors::NoMethod;
     }
 
+    populateDlcOutMessage(*OutMessage);
+    OutMessage->Sequence = function;     // Helps us figure it out later!
+    OutMessage->Request.RouteID = getRouteID();
 
-    return nRet;
+    strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+    for (int i = 0; i < parse.getiValue("count"); i++)
+    {
+        outList.push_back(new OUTMESS(*OutMessage));
+    }
+        
+    delete OutMessage;
+    OutMessage = NULL;
+
+    return ClientErrors::None;
 }
 
 
@@ -1384,7 +1361,7 @@ YukonError_t Lcr3102Device::executeGetConfig( CtiRequestMsg *pReq, CtiCommandPar
         }
         OutMessage->Buffer.BSt.Length = std::min(parse.getiValue("rawlen", 13), 13);    //  default (and maximum) is 13 bytes
     }
-    if(parse.isKeyValid("install") | parse.isKeyValid("model"))
+    if(parse.isKeyValid("install") || parse.isKeyValid("model"))
     {
         function = EmetconProtocol::GetConfig_Softspec;
         found = getOperation(function, OutMessage->Buffer.BSt);
