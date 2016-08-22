@@ -129,15 +129,13 @@ begin
 end;
 
 //-------------------------------------------------------
-// Helper function to determine if the user is attempting
-// an upgrade on a version that does not support it. 
-// Upgrades are only supported when the installed version
-// is 5.1.3 or higher.
+// Helper function to determine the comparison of product versions
+// Return true if installed version is greater than compared version otherwise return false
 //-------------------------------------------------------
-export prototype BOOL IsUpgradeSupported();
-function BOOL IsUpgradeSupported()
-string sOldVersion, sTemp;
-number nV1, nV2, nV3;
+export prototype BOOL IsInstalledVersionGreater(STRING);
+function BOOL IsInstalledVersionGreater(version)
+string sOldVersion, sTemp, sTemp1;
+number nV1, nV2, nV3, nVer1, nVer2, nVer3;
 begin
 	sOldVersion = IFX_INSTALLED_VERSION;
     //split version into three version components
@@ -147,31 +145,57 @@ begin
     StrToNum(nV2, sTemp);
     StrSub(sTemp, sOldVersion, 5, 3);
     StrToNum(nV3, sTemp);
-    //if version is prior to 5.1.3, upgrade is not supported
-    if(nV1 < 5) then
-    	//4.x.x or earlier
-    	return FALSE;
-    elseif(nV1 > 5) then
-    	//6.x.x or later
+    
+    StrSub(sTemp, version, 0, 1);
+    StrToNum(nVer1, sTemp);
+    StrSub(sTemp, version, 2, 2);
+    StrToNum(nVer2, sTemp);
+    StrSub(sTemp, version, 5, 3);
+    StrToNum(nVer3, sTemp);
+    
+    if(nV1 < nVer1) then  	
+        return FALSE;
+    elseif(nV1 > nVer1) then
     	return TRUE;
     endif;
-    //if we didn't return above, version is 5.x.x
-    if(nV2 < 1) then
-    	//5.0.x
-    	return FALSE;
-    elseif(nV2 > 1) then
-    	//5.2.x or later
-    	return TRUE;
+
+    if(nV2 < nVer2) then
+        return FALSE;
+    elseif(nV2 > nVer2) then
+        return TRUE;
     endif;
-    //if we didn't return above, version is 5.1.x
-    if(nV3 < 3) then
-    	//5.1.2 or earlier
-    	return FALSE;
+
+    if(nV3 <= nVer3) then
+        return FALSE;
     else
-    	//5.1.3 or later
-    	return TRUE;
-    endif;    
+        return TRUE;
+    endif;
+   
 end;
+
+//-------------------------------------------------------
+// Helper function to determine if the user is attempting
+// an upgrade on a version that does not support it. 
+// Upgrades are only supported when the installed version
+// is 5.1.3 or higher.
+//-------------------------------------------------------
+export prototype BOOL IsUpgradeSupported();
+function BOOL IsUpgradeSupported()
+begin
+    return IsInstalledVersionGreater("5.1.3");
+end;
+
+//-------------------------------------------------------
+// Helper function to determine the deletion of activeMQ index
+// Only delete index if installed Yukon version is less than 6.6.0 
+// due to incompatibilty of activeMQ index in higher version(5.13.4)
+//-------------------------------------------------------
+export prototype BOOL IsActiveMQIndexDeletionRequired();
+function BOOL IsActiveMQIndexDeletionRequired()
+begin
+    return IsInstalledVersionGreater("6.6.0");
+end;
+
 
 //-------------------------------------------------------
 // Helper function to determine if the installed version
@@ -180,41 +204,8 @@ end;
 //-------------------------------------------------------
 export prototype BOOL IsDowngrade();
 function BOOL IsDowngrade()
-string sOldVersion, sNewVersion, sTempOld, sTempNew;
-number nOldV1, nOldV2, nOldV3, nNewV1, nNewV2, nNewV3;
-BOOL isDowngrade;
 begin
-	sOldVersion = IFX_INSTALLED_VERSION;
-	sNewVersion = IFX_PRODUCT_VERSION;
-	//split old version into three version components
-    StrSub(sTempOld, sOldVersion, 0, 1);
-    StrToNum(nOldV1, sTempOld);
-    StrSub(sTempOld, sOldVersion, 2, 2);
-    StrToNum(nOldV2, sTempOld);
-    StrSub(sTempOld, sOldVersion, 5, 3);
-    StrToNum(nOldV3, sTempOld);
-    //split new version into three version components
-    //(slightly different format)
-    StrSub(sTempNew, sNewVersion, 0, 1);
-    StrToNum(nNewV1, sTempNew);
-    StrSub(sTempNew, sNewVersion, 2, 2);
-    StrToNum(nNewV2, sTempNew);
-    StrSub(sTempNew, sNewVersion, 4, 3);
-    StrToNum(nNewV3, sTempNew);
-	//compare old to new
-	isDowngrade = FALSE;
-	if(nOldV1 > nNewV1) then
-		isDowngrade = TRUE;
-	else
-		if(nOldV2 > nNewV2) then
-			isDowngrade = TRUE;
-		else
-			if(nOldV3 > nNewV3) then
-				isDowngrade = TRUE;
-			endif;
-		endif;
-	endif;
-	return isDowngrade;
+    return IsInstalledVersionGreater(IFX_PRODUCT_VERSION);
 end;
 
 //-------------------------------------------------------
@@ -380,29 +371,10 @@ end;
 //-------------------------------------------------------
 export prototype void RemoveJvmParams();
 function void RemoveJvmParams()
-string sOldVersion, sTempOld;
-number nOldV1, nOldV2, nOldV3;
 begin
-    sOldVersion = IFX_INSTALLED_VERSION;
-    //split old version into three version components
-    StrSub(sTempOld, sOldVersion, 0, 1);
-    StrToNum(nOldV1, sTempOld);
-    StrSub(sTempOld, sOldVersion, 2, 2);
-    StrToNum(nOldV2, sTempOld);
-    StrSub(sTempOld, sOldVersion, 5, 3);
-    StrToNum(nOldV3, sTempOld);
-    
-        if(nOldV1 < 6) then
-            SetBlankValueInJvmParams();
-        elseif(nOldV1 = 6) then 
-            if(nOldV2 < 5) then
-                SetBlankValueInJvmParams();
-            elseif(nOldV2 = 5) then
-                if(nOldV3 < 6) then
-                    SetBlankValueInJvmParams();
-                endif;
-            endif;
-        endif;
+    if(!IsInstalledVersionGreater("6.5.5")) then
+        SetBlankValueInJvmParams();
+    endif;
 end;
 //------------------------------------------------------------
 // Helper function that permits write access to a file for

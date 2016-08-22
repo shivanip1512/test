@@ -19,10 +19,10 @@
     
     <fileset dir="${yukon.lib}" id="yukon.lib.files">
         <include name="activation.jar"/>
-        <include name="activemq-broker-5.11.1.jar"/>
-        <include name="activemq-client-5.11.1.jar"/>
-        <include name="activemq-kahadb-store-5.11.1.jar"/>
-        <include name="activemq-openwire-legacy-5.11.1.jar"/>
+        <include name="activemq-broker-5.13.4.jar"/>
+        <include name="activemq-client-5.13.4.jar"/>
+        <include name="activemq-kahadb-store-5.13.4.jar"/>
+        <include name="activemq-openwire-legacy-5.13.4.jar"/>
         <include name="activemq-protobuf-1.1.jar"/>
         <include name="aopalliance-1.0.jar"/>
         <include name="api.jar"/>
@@ -79,7 +79,7 @@
         <include name="org.osgi.core-4.1.0.jar"/>
         <include name="quartz-2.2.1.jar"/>
         <include name="saaj.jar"/>
-        <include name="slf4j-api-1.7.10.jar"/>
+        <include name="slf4j-api-1.7.13.jar"/>
         <include name="slf4j-log4j12-1.7.2.jar"/>
         <include name="spring-xml-2.3.0.RELEASE.jar"/>
         <include name="spring-ws-core-2.3.0.RELEASE.jar"/>

@@ -28,7 +28,13 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
         REMOTE_SERVICES,
         INTERNAL_MESSAGING,
     }
-
+    
+    static {
+        System.setProperty(
+            "org.apache.activemq.SERIALIZABLE_PACKAGES",
+            "java.lang,javax.security,java.util,javax.jms,com.thoughtworks.xstream.mapper,org.joda,com.cannontech");
+    }
+    
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
 

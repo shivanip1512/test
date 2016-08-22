@@ -260,7 +260,7 @@ end;
 function OnUpdateUIBefore()
 number nResult ;
 BOOL bOptYes, bOptNo, bOpt;
-string sMasterConfig, sOldVersion, sMsg1, sMsg2, sCMD, sArgs, sDir;
+string sMasterConfig, sOldVersion, sMsg1, sMsg2, sCMD, sArgs, sDir, szComputerName;
 begin
 	//set the string shown on the installer windows' title bars
 	IFX_SETUP_TITLE = "Yukon Application Suite - Installation Wizard";
@@ -365,6 +365,13 @@ begin
 	sDir = TARGETDIR ^ "\\Server\\Static\\JRE";
 	DeleteFilesOfType(sDir, "exe");
 	
+	// Delete ActiveMQ index files (.data and .redo) due to its incompatibilty with higher version of activeMQ(5.13.4)
+    if(IsActiveMQIndexDeletionRequired()) then
+        sDir = TARGETDIR ^ "Client\\bin\\activemq-data\\ServiceManager\\KahaDB";
+        DeleteFile(sDir ^ "*.data");
+        DeleteFile(sDir ^ "*.redo");
+    endif;
+    
 	//set installer to update all features that are currently installed
 	FeatureReinstall();
 	
