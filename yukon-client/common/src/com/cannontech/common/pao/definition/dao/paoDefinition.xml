@@ -11032,7 +11032,7 @@
                 <basicLookup point="Received Peak kVAr"/>
             </attribute>
             <attribute name="PEAK_KVA">
-                <basicLookup point="Delivered Peak kVA"/>
+                <basicLookup point="Peak kVA"/>
             </attribute>
             <attribute name="RECEIVED_PEAK_KVA">
                 <basicLookup point="Received Peak kVA"/>
