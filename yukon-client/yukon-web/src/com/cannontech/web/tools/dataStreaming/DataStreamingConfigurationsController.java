@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -43,6 +44,7 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -301,12 +303,14 @@ public class DataStreamingConfigurationsController {
 
         List<DiscrepancyResult> discrepancies = dataStreamingService.findDiscrepancies();
         for (DiscrepancyResult result : discrepancies) {
-            if (result.getExpected() != null) {
-                result.getExpected().setAccessor(accessor);
+            if (result.getExpected() == null) {
+                result.setExpected(new DataStreamingConfig());
             }
-            if (result.getActual() != null) {
-                result.getActual().setAccessor(accessor);
+            result.getExpected().setAccessor(accessor);
+            if (result.getActual() == null) {
+                result.setActual(new DataStreamingConfig());
             }
+            result.getActual().setAccessor(accessor);
         }
 
         SearchResults<DiscrepancyResult> searchResult = new SearchResults<>();
@@ -350,25 +354,46 @@ public class DataStreamingConfigurationsController {
     }
     
     @RequestMapping("discrepancies/{deviceId}/resend")
-    public String resendDevice(@PathVariable int deviceId) {
-        //TODO:  Call service
-        return "redirect:/tools/dataStreaming/discrepancies";
+    public String resendDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
+        LiteYukonUser user = userContext.getYukonUser();
+        try {
+            DataStreamingConfigResult result = dataStreamingService.resend(Arrays.asList(deviceId), user);
+            model.addAttribute("resultsId", result.getResultsId());
+            return "redirect:/bulk/dataStreaming/dataStreamingResults";
+        } catch (DataStreamingConfigException e) {
+            flash.setError(e.getMessageSourceResolvable());
+            return "redirect:/tools/dataStreaming/discrepancies";
+        }
     }
     
     @RequestMapping("discrepancies/{deviceId}/accept")
-    public String acceptDevice(@PathVariable int deviceId) {
-        //TODO:  Call service
-        return "redirect:/tools/dataStreaming/discrepancies";
+    public String acceptDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
+        LiteYukonUser user = userContext.getYukonUser();
+        try {
+            DataStreamingConfigResult result = dataStreamingService.accept(Arrays.asList(deviceId), user);
+            model.addAttribute("resultsId", result.getResultsId());
+            return "redirect:/bulk/dataStreaming/dataStreamingResults";
+        } catch (DataStreamingConfigException e) {
+            flash.setError(e.getMessageSourceResolvable());
+            return "redirect:/tools/dataStreaming/discrepancies";
+        }
     }
     
     @RequestMapping("discrepancies/{deviceId}/remove")
-    public String removeDevice(@PathVariable int deviceId) {
-        //TODO:  Call service
-        return "redirect:/tools/dataStreaming/discrepancies";
+    public String removeDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
+        LiteYukonUser user = userContext.getYukonUser();
+        try {
+            DataStreamingConfigResult result = dataStreamingService.unassignDataStreamingConfig(Arrays.asList(deviceId), user);
+            model.addAttribute("resultsId", result.getResultsId());
+            return "redirect:/bulk/dataStreaming/dataStreamingResults";
+        } catch (DataStreamingConfigException e) {
+            flash.setError(e.getMessageSourceResolvable());
+            return "redirect:/tools/dataStreaming/discrepancies";
+        }
     }
     
     @RequestMapping(value="discrepancies/resendAll", method=RequestMethod.POST)
-    public String resendAll(HttpServletRequest request) {
+    public String resendAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash) {
         List<Integer> deviceList = new ArrayList<>();
         String ids = request.getParameter("deviceIds");
         String [] deviceIds = ids.split(",");
@@ -376,21 +401,35 @@ public class DataStreamingConfigurationsController {
             deviceList.add(Integer.parseInt(deviceId));
         }
         
-        //TODO:  Call service
-        
-        return "redirect:/tools/dataStreaming/discrepancies";
+        LiteYukonUser user = userContext.getYukonUser();
+        try {
+            DataStreamingConfigResult result = dataStreamingService.resend(deviceList, user);
+            model.addAttribute("resultsId", result.getResultsId());
+            return "redirect:/bulk/dataStreaming/dataStreamingResults";
+        } catch (DataStreamingConfigException e) {
+            flash.setError(e.getMessageSourceResolvable());
+            return "redirect:/tools/dataStreaming/discrepancies";
+        }
     }
     
     @RequestMapping(value="discrepancies/acceptAll", method=RequestMethod.POST)
-    public String acceptAll(HttpServletRequest request) {
+    public String acceptAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash) {
         List<Integer> deviceList = new ArrayList<>();
         String ids = request.getParameter("deviceIds");
         String [] deviceIds = ids.split(",");
         for (String deviceId : deviceIds) {
             deviceList.add(Integer.parseInt(deviceId));
         }
-        //TODO:  Call service
-        return "redirect:/tools/dataStreaming/discrepancies";
+        
+        LiteYukonUser user = userContext.getYukonUser();
+        try {
+            DataStreamingConfigResult result = dataStreamingService.accept(deviceList, user);
+            model.addAttribute("resultsId", result.getResultsId());
+            return "redirect:/bulk/dataStreaming/dataStreamingResults";
+        } catch (DataStreamingConfigException e) {
+            flash.setError(e.getMessageSourceResolvable());
+            return "redirect:/tools/dataStreaming/discrepancies";
+        }
     }
     
     public enum DiscrepancySortBy implements DisplayableEnum {

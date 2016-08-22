@@ -32,7 +32,7 @@
                     <td><a href="${detailUrl}">${fn:escapeXml(discrepancy.paoName)}</a></td>
                     <td class="wrbw">${discrepancy.expected.commaDelimitedAttributesOnOff}</td>
                     <td class="wrbw">${discrepancy.actual.commaDelimitedAttributesOnOff}</td>
-                    <td class="wsnw">${discrepancy.expected.selectedInterval}
+                    <td class="wsnw"><c:if test="${discrepancy.expected.selectedInterval > 0}">${discrepancy.expected.selectedInterval}</c:if>
                         <c:choose>
                             <c:when test="${discrepancy.expected.selectedInterval == 1}">
                                 <i:inline key=".minute"/>
@@ -41,6 +41,7 @@
                                 <i:inline key=".minutes"/>
                             </c:when>
                             <c:otherwise>
+                                <i:inline key="yukon.common.none" />
                             </c:otherwise>
                         </c:choose>
                     </td>
@@ -55,10 +56,12 @@
                                 <i:inline key=".minutes" />
                             </c:when>
                             <c:otherwise>
+                                <i:inline key="yukon.common.none" />
                             </c:otherwise>
                         </c:choose>
                     </td>
                     <td class="wsnw"><i:inline key=".${discrepancy.status}"/></td>
+                    <c:set var="disabled" value="false"/>
                     <td class="wsnw dif"><cti:formatDate value="${discrepancy.lastCommunicated}" type="DATEHM_12" />&nbsp;&nbsp;
                         <cm:dropdown icon="icon-cog" triggerClasses="fr">
                             <cti:url var="resendUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/resend"/>

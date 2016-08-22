@@ -269,7 +269,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
              * Pending entries should only show up after 24 hours.
              */
             BehaviorReport report = deviceIdToReport.get(deviceId);
-            if (checkPending(report)) {
+            if (report != null && checkPending(report)) {
                 Behavior behavior = deviceIdToBehavior.get(deviceId);
 
                 // behavior

@@ -11,17 +11,12 @@
     
     <c:set var="resultsId" value="${result.resultsId}"/>
                 
-        <div class="stacked notes">
-             <strong><i:inline key=".configuration"/>:</strong>&nbsp;
-            <c:choose>
-                <c:when test="${config != null}">
-                    <a href="javascript:void(0);" data-popup="#data-streaming-popup">${fn:escapeXml(config.name)}</a>
-                </c:when>
-                <c:otherwise>
-                    <i:inline key=".removeConfiguration"/>
-                </c:otherwise>
-            </c:choose>
-        </div>
+        <c:if test="${config != null}">
+             <div class="stacked notes">
+                <strong><i:inline key=".configuration"/>:</strong>&nbsp;
+                <a href="javascript:void(0);" data-popup="#data-streaming-popup">${fn:escapeXml(config.name)}</a>
+             </div>
+        </c:if>
 
         <table class="stacked">
             <tr>
