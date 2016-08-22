@@ -15,7 +15,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.SeasonScheduleDao;
@@ -204,7 +203,7 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao {
         }
                 
         LiteYukonPAObject paoObj = cache.getAllPaosMap().get(paoId);
-        dbChangeManager.processPaoDbChange(PaoIdentifier.of(paoId, paoObj.getPaoType()), DbChangeType.UPDATE);
+        dbChangeManager.processPaoDbChange(paoObj, DbChangeType.UPDATE);
 
     }
     
