@@ -1,16 +1,9 @@
 #include "precompiled.h"
 
-#include <iostream>
-#include <utility>
+#include "ctivangogh.h"
 
-#include "collectable.h"
-#include "counter.h"
-#include "cparms.h"
-#include "guard.h"
-#include <list>
-
-#include "queue.h"
-#include "con_mgr.h"
+#include "mgr_ptclients.h"
+#include "dllyukon.h"
 
 #include "msg_cmd.h"
 #include "msg_reg.h"
@@ -20,41 +13,17 @@
 #include "msg_notif_alarm.h"
 #include "msg_server_req.h"
 #include "msg_server_resp.h"
-#include "ctivangogh.h"
-
-#include "pt_base.h"
-#include "pt_accum.h"
-#include "pt_analog.h"
-#include "pt_status.h"
-
-#include "dev_base.h"
 
 #include "tbl_dyn_ptalarming.h"
-#include "tbl_signal.h"
-#include "tbl_lm_controlhist.h"
-#include "tbl_ptdispatch.h"
-#include "tbl_pt_alarm.h"
-#include "thread_monitor.h"
-#include "ThreadStatusKeeper.h"
 
-#include "mgr_ptclients.h"
-#include "dlldefs.h"
-
-#include "database_connection.h"
 #include "database_reader.h"
 #include "database_transaction.h"
 #include "database_writer.h"
 #include "database_util.h"
 #include "database_exceptions.h"
 
-#include "connection.h"
-#include "dbaccess.h"
-#include "utility.h"
-#include "logger.h"
+#include "ThreadStatusKeeper.h"
 
-#include "dllyukon.h"
-#include "ctidate.h"
-#include "numstr.h"
 #include "debug_timer.h"
 #include "millisecond_timer.h"
 
@@ -62,11 +31,12 @@
 #include "std_helper.h"
 #include "win_helper.h"
 #include "amq_constants.h"
-#include "module_util.h"
-#include "logger.h"
 #include "desolvers.h"
 
 #include "coroutine_util.h"
+
+#include "counter.h"
+#include "ctidate.h"
 
 #include <boost/tuple/tuple_comparison.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
@@ -317,7 +287,8 @@ void CtiVanGogh::VGMainThread()
         _pendingOpThread.setSignalManager( &_signalManager );
         _pendingOpThread.start();
 
-        _rphThread        = boost::thread(&CtiVanGogh::VGRPHWriterThread,      this);
+        _rphArchiver.start();
+
         _archiveThread    = boost::thread(&CtiVanGogh::VGArchiverThread,       this);
         _timedOpThread    = boost::thread(&CtiVanGogh::VGTimedOperationThread, this);
         _dbSigThread      = boost::thread(&CtiVanGogh::VGDBSignalWriterThread, this);
@@ -1343,7 +1314,7 @@ void CtiVanGogh::VGArchiverThread()
              *  Step 1. Write/mark any points which need archiving and update their nextArchive times.
              */
 
-            submitRowsToArchiver(PointMgr.scanForArchival(TimeNow));
+            _rphArchiver.submitRows(PointMgr.scanForArchival(TimeNow));
 
             /*
              *  Step 2. identify the next nearest time we need to do an archival write.
@@ -1585,9 +1556,7 @@ void CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                         // This is a forced reading, which must be written, it should not
                         // however cause any change in normal pending scanned readings
 
-                        submitRowToArchiver(
-                                std::make_unique<CtiTableRawPointHistory>(
-                                        TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis()));
+                        _rphArchiver.submitPointData(aPD);
 
                         pDyn->setWasArchived(true);
                     }
@@ -1597,9 +1566,7 @@ void CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
                         (TempPoint->getArchiveType() == ArchiveTypeOnChange && hasChanged) ||
                         (TempPoint->getArchiveType() == ArchiveTypeOnTimerOrUpdated))
                 {
-                    submitRowToArchiver(
-                            std::make_unique<CtiTableRawPointHistory>(
-                                    TempPoint->getID(), aPD.getQuality(), aPD.getValue(), aPD.getTime(), aPD.getMillis()));
+                    _rphArchiver.submitPointData(aPD);
 
                     pDyn->setArchivePending(false);
 
@@ -2612,69 +2579,6 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
         CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
     }
 }
-
-bool CtiVanGogh::writeArchiveDataToDB(Cti::Database::DatabaseConnection& conn, const WriteMode wm)
-{
-    const unsigned MinRowsToWrite = 10;
-    const unsigned ChunkSize = 10000;
-
-    const unsigned rowsWaiting = archiverQueueSize();
-
-    if( ! rowsWaiting )
-    {
-        return false;
-    }
-
-    if( wm == WriteMode_WriteChunkIfOverThreshold && rowsWaiting < MinRowsToWrite )
-    {
-        return false;
-    }
-
-    std::vector<std::unique_ptr<CtiTableRawPointHistory>> rowsToWrite;
-
-    {
-        CtiLockGuard<CtiCriticalSection> lock(_archiverLock);
-
-        if( wm != WriteMode_WriteAll && _archiverQueue.size() > ChunkSize )
-        {
-            rowsToWrite.reserve(ChunkSize);
-
-            const auto begin = _archiverQueue.begin();
-            const auto mid = begin + ChunkSize;
-
-            rowsToWrite.assign(
-                std::make_move_iterator(begin),
-                std::make_move_iterator(mid));
-
-            _archiverQueue.erase(begin, mid);
-        }
-        else
-        {
-            rowsToWrite.swap(_archiverQueue);
-        }
-    }
-
-    try
-    {
-        Cti::Timing::MillisecondTimer timer;
-
-        if( unsigned rowsWritten = writeRawPointHistory(conn, std::move(rowsToWrite)) )
-        {
-            const unsigned rowsRemaining = archiverQueueSize();
-
-            CTILOG_INFO(dout, "RawPointHistory transaction completed in " << timer.elapsed() << "ms. Inserted "<< rowsWritten <<" rows. remaining: "<< rowsRemaining <<" rows");
-
-            return rowsRemaining > MinRowsToWrite;
-        }
-    }
-    catch(...)
-    {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-    }
-
-    return false;
-}
-
 
 /*
  *  This method makes sure that AreYouThere messages are being responded to by clients.
@@ -4408,7 +4312,9 @@ CtiVanGogh::CtiVanGogh(CtiPointClientManager* externalMgr)
                     : *_localPointClientMgr },
         _pendingOpThread{PointMgr},
         _notificationConnection(NULL),
-        _listenerConnection( Cti::Messaging::ActiveMQ::Queue::dispatch )
+        _listenerConnection( Cti::Messaging::ActiveMQ::Queue::dispatch ),
+        ShutdownOnThreadTimeout { true },
+        _rphArchiver { ShutdownOnThreadTimeout, &CtiVanGogh::sendbGCtrlC }
 {
     {
         CtiServerExclusion guard(_server_exclusion);
@@ -4451,70 +4357,6 @@ void CtiVanGogh::shutdownAllClients()
         Mgr = itr->second;
         clientShutdown(Mgr); // expected to remove first element from mConnectionTable
     }
-}
-
-
-void CtiVanGogh::VGRPHWriterThread()
-{
-    ThreadStatusKeeper threadStatus("RawPointHistory Writer Thread");
-
-    CTILOG_INFO(dout, "Dispatch RawPointHistory Writer Thread starting");
-
-    SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
-
-    try
-    {
-        Cti::Database::DatabaseConnection conn;
-
-        const unsigned ThirtySeconds = 30 * 1000;
-        unsigned loopTimer = 0;
-
-        for(;!bGCtrlC;)
-        {
-            Cti::Timing::MillisecondTimer timer;
-
-            WriteMode wm = WriteMode_WriteChunkIfOverThreshold;
-
-            if( loopTimer > ThirtySeconds )
-            {
-                loopTimer %= ThirtySeconds;
-
-                //  guaranteed write once every 30 seconds
-                wm = WriteMode_WriteChunk;
-
-                if( ShutdownOnThreadTimeout )
-                {
-                    threadStatus.monitorCheck(&CtiVanGogh::sendbGCtrlC);
-                }
-                else
-                {
-                    threadStatus.monitorCheck(CtiThreadRegData::None);
-                }
-            }
-
-            const bool MoreWaiting = writeArchiveDataToDB(conn, wm);
-
-            const unsigned MinimumLoopTime = MoreWaiting ? 50 : 1000;  //  wait 50 ms if more work waiting, 1 second otherwise
-
-            const unsigned elapsed = timer.elapsed();
-
-            if( elapsed < MinimumLoopTime )
-            {
-                Sleep(MinimumLoopTime - elapsed);
-            }
-
-            loopTimer += timer.elapsed();
-        }
-
-        //  Write anything remaining before we exit.
-        writeArchiveDataToDB(conn, WriteMode_WriteAll);
-    }
-    catch(...)
-    {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
-    }
-
-    CTILOG_INFO(dout, "Dispatch RawPointHistory Writer Thread shutting down");
 }
 
 
@@ -4709,7 +4551,7 @@ void CtiVanGogh::reportOnThreads()
 
         boost::posix_time::milliseconds shake(0);
 
-        if( _rphThread.timed_join(shake) )
+        if( ! _rphArchiver.isRunning() )
         {
             CTILOG_ERROR(dout, "RawPointHistory Writer Thread is not running");
         }
@@ -5083,102 +4925,6 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
             }
         }
     }
-}
-
-void CtiVanGogh::submitRowToArchiver(std::unique_ptr<CtiTableRawPointHistory>&& row)
-{
-    CtiLockGuard<CtiCriticalSection> lock(_archiverLock);
-
-    _archiverQueue.emplace_back(std::move(row));
-}
-
-void CtiVanGogh::submitRowsToArchiver(std::vector<std::unique_ptr<CtiTableRawPointHistory>>&& rows)
-{
-    CtiLockGuard<CtiCriticalSection> lock(_archiverLock);
-
-    _archiverQueue.reserve(_archiverQueue.size() + rows.size());
-
-    _archiverQueue.insert(
-            _archiverQueue.end(), 
-            std::make_move_iterator(rows.begin()), 
-            std::make_move_iterator(rows.end()));
-}
-
-unsigned CtiVanGogh::archiverQueueSize()
-{
-    CtiLockGuard<CtiCriticalSection> lock(_archiverLock);
-
-    return _archiverQueue.size();
-}
-
-
-unsigned CtiVanGogh::writeRawPointHistory(Cti::Database::DatabaseConnection &conn, std::vector<std::unique_ptr<CtiTableRawPointHistory>>&& rowsToWrite)
-{
-    using namespace Cti::Database;
-
-    if( ! conn.isValid() )
-    {
-        CTILOG_ERROR(dout, "Invalid Connection to Database");
-        return 0;
-    }
-    
-    static const size_t ChunkSize = 180;  //  each row takes 5 placeholders, so this is 900 - which is close to our (current) 999 limit, but still a round number
-
-    unsigned rowsWritten = 0;
-
-    boost::optional<DatabaseTransaction> transaction;
-
-    try
-    {
-        DatabaseWriter truncator{ conn, CtiTableRawPointHistory::getTempTableTruncationSql(conn.getClientType()) };
-
-        if( ! truncator.execute() )
-        {
-            CTILOG_INFO(dout, "Temp table not detected, attempting to create");
-
-            DatabaseWriter creator{ conn, CtiTableRawPointHistory::getTempTableCreationSql(conn.getClientType()) };
-
-            executeWriter(creator, __FILE__, __LINE__, Cti::Database::LogDebug::Disable);
-        }
-
-        transaction.emplace(conn);
-
-        for( auto chunk : Cti::Coroutines::chunked(rowsToWrite, ChunkSize) )
-        {
-            DatabaseWriter inserter{ conn, CtiTableRawPointHistory::getInsertSql(conn.getClientType(), chunk.size()) };
-
-            boost::range::for_each( chunk, [&](auto& record) {
-                record->fillInserter(inserter);
-            });
-
-            executeWriter(inserter, __FILE__, __LINE__, Cti::Database::LogDebug::Disable);
-
-            rowsWritten += chunk.size();
-        }
-
-        DatabaseWriter finalizer{ conn, CtiTableRawPointHistory::getFinalizeSql(conn.getClientType()) };
-
-        finalizer.executeWithDatabaseException();
-    }
-    catch( DatabaseException & ex )
-    {
-        if( transaction )
-        {
-            transaction->rollback();
-        }
-
-        CTILOG_EXCEPTION_ERROR(dout, ex, "Unable to insert rows into RawPointHistory:\n" <<
-            boost::join(rowsToWrite |
-                boost::adaptors::indirected |
-                boost::adaptors::transformed(
-                    [](const Cti::Loggable &obj) {
-                        return obj.toString(); }), "\n"));
-
-        rowsWritten = 0;
-    }
-
-
-    return rowsWritten;
 }
 
 void CtiVanGogh::checkNumericReasonability(CtiPointDataMsg &pData, CtiMultiWrapper &aWrap, const CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig )
@@ -6178,6 +5924,7 @@ void CtiVanGogh::stopDispatch()
 
     // Interrupt the CtiThread based threads.
     _pendingOpThread.interrupt(CtiThread::SHUTDOWN);
+    _rphArchiver.interrupt();
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
 
     if( ! _connThread.timed_join(boost::posix_time::seconds(30)) )
@@ -6211,10 +5958,10 @@ void CtiVanGogh::stopDispatch()
         CTILOG_WARN(dout, "Terminating timed op thread");
         TerminateThread(_timedOpThread.native_handle(), EXIT_SUCCESS);
     }
-    if( ! _rphThread.timed_join(boost::posix_time::seconds(gConfigParms.getValueAsInt("SHUTDOWN_TERMINATE_TIME", 300))) )
+    if( ! _rphArchiver.tryJoinFor(std::chrono::seconds(gConfigParms.getValueAsInt("SHUTDOWN_TERMINATE_TIME", 300))) )
     {
         CTILOG_WARN(dout, "Terminating RPH thread");
-        TerminateThread(_rphThread.native_handle(), EXIT_SUCCESS);
+        _rphArchiver.terminate();
     }
     ThreadMonitor.join();
 

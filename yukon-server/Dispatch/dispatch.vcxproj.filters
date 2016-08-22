@@ -72,6 +72,9 @@
     <ClCompile Include="tbl_signal.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="rph_archiver.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\con_mgr_vg.h">
@@ -123,6 +126,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\tbl_rawpthistory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\rph_archiver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

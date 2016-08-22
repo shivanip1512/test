@@ -366,6 +366,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClCompile Include="pendingopthread.cpp" />
     <ClCompile Include="pending_info.cpp" />
     <ClCompile Include="ptconnect.cpp" />
+    <ClCompile Include="rph_archiver.cpp" />
     <ClCompile Include="signalmanager.cpp" />
     <ClCompile Include="tagmanager.cpp" />
     <ClCompile Include="tbl_rawpthistory.cpp" />
@@ -388,6 +389,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\pending_info.h" />
     <ClInclude Include="include\pendingOpThread.h" />
     <ClInclude Include="include\ptconnect.h" />
+    <ClInclude Include="include\rph_archiver.h" />
     <ClInclude Include="include\signalmanager.h" />
     <ClInclude Include="include\tagmanager.h" />
     <ClInclude Include="include\tbl_rawpthistory.h" />

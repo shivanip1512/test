@@ -31,8 +31,7 @@
 #include "tbl_contact_notification.h"
 #include "rtdb.h"
 #include "connection_client.h"
-
-#include <boost/ptr_container/ptr_deque.hpp>
+#include "rph_archiver.h"
 
 class CtiPointRegistrationMsg;
 class CtiPointBase;
@@ -65,7 +64,8 @@ private:
 
     CtiPendingOpThread _pendingOpThread;
 
-    boost::thread  _rphThread;       // RawPointHistory....
+    Cti::Dispatch::RawPointHistoryArchiver _rphArchiver;
+
     boost::thread  _archiveThread;
     boost::thread  _timedOpThread;
     boost::thread  _dbSigThread;
@@ -77,13 +77,6 @@ private:
 
     CtiFIFOQueue< CtiSignalMsg > _signalMsgQueue;
 
-    std::vector<std::unique_ptr<CtiTableRawPointHistory>> _archiverQueue;
-    CtiCriticalSection _archiverLock;
-
-    void submitRowsToArchiver(std::vector<std::unique_ptr<CtiTableRawPointHistory>>&& rows);
-    void submitRowToArchiver(std::unique_ptr<CtiTableRawPointHistory>&& row);
-    unsigned archiverQueueSize();
-
     // These are the signals which have not been cleared by a client app
     CtiA2DTranslation_t        _alarmToDestInfo[256];  // This holds translations from alarm ID to DestinationID.
     std::map< long, CtiTableNotificationGroup >  _notificationGroups;
@@ -94,8 +87,6 @@ private:
 
     CtiClientConnection*       _notificationConnection;
     bool ShutdownOnThreadTimeout;
-
-    unsigned writeRawPointHistory(Cti::Database::DatabaseConnection &conn, std::vector<std::unique_ptr<CtiTableRawPointHistory>>&& rowsToWrite);
 
     void checkNumericReasonability(CtiPointDataMsg &pData, CtiMultiWrapper &aWrap, const CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig );
     void checkNumericLimits(int alarm, CtiPointDataMsg &pData, CtiMultiWrapper &aWrap, const CtiPointNumeric &pointNumeric, CtiDynamicPointDispatch &dpd, CtiSignalMsg *&pSig );
@@ -150,15 +141,6 @@ private:
 
 protected:
 
-    enum WriteMode
-    {
-        WriteMode_WriteChunkIfOverThreshold,
-        WriteMode_WriteChunk,
-        WriteMode_WriteAll
-    };
-
-    bool writeArchiveDataToDB(Cti::Database::DatabaseConnection& conn, const WriteMode wm);
-
     CtiVanGogh(CtiPointClientManager& externalMgr, Cti::Test::use_in_unit_tests_only &);  //  For unit tests
     
 public:
@@ -167,6 +149,9 @@ public:
 
     CtiVanGogh();
     virtual ~CtiVanGogh();
+
+    CtiVanGogh(const CtiVanGogh &) = delete;
+    CtiVanGogh &operator=(const CtiVanGogh &) = delete;
 
     void  clientShutdown(CtiServer::ptr_type &CM) override;
     void  commandMsgHandler(CtiCommandMsg *Cmd) override;
@@ -185,7 +170,6 @@ public:
     void  VGTimedOperationThread();
     void  VGDBSignalWriterThread();
     void  VGDBSignalEmailThread();
-    void  VGRPHWriterThread();
     void  VGAppMonitorThread();
     void  VGCacheHandlerThread(int threadNumber);
 

@@ -72,6 +72,11 @@
     <Import Project="$(SolutionDir)build.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="Intentionally sharing intermediate directory with parent project">
+    <IntDirSharingDetected>
+      None
+    </IntDirSharingDetected>
+  </PropertyGroup>
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(SolutionDir)bin-debug\</OutDir>
@@ -358,6 +363,7 @@
     <ClCompile Include="pendingopthread.cpp" />
     <ClCompile Include="pending_info.cpp" />
     <ClCompile Include="ptconnect.cpp" />
+    <ClCompile Include="rph_archiver.cpp" />
     <ClCompile Include="signalmanager.cpp" />
     <ClCompile Include="tagmanager.cpp" />
     <ClCompile Include="tbl_rawpthistory.cpp" />
@@ -387,9 +393,11 @@
     <ClInclude Include="include\pending_info.h" />
     <ClInclude Include="include\pendingOpThread.h" />
     <ClInclude Include="include\ptconnect.h" />
+    <ClInclude Include="include\rph_archiver.h" />
     <ClInclude Include="include\signalmanager.h" />
     <ClInclude Include="include\tagmanager.h" />
     <ClInclude Include="include\tbl_rawpthistory.h" />
+    <ClInclude Include="include\tbl_signal.h" />
     <ClInclude Include="include\vgexe_factory.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
