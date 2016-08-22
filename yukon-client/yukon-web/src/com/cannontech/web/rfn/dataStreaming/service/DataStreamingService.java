@@ -85,14 +85,6 @@ public interface DataStreamingService {
     DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException;
 
     /**
-     * Resends config to all devices
-     * 
-     * @throws DataStreamingConfigException if there is a communication error requesting information from Network
-     *         Manager.
-     */
-    DataStreamingConfigResult resendAll(LiteYukonUser user) throws DataStreamingConfigException;
-
-    /**
      * Returns map of configurations to device collection that contains all assigned devices.
      */
     Map<DataStreamingConfig, DeviceCollection> getAllDataStreamingConfigurationsAndDevices();
@@ -113,4 +105,6 @@ public interface DataStreamingService {
      *         Manager.
      */
     List<DiscrepancyResult> findDiscrepancies();
+
+    DataStreamingConfigResult accept(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException;
 }

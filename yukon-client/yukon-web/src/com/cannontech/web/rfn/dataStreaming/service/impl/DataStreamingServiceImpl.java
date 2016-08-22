@@ -535,13 +535,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         DataStreamingConfig config = convertBehaviorToConfig(behavior);
         return verifyConfiguration(config, deviceIds);
     }
-     
-    @Override
-    public DataStreamingConfigResult resendAll(LiteYukonUser user) throws DataStreamingConfigException {
-        Map<Integer, Integer> deviceIdsToBehaviorIds =
-            deviceBehaviorDao.getDeviceIdsToBehaviorIdMap(TYPE, null, null, null);
-        return resend(new ArrayList<>(deviceIdsToBehaviorIds.keySet()), user);
-    }
    
     @Override
     public DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user)
@@ -635,6 +628,33 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 });
             }
             return sendConfiguration(user, deviceCollection, correlationId);
+        } else {
+            return createEmptyConnectionResult(deviceCollection, "Porter connection is invalid.");
+        }
+    }
+    
+    @Override
+    public DataStreamingConfigResult accept(List<Integer> allDeviceIds, LiteYukonUser user)
+            throws DataStreamingConfigException {
+        
+        DeviceCollection deviceCollection = createDeviceCollectionForIds(allDeviceIds);
+        if (isValidPorterConnection()) {
+            
+            // deviceId, config
+            Map<Integer, Behavior> deviceIdToBehavior =
+                deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, allDeviceIds);
+
+            // deviceId, report
+            Map<Integer, BehaviorReport> deviceIdToReport =
+                deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, allDeviceIds);
+            
+            Set<Integer> deviceIds = new HashSet<>();
+            deviceIds.addAll(deviceIdToBehavior.keySet());
+            deviceIds.addAll(deviceIdToReport.keySet());
+            
+            String correlationId = UUID.randomUUID().toString();
+
+            return createEmptyConnectionResult(deviceCollection, "...");
         } else {
             return createEmptyConnectionResult(deviceCollection, "Porter connection is invalid.");
         }
@@ -884,7 +904,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     /**
-     * Pending report doesn't have channels leaving as is for now untill this is tested with Porter
+     * Pending report doesn't have channels leaving as is for now until this is tested with Porter
         private BehaviorReport buildPendingReport(DataStreamingConfig config, int deviceId, boolean enabled) {
         BehaviorReport report = new BehaviorReport();
         report.setType(TYPE);
