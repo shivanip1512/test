@@ -58,7 +58,7 @@
                         
                         
                         <tags:nameValue2 nameKey=".controlInterval" rowClass="js-not-time-of-day">
-                            <tags:intervalDropdown path="controlInterval" intervals="${analysisIntervals}" />
+                            <tags:intervalDropdown path="controlInterval" intervals="${analysisIntervals}" noneKey=".newDataOnly"/>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".minResponseTime">
