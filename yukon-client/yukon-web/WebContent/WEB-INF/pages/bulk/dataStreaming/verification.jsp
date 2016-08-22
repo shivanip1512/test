@@ -21,7 +21,7 @@
                 <form:hidden path="configuration.id" />
                                 
                 <c:forEach var="exception" items="${verificationInfo.exceptions}">
-                    <div class="user-message error">${exception.message}</div>
+                    <div class="user-message error"><i:inline key="${exception}"/></div>
                 </c:forEach>
 
                 <tags:sectionContainer2 nameKey="devicesUnsupported">

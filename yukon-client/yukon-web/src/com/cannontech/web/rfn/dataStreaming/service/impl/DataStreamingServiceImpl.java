@@ -985,11 +985,11 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 DeviceDataStreamingConfigError errorType = errorDeviceEntry.getValue().getErrorType();
                 //Ignore Gateway overloaded errors, those are covered above
                 if (errorType != DeviceDataStreamingConfigError.GATEWAY_OVERLOADED) {
-                    RfnDevice deviceName = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
-                    log.debug("Data streaming verification response - device error: " + deviceName + ", " + errorType.name());
-                    String deviceError = "Device error for " + deviceName + ": " + errorType;
+                    RfnDevice device = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
+                    log.debug("Data streaming verification response - device error: " + device + ", " + errorType.name());
+                    String deviceError = "Device error for " + device + ": " + errorType;
                     String i18nKey = "device." + errorType.name();
-                    exceptions.add(new DataStreamingConfigException(deviceError , i18nKey, deviceName));
+                    exceptions.add(new DataStreamingConfigException(deviceError , i18nKey, device.getName()));
                 }
             }
         }
