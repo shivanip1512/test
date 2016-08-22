@@ -667,6 +667,19 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         porterConn.cancel(result ,user);
     }
     
+    private void sendNmConfiguration(Multimap<DataStreamingConfig, Integer> configToDeviceIds, String correlationId) throws DataStreamingConfigException {
+        //If only called from the discrepancies page, we can assume that all devices support data streaming. If called from
+        //elsewhere, we may need to check.
+        
+        //Build config message for NM
+        DeviceDataStreamingConfigRequest configRequest = dataStreamingCommService.buildConfigRequest(configToDeviceIds, correlationId);
+        
+        //Send message (Block for response message)
+        DeviceDataStreamingConfigResponse response = dataStreamingCommService.sendConfigRequest(configRequest);
+        
+        processConfigResponse(response);
+    }
+    
     private void sendNmConfiguration(DataStreamingConfig config, List<Integer> deviceIds, String correlationId) throws DataStreamingConfigException {
         //Remove devices from the list that don't support data streaming
         removeDataStreamingUnsupportedDevices(deviceIds);
@@ -675,13 +688,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         //(Some devices may only support some of the configured attributes)
         Multimap<DataStreamingConfig, Integer> configToDeviceIds = splitConfigForDevices(config, deviceIds, null);
         
-        //Build config message for NM
-        DeviceDataStreamingConfigRequest configRequest = dataStreamingCommService.buildConfigRequest(configToDeviceIds, correlationId);
-        
-        //Send verification message (Block for response message)
-        DeviceDataStreamingConfigResponse response = dataStreamingCommService.sendConfigRequest(configRequest);
-        
-        processConfigResponse(response);
+        sendNmConfiguration(configToDeviceIds, correlationId);
     }
     
     private void sendNmConfigurationRemove(List<Integer> deviceIds, String correlationId) throws DataStreamingConfigException {
