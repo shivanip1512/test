@@ -67,7 +67,9 @@
                             <cti:url var="resendUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/resend"/>
                             <cm:dropdownOption key=".resend" href="${resendUrl}" icon="icon-control-repeat-blue"/>
                             <cti:url var="acceptUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/accept"/>
-                            <cm:dropdownOption key=".accept" href="${acceptUrl}" icon="icon-accept"/>
+                            <c:if test="${discrepancy.status != 'PENDING' && discrepancy.actual.attributes.size() > 0}">
+                                <cm:dropdownOption key=".accept" href="${acceptUrl}" icon="icon-accept"/>
+                            </c:if>
                             <cti:url var="removeUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/remove"/>
                             <cm:dropdownOption key=".remove" href="${removeUrl}" icon="icon-cross"/>
                         </cm:dropdown>

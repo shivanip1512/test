@@ -167,7 +167,7 @@ public class DataStreamingController {
         } catch (DataStreamingConfigException e) {
             flash.setError(e.getMessageSourceResolvable());
             model.addAttribute("deviceCollection", deviceCollection);
-            return "redirect:dataStreaming/remove.jsp";
+            return "dataStreaming/remove.jsp";
         }
     }
     
