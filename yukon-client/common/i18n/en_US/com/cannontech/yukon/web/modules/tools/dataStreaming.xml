@@ -28,6 +28,7 @@
     <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.configuration">Configuration</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.attributes">Attribute(s)</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.interval">Interval</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.filter.maxLessThanMinError">Gateway Loading maximum percent must be greater than minimum.</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results">Selected Results</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.devices">Devices</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.deviceName">Device Name</entry>

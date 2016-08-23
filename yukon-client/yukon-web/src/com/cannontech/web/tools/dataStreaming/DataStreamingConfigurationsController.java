@@ -45,6 +45,7 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -245,10 +246,15 @@ public class DataStreamingConfigurationsController {
         model.addAttribute("searchFilters", searchFilter);
         
         List<SummarySearchResult> results = new ArrayList<>();
-        try {
-            results = getSearchResults(searchFilter, accessor, model);
-        } catch (DataStreamingConfigException e) {
-            flash.setError(e.getMessageSourceResolvable());
+        
+        if (searchFilter.getMaxLoadPercent() != null && searchFilter.getMinLoadPercent() != null && searchFilter.getMaxLoadPercent() < searchFilter.getMinLoadPercent()) {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.tools.dataStreaming.summary.filter.maxLessThanMinError"));
+        } else {
+            try {
+                results = getSearchResults(searchFilter, accessor, model);
+            } catch (DataStreamingConfigException e) {
+                flash.setError(e.getMessageSourceResolvable());
+            }
         }
         
         int endIndex = Math.min(startIndex + itemsPerPage, results.size());
