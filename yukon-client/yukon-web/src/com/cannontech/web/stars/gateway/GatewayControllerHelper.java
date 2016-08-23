@@ -78,6 +78,7 @@ public class GatewayControllerHelper {
                     + data.getConnectionStatus()));
             dataJson.put("ip", data.getIpAddress());
             dataJson.put("port", data.getPort());
+            dataJson.put("dataStreamingLoadingPercent", data.getDataStreamingLoadingPercent());
             dataJson.put("lastComm", data.getLastCommStatus());
             dataJson.put("lastCommText", accessor.getMessage(baseKey + "lastCommStatus." + data.getLastCommStatus()));
             dataJson.put("lastCommTimestamp", data.getLastCommStatusTimestamp());

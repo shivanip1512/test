@@ -216,4 +216,7 @@
     <entry key="yukon.web.modules.operator.gateways.username">Username</entry>
     <entry key="yukon.web.modules.operator.gateways.password">Password</entry>
     
+    <entry key="yukon.web.modules.operator.gateways.streamingCapacity">Streaming Capacity</entry>
+    
+    
 </properties>

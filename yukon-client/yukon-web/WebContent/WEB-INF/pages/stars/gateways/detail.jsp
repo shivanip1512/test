@@ -108,6 +108,13 @@
                         <c:if test="${not empty data}"><i:inline key=".appMode.${data.mode}"/></c:if>
                     </span>
                 </tags:nameValue2>
+                <tags:nameValue2 nameKey=".streamingCapacity" data-gateway="${gateway.paoIdentifier.paoId}">
+                    <c:set var="color" value="badge-success"/>
+                    <c:if test="${data.dataStreamingLoadingPercent > 100}">
+                        <c:set var="color" value="badge-error"/>
+                    </c:if>
+                    <span class="badge ${color} cp js-streaming-capacity"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
+                </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
         

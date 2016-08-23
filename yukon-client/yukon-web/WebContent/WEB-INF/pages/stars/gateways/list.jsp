@@ -96,6 +96,7 @@
         <tr>
             <th></th>
             <th><i:inline key=".name"/></th>
+            <th><i:inline key=".streamingCapacity"/></th>
             <th><i:inline key=".serialNumber"/></th>
             <th><i:inline key=".ipaddress"/></th>
             <c:if test="${enableNMGatewayVersion}">
@@ -119,6 +120,13 @@
                             <span class="state-box ${clazz}"></span>
                         </td>
                         <td class="js-gw-name"><a href="${detailUrl}">${fn:escapeXml(gateway.name)}</a></td>
+                        <td class="js-gw-capacity">
+                            <c:set var="color" value="badge-success"/>
+                            <c:if test="${data.dataStreamingLoadingPercent > 100}">
+                                <c:set var="color" value="badge-error"/>
+                            </c:if>
+                            <span class="badge ${color} cp js-streaming-capacity"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
+                        </td>
                         <td class="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
                         <td class="js-gw-ip">${fn:escapeXml(gateway.data.ipAddress)}</td>
                         <c:if test="${enableNMGatewayVersion}">
@@ -315,6 +323,7 @@
         <tr class="js-loaded-row" data-gateway="" data-loaded="true">
             <td class="js-gw-conn-status"><span class="state-box"></span></td>
             <td class="js-gw-name"><a></a></td>
+            <td class="js-gw-capacity"><span class="badge cp js-streaming-capacity"></span></td>
             <td class="js-gw-sn"></td>
             <td class="js-gw-ip"></td>
             <c:if test="${enableNMGatewayVersion}">
@@ -343,6 +352,7 @@
         <tr class="js-loading-row" data-gateway="" data-loaded="false">
             <td class="js-gw-conn-status"><cti:icon icon="icon-loading-bars"/></td>
             <td class="js-gw-name"></td>
+            <td class="js-gw-capacity"></td>
             <td class="js-gw-sn"></td>
             <td colspan="4"><i:inline key=".loadingGatewayData"/></td>
         </tr>
