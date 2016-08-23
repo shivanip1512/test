@@ -23,7 +23,6 @@ import com.cannontech.amr.meter.search.service.MeterSearchService;
 import com.cannontech.common.bulk.collection.DeviceFilterCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
-import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -38,6 +37,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.service.PointService;
+import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
@@ -68,7 +68,6 @@ public class MeterController {
     
     @Autowired private AttributeService attributeService;
     @Autowired private CachingPointFormattingService pointFormattingService;
-    @Autowired private DeviceConfigService deviceConfigService;
     @Autowired private DeviceConfigurationDao deviceConfigDao;
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceFilterCollectionHelper filterCollectionHelper;
@@ -83,6 +82,7 @@ public class MeterController {
     @Autowired private PointService pointService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
     
    
     private static final String baseKey = "yukon.web.modules.amr.meterSearchResults";
@@ -219,6 +219,7 @@ public class MeterController {
         
         /** Other Device Properties */
         boolean configurableDevice = !deviceConfigDao.getAllConfigurationsByType(type).isEmpty();
+        boolean streamableDevice = !dataStreamingAttributeHelper.getSupportedAttributes(type).isEmpty();
         boolean outageSupported = outageDevice && (outageLogAttribute || blinkCountAttribute);
         // Device has internal disconnect or a disconnect collar attached
         boolean disconnectDevice = disconnectService.supportsDisconnect(Collections.singleton(device), true);
@@ -245,7 +246,9 @@ public class MeterController {
         CisDetailRolePropertyEnum cisDetail = globalSettingDao.getEnum(GlobalSettingType.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class);
         model.addAttribute("cisInfoWidgetName", cisDetail.getWidgetName());
         model.addAttribute("showCis", cisDetail != CisDetailRolePropertyEnum.NONE);
-        model.addAttribute("showConfig", configurableDevice);
+        model.addAttribute("showConfig", configurableDevice || streamableDevice);
+        model.addAttribute("configurableDevice", configurableDevice);
+        model.addAttribute("streamableDevice", streamableDevice);
         model.addAttribute("showDisconnect", disconnectDevice);
         model.addAttribute("showEvents", rfEventsDevice);
         model.addAttribute("showOutage", outageSupported && !rfDevice);
