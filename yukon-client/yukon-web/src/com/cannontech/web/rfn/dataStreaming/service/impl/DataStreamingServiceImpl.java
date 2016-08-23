@@ -249,13 +249,36 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     
     @Override
     public List<DiscrepancyResult> findDiscrepancies() {
-        List<DiscrepancyResult> results = new ArrayList<>();
         
         // deviceId, config
         Map<Integer, Behavior> deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByType(TYPE);
 
         // deviceId, report
         Map<Integer, BehaviorReport> deviceIdToReport = deviceBehaviorDao.getBehaviorReportsByType(TYPE);
+        
+        return  findDiscrepancies(deviceIdToBehavior, deviceIdToReport);
+    }
+    
+    @Override
+    public DiscrepancyResult findDiscrepancy(int deviceId){
+        
+        // deviceId, config
+        Map<Integer, Behavior> deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, Lists.newArrayList(deviceId));
+
+        // deviceId, report
+        Map<Integer, BehaviorReport> deviceIdToReport = deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, Lists.newArrayList(deviceId));
+        
+        DiscrepancyResult discrepancy = findDiscrepancies(deviceIdToBehavior, deviceIdToReport).get(0);
+        if(discrepancy.getDeviceId() == 0){
+            return null;
+        }
+        
+        return discrepancy;
+    }
+    
+    
+    private List<DiscrepancyResult> findDiscrepancies( Map<Integer, Behavior> deviceIdToBehavior,  Map<Integer, BehaviorReport> deviceIdToReport){
+        List<DiscrepancyResult> results = new ArrayList<>();
 
         Set<Integer> deviceIds = new HashSet<>();
         deviceIds.addAll(deviceIdToBehavior.keySet());
@@ -269,15 +292,15 @@ public class DataStreamingServiceImpl implements DataStreamingService {
              * Pending entries should only show up after 24 hours.
              */
             BehaviorReport report = deviceIdToReport.get(deviceId);
-            if (report != null && checkPending(report)) {
+            if (checkPending(report)) {
                 Behavior behavior = deviceIdToBehavior.get(deviceId);
 
                 // behavior
                 DataStreamingConfig expectedConfig = convertBehaviorToConfig(behavior);
                 // behavior report
                 DataStreamingConfig actualConfig = convertBehaviorToConfig(report);
-
-                if (expectedConfig == null || hasDiscrepancy(expectedConfig.getAttributes(), actualConfig.getAttributes())) {
+                if (expectedConfig == null
+                    || hasDiscrepancy(expectedConfig.getAttributes(), actualConfig.getAttributes())) {
                     DiscrepancyResult result = new DiscrepancyResult();
                     result.setActual(actualConfig);
                     result.setExpected(expectedConfig);
@@ -293,6 +316,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return results;
     }
     
+
  
     /**
      * Pending entries should only show up after 24 hours.
@@ -550,9 +574,9 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             for (Entry<Integer, Behavior> entry : deviceIdToBehavior.entrySet()) {
                 configsToDeviceIds.put(convertBehaviorToConfig(entry.getValue()), entry.getKey());
             }
-            for (DataStreamingConfig config : configsToDeviceIds.keys()) {
-                sendNmConfiguration(config, Lists.newArrayList(configsToDeviceIds.get(config)), correlationId);
-            }
+         
+           sendNmConfiguration(configsToDeviceIds, correlationId);
+            
             Map<Integer, BehaviorReport> reports =
                 deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, deviceIds);
             deviceIds.forEach(id -> {
@@ -612,7 +636,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Override
     public DataStreamingConfigResult assignDataStreamingConfig(DataStreamingConfig config,
             DeviceCollection deviceCollection, LiteYukonUser user) throws DataStreamingConfigException {
-        
         if (isValidPorterConnection()) {
             List<Integer> deviceIds =
                 getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
@@ -636,25 +659,51 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Override
     public DataStreamingConfigResult accept(List<Integer> allDeviceIds, LiteYukonUser user)
             throws DataStreamingConfigException {
-        
+
         DeviceCollection deviceCollection = createDeviceCollectionForIds(allDeviceIds);
         if (isValidPorterConnection()) {
-            
-            // deviceId, config
-            Map<Integer, Behavior> deviceIdToBehavior =
-                deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, allDeviceIds);
 
             // deviceId, report
             Map<Integer, BehaviorReport> deviceIdToReport =
                 deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, allDeviceIds);
-            
-            Set<Integer> deviceIds = new HashSet<>();
-            deviceIds.addAll(deviceIdToBehavior.keySet());
-            deviceIds.addAll(deviceIdToReport.keySet());
-            
+
             String correlationId = UUID.randomUUID().toString();
 
-            return createEmptyConnectionResult(deviceCollection, "...");
+            Multimap<DataStreamingConfig, Integer> configToDeviceIds = ArrayListMultimap.create();
+            
+            for (Integer deviceId : deviceIdToReport.keySet()) {
+                BehaviorReport report = deviceIdToReport.get(deviceId);
+                // behavior report
+                DataStreamingConfig actualConfig = convertBehaviorToConfig(report);
+
+                Map<Integer, Integer> deviceIdsToBehaviorIds = deviceBehaviorDao.getDeviceIdsToBehaviorIdMap(TYPE,
+                    actualConfig.getAttributes().stream().map(a -> a.getAttribute()).collect(Collectors.toList()),
+                    actualConfig.getSelectedInterval(), null);
+                
+                if (deviceIdsToBehaviorIds.isEmpty()) {
+                    Behavior behavior = convertConfigToBehavior(actualConfig);
+                    behavior.setId(0);
+                    configToDeviceIds.put(actualConfig, deviceId);
+                } else {
+                    int configId = deviceIdsToBehaviorIds.get(deviceId);
+                    configToDeviceIds.put(findDataStreamingConfiguration(configId), deviceId);
+                }
+            }
+
+            sendNmConfiguration(configToDeviceIds, correlationId);
+            
+            for(DataStreamingConfig config: configToDeviceIds.keySet()){
+                if(config.getId() == 0){
+                    Behavior behavior = convertConfigToBehavior(config);
+                    int behaviorId = deviceBehaviorDao.saveBehavior(behavior);
+                    config.setId(behaviorId);
+                }
+                deviceBehaviorDao.assignBehavior(config.getId(), TYPE,
+                    configToDeviceIds.get(config).stream().collect(Collectors.toList()));
+            }
+            deviceBehaviorDao.updateBehaviorReportStatus(TYPE, BehaviorReportStatus.PENDING,
+                new ArrayList<>(deviceIdToReport.keySet()));
+            return sendConfiguration(user, deviceCollection, correlationId);
         } else {
             return createEmptyConnectionResult(deviceCollection, "Porter connection is invalid.");
         }

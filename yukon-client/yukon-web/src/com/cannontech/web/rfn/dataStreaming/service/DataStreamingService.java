@@ -107,4 +107,6 @@ public interface DataStreamingService {
     List<DiscrepancyResult> findDiscrepancies();
 
     DataStreamingConfigResult accept(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException;
+
+    DiscrepancyResult findDiscrepancy(int deviceId);
 }
