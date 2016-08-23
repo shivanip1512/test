@@ -411,7 +411,6 @@
     <ClInclude Include="include\Ccu711.h" />
     <ClInclude Include="include\Ccu721.h" />
     <ClInclude Include="include\CcuIDLC.h" />
-    <ClInclude Include="include\ccusimsvc.h" />
     <ClInclude Include="include\CommInterface.h" />
     <ClInclude Include="include\CommsBehavior.h" />
     <ClInclude Include="include\DelayBehavior.h" />
@@ -429,7 +428,6 @@
     <ClInclude Include="include\PortLogger.h" />
     <ClInclude Include="include\RandomConsumptionBehavior.h" />
     <ClInclude Include="include\ScopedLogger.h" />
-    <ClInclude Include="include\Simulator.h" />
     <ClInclude Include="include\SimulatorLogger.h" />
     <ClInclude Include="include\SimulatorUtils.h" />
     <ClInclude Include="include\Types.h" />

@@ -625,7 +625,6 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
   <ItemGroup>
     <ClInclude Include="include\cmd_device.h" />
     <ClInclude Include="include\cmd_dlc.h" />
-    <ClInclude Include="include\cmd_helper.h" />
     <ClInclude Include="include\cmd_lcr3102.h" />
     <ClInclude Include="include\cmd_lcr3102_DemandResponseSummary.h" />
     <ClInclude Include="include\cmd_lcr3102_hourlyDataLog.h" />
@@ -742,7 +741,6 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\dev_rfn.h" />
     <ClInclude Include="include\dev_rfn410centron.h" />
     <ClInclude Include="include\dev_rfn420centron.h" />
-    <ClInclude Include="include\dev_rfn420focus_al.h" />
     <ClInclude Include="include\dev_rfnCommercial.h" />
     <ClInclude Include="include\dev_rfnMeter.h" />
     <ClInclude Include="include\dev_rfnResidential.h" />
