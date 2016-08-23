@@ -196,7 +196,7 @@ public class DataStreamingController {
             flash.setError(e.getMessageSourceResolvable());
             model.addAttribute("configuration", config);
             model.addAttribute("deviceCollection", deviceCollection);
-            return "redirect:configure";
+            return "dataStreaming/verification.jsp";
         }
     }
     
