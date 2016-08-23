@@ -1168,7 +1168,10 @@ void CtiLoadManager::pointDataMsg( long pointID, double value, unsigned quality,
                                 _snprintf(tempchar,80,"%.*f",3,currentTrigger->getThreshold());
                                 additional += tempchar;
                                 additional += " changed because peak point value: ";
-                                _snprintf(tempchar,80,"%.*f",1,currentTrigger->getPointValue());
+                                _snprintf(tempchar,80,"%.*f",1,currentTrigger->getPeakPointValue());
+                                additional += tempchar;
+                                additional += " current point value: ";
+                                _snprintf(tempchar, 80, "%.*f", 1, currentTrigger->getPointValue());
                                 additional += tempchar;
                                 CtiLoadManager::getInstance()->sendMessageToDispatch(CTIDBG_new CtiSignalMsg(SYS_PID_LOADMANAGEMENT,0,text,additional,GeneralLogType,SignalEvent));
                                 CTILOG_INFO(dout, text << ", " << additional);
