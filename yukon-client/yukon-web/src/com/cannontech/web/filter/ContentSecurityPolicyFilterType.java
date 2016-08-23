@@ -22,7 +22,7 @@ public enum ContentSecurityPolicyFilterType {
         + "https://api.mapbox.com "
         + "https://*.tiles.mapbox.com " 
         + "https://www.google.com/recaptcha/; "),
-    IMG_SRC("img-src 'self' data: Access-Control-Allow-Origin: *" // Access-Control-Allow-Origin: * used for cross origin resource sharing for map images
+    IMG_SRC("img-src 'self' data: Access-Control-Allow-Origin: * " // Access-Control-Allow-Origin: * used for cross origin resource sharing for map images
         + "https://www.google.com/recaptcha/ " 
         + "http://www.google-analytics.com "
         + "http://api.recaptcha.net;"),
