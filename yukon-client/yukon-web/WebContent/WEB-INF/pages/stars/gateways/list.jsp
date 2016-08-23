@@ -125,7 +125,7 @@
                             <c:if test="${data.dataStreamingLoadingPercent > 100}">
                                 <c:set var="color" value="badge-error"/>
                             </c:if>
-                            <span class="badge ${color} cp js-streaming-capacity"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
+                            <span class="badge ${color} cp js-streaming-capacity" title="<i:inline key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
                         </td>
                         <td class="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
                         <td class="js-gw-ip">${fn:escapeXml(gateway.data.ipAddress)}</td>
@@ -323,7 +323,7 @@
         <tr class="js-loaded-row" data-gateway="" data-loaded="true">
             <td class="js-gw-conn-status"><span class="state-box"></span></td>
             <td class="js-gw-name"><a></a></td>
-            <td class="js-gw-capacity"><span class="badge cp js-streaming-capacity"></span></td>
+            <td class="js-gw-capacity"><span class="badge cp js-streaming-capacity" title="<i:inline key=".streamingDetail"/>"></span></td>
             <td class="js-gw-sn"></td>
             <td class="js-gw-ip"></td>
             <c:if test="${enableNMGatewayVersion}">

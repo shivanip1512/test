@@ -113,7 +113,7 @@
                     <c:if test="${data.dataStreamingLoadingPercent > 100}">
                         <c:set var="color" value="badge-error"/>
                     </c:if>
-                    <span class="badge ${color} cp js-streaming-capacity"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
+                    <span class="badge ${color} cp js-streaming-capacity" title="<i:inline key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>
