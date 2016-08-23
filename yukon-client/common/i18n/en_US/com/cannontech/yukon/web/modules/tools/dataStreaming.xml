@@ -60,6 +60,7 @@
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.FAILED">Failed</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.CANCELED">Canceled</entry>
     
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.viewDiscrepancy">View Discrepancy</entry>
    
     
     

@@ -45,36 +45,46 @@
     <div id="${widgetParameters.widgetId}_config_results"></div>
 
     <!-- Data Streaming Configuration -->
-    <tags:nameValue2 nameKey=".dataStreaming" valueClass="full-width" nameClass="wsnw">
-        <span class="fl">
-        <c:choose>
-            <c:when test="${dataStreamingConfig != null}">
-                <a href="javascript:void(0);" data-popup="#data-streaming-popup">${fn:escapeXml(dataStreamingConfig.name)}</a>
-            </c:when>
-            <c:otherwise>
-                <i:inline key="yukon.common.none.choice"/>
-            </c:otherwise>
-        </c:choose>
-        </span>
-        <cti:url var="configureUrl" value="/bulk/dataStreaming/configure">
-            <cti:param name="collectionType" value="idList"/>
-            <cti:param name="idList.ids" value="${deviceId}"/>
-        </cti:url>
-        <cti:url var="removeUrl" value="/bulk/dataStreaming/remove">
-            <cti:param name="collectionType" value="idList"/>
-            <cti:param name="idList.ids" value="${deviceId}"/>
-        </cti:url>
-        <c:set var="buttonClass" value=""/>
-        <c:if test="${dataStreamingConfig != null}">
-            <c:set var="buttonClass" value="button-group fr"/>
-        </c:if>
-        <span class="${buttonClass}">
-            <cti:button nameKey="configure" href="${configureUrl}" />
-            <c:if test="${dataStreamingConfig != null}">
-                <cti:button nameKey="remove" href="${removeUrl}"/>
+    <c:if test="${dataStreamingSupported}">
+        <tags:nameValue2 nameKey=".dataStreaming" valueClass="full-width" nameClass="wsnw">
+            <span class="fl">
+                <c:choose>
+                    <c:when test="${dataStreamingConfig != null}">
+                        <a href="javascript:void(0);" data-popup="#data-streaming-popup">${fn:escapeXml(dataStreamingConfig.name)}</a>
+                    </c:when>
+                    <c:otherwise>
+                        <i:inline key="yukon.common.none.choice"/>
+                    </c:otherwise>
+                </c:choose>
+
+            </span>
+            <c:if test="${dataStreamingDiscrepancy != null}">
+                <cti:url var="discrepancyUrl" value="/tools/dataStreaming/discrepancies"/>
+                <cti:msg2 var="viewDiscrepancy" key="yukon.web.modules.tools.dataStreaming.discrepancies.viewDiscrepancy"/>
+                <cti:icon icon="icon-error" href="${discrepancyUrl}" title="${viewDiscrepancy}"/>
             </c:if>
-        </span>
-    </tags:nameValue2>
+            <cti:url var="configureUrl" value="/bulk/dataStreaming/configure">
+                <cti:param name="collectionType" value="idList"/>
+                <cti:param name="idList.ids" value="${deviceId}"/>
+            </cti:url>
+            <cti:url var="removeUrl" value="/bulk/dataStreaming/remove">
+                <cti:param name="collectionType" value="idList"/>
+                <cti:param name="idList.ids" value="${deviceId}"/>
+            </cti:url>
+            <c:set var="buttonClass" value=""/>
+            <c:if test="${dataStreamingConfig != null}">
+                <c:set var="buttonClass" value="button-group fr"/>
+            </c:if>
+            <span class="${buttonClass}">
+                <cti:button nameKey="configure" href="${configureUrl}" />
+                <c:if test="${dataStreamingConfig != null}">
+                    <cti:button nameKey="remove" href="${removeUrl}"/>
+                </c:if>
+            </span>
+
+        </tags:nameValue2>
+    </c:if>
+
         
 </tags:nameValueContainer2>
 

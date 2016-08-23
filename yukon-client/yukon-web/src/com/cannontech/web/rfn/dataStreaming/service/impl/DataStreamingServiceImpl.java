@@ -261,6 +261,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     
     @Override
     public DiscrepancyResult findDiscrepancy(int deviceId){
+        DiscrepancyResult discrepancy = null;
         
         // deviceId, config
         Map<Integer, Behavior> deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, Lists.newArrayList(deviceId));
@@ -268,9 +269,12 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         // deviceId, report
         Map<Integer, BehaviorReport> deviceIdToReport = deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, Lists.newArrayList(deviceId));
         
-        DiscrepancyResult discrepancy = findDiscrepancies(deviceIdToBehavior, deviceIdToReport).get(0);
-        if(discrepancy.getDeviceId() == 0){
-            return null;
+        List<DiscrepancyResult> discrepancies = findDiscrepancies(deviceIdToBehavior, deviceIdToReport);
+        if (!discrepancies.isEmpty()) {
+            discrepancy = findDiscrepancies(deviceIdToBehavior, deviceIdToReport).get(0);
+            if(discrepancy.getDeviceId() == 0){
+                return null;
+            }
         }
         
         return discrepancy;

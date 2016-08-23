@@ -1,5 +1,6 @@
 package com.cannontech.web.widget;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,6 +25,8 @@ import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DeviceDao;
@@ -32,6 +35,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
+import com.cannontech.web.rfn.dataStreaming.model.DiscrepancyResult;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -48,6 +52,7 @@ public class ConfigWidget extends WidgetControllerBase {
     @Autowired private DeviceConfigEventLogService eventLogService;
     @Autowired private DataStreamingService dataStreamingService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
     
     @Autowired
     public ConfigWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
@@ -83,14 +88,23 @@ public class ConfigWidget extends WidgetControllerBase {
         mav.addObject("currentConfigName", config != null ? config.getName() : CtiUtilities.STRING_NONE);
         
         //check for data streaming config
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        DataStreamingConfig dsConfig = dataStreamingService.findDataStreamingConfigurationForDevice(deviceId);
-        if (dsConfig != null) {
-            dsConfig.setAccessor(accessor);
+        List<BuiltInAttribute> attributes = new ArrayList<>(dataStreamingAttributeHelper.getSupportedAttributes(device.getPaoIdentifier().getPaoType()));
+        if (attributes.isEmpty()) {
+            mav.addObject("dataStreamingSupported", false);
+        } else {
+            mav.addObject("dataStreamingSupported", true);
+            YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            DataStreamingConfig dsConfig = dataStreamingService.findDataStreamingConfigurationForDevice(deviceId);
+            if (dsConfig != null) {
+                dsConfig.setAccessor(accessor);
+            }
+            mav.addObject("dataStreamingConfig", dsConfig);
+            
+            DiscrepancyResult discrepancy = dataStreamingService.findDiscrepancy(deviceId);
+            mav.addObject("dataStreamingDiscrepancy", discrepancy);
         }
-        mav.addObject("dataStreamingConfig", dsConfig);
-        
+
         return mav;
     }
 
