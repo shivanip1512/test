@@ -10,14 +10,10 @@
 #include "database_writer.h"
 #include "database_util.h"
 #include "utility.h"
-#include "PointResponseDao.h"
-#include "DatabaseDaoFactory.h"
 #include "PointResponseManager.h"
 
 using namespace Cti::CapControl;
 using namespace std;
-
-using Database::DatabaseDaoFactory;
 
 extern unsigned long _CC_DEBUG;
 extern bool _USE_FLIP_FLAG;
@@ -1592,11 +1588,6 @@ void CtiCCCapBank::addPointResponse(Cti::CapControl::PointResponse pointResponse
     }
 }
 
-PointResponseManager& CtiCCCapBank::getPointResponseManager()
-{
-    return _pointResponseManager;
-}
-
 bool CtiCCCapBank::addMonitorPoint(CtiCCMonitorPointPtr monPoint)
 {
     for ( int index = 0; index < _monitorPoint.size(); ++index )
@@ -2080,18 +2071,7 @@ void CtiCCCapBank::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
 
 void CtiCCCapBank::dumpDynamicPointResponseData(Cti::Database::DatabaseConnection& conn)
 {
-    //Building Dao manually here because this updating should be handled in the store anyways.
-    PointResponseDaoPtr pointResponseDao = DatabaseDaoFactory().getPointResponseDao();
-
-    for each (PointResponse pointResponse in getPointResponses())
-    {
-        bool ret = pointResponseDao->save(conn,pointResponse);
-
-        if( (ret == false) && (_CC_DEBUG & CC_DEBUG_DATABASE) )
-        {
-            CTILOG_DEBUG(dout, "Point Response save failed. ");
-        }
-    }
+    _pointResponseManager.serializeUpdatedPointResponses( conn );
 }
 
 void CtiCCCapBank::dumpDynamicPointResponseData()

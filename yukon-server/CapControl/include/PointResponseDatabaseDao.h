@@ -23,12 +23,12 @@ public:
     virtual std::vector<PointResponse> getPointResponsesBySubBusId(int subBusId);
     virtual std::vector<PointResponse> getAllPointResponses();
 
-    virtual bool save(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse);
+    virtual bool save(Cti::Database::DatabaseConnection& databaseConnection, PointResponse & pointResponse);
 
 protected:
 
-    virtual bool update(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse);
-    virtual bool insert(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse);
+    virtual bool update(Cti::Database::DatabaseConnection& databaseConnection, PointResponse & pointResponse);
+    virtual bool insert(Cti::Database::DatabaseConnection& databaseConnection, PointResponse & pointResponse);
 
 private:
 

@@ -7,6 +7,7 @@
 #include "capcontroller.h"
 #include "tbl_pt_alarm.h"
 #include "MsgVerifyBanks.h"
+#include "Exceptions.h"
 
 using Cti::CapControl::PointResponse;
 using Cti::CapControl::PointResponsePtr;

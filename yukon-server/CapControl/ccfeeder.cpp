@@ -8,9 +8,9 @@
 #include "msg_signal.h"
 #include "msg_lmcontrolhistory.h"
 #include "tbl_pt_alarm.h"
+#include "Exceptions.h"
 
 using Cti::CapControl::PointResponse;
-using Cti::CapControl::PointResponseManager;
 using Cti::CapControl::createPorterRequestMsg;
 using Cti::CapControl::createBankOpenRequest;
 using Cti::CapControl::createBankCloseRequest;

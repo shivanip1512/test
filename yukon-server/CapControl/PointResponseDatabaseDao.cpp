@@ -106,7 +106,7 @@ vector<PointResponse> PointResponseDatabaseDao::getAllPointResponses()
     return pointResponses;
 }
 
-bool PointResponseDatabaseDao::update(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse)
+bool PointResponseDatabaseDao::update(Cti::Database::DatabaseConnection& databaseConnection, PointResponse & pointResponse)
 {
     static const string sql = "UPDATE dynamicccmonitorpointresponse "
                                     " SET PreOpValue = ?,Delta = ?,StaticDelta = ? "
@@ -135,7 +135,7 @@ bool PointResponseDatabaseDao::update(Cti::Database::DatabaseConnection& databas
     return executeUpdater( dbUpdater, __FILE__, __LINE__, logDebug, LogNoRowsAffected::Disable );
 }
 
-bool PointResponseDatabaseDao::insert(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse)
+bool PointResponseDatabaseDao::insert(Cti::Database::DatabaseConnection& databaseConnection, PointResponse & pointResponse)
 {
     static const string sql = "INSERT INTO dynamicccmonitorpointresponse values(?, ?, ?, ?, ?)";
 
@@ -157,15 +157,22 @@ bool PointResponseDatabaseDao::insert(Cti::Database::DatabaseConnection& databas
     return executeCommand( dbInserter, __FILE__, __LINE__, LogDebug(_CC_DEBUG & CC_DEBUG_DATABASE) );
 }
 
-bool PointResponseDatabaseDao::save(Cti::Database::DatabaseConnection& databaseConnection, PointResponse pointResponse)
+bool PointResponseDatabaseDao::save(Cti::Database::DatabaseConnection& databaseConnection, PointResponse & pointResponse)
 {
-    //Attempt to update, if false insert it.
-    if( ! update( databaseConnection,pointResponse ))
+    if ( pointResponse.isDirty() ) 
     {
-        return insert(databaseConnection,pointResponse);
+        if ( update( databaseConnection, pointResponse )
+             || insert( databaseConnection, pointResponse ) )
+        {
+            pointResponse.setDirty( false );
+        }
+        else
+        {
+            return false;
+        }
     }
 
-    return true; // Update was successful!
+    return true;
 }
 
 bool PointResponseDatabaseDao::performDatabaseOperation(DatabaseReader& reader, vector<PointResponse>& pointResponses)

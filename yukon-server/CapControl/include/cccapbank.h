@@ -222,7 +222,6 @@ public:
     Cti::CapControl::PointResponse getPointResponse(const CtiCCMonitorPoint & point);
     std::vector<Cti::CapControl::PointResponse> getPointResponses();
     void addPointResponse(Cti::CapControl::PointResponse pointResponse);
-    Cti::CapControl::PointResponseManager& getPointResponseManager();
 
     bool handlePointResponseDeltaChange(long pointId, double newDelta, bool staticDelta);
     bool updatePointResponseDelta(const CtiCCMonitorPoint & point);

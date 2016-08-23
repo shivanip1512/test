@@ -1,13 +1,12 @@
 #include "precompiled.h"
 
 #include "PointResponseManager.h"
+#include "ccmonitorpoint.h"
+#include "Exceptions.h"
+#include "DatabaseDaoFactory.h"
+#include "ccid.h"
 
-#include <utility>
-#include <algorithm>
-
-using std::vector;
-using std::map;
-using std::pair;
+extern unsigned long    _CC_DEBUG;
 
 
 namespace Cti {
@@ -20,7 +19,7 @@ PointResponseManager::PointResponseManager()
 
 bool PointResponseManager::addPointResponse(PointResponse pointResponse)
 {
-    pair<PointResponseMap::iterator,bool> ret;
+    std::pair<PointResponseMap::iterator,bool> ret;
 
     ret = _pointResponses.insert(std::make_pair(pointResponse.getPointId(),pointResponse));
 
@@ -86,7 +85,7 @@ PointResponse PointResponseManager::getPointResponse(long pointId)
 
 std::vector<PointResponse> PointResponseManager::getPointResponses()
 {
-    vector<PointResponse> pointResponses;
+    std::vector<PointResponse> pointResponses;
 
     pointResponses.reserve(_pointResponses.size());
 
@@ -96,6 +95,22 @@ std::vector<PointResponse> PointResponseManager::getPointResponses()
     }
 
     return pointResponses;
+}
+
+void PointResponseManager::serializeUpdatedPointResponses( Cti::Database::DatabaseConnection & connection )
+{
+    using Database::DatabaseDaoFactory;
+
+    PointResponseDaoPtr dao = DatabaseDaoFactory().getPointResponseDao();
+
+    for ( auto & mapEntry : _pointResponses )
+    {
+        if ( ! dao->save( connection, mapEntry.second )
+             && ( _CC_DEBUG & CC_DEBUG_DATABASE ) )
+        {
+            CTILOG_DEBUG( dout, "PointResponse serialization failed." );
+        }
+    }
 }
 
 }

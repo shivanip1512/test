@@ -9,6 +9,7 @@
 #include "ccsubstationbusstore.h"
 #include "ExecutorFactory.h"
 #include "MsgCapControlServerResponse.h"
+#include "Exceptions.h"
 
 extern unsigned long _CC_DEBUG;
 
