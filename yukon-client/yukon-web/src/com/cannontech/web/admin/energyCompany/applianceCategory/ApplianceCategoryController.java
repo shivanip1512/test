@@ -323,6 +323,7 @@ public class ApplianceCategoryController {
             List<MessageSourceResolvable> messages =
                 YukonValidationUtils.errorsForBindingResult(bindingResult);
             flashScope.setMessage(messages, FlashScopeMessageType.ERROR);
+            model.addAttribute("ecId", ecId);
             return edit(PageEditMode.EDIT, model, applianceCategory, userContext, ecId);
         }
 
