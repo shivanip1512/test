@@ -20,6 +20,20 @@ yukon.bulk.dataStreaming = (function () {
             $('.js-new-configuration').toggleClass('dn', true);
         }
     };
+    
+    var showConfigurationTable = function () {
+        var toggle = $('.js-configuration-type'),
+        configTypeRow = toggle.closest('tr'),
+        newConfig = configTypeRow.find('.switch-btn-checkbox').prop('checked');
+        if (!newConfig) {
+            var id = $('.js-existing-configuration').find(":selected").val();
+            if (id > 0) {
+                $('.js-selected-config').show();
+            }
+            $('.js-config-table').hide();
+            $('#configTable_' + id).show();
+        }
+    };
 
     'use strict';
     var initialized = false,
@@ -54,6 +68,7 @@ yukon.bulk.dataStreaming = (function () {
 //              show/hide information based on New or Existing Configuration selection
                 $(document).on('click', '.js-configuration-type', function () {
                     enableDisable();
+                    showConfigurationTable();
                 });
 
 //              Validate user has either selected an existing config or turned at least one attribute on
@@ -82,16 +97,10 @@ yukon.bulk.dataStreaming = (function () {
                 
                 //  display table showing full data streaming configuration
                 $(document).on('change', '.js-existing-configuration', function () {
-                    var id = $(this).find(":selected").val();
-                    $('.js-selected-config').hide();
-                    if (id > 0) {
-                        $('.js-selected-config').show();
-                    }
-                    $('.js-config-table').hide();
-                    $('#configTable_' + id).show();
+                    showConfigurationTable();
                 });
                 
-                
+                showConfigurationTable();
                 initialized = true;
                 _canceled = false;
 
