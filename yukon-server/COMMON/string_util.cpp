@@ -1064,6 +1064,11 @@ StreamBufferSink& FormattedList::add()
     return _itemList.back()._streamBuffer;
 }
 
+bool FormattedList::empty() const
+{
+    return _itemList.empty();
+}
+
 std::string FormattedList::toString() const
 {
     const_cast<FormattedList*>(this)->updateLastItem();

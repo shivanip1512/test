@@ -285,6 +285,7 @@ public:
 
     // write list
     std::string toString() const override;
+    bool empty() const;
 };
 
 } // namespace Cti

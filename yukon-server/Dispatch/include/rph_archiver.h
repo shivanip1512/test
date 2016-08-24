@@ -46,6 +46,10 @@ protected:
 
     bool writeArchiveDataToDB(Cti::Database::DatabaseConnection& conn, const WriteMode wm);
 
+    std::vector<std::unique_ptr<CtiTableRawPointHistory>> getFilteredRows(size_t maximum);
+
+    bool wasPreviouslyArchived(const CtiTableRawPointHistory& row);
+
 private:
 
     void mainThread();

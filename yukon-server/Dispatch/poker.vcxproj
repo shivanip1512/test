@@ -355,11 +355,9 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\control_history_association.h" />
     <ClInclude Include="include\ctivangogh.h" />
     <ClInclude Include="include\dispsvc.h" />
-    <ClInclude Include="include\dllvg.h" />
     <ClInclude Include="include\exe_ptchg.h" />
     <ClInclude Include="include\exe_signal.h" />
     <ClInclude Include="include\id_vg.h" />
-    <ClInclude Include="include\id_vgdll.h" />
     <ClInclude Include="include\mgr_ptclients.h" />
     <ClInclude Include="include\pendable.h" />
     <ClInclude Include="include\pending_info.h" />
