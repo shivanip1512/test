@@ -19,6 +19,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -55,7 +56,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
         @Override
         public void extractValues(MapSqlParameterSource parameterHolder, LiteYukonGroup group) {
             parameterHolder.addValue("GroupName", group.getGroupName());
-            parameterHolder.addValue("GroupDescription", group.getGroupDescription());
+            parameterHolder.addValue("GroupDescription", SqlUtils.convertStringToDbValue(group.getGroupDescription()));
         }
     };
     
@@ -94,7 +95,7 @@ public class YukonGroupDaoImpl implements YukonGroupDao {
             LiteYukonGroup group = new LiteYukonGroup();
             group.setGroupID(rs.getInt("GroupId"));
             group.setGroupName(rs.getString("GroupName"));
-            group.setGroupDescription(rs.getString("GroupDescription"));
+            group.setGroupDescription(SqlUtils.convertDbValueToString(rs.getString("GroupDescription")));
             
             return group;
         }
