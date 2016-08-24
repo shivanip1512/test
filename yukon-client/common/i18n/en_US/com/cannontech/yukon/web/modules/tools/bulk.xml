@@ -407,6 +407,7 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.gatewayLoadingIncrease">Gateway {0} loading will increase from {1}% to {2}%.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.gatewayLoadingDecrease">Gateway {0} loading will decrease from {1}% to {2}%.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.gatewayLoadingSame">Gateway {0} loading will remain the same at {1}%.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.allDevicesSupported">All devices support the selected attributes.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.devicesUnsupported.title">Devices Not Supported</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.devicesUnsupported">{0} {0,choice,1#device does|1&lt;devices do} not support {1}.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.commsError">A communication error occurred between Yukon and Network Manager.</entry>

@@ -7,19 +7,21 @@
             </tr>
         </thead>
         <c:forEach var="configAtt" varStatus="status" items="${config.attributes}">
-            <tr>
-                <td>${configAtt.attribute.description}</td>
-                <td>${configAtt.interval}
-                    <c:choose>
-                        <c:when test="${configAtt.interval > 1}">
-                                <i:inline key=".minutes"/>
-                            </c:when>
-                            <c:otherwise>
-                                <i:inline key=".minute"/>
-                            </c:otherwise>
-                        </c:choose>
-                   </td>
-                </tr>
+            <c:if test="${configAtt.attributeOn}">
+                <tr>
+                    <td>${configAtt.attribute.description}</td>
+                    <td>${configAtt.interval}
+                        <c:choose>
+                            <c:when test="${configAtt.interval > 1}">
+                                    <i:inline key=".minutes"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <i:inline key=".minute"/>
+                                </c:otherwise>
+                            </c:choose>
+                       </td>
+                    </tr>
+                </c:if>
             </c:forEach>
     </table>
 </cti:msgScope>

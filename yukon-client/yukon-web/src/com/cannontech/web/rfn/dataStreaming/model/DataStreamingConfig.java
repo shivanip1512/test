@@ -62,14 +62,20 @@ public class DataStreamingConfig implements Cloneable {
      * 
      */
     public String getName() {
-        if (accessor != null && attributes.size() > 0) {
-            String attrName = accessor.getMessage(attributes.get(0).getAttribute());
-            int interval = attributes.get(0).getInterval();
-            if (attributes.size() == 1) {
+        List<DataStreamingAttribute> onAttributes = new ArrayList<>();
+        attributes.forEach(attribute -> {
+            if (attribute.getAttributeOn()) {
+                onAttributes.add(attribute);
+            }
+        });
+        if (accessor != null && onAttributes.size() > 0) {
+            String attrName = accessor.getMessage(onAttributes.get(0).getAttribute());
+            int interval = onAttributes.get(0).getInterval();
+            if (onAttributes.size() == 1) {
                 name = accessor.getMessage(nameKey, attrName, 0, interval);
             } else {
-                String attrName2 = accessor.getMessage(attributes.get(1).getAttribute());
-                name = accessor.getMessage(nameKey, attrName + ", " + attrName2, attributes.size() - 2, interval);
+                String attrName2 = accessor.getMessage(onAttributes.get(1).getAttribute());
+                name = accessor.getMessage(nameKey, attrName + ", " + attrName2, onAttributes.size() - 2, interval);
             }
         }
         return name;

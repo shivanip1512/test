@@ -26,9 +26,16 @@
 
                 <tags:sectionContainer2 nameKey="devicesUnsupported">
                     <div class="scroll-md">
+                        <c:set var="allDevicesSupported" value="true"/>
                         <c:forEach var="deviceUnsupported" items="${verificationInfo.deviceUnsupported}">
-                            <div><cti:icon icon="icon-error"/>${deviceUnsupported.detail}<tags:selectedDevicesPopup deviceCollection="${deviceUnsupported.deviceCollection}"/></div>
+                            <c:if test="${deviceUnsupported.deviceIds.size() > 0}">
+                                <c:set var="allDevicesSupported" value="false"/>
+                                <div><cti:icon icon="icon-error"/>${deviceUnsupported.detail}<tags:selectedDevicesPopup deviceCollection="${deviceUnsupported.deviceCollection}"/></div>
+                            </c:if>
                         </c:forEach>
+                        <c:if test="${allDevicesSupported}">
+                            <div><cti:icon icon="icon-accept"/><i:inline key=".allDevicesSupported"/></div>
+                        </c:if>
                     </div>
                 </tags:sectionContainer2>
                 
