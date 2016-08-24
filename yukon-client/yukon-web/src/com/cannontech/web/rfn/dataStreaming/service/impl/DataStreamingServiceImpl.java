@@ -65,6 +65,9 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
@@ -115,6 +118,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private PointDao pointDao;
 
     @Override
     public DataStreamingConfigResult findDataStreamingResult(String resultKey) {
@@ -279,8 +284,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         
         return discrepancy;
     }
-    
-    
+     
     private List<DiscrepancyResult> findDiscrepancies( Map<Integer, Behavior> deviceIdToBehavior,  Map<Integer, BehaviorReport> deviceIdToReport){
         List<DiscrepancyResult> results = new ArrayList<>();
 
@@ -288,6 +292,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         deviceIds.addAll(deviceIdToBehavior.keySet());
         deviceIds.addAll(deviceIdToReport.keySet());
 
+        Multimap<Integer, Integer> devicePointIds = pointDao.getPaoPointMultimap(deviceIds);
+        
         for (int deviceId : deviceIds) {
             /*
              * Assume that each device assigned to a behavior has an entry in behavior report table.
@@ -309,7 +315,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     result.setActual(actualConfig);
                     result.setExpected(expectedConfig);
                     result.setStatus(report.getStatus());
-                    result.setLastCommunicated(new Instant());
+                    result.setLastCommunicated(getLastCommunicatedTime(deviceId, devicePointIds));
                     result.setPaoName(serverDatabaseCache.getAllPaosMap().get(deviceId).getPaoName());
                     result.setDeviceId(deviceId);
                     results.add(result);
@@ -319,8 +325,22 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
         return results;
     }
-    
 
+    /**
+     * Finds last communicated time by looking at all the points for the device and getting the latest time.
+     */
+    private Instant getLastCommunicatedTime(Integer deviceId, Multimap<Integer, Integer> devicePointIds) {
+        Collection<Integer> points = devicePointIds.get(deviceId);
+        // Gets point values from cache, if the points values are not available in cache, asks dispatch for the point
+        // data
+        Set<? extends PointValueQualityHolder> pointValues =
+            asyncDynamicDataSource.getPointValues(Sets.newHashSet(points));
+        if (!pointValues.isEmpty()) {
+            Date maxDate = pointValues.stream().map(u -> u.getPointDataTimeStamp()).max(Date::compareTo).get();
+            return new Instant(maxDate);
+        }
+        return null;
+    }
  
     /**
      * Pending entries should only show up after 24 hours.

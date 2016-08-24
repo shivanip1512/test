@@ -178,6 +178,32 @@ public class DataStreamingFakeData {
         return json;
     }
     
+    private String getSameResponseAsBehaviorJson(int deviceId) {
+        Map<Integer, BehaviorReport>  reports = deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(BehaviorType.DATA_STREAMING, Lists.newArrayList(deviceId));
+        BehaviorReport report = reports.get(deviceId);
+        ReportedDataStreamingConfig config = new ReportedDataStreamingConfig();
+        boolean streamingEnabled = new Boolean(report.getValuesMap().get(STREAMING_ENABLED_STRING));
+        List<ReportedDataStreamingAttribute> reportedAttributes = new ArrayList<>();
+        config.setStreamingEnabled(streamingEnabled);
+        config.setConfiguredMetrics(reportedAttributes);
+        for (BuiltInAttribute attribute : attributes) {
+            ReportedDataStreamingAttribute metric = new ReportedDataStreamingAttribute();
+            boolean isAttributeEnabled = new Random().nextBoolean();
+            metric.setEnabled(isAttributeEnabled);
+            metric.setInterval(1);
+            metric.setAttribute(attribute.getKey());
+            reportedAttributes.add(metric);
+        }
+        String json = "";
+        try {
+            json = JsonUtils.toJson(config);
+        } catch (JsonProcessingException e) {
+            log.warn("Caught exception in getResponseJson", e);
+        }
+
+        return json;
+    }
+    
     public static double getLoadingPercentForGateway(){
         boolean isTrue = new Random().nextBoolean();
         if(isTrue){

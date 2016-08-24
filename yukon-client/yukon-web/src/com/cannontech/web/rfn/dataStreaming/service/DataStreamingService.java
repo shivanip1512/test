@@ -106,7 +106,23 @@ public interface DataStreamingService {
      */
     List<DiscrepancyResult> findDiscrepancies();
 
-    DataStreamingConfigResult accept(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException;
-
+    /**
+     * Attempts to find discrepancies by comparing behavior to behavior report for a single device.
+     * 
+     * @return null is returned if there is no discrepancy
+     * @throws DataStreamingConfigException if there is a communication error requesting information from Network
+     *         Manager.
+     */
     DiscrepancyResult findDiscrepancy(int deviceId);
+    
+    /**
+     * 1. For each device finds behavior report
+     * 2. Attempts to figure if behavior exists matching the the behavior report.
+     *    a. If behavior doesn't exist creates a new behavior
+     * 3. Assigns device to behavior that was found/created
+     * 
+     * @throws DataStreamingConfigException if there is a communication error requesting information from Network
+     *         Manager.
+     */
+    DataStreamingConfigResult accept(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException;
 }
