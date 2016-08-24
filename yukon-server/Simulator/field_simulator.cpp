@@ -19,7 +19,7 @@
 
 BOOL WINAPI CtrlHandler(DWORD fdwCtrlType);
 
-PROJECT_ID("CCU Simulator");
+PROJECT_ID("Field Simulator");
 
 bool gQuit = false;
 HANDLE gQuitEvent = NULL;

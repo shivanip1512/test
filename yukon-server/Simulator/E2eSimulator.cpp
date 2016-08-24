@@ -18,11 +18,15 @@
 #include "amq_connection.h"
 #include "amq_constants.h"
 
+#include "CParms.h"
+
 extern "C" {
 #include "coap/pdu.h"
 #include "coap/block.h"
 #undef E  //  CoAP define that interferes with templates
 }
+
+#include <random>
 
 using namespace Cti::Messaging::ActiveMQ;
 using namespace Cti::Messaging::Rfn;
@@ -84,6 +88,9 @@ void E2eSimulator::stop()
     conn.reset();
 }
 
+std::mt19937_64 rd { static_cast<unsigned long long>(std::time(nullptr)) };
+std::uniform_real_distribution<double> dist{ 0.0, 1.0 };
+
 void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
 {
     CTILOG_INFO(dout, "Received message on RFN E2E queue");
@@ -108,7 +115,21 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
                 return;
             }
 
+            //  NM timeout
+            if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_NM_TIMEOUT_CHANCE", 0.1) )
+            {
+                CTILOG_INFO(dout, "Not sending NM acknowledgement for " << requestMsg->rfnIdentifier);
+                return;
+            }
+                
             sendNetworkManagerRequestAck(requestMsg->header, msg->getCMSReplyTo());
+
+            //  E2E timeout
+            if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_TIMEOUT_CHANCE", 0.1) )
+            {
+                CTILOG_INFO(dout, "Not sending E2E confirm for " << requestMsg->rfnIdentifier);
+                return;
+            }
 
             sendE2eDataConfirm(*requestMsg);
 

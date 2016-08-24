@@ -166,8 +166,8 @@ metric_response mangleResponse(metric_response contents, double mangleFactor)
 }
 
 
-std::mt19937_64 rd { static_cast<unsigned long long>(std::time(nullptr)) };
-std::uniform_real_distribution<double> dist{ 0.0, 1.0 };
+extern std::mt19937_64 rd;
+extern std::uniform_real_distribution<double> dist;
 
 std::vector<unsigned char> makeDataStreamingResponse(const unsigned char responseCode, const metric_response& original)
 {
