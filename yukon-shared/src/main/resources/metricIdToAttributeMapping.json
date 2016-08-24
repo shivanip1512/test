@@ -50,6 +50,8 @@
 
                 { "metricId" : 114, "attribute" : "MAXIMUM_VOLTAGE" },
                 { "metricId" : 115, "attribute" : "VOLTAGE" },
+                
+                { "metricId" : 128, "attribute" : "NEUTRAL_CURRENT" },
 
                 { "metricId" : 162, "attribute" : "POWER_FACTOR_PHASE_A" },
                 { "metricId" : 163, "attribute" : "POWER_FACTOR_PHASE_B" },
