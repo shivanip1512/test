@@ -390,7 +390,7 @@ bool StatisticsManager::pruneDaily(Database::DatabaseConnection &conn)
 void StatisticsManager::loadPaoStatistics(const std::set<long> &pao_ids)
 {
     //  Grab at least ten at once, even if they specify a negative number
-    const int max_ids_per_select = std::max(10, gConfigParms.getValueAsInt("MAX_IDS_PER_STATISTICS_SELECT", 1000));
+    const int max_ids_per_select = std::max(10, gConfigParms.getValueAsInt("MAX_IDS_PER_STATISTICS_SELECT", 950));
 
     Timing::DebugTimer timer("StatisticsManager::loadPaoStatistics()");
 

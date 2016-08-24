@@ -14,6 +14,7 @@
 #include "database_connection.h"
 #include "database_reader.h"
 #include "database_util.h"
+#include "coroutine_util.h"
 
 #include <sstream>
 
@@ -219,11 +220,20 @@ void CtiRouteManager::RefreshList(CtiRouteBase* (*Factory)(Cti::RowReader &))
                         paoids.insert(sp->first);
                     }
                 }
-                refreshStaticPaoInfo( paoids );
+                {   // chunk collection so as not to break the reader
+                    unsigned long max_size = gConfigParms.getValueAsULong("MAX_IDS_PER_POINT_SELECT", 950);
 
-                // Load encryption keys for any routes that may have one
+                    for( const auto& id_chunk : Cti::Coroutines::chunked(paoids, max_size) )
+                    {
+                        std::set<long> idSubset{ id_chunk.begin(), id_chunk.end() };
 
-                refreshRouteEncryptionKeys( paoids );
+                        refreshStaticPaoInfo( idSubset );
+
+                        // Load encryption keys for any routes that may have one
+
+                        refreshRouteEncryptionKeys( idSubset );
+                    }
+                }
             }
 
         }   // Temporary results are destroyed to free the connection

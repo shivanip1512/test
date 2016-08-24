@@ -20,6 +20,7 @@
 #include "database_reader.h"
 #include "database_util.h"
 #include "std_helper.h"
+#include "coroutine_util.h"
 
 using namespace std;
 
@@ -123,7 +124,16 @@ void TcpPortHandler::loadDeviceProperties(const vector<const CtiDeviceSingle *> 
         }
     }
 
-    loadDeviceTcpProperties(device_ids);
+    {   // chunk collection so as not to break the reader
+        unsigned long max_size = gConfigParms.getValueAsULong("MAX_IDS_PER_POINT_SELECT", 950);
+
+        for( const auto& id_chunk : Cti::Coroutines::chunked(device_ids, max_size) )
+        {
+            std::set<long> idSubset{ id_chunk.begin(), id_chunk.end() };
+
+            loadDeviceTcpProperties(idSubset);
+        }
+    }
 }
 
 
