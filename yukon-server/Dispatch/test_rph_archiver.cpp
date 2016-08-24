@@ -105,6 +105,19 @@ BOOST_AUTO_TEST_CASE( test_wasPreviouslyArchived )
 	BOOST_CHECK_EQUAL( true, a.wasPreviouslyArchived(b + 1h) );
 	BOOST_CHECK_EQUAL( true, a.wasPreviouslyArchived(b - 1h) );
 	BOOST_CHECK_EQUAL( true, a.wasPreviouslyArchived(b + 15min) );
+
+	//  insert something that is far future
+	BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 36h) );
+	BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b + 36h) );
+
+	//  and confirm everything else has been removed
+	BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b) );
+	BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 1h) );
+	BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 1h) );
+	BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 35h) );
+	BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 36h) );
+	BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 15min) );
+	BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 15min * 32) );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

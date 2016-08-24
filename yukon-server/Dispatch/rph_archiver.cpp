@@ -37,6 +37,14 @@ RawPointHistoryArchiver::~RawPointHistoryArchiver() = default;
 
 namespace {
 
+//  Spreads out intervals by a given factor.  
+//    For example, takes a 1 hour bitmask of 
+//      01011011
+//    and given a factor of 4, turns it to a 15 minute bitmask of
+//      00000001000000010001000000010001
+//  Only adjusts as many bits as will fit into a 64-bit ULL.
+//    Will miss a couple bits on the top end of the 64 bits for uneven factors (like 3, which only converts 21 bits into 63).
+//    Since this method is currently feeding a 37-bit field, that's not a big deal yet.
 unsigned long long adjust_intervals(unsigned long long intervals, unsigned factor)
 {
     auto mask = 0x1ull << (64 / factor);
@@ -45,8 +53,8 @@ unsigned long long adjust_intervals(unsigned long long intervals, unsigned facto
 
     while( mask )
     {
-		output <<= factor;
-		output |= !!(intervals & mask);
+        output <<= factor;
+        output |= !!(intervals & mask);
         mask >>= 1;
     }
 

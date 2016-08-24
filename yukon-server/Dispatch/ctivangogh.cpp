@@ -4467,17 +4467,16 @@ void CtiVanGogh::VGAppMonitorThread()
                 //Check thread watcher status
                 if(pointID!=0)
                 {
-                    CtiThreadMonitor::State next;
+                    CtiThreadMonitor::State next = ThreadMonitor.getState();
 
-                    if( NextThreadMonitorReportTime.now() > NextThreadMonitorReportTime ||
-                       (next = ThreadMonitor.getState()) != previous)
+                    if( NextThreadMonitorReportTime.now() > NextThreadMonitorReportTime || next != previous)
                     {
                         NextThreadMonitorReportTime = nextScheduledTimeAlignedOnRate(CtiTime::now(), CtiThreadMonitor::StandardMonitorTime / 2);
                         previous = next;
 
-                        CtiMessage *pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString());
+                        auto pData = std::make_unique<CtiPointDataMsg>(pointID, next, NormalQuality, StatusPointType, ThreadMonitor.getString());
                         pData->setSource(DISPATCH_APPLICATION_NAME);
-                        MainQueue_.putQueue(pData);
+                        MainQueue_.putQueue(pData.release());
                     }
                 }
             }
