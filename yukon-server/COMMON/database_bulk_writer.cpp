@@ -220,17 +220,47 @@ DatabaseBulkUpdater<ColumnCount>::DatabaseBulkUpdater(TempTableColumns schema, c
 template <size_t ColumnCount>
 std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql(const DbClientType clientType) const
 {
+    const auto columnUpdate =
+        boost::adaptors::transformed(
+            [this](ColumnDefinition &cd) {
+        return cd.name + " = " + _tempTable + "." + cd.name; });
+
     switch( clientType )
     {
         case DbClientType::SqlServer:
         {
             return
-                "";  //  SQL Server MERGE goes here
+                "DECLARE @maxId NUMERIC;"
+                "SELECT @maxId = COALESCE(MAX(" + _idColumn + "), 0) FROM " + _destTable + ";"
+                "MERGE " + _destTable +
+                "USING " + _tempTable +
+                "ON " + _destTable + "." + _idColumn + " = " + _tempTable + "." + _idColumn +
+                "WHEN MATCHED THEN"
+                " UPDATE " + _destTable +
+                " SET " Cti::join(_schema | columnUpdate) +
+                " WHERE " + _idColumn + " = " + _destTable + "." + _idColumn +
+                "WHEN NOT MATCHED THEN"
+                " INSERT INTO " + _destTable + " (" + _idColumn + ", " + Cti::join(_schema | columnName) + ")" +
+                " SELECT @maxId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)), " + Cti::join(_schema | columnName) +
+                " FROM ##" + _tempTable + ";";
         }
         case DbClientType::Oracle:
         {
             return
-                "";  //  Oracle MERGE goes here
+                "DECLARE @maxId NUMERIC;"
+                "BEGIN"
+                "SELECT @maxId = COALESCE(MAX(" + _idColumn + "), 0) FROM " + _destTable + ";"
+                "MERGE INTO " + _destTable +
+                "USING " + _tempTable +
+                "ON (" + _destTable + "." + _idColumn + " = " + _tempTable + "." + _idColumn + ")"
+                "WHEN MATCHED THEN"
+                " UPDATE SET " + Cti::join(_schema | columnUpdate) +
+                " WHERE " + _idColumn + " = " + _destTable + "." + _idColumn +
+                "WHEN NOT MATCHED THEN"
+                " INSERT INTO " + _destTable + "(" + _idColumn + ", " + Cti::join(_schema | columnName) + ")" +
+                " SELECT maxId + ROWNUM, " + Cti::join(_schema | columnName) +
+                " FROM Temp_" + _tempTable + "; "
+                "END;";
         }
     }
 
