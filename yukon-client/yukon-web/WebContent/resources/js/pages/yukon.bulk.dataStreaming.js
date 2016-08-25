@@ -34,6 +34,32 @@ yukon.bulk.dataStreaming = (function () {
             $('#configTable_' + id).show();
         }
     };
+    
+    var checkForValidConfig = function () {
+        var validConfig = false;
+        var toggle = $('.js-configuration-type'),
+        configTypeRow = toggle.closest('tr'),
+        newConfig = configTypeRow.find('.switch-btn-checkbox').prop('checked');
+        if (newConfig) {
+            $('.js-attribute').each(function () {
+                var attOn = $(this).find('.switch-btn-checkbox').prop('checked');
+                if (attOn) {
+                    validConfig = true;
+                }
+            });
+        } else {
+            var selectedConfig = $('#selectedConfiguration').val();
+            if (selectedConfig > 0) {
+                validConfig = true;
+            }
+        }
+
+        if (validConfig) {
+            $('.js-next-button').prop('disabled', false);
+        } else {
+            $('.js-next-button').prop('disabled', true);
+        }
+    };
 
     'use strict';
     var initialized = false,
@@ -69,37 +95,24 @@ yukon.bulk.dataStreaming = (function () {
                 $(document).on('click', '.js-configuration-type', function () {
                     enableDisable();
                     showConfigurationTable();
+                    checkForValidConfig();
                 });
-
-//              Validate user has either selected an existing config or turned at least one attribute on
+              
                 $(document).on('click', '.js-next-button', function () {
-                    var validConfig = false;
-
-                    var selectedConfig = $('#selectedConfiguration').val();
-                    if (selectedConfig == 0) {
-                        $('.js-attribute').each(function () {
-                            var attOn = $(this).find('.switch-btn-checkbox').prop('checked');
-                            if (attOn) {
-                                validConfig = true;
-                            }
-                        });
-                    } else {
-                        validConfig = true;
-                    }
-
-                    if (validConfig) {
-                        $('#configureForm').submit();
-                    } else {
-                        $('.js-none-selected').show();
-                    }
-
+                    $('#configureForm').submit();
                 });
                 
                 //  display table showing full data streaming configuration
                 $(document).on('change', '.js-existing-configuration', function () {
                     showConfigurationTable();
+                    checkForValidConfig();
                 });
                 
+                $(document).on('click', '.js-attribute', function () {
+                    checkForValidConfig();
+                });
+                
+                checkForValidConfig();
                 showConfigurationTable();
                 initialized = true;
                 _canceled = false;

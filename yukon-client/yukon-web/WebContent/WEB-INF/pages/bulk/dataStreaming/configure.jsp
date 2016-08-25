@@ -7,10 +7,6 @@
 
 <cti:standardPage module="tools" page="bulk.dataStreaming.configure">
 
-    <div class="dn js-none-selected warning">
-        <i:inline key=".noneSelected"/>
-    </div>
-
     <tags:bulkActionContainer key="yukon.web.modules.tools.bulk.dataStreaming.configure" deviceCollection="${deviceCollection}">
         <div class="page-action-area">
             <cti:url var="assignUrl"  value="/bulk/dataStreaming/configure" />
