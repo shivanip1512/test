@@ -1,6 +1,11 @@
 package com.cannontech.services.calculated;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyInt;
+import static org.easymock.EasyMock.anyLong;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createNiceMock;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -40,10 +45,13 @@ import com.google.common.collect.Lists;
  * 
  */
 public class PerIntervalAndLoadProfileCalculatorTest {
-    private final static PaoIdentifier PAO_IDENTIFIER = new PaoIdentifier(1, PaoType.RFN410CL);
+    private final static PaoIdentifier RFW_PAO_IDENTIFIER = new PaoIdentifier(1, PaoType.RFWMETER);
     List<PointData> messagesToSend = Lists.newArrayListWithExpectedSize(5);
+    private final static PaoIdentifier PAO_IDENTIFIER = new PaoIdentifier(1, PaoType.RFN410CL);
     private final static PointIdentifier POINT_IDENTIFIER = new PointIdentifier(PointType.PulseAccumulator, 1);
     private final static PaoPointIdentifier PAO_POINT_IDENTIFIER = new PaoPointIdentifier(PAO_IDENTIFIER,
+        POINT_IDENTIFIER);
+    private final static PaoPointIdentifier RFW_PAO_POINT_IDENTIFIER = new PaoPointIdentifier(RFW_PAO_IDENTIFIER,
         POINT_IDENTIFIER);
     private PerIntervalAndLoadProfileCalculator calculator;
     private CalculationData calculationData;
@@ -177,7 +185,7 @@ public class PerIntervalAndLoadProfileCalculatorTest {
     
     private void buildRequestParameters(Instant instant) {
 
-        PointValueQualityHolder pointValueQualityHolder =
+        final PointValueQualityHolder pointValueQualityHolder =
             PointValueBuilder.create().withPointId(200).withType(PointType.PulseAccumulator).withPointQuality(
                 PointQuality.Manual).withValue(600).withTimeStamp(instant.toDate()).build();
         calculationData = CalculationData.of(PaoPointValue.of(PAO_POINT_IDENTIFIER, pointValueQualityHolder), 3600);
@@ -201,6 +209,180 @@ public class PerIntervalAndLoadProfileCalculatorTest {
         ReflectionTestUtils.setField(calculator, "rphDao", rphDao);
 
         replay(rphDao);
+    }
+
+    private void buildRfwMeterRequestParameters(Instant instant, double pointValue) {
+
+        final PointValueQualityHolder pointValueQualityHolder =
+            PointValueBuilder.create().withPointId(12841773).withType(PointType.Analog).withPointQuality(
+                PointQuality.Normal).withValue(pointValue).withTimeStamp(instant.toDate()).build();
+        calculationData =
+            CalculationData.of(PaoPointValue.of(RFW_PAO_POINT_IDENTIFIER, pointValueQualityHolder), 86400);
+
+        CacheKey key =
+            CacheKey.of(pointValueQualityHolder.getId(), pointValueQualityHolder.getPointDataTimeStamp().getTime());
+        CacheValue value =
+            CacheValue.of(pointValueQualityHolder.getValue(), calculationData.getInterval(), false, false);
+        recentReadings.put(key, value);
+
+        rphDao = createNiceMock(RawPointHistoryDao.class);
+        rphDao.getSpecificValue(anyInt(), anyLong());
+        expectLastCall().andAnswer(new IAnswer<PointValueQualityHolder>() {
+            @Override
+            public PointValueQualityHolder answer() throws Throwable {
+
+                return pointValueQualityHolder;
+            }
+        }).anyTimes();
+
+        ReflectionTestUtils.setField(calculator, "rphDao", rphDao);
+
+        replay(rphDao);
+    }
+
+    @Test
+    public void Valid_Readings_0_0_0() {
+
+        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 0);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 0);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 0);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        Assert.assertEquals(12, messagesToSend.size());
+    }
+
+    @Test
+    public void Invalid_Readings_1_0_0() {
+
+        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 1);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 0);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 0);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        Assert.assertEquals(8, messagesToSend.size());
+    }
+
+    @Test
+    public void Invalid_Readings_0_1_0() { // tested
+
+        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 0);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 1);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 0);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        System.out.println(messagesToSend.size());
+        Assert.assertEquals(8, messagesToSend.size());
+    }
+
+    @Test
+    public void Invalid_Readings_1_1_0() {
+
+        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 1);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 1);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 0);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        Assert.assertEquals(8, messagesToSend.size());
+    }
+
+    @Test
+    public void Valid_Readings_0_0_1() {
+
+        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 0);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 0);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 1);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        Assert.assertEquals(12, messagesToSend.size());
+    }
+
+    @Test
+    public void Invalid_Readings_1_0_1() {
+
+        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 1);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 0);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 1);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        Assert.assertEquals(8, messagesToSend.size());
+    }
+
+    @Test
+    public void Invalid_Readings_0_1_1() {
+
+        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 0);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 1);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 1);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        Assert.assertEquals(12, messagesToSend.size());
+    }
+
+    @Test
+    public void Valid_Readings_1_1_1() {
+
+        Instant instant = new Instant(1472102587787l); // Date -2016-08-25T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 1);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472188987787l); // Date -2016-08-26T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 1);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        instant = new Instant(1472275387787l); // Date -2016-08-27T05:23:07.787Z
+        buildRfwMeterRequestParameters(instant, 1);
+        calculator.calculate(recentReadings, calculationData, messagesToSend);
+
+        Assert.assertEquals(12, messagesToSend.size());
     }
 
 }
