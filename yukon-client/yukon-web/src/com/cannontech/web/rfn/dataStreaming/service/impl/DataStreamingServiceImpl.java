@@ -705,8 +705,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     actualConfig.getSelectedInterval(), null);
                 
                 if (deviceIdsToBehaviorIds.isEmpty()) {
-                    Behavior behavior = convertConfigToBehavior(actualConfig);
-                    behavior.setId(0);
+                    actualConfig.setId(0);
                     configToDeviceIds.put(actualConfig, deviceId);
                 } else {
                     int configId = deviceIdsToBehaviorIds.get(deviceId);
