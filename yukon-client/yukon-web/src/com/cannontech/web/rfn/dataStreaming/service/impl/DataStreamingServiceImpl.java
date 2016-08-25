@@ -86,6 +86,7 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.conns.ConnPool;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -266,7 +267,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     
     @Override
     public DiscrepancyResult findDiscrepancy(int deviceId){
-        DiscrepancyResult discrepancy = null;
         
         // deviceId, config
         Map<Integer, Behavior> deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, Lists.newArrayList(deviceId));
@@ -275,14 +275,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         Map<Integer, BehaviorReport> deviceIdToReport = deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, Lists.newArrayList(deviceId));
         
         List<DiscrepancyResult> discrepancies = findDiscrepancies(deviceIdToBehavior, deviceIdToReport);
-        if (!discrepancies.isEmpty()) {
-            discrepancy = findDiscrepancies(deviceIdToBehavior, deviceIdToReport).get(0);
-            if(discrepancy.getDeviceId() == 0){
-                return null;
-            }
-        }
-        
-        return discrepancy;
+        return Iterables.getOnlyElement(discrepancies, null);
     }
      
     private List<DiscrepancyResult> findDiscrepancies( Map<Integer, Behavior> deviceIdToBehavior,  Map<Integer, BehaviorReport> deviceIdToReport){
@@ -309,8 +302,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 DataStreamingConfig expectedConfig = convertBehaviorToConfig(behavior);
                 // behavior report
                 DataStreamingConfig actualConfig = convertBehaviorToConfig(report);
-                if (expectedConfig == null
-                    || hasDiscrepancy(expectedConfig.getAttributes(), actualConfig.getAttributes())) {
+                if (hasDiscrepancy(expectedConfig, actualConfig)) {
                     DiscrepancyResult result = new DiscrepancyResult();
                     result.setActual(actualConfig);
                     result.setExpected(expectedConfig);
@@ -357,16 +349,34 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     /**
      * Compares expected and actual attributes, returns true if attributes are not equal.
      */
-    private boolean hasDiscrepancy(List<DataStreamingAttribute> expected, List<DataStreamingAttribute> actual) {
-        // actual can be null if the behavior was assigned and porter didn't update behavior report table.
-        if (actual == null) {
+    private boolean hasDiscrepancy(DataStreamingConfig expectedConfig, DataStreamingConfig actualConfig) {
+        if (expectedConfig == null && actualConfig.getAttributes().isEmpty()) {
+            // Device was assigned to behavior, then device was unassigned, behavior was deleted since no other devices
+            // were assigned to it. Result - no behavior and actual config doesn't have attributes
+            return false;
+        }
+
+        if (expectedConfig == null) {
             return true;
         }
-        return !Sets.difference(Sets.newHashSet(expected), Sets.newHashSet(actual)).isEmpty();
+        return compareConfigs(expectedConfig, actualConfig);
+    }
+    
+
+    private boolean compareConfigs(DataStreamingConfig config1, DataStreamingConfig config2){
+       boolean hasSameAttributes = !Sets.difference(Sets.newHashSet(config1.getAttributes()),
+            Sets.newHashSet(config2.getAttributes())).isEmpty();
+       boolean hasSameInterval = config1.getSelectedInterval() == config2.getSelectedInterval();
+       return hasSameAttributes && hasSameInterval;
     }
 
     @Override
     public int saveConfig(DataStreamingConfig config) {
+        for (DataStreamingConfig savedConfig : getAllDataStreamingConfigurations()) {
+            if (compareConfigs(config, savedConfig)) {
+                return savedConfig.getId();
+            }
+        }
         Behavior behavior = convertConfigToBehavior(config);
         return deviceBehaviorDao.saveBehavior(behavior);
     }

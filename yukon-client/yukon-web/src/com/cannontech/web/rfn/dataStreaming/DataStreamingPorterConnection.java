@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
@@ -24,18 +22,15 @@ import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionDao;
-import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.commands.impl.PorterCommandCallback;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
-import com.cannontech.common.device.streaming.dao.DeviceBehaviorDao;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.dev.dataStreaming.DataStreamingDevSettings;
-import com.cannontech.web.dev.dataStreaming.DataStreamingFakeData;
 import com.cannontech.web.tools.commander.service.CommanderServiceImpl;
 
 /**
@@ -47,18 +42,10 @@ public class DataStreamingPorterConnection {
     private static final CommandCallback commandCallback = new PorterCommandCallback("putconfig behavior rfndatastreaming");
 
     @Autowired private CommandRequestDeviceExecutor commandExecutor;
-    @Autowired private DeviceBehaviorDao deviceBehaviorDao;
     @Autowired private DataStreamingDevSettings devSettings;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
-    @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
-    private DataStreamingFakeData fakeData;
-    
-    @PostConstruct
-    public void init() {
-        fakeData =
-            new DataStreamingFakeData(deviceBehaviorDao, deviceErrorTranslatorDao, commandRequestExecutionResultDao);
-    }
+
 
     /**
      * Build a list of data streaming configuration commands for the specified devices. Porter will use the
@@ -85,16 +72,9 @@ public class DataStreamingPorterConnection {
         CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback =
             buildCallbackProxy(result.getConfigCallback());
         result.setCommandCompletionCallback(commandCompletionCallback);
-        if (devSettings.isSimulatePorterConfigResponse()) {
-            // If developer settings are set to simulate, replace the real commandExecutor with a simulator.
-            log.info("Simulating data streaming configuration via fake executor.");
-            fakeData.execute(result.getExecution(), commandCompletionCallback, commands, user);
-        } else {
-            // Otherwise send the commands to Porter
-            log.info("Sending data streaming configuration to Porter. " + commands);
-            commandExecutor.createTemplateAndExecute(result.getExecution(), commandCompletionCallback, commands, user,
-                false);
-        }
+        log.info("Sending data streaming configuration to Porter. " + commands);
+        commandExecutor.createTemplateAndExecute(result.getExecution(), commandCompletionCallback, commands, user,
+            false);
     }
 
     /**
@@ -106,6 +86,7 @@ public class DataStreamingPorterConnection {
 
             @Override
             public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+                log.info("Recieved error for device="+ command.getDevice()+" error="+error);
                 configCallback.receivedConfigError(command.getDevice(), error);
             }
             

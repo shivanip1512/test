@@ -59,6 +59,10 @@ public interface DataStreamingService {
     DataStreamingConfigResult unassignDataStreamingConfig(List<Integer> devicesIds, LiteYukonUser user)
             throws DataStreamingConfigException;
 
+    /**
+     * Compares config to all saved configs by attributes and interval.
+     * If saved config was found returns config id otherwise creates new config.
+     */
     int saveConfig(DataStreamingConfig config);
 
     DataStreamingConfig findDataStreamingConfiguration(int configId);

@@ -81,6 +81,7 @@ public final class CommandRequestExecutionDefaults {
         b.put(MULTISPEAK_CONNECT_DISCONNECT,                      new ExecutionInfo(true, 13, false));
         b.put(ASSET_AVAILABILITY_READ,                            new ExecutionInfo(false, 8, false));
         b.put(LM_DEVICE_DETAILS_ATTRIBUTE_READ,                   new ExecutionInfo(false, 8, false));
+        b.put(DATA_STREAMING_CONFIG,                              new ExecutionInfo(false, 7, false));
         infoLookup = b.build();
     }
 
