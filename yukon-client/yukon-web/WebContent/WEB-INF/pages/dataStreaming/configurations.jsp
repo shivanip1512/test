@@ -27,47 +27,58 @@
                 <tags:sort column="${numberOfDevices}"/>            
             </tr>
         </thead>
-        <c:forEach var="config" items="${existingConfigs.resultList}">
-            <c:set var="deviceCollection" value="${configsAndDevices[config]}"/>
-            <tr>
-                <td>${config.commaDelimitedAttributes}</td>
-                <td>${config.selectedInterval}
-                    <c:choose>
-                        <c:when test="${config.selectedInterval > 1}">
-                            <i:inline key=".minutes"/>
-                        </c:when>
-                        <c:otherwise>
-                            <i:inline key=".minute"/>
-                        </c:otherwise>
-                    </c:choose>
-                   </td>
-                   <td>
-                        ${deviceCollection.deviceCount}
-                        <cm:dropdown icon="icon-cog" triggerClasses="fr">
-                            <cti:url var="summaryUrl" value="/tools/dataStreaming/summary?selectedConfiguration=${config.id}"/>
-                            <cm:dropdownOption key=".summary.pageName" href="${summaryUrl}" icon="icon-application-view-columns"/>
-                            <cti:url var="configureUrl" value="/bulk/dataStreaming/configure">
-                                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                                    <cti:param name="${cp.key}" value="${cp.value}"/>
-                                </c:forEach>
-                            </cti:url>
-                            <cm:dropdownOption key=".configure" href="${configureUrl}" icon="icon-cog-edit"/>
-                            <cti:url var="removeUrl" value="/bulk/dataStreaming/remove">
-                                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                                    <cti:param name="${cp.key}" value="${cp.value}"/>
-                                </c:forEach>
-                            </cti:url>                            
-                            <cm:dropdownOption key=".remove" href="${removeUrl}" icon="icon-cross"/>
-                            <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
-                                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                                    <cti:param name="${cp.key}" value="${cp.value}"/>
-                                </c:forEach>
-                            </cti:url>
-                            <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go"/>
-                        </cm:dropdown>
-                   </td>
-                </tr>
-            </c:forEach>
+        <tbody>
+            <c:choose>
+                <c:when test="${existingConfigs.hitCount > 0}">
+                    <c:forEach var="config" items="${existingConfigs.resultList}">
+                        <c:set var="deviceCollection" value="${configsAndDevices[config]}"/>
+                        <tr>
+                            <td>${config.commaDelimitedAttributes}</td>
+                            <td>${config.selectedInterval}
+                                <c:choose>
+                                    <c:when test="${config.selectedInterval > 1}">
+                                        <i:inline key=".minutes"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <i:inline key=".minute"/>
+                                    </c:otherwise>
+                                </c:choose>
+                               </td>
+                               <td>
+                                    ${deviceCollection.deviceCount}
+                                    <cm:dropdown icon="icon-cog" triggerClasses="fr">
+                                        <cti:url var="summaryUrl" value="/tools/dataStreaming/summary?selectedConfiguration=${config.id}"/>
+                                        <cm:dropdownOption key=".summary.pageName" href="${summaryUrl}" icon="icon-application-view-columns"/>
+                                        <cti:url var="configureUrl" value="/bulk/dataStreaming/configure">
+                                            <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                                                <cti:param name="${cp.key}" value="${cp.value}"/>
+                                            </c:forEach>
+                                        </cti:url>
+                                        <cm:dropdownOption key=".configure" href="${configureUrl}" icon="icon-cog-edit"/>
+                                        <cti:url var="removeUrl" value="/bulk/dataStreaming/remove">
+                                            <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                                                <cti:param name="${cp.key}" value="${cp.value}"/>
+                                            </c:forEach>
+                                        </cti:url>                            
+                                        <cm:dropdownOption key=".remove" href="${removeUrl}" icon="icon-cross"/>
+                                        <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+                                            <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                                                <cti:param name="${cp.key}" value="${cp.value}"/>
+                                            </c:forEach>
+                                        </cti:url>
+                                        <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go"/>
+                                    </cm:dropdown>
+                               </td>
+                            </tr>
+                        </c:forEach>
+                </c:when>
+                <c:otherwise>
+                    <tr><td>
+                        <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
+                    </td></tr>                
+                </c:otherwise>
+            </c:choose>
+        </tbody>
     </table>
     <tags:pagingResultsControls result="${existingConfigs}" hundreds="true" adjustPageCount="true"/>
     </div>
