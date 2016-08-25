@@ -368,6 +368,7 @@
     </ClCompile>
     <ClCompile Include="ctitokenizer.cpp">
     </ClCompile>
+    <ClCompile Include="database_bulk_writer.cpp" />
     <ClCompile Include="database_connection.cpp">
     </ClCompile>
     <ClCompile Include="database_reader.cpp">
@@ -528,6 +529,7 @@
     <ClInclude Include="include\database_connection.h" />
     <ClInclude Include="include\database_exceptions.h" />
     <ClInclude Include="include\database_reader.h" />
+    <ClInclude Include="include\database_bulk_writer.h" />
     <ClInclude Include="include\database_transaction.h" />
     <ClInclude Include="include\database_util.h" />
     <ClInclude Include="include\database_writer.h" />
