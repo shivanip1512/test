@@ -4,10 +4,11 @@
 <cti:msg2 key=".thirtyDayPf.label" var="thirtyDayPf"/>
 
 <script type="text/javascript">
-function showTrends(title, url) {
+function showTrends(title, url, id) {
     $('.js-analysis-trends').dialog('close');
     
-    var selectedItems = $('table.analysisCheckboxes input:checkbox:checked');
+    var checkboxIds = 'table.analysisCheckboxes' + id;
+    var selectedItems = $(checkboxIds + ' input:checkbox:checked');
     var targets = new Array();
     $.each(selectedItems, function (i, item) {
         targets.push($(item).val());
@@ -27,15 +28,16 @@ function showTrends(title, url) {
     <c:set var="subBusList" value="${viewableArea.subBusList}"/>
     <c:set var="feederList" value="${viewableArea.feederList}"/>
     <c:set var="capBankList" value="${viewableArea.capBankList}"/>
+    <c:set var="id" value="${viewableArea.ccId}"/>
 </c:if>
 
 <tags:sectionContainer2 nameKey="busContainer">
     <div>
-        <input type="checkbox" id="analysisBusSelectAll" onclick="yukon.da.common.checkAll(this, 'table.analysisBuses input[type=checkbox]');">
+        <input type="checkbox" id="analysisBusSelectAll${id}" onclick="yukon.da.common.checkAll(this, 'table.analysisBuses${id} input[type=checkbox]');">
         <label for="analysisBusSelectAll"><i:inline key=".selectAllBuses"/></label>
     </div>
     <div class="scroll-md">
-        <cti:dataGrid cols="4" tableClasses="checkBoxList analysisBuses analysisCheckboxes">
+        <cti:dataGrid cols="4" tableClasses="checkBoxList analysisBuses${id} analysisCheckboxes${id}">
             <c:forEach var="bus" items="${subBusList}">
                 <cti:dataGridCell>
                     <input type="checkbox" value="${bus.ccId}" id="analysisBus_${bus.ccId}">
@@ -48,11 +50,11 @@ function showTrends(title, url) {
 
 <tags:sectionContainer2 nameKey="feedersContainer" styleClass="padBottom">
     <div>
-        <input type="checkbox" id="analysisFeederSelectAll" onclick="yukon.da.common.checkAll(this, 'table.analysisFeeders input[type=checkbox]');">
+        <input type="checkbox" id="analysisFeederSelectAll${id}" onclick="yukon.da.common.checkAll(this, 'table.analysisFeeders${id} input[type=checkbox]');">
         <label for="analysisFeederSelectAll"><i:inline key=".selectAllFeeders"/></label>
     </div>
     <div class="scroll-md">
-        <cti:dataGrid cols="4" tableClasses="checkBoxList analysisFeeders analysisCheckboxes">
+        <cti:dataGrid cols="4" tableClasses="checkBoxList analysisFeeders${id} analysisCheckboxes${id}">
             <c:forEach var="feeder" items="${feederList}">
                 <cti:dataGridCell>
                     <input type="checkbox" value="${feeder.ccId}" id="analysisFeeder_${feeder.ccId}">
@@ -65,24 +67,21 @@ function showTrends(title, url) {
 
 
 <div class="action-area">
-    <cti:button nameKey="todayKvarWatt" onclick="showTrends('${todayKvarWatt}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY'))"/>
-    <cti:button nameKey="thirtyDayKvarWatt" onclick="showTrends('${thirtyDayKvarWatt}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH'))"/>
-    <cti:button nameKey="todayPf" onclick="showTrends('${todayPf}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY'))"/>
-    <cti:button nameKey="thirtyDayPf" onclick="showTrends('${thirtyDayPf}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH'))"/>
+    <cti:button nameKey="todayKvarWatt" disabled="true" onclick="showTrends('${todayKvarWatt}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY'), ${id})"/>
+    <cti:button nameKey="thirtyDayKvarWatt" disabled="true" onclick="showTrends('${thirtyDayKvarWatt}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH'), ${id})"/>
+    <cti:button nameKey="todayPf" disabled="true" onclick="showTrends('${todayPf}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY'), ${id})"/>
+    <cti:button nameKey="thirtyDayPf" disabled="true" onclick="showTrends('${thirtyDayPf}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH'), ${id})"/>
 </div>
 
 
 <script type='text/javascript'>
-function updateButtons() {
-    if ($('.js-analysis-trends input:checkbox:checked').length == 0) {
-        $('.js-analysis-trends .action-area button').attr("disabled", "disabled");
-    } else {
-        $('.js-analysis-trends .action-area button').removeAttr("disabled");
-    }
-}
 
-$(function() {
-    updateButtons();
-    $('.js-analysis-trends input:checkbox').click(updateButtons);
+$(document).on('click', '.js-analysis-trends input:checkbox', function () {
+    var popup = $(this).closest('.js-analysis-trends');
+    if (popup.find('input:checkbox:checked').length == 0) {
+        popup.find('.action-area button').attr("disabled", "disabled");
+    } else {
+        popup.find('.action-area button').removeAttr("disabled");
+    }
 });
 </script>
