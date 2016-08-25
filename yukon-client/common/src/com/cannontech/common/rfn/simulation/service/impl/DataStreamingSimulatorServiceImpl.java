@@ -196,7 +196,7 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         }
         
         Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways = new HashMap<>();
-        for (int i = 0; i < deviceSubLists.size(); i++) {
+        for (int i = 0;  i < gateways.size() && i < deviceSubLists.size(); i++) {
             RfnGateway gateway = gateways.get(i);
             
             GatewayDataStreamingInfo info = new GatewayDataStreamingInfo();
@@ -326,7 +326,7 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         }
         
         Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways = new HashMap<>();
-        for (int i = 0; i < deviceSubLists.size(); i++) {
+        for (int i = 0; i < gateways.size() && i < deviceSubLists.size(); i++) {
             RfnGateway gateway = gateways.get(i);
             
             GatewayDataStreamingInfo info = new GatewayDataStreamingInfo();
