@@ -11,7 +11,7 @@
 #include "dlldev.h"
 // Here are the devices for which scannables have been defined
 
-#include "scanglob.h"
+#include "scanner_syncs.h"
 
 #include "rtdb.h"
 #include "mgr_device_scannable.h"
@@ -102,14 +102,11 @@ CtiClientConnection VanGoghConnection( Cti::Messaging::ActiveMQ::Queue::dispatch
 
 ULONG ScannerDebugLevel = 0;
 
-HANDLE hLockArray[] = {
-    hScannerSyncs[S_QUIT_EVENT],
-    hScannerSyncs[S_LOCK_MUTEX]
-};
+std::array<HANDLE, 2> hLockArray;
 
 void acquireMutex(int line)
 {
-    const DWORD dwWait = WaitForMultipleObjects(2, hLockArray, FALSE, INFINITE);
+    const DWORD dwWait = WaitForMultipleObjects(2, hLockArray.data(), FALSE, INFINITE);
 
     switch(dwWait)
     {
@@ -354,6 +351,8 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     Cti::identifyProject(CompileInfo);
 
     Cti::DynamicPaoInfoManager::setOwner(Cti::Application_Scanner);
+
+    hLockArray = { hScannerSyncs[S_QUIT_EVENT], hScannerSyncs[S_LOCK_MUTEX] };
 
     /* check for various flags */
     if(argc > 1)

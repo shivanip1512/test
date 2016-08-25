@@ -33,12 +33,6 @@
    #define IM_EX_MSG __declspec(dllimport)
 #endif
 
-#ifdef _DLL_SCANSUP
-   #define IM_EX_SCANSUP   __declspec(dllexport)
-#else
-   #define IM_EX_SCANSUP   __declspec(dllimport)
-#endif
-
 #ifdef CTIYUKONDB                // The ctidb.dll
    #define IM_EX_CTIYUKONDB   __declspec(dllexport)
 #else

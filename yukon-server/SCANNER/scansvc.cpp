@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#include "scanglob.h"
+#include "scanner_syncs.h"
 #include "scansvc.h"
 
 #include <boost/thread.hpp>

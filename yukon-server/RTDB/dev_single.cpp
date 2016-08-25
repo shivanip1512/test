@@ -11,7 +11,7 @@
 #include "utility.h"
 #include "ctidate.h"
 #include "ctitime.h"
-#include "scanglob.h"
+#include "scanner_debug.h"
 #include "pt_numeric.h"
 #include "pt_status.h"
 #include "dllyukon.h"

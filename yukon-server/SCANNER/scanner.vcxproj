@@ -152,7 +152,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;advapi32.lib;winmm.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctimsg.lib;..\lib-debug\scansup.lib;..\lib-debug\service.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\cticonfig.lib;..\lib-debug\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;advapi32.lib;winmm.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctimsg.lib;..\lib-debug\service.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\cticonfig.lib;..\lib-debug\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>$(SolutionDir)pdb-debug\$(TargetName).pdb</ProgramDatabaseFile>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -201,7 +201,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;advapi32.lib;winmm.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\scansup.lib;..\lib\service.lib;..\lib\ctidevdb.lib;..\lib\ctipntdb.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;advapi32.lib;winmm.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\service.lib;..\lib\ctidevdb.lib;..\lib\ctipntdb.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -253,7 +253,7 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;advapi32.lib;winmm.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctimsg.lib;..\lib-debug\scansup.lib;..\lib-debug\service.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\cticonfig.lib;..\lib-debug\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-gd-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-gd-1_60.lib;advapi32.lib;winmm.lib;..\lib-debug\ctibase.lib;..\lib-debug\ctimsg.lib;..\lib-debug\lib-debug\service.lib;..\lib-debug\ctidevdb.lib;..\lib-debug\ctipntdb.lib;..\lib-debug\ctidbsrc.lib;..\lib-debug\cticonfig.lib;..\lib-debug\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ProgramDatabaseFile>
       </ProgramDatabaseFile>
@@ -311,7 +311,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;advapi32.lib;winmm.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\scansup.lib;..\lib\service.lib;..\lib\ctidevdb.lib;..\lib\ctipntdb.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(BOOST)\lib\boost_system-vc140-mt-1_60.lib;$(BOOST)\lib\boost_filesystem-vc140-mt-1_60.lib;$(BOOST)\lib\boost_regex-vc140-mt-1_60.lib;$(BOOST)\lib\boost_thread-vc140-mt-1_60.lib;$(BOOST)\lib\boost_date_time-vc140-mt-1_60.lib;$(BOOST)\lib\boost_chrono-vc140-mt-1_60.lib;advapi32.lib;winmm.lib;..\lib\ctibase.lib;..\lib\ctimsg.lib;..\lib\service.lib;..\lib\ctidevdb.lib;..\lib\ctipntdb.lib;..\lib\ctidbsrc.lib;..\lib\cticonfig.lib;..\lib\dynpaoinfo.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>.;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -355,15 +355,16 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="scanner.cpp">
     </ClCompile>
+    <ClCompile Include="scanner_syncs.cpp" />
     <ClCompile Include="scansvc.cpp">
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\id_scanner.h" />
-    <ClInclude Include="include\id_sgdll.h" />
     <ClInclude Include="include\mgr_device_scannable.h" />
-    <ClInclude Include="include\SCANGLOB.H" />
     <ClInclude Include="include\scanner.h" />
+    <ClInclude Include="include\scanner_debug.h" />
+    <ClInclude Include="include\scanner_syncs.h" />
     <ClInclude Include="include\scansvc.h" />
   </ItemGroup>
   <ItemGroup>

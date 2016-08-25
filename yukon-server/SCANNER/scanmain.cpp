@@ -6,6 +6,7 @@ using namespace std;
 #include "ctitime.h"
 
 #include "scansvc.h"
+#include "scanner_syncs.h"
 #include "CServiceConfig.h"
 #include "dllbase.h"
 #include "dllbase.h"
@@ -41,6 +42,8 @@ int main(int argc, char* argv[])
    doutManager.start(); // fire up the logger thread
 
    ThreadMonitor.start();
+
+   Cti::Scanner::CreateSyncEvents();
 
    if( Cti::setConsoleTitle(CompileInfo) )
    {
@@ -89,6 +92,8 @@ int main(int argc, char* argv[])
       SERVICE_MAP_ENTRY(CtiScannerService, Scanner)
       END_SERVICE_MAP
    }
+
+   Cti::Scanner::DestroySyncEvents();
 
    ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
    ThreadMonitor.join();

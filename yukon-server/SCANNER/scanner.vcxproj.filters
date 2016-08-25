@@ -36,24 +36,27 @@
     <ClCompile Include="..\COMMON\boost_assert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="scanner_syncs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\id_scanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\id_sgdll.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\mgr_device_scannable.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\SCANGLOB.H">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\scanner.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\scansvc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scanner_syncs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\scanner_debug.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
