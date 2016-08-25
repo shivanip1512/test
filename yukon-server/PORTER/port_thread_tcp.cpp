@@ -125,7 +125,7 @@ void TcpPortHandler::loadDeviceProperties(const vector<const CtiDeviceSingle *> 
     }
 
     {   // chunk collection so as not to break the reader
-        unsigned long max_size = gConfigParms.getValueAsULong("MAX_IDS_PER_POINT_SELECT", 950);
+        unsigned long max_size = gConfigParms.getValueAsULong("MAX_IDS_PER_SELECT", 950);
 
         for( const auto& id_chunk : Cti::Coroutines::chunked(device_ids, max_size) )
         {

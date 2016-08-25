@@ -452,7 +452,7 @@ void CtiPointManager::refreshListByIDs(const set<long> &id_list, bool paoids)
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader rdr(connection);
 
-    const auto max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_POINT_SELECT", 256);
+    const auto max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_SELECT", 256);
 
     vector<long> ids_to_load;
 

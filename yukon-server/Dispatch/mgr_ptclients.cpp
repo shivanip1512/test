@@ -210,7 +210,7 @@ std::set<long> CtiPointClientManager::refreshList(LONG pntID, LONG paoID, CtiPoi
 
 void CtiPointClientManager::refreshListByPointIDs(const set<long> &ids)
 {
-    unsigned long max_size = gConfigParms.getValueAsULong("MAX_IDS_PER_POINT_SELECT", POINT_REFRESH_SIZE);
+    unsigned long max_size = gConfigParms.getValueAsULong("MAX_IDS_PER_SELECT", POINT_REFRESH_SIZE);
 
     for( const auto& id_chunk : Cti::Coroutines::chunked(ids, max_size) )
     {
@@ -897,7 +897,7 @@ vector<string> CtiPointClientManager::generateSqlStatements(const set<long> &poi
 
     Cti::Database::id_set_itr pointid_itr = pointIds.begin();
 
-    int max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_POINT_SELECT", POINT_REFRESH_SIZE);
+    int max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_SELECT", POINT_REFRESH_SIZE);
 
     do
     {
