@@ -70,6 +70,10 @@
             <span class="empty-list"><cti:msg2 key=".noResults"/></span>
         </c:when>
         <c:otherwise>
+        <div class="dn">
+            <cti:formatDate type="DATE" value="${filter.lastAction.min}" var="lastActionMin"/>
+            <cti:formatDate type="DATE" value="${filter.lastAction.max}" var="lastActionMax"/>
+        </div>
             <cti:url var="url" value="${baseUrl}">
                 <c:if test="${!empty param.programId}">
                     <cti:param name="programId" value="${param.programId}"/>
@@ -79,8 +83,8 @@
                 </c:if>
                 <cti:param name="name" value="${filter.name}"/>
                 <cti:param name="state" value="${filter.state}"/>
-                <cti:param name="lastAction.min" value="${filter.lastAction.min}"/>
-                <cti:param name="lastAction.max" value="${filter.lastAction.max}"/>
+                <cti:param name="lastAction.min" value="${lastActionMin}"/>
+                <cti:param name="lastAction.max" value="${lastActionMax}"/>
             </cti:url>
             <div data-url="${url}" data-static>
                 <table class="compact-results-table has-actions">
