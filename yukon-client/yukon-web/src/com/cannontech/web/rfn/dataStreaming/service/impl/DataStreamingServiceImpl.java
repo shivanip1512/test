@@ -99,7 +99,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     private static final Logger log = YukonLogManager.getLogger(DataStreamingServiceImpl.class);
 
     public final static BehaviorType TYPE = BehaviorType.DATA_STREAMING;
-    public final static String STREAMING_ENABLED_STRING = "streamingEnabled";
+    public final static String STREAMING_ENABLED_STRING = "enabled";
     public final static String CHANNELS_STRING = "channels";
     public final static String ATTRIBUTE_STRING = ".attribute";
     public final static String INTERVAL_STRING = ".interval";
@@ -356,18 +356,18 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             return false;
         }
 
-        if (expectedConfig == null) {
+        if (expectedConfig.getAttributes().isEmpty()) {
             return true;
         }
-        return compareConfigs(expectedConfig, actualConfig);
+        return !compareConfigs(expectedConfig, actualConfig);
     }
     
-
-    private boolean compareConfigs(DataStreamingConfig config1, DataStreamingConfig config2){
-       boolean hasSameAttributes = !Sets.difference(Sets.newHashSet(config1.getAttributes()),
-            Sets.newHashSet(config2.getAttributes())).isEmpty();
-       boolean hasSameInterval = config1.getSelectedInterval() == config2.getSelectedInterval();
-       return hasSameAttributes && hasSameInterval;
+    /**
+     * Returns true if configs are equal
+     */
+    private boolean compareConfigs(DataStreamingConfig config1, DataStreamingConfig config2) {
+        Set<DataStreamingConfig> differences = Sets.difference(Sets.newHashSet(config1), Sets.newHashSet(config2));
+        return differences.isEmpty();
     }
 
     @Override
