@@ -412,7 +412,8 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.devicesUnsupported">{0} {0,choice,1#device does|1&lt;devices do} not support {1}.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.commsError">A communication error occurred between Yukon and Network Manager.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.unknownError">An unknown error occurred. See logs for additional details.</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.networkManagerFailure">Network Manager encountered an error that prevented it from completing the operation.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.networkManagerFailure">Network Manager encountered a processing error that prevented it from completing the operation.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.networkManagerFailureDb">Network Manager encountered a database error that prevented it from completing the operation.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.badRequest">Network Manager rejected the request as malformed: {0}</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.gatewaysOversubscribed">This configuration would result in gateways exceeding their recommended loading.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.noDevices">None of the selected devices support data streaming.</entry>

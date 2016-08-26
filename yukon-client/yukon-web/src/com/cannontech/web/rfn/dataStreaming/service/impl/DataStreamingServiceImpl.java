@@ -59,6 +59,7 @@ import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamin
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequestType;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse.ConfigError;
+import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponseType;
 import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfo;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -463,11 +464,16 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             String requestError = "Network Manager rejected the request as malformed: " + response.getResponseType();
             log.error(requestError + ". " + response.getResponseMessage());
             throw new DataStreamingConfigException(requestError, "badRequest", response.getResponseType());
-        case NETWORK_MANAGER_FAILURE:
+        case NETWORK_MANAGER_SERVER_FAILURE:
             // Exception was thrown in NM processing and it couldn't complete the task
-            String nmError = "Network Manager encountered an error during data streaming configuration. ";
+            String nmError = "Network Manager encountered a processing error during data streaming configuration. ";
             log.error(nmError + response.getResponseMessage());
             throw new DataStreamingConfigException(nmError, "networkManagerFailure");
+        case NETWORK_MANAGER_DATABASE_FAILURE:
+            // Exception was thrown in NM processing and it couldn't complete the task
+            String nmDbError = "Network Manager encountered a databse error during data streaming configuration. ";
+            log.error(nmDbError + response.getResponseMessage());
+            throw new DataStreamingConfigException(nmDbError, "networkManagerFailureDb");
         case OTHER_ERROR:
         default:
             //unknown error
@@ -1070,7 +1076,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 case NO_DEVICES:
                     handleBadRequestResponse(response);
                     break;
-                case NETWORK_MANAGER_FAILURE:
+                case NETWORK_MANAGER_SERVER_FAILURE:
+                case NETWORK_MANAGER_DATABASE_FAILURE:
                     // Exception was thrown in NM processing and it couldn't complete the task
                     handleNmErrorResponse(response);
                     break;
@@ -1112,9 +1119,16 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         
         private void handleNmErrorResponse(DeviceDataStreamingConfigResponse response) {
             success = false;
-            String nmError = "Network Manager encountered an error during data streaming configuration verification. ";
-            log.error(nmError + response.getResponseMessage());
-            exceptions.add(new DataStreamingConfigException(nmError, "networkManagerFailure"));
+            
+            if (response.getResponseType() == DeviceDataStreamingConfigResponseType.NETWORK_MANAGER_DATABASE_FAILURE) {
+                String nmError = "Network Manager encountered a database error during data streaming configuration verification. ";
+                log.error(nmError + response.getResponseMessage());
+                exceptions.add(new DataStreamingConfigException(nmError, "networkManagerFailureDb"));
+            } else {
+                String nmError = "Network Manager encountered a processing error during data streaming configuration verification. ";
+                log.error(nmError + response.getResponseMessage());
+                exceptions.add(new DataStreamingConfigException(nmError, "networkManagerFailure"));
+            }
         }
         
         private void handleUnknownErrorResponse(DeviceDataStreamingConfigResponse response) {

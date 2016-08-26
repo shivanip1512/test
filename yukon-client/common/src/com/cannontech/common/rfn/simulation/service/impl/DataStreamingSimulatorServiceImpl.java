@@ -248,7 +248,7 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         }
         
         if (isNetworkManagerFail) {
-            response.setResponseType(DeviceDataStreamingConfigResponseType.NETWORK_MANAGER_FAILURE);
+            response.setResponseType(DeviceDataStreamingConfigResponseType.NETWORK_MANAGER_SERVER_FAILURE);
         } else if (isOverloadGateways || deviceError != null) {
             response.setResponseType(DeviceDataStreamingConfigResponseType.CONFIG_ERROR);
         } else {
