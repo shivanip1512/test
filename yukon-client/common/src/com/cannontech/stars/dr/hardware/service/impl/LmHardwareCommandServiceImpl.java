@@ -259,7 +259,7 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
     private void verifyCanSendShed(LmHardwareCommand command) throws CommandCompletionException {
         LiteLmHardwareBase lhb = command.getDevice();
         InventoryIdentifier inventory = inventoryDao.getYukonInventory(lhb.getInventoryID());
-        if (!inventory.getHardwareType().isSupportsShed()) {
+        if (!inventory.getHardwareType().getHardwareConfigType().isSupportsServiceInOut()) {
             throw new CommandCompletionException("Cannot send shed for " + inventory.getHardwareType());
         }
     }

@@ -133,8 +133,10 @@ public class InventoryController {
             return "redirect:/stars/operator/hardware/view";
         }
         InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventoryId);
-        model.addAttribute("canEnableDisable", inventory.getHardwareType().isSupportsServiceInServiceOut());
-        model.addAttribute("canSendShed", inventory.getHardwareType().isSupportsShed());
+        model.addAttribute("canEnableDisable",
+            inventory.getHardwareType().getHardwareConfigType().isSupportsServiceInOut()
+                || inventory.getHardwareType().getHardwareConfigType().isSA());
+        model.addAttribute("canSendShed", inventory.getHardwareType().getHardwareConfigType().isSupportsServiceInOut());
         Hardware hardware = hardwareUiService.getHardware(inventoryId);
         
         if (hardware.getHardwareType().isRf()) {
