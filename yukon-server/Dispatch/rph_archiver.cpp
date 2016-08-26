@@ -11,10 +11,8 @@
 #include "tbl_rawpthistory.h"
 
 #include "database_connection.h"
-#include "database_writer.h"
-#include "database_util.h"
+#include "database_bulk_writer.h"
 #include "database_exceptions.h"
-#include "database_transaction.h"
 
 #include "coroutine_util.h"
 #include "std_helper.h"
@@ -465,56 +463,24 @@ unsigned RawPointHistoryArchiver::writeRawPointHistory(Cti::Database::DatabaseCo
         return 0;
     }
 
-    static const size_t ChunkSize = 180;  //  each row takes 5 placeholders, so this is 900 - which is close to our (current) 999 limit, but still a round number
+    std::vector<std::unique_ptr<RowSource>> rowSources;
 
-    unsigned rowsWritten = 0;
+    //  Convert the rows from RawPointHistory to RowSource
+    std::move(
+        rowsToWrite.begin(), 
+        rowsToWrite.end(), 
+        std::back_inserter(rowSources));
 
-    boost::optional<DatabaseTransaction> transaction;
+    DatabaseBulkInserter<5> rphWriter { CtiTableRawPointHistory::getTempTableSchema(), "RPH", "RawPointHistory", "changeId" };
+
+    unsigned rowsWritten = rowSources.size();
 
     try
     {
-        DatabaseWriter truncator{ conn, CtiTableRawPointHistory::getTempTableTruncationSql(conn.getClientType()) };
-
-        try
-        {
-            truncator.executeWithDatabaseException();
-        }
-        catch( const DatabaseException &ex )
-        {
-            CTILOG_INFO(dout, "Temp table not detected, attempting to create");
-
-            DatabaseWriter creator{ conn, CtiTableRawPointHistory::getTempTableCreationSql(conn.getClientType()) };
-
-            executeWriter(creator, __FILE__, __LINE__, Cti::Database::LogDebug::Disable);
-        }
-
-        transaction.emplace(conn);
-
-        for( auto chunk : Cti::Coroutines::chunked(rowsToWrite, ChunkSize) )
-        {
-            DatabaseWriter inserter{ conn, CtiTableRawPointHistory::getInsertSql(conn.getClientType(), chunk.size()) };
-
-            for( auto& record : chunk ) 
-            {
-                record->fillInserter(inserter);
-            }
-
-            executeWriter(inserter, __FILE__, __LINE__, Cti::Database::LogDebug::Disable);
-
-            rowsWritten += chunk.size();
-        }
-
-        DatabaseWriter finalizer{ conn, CtiTableRawPointHistory::getFinalizeSql(conn.getClientType()) };
-
-        finalizer.executeWithDatabaseException();
+        rphWriter.writeRows(conn, std::move(rowSources));
     }
     catch( DatabaseException & ex )
     {
-        if( transaction )
-        {
-            transaction->rollback();
-        }
-
         CTILOG_EXCEPTION_ERROR(dout, ex, "Unable to insert rows into RawPointHistory:\n" <<
             boost::join(rowsToWrite |
                 boost::adaptors::indirected |
@@ -524,7 +490,6 @@ unsigned RawPointHistoryArchiver::writeRawPointHistory(Cti::Database::DatabaseCo
 
         rowsWritten = 0;
     }
-
 
     return rowsWritten;
 }
