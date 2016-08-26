@@ -220,46 +220,61 @@ DatabaseBulkUpdater<ColumnCount>::DatabaseBulkUpdater(TempTableColumns schema, c
 template <size_t ColumnCount>
 std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql(const DbClientType clientType) const
 {
-    const auto columnUpdate =
-        boost::adaptors::transformed(
-            [this](ColumnDefinition &cd) {
-        return cd.name + " = " + _tempTable + "." + cd.name; });
+
+    const auto columnNames  = Cti::join(_schema | columnName, ",");
 
     switch( clientType )
     {
         case DbClientType::SqlServer:
         {
+            const auto mergeUpdate =
+                boost::adaptors::transformed(
+                    [this](const ColumnDefinition &cd) {
+                return cd.name + " = ##" + _tempTable + "." + cd.name; });
+
+            const auto mergeInsert =
+                boost::adaptors::transformed(
+                    [this](const ColumnDefinition &cd) {
+                return "##" + _tempTable + "." + cd.name; });
+
+            const auto mergeUpdates = Cti::join(_schema | mergeUpdate, ",");
+            const auto mergeInserts = Cti::join(_schema | mergeInsert, ",");
+
             return
-                "DECLARE @maxId NUMERIC;"
-                "SELECT @maxId = COALESCE(MAX(" + _idColumn + "), 0) FROM " + _destTable + ";"
                 "MERGE " + _destTable +
-                "USING " + _tempTable +
-                "ON " + _destTable + "." + _idColumn + " = " + _tempTable + "." + _idColumn +
+                "USING ##" + _tempTable +
+                "ON " + _destTable + "." + _idColumn + " = ##" + _tempTable + "." + _idColumn +
                 "WHEN MATCHED THEN"
-                " UPDATE " + _destTable +
-                " SET " Cti::join(_schema | columnUpdate) +
-                " WHERE " + _idColumn + " = " + _destTable + "." + _idColumn +
+                " UPDATE SET " + mergeUpdates +
                 "WHEN NOT MATCHED THEN"
-                " INSERT INTO " + _destTable + " (" + _idColumn + ", " + Cti::join(_schema | columnName) + ")" +
-                " SELECT @maxId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)), " + Cti::join(_schema | columnName) +
-                " FROM ##" + _tempTable + ";";
+                " INSERT (" + _idColumn + "," + columnNames + ")" +
+                " VALUES (##" + _tempTable + "." + _idColumn + "," + mergeInserts + ");";
         }
         case DbClientType::Oracle:
         {
+            const auto mergeUpdate =
+                boost::adaptors::transformed(
+                    [this](const ColumnDefinition &cd) {
+                return cd.name + " = Temp_" + _tempTable + "." + cd.name; });
+
+            const auto mergeInsert =
+                boost::adaptors::transformed(
+                    [this](const ColumnDefinition &cd) {
+                return "Temp_" + _tempTable + "." + cd.name; });
+
+            const auto mergeUpdates = Cti::join(_schema | mergeUpdate, ",");
+            const auto mergeInserts = Cti::join(_schema | mergeInsert, ",");
+
             return
-                "DECLARE @maxId NUMERIC;"
                 "BEGIN"
-                "SELECT @maxId = COALESCE(MAX(" + _idColumn + "), 0) FROM " + _destTable + ";"
                 "MERGE INTO " + _destTable +
-                "USING " + _tempTable +
-                "ON (" + _destTable + "." + _idColumn + " = " + _tempTable + "." + _idColumn + ")"
+                "USING Temp_" + _tempTable +
+                "ON (" + _destTable + "." + _idColumn + " = Temp_" + _tempTable + "." + _idColumn + ")"
                 "WHEN MATCHED THEN"
-                " UPDATE SET " + Cti::join(_schema | columnUpdate) +
-                " WHERE " + _idColumn + " = " + _destTable + "." + _idColumn +
+                " UPDATE SET " + mergeUpdates +
                 "WHEN NOT MATCHED THEN"
-                " INSERT INTO " + _destTable + "(" + _idColumn + ", " + Cti::join(_schema | columnName) + ")" +
-                " SELECT maxId + ROWNUM, " + Cti::join(_schema | columnName) +
-                " FROM Temp_" + _tempTable + "; "
+                " INSERT (" + _idColumn + "," + columnNames + ")" +
+                " VALUES (Temp_" + _tempTable + "." + _idColumn + "," + mergeInserts + ");";
                 "END;";
         }
     }
