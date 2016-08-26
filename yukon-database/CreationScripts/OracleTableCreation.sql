@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/18/2016 12:37:19 PM                        */
+/* Created on:     8/26/2016 6:28:21 AM                         */
 /*==============================================================*/
 
 
@@ -12107,7 +12107,8 @@ alter table LMControlAreaTrigger
 
 alter table LMControlHistory
    add constraint FK_LmCtrlHis_YPAO foreign key (PAObjectID)
-      references YukonPAObject (PAObjectID);
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table LMControlScenarioProgram
    add constraint FK_LmCScP_YkPA foreign key (ScenarioID)

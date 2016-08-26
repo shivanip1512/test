@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/18/2016 12:36:31 PM                        */
+/* Created on:     8/26/2016 6:29:51 AM                         */
 /*==============================================================*/
 
 
@@ -13072,6 +13072,7 @@ go
 alter table LMControlHistory
    add constraint FK_LmCtrlHis_YPAO foreign key (PAObjectID)
       references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table LMControlScenarioProgram
