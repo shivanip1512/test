@@ -151,7 +151,7 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
         MaxInterval = 60
     };
 
-    static const auto makeArchiveEpoch = []{ return std::make_unique<const time_t>(time(nullptr) / 60 - MinutesPerYear); };  //  1 year before startup
+    static const auto makeArchiveEpoch = []{ return std::make_unique<const time_t>(CtiTime::now().seconds() / 60 - MinutesPerYear); };  //  1 year before startup
 
     static auto ArchiveEpoch = makeArchiveEpoch();
 
@@ -176,6 +176,19 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
     //  don't cache rows with millis or non-integral minutes
     if( row.millis || (utcSeconds % 60) )
     {
+        return false;
+    }
+
+    // Sanity check on this data - it might be far-flung-future
+    if( utcSeconds >= (CtiTime::now() + 86400) )
+    {
+        Cti::FormattedList l;
+        l.add("Epoch") << CtiTime(*ArchiveEpoch * 60);
+        l.add("Incoming timestamp") << row.time;
+        l.add("Incoming pointid") << row.pointId;
+
+        CTILOG_WARN(dout, "Recieved pointdata more than 1 day in the future" << l);
+
         return false;
     }
 
