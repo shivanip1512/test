@@ -23,6 +23,7 @@ import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigError;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequest;
+import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequestType;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse.ConfigError;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponseType;
@@ -172,23 +173,37 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         
         switch(request.getRequestType()) {
         case ASSESS:
-            return getVerificationResponse(request);
+            return getResponse(request.getRequestType(),
+                               new ArrayList<>(request.getDevices().keySet()),
+                               settings.isOverloadGatewaysOnVerification(),
+                               settings.isNetworkManagerFailOnVerification(),
+                               settings.getDeviceErrorOnVerification());
         case UPDATE:
-            return getConfigResponse(request);
+            return getResponse(request.getRequestType(),
+                               new ArrayList<>(request.getDevices().keySet()),
+                               settings.isOverloadGatewaysOnConfig(),
+                               settings.isNetworkManagerFailOnConfig(),
+                               settings.getDeviceErrorOnConfig());
         case CONFIRM:
-            return getSyncResponse(request);
+            return getResponse(request.getRequestType(), new ArrayList<>(request.getDevices().keySet()), false, false, 
+                               null);
         default:
             throw new IllegalArgumentException("Unsupported request type: " + request.getRequestType());
         }
     }
     
-    private DeviceDataStreamingConfigResponse getVerificationResponse(DeviceDataStreamingConfigRequest request) {
+    private DeviceDataStreamingConfigResponse getResponse(DeviceDataStreamingConfigRequestType requestType,
+                                                          List<RfnIdentifier> devices,
+                                                          boolean isOverloadGateways,
+                                                          boolean isNetworkManagerFail,
+                                                          DeviceDataStreamingConfigError deviceError) {
+        
         List<RfnGateway> gateways = new ArrayList<>(gatewayService.getAllGateways());
-        List<RfnIdentifier> devices = new ArrayList<>(request.getDevices().keySet());
         
         int numberOfDevices = devices.size();
         int numberOfDevicesPerGateway = numberOfDevices / gateways.size();
         final List<List<RfnIdentifier>> deviceSubLists = new ArrayList<>();
+        
         if (numberOfDevices > gateways.size()) {
             deviceSubLists.addAll(Lists.partition(devices, numberOfDevicesPerGateway));
         } else {
@@ -203,74 +218,7 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
             info.setGatewayRfnIdentifier(gateway.getRfnIdentifier());
             info.setCurrentLoading(1.0);
             info.setMaxCapacity(10.0);
-            if (settings.isOverloadGatewaysOnVerification()) {
-                info.setResultLoading(11.5);
-            } else {
-                info.setResultLoading(2.0);
-            }
-            
-            Map<RfnIdentifier, Double> deviceRfnIdentifiers = deviceSubLists.get(i).stream()
-                    .collect(Collectors.toMap(d -> d, d -> 1.0));
-            info.setDeviceRfnIdentifiers(deviceRfnIdentifiers);
-            
-            affectedGateways.put(gateway.getRfnIdentifier(), info);
-        }
-        
-        
-        DeviceDataStreamingConfigResponse response = new DeviceDataStreamingConfigResponse();
-        response.setAffectedGateways(affectedGateways);
-        response.setResponseMessage("Simulated Response!");
-        
-        DeviceDataStreamingConfigError deviceError = settings.getDeviceErrorOnVerification();
-        if (deviceError != null) {
-            Map<RfnIdentifier, ConfigError> errorMap = new HashMap<>();
-            ConfigError error = new ConfigError();
-            error.setErrorType(deviceError);
-            error.setErrorMessage(deviceError.toString());
-            error.setOverSubscribedGatewayRfnIdentifier(devices.get(0)); //TODO variable by error type
-            errorMap.put(devices.get(0), error);
-            response.setErrorConfigedDevices(errorMap);
-        } else {
-            response.setErrorConfigedDevices(new HashMap<>());
-        }
-        
-        if (settings.isNetworkManagerFailOnVerification()) {
-            response.setResponseType(DeviceDataStreamingConfigResponseType.NETWORK_MANAGER_FAILURE);
-        } else if (settings.isOverloadGatewaysOnVerification() || settings.getDeviceErrorOnVerification() != null) {
-            response.setResponseType(DeviceDataStreamingConfigResponseType.CONFIG_ERROR);
-        } else {
-            response.setResponseType(DeviceDataStreamingConfigResponseType.ACCEPTED);
-        }
-        
-        return response;
-    }
-    
-    private DeviceDataStreamingConfigResponse getConfigResponse(DeviceDataStreamingConfigRequest request) {
-        List<RfnGateway> gateways = new ArrayList<>(gatewayService.getAllGateways());
-        List<RfnIdentifier> devices = new ArrayList<>(request.getDevices().keySet());
-        
-        int numberOfDevices = devices.size();
-        int numberOfDevicesPerGateway = numberOfDevices / gateways.size();
-        final List<List<RfnIdentifier>> deviceSubLists = new ArrayList<>();
-        
-        if (numberOfDevices > gateways.size()) {
-            deviceSubLists.addAll(Lists.partition(devices, numberOfDevicesPerGateway));
-        } else {
-            devices.forEach(device -> deviceSubLists.add(Lists.newArrayList(device)));
-        }
-        
-        log.debug("Gateways size: " + gateways.size());
-        log.debug("Device sub list size: " + deviceSubLists.size());
-        
-        Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways = new HashMap<>();
-        for (int i = 0; i < gateways.size() && i < deviceSubLists.size(); i++) {
-            RfnGateway gateway = gateways.get(i);
-            
-            GatewayDataStreamingInfo info = new GatewayDataStreamingInfo();
-            info.setGatewayRfnIdentifier(gateway.getRfnIdentifier());
-            info.setCurrentLoading(1.0);
-            info.setMaxCapacity(10.0);
-            if (settings.isOverloadGatewaysOnConfig()) {
+            if (isOverloadGateways) {
                 info.setResultLoading(11.5);
             } else {
                 info.setResultLoading(2.0);
@@ -287,22 +235,21 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         response.setAffectedGateways(affectedGateways);
         response.setResponseMessage("Simulated Response!");
         
-        DeviceDataStreamingConfigError deviceError = settings.getDeviceErrorOnConfig();
         if (deviceError != null) {
             Map<RfnIdentifier, ConfigError> errorMap = new HashMap<>();
             ConfigError error = new ConfigError();
             error.setErrorType(deviceError);
             error.setErrorMessage(deviceError.toString());
-            error.setOverSubscribedGatewayRfnIdentifier(devices.get(0)); //TODO variable by error type
+            error.setOverSubscribedGatewayRfnIdentifier(devices.get(0)); //TODO variable by error type?
             errorMap.put(devices.get(0), error);
             response.setErrorConfigedDevices(errorMap);
         } else {
             response.setErrorConfigedDevices(new HashMap<>());
         }
         
-        if (settings.isNetworkManagerFailOnConfig()) {
+        if (isNetworkManagerFail) {
             response.setResponseType(DeviceDataStreamingConfigResponseType.NETWORK_MANAGER_FAILURE);
-        } else if (settings.isOverloadGatewaysOnConfig() || settings.getDeviceErrorOnConfig() != null) {
+        } else if (isOverloadGateways || deviceError != null) {
             response.setResponseType(DeviceDataStreamingConfigResponseType.CONFIG_ERROR);
         } else {
             response.setResponseType(DeviceDataStreamingConfigResponseType.ACCEPTED);
@@ -311,44 +258,4 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         return response;
     }
     
-    private DeviceDataStreamingConfigResponse getSyncResponse(DeviceDataStreamingConfigRequest request) {
-        //TODO additional settings/adjustments?
-        List<RfnGateway> gateways = new ArrayList<>(gatewayService.getAllGateways());
-        List<RfnIdentifier> devices = new ArrayList<>(request.getDevices().keySet());
-        
-        int numberOfDevices = devices.size();
-        int numberOfDevicesPerGateway = numberOfDevices / gateways.size();
-        final List<List<RfnIdentifier>> deviceSubLists = new ArrayList<>();
-        if (numberOfDevices > gateways.size()) {
-            deviceSubLists.addAll(Lists.partition(devices, numberOfDevicesPerGateway));
-        } else {
-            devices.forEach(device -> deviceSubLists.add(Lists.newArrayList(device)));
-        }
-        
-        Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways = new HashMap<>();
-        for (int i = 0; i < gateways.size() && i < deviceSubLists.size(); i++) {
-            RfnGateway gateway = gateways.get(i);
-            
-            GatewayDataStreamingInfo info = new GatewayDataStreamingInfo();
-            info.setGatewayRfnIdentifier(gateway.getRfnIdentifier());
-            info.setCurrentLoading(1.0);
-            info.setMaxCapacity(10.0);
-            info.setResultLoading(2.0);
-            
-            Map<RfnIdentifier, Double> deviceRfnIdentifiers = deviceSubLists.get(i).stream()
-                    .collect(Collectors.toMap(d -> d, d -> 1.0));
-            info.setDeviceRfnIdentifiers(deviceRfnIdentifiers);
-            
-            affectedGateways.put(gateway.getRfnIdentifier(), info);
-        }
-        
-        
-        DeviceDataStreamingConfigResponse response = new DeviceDataStreamingConfigResponse();
-        response.setAffectedGateways(affectedGateways);
-        response.setResponseMessage("Simulated Response!");
-        response.setErrorConfigedDevices(new HashMap<>());
-        response.setResponseType(DeviceDataStreamingConfigResponseType.ACCEPTED);
-        
-        return response;
-    }
 }
