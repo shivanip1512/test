@@ -65,7 +65,8 @@ import com.google.common.collect.ImmutableSet;
 public class DeviceConfigurationCategoryController {
 
     private final Set<PaoType> voltageDataStreamingTypes = ImmutableSet.of(PaoType.RFN410CL, PaoType.RFN420CL, PaoType.RFN420FX,
-        PaoType.RFN420FD, PaoType.RFN420FL, PaoType.RFN420FRX, PaoType.RFN420FRD, PaoType.RFN420CD);
+        PaoType.RFN420FD, PaoType.RFN420FL, PaoType.RFN420FRX, PaoType.RFN420FRD, PaoType.RFN420CD,
+        PaoType.RFN510FL, PaoType.RFN520FAX, PaoType.RFN520FRX, PaoType.RFN520FAXD, PaoType.RFN520FRXD);
     private final Set<PaoType> disconnectDisplayDisabledTypes =
         ImmutableSet.of(PaoType.RFN420CL, PaoType.MCT420FD, PaoType.MCT420CL, PaoType.MCT420CD);
     
