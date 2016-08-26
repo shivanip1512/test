@@ -346,6 +346,7 @@
     </ClCompile>
     <ClCompile Include="test_ctitime.cpp">
     </ClCompile>
+    <ClCompile Include="test_database_bulk_writer.cpp" />
     <ClCompile Include="test_database_util.cpp">
     </ClCompile>
     <ClCompile Include="test_date_utility.cpp">

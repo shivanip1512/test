@@ -368,7 +368,14 @@
     </ClCompile>
     <ClCompile Include="ctitokenizer.cpp">
     </ClCompile>
-    <ClCompile Include="database_bulk_writer.cpp" />
+    <ClCompile Include="database_bulk_writer.cpp">
+      <!--  Add /await just for this file, since it currently conflicts with logManager.cpp / log4cxx -->
+      <AdditionalOptions>/await</AdditionalOptions>
+      <!--  Exclude the precompiled header, since it overrides per-file /await -->
+      <PrecompiledHeader />
+      <PrecompiledHeaderFile />
+      <PrecompiledHeaderOutputFile />
+    </ClCompile>
     <ClCompile Include="database_connection.cpp">
     </ClCompile>
     <ClCompile Include="database_reader.cpp">

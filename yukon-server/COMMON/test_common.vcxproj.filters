@@ -98,6 +98,9 @@
     <ClCompile Include="test_coroutines.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_database_bulk_writer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AttributeService.h">

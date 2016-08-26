@@ -3,6 +3,8 @@
 #include "dllbase.h"
 #include "dlldefs.h"
 
+#include <functional>
+
 class SAConnection;
 
 //various database connection options

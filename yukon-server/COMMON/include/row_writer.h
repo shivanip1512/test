@@ -2,9 +2,17 @@
 
 #include "ctitime.h"
 #include "dlldefs.h"
-#include <string>
-#include <boost/date_time/posix_time/posix_time_types.hpp>
+#include "loggable.h"
+
 #include <boost/optional.hpp>
+
+#include <string>
+
+namespace boost {
+namespace posix_time {
+    class ptime;  //  forward declaration, no need to include ptime here
+}
+}
 
 namespace Cti {
 
@@ -52,6 +60,11 @@ public:
 
         return *this << Null;
     }
+};
+
+struct RowSource : Loggable
+{
+    virtual void fillRowWriter(RowWriter&) const = 0;
 };
 
 }// namespace cti

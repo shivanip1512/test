@@ -66,6 +66,14 @@ typedef Detail::CommandParam <Detail::LogDebug>          LogDebug;
 typedef Detail::CommandParam <Detail::LogNoRowsAffected> LogNoRowsAffected;
 typedef Detail::CommandParam <Detail::TryInsertFirst>    TryInsertFirst;
 
+//  Column definitions for temp tables
+struct ColumnDefinition
+{
+    std::string name;
+    std::string sqlServerType;
+    std::string oracleType;
+};
+
 /**
  * Execute a read or a write command
  * @return true if no error, false otherwise

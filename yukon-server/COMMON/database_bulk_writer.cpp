@@ -1,9 +1,19 @@
-#include "precompiled.h"
+//  Exclude database_bulk_writer.cpp from using precompiled.h for now so we can specify /await for just this file.
+//
+//  DatabaseBulkWriter needs /await to use Coroutines::chunked, but we can't enable /await at the ctibase project scope
+//    due to an /await keyword conflict with log4cxx::Condition::await(), which is included by logManager.cpp.
+//
+//#include "precompiled.h"  
 
 #include "database_bulk_writer.h"
+#include "database_exceptions.h"
+#include "database_transaction.h"
+
+#include "coroutine_util.h"
 
 #include <boost/range/algorithm/transform.hpp>
 #include <boost/range/adaptor/transformed.hpp>
+#include <boost/range/adaptor/indirected.hpp>
 
 namespace Cti {
 namespace Database {
@@ -14,17 +24,17 @@ namespace {
     
 static const auto columnName = 
     boost::adaptors::transformed(
-        [](ColumnDefinition &cd){ 
+        [](const ColumnDefinition &cd){ 
             return cd.name; });
     
 static const auto sqlServerColumnSpecification = 
     boost::adaptors::transformed(
-        [](ColumnDefinition &cd){ 
+        [](const ColumnDefinition &cd){ 
             return cd.name + " " + cd.sqlServerType + " not null"; });
 
 static const auto oracleColumnSpecification = 
     boost::adaptors::transformed(
-        [](ColumnDefinition &cd){ 
+        [](const ColumnDefinition &cd){ 
             return cd.name + " " + cd.oracleType + " not null"; });
 }
 
@@ -77,11 +87,11 @@ template <size_t ColumnCount>
 std::string DatabaseBulkWriter<ColumnCount>::getInsertSql(const DbClientType clientType, size_t rows) const
 {
     const std::string oraclePrefix = "INSERT ALL";
-    const std::string oracleInfix  = " INTO Temp_" + _tempTable + " VALUES(" + createPlaceholderList(ColumnCount) + ")";
+    const std::string oracleInfix  = " INTO Temp_" + _tempTable + " VALUES " + createPlaceholderList(ColumnCount);
     const std::string oracleSuffix = " SELECT 1 FROM DUAL";
 
-    const std::string sqlPrefix = "INSERT INTO ##" + _tempTable + " VALUES";
-    const std::string sqlInfix = " (" + createPlaceholderList(ColumnCount) + ")";  //  joined by commas
+    const std::string sqlPrefix = "INSERT INTO ##" + _tempTable + " VALUES ";
+    const std::string sqlInfix = createPlaceholderList(ColumnCount);  //  joined by commas
 
     switch( clientType )
     {
@@ -106,9 +116,9 @@ std::string DatabaseBulkWriter<ColumnCount>::getInsertSql(const DbClientType cli
     throw DatabaseException{ "Invalid client type " + std::to_string(static_cast<unsigned>(clientType)) };
 }
 
-/*
-template <size_t ColumnCount, class T>
-void DatabaseBulkWriter<ColumnCount>::writeRows(std::vector<std::unique_ptr<T>>&& rows) const
+
+template <size_t ColumnCount>
+void DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& conn, std::vector<std::unique_ptr<RowSource>>&& rows) const
 {
     static const size_t ChunkSize = 1000 / ColumnCount;
 
@@ -118,17 +128,17 @@ void DatabaseBulkWriter<ColumnCount>::writeRows(std::vector<std::unique_ptr<T>>&
 
     try
     {
-        DatabaseWriter truncator{ conn, CtiTableRawPointHistory::getTempTableTruncationSql(conn.getClientType()) };
+        DatabaseWriter truncator{ conn, getTempTableTruncationSql(conn.getClientType()) };
 
         try
         {
             truncator.executeWithDatabaseException();
         }
-        catch( const DatabaseException &ex )
+        catch( const DatabaseException & )
         {
             CTILOG_INFO(dout, "Temp table not detected, attempting to create");
 
-            DatabaseWriter creator{ conn, CtiTableRawPointHistory::getTempTableCreationSql(conn.getClientType()) };
+            DatabaseWriter creator{ conn, getTempTableCreationSql(conn.getClientType()) };
 
             executeWriter(creator, __FILE__, __LINE__, Cti::Database::LogDebug::Disable);
         }
@@ -137,11 +147,11 @@ void DatabaseBulkWriter<ColumnCount>::writeRows(std::vector<std::unique_ptr<T>>&
 
         for( auto chunk : Cti::Coroutines::chunked(rows, ChunkSize) )
         {
-            DatabaseWriter inserter{ conn, CtiTableRawPointHistory::getInsertSql(conn.getClientType(), chunk.size()) };
+            DatabaseWriter inserter{ conn, getInsertSql(conn.getClientType(), chunk.size()) };
 
             for( auto& record : chunk ) 
             {
-                record->fillInserter(inserter);
+                record->fillRowWriter(inserter);
             }
 
             executeWriter(inserter, __FILE__, __LINE__, Cti::Database::LogDebug::Disable);
@@ -149,7 +159,7 @@ void DatabaseBulkWriter<ColumnCount>::writeRows(std::vector<std::unique_ptr<T>>&
             rowsWritten += chunk.size();
         }
 
-        DatabaseWriter finalizer{ conn, CtiTableRawPointHistory::getFinalizeSql(conn.getClientType()) };
+        DatabaseWriter finalizer{ conn, getFinalizeSql(conn.getClientType()) };
 
         finalizer.executeWithDatabaseException();
     }
@@ -161,7 +171,7 @@ void DatabaseBulkWriter<ColumnCount>::writeRows(std::vector<std::unique_ptr<T>>&
         }
 
         CTILOG_EXCEPTION_ERROR(dout, ex, "Unable to insert rows into " << _destTable << ":\n" <<
-            boost::join(rowsToWrite |
+            boost::join(rows |
                 boost::adaptors::indirected |
                 boost::adaptors::transformed(
                     [](const Cti::Loggable &obj) {
@@ -170,7 +180,7 @@ void DatabaseBulkWriter<ColumnCount>::writeRows(std::vector<std::unique_ptr<T>>&
         rowsWritten = 0;
     }
 }
-*/
+
 
 template <size_t ColumnCount>
 DatabaseBulkInserter<ColumnCount>::DatabaseBulkInserter(TempTableColumns schema, const std::string& tempTableName, const std::string& destTableName, const std::string& destIdColumn ) 
@@ -181,6 +191,8 @@ DatabaseBulkInserter<ColumnCount>::DatabaseBulkInserter(TempTableColumns schema,
 template <size_t ColumnCount>
 std::string DatabaseBulkInserter<ColumnCount>::getFinalizeSql(const DbClientType clientType) const
 {
+    const auto columnNames = boost::join(_schema | columnName, ", ");
+
     switch( clientType )
     {
         case DbClientType::SqlServer:
@@ -188,8 +200,8 @@ std::string DatabaseBulkInserter<ColumnCount>::getFinalizeSql(const DbClientType
             return
                 "declare @maxId numeric;"
                 "select @maxId = COALESCE(MAX(" + _idColumn + "), 0) from " + _destTable + ";"
-                "insert into RAWPOINTHISTORY (" + _idColumn + ", " + Cti::join(_schema | columnName) + ")" +
-                " select @maxId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)), " + Cti::join(_schema | columnName) +
+                "insert into RAWPOINTHISTORY (" + _idColumn + ", " + columnNames + ")" +
+                " select @maxId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)), " + columnNames +
                 " FROM ##" + _tempTable + ";";
         }
         case DbClientType::Oracle:
@@ -199,8 +211,8 @@ std::string DatabaseBulkInserter<ColumnCount>::getFinalizeSql(const DbClientType
                 "BEGIN"
                 " SELECT NVL(MAX(" + _idColumn + "), 0) INTO maxId"
                 " FROM RAWPOINTHISTORY;"
-                "INSERT INTO RAWPOINTHISTORY (" + _idColumn + ", " + Cti::join(_schema | columnName) + ")" +
-                " SELECT maxId + ROWNUM, " + Cti::join(_schema | columnName) +
+                "INSERT INTO RAWPOINTHISTORY (" + _idColumn + ", " + columnNames + ")" +
+                " SELECT maxId + ROWNUM, " + columnNames +
                 " FROM Temp_" + _tempTable + "; "
                 "END;";
         }
@@ -220,8 +232,7 @@ DatabaseBulkUpdater<ColumnCount>::DatabaseBulkUpdater(TempTableColumns schema, c
 template <size_t ColumnCount>
 std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql(const DbClientType clientType) const
 {
-
-    const auto columnNames  = Cti::join(_schema | columnName, ",");
+    const auto columnNames = boost::join(_schema | columnName, ", ");
 
     switch( clientType )
     {
@@ -230,15 +241,15 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql(const DbClientType 
             const auto mergeUpdate =
                 boost::adaptors::transformed(
                     [this](const ColumnDefinition &cd) {
-                return cd.name + " = ##" + _tempTable + "." + cd.name; });
+                        return cd.name + " = ##" + _tempTable + "." + cd.name; });
 
             const auto mergeInsert =
                 boost::adaptors::transformed(
                     [this](const ColumnDefinition &cd) {
-                return "##" + _tempTable + "." + cd.name; });
+                        return "##" + _tempTable + "." + cd.name; });
 
-            const auto mergeUpdates = Cti::join(_schema | mergeUpdate, ",");
-            const auto mergeInserts = Cti::join(_schema | mergeInsert, ",");
+            const auto mergeUpdates = boost::join(_schema | mergeUpdate, ", ");
+            const auto mergeInserts = boost::join(_schema | mergeInsert, ", ");
 
             return
                 "MERGE " + _destTable +
@@ -255,15 +266,15 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql(const DbClientType 
             const auto mergeUpdate =
                 boost::adaptors::transformed(
                     [this](const ColumnDefinition &cd) {
-                return cd.name + " = Temp_" + _tempTable + "." + cd.name; });
+                        return cd.name + " = Temp_" + _tempTable + "." + cd.name; });
 
             const auto mergeInsert =
                 boost::adaptors::transformed(
                     [this](const ColumnDefinition &cd) {
-                return "Temp_" + _tempTable + "." + cd.name; });
+                        return "Temp_" + _tempTable + "." + cd.name; });
 
-            const auto mergeUpdates = Cti::join(_schema | mergeUpdate, ",");
-            const auto mergeInserts = Cti::join(_schema | mergeInsert, ",");
+            const auto mergeUpdates = boost::join(_schema | mergeUpdate, ", ");
+            const auto mergeInserts = boost::join(_schema | mergeInsert, ", ");
 
             return
                 "BEGIN"
@@ -281,6 +292,10 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql(const DbClientType 
 
     throw DatabaseException{ "Invalid client type " + std::to_string(static_cast<unsigned>(clientType)) };
 }
+
+
+template DatabaseBulkInserter<5>;
+template DatabaseBulkUpdater<9>;
 
 
 }
