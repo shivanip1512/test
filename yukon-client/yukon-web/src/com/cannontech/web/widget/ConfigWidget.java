@@ -119,6 +119,7 @@ public class ConfigWidget extends WidgetControllerBase {
         }
         
         ModelAndView mav = getConfigModelAndView(request);
+        mav.addObject("configurableDevice", true);
         return mav;
     }
     
