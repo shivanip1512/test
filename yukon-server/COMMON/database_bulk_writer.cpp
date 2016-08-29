@@ -120,7 +120,7 @@ std::string DatabaseBulkWriter<ColumnCount>::getInsertSql(const DbClientType cli
 template <size_t ColumnCount>
 std::vector<int> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& conn, std::vector<std::unique_ptr<RowSource>>&& rows) const
 {
-    static const size_t ChunkSize = 1000 / ColumnCount;
+    static const size_t ChunkSize = 999 / ColumnCount;  //  we only have 999 placeholders
 
     unsigned rowsWritten = 0;
 
