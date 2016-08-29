@@ -258,8 +258,8 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql(const DbClientType 
                 "WHEN MATCHED THEN"
                 " UPDATE SET " + mergeUpdates +
                 "WHEN NOT MATCHED THEN"
-                " INSERT (" + _idColumn + "," + columnNames + ")" +
-                " VALUES (##" + _tempTable + "." + _idColumn + "," + mergeInserts + ");";
+                " INSERT (" + _idColumn + ", " + columnNames + ")"
+                " VALUES (##" + _tempTable + "." + _idColumn + ", " + mergeInserts + ");";
         }
         case DbClientType::Oracle:
         {
@@ -284,8 +284,8 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql(const DbClientType 
                 "WHEN MATCHED THEN"
                 " UPDATE SET " + mergeUpdates +
                 "WHEN NOT MATCHED THEN"
-                " INSERT (" + _idColumn + "," + columnNames + ")" +
-                " VALUES (Temp_" + _tempTable + "." + _idColumn + "," + mergeInserts + ");";
+                " INSERT (" + _idColumn + ", " + columnNames + ")"
+                " VALUES (Temp_" + _tempTable + "." + _idColumn + ", " + mergeInserts + ")"
                 "END;";
         }
     }
@@ -296,6 +296,7 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql(const DbClientType 
 
 template DatabaseBulkInserter<5>;
 template DatabaseBulkUpdater<9>;
+template DatabaseBulkUpdater<5>;
 
 
 }
