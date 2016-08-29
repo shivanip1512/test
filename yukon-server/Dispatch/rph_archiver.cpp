@@ -117,7 +117,7 @@ auto RawPointHistoryArchiver::getFilteredRows(size_t maximum) -> std::vector<std
 
     FormattedList duplicates;
 
-	const auto now = std::time(nullptr);
+    const auto now = std::time(nullptr);
 
     while( maximum-- && itr.base() != _archiverQueue.end() )
     {

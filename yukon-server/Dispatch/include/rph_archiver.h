@@ -48,7 +48,7 @@ protected:
 
     std::vector<std::unique_ptr<CtiTableRawPointHistory>> getFilteredRows(size_t maximum);
 
-    bool wasPreviouslyArchived(const CtiTableRawPointHistory& row);
+    bool wasPreviouslyArchived(const CtiTableRawPointHistory& row, const time_t now);
 
 private:
 
