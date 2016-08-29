@@ -2305,7 +2305,12 @@ void CreateMiniDump( const std::string &dumpfilePrefix, const LPEXCEPTION_POINTE
     // Used in passing info to MiniDumpWriteDump()
     MINIDUMP_EXCEPTION_INFORMATION dumpInfo{};
 
-    // We need to create a MINIDUMP_EXCEPTION_INFORMATION structure to pass to MiniDumpWriteDump.
+    //  We will need these if we have to fill in our own ExceptionPointers.
+    EXCEPTION_RECORD ExceptionRecord{};
+    CONTEXT ContextRecord{};
+    EXCEPTION_POINTERS ExceptionPointers{};
+
+	// We need to create a MINIDUMP_EXCEPTION_INFORMATION structure to pass to MiniDumpWriteDump.
     dumpInfo.ThreadId = GetCurrentThreadId();
     dumpInfo.ClientPointers = false;
     if (pExceptionPtrs != 0)
@@ -2316,10 +2321,6 @@ void CreateMiniDump( const std::string &dumpfilePrefix, const LPEXCEPTION_POINTE
     else
     {
         // Make up our own ExceptionPointers
-
-        EXCEPTION_RECORD ExceptionRecord{};
-        CONTEXT ContextRecord{};
-        EXCEPTION_POINTERS ExceptionPointers{};
 
         // Adapted from http://crashrpt.sourceforge.net/docs/html/exception_handling.html
 
