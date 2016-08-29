@@ -8,12 +8,14 @@
 #include "ctitime.h"
 #include "row_reader.h"
 #include "database_connection.h"
+#include "database_util.h"
+#include "row_writer.h"
 #include "loggable.h"
 
 #include <limits.h>
 
 
-class IM_EX_CTIYUKONDB CtiTablePointDispatch : public CtiMemDBObject, private boost::noncopyable, public Cti::Loggable
+class IM_EX_CTIYUKONDB CtiTablePointDispatch : public CtiMemDBObject, public Cti::RowSource
 {
     LONG           _pointID;
 
@@ -24,11 +26,6 @@ class IM_EX_CTIYUKONDB CtiTablePointDispatch : public CtiMemDBObject, private bo
 
     CtiTime        _nextArchiveTime;
     UINT           _tags;
-
-    bool _pointIdInvalid;
-
-    void initInserter (Cti::Database::DatabaseWriter &inserter) const;
-    void initUpdater  (Cti::Database::DatabaseWriter &updater) const;
 
 public:
 
@@ -47,10 +44,6 @@ public:
     virtual bool operator==(const CtiTablePointDispatch&) const;
 
     static std::string getTableName();
-
-    bool writeToDB(Cti::Database::DatabaseConnection &conn);
-
-    bool isPointIdInvalid() const;
 
     virtual bool Restore();
 
@@ -73,7 +66,6 @@ public:
     DOUBLE getValue() const;
     CtiTablePointDispatch& setValue(DOUBLE value);
 
-
     const CtiTime& getNextArchiveTime() const;
     CtiTablePointDispatch& setNextArchiveTime(const CtiTime& timestamp);
 
@@ -83,7 +75,9 @@ public:
     UINT setTags(UINT tags);
     UINT resetTags(UINT mask = 0xffffffff);
 
-    UINT getStaleCount() const;
-
     virtual std::string toString() const override;
+
+    void fillRowWriter(Cti::RowWriter& writer) const override;
+
+    static std::array<Cti::Database::ColumnDefinition, 7> getTempTableSchema();
 };

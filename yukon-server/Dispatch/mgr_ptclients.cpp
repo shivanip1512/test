@@ -6,7 +6,7 @@
 #include "dbaccess.h"
 #include "database_reader.h"
 #include "database_connection.h"
-#include "database_transaction.h"
+#include "database_bulk_writer.h"
 #include "database_util.h"
 #include "devicetypes.h"
 #include "msg_ptreg.h"
@@ -34,6 +34,7 @@
 
 using namespace std;
 using Cti::Database::DatabaseConnection;
+using Cti::Database::DatabaseBulkUpdater;
 using Cti::Database::DatabaseReader;
 
 #define POINT_REFRESH_SIZE 950 //This is overriden by cparm.
@@ -582,8 +583,8 @@ std::set<long> CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_typ
     CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
 
     return conIter != _conMgrPointMap.end() 
-		? conIter->second
-		: std::set<long>{};
+        ? conIter->second
+        : std::set<long>{};
 }
 
 /** Remove all points from the specified ConnectionManager */
@@ -740,7 +741,7 @@ auto CtiPointClientManager::getDirtyRecordList() -> DynamicPointDispatchList
                     pDyn->getDispatch().setTags(pPt->adjustStaticTags(statictags));   // make the static tags match...
                 }
 
-                updateList.push_back(pDyn);
+                updateList.push_back(std::make_unique<CtiTablePointDispatch>(pDyn->getDispatch()));
             }
         }
         catch(...)
@@ -752,7 +753,7 @@ auto CtiPointClientManager::getDirtyRecordList() -> DynamicPointDispatchList
     return updateList;
 }
 
-void CtiPointClientManager::writeRecordsToDB(const DynamicPointDispatchList& updateList)
+void CtiPointClientManager::writeRecordsToDB(DynamicPointDispatchList&& updateList)
 {
     Cti::Database::DatabaseConnection   conn;
 
@@ -769,25 +770,23 @@ void CtiPointClientManager::writeRecordsToDB(const DynamicPointDispatchList& upd
 
     size_t listCount = 0;
 
-    for( auto& pDyn : updateList )
+    DatabaseBulkUpdater<7> bu { CtiTablePointDispatch::getTempTableSchema(), "DPD", "DynamicPointDispatch", "PointID" };
+
+    std::vector<std::unique_ptr<Cti::RowSource>> rowSources;
+
+    //  Convert the rows from RawPointHistory to RowSource
+    std::move(
+        updateList.begin(), 
+        updateList.end(), 
+        std::back_inserter(rowSources));
+    
+    auto rejectedRows = bu.writeRows(conn, std::move(rowSources));
+
+    for( auto pointId : rejectedRows )
     {
-        CtiTablePointDispatch& dynamicPointData = pDyn->getDispatch();
+        CTILOG_WARN(dout, "Removing record for invalid point ID " << pointId);
 
-        const auto pointId = dynamicPointData.getPointID();
-
-        if( ! dynamicPointData.writeToDB(conn) )
-        {
-            if( dynamicPointData.isPointIdInvalid() )
-            {
-                CTILOG_WARN(dout, "Removing record for invalid point ID " << pointId);
-
-                erase(pointId);
-            }
-        }
-        else if( ++listCount % 1000 == 0 )
-        {
-            CTILOG_INFO(dout, "WRITING dynamic dispatch records to DB, " << listCount << " of " << total << " records written");
-        }
+        erase(pointId);
     }
 }
 
@@ -820,13 +819,13 @@ void CtiPointClientManager::removeOldDynamicData()
 
 void CtiPointClientManager::storeDirtyRecords()
 {
-    const auto updateList = getDirtyRecordList();
+    auto updateList = getDirtyRecordList();
 
     if( ! updateList.empty() )
     {
-        writeRecordsToDB(updateList);
+        CTILOG_DEBUG(dout, "Updating " << updateList.size() << " dynamic dispatch records");
 
-        CTILOG_DEBUG(dout, "Updated " << updateList.size() << " dynamic dispatch records");
+        writeRecordsToDB(std::move(updateList));
     }
 
     removeOldDynamicData();

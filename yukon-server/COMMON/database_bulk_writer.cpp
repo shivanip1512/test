@@ -118,13 +118,15 @@ std::string DatabaseBulkWriter<ColumnCount>::getInsertSql(const DbClientType cli
 
 
 template <size_t ColumnCount>
-void DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& conn, std::vector<std::unique_ptr<RowSource>>&& rows) const
+std::vector<int> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& conn, std::vector<std::unique_ptr<RowSource>>&& rows) const
 {
     static const size_t ChunkSize = 1000 / ColumnCount;
 
     unsigned rowsWritten = 0;
 
     boost::optional<DatabaseTransaction> transaction;
+
+    std::vector<int> rejectedRows;
 
     try
     {
@@ -159,6 +161,8 @@ void DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& conn, std::v
             rowsWritten += chunk.size();
         }
 
+        //rejectedRows = validateTemporaryRows(conn);
+
         DatabaseWriter finalizer{ conn, getFinalizeSql(conn.getClientType()) };
 
         finalizer.executeWithDatabaseException();
@@ -179,6 +183,8 @@ void DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& conn, std::v
 
         rowsWritten = 0;
     }
+
+    return rejectedRows;
 }
 
 
@@ -295,7 +301,7 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql(const DbClientType 
 
 
 template DatabaseBulkInserter<5>;
-template DatabaseBulkUpdater<9>;
+template DatabaseBulkUpdater<7>;
 template DatabaseBulkUpdater<5>;
 
 

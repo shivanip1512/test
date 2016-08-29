@@ -13,7 +13,9 @@ public:
     using TempTableColumns = std::array<ColumnDefinition, ColumnCount>;
     using DbClientType = DatabaseConnection::ClientType;
 
-    void writeRows(DatabaseConnection& conn, std::vector<std::unique_ptr<RowSource>>&& rows) const;
+    using RowSources = std::vector<std::unique_ptr<RowSource>>;
+
+    std::vector<int> writeRows(DatabaseConnection& conn, RowSources&& rows) const;
 
 protected:
     DatabaseBulkWriter(TempTableColumns tempTableSchema, const std::string &tempTableName, const std::string &destTableName);

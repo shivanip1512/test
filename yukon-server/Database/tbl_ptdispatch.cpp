@@ -22,8 +22,7 @@ _value(0),
 _tags(0),
 //_staleCount(0),
 //_lastAlarmLogID(0),
-_nextArchiveTime(CtiTime(YUKONEOT+86400)),
-_pointIdInvalid(false)
+_nextArchiveTime(CtiTime(YUKONEOT+86400))
 {
     setTimeStampMillis(0);
 }
@@ -40,8 +39,7 @@ _value(value),
 _tags(0),
 //_staleCount(0),
 //_lastAlarmLogID(0),
-_nextArchiveTime(CtiTime(YUKONEOT - 86400)),
-_pointIdInvalid(false)
+_nextArchiveTime(CtiTime(YUKONEOT - 86400))
 {
     setTimeStampMillis(millis);
 
@@ -60,6 +58,18 @@ bool CtiTablePointDispatch::operator==(const CtiTablePointDispatch& right) const
 string CtiTablePointDispatch::getTableName()
 {
     return "DynamicPointDispatch";
+}
+
+std::array<Cti::Database::ColumnDefinition, 7> CtiTablePointDispatch::getTempTableSchema()
+{
+    return { Cti::Database::ColumnDefinition
+        { "POINTID",        "numeric", "NUMBER" },
+        { "TIMESTAMP",      "datetime", "DATE"},
+        { "QUALITY",        "numeric", "NUMBER"},
+        { "VALUE",          "float", "FLOAT"},
+        { "TAGS",           "numeric", "NUMBER"},
+        { "NEXTARCHIVE",    "datetime", "DATE"},
+        { "millis",         "smallint", "SMALLINT"}};
 }
 
 string CtiTablePointDispatch::getSQLCoreStatement(long id)
@@ -125,88 +135,16 @@ void CtiTablePointDispatch::DecodeDatabaseReader(Cti::RowReader& rdr )
     resetDirty(FALSE);
 }
 
-bool CtiTablePointDispatch::writeToDB(Cti::Database::DatabaseConnection &conn)
+void CtiTablePointDispatch::fillRowWriter(Cti::RowWriter &writer) const
 {
-    using namespace Cti::Database;
-
-    try
-    {
-        const TryInsertFirst tryInsertFirst = ! getUpdatedFlag();
-
-        executeUpsert(
-                conn,
-                boost::bind(&CtiTablePointDispatch::initInserter, this, _1),
-                boost::bind(&CtiTablePointDispatch::initUpdater,  this, _1),
-                tryInsertFirst,
-                __FILE__, __LINE__, LogDebug::Disable );
-
-        setUpdatedFlag(true);
-        setDirty(false);
-
-        return true;
-    }
-    catch( Cti::Database::ForeignKeyViolationException& )
-    {
-        _pointIdInvalid = true;
-    }
-    catch( Cti::Database::DatabaseException& )
-    {
-        // logging is done inside executeUpsert()
-    }
-
-    return false;
-}
-
-
-void CtiTablePointDispatch::initUpdater(Cti::Database::DatabaseWriter &updater) const
-{
-    static const std::string sql = "update " + getTableName() +
-                                   " set "
-                                        "timestamp = ?, "
-                                        "quality = ?, "
-                                        "value = ?, "
-                                        "tags = ?, "
-                                        "nextarchive = ?, "
-                                        "stalecount = ?, "
-                                        "millis = ?"
-                                   " where "
-                                        "pointid = ?";
-
-    updater.setCommandText(sql);
-
-    updater
-        << getTimeStamp()
-        << getQuality()
-        << getValue()
-        << getTags()
-        << getNextArchiveTime()
-        << getStaleCount()
-        << getTimeStampMillis()
-        << getPointID();
-}
-
-void CtiTablePointDispatch::initInserter(Cti::Database::DatabaseWriter &inserter) const
-{
-    static const std::string sql = "insert into " + getTableName() +
-                                       " values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    inserter.setCommandText(sql);
-
-    inserter
+    writer
         << getPointID()
         << getTimeStamp()
         << getQuality()
         << getValue()
         << getTags()
         << getNextArchiveTime()
-        << getStaleCount()
-        << getLastAlarmLogID()
         << getTimeStampMillis();
-}
-
-bool CtiTablePointDispatch::isPointIdInvalid() const
-{
-    return _pointIdInvalid;
 }
 
 LONG CtiTablePointDispatch::getPointID() const
@@ -309,12 +247,6 @@ UINT CtiTablePointDispatch::resetTags(UINT mask)
         setDirty(TRUE);
     }
     return _tags;
-}
-
-// getStaleCount always returns 0
-UINT CtiTablePointDispatch::getStaleCount() const
-{
-    return 0; //_stalecount
 }
 
 const CtiTime& CtiTablePointDispatch::getNextArchiveTime() const

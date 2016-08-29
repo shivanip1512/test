@@ -67,9 +67,9 @@ private:
 
    void executeDynamicDataQueries(const std::vector<std::string> &queries);
 
-   using DynamicPointDispatchList = std::vector<CtiDynamicPointDispatchSPtr>;
+   using DynamicPointDispatchList = std::vector<std::unique_ptr<CtiTablePointDispatch>>;
    DynamicPointDispatchList getDirtyRecordList();
-   void writeRecordsToDB(const DynamicPointDispatchList& records);
+   void writeRecordsToDB(DynamicPointDispatchList&& records);
    void removeOldDynamicData();
 
    CtiDynamicPointDispatchSPtr getDynamic(unsigned long pointID) const;
