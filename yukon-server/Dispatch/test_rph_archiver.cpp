@@ -43,96 +43,96 @@ BOOST_AUTO_TEST_CASE( test_wasPreviouslyArchived )
 {
     test_RphArchiver a;
 
-    CtiTime t { CtiDate { 23, 8, 2016 }, 13, 00, 00 };
+    const CtiTime t { CtiDate { 23, 8, 2016 }, 13, 00, 00 };
 
-    Cti::Test::Override_CtiTime_Now timeOverride { t };
+    const auto now = t.seconds();
         
     const CtiTableRawPointHistory b { 11235, 5, 12.34, t, 0 };
 
     //  baseline
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b) );
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b, now) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b, now) );
     
     //  readings with millis do not get cached
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 83ms) );
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 83ms) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 83ms, now) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 83ms, now) );
     
     //  readings with non-integral minutes do not get cached
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 17s) );
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 17s) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 17s, now) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 17s, now) );
     
     //  1 hour before baseline
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 1h) );
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b + 1h) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 1h, now) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b + 1h, now) );
     //  1 hour after baseline
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 1h) );
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b - 1h) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 1h, now) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b - 1h, now) );
     
     //  check baseline again
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b, now) );
     
     //  35 hours before baseline
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 35h) );
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b - 35h) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 35h, now) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b - 35h, now) );
 
     //  36 hours before baseline, out of range, cannot be cached
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 36h) );
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 36h) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 36h, now) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 36h, now) );
 
     //  check baseline again
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b, now) );
     
     //  change interval to 15 minutes
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 15min) );
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b + 15min) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 15min, now) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b + 15min, now) );
     
     //  check baseline again
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b, now) );
     
     //  check hourly again
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b + 1h) );
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b - 1h) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b + 1h, now) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b - 1h, now) );
     
     //  make sure 36 hour was kicked out...
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 35h) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 35h, now) );
     //  ... and stays kicked out, since we have no room for it now
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 35h) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 35h, now) );
     
     //  but we do have room for b + 4 - 36 = b - 32 * 15-minute intervals back
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 15min * 32) );
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b - 15min * 32) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 15min * 32, now) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b - 15min * 32, now) );
     
     //  confirm everything else again
-    BOOST_CHECK_EQUAL( true, a.wasPreviouslyArchived(b) );
-    BOOST_CHECK_EQUAL( true, a.wasPreviouslyArchived(b + 1h) );
-    BOOST_CHECK_EQUAL( true, a.wasPreviouslyArchived(b - 1h) );
-    BOOST_CHECK_EQUAL( true, a.wasPreviouslyArchived(b + 15min) );
+    BOOST_CHECK_EQUAL( true, a.wasPreviouslyArchived(b, now) );
+    BOOST_CHECK_EQUAL( true, a.wasPreviouslyArchived(b + 1h, now) );
+    BOOST_CHECK_EQUAL( true, a.wasPreviouslyArchived(b - 1h, now) );
+    BOOST_CHECK_EQUAL( true, a.wasPreviouslyArchived(b + 15min, now) );
 
     //  insert something far-flung-future, should be ignored
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 24h) );
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 24h) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 24h, now) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 24h, now) );
 
     //  confirm everything else is still in there
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b) );
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b + 1h) );
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b - 1h) );
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 35h) );
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 36h) );
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b + 15min) );
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b - 15min * 32) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b, now) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b + 1h, now) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b - 1h, now) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 35h, now) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 36h, now) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b + 15min, now) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b - 15min * 32, now) );
 
     //  insert something that is less than 24 hours in the future
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 23h) );
-    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b + 23h) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 23h, now) );
+    BOOST_CHECK_EQUAL( true,  a.wasPreviouslyArchived(b + 23h, now) );
 
     //  and confirm everything else has been removed
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b) );
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 1h) );
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 1h) );
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 35h) );
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 36h) );
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 15min) );
-    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 15min * 32) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b, now) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 1h, now) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 1h, now) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 35h, now) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 36h, now) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b + 15min, now) );
+    BOOST_CHECK_EQUAL( false, a.wasPreviouslyArchived(b - 15min * 32, now) );
 }
 
 BOOST_AUTO_TEST_SUITE_END()

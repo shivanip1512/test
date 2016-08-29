@@ -117,9 +117,11 @@ auto RawPointHistoryArchiver::getFilteredRows(size_t maximum) -> std::vector<std
 
     FormattedList duplicates;
 
+	const auto now = std::time(nullptr);
+
     while( maximum-- && itr.base() != _archiverQueue.end() )
     {
-        if( ! wasPreviouslyArchived(**itr) )
+        if( ! wasPreviouslyArchived(**itr, now) )
         {
             rows.push_back(*itr);
         }
@@ -134,14 +136,14 @@ auto RawPointHistoryArchiver::getFilteredRows(size_t maximum) -> std::vector<std
 
     if( ! duplicates.empty() )
     {
-        CTILOG_DEBUG(dout, "Detected duplicates:" << duplicates);
+        CTILOG_ERROR(dout, "Detected duplicates:" << duplicates);
     }
 
     return rows;
 }
 
 
-bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistory& row)
+bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistory& row, const time_t now)
 {
     enum {
         MinutesPerYear = 365 * 24 * 60,
@@ -149,9 +151,9 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
         MaxInterval = 60
     };
 
-    static const auto makeArchiveEpoch = []{ return std::make_unique<const time_t>(CtiTime::now().seconds() / 60 - MinutesPerYear); };  //  1 year before startup
+    static const auto makeArchiveEpoch = [](const time_t now){ return now / 60 - MinutesPerYear; };  //  1 year before startup
 
-    static auto ArchiveEpoch = makeArchiveEpoch();
+    static auto ArchiveEpoch = makeArchiveEpoch(now);
 
     struct last_seen
     {
@@ -178,10 +180,10 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
     }
 
     // Sanity check on this data - it might be far-flung-future
-    if( utcSeconds >= (CtiTime::now() + 86400) )
+    if( utcSeconds >= (now + 86400) )
     {
         Cti::FormattedList l;
-        l.add("Epoch") << CtiTime(*ArchiveEpoch * 60);
+        l.add("Epoch") << CtiTime(ArchiveEpoch * 60);
         l.add("Incoming timestamp") << row.time;
         l.add("Incoming pointid") << row.pointId;
 
@@ -192,10 +194,10 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
 
     const auto utcMinutes = utcSeconds / 60;
 
-    if( utcMinutes < *ArchiveEpoch )
+    if( utcMinutes < ArchiveEpoch )
     {
         Cti::FormattedList l;
-        l.add("Epoch") << CtiTime(*ArchiveEpoch * 60);
+        l.add("Epoch") << CtiTime(ArchiveEpoch * 60);
         l.add("Incoming timestamp") << row.time;
         l.add("Incoming pointid") << row.pointId;
 
@@ -204,23 +206,23 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
         return false;
     }
 
-    unsigned long long epochMinutes = utcMinutes - *ArchiveEpoch;
+    unsigned long long epochMinutes = utcMinutes - ArchiveEpoch;
 
     //  if the incoming value won't fit in the 21 bit timestamp, reset the epoch and clear the cache
     if( epochMinutes >= (1 << 21) )
     {
-        auto newArchiveEpoch = makeArchiveEpoch();
+        auto newArchiveEpoch = makeArchiveEpoch(now);
 
         Cti::FormattedList l;
-        l.add("Previous epoch")     << CtiTime(*ArchiveEpoch * 60);
-        l.add("New epoch")          << CtiTime(*newArchiveEpoch * 60);
+        l.add("Previous epoch")     << CtiTime(ArchiveEpoch * 60);
+        l.add("New epoch")          << CtiTime(newArchiveEpoch * 60);
         l.add("Incoming timestamp") << row.time;
 
         CTILOG_WARN(dout, "Epoch exceeded, resetting archive cache" << l);
 
-        ArchiveEpoch.swap(newArchiveEpoch);
+        ArchiveEpoch = newArchiveEpoch;
 
-        epochMinutes = utcMinutes - *ArchiveEpoch;
+        epochMinutes = utcMinutes - ArchiveEpoch;
 
         value_cache.clear();
     }
@@ -267,7 +269,7 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
         l.add("Incoming timestamp") << row.time;
         l.add("Old interval") << record->interval_minutes << " minutes";
         l.add("New interval") << new_interval_minutes << " minutes";
-        l.add("Latest timestamp") << CtiTime((record->latest_timestamp + *ArchiveEpoch) * 60);
+        l.add("Latest timestamp") << CtiTime((record->latest_timestamp + ArchiveEpoch) * 60);
         l.add("Old cache") << std::hex << std::setw((IntervalBits + 3) / 4) << record->intervals;
         l.add("New cache") << std::hex << std::setw((IntervalBits + 3) / 4) << new_intervals;
         l.add("Interval bits") << IntervalBits;
@@ -303,7 +305,7 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
         Cti::FormattedList l;
         l.add("Incoming timestamp") << row.time;
         l.add("Interval") << record->interval_minutes << " minutes";
-        l.add("Latest timestamp") << CtiTime((record->latest_timestamp + *ArchiveEpoch) * 60);
+        l.add("Latest timestamp") << CtiTime((record->latest_timestamp + ArchiveEpoch) * 60);
         l.add("Cache") << std::hex << std::setw((IntervalBits + 3) / 4) << record->intervals;
         l.add("Interval bits") << IntervalBits;
 
