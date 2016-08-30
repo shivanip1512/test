@@ -97,28 +97,28 @@
             <cti:tab title="${trendName}" selected="${showTrends}">
                 <div id="label-json" class="dn">${fn:escapeXml(labels)}</div>
 
-			    <div class="column-7-17 clearfix">
-			        <div class="column one">
-			            <div class="side-nav trend-list">
-			                <ul>
-			                    <c:forEach var="trend" items="${trends}">
-			                        <c:if test="${trendId == trend.graphDefinitionID}"><c:set var="selected" value="selected"/></c:if>
-			                        <c:if test="${trendId != trend.graphDefinitionID}"><c:set var="selected" value=""/></c:if>
-			                        <li data-graph-id="${trend.graphDefinitionID}" class="${selected}">
-			                            <cti:url var="trendUrl" value="/dr/cc/home">
-			                                <cti:param name="trendId" value="${trend.graphDefinitionID}"/>
-			                            </cti:url>
-			                            <a href="${trendUrl}">${fn:escapeXml(trend.name)}</a>
-			                        </li>
-			                    </c:forEach>
-			                </ul>
-			            </div>
-			        </div>
-			        
-			        <div class="column two nogutter trend-container pr" data-trend="${trendId}">
-			            <div class="glass"></div>
-			        </div>
-			    </div>
+                <div class="column-7-17 clearfix">
+                    <div class="column one">
+                        <div class="side-nav trend-list">
+                            <ul>
+                                <c:forEach var="trend" items="${trends}">
+                                    <c:if test="${trendId == trend.graphDefinitionID}"><c:set var="selected" value="selected"/></c:if>
+                                    <c:if test="${trendId != trend.graphDefinitionID}"><c:set var="selected" value=""/></c:if>
+                                    <li data-graph-id="${trend.graphDefinitionID}" class="${selected}">
+                                        <cti:url var="trendUrl" value="/dr/cc/home">
+                                            <cti:param name="trendId" value="${trend.graphDefinitionID}"/>
+                                        </cti:url>
+                                        <a href="${trendUrl}">${fn:escapeXml(trend.name)}</a>
+                                    </li>
+                                </c:forEach>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="column two nogutter trend-container pr" data-trend="${trendId}">
+                        <div class="glass"></div>
+                    </div>
+                </div>
             </cti:tab>
         </cti:tabs>
     </div>

@@ -45,7 +45,7 @@ import com.cannontech.web.user.service.UserPreferenceService;
 import com.google.common.collect.ImmutableMap;
 
 @Controller
-@CheckRole(YukonRole.TRENDING)
+@CheckRole({ YukonRole.TRENDING, YukonRole.CI_CURTAILMENT })
 
 public class TrendDataController {
 
