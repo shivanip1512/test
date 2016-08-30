@@ -113,7 +113,11 @@
                     <c:if test="${data.dataStreamingLoadingPercent > 100}">
                         <c:set var="color" value="badge-error"/>
                     </c:if>
-                    <span class="badge ${color} cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
+                    <c:set var="linkClasses" value=""/>
+                    <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                        <c:set var="linkClasses" value="cp js-streaming-capacity"/>
+                    </cti:checkRolesAndProperties>
+                    <span class="badge ${color} ${linkClasses}" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </tags:sectionContainer2>

@@ -49,47 +49,53 @@
    </c:if>
 
     <!-- Data Streaming Configuration -->
-    <c:if test="${streamableDevice}">
-        <tags:nameValueContainer2 naturalWidth="true">
-            <tags:nameValue2 nameKey=".dataStreaming" valueClass="full-width" nameClass="wsnw">
-                <span class="fl">
-                    <c:choose>
-                        <c:when test="${dataStreamingConfig != null}">
-                            <a href="javascript:void(0);" data-popup="#data-streaming-popup">${fn:escapeXml(dataStreamingConfig.name)}</a>
-                        </c:when>
-                        <c:otherwise>
-                            <i:inline key="yukon.common.none.choice"/>
-                        </c:otherwise>
-                    </c:choose>
-                </span>
-                <c:if test="${dataStreamingDiscrepancy != null}">
-                    <cti:url var="discrepancyUrl" value="/tools/dataStreaming/discrepancies"/>
-                    <cti:msg2 var="viewDiscrepancy" key="yukon.web.modules.tools.dataStreaming.discrepancies.viewDiscrepancy"/>
-                    <cti:icon icon="icon-error" href="${discrepancyUrl}" title="${viewDiscrepancy}"/>
-                </c:if>
-                <cti:url var="configureUrl" value="/bulk/dataStreaming/configure">
-                    <cti:param name="collectionType" value="idList"/>
-                    <cti:param name="idList.ids" value="${deviceId}"/>
-                </cti:url>
-                <cti:url var="removeUrl" value="/bulk/dataStreaming/remove">
-                    <cti:param name="collectionType" value="idList"/>
-                    <cti:param name="idList.ids" value="${deviceId}"/>
-                </cti:url>
-                <c:set var="buttonClass" value=""/>
-                <c:if test="${dataStreamingConfig != null}">
-                    <c:set var="buttonClass" value="button-group fr"/>
-                </c:if>
-                <span class="${buttonClass}">
-                    <cti:button nameKey="configure" href="${configureUrl}" />
-                    <c:if test="${dataStreamingConfig != null}">
-                        <cti:button nameKey="remove" href="${removeUrl}"/>
+    <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+    
+        <c:if test="${streamableDevice}">
+            <tags:nameValueContainer2 naturalWidth="true">
+                <tags:nameValue2 nameKey=".dataStreaming" valueClass="full-width" nameClass="wsnw">
+                    <span class="fl">
+                        <c:choose>
+                            <c:when test="${dataStreamingConfig != null}">
+                                <a href="javascript:void(0);" data-popup="#data-streaming-popup">${fn:escapeXml(dataStreamingConfig.name)}</a>
+                            </c:when>
+                            <c:otherwise>
+                                <i:inline key="yukon.common.none.choice"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </span>
+                    <c:if test="${dataStreamingDiscrepancy != null}">
+                        <cti:url var="discrepancyUrl" value="/tools/dataStreaming/discrepancies"/>
+                        <cti:msg2 var="viewDiscrepancy" key="yukon.web.modules.tools.dataStreaming.discrepancies.viewDiscrepancy"/>
+                        <cti:icon icon="icon-error" href="${discrepancyUrl}" title="${viewDiscrepancy}"/>
                     </c:if>
-                </span>
-            </tags:nameValue2>
-        </tags:nameValueContainer2>
-    </c:if>
+                    <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
+                        <cti:url var="configureUrl" value="/bulk/dataStreaming/configure">
+                            <cti:param name="collectionType" value="idList"/>
+                            <cti:param name="idList.ids" value="${deviceId}"/>
+                        </cti:url>
+                        <cti:url var="removeUrl" value="/bulk/dataStreaming/remove">
+                            <cti:param name="collectionType" value="idList"/>
+                            <cti:param name="idList.ids" value="${deviceId}"/>
+                        </cti:url>
+                        <c:set var="buttonClass" value=""/>
+                        <c:if test="${dataStreamingConfig != null}">
+                            <c:set var="buttonClass" value="button-group fr"/>
+                        </c:if>
+                        <span class="${buttonClass}">
+                            <cti:button nameKey="configure" href="${configureUrl}" />
+                            <c:if test="${dataStreamingConfig != null}">
+                                <cti:button nameKey="remove" href="${removeUrl}"/>
+                            </c:if>
+                        </span>
+                    </cti:checkRolesAndProperties>
+                </tags:nameValue2>
+            </tags:nameValueContainer2>
+        </c:if>
+    
+    <div id="data-streaming-popup" data-width="400" data-title="<cti:msg2 key=".dataStreamingConfiguration"/>" class="dn">
+        <c:set var="config" value="${dataStreamingConfig}"/>
+        <%@ include file="/WEB-INF/pages/dataStreaming/configurationTable.jspf" %>
+    </div>
 
-<div id="data-streaming-popup" data-width="400" data-title="<cti:msg2 key=".dataStreamingConfiguration"/>" class="dn">
-    <c:set var="config" value="${dataStreamingConfig}"/>
-    <%@ include file="/WEB-INF/pages/dataStreaming/configurationTable.jspf" %>
-</div>
+</cti:checkRolesAndProperties>

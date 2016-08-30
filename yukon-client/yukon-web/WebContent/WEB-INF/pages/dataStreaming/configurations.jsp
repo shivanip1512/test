@@ -14,8 +14,10 @@
         <cm:dropdownOption key=".discrepancies" href="${discrepanciesUrl}" icon="icon-error"/>
         <cti:url var="collectionActionsUrl" value="/bulk/deviceSelection"/>
         <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go"/>
-        <cti:url var="configureOthersUrl" value="/bulk/deviceSelection?redirectUrl=/bulk/dataStreaming/configure"/>
-        <cm:dropdownOption key=".configureOtherDevices" href="${configureOthersUrl}" icon="icon-cog-add"/>
+        <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
+            <cti:url var="configureOthersUrl" value="/bulk/deviceSelection?redirectUrl=/bulk/dataStreaming/configure"/>
+            <cm:dropdownOption key=".configureOtherDevices" href="${configureOthersUrl}" icon="icon-cog-add"/>
+        </cti:checkRolesAndProperties>
     </div>
 
     <div data-url="${filterUrl}" data-static>
@@ -49,18 +51,20 @@
                                     <cm:dropdown icon="icon-cog" triggerClasses="fr">
                                         <cti:url var="summaryUrl" value="/tools/dataStreaming/summary?selectedConfiguration=${config.id}"/>
                                         <cm:dropdownOption key=".summary.pageName" href="${summaryUrl}" icon="icon-application-view-columns"/>
-                                        <cti:url var="configureUrl" value="/bulk/dataStreaming/configure">
-                                            <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                                                <cti:param name="${cp.key}" value="${cp.value}"/>
-                                            </c:forEach>
-                                        </cti:url>
-                                        <cm:dropdownOption key=".configure" href="${configureUrl}" icon="icon-cog-edit"/>
-                                        <cti:url var="removeUrl" value="/bulk/dataStreaming/remove">
-                                            <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
-                                                <cti:param name="${cp.key}" value="${cp.value}"/>
-                                            </c:forEach>
-                                        </cti:url>                            
-                                        <cm:dropdownOption key=".remove" href="${removeUrl}" icon="icon-cross"/>
+                                        <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
+                                            <cti:url var="configureUrl" value="/bulk/dataStreaming/configure">
+                                                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                                                    <cti:param name="${cp.key}" value="${cp.value}"/>
+                                                </c:forEach>
+                                            </cti:url>
+                                            <cm:dropdownOption key=".configure" href="${configureUrl}" icon="icon-cog-edit"/>
+                                            <cti:url var="removeUrl" value="/bulk/dataStreaming/remove">
+                                                <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                                                    <cti:param name="${cp.key}" value="${cp.value}"/>
+                                                </c:forEach>
+                                            </cti:url>                            
+                                            <cm:dropdownOption key=".remove" href="${removeUrl}" icon="icon-cross"/>
+                                        </cti:checkRolesAndProperties>
                                         <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
                                             <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
                                                 <cti:param name="${cp.key}" value="${cp.value}"/>

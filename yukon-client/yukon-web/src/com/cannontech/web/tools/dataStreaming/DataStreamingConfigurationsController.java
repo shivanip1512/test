@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
@@ -44,6 +45,7 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -56,6 +58,8 @@ import com.cannontech.web.rfn.dataStreaming.model.DiscrepancyResult;
 import com.cannontech.web.rfn.dataStreaming.model.SummarySearchCriteria;
 import com.cannontech.web.rfn.dataStreaming.model.SummarySearchResult;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
+import com.cannontech.web.security.annotation.CheckCparm;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -65,6 +69,7 @@ import com.google.common.collect.Ordering;
 
 @Controller
 @RequestMapping("/dataStreaming/*")
+@CheckCparm(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED)
 public class DataStreamingConfigurationsController {
 
     @Autowired private DataStreamingService dataStreamingService;
@@ -360,6 +365,7 @@ public class DataStreamingConfigurationsController {
     }
     
     @RequestMapping("discrepancies/{deviceId}/resend")
+    @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String resendDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
         LiteYukonUser user = userContext.getYukonUser();
         try {
@@ -373,6 +379,7 @@ public class DataStreamingConfigurationsController {
     }
     
     @RequestMapping("discrepancies/{deviceId}/accept")
+    @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String acceptDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
         LiteYukonUser user = userContext.getYukonUser();
         try {
@@ -386,6 +393,7 @@ public class DataStreamingConfigurationsController {
     }
     
     @RequestMapping("discrepancies/{deviceId}/remove")
+    @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String removeDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
         LiteYukonUser user = userContext.getYukonUser();
         try {
@@ -399,6 +407,7 @@ public class DataStreamingConfigurationsController {
     }
     
     @RequestMapping(value="discrepancies/resendAll", method=RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String resendAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash) {
         List<Integer> deviceList = new ArrayList<>();
         String ids = request.getParameter("deviceIds");
@@ -419,6 +428,7 @@ public class DataStreamingConfigurationsController {
     }
     
     @RequestMapping(value="discrepancies/acceptAll", method=RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String acceptAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash) {
         List<Integer> deviceList = new ArrayList<>();
         String ids = request.getParameter("deviceIds");

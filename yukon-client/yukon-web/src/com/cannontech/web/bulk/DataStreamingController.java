@@ -23,6 +23,7 @@ import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -37,12 +38,14 @@ import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.web.rfn.dataStreaming.model.VerificationInformation;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.ImmutableList;
 
 @Controller
 @RequestMapping("/dataStreaming/*")
-@CheckRoleProperty(YukonRoleProperty.MASS_CHANGE)
+@CheckCparm(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED)
+@CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
 public class DataStreamingController {
 
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;

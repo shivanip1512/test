@@ -210,13 +210,19 @@
                             <tags:collectionActionTr buttonValue="${verifyConfigLabel}" description="${verifyConfigDescription}"
                                 action="${verifyConfigUrl}" deviceCollection="${deviceCollection}"/>
                                 
-                            <%-- CONFIGURE DATA STREAMING --%>
-                            <tags:collectionActionTr buttonValue="${configureDataStreamingLabel}" description="${configureDataStreamingDescription}"
-                                action="${configureDataStreamingUrl}" deviceCollection="${deviceCollection}"/>
-                                
-                            <%-- REMOVE DATA STREAMING --%>
-                            <tags:collectionActionTr buttonValue="${removeDataStreamingLabel}" description="${removeDataStreamingDescription}"
-                                action="${removeDataStreamingUrl}" deviceCollection="${deviceCollection}"/>
+                            <%--DATA STREAMING - check for CPARM and ROLE PROPERTY--%>
+                            <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                                <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
+                                    <%-- CONFIGURE DATA STREAMING --%>
+                                    <tags:collectionActionTr buttonValue="${configureDataStreamingLabel}" description="${configureDataStreamingDescription}"
+                                        action="${configureDataStreamingUrl}" deviceCollection="${deviceCollection}"/>
+                                        
+                                    <%-- REMOVE DATA STREAMING --%>
+                                    <tags:collectionActionTr buttonValue="${removeDataStreamingLabel}" description="${removeDataStreamingDescription}"
+                                        action="${removeDataStreamingUrl}" deviceCollection="${deviceCollection}"/>
+                                </cti:checkRolesAndProperties>
+                            </cti:checkRolesAndProperties>
+                            
                         </table>
                     </tags:sectionContainer>
                 </cti:dataGridCell>

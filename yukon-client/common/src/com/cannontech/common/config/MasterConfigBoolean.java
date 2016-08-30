@@ -27,6 +27,7 @@ public enum MasterConfigBoolean {
     MULTISPEAK_DISABLED,
     PAUSE_FOR_DISPATCH_MESSAGE_BACKUP,
     POINT_UPDATE_REGISTRATION, //YUK-14972
+    RF_DATA_STREAMING_ENABLED,  //Enables Data Streaming Functionality
     SCHEDULED_REQUEST_TIMEOUT_IN_MINUTES, //Used for debugging Web schedules (YUK-14711)
     SEND_INDIVIDUAL_SWITCH_CONFIG, // YUK-13985 For GRE's old config by range feature
     USE_OLD_FORGOTTEN_PASSWORD_PAGE,

@@ -246,6 +246,7 @@ public enum YukonRoleProperty {
     ARCHIVED_DATA_EXPORT(DEVICE_ACTIONS, DEVICE_ACTIONS.getBasePropertyId() - 13, booleanType()),
     GROUP_DISCONNECT_CONTROL(DEVICE_ACTIONS, DEVICE_ACTIONS.getBasePropertyId() - 14, booleanType()),  
     GROUP_DEMAND_RESET(DEVICE_ACTIONS, DEVICE_ACTIONS.getBasePropertyId() - 15, booleanType()),  
+    RF_DATA_STREAMING(DEVICE_ACTIONS, DEVICE_ACTIONS.getBasePropertyId() - 16, booleanType()),
     SN_ADD_RANGE(INVENTORY, INVENTORY.getBasePropertyId() - 1, booleanType()),
     SN_UPDATE_RANGE(INVENTORY, INVENTORY.getBasePropertyId() - 2, booleanType()),
     SN_DELETE_RANGE(INVENTORY, INVENTORY.getBasePropertyId() - 4, booleanType()),

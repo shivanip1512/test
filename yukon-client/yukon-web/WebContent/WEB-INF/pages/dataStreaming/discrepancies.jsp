@@ -66,16 +66,18 @@
                                 <td class="wsnw"><i:inline key=".${discrepancy.status}"/></td>
                                 <c:set var="disabled" value="false"/>
                                 <td class="wsnw dif"><cti:formatDate value="${discrepancy.lastCommunicated}" type="DATEHM_12" />&nbsp;&nbsp;
-                                    <cm:dropdown icon="icon-cog" triggerClasses="fr">
-                                        <cti:url var="resendUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/resend"/>
-                                        <cm:dropdownOption key=".resend" href="${resendUrl}" icon="icon-control-repeat-blue"/>
-                                        <cti:url var="acceptUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/accept"/>
-                                        <c:if test="${discrepancy.status != 'PENDING' && discrepancy.actual.attributes.size() > 0}">
-                                            <cm:dropdownOption key=".accept" href="${acceptUrl}" icon="icon-accept"/>
-                                        </c:if>
-                                        <cti:url var="removeUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/remove"/>
-                                        <cm:dropdownOption key=".remove" href="${removeUrl}" icon="icon-cross"/>
-                                    </cm:dropdown>
+                                    <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
+                                        <cm:dropdown icon="icon-cog" triggerClasses="fr">
+                                            <cti:url var="resendUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/resend"/>
+                                            <cm:dropdownOption key=".resend" href="${resendUrl}" icon="icon-control-repeat-blue"/>
+                                            <cti:url var="acceptUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/accept"/>
+                                            <c:if test="${discrepancy.status != 'PENDING' && discrepancy.actual.attributes.size() > 0}">
+                                                <cm:dropdownOption key=".accept" href="${acceptUrl}" icon="icon-accept"/>
+                                            </c:if>
+                                            <cti:url var="removeUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/remove"/>
+                                            <cm:dropdownOption key=".remove" href="${removeUrl}" icon="icon-cross"/>
+                                        </cm:dropdown>
+                                    </cti:checkRolesAndProperties>
                                </td>
                             </tr>
                         </c:forEach>
@@ -91,24 +93,28 @@
         <tags:pagingResultsControls result="${discrepancies}" adjustPageCount="true" hundreds="true"/>
     </div>
     
-    <div class="page-action-area">
+    <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
     
-        <c:set var="disableButtons" value="${discrepancies.resultList.size() == 0}"/>
-
-        <cti:url var="resendAllUrl" value="/tools/dataStreaming/discrepancies/resendAll"/>
-        <form:form id="resendAll" action="${resendAllUrl}" method="POST">
-            <cti:csrfToken/>
-            <input type="hidden" id="deviceIds" name="deviceIds" value="${deviceIds}"/>
-            <cti:button type="submit" nameKey="resendAll" disabled="${disableButtons}" />
-        </form:form>
+        <div class="page-action-area">
         
-        <cti:url var="acceptAllUrl" value="/tools/dataStreaming/discrepancies/acceptAll"/>
-        <form:form id="acceptAll" action="${acceptAllUrl}" method="POST">
-            <cti:csrfToken/>
-            <input type="hidden" id="deviceIds" name="deviceIds" value="${deviceIds}"/>
-            <cti:button type="submit" nameKey="acceptAll" disabled="${disableButtons}"/>
-        </form:form>
-      
-    </div>
+            <c:set var="disableButtons" value="${discrepancies.resultList.size() == 0}"/>
+    
+            <cti:url var="resendAllUrl" value="/tools/dataStreaming/discrepancies/resendAll"/>
+            <form:form id="resendAll" action="${resendAllUrl}" method="POST">
+                <cti:csrfToken/>
+                <input type="hidden" id="deviceIds" name="deviceIds" value="${deviceIds}"/>
+                <cti:button type="submit" nameKey="resendAll" disabled="${disableButtons}" />
+            </form:form>
+            
+            <cti:url var="acceptAllUrl" value="/tools/dataStreaming/discrepancies/acceptAll"/>
+            <form:form id="acceptAll" action="${acceptAllUrl}" method="POST">
+                <cti:csrfToken/>
+                <input type="hidden" id="deviceIds" name="deviceIds" value="${deviceIds}"/>
+                <cti:button type="submit" nameKey="acceptAll" disabled="${disableButtons}"/>
+            </form:form>
+          
+        </div>
+    
+    </cti:checkRolesAndProperties>
 
 </cti:standardPage>

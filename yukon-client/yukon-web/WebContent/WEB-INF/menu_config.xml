@@ -234,7 +234,7 @@
       </option>
       <option name="dataStreaming">
         <permissions>
-          <roleProperty name="ADMIN_VIEW_CONFIG" />
+            <masterConfig name="RF_DATA_STREAMING_ENABLED" />
         </permissions>
         <link>/tools/dataStreaming/configurations</link>
       </option>

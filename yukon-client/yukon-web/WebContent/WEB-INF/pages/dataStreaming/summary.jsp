@@ -93,8 +93,10 @@
             <c:if test="${searchResults.hitCount > 0}">
                 <span class="js-cog-menu">
                     <cm:dropdown icon="icon-cog">
-                        <cm:dropdownOption key=".configure" icon="icon-cog-edit" classes="js-selected-configure"/>
-                        <cm:dropdownOption key=".remove" href="${removeUrl}" icon="icon-cross" classes="js-selected-remove"/>
+                        <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
+                            <cm:dropdownOption key=".configure" icon="icon-cog-edit" classes="js-selected-configure"/>
+                            <cm:dropdownOption key=".remove" href="${removeUrl}" icon="icon-cross" classes="js-selected-remove"/>
+                        </cti:checkRolesAndProperties>
                         <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" classes="js-selected-actions"/>
                     </cm:dropdown>
                 </span>

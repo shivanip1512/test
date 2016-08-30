@@ -125,7 +125,11 @@
                             <c:if test="${data.dataStreamingLoadingPercent > 100}">
                                 <c:set var="color" value="badge-error"/>
                             </c:if>
-                            <span class="badge ${color} cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
+                            <c:set var="linkClasses" value=""/>
+                            <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                                <c:set var="linkClasses" value="cp js-streaming-capacity"/>
+                            </cti:checkRolesAndProperties>
+                            <span class="badge ${color} ${linkClasses}" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
                         </td>
                         <td class="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
                         <td class="js-gw-ip">${fn:escapeXml(gateway.data.ipAddress)}</td>
