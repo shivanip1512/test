@@ -118,7 +118,7 @@ std::string DatabaseBulkWriter<ColumnCount>::getInsertSql(const DbClientType cli
 
 
 template <size_t ColumnCount>
-std::vector<int> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& conn, std::vector<std::unique_ptr<RowSource>>&& rows) const
+std::set<int> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& conn, const std::vector<const RowSource*>&& rows) const
 {
     static const size_t ChunkSize = 999 / ColumnCount;  //  we only have 999 placeholders
 
@@ -126,7 +126,7 @@ std::vector<int> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& 
 
     boost::optional<DatabaseTransaction> transaction;
 
-    std::vector<int> rejectedRows;
+    std::set<int> rejectedRows;
 
     try
     {
@@ -259,13 +259,13 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql(const DbClientType 
 
             return
                 "MERGE " + _destTable +
-                "USING ##" + _tempTable +
-                "ON " + _destTable + "." + _idColumn + " = ##" + _tempTable + "." + _idColumn +
-                "WHEN MATCHED THEN"
+                " USING ##" + _tempTable +
+                " ON " + _destTable + "." + _idColumn + " = ##" + _tempTable + "." + _idColumn +
+                " WHEN MATCHED THEN"
                 " UPDATE SET " + mergeUpdates +
-                "WHEN NOT MATCHED THEN"
-                " INSERT (" + _idColumn + ", " + columnNames + ")"
-                " VALUES (##" + _tempTable + "." + _idColumn + ", " + mergeInserts + ");";
+                " WHEN NOT MATCHED THEN"
+                " INSERT (" + columnNames + ")"
+                " VALUES (" + mergeInserts + ");";
         }
         case DbClientType::Oracle:
         {
@@ -284,15 +284,15 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql(const DbClientType 
 
             return
                 "BEGIN"
-                "MERGE INTO " + _destTable +
-                "USING Temp_" + _tempTable +
-                "ON (" + _destTable + "." + _idColumn + " = Temp_" + _tempTable + "." + _idColumn + ")"
-                "WHEN MATCHED THEN"
+                " MERGE INTO " + _destTable +
+                " USING Temp_" + _tempTable +
+                " ON (" + _destTable + "." + _idColumn + " = Temp_" + _tempTable + "." + _idColumn + ")"
+                " WHEN MATCHED THEN"
                 " UPDATE SET " + mergeUpdates +
-                "WHEN NOT MATCHED THEN"
-                " INSERT (" + _idColumn + ", " + columnNames + ")"
-                " VALUES (Temp_" + _tempTable + "." + _idColumn + ", " + mergeInserts + ")"
-                "END;";
+                " WHEN NOT MATCHED THEN"
+                " INSERT (" + columnNames + ")"
+                " VALUES (" + mergeInserts + ")"
+                " END;";
         }
     }
 

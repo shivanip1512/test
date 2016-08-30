@@ -128,12 +128,12 @@ struct test_BulkUpdater : Cti::Database::DatabaseBulkUpdater<5>
 {
     test_BulkUpdater()
         : DatabaseBulkUpdater(
-    { Cti::Database::ColumnDefinition
-    { "ColumnA", "SqlServerTypeA", "OracleTypeA" },
-    { "ColumnB", "SqlServerTypeB", "OracleTypeB" },
-    { "ColumnC", "SqlServerTypeC", "OracleTypeC" },
-    { "ColumnD", "SqlServerTypeD", "OracleTypeD" },
-    { "ColumnE", "SqlServerTypeE", "OracleTypeE" } },
+            { Cti::Database::ColumnDefinition
+                { "ColumnA", "SqlServerTypeA", "OracleTypeA" },
+                { "ColumnB", "SqlServerTypeB", "OracleTypeB" },
+                { "ColumnC", "SqlServerTypeC", "OracleTypeC" },
+                { "ColumnD", "SqlServerTypeD", "OracleTypeD" },
+                { "ColumnE", "SqlServerTypeE", "OracleTypeE" } },
             "TemporaryTableName", "DestinationTableName", "DestinationIdColumn")
     {}
 
@@ -147,26 +147,26 @@ BOOST_AUTO_TEST_CASE(test_bulk_updater_finalize_sql)
     BOOST_CHECK_EQUAL(
         bu.getFinalizeSql(test_BulkUpdater::DbClientType::SqlServer),
         "MERGE DestinationTableName"
-        "USING ##TemporaryTableName"
-        "ON DestinationTableName.DestinationIdColumn = ##TemporaryTableName.DestinationIdColumn"
-        "WHEN MATCHED THEN"
+        " USING ##TemporaryTableName"
+        " ON DestinationTableName.DestinationIdColumn = ##TemporaryTableName.DestinationIdColumn"
+        " WHEN MATCHED THEN"
         " UPDATE SET ColumnA = ##TemporaryTableName.ColumnA, ColumnB = ##TemporaryTableName.ColumnB, ColumnC = ##TemporaryTableName.ColumnC, ColumnD = ##TemporaryTableName.ColumnD, ColumnE = ##TemporaryTableName.ColumnE"
-        "WHEN NOT MATCHED THEN"
-        " INSERT (DestinationIdColumn, ColumnA, ColumnB, ColumnC, ColumnD, ColumnE)"
-        " VALUES (##TemporaryTableName.DestinationIdColumn, ##TemporaryTableName.ColumnA, ##TemporaryTableName.ColumnB, ##TemporaryTableName.ColumnC, ##TemporaryTableName.ColumnD, ##TemporaryTableName.ColumnE);");
+        " WHEN NOT MATCHED THEN"
+        " INSERT (ColumnA, ColumnB, ColumnC, ColumnD, ColumnE)"
+        " VALUES (##TemporaryTableName.ColumnA, ##TemporaryTableName.ColumnB, ##TemporaryTableName.ColumnC, ##TemporaryTableName.ColumnD, ##TemporaryTableName.ColumnE);");
 
     BOOST_CHECK_EQUAL(
         bu.getFinalizeSql(test_BulkUpdater::DbClientType::Oracle),
         "BEGIN"
-        "MERGE INTO DestinationTableName"
-        "USING Temp_TemporaryTableName"
-        "ON (DestinationTableName.DestinationIdColumn = Temp_TemporaryTableName.DestinationIdColumn)"
-        "WHEN MATCHED THEN"
+        " MERGE INTO DestinationTableName"
+        " USING Temp_TemporaryTableName"
+        " ON (DestinationTableName.DestinationIdColumn = Temp_TemporaryTableName.DestinationIdColumn)"
+        " WHEN MATCHED THEN"
         " UPDATE SET ColumnA = Temp_TemporaryTableName.ColumnA, ColumnB = Temp_TemporaryTableName.ColumnB, ColumnC = Temp_TemporaryTableName.ColumnC, ColumnD = Temp_TemporaryTableName.ColumnD, ColumnE = Temp_TemporaryTableName.ColumnE"
-        "WHEN NOT MATCHED THEN"
-        " INSERT (DestinationIdColumn, ColumnA, ColumnB, ColumnC, ColumnD, ColumnE)"
-        " VALUES (Temp_TemporaryTableName.DestinationIdColumn, Temp_TemporaryTableName.ColumnA, Temp_TemporaryTableName.ColumnB, Temp_TemporaryTableName.ColumnC, Temp_TemporaryTableName.ColumnD, Temp_TemporaryTableName.ColumnE)"
-        "END;");
+        " WHEN NOT MATCHED THEN"
+        " INSERT (ColumnA, ColumnB, ColumnC, ColumnD, ColumnE)"
+        " VALUES (Temp_TemporaryTableName.ColumnA, Temp_TemporaryTableName.ColumnB, Temp_TemporaryTableName.ColumnC, Temp_TemporaryTableName.ColumnD, Temp_TemporaryTableName.ColumnE)"
+        " END;");
 }
 
 BOOST_AUTO_TEST_SUITE_END()

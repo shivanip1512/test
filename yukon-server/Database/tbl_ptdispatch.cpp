@@ -20,8 +20,6 @@ _timeStamp( CtiDate( (UINT)1, (UINT)1, (UINT)1990 )),
 _quality(UnintializedQuality),
 _value(0),
 _tags(0),
-//_staleCount(0),
-//_lastAlarmLogID(0),
 _nextArchiveTime(CtiTime(YUKONEOT+86400))
 {
     setTimeStampMillis(0);
@@ -37,8 +35,6 @@ _timeStamp(timestamp),
 _quality(quality),
 _value(value),
 _tags(0),
-//_staleCount(0),
-//_lastAlarmLogID(0),
 _nextArchiveTime(CtiTime(YUKONEOT - 86400))
 {
     setTimeStampMillis(millis);
@@ -63,13 +59,13 @@ string CtiTablePointDispatch::getTableName()
 std::array<Cti::Database::ColumnDefinition, 7> CtiTablePointDispatch::getTempTableSchema()
 {
     return { Cti::Database::ColumnDefinition
-        { "POINTID",        "numeric", "NUMBER" },
-        { "TIMESTAMP",      "datetime", "DATE"},
-        { "QUALITY",        "numeric", "NUMBER"},
-        { "VALUE",          "float", "FLOAT"},
-        { "TAGS",           "numeric", "NUMBER"},
-        { "NEXTARCHIVE",    "datetime", "DATE"},
-        { "millis",         "smallint", "SMALLINT"}};
+        { "POINTID",        "numeric",  "NUMBER"   },
+        { "TIMESTAMP",      "datetime", "DATE"     },
+        { "QUALITY",        "numeric",  "NUMBER"   },
+        { "VALUE",          "float",    "FLOAT"    },
+        { "TAGS",           "numeric",  "NUMBER"   },
+        { "NEXTARCHIVE",    "datetime", "DATE"     },
+        { "millis",         "smallint", "SMALLINT" }};
 }
 
 string CtiTablePointDispatch::getSQLCoreStatement(long id)
@@ -102,7 +98,7 @@ bool CtiTablePointDispatch::Restore()
     reader.execute();
 
     /*
-     *  If we are in the database, we reload and ARE NOT dirty... otherwise, we are sirty and need to be
+     *  If we are in the database, we reload and ARE NOT dirty... otherwise, we are dirty and need to be
      *  written into the database
      */
     if( reader() )
@@ -267,17 +263,11 @@ std::string CtiTablePointDispatch::toString() const
 
     itemList <<"CtiTablePointDispatch";
     itemList.add("PointID")           << _pointID;
-    itemList.add("Time Stamp")        << _timeStamp <<") "<< _timeStampMillis <<"ms";
+    itemList.add("Time Stamp")        << _timeStamp <<", "<< _timeStampMillis <<"ms";
     itemList.add("Value")             << _value;
     itemList.add("Quality")           << _quality;
     itemList.add("Next Archive Time") << _nextArchiveTime;
     itemList.add("Tags")              << CtiNumStr(_tags).xhex().zpad(8);
 
     return itemList.toString();
-}
-
-// getLastAlarmLogID always returns 0
-ULONG CtiTablePointDispatch::getLastAlarmLogID() const
-{
-    return 0;
 }

@@ -465,13 +465,10 @@ unsigned RawPointHistoryArchiver::writeRawPointHistory(Cti::Database::DatabaseCo
         return 0;
     }
 
-    std::vector<std::unique_ptr<RowSource>> rowSources;
+    //  Get a RowSources view of the RawPointHistory rows
+    const auto asRowSource = [](const std::unique_ptr<CtiTableRawPointHistory>& rph) { return rph.get(); };
 
-    //  Convert the rows from RawPointHistory to RowSource
-    std::move(
-        rowsToWrite.begin(), 
-        rowsToWrite.end(), 
-        std::back_inserter(rowSources));
+    auto rowSources = boost::copy_range<std::vector<const RowSource*>>(rowsToWrite | boost::adaptors::transformed(asRowSource));
 
     DatabaseBulkInserter<5> rphWriter { CtiTableRawPointHistory::getTempTableSchema(), "RPH", "RawPointHistory", "changeId" };
 

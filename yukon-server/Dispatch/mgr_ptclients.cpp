@@ -29,6 +29,7 @@
 #include "std_helper.h"
 
 #include <boost/range/algorithm/for_each.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 
 #include <list>
 
@@ -741,7 +742,7 @@ auto CtiPointClientManager::getDirtyRecordList() -> DynamicPointDispatchList
                     pDyn->getDispatch().setTags(pPt->adjustStaticTags(statictags));   // make the static tags match...
                 }
 
-                updateList.push_back(std::make_unique<CtiTablePointDispatch>(pDyn->getDispatch()));
+                updateList.push_back(pDyn);
             }
         }
         catch(...)
@@ -753,7 +754,7 @@ auto CtiPointClientManager::getDirtyRecordList() -> DynamicPointDispatchList
     return updateList;
 }
 
-void CtiPointClientManager::writeRecordsToDB(DynamicPointDispatchList&& updateList)
+void CtiPointClientManager::writeRecordsToDB(const DynamicPointDispatchList& updateList)
 {
     Cti::Database::DatabaseConnection   conn;
 
@@ -772,14 +773,11 @@ void CtiPointClientManager::writeRecordsToDB(DynamicPointDispatchList&& updateLi
 
     DatabaseBulkUpdater<7> bu { CtiTablePointDispatch::getTempTableSchema(), "DPD", "DynamicPointDispatch", "PointID" };
 
-    std::vector<std::unique_ptr<Cti::RowSource>> rowSources;
+    //  Get a RowSources view of the DynamicPointDispatch table rows
+    const auto asRowSource = boost::adaptors::transformed ([](const CtiDynamicPointDispatchSPtr& dpd) { return &dpd->getDispatch(); });
 
-    //  Convert the rows from RawPointHistory to RowSource
-    std::move(
-        updateList.begin(), 
-        updateList.end(), 
-        std::back_inserter(rowSources));
-    
+    auto rowSources = boost::copy_range<std::vector<const Cti::RowSource*>> (updateList | asRowSource);
+
     auto rejectedRows = bu.writeRows(conn, std::move(rowSources));
 
     for( auto pointId : rejectedRows )
@@ -787,6 +785,14 @@ void CtiPointClientManager::writeRecordsToDB(DynamicPointDispatchList&& updateLi
         CTILOG_WARN(dout, "Removing record for invalid point ID " << pointId);
 
         erase(pointId);
+    }
+    for( auto& row : updateList )
+    {
+        //  Make sure the row wasn't deleted
+        if( ! rejectedRows.count(row->getDispatch().getPointID()) )
+        {
+            row->getDispatch().resetDirty();
+        }
     }
 }
 
