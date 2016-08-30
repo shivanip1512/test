@@ -262,8 +262,12 @@
     <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.oneMonth">Download One Month</entry>
     <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.resultLimit">Only showing first {0} results</entry>
     <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.notFound">No Readings Found</entry>
+    <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.tableHeader.devicename.linkText">Device Name</entry>
+    <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.tableHeader.pointname.linkText">Point Name</entry>
     <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.tableHeader.timestamp.linkText">Timestamp</entry>
     <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.tableHeader.value.linkText">Value</entry>
+    <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.tableHeader.uom.linkText">Units</entry>
+    <entry key="yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.tableHeader.quality.linkText">Quality</entry>
     
     <entry key="yukon.web.widgetClasses.SubscribedMonitorsWidget.emptyList">No Monitors</entry>
     <entry key="yukon.web.widgetClasses.SubscribedMonitorsWidget.subscription.removed">{0} removed from Subscriptions</entry>

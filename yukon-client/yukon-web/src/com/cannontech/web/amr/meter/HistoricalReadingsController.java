@@ -35,6 +35,7 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.util.CtiUtilities;
@@ -145,12 +146,20 @@ public class HistoricalReadingsController {
         BlockingQueue<PointValueHolder> queue = new ArrayBlockingQueue<PointValueHolder>(100000);
 
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
-        String[] headerRow = new String[2];
-        headerRow[0] = accessor.getMessage(baseKey + "tableHeader.timestamp.linkText");
-        headerRow[1] = accessor.getMessage(baseKey + "tableHeader.value.linkText");
+        String[] headerRow = new String[6];
+        headerRow[0] = accessor.getMessage(baseKey + "tableHeader.devicename.linkText");
+        headerRow[1] = accessor.getMessage(baseKey + "tableHeader.pointname.linkText");
+        headerRow[2] = accessor.getMessage(baseKey + "tableHeader.timestamp.linkText");
+        headerRow[3] = accessor.getMessage(baseKey + "tableHeader.value.linkText");
+        headerRow[4] = accessor.getMessage(baseKey + "tableHeader.uom.linkText");
+        headerRow[5] = accessor.getMessage(baseKey + "tableHeader.quality.linkText");
         AtomicBoolean isCompleted = new AtomicBoolean(false);
-
-        String fileName = "HistoryReadings.csv";
+        
+        PaoPointIdentifier paoPointIdentifier = pointDao.getPaoPointIdentifier(pointId);
+        String deviceName = databaseCache.getAllPaosMap().get(paoPointIdentifier.getPaoIdentifier().getPaoId()).getPaoName();
+        String pointName = pointDao.getPointName(pointId);
+        
+        String fileName = deviceName + "_" + pointName + ".csv";
         queueLimitedPointData(period,
                               context,
                               Order.REVERSE,
@@ -173,11 +182,19 @@ public class HistoricalReadingsController {
                         PointValueHolder pointValueHolder = queue.take();
                         if (pointValueHolder != null) {
                             List<String> row = Lists.newArrayList();
+                            row.add(deviceName);
+                            row.add(pointName);
                             row.add(pointFormattingService.getValueString(pointValueHolder,
                                                                           Format.DATE,
                                                                           context));
                             row.add(pointFormattingService.getValueString(pointValueHolder,
-                                                                          Format.SHORT,
+                                                                          Format.VALUE,
+                                                                          context));
+                            row.add(pointFormattingService.getValueString(pointValueHolder,
+                                                                          Format.UNIT,
+                                                                          context));
+                            row.add(pointFormattingService.getValueString(pointValueHolder,
+                                                                          Format.QUALITY,
                                                                           context));
 
                             String[] dataRows = new String[row.size()];
