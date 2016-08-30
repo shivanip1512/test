@@ -103,7 +103,10 @@ CtiCCFeeder::CtiCCFeeder(Cti::RowReader& rdr, StrategyManager * strategyManager)
     if ( hasDynamicData( rdr["AdditionalFlags"] ) )
     {
         setDynamicData( rdr );
+    }
 
+    if ( ! rdr["OriginalParentId"].isNull() )
+    {
         _originalParent.restore( rdr );
     }
 }
