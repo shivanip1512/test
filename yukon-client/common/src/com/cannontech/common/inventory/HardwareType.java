@@ -222,7 +222,21 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     public HardwareClass getHardwareClass() {
         return hardwareClass;
     }
-    
+
+    public boolean isSupportServiceInServiceOut() {
+        if (hardwareConfigType != null && (hardwareConfigType.isSupportsServiceInOut() || hardwareConfigType.isSA())) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isSupportsIndivisualDeviceShed() {
+        if (hardwareConfigType != null && hardwareConfigType.isSupportsServiceInOut()) {
+            return true;
+        }
+        return false;
+    }
+
     public HardwareConfigType getHardwareConfigType() {
         return hardwareConfigType;
     }
