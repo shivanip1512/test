@@ -19,6 +19,7 @@ using Cti::CapControl::EventLogEntries;
 using Cti::CapControl::Database::DatabaseDaoFactory;
 using Cti::CapControl::deserializeFlag;
 using Cti::CapControl::serializeFlag;
+using Cti::CapControl::populateFlag;
 
 using std::endl;
 using std::set;
@@ -4988,24 +4989,24 @@ std::string CtiCCSubstationBus::formatFlags() const
 {
     std::string flags( 20, 'N' );
 
-    flags[  0 ] = serializeFlag( _verificationFlag );
-    flags[  1 ] = serializeFlag( _performingVerificationFlag );
-    flags[  2 ] = serializeFlag( _verificationDoneFlag );
-    flags[  3 ] = serializeFlag( _overlappingSchedulesVerificationFlag );
-    flags[  4 ] = serializeFlag( _preOperationMonitorPointScanFlag );
-    flags[  5 ] = serializeFlag( _operationSentWaitFlag );
-    flags[  6 ] = serializeFlag( _postOperationMonitorPointScanFlag );
-    flags[  7 ] = serializeFlag( _reEnableBusFlag );
-    flags[  8 ] = serializeFlag( _waitForReCloseDelayFlag );
-    flags[  9 ] = serializeFlag( _waitToFinishRegularControlFlag );
-    flags[ 10 ] = serializeFlag( _maxDailyOpsHitFlag );
-    flags[ 11 ] = serializeFlag( _ovUvDisabledFlag );
-    flags[ 12 ] = serializeFlag( _correctionNeededNoBankAvailFlag );
-    flags[ 13 ] = serializeFlag( _likeDayControlFlag );
-    flags[ 14 ] = serializeFlag( _voltReductionFlag );
-    flags[ 15 ] = serializeFlag( _sendMoreTimeControlledCommandsFlag );
-    flags[ 16 ] = serializeFlag( _disableOvUvVerificationFlag );
-    flags[ 17 ] = serializeFlag( _primaryBusFlag );
+    flags[  0 ] = populateFlag( _verificationFlag );
+    flags[  1 ] = populateFlag( _performingVerificationFlag );
+    flags[  2 ] = populateFlag( _verificationDoneFlag );
+    flags[  3 ] = populateFlag( _overlappingSchedulesVerificationFlag );
+    flags[  4 ] = populateFlag( _preOperationMonitorPointScanFlag );
+    flags[  5 ] = populateFlag( _operationSentWaitFlag );
+    flags[  6 ] = populateFlag( _postOperationMonitorPointScanFlag );
+    flags[  7 ] = populateFlag( _reEnableBusFlag );
+    flags[  8 ] = populateFlag( _waitForReCloseDelayFlag );
+    flags[  9 ] = populateFlag( _waitToFinishRegularControlFlag );
+    flags[ 10 ] = populateFlag( _maxDailyOpsHitFlag );
+    flags[ 11 ] = populateFlag( _ovUvDisabledFlag );
+    flags[ 12 ] = populateFlag( _correctionNeededNoBankAvailFlag );
+    flags[ 13 ] = populateFlag( _likeDayControlFlag );
+    flags[ 14 ] = populateFlag( _voltReductionFlag );
+    flags[ 15 ] = populateFlag( _sendMoreTimeControlledCommandsFlag );
+    flags[ 16 ] = populateFlag( _disableOvUvVerificationFlag );
+    flags[ 17 ] = populateFlag( _primaryBusFlag );
 
     return flags;
 }

@@ -136,7 +136,8 @@ void static sendCapControlOperationMessage( Cti::Messaging::CapControl::CapContr
 
 double calculatePowerFactor( const double kvar, const double kwatt );
 
-char serializeFlag( const bool flag );
+char populateFlag( const bool flag );
+std::string serializeFlag( const bool flag );
 bool deserializeFlag( const std::string & flags, const unsigned index = 0 );
 
 extern const std::string SystemUser;

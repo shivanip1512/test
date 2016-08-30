@@ -257,9 +257,16 @@ double calculatePowerFactor( const double kvar, const double kwatt )
     return pf;
 }
 
-char serializeFlag( const bool flag )
+// use when populating a string of flags
+char populateFlag( const bool flag )
 {
     return flag ? 'Y' : 'N';
+}
+
+// use when sending a single flag to the database writer
+std::string serializeFlag( const bool flag )
+{
+    return flag ? "Y" : "N";
 }
 
 bool deserializeFlag( const std::string & flags, const unsigned index )

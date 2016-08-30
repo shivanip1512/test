@@ -20,6 +20,7 @@ using Cti::CapControl::EventLogEntry;
 using Cti::CapControl::EventLogEntries;
 using Cti::CapControl::deserializeFlag;
 using Cti::CapControl::serializeFlag;
+using Cti::CapControl::populateFlag;
 
 using namespace Cti::Messaging::CapControl;
 using std::endl;
@@ -4416,19 +4417,19 @@ std::string CtiCCFeeder::formatFlags() const
 {
     std::string flags( 20, 'N' );
 
-    flags[  0 ] = serializeFlag( _verificationFlag );
-    flags[  1 ] = serializeFlag( _performingVerificationFlag );
-    flags[  2 ] = serializeFlag( _verificationDoneFlag );
-    flags[  3 ] = serializeFlag( _preOperationMonitorPointScanFlag );
-    flags[  4 ] = serializeFlag( _operationSentWaitFlag );
-    flags[  5 ] = serializeFlag( _postOperationMonitorPointScanFlag );
-    flags[  6 ] = serializeFlag( _waitForReCloseDelayFlag );
-    flags[  7 ] = serializeFlag( _peakTimeFlag );
-    flags[  8 ] = serializeFlag( _maxDailyOpsHitFlag );
-    flags[  9 ] = serializeFlag( _ovUvDisabledFlag );
-    flags[ 10 ] = serializeFlag( _correctionNeededNoBankAvailFlag );
-    flags[ 11 ] = serializeFlag( _likeDayControlFlag );
-    flags[ 12 ] = serializeFlag( _lastVerificationMsgSentSuccessful );
+    flags[  0 ] = populateFlag( _verificationFlag );
+    flags[  1 ] = populateFlag( _performingVerificationFlag );
+    flags[  2 ] = populateFlag( _verificationDoneFlag );
+    flags[  3 ] = populateFlag( _preOperationMonitorPointScanFlag );
+    flags[  4 ] = populateFlag( _operationSentWaitFlag );
+    flags[  5 ] = populateFlag( _postOperationMonitorPointScanFlag );
+    flags[  6 ] = populateFlag( _waitForReCloseDelayFlag );
+    flags[  7 ] = populateFlag( _peakTimeFlag );
+    flags[  8 ] = populateFlag( _maxDailyOpsHitFlag );
+    flags[  9 ] = populateFlag( _ovUvDisabledFlag );
+    flags[ 10 ] = populateFlag( _correctionNeededNoBankAvailFlag );
+    flags[ 11 ] = populateFlag( _likeDayControlFlag );
+    flags[ 12 ] = populateFlag( _lastVerificationMsgSentSuccessful );
 
     return flags;
 }

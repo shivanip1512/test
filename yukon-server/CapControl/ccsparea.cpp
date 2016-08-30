@@ -6,7 +6,7 @@
 #include "ccsubstationbusstore.h"
 #include "ExecutorFactory.h"
 
-using Cti::CapControl::serializeFlag;
+using Cti::CapControl::populateFlag;
 
 extern unsigned long _CC_DEBUG;
 extern bool _AUTO_VOLT_REDUCTION;
@@ -50,10 +50,10 @@ void CtiCCSpecial::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiT
 */
 std::string CtiCCSpecial::formatFlags() const
 {
-    std::string flags( Length_DynamicFlags, serializeFlag( false ) );
+    std::string flags( Length_DynamicFlags, populateFlag( false ) );
 
-    flags[ Index_OvUvDisabled ] = serializeFlag( getOvUvDisabledFlag() );
-    flags[ Index_AreaUpdated ]  = serializeFlag( getAreaUpdatedFlag() );
+    flags[ Index_OvUvDisabled ] = populateFlag( getOvUvDisabledFlag() );
+    flags[ Index_AreaUpdated ]  = populateFlag( getAreaUpdatedFlag() );
 
     return flags;
 }

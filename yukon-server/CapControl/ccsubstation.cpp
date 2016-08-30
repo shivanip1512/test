@@ -15,7 +15,7 @@ extern unsigned long _CC_DEBUG;
 extern bool _AUTO_VOLT_REDUCTION;
 
 using Cti::CapControl::deserializeFlag;
-using Cti::CapControl::serializeFlag;
+using Cti::CapControl::populateFlag;
 using Cti::CapControl::PaoIdVector;
 
 DEFINE_COLLECTABLE( CtiCCSubstation, CTICCSUBSTATION_ID )
@@ -118,14 +118,14 @@ void CtiCCSubstation::dumpDynamicData(Cti::Database::DatabaseConnection& conn, C
 */
 std::string CtiCCSubstation::formatFlags() const
 {
-    std::string flags( Length_DynamicFlags, serializeFlag( false ) );
+    std::string flags( Length_DynamicFlags, populateFlag( false ) );
 
-    flags[ Index_OvUvDisabled ]    = serializeFlag( _ovUvDisabledFlag );
-    flags[ Index_SAEnabled ]       = serializeFlag( _saEnabledFlag );
-    flags[ Index_VoltReduction ]   = serializeFlag( _voltReductionFlag );
-    flags[ Index_RecentControl ]   = serializeFlag( _recentlyControlledFlag );
-    flags[ Index_StationUpdated ]  = serializeFlag( _stationUpdatedFlag );
-    flags[ Index_ChildVReduction ] = serializeFlag( _childVoltReductionFlag );
+    flags[ Index_OvUvDisabled ]    = populateFlag( _ovUvDisabledFlag );
+    flags[ Index_SAEnabled ]       = populateFlag( _saEnabledFlag );
+    flags[ Index_VoltReduction ]   = populateFlag( _voltReductionFlag );
+    flags[ Index_RecentControl ]   = populateFlag( _recentlyControlledFlag );
+    flags[ Index_StationUpdated ]  = populateFlag( _stationUpdatedFlag );
+    flags[ Index_ChildVReduction ] = populateFlag( _childVoltReductionFlag );
 
     return flags;
 }

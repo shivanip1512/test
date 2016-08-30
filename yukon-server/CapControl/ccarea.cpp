@@ -11,7 +11,7 @@ extern unsigned long _CC_DEBUG;
 extern bool _AUTO_VOLT_REDUCTION;
 
 using Cti::CapControl::deserializeFlag;
-using Cti::CapControl::serializeFlag;
+using Cti::CapControl::populateFlag;
 using Cti::CapControl::PaoIdVector;
 
 DEFINE_COLLECTABLE( CtiCCArea, CTICCAREA_ID )
@@ -74,12 +74,12 @@ void CtiCCArea::dumpDynamicData(Cti::Database::DatabaseConnection& conn, CtiTime
 */
 std::string CtiCCArea::formatFlags() const
 {
-    std::string flags( Length_DynamicFlags, serializeFlag( false ) );
+    std::string flags( Length_DynamicFlags, populateFlag( false ) );
 
-    flags[ Index_OvUvDisabled ]    = serializeFlag( getOvUvDisabledFlag() );
-    flags[ Index_ReEnableArea ]    = serializeFlag( _reEnableAreaFlag );
-    flags[ Index_ChildVReduction ] = serializeFlag( _childVoltReductionFlag );
-    flags[ Index_AreaUpdated ]     = serializeFlag( getAreaUpdatedFlag() );
+    flags[ Index_OvUvDisabled ]    = populateFlag( getOvUvDisabledFlag() );
+    flags[ Index_ReEnableArea ]    = populateFlag( _reEnableAreaFlag );
+    flags[ Index_ChildVReduction ] = populateFlag( _childVoltReductionFlag );
+    flags[ Index_AreaUpdated ]     = populateFlag( getAreaUpdatedFlag() );
 
     return flags;
 }
