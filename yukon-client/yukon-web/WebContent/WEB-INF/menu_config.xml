@@ -46,7 +46,10 @@
   </menu>
   <menu name="dr">
     <permissions>
-      <role name="DEMAND_RESPONSE" />
+        <or>
+            <role name="DEMAND_RESPONSE" />
+            <role name="CI_CURTAILMENT" />
+        </or>
     </permissions>
     <link>/dr/home</link>
     <options>
@@ -66,9 +69,15 @@
         <link>/dr/controlArea/list</link>
       </option>
       <option name="programs">
+        <permissions>
+          <role name="DEMAND_RESPONSE" />
+        </permissions>
         <link>/dr/program/list</link>
       </option>
       <option name="loadGroups">
+        <permissions>
+          <role name="DEMAND_RESPONSE" />
+        </permissions>
         <link>/dr/loadGroup/list</link>
       </option>
       <option name="estimatedLoad">
