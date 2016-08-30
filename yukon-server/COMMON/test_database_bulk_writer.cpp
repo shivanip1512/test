@@ -138,6 +138,8 @@ struct test_BulkUpdater : Cti::Database::DatabaseBulkUpdater<5>
     {}
 
     using DatabaseBulkUpdater::getFinalizeSql;
+    using DatabaseBulkUpdater::getRejectedRowsSql;
+    using DatabaseBulkUpdater::getDeleteRejectedRowsSql;
 };
 
 BOOST_AUTO_TEST_CASE(test_bulk_updater_finalize_sql)
@@ -167,6 +169,53 @@ BOOST_AUTO_TEST_CASE(test_bulk_updater_finalize_sql)
         " INSERT (ColumnA, ColumnB, ColumnC, ColumnD, ColumnE)"
         " VALUES (Temp_TemporaryTableName.ColumnA, Temp_TemporaryTableName.ColumnB, Temp_TemporaryTableName.ColumnC, Temp_TemporaryTableName.ColumnD, Temp_TemporaryTableName.ColumnE)"
         " END;");
+}
+
+BOOST_AUTO_TEST_CASE(test_bulk_updater_get_delete_rejected_rows_sql)
+{
+    test_BulkUpdater bu;
+
+    BOOST_CHECK_EQUAL(
+        bu.getRejectedRowsSql(test_BulkUpdater::DbClientType::SqlServer),
+        "SELECT TemporaryTableName.DestinationIdColumn"
+        " FROM TemporaryTableName"
+        " LEFT JOIN DestinationTableName"
+        " ON TemporaryTableName.DestinationIdColumn=DestinationTableName.DestinationIdColumn"
+        " WHERE DestinationTableName.DestinationIdColumn IS NULL;");
+
+    BOOST_CHECK_EQUAL(
+        bu.getRejectedRowsSql(test_BulkUpdater::DbClientType::Oracle),
+        "SELECT TemporaryTableName.DestinationIdColumn"
+        " FROM TemporaryTableName"
+        " LEFT JOIN DestinationTableName"
+        " ON TemporaryTableName.DestinationIdColumn=DestinationTableName.DestinationIdColumn"
+        " WHERE DestinationTableName.DestinationIdColumn IS NULL;");
+}
+
+BOOST_AUTO_TEST_CASE(test_bulk_updater_get_rejected_rows_sql)
+{
+    test_BulkUpdater bu;
+
+    BOOST_CHECK_EQUAL(
+        bu.getDeleteRejectedRowsSql(test_BulkUpdater::DbClientType::SqlServer),
+        "DELETE FROM TemporaryTableName"
+        " WHERE DestinationIdColumn IN"
+        " (SELECT TemporaryTableName.DestinationIdColumn"
+        " FROM TemporaryTableName"
+        " LEFT JOIN DestinationTableName"
+        " ON TemporaryTableName.DestinationIdColumn=DestinationTableName.DestinationIdColumn"
+        " WHERE DestinationTableName.DestinationIdColumn IS NULL);");
+
+    BOOST_CHECK_EQUAL(
+        bu.getDeleteRejectedRowsSql(test_BulkUpdater::DbClientType::Oracle),
+        "DELETE FROM TemporaryTableName"
+        " WHERE DestinationIdColumn IN"
+        " (SELECT TemporaryTableName.DestinationIdColumn"
+        " FROM TemporaryTableName"
+        " LEFT JOIN DestinationTableName"
+        " ON TemporaryTableName.DestinationIdColumn=DestinationTableName.DestinationIdColumn"
+        " WHERE DestinationTableName.DestinationIdColumn IS NULL);");
+
 }
 
 BOOST_AUTO_TEST_SUITE_END()

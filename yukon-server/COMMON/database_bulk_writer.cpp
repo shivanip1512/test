@@ -7,6 +7,7 @@
 
 #include "database_bulk_writer.h"
 #include "database_exceptions.h"
+#include "database_reader.h"
 #include "database_transaction.h"
 
 #include "coroutine_util.h"
@@ -116,9 +117,8 @@ std::string DatabaseBulkWriter<ColumnCount>::getInsertSql(const DbClientType cli
     throw DatabaseException{ "Invalid client type " + std::to_string(static_cast<unsigned>(clientType)) };
 }
 
-
 template <size_t ColumnCount>
-std::set<int> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& conn, const std::vector<const RowSource*>&& rows) const
+std::set<long> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& conn, const std::vector<const RowSource*>&& rows) const
 {
     static const size_t ChunkSize = 999 / ColumnCount;  //  we only have 999 placeholders
 
@@ -126,7 +126,7 @@ std::set<int> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& con
 
     boost::optional<DatabaseTransaction> transaction;
 
-    std::set<int> rejectedRows;
+    std::set<long> rejectedRows;
 
     try
     {
@@ -161,7 +161,7 @@ std::set<int> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& con
             rowsWritten += chunk.size();
         }
 
-        //rejectedRows = validateTemporaryRows(conn);
+        rejectedRows = validateTemporaryRows(conn);
 
         DatabaseWriter finalizer{ conn, getFinalizeSql(conn.getClientType()) };
 
@@ -187,6 +187,32 @@ std::set<int> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& con
     return rejectedRows;
 }
 
+template<size_t ColumnCount>
+std::set<long> DatabaseBulkWriter<ColumnCount>::validateTemporaryRows(DatabaseConnection & conn) const
+{
+    return std::set<long>();
+}
+
+template <size_t ColumnCount>
+std::set<long> DatabaseBulkUpdater<ColumnCount>::validateTemporaryRows(DatabaseConnection& conn) const
+{
+    long pointID;
+    std::set<long> rejectedRows;
+
+    DatabaseReader validateSelecter{ conn, getRejectedRowsSql(conn.getClientType()) };
+    validateSelecter.execute();
+
+    while (validateSelecter())
+    {
+        validateSelecter >> pointID;
+        rejectedRows.insert(pointID);
+    }
+
+    DatabaseWriter validateDeleter{ conn, getDeleteRejectedRowsSql(conn.getClientType()) };
+    validateDeleter.execute();
+
+    return rejectedRows;
+}
 
 template <size_t ColumnCount>
 DatabaseBulkInserter<ColumnCount>::DatabaseBulkInserter(TempTableColumns schema, const std::string& tempTableName, const std::string& destTableName, const std::string& destIdColumn ) 
@@ -299,6 +325,29 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql(const DbClientType 
     throw DatabaseException{ "Invalid client type " + std::to_string(static_cast<unsigned>(clientType)) };
 }
 
+template <size_t ColumnCount>
+std::string DatabaseBulkUpdater<ColumnCount>::getRejectedRowsSql(const DbClientType clientType) const
+{
+    return
+        "SELECT " + _tempTable + "." + _idColumn +
+        " FROM " + _tempTable +
+        " LEFT JOIN " + _destTable +
+        " ON " + _tempTable + "." + _idColumn + "=" + _destTable + "." + _idColumn +
+        " WHERE " + _destTable + "." + _idColumn + " IS NULL;";
+}
+
+template <size_t ColumnCount>
+std::string DatabaseBulkUpdater<ColumnCount>::getDeleteRejectedRowsSql(const DbClientType clientType) const
+{
+    return
+        "DELETE FROM " + _tempTable + 
+        " WHERE " + _idColumn + " IN"
+        " (SELECT " + _tempTable + "." + _idColumn +
+        " FROM " + _tempTable +
+        " LEFT JOIN " + _destTable +
+        " ON " + _tempTable + "." + _idColumn + "=" + _destTable + "." + _idColumn +
+        " WHERE " + _destTable + "." + _idColumn + " IS NULL);";
+}
 
 template DatabaseBulkInserter<5>;
 template DatabaseBulkUpdater<7>;

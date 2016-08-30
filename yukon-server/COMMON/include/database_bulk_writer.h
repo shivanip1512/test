@@ -13,7 +13,7 @@ public:
     using TempTableColumns = std::array<ColumnDefinition, ColumnCount>;
     using DbClientType = DatabaseConnection::ClientType;
 
-    std::set<int> writeRows(DatabaseConnection& conn, const std::vector<const RowSource*>&& rows) const;
+    std::set<long> writeRows(DatabaseConnection& conn, const std::vector<const RowSource*>&& rows) const;
 
 protected:
     DatabaseBulkWriter(TempTableColumns tempTableSchema, const std::string &tempTableName, const std::string &destTableName);
@@ -23,6 +23,7 @@ protected:
     std::string getInsertSql(const DbClientType clientType, size_t rows) const;
 
     virtual std::string getFinalizeSql(const DbClientType clientType) const = 0;
+    virtual std::set<long> validateTemporaryRows(DatabaseConnection& conn) const;
     
     const TempTableColumns _schema;
     const std::string _tempTable, _destTable;
@@ -49,6 +50,10 @@ public:
 
 protected:
     std::string getFinalizeSql(const DbClientType clientType) const override;
+    std::string getRejectedRowsSql(const DbClientType clientType) const;
+    std::string getDeleteRejectedRowsSql(const DbClientType clientType) const;
+
+    std::set<long> validateTemporaryRows(DatabaseConnection & conn) const override;
 
 private:
     std::string _idColumn;
