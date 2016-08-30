@@ -217,7 +217,7 @@ public class RfnChannelDataConverter {
         }
         
         if( !RfnDataValidator.isTimestampValid(readingInstant, Instant.now()) ) {
-            log.trace("Discarding invalid pointdata for device " + rfnDevice + " : " + pointData);
+            log.warn("Discarding invalid pointdata for device " + rfnDevice + " : " + pointData);
             return null;
         }
         
