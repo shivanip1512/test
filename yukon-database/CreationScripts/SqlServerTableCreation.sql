@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     8/26/2016 6:29:51 AM                         */
+/* Created on:     8/31/2016 1:59:16 PM                         */
 /*==============================================================*/
 
 
@@ -2864,8 +2864,6 @@ create table DYNAMICPOINTDISPATCH (
    VALUE                float                not null,
    TAGS                 numeric              not null,
    NEXTARCHIVE          datetime             not null,
-   STALECOUNT           numeric              not null,
-   LastAlarmLogID       numeric              not null,
    millis               smallint             not null,
    constraint PK_DYNAMICPOINTDISPATCH primary key (POINTID)
 )

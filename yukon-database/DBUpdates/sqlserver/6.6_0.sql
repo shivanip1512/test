@@ -696,14 +696,20 @@ INSERT INTO DeviceTypeCommand VALUES (-1229, -212, 'LCR-3102', 16, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1230, -213, 'LCR-3102', 17, 'Y', -1);
 /* End YUK-15671 */
 
-/* Start YUK-15633*/
+/* Start YUK-15633 */
 ALTER TABLE LMControlHistory DROP CONSTRAINT FK_LmCtrlHis_YPAO;
 
-alter table LMControlHistory
-   add constraint FK_LmCtrlHis_YPAO foreign key (PAObjectID)
-      references YukonPAObject (PAObjectID)
-         on delete cascade;
-/* End YUK-15633*/
+ALTER TABLE LMControlHistory
+   ADD CONSTRAINT FK_LmCtrlHis_YPAO FOREIGN KEY (PAObjectID)
+      REFERENCES YukonPAObject (PAObjectID)
+         ON DELETE CASCADE;
+GO
+/* End YUK-15633 */
+
+/* Start YUK-15729 */
+ALTER TABLE DYNAMICPOINTDISPATCH DROP COLUMN STALECOUNT, LastAlarmLogID;
+GO
+/* End YUK-15729 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

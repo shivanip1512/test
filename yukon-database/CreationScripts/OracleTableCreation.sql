@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/26/2016 6:28:21 AM                         */
+/* Created on:     8/31/2016 2:00:08 PM                         */
 /*==============================================================*/
 
 
@@ -2693,8 +2693,6 @@ create table DYNAMICPOINTDISPATCH  (
    VALUE                FLOAT                           not null,
    TAGS                 NUMBER                          not null,
    NEXTARCHIVE          DATE                            not null,
-   STALECOUNT           NUMBER                          not null,
-   LastAlarmLogID       NUMBER                          not null,
    millis               SMALLINT                        not null,
    constraint PK_DYNAMICPOINTDISPATCH primary key (POINTID)
 );
