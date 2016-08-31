@@ -196,25 +196,17 @@ BOOST_AUTO_TEST_CASE(test_bulk_updater_get_rejected_rows_sql)
 {
     test_BulkUpdater bu;
 
-    BOOST_CHECK_EQUAL(
-        bu.getDeleteRejectedRowsSql(test_BulkUpdater::DbClientType::SqlServer),
-        "DELETE FROM TemporaryTableName"
-        " WHERE DestinationIdColumn IN"
-        " (SELECT TemporaryTableName.DestinationIdColumn"
-        " FROM TemporaryTableName"
-        " LEFT JOIN DestinationTableName"
-        " ON TemporaryTableName.DestinationIdColumn=DestinationTableName.DestinationIdColumn"
-        " WHERE DestinationTableName.DestinationIdColumn IS NULL);");
+    std::set<long> testSet = { 1, 2, 3, 4, 5 };
 
     BOOST_CHECK_EQUAL(
-        bu.getDeleteRejectedRowsSql(test_BulkUpdater::DbClientType::Oracle),
+        bu.getDeleteRejectedRowsSql(test_BulkUpdater::DbClientType::SqlServer, testSet),
         "DELETE FROM TemporaryTableName"
-        " WHERE DestinationIdColumn IN"
-        " (SELECT TemporaryTableName.DestinationIdColumn"
-        " FROM TemporaryTableName"
-        " LEFT JOIN DestinationTableName"
-        " ON TemporaryTableName.DestinationIdColumn=DestinationTableName.DestinationIdColumn"
-        " WHERE DestinationTableName.DestinationIdColumn IS NULL);");
+        " WHERE DestinationIdColumn IN (1, 2, 3, 4, 5);");
+
+    BOOST_CHECK_EQUAL(
+        bu.getDeleteRejectedRowsSql(test_BulkUpdater::DbClientType::Oracle, testSet),
+        "DELETE FROM TemporaryTableName"
+        " WHERE DestinationIdColumn IN (1, 2, 3, 4, 5);");
 
 }
 

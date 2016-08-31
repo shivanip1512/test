@@ -51,7 +51,7 @@ public:
 protected:
     std::string getFinalizeSql(const DbClientType clientType) const override;
     std::string getRejectedRowsSql(const DbClientType clientType) const;
-    std::string getDeleteRejectedRowsSql(const DbClientType clientType) const;
+    std::string getDeleteRejectedRowsSql(const DbClientType clientType, std::set<long> rejectedRowSet) const;
 
     std::set<long> validateTemporaryRows(DatabaseConnection & conn) const override;
 

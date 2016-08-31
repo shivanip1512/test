@@ -208,8 +208,11 @@ std::set<long> DatabaseBulkUpdater<ColumnCount>::validateTemporaryRows(DatabaseC
         rejectedRows.insert(pointID);
     }
 
-    DatabaseWriter validateDeleter{ conn, getDeleteRejectedRowsSql(conn.getClientType()) };
-    validateDeleter.execute();
+    if ( ! rejectedRows.empty() )
+    {
+        DatabaseWriter validateDeleter{ conn, getDeleteRejectedRowsSql(conn.getClientType(), rejectedRows) };
+        validateDeleter.execute();
+    }
 
     return rejectedRows;
 }
@@ -337,16 +340,13 @@ std::string DatabaseBulkUpdater<ColumnCount>::getRejectedRowsSql(const DbClientT
 }
 
 template <size_t ColumnCount>
-std::string DatabaseBulkUpdater<ColumnCount>::getDeleteRejectedRowsSql(const DbClientType clientType) const
+std::string DatabaseBulkUpdater<ColumnCount>::getDeleteRejectedRowsSql(const DbClientType clientType, std::set<long> rejectedRowSet) const
 {
+    std::string rejectedRowString = Cti::join(rejectedRowSet, ", ");
+
     return
         "DELETE FROM " + _tempTable + 
-        " WHERE " + _idColumn + " IN"
-        " (SELECT " + _tempTable + "." + _idColumn +
-        " FROM " + _tempTable +
-        " LEFT JOIN " + _destTable +
-        " ON " + _tempTable + "." + _idColumn + "=" + _destTable + "." + _idColumn +
-        " WHERE " + _destTable + "." + _idColumn + " IS NULL);";
+        " WHERE " + _idColumn + " IN (" + rejectedRowString + ");";
 }
 
 template DatabaseBulkInserter<5>;
