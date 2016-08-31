@@ -39,7 +39,7 @@ yukon.tools.trends = (function () {
                     };
                 var legend;
                 if(trend.isTruncated){
-                	legend = {
+                    legend = {
                         enabled: true,
                         align: 'center',
                         backgroundColor: '#fefefe',
@@ -50,13 +50,14 @@ yukon.tools.trends = (function () {
                         verticalAlign: 'bottom',
                         shadow: true,
                         title : {
-                        	style:{
-                        		"color" :"red"},
-                        	text:trend.truncateMessage
+                            style:{
+                                "color" :"#ff0000"
+                                },
+                            text:trend.truncateMessage
                         }
-                }
+                    };
                 }else{
-                	legend = {
+                    legend = {
                             enabled: true,
                             align: 'center',
                             backgroundColor: '#fefefe',
@@ -66,7 +67,7 @@ yukon.tools.trends = (function () {
                             layout: 'vertical',
                             verticalAlign: 'bottom',
                             shadow: true,
-                    }
+                    };
                 }
                 // Create the chart
                 $('[data-trend]').highcharts('StockChart', {
