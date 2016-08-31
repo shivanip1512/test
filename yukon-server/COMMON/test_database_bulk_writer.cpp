@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE(test_bulk_inserter_finalize_sql)
                 "INSERT INTO"
                     " DestinationTableName (DestinationIdColumn, ColumnA, ColumnB, ColumnC, ColumnD, ColumnE)"
                     " SELECT maxId + ROWNUM, ColumnA, ColumnB, ColumnC, ColumnD, ColumnE FROM Temp_TemporaryTableName;"
-            " END");
+            " END;");
     }
 }        
 
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE(test_bulk_updater_finalize_sql)
             " UPDATE SET ColumnB = t.ColumnB, ColumnC = t.ColumnC, ColumnD = t.ColumnD, ColumnE = t.ColumnE"
             " WHEN NOT MATCHED THEN"
             " INSERT (ColumnA, ColumnB, ColumnC, ColumnD, ColumnE)"
-            " VALUES (t.ColumnA, t.ColumnB, t.ColumnC, t.ColumnD, t.ColumnE)");
+            " VALUES (t.ColumnA, t.ColumnB, t.ColumnC, t.ColumnD, t.ColumnE);");
     }
 
     {
@@ -197,7 +197,7 @@ BOOST_AUTO_TEST_CASE(test_bulk_updater_finalize_sql)
                 " FROM Temp_TemporaryTableName"
                 " JOIN ForeignKeyTableName"
                 " ON Temp_TemporaryTableName.ColumnA=ForeignKeyTableName.ColumnA) t"
-            " ON DestinationTableName.ColumnA = t.ColumnA"
+            " ON (DestinationTableName.ColumnA = t.ColumnA)"
             " WHEN MATCHED THEN"
             " UPDATE SET ColumnB = t.ColumnB, ColumnC = t.ColumnC, ColumnD = t.ColumnD, ColumnE = t.ColumnE"
             " WHEN NOT MATCHED THEN"

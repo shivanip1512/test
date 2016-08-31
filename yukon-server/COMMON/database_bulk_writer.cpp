@@ -132,11 +132,7 @@ std::set<long> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& co
 {
     static const size_t ChunkSize = 999 / ColumnCount;  //  we only have 999 placeholders
 
-    unsigned rowsWritten = 0;
-
     boost::optional<DatabaseTransaction> transaction;
-
-    std::set<long> rejectedRows;
 
     CTILOG_INFO(dout, "Writing " << rows.size() << " records to " << _destTable);
 
@@ -159,7 +155,7 @@ std::set<long> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& co
 
         transaction.emplace(conn);
 
-        unsigned logLimit = ChunkSize;
+        unsigned rowsWritten = 0, logLimit = ChunkSize;
 
         for( auto chunk : Cti::Coroutines::chunked(rows, ChunkSize) )
         {
@@ -187,8 +183,6 @@ std::set<long> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& co
         CTILOG_INFO(dout, "Finalizing records for " << _destTable);
 
         finalizer.executeWithDatabaseException();
-
-        return getRejectedRows(conn);
     }
     catch( DatabaseException & ex )
     {
@@ -202,10 +196,28 @@ std::set<long> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& co
                 boost::adaptors::indirected |
                 boost::adaptors::transformed(
                     [](const Cti::Loggable &obj) {
-            return obj.toString(); }), "\n"));
+                        return obj.toString(); }), "\n"));
 
         throw;
     }
+
+    std::set<long> rejectedRows;
+
+    try
+    {
+        rejectedRows = getRejectedRows(conn);
+    }
+    catch( DatabaseException & ex )
+    {
+        CTILOG_EXCEPTION_ERROR(dout, ex, "Unable to select rows rejected on insert into " << _destTable << ":\n" <<
+            boost::join(rows |
+                boost::adaptors::indirected |
+                boost::adaptors::transformed(
+                    [](const Cti::Loggable &obj) {
+                        return obj.toString(); }), "\n"));
+    }
+
+    return rejectedRows;
 }
 
 template<size_t ColumnCount>
@@ -247,7 +259,7 @@ std::string DatabaseBulkInserter<ColumnCount>::getFinalizeSql() const
                 "INSERT INTO " + _destTable + " (" + _idColumn + ", " + columnNames + ")" +
                 " SELECT maxId + ROWNUM, " + columnNames +
                 " FROM " + _tempTable + "; "
-                "END";
+                "END;";
         }
     }
 
@@ -294,14 +306,14 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql() const
                 " UPDATE SET " + mergeUpdates +
                 " WHEN NOT MATCHED THEN"
                 " INSERT (" + columnNames + ")"
-                " VALUES (" + mergeInserts + ")";
+                " VALUES (" + mergeInserts + ");";
         }
         case DbClientType::Oracle:
         {
             return
                 "MERGE INTO " + _destTable +
                 " USING (SELECT " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
-                " ON " + _destTable + "." + _idColumn + " = t." + _idColumn +
+                " ON (" + _destTable + "." + _idColumn + " = t." + _idColumn + ")" +
                 " WHEN MATCHED THEN"
                 " UPDATE SET " + mergeUpdates +
                 " WHEN NOT MATCHED THEN"

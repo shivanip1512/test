@@ -7,6 +7,7 @@
 #include "database_reader.h"
 #include "database_connection.h"
 #include "database_bulk_writer.h"
+#include "database_exceptions.h"
 #include "database_util.h"
 #include "devicetypes.h"
 #include "msg_ptreg.h"
@@ -778,21 +779,28 @@ void CtiPointClientManager::writeRecordsToDB(const DynamicPointDispatchList& upd
 
     auto rowSources = boost::copy_range<std::vector<const Cti::RowSource*>> (updateList | asRowSource);
 
-    auto rejectedRows = bu.writeRows(conn, std::move(rowSources));
-
-    for( auto pointId : rejectedRows )
+    try
     {
-        CTILOG_WARN(dout, "Removing record for invalid point ID " << pointId);
+        auto rejectedRows = bu.writeRows(conn, std::move(rowSources));
 
-        erase(pointId);
-    }
-    for( auto& row : updateList )
-    {
-        //  Make sure the row wasn't deleted
-        if( ! rejectedRows.count(row->getDispatch().getPointID()) )
+        for( auto pointId : rejectedRows )
         {
-            row->getDispatch().resetDirty();
+            CTILOG_WARN(dout, "Removing record for invalid point ID " << pointId);
+
+            erase(pointId);
         }
+        for( auto& row : updateList )
+        {
+            //  Make sure the row wasn't deleted
+            if( ! rejectedRows.count(row->getDispatch().getPointID()) )
+            {
+                row->getDispatch().resetDirty();
+            }
+        }
+    }
+    catch( const Cti::Database::DatabaseException& ex )
+    {
+        CTILOG_EXCEPTION_ERROR(dout, ex, "Unable to update rows in DynamicPointDispatch");
     }
 }
 
