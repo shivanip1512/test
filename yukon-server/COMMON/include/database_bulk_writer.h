@@ -25,7 +25,7 @@ protected:
     std::string getInsertSql(size_t rows) const;
 
     virtual std::string getFinalizeSql() const = 0;
-    virtual std::set<long> validateTemporaryRows(DatabaseConnection& conn) const;
+    virtual std::set<long> getRejectedRows(DatabaseConnection& conn) const;
     
     const DbClientType _clientType;
     const TempTableColumns _schema;
@@ -54,9 +54,8 @@ public:
 protected:
     std::string getFinalizeSql() const override;
     std::string getRejectedRowsSql() const;
-    std::string getDeleteRejectedRowsSql(std::set<long> rejectedRowSet) const;
 
-    std::set<long> validateTemporaryRows(DatabaseConnection & conn) const override;
+    std::set<long> getRejectedRows(DatabaseConnection& conn) const override;
 
 private:
     const std::string _idColumn;

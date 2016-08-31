@@ -182,13 +182,13 @@ std::set<long> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& co
             }
         }
 
-        rejectedRows = validateTemporaryRows(conn);
-
         DatabaseWriter finalizer{ conn, getFinalizeSql() };
 
         CTILOG_INFO(dout, "Finalizing records for " << _destTable);
 
         finalizer.executeWithDatabaseException();
+
+        return getRejectedRows(conn);
     }
     catch( DatabaseException & ex )
     {
@@ -204,41 +204,16 @@ std::set<long> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& co
                     [](const Cti::Loggable &obj) {
             return obj.toString(); }), "\n"));
 
-        rowsWritten = 0;
+        throw;
     }
-
-    return rejectedRows;
 }
 
 template<size_t ColumnCount>
-std::set<long> DatabaseBulkWriter<ColumnCount>::validateTemporaryRows(DatabaseConnection & conn) const
+std::set<long> DatabaseBulkWriter<ColumnCount>::getRejectedRows(DatabaseConnection & conn) const
 {
-    return std::set<long>();
+    return {};
 }
 
-template <size_t ColumnCount>
-std::set<long> DatabaseBulkUpdater<ColumnCount>::validateTemporaryRows(DatabaseConnection& conn) const
-{
-    long pointID;
-    std::set<long> rejectedRows;
-
-    DatabaseReader validateSelecter{ conn, getRejectedRowsSql() };
-    validateSelecter.execute();
-
-    while (validateSelecter())
-    {
-        validateSelecter >> pointID;
-        rejectedRows.insert(pointID);
-    }
-
-    if ( ! rejectedRows.empty() )
-    {
-        DatabaseWriter validateDeleter{ conn, getDeleteRejectedRowsSql(rejectedRows) };
-        validateDeleter.execute();
-    }
-
-    return rejectedRows;
-}
 
 template <size_t ColumnCount>
 DatabaseBulkInserter<ColumnCount>::DatabaseBulkInserter(const DbClientType clientType, TempTableColumns schema, const std::string& tempTableName, const std::string& destTableName, const std::string& destIdColumn ) 
@@ -260,7 +235,7 @@ std::string DatabaseBulkInserter<ColumnCount>::getFinalizeSql() const
                 "select @maxId = COALESCE(MAX(" + _idColumn + "), 0) from " + _destTable + ";"
                 "insert into " + _destTable + " (" + _idColumn + ", " + columnNames + ")" +
                 " select @maxId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)), " + columnNames +
-                " FROM " + _tempTable + ";";
+                " FROM " + _tempTable;
         }
         case DbClientType::Oracle:
         {
@@ -272,7 +247,7 @@ std::string DatabaseBulkInserter<ColumnCount>::getFinalizeSql() const
                 "INSERT INTO " + _destTable + " (" + _idColumn + ", " + columnNames + ")" +
                 " SELECT maxId + ROWNUM, " + columnNames +
                 " FROM " + _tempTable + "; "
-                "END;";
+                "END";
         }
     }
 
@@ -294,64 +269,50 @@ std::string DatabaseBulkUpdater<ColumnCount>::getFinalizeSql() const
 {
     const auto columnNames = boost::join(_schema | columnName, ", ");
 
+    const auto mergeUpdate =
+        boost::adaptors::transformed(
+            [this](const ColumnDefinition &cd) {
+                return cd.name + " = t." + cd.name; });
+
+    const auto mergeInsert =
+        boost::adaptors::transformed(
+            [this](const ColumnDefinition &cd) {
+                return "t." + cd.name; });
+
+    const auto mergeUpdates = boost::join(_valueColumns | mergeUpdate, ", ");
+    const auto mergeInserts = boost::join(_schema | mergeInsert, ", ");
+
     switch( _clientType )
     {
         case DbClientType::SqlServer:
         {
-            const auto mergeUpdate =
-                boost::adaptors::transformed(
-                    [this](const ColumnDefinition &cd) {
-                        return cd.name + " = " + _tempTable + "." + cd.name; });
-
-            const auto mergeInsert =
-                boost::adaptors::transformed(
-                    [this](const ColumnDefinition &cd) {
-                        return "" + _tempTable + "." + cd.name; });
-
-            const auto mergeUpdates = boost::join(_valueColumns | mergeUpdate, ", ");
-            const auto mergeInserts = boost::join(_schema | mergeInsert, ", ");
-
             return
                 "MERGE " + _destTable +
-                " USING " + _tempTable +
-                " ON " + _destTable + "." + _idColumn + " = " + _tempTable + "." + _idColumn +
+                " USING (SELECT " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
+                " ON " + _destTable + "." + _idColumn + " = t." + _idColumn +
                 " WHEN MATCHED THEN"
                 " UPDATE SET " + mergeUpdates +
                 " WHEN NOT MATCHED THEN"
                 " INSERT (" + columnNames + ")"
-                " VALUES (" + mergeInserts + ");";
+                " VALUES (" + mergeInserts + ")";
         }
         case DbClientType::Oracle:
         {
-            const auto mergeUpdate =
-                boost::adaptors::transformed(
-                    [this](const ColumnDefinition &cd) {
-                        return cd.name + " = " + _tempTable + "." + cd.name; });
-
-            const auto mergeInsert =
-                boost::adaptors::transformed(
-                    [this](const ColumnDefinition &cd) {
-                        return "" + _tempTable + "." + cd.name; });
-
-            const auto mergeUpdates = boost::join(_valueColumns | mergeUpdate, ", ");
-            const auto mergeInserts = boost::join(_schema | mergeInsert, ", ");
-
             return
-                "BEGIN"
-                " MERGE INTO " + _destTable +
-                " USING " + _tempTable +
-                " ON (" + _destTable + "." + _idColumn + " = " + _tempTable + "." + _idColumn + ")"
+                "MERGE INTO " + _destTable +
+                " USING (SELECT " + _tempTable + ".* FROM " + _tempTable + " JOIN " + _fkTable + " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn + ") t"
+                " ON " + _destTable + "." + _idColumn + " = t." + _idColumn +
                 " WHEN MATCHED THEN"
                 " UPDATE SET " + mergeUpdates +
                 " WHEN NOT MATCHED THEN"
                 " INSERT (" + columnNames + ")"
-                " VALUES (" + mergeInserts + ")"
-                " END;";
+                " VALUES (" + mergeInserts + ")";
         }
     }
 
     throw DatabaseException{ "Invalid client type " + std::to_string(static_cast<unsigned>(_clientType)) };
 }
+
 
 template <size_t ColumnCount>
 std::string DatabaseBulkUpdater<ColumnCount>::getRejectedRowsSql() const
@@ -359,20 +320,29 @@ std::string DatabaseBulkUpdater<ColumnCount>::getRejectedRowsSql() const
     return
         "SELECT " + _tempTable + "." + _idColumn +
         " FROM " + _tempTable +
-        " LEFT JOIN " + _fkTable +
-        " ON " + _tempTable + "." + _idColumn + "=" + _fkTable + "." + _idColumn +
-        " WHERE " + _fkTable + "." + _idColumn + " IS NULL";
+        " WHERE NOT EXISTS ("
+        "SELECT " + _idColumn + 
+        " FROM " + _fkTable + 
+        " WHERE " + _fkTable + "." + _idColumn + " = " + _tempTable + "." + _idColumn + ")";
 }
 
 template <size_t ColumnCount>
-std::string DatabaseBulkUpdater<ColumnCount>::getDeleteRejectedRowsSql(std::set<long> rejectedRowSet) const
+std::set<long> DatabaseBulkUpdater<ColumnCount>::getRejectedRows(DatabaseConnection& conn) const
 {
-    std::string rejectedRowString = Cti::join(rejectedRowSet, ", ");
+    DatabaseReader rejectedReader{ conn, getRejectedRowsSql() };
 
-    return
-        "DELETE FROM " + _tempTable + 
-        " WHERE " + _idColumn + " IN (" + rejectedRowString + ");";
+    rejectedReader.execute();
+
+    std::set<long> rejectedRows;
+
+    while( rejectedReader() )
+    {
+        rejectedRows.insert(rejectedReader.as<long>());
+    }
+
+    return rejectedRows;
 }
+
 
 template DatabaseBulkInserter<5>;
 template DatabaseBulkUpdater<7>;

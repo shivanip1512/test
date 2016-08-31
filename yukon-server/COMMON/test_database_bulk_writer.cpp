@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(test_bulk_inserter_finalize_sql)
             "select @maxId = COALESCE(MAX(DestinationIdColumn), 0) from DestinationTableName;"
             "insert into"
             " DestinationTableName (DestinationIdColumn, ColumnA, ColumnB, ColumnC, ColumnD, ColumnE)"
-            " select @maxId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)), ColumnA, ColumnB, ColumnC, ColumnD, ColumnE FROM ##TemporaryTableName;");
+            " select @maxId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)), ColumnA, ColumnB, ColumnC, ColumnD, ColumnE FROM ##TemporaryTableName");
     }
 
     {
@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE(test_bulk_inserter_finalize_sql)
                 "INSERT INTO"
                     " DestinationTableName (DestinationIdColumn, ColumnA, ColumnB, ColumnC, ColumnD, ColumnE)"
                     " SELECT maxId + ROWNUM, ColumnA, ColumnB, ColumnC, ColumnD, ColumnE FROM Temp_TemporaryTableName;"
-            " END;");
+            " END");
     }
 }        
 
@@ -163,7 +163,6 @@ struct test_BulkUpdater : Cti::Database::DatabaseBulkUpdater<5>
 
     using DatabaseBulkUpdater::getFinalizeSql;
     using DatabaseBulkUpdater::getRejectedRowsSql;
-    using DatabaseBulkUpdater::getDeleteRejectedRowsSql;
 };
 
 BOOST_AUTO_TEST_CASE(test_bulk_updater_finalize_sql)
@@ -174,13 +173,17 @@ BOOST_AUTO_TEST_CASE(test_bulk_updater_finalize_sql)
         BOOST_CHECK_EQUAL(
             bu.getFinalizeSql(),
             "MERGE DestinationTableName"
-            " USING ##TemporaryTableName"
-            " ON DestinationTableName.ColumnA = ##TemporaryTableName.ColumnA"
+            " USING ("
+                "SELECT ##TemporaryTableName.*"
+                " FROM ##TemporaryTableName"
+                " JOIN ForeignKeyTableName"
+                " ON ##TemporaryTableName.ColumnA=ForeignKeyTableName.ColumnA) t"
+            " ON DestinationTableName.ColumnA = t.ColumnA"
             " WHEN MATCHED THEN"
-            " UPDATE SET ColumnB = ##TemporaryTableName.ColumnB, ColumnC = ##TemporaryTableName.ColumnC, ColumnD = ##TemporaryTableName.ColumnD, ColumnE = ##TemporaryTableName.ColumnE"
+            " UPDATE SET ColumnB = t.ColumnB, ColumnC = t.ColumnC, ColumnD = t.ColumnD, ColumnE = t.ColumnE"
             " WHEN NOT MATCHED THEN"
             " INSERT (ColumnA, ColumnB, ColumnC, ColumnD, ColumnE)"
-            " VALUES (##TemporaryTableName.ColumnA, ##TemporaryTableName.ColumnB, ##TemporaryTableName.ColumnC, ##TemporaryTableName.ColumnD, ##TemporaryTableName.ColumnE);");
+            " VALUES (t.ColumnA, t.ColumnB, t.ColumnC, t.ColumnD, t.ColumnE)");
     }
 
     {
@@ -188,16 +191,18 @@ BOOST_AUTO_TEST_CASE(test_bulk_updater_finalize_sql)
 
         BOOST_CHECK_EQUAL(
             bu.getFinalizeSql(),
-            "BEGIN"
-            " MERGE INTO DestinationTableName"
-            " USING Temp_TemporaryTableName"
-            " ON (DestinationTableName.ColumnA = Temp_TemporaryTableName.ColumnA)"
+            "MERGE INTO DestinationTableName"
+            " USING ("
+                "SELECT Temp_TemporaryTableName.*"
+                " FROM Temp_TemporaryTableName"
+                " JOIN ForeignKeyTableName"
+                " ON Temp_TemporaryTableName.ColumnA=ForeignKeyTableName.ColumnA) t"
+            " ON DestinationTableName.ColumnA = t.ColumnA"
             " WHEN MATCHED THEN"
-            " UPDATE SET ColumnB = Temp_TemporaryTableName.ColumnB, ColumnC = Temp_TemporaryTableName.ColumnC, ColumnD = Temp_TemporaryTableName.ColumnD, ColumnE = Temp_TemporaryTableName.ColumnE"
+            " UPDATE SET ColumnB = t.ColumnB, ColumnC = t.ColumnC, ColumnD = t.ColumnD, ColumnE = t.ColumnE"
             " WHEN NOT MATCHED THEN"
             " INSERT (ColumnA, ColumnB, ColumnC, ColumnD, ColumnE)"
-            " VALUES (Temp_TemporaryTableName.ColumnA, Temp_TemporaryTableName.ColumnB, Temp_TemporaryTableName.ColumnC, Temp_TemporaryTableName.ColumnD, Temp_TemporaryTableName.ColumnE)"
-            " END;");
+            " VALUES (t.ColumnA, t.ColumnB, t.ColumnC, t.ColumnD, t.ColumnE)");
     }
 }
 
@@ -210,9 +215,10 @@ BOOST_AUTO_TEST_CASE(test_bulk_updater_get_rejected_rows_sql)
             bu.getRejectedRowsSql(),
             "SELECT ##TemporaryTableName.ColumnA"
             " FROM ##TemporaryTableName"
-            " LEFT JOIN ForeignKeyTableName"
-            " ON ##TemporaryTableName.ColumnA=ForeignKeyTableName.ColumnA"
-            " WHERE ForeignKeyTableName.ColumnA IS NULL");
+            " WHERE NOT EXISTS ("
+                "SELECT ColumnA"
+                " FROM ForeignKeyTableName"
+                " WHERE ForeignKeyTableName.ColumnA = ##TemporaryTableName.ColumnA)");
     }
 
     {
@@ -222,32 +228,10 @@ BOOST_AUTO_TEST_CASE(test_bulk_updater_get_rejected_rows_sql)
             bu.getRejectedRowsSql(),
             "SELECT Temp_TemporaryTableName.ColumnA"
             " FROM Temp_TemporaryTableName"
-            " LEFT JOIN ForeignKeyTableName"
-            " ON Temp_TemporaryTableName.ColumnA=ForeignKeyTableName.ColumnA"
-            " WHERE ForeignKeyTableName.ColumnA IS NULL");
-    }
-}
-
-BOOST_AUTO_TEST_CASE(test_bulk_updater_get_delete_rejected_rows_sql)
-{
-    std::set<long> testSet = { 1, 2, 3, 4, 5 };
-
-    {
-        test_BulkUpdater bu { test_BulkUpdater::DbClientType::SqlServer };
-
-        BOOST_CHECK_EQUAL(
-            bu.getDeleteRejectedRowsSql(testSet),
-            "DELETE FROM ##TemporaryTableName"
-            " WHERE ColumnA IN (1, 2, 3, 4, 5);");
-    }
-
-    {
-        test_BulkUpdater bu { test_BulkUpdater::DbClientType::Oracle };
-
-        BOOST_CHECK_EQUAL(
-            bu.getDeleteRejectedRowsSql(testSet),
-            "DELETE FROM Temp_TemporaryTableName"
-            " WHERE ColumnA IN (1, 2, 3, 4, 5);");
+            " WHERE NOT EXISTS ("
+                "SELECT ColumnA"
+                " FROM ForeignKeyTableName"
+                " WHERE ForeignKeyTableName.ColumnA = Temp_TemporaryTableName.ColumnA)");
     }
 }
 
