@@ -55,10 +55,10 @@ public class TrendDataServiceImpl implements TrendDataService {
             return rawPointHistoryDao.getLimitedPointData(pointId,
                                                           instantRange,
                                                           false,
-                                                          Order.FORWARD,
+                                                          Order.REVERSE,
                                                           maxRows);
         } else {
-            return rawPointHistoryDao.getPointData(pointId, instantRange, Order.FORWARD);
+            return rawPointHistoryDao.getPointData(pointId, instantRange, Order.REVERSE);
         }
 
     }

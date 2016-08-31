@@ -37,6 +37,37 @@ yukon.tools.trends = (function () {
                         month:       [labelFormat,labelFormat],
                         year:        [labelFormat,labelFormat]
                     };
+                var legend;
+                if(trend.isTruncated){
+                	legend = {
+                        enabled: true,
+                        align: 'center',
+                        backgroundColor: '#fefefe',
+                        borderColor: '#ccc',
+                        borderWidth: 1,
+                        borderRadius: 1,
+                        layout: 'vertical',
+                        verticalAlign: 'bottom',
+                        shadow: true,
+                        title : {
+                        	style:{
+                        		"color" :"red"},
+                        	text:trend.truncateMessage
+                        }
+                }
+                }else{
+                	legend = {
+                            enabled: true,
+                            align: 'center',
+                            backgroundColor: '#fefefe',
+                            borderColor: '#ccc',
+                            borderWidth: 1,
+                            borderRadius: 1,
+                            layout: 'vertical',
+                            verticalAlign: 'bottom',
+                            shadow: true,
+                    }
+                }
                 // Create the chart
                 $('[data-trend]').highcharts('StockChart', {
                     
@@ -58,18 +89,7 @@ yukon.tools.trends = (function () {
                         enabled: false
                     },
                     
-                    legend: {
-                        enabled: true,
-                        align: 'center',
-                        backgroundColor: '#fefefe',
-                        borderColor: '#ccc',
-                        borderWidth: 1,
-                        borderRadius: 1,
-                        layout: 'vertical',
-                        verticalAlign: 'bottom',
-                        shadow: true
-                    },
-                    
+                    legend: legend,
                     plotOptions: {
                         series: {
                             dataGrouping: {
