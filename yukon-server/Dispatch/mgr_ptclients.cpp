@@ -771,7 +771,7 @@ void CtiPointClientManager::writeRecordsToDB(const DynamicPointDispatchList& upd
 
     size_t listCount = 0;
 
-    DatabaseBulkUpdater<7> bu { CtiTablePointDispatch::getTempTableSchema(), "DPD", "DynamicPointDispatch", "PointID" };
+    DatabaseBulkUpdater<7> bu { conn.getClientType(), CtiTablePointDispatch::getTempTableSchema(), "DPD", "DynamicPointDispatch", "Point" };
 
     //  Get a RowSources view of the DynamicPointDispatch table rows
     const auto asRowSource = boost::adaptors::transformed ([](const CtiDynamicPointDispatchSPtr& dpd) { return &dpd->getDispatch(); });

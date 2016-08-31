@@ -470,7 +470,7 @@ unsigned RawPointHistoryArchiver::writeRawPointHistory(Cti::Database::DatabaseCo
 
     auto rowSources = boost::copy_range<std::vector<const RowSource*>>(rowsToWrite | boost::adaptors::transformed(asRowSource));
 
-    DatabaseBulkInserter<5> rphWriter { CtiTableRawPointHistory::getTempTableSchema(), "RPH", "RawPointHistory", "changeId" };
+    DatabaseBulkInserter<5> rphWriter { conn.getClientType(), CtiTableRawPointHistory::getTempTableSchema(), "RPH", "RawPointHistory", "changeId" };
 
     unsigned rowsWritten = rowSources.size();
 

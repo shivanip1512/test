@@ -3,6 +3,8 @@
 #include "database_connection.h"
 #include "database_util.h"
 
+#include <boost/range/sub_range.hpp>
+
 namespace Cti {
 namespace Database {
 
@@ -16,15 +18,16 @@ public:
     std::set<long> writeRows(DatabaseConnection& conn, const std::vector<const RowSource*>&& rows) const;
 
 protected:
-    DatabaseBulkWriter(TempTableColumns tempTableSchema, const std::string &tempTableName, const std::string &destTableName);
+    DatabaseBulkWriter(const DbClientType clientType, TempTableColumns tempTableSchema, const std::string &tempTableName, const std::string &destTableName);
 
-    std::string getTempTableCreationSql(const DbClientType clientType) const;
-    std::string getTempTableTruncationSql(const DbClientType clientType) const;
-    std::string getInsertSql(const DbClientType clientType, size_t rows) const;
+    std::string getTempTableCreationSql() const;
+    std::string getTempTableTruncationSql() const;
+    std::string getInsertSql(size_t rows) const;
 
-    virtual std::string getFinalizeSql(const DbClientType clientType) const = 0;
+    virtual std::string getFinalizeSql() const = 0;
     virtual std::set<long> validateTemporaryRows(DatabaseConnection& conn) const;
     
+    const DbClientType _clientType;
     const TempTableColumns _schema;
     const std::string _tempTable, _destTable;
 };
@@ -33,10 +36,10 @@ template <size_t ColumnCount>
 class IM_EX_CTIBASE DatabaseBulkInserter : public DatabaseBulkWriter<ColumnCount>
 {
 public:
-    DatabaseBulkInserter(TempTableColumns schema, const std::string& tempTableName, const std::string& destTableName, const std::string& destIdColumn );
+    DatabaseBulkInserter(const DbClientType clientType, TempTableColumns schema, const std::string& tempTableName, const std::string& destTableName, const std::string& destIdColumn);
 
 protected:
-    std::string getFinalizeSql(const DbClientType clientType) const override;
+    std::string getFinalizeSql() const override;
 
 private:
     std::string _idColumn;
@@ -46,17 +49,19 @@ template <size_t ColumnCount>
 class IM_EX_CTIBASE DatabaseBulkUpdater : public DatabaseBulkWriter<ColumnCount>
 {
 public:
-    DatabaseBulkUpdater(TempTableColumns schema, const std::string& tempTableName, const std::string& destTableName, const std::string& destIdColumn );
+    DatabaseBulkUpdater(const DbClientType clientType, TempTableColumns schema, const std::string& tempTableName, const std::string& destTableName, const std::string& foreignKeyTableName);
 
 protected:
-    std::string getFinalizeSql(const DbClientType clientType) const override;
-    std::string getRejectedRowsSql(const DbClientType clientType) const;
-    std::string getDeleteRejectedRowsSql(const DbClientType clientType, std::set<long> rejectedRowSet) const;
+    std::string getFinalizeSql() const override;
+    std::string getRejectedRowsSql() const;
+    std::string getDeleteRejectedRowsSql(std::set<long> rejectedRowSet) const;
 
     std::set<long> validateTemporaryRows(DatabaseConnection & conn) const override;
 
 private:
-    std::string _idColumn;
+    const std::string _idColumn;
+    const boost::sub_range<const std::array<ColumnDefinition, ColumnCount>> _valueColumns;
+    const std::string _fkTable;
 };
 
 }
