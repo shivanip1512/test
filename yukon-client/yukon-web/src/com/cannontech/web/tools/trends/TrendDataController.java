@@ -34,6 +34,8 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.db.graph.GDSTypesFuncs;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.tools.trends.data.RenderType;
@@ -55,7 +57,8 @@ public class TrendDataController {
     @Autowired private TrendDataService trendDataService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private UserPreferenceService userPreferenceService;
-
+    @Autowired private GlobalSettingDao globalSettingDao;
+    
     private static final Logger log = YukonLogManager.getLogger(TrendDataController.class);
 
     /**
@@ -92,6 +95,7 @@ public class TrendDataController {
         DateTime chartDateLimit = DateTime.now();
         boolean hasCurrentDateBoundary = false;
         boolean showRightAxis = false;
+        boolean isTruncated = false;
         for (GraphDataSeries seriesItem : graphDataSeriesList) {
             TrendType itemType = TrendType.of(seriesItem.getType());
             log.info("TrendType:" + itemType.getGraphType() + " Graph Type:" + GDSTypesFuncs.getType(seriesItem.getType()));
@@ -129,6 +133,9 @@ public class TrendDataController {
                 plotLines.add(plotLineProperties);
                 yAxisProperties.put("plotLines", plotLines);
                 break;
+            }
+            if (globalSettingDao.getInteger(GlobalSettingType.TRENDS_READING_PER_POINT) == seriesItemResult.size()) {
+                isTruncated = true;
             }
             if (seriesData.isEmpty()) {
                 seriesProperties.put("error", graphDataStateMessage(GraphDataError.NO_TREND_DATA_AVAILABLE, userContext));
@@ -219,6 +226,13 @@ public class TrendDataController {
         Map<String, Object> json = new HashMap<>();
         json.put("name", trend.getName());
         json.put("series", seriesList);
+        if (isTruncated) {
+            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
+            String truncateMessage = accessor.getMessage("yukon.web.modules.tools.trends.truncateWarning");
+            json.put("truncateMessage", truncateMessage);
+        }
+        json.put("isTruncated", isTruncated);
+
         List<Map<String, Object>> yAxis = new ArrayList<>();
         ImmutableMap<String, ImmutableMap<String, String>> labels = ImmutableMap.of("style", ImmutableMap.of("color", "#555"));
         yAxisProperties.put("labels", labels);
