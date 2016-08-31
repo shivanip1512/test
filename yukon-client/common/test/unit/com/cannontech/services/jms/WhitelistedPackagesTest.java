@@ -56,7 +56,7 @@ public class WhitelistedPackagesTest {
         "com.cannontech.core.dynamic");
 
     static {
-        serializablePackages = ImmutableList.of("java.lang","javax.security","java.util","javax.jms","com.thoughtworks.xstream.mapper","org.joda","com.cannontech");
+        serializablePackages = ImmutableList.of("java.lang","javax.security","java.util","javax.jms","com.thoughtworks.xstream.mapper","org.joda","com.google.common.collect","com.cannontech");
     }
 
     @Before

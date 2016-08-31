@@ -22,11 +22,12 @@ public class AmqConnectionFactoryService {
 
     private ConnectionFactory connectionFactory;
     
-    static {
-        System.setProperty(
-            "org.apache.activemq.SERIALIZABLE_PACKAGES",
-            "java.lang,javax.security,java.util,javax.jms,com.thoughtworks.xstream.mapper,org.joda,com.cannontech");
-    }
+//  Set by YukonJmsConnectionFactory
+//    static {
+//        System.setProperty(
+//            "org.apache.activemq.SERIALIZABLE_PACKAGES",
+//            "java.lang,javax.security,java.util,javax.jms,com.thoughtworks.xstream.mapper,org.joda,com.cannontech");
+//    }
     // create a logger for instances of this class and its subclasses
     protected Logger logger = YukonLogManager.getLogger(this.getClass());
 

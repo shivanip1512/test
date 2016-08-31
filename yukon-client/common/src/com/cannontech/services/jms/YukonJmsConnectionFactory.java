@@ -32,7 +32,7 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
     static {
         System.setProperty(
             "org.apache.activemq.SERIALIZABLE_PACKAGES",
-            "java.lang,javax.security,java.util,javax.jms,com.thoughtworks.xstream.mapper,org.joda,com.cannontech");
+            "java.lang,javax.security,java.util,javax.jms,com.thoughtworks.xstream.mapper,org.joda,com.google.common.collect,com.cannontech");
     }
     
     @Autowired private ConfigurationSource configurationSource;
