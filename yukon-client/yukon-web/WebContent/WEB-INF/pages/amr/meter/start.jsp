@@ -40,6 +40,11 @@
                     <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
                         <ct:widget bean="systemActionsMenuWidget" />
                     </cti:checkRolesAndProperties>
+                    
+                    <c:if test="${showOverloadedGatewaysWidget}">
+                        <cti:msg2 key="yukon.web.widgets.overloadedGatewaysWidget.helpText" var="gatewayHelpText"/>
+                        <ct:widget bean="overloadedGatewaysWidget" helpText="${gatewayHelpText}"/>
+                    </c:if>
             </div>
         </div>
     </ct:widgetContainer>

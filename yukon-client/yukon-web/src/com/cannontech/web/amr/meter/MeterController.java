@@ -38,6 +38,7 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PointDao;
@@ -57,6 +58,8 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
+import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -83,12 +86,20 @@ public class MeterController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
-    
+    @Autowired private DataStreamingService dataStreamingService;
+
    
     private static final String baseKey = "yukon.web.modules.amr.meterSearchResults";
     
     @RequestMapping("start")
-    public String start() {
+    public String start(ModelMap model) {
+        List<RfnGateway> overloadedGateways = new ArrayList<>();
+        try {
+            overloadedGateways = dataStreamingService.getOverloadedGateways();
+        } catch (DataStreamingConfigException e) {}
+        
+        model.addAttribute("showOverloadedGatewaysWidget", overloadedGateways.size() > 0 ? true : false);
+        
         return "start.jsp";
     }
         

@@ -198,6 +198,26 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
     
     @Override
+    public List<RfnGateway> getOverloadedGateways() throws DataStreamingConfigException{
+        List<RfnGateway> overloadedGateways = new ArrayList<>();
+        
+        List<RfnGateway> allGateways = new ArrayList<>();
+        try {
+            allGateways.addAll(rfnGatewayService.getAllGatewaysWithData());
+            allGateways.forEach(gateway -> {
+                if (gateway.getData().getDataStreamingLoadingPercent() > 100) {
+                    overloadedGateways.add(gateway);
+                }
+            });
+        } catch (NmCommunicationException e) {
+            throw new DataStreamingConfigException("Communication error requesting gateway data from Network Manager.",
+                                                   e, "commsError");
+        }
+        
+        return overloadedGateways;
+    }
+    
+    @Override
     public List<SummarySearchResult> search(SummarySearchCriteria criteria) throws DataStreamingConfigException {
         log.debug(criteria);
         List<SummarySearchResult> results = new ArrayList<>();

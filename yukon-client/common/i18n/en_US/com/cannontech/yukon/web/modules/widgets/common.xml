@@ -97,6 +97,12 @@
 <entry key="yukon.web.widgetClasses.TrendWidget.noData">No data for selected period</entry>
 <entry key="yukon.web.widgetClasses.TrendWidget.showAll">Show All</entry>
 
+<entry key="yukon.web.widgets.overloadedGatewaysWidget">Gateway Streaming Capacity</entry>
+<entry key="yukon.web.widgets.overloadedGatewaysWidget.helpText"><![CDATA[
+        Lists gateways that are overloaded.
+        <br><br>Clicking on the gateway loading percentage will display a Data Streaming Summary for the selected gateway.
+]]></entry>
+<entry key="yukon.web.widgetClasses.OverloadedGatewaysWidget.streamingDetail">View Data Streaming Summary</entry>
 
 
 </properties>

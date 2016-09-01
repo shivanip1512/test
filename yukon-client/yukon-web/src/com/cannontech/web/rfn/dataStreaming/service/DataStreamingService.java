@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
@@ -129,4 +130,13 @@ public interface DataStreamingService {
      *         Manager.
      */
     DataStreamingConfigResult accept(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException;
+
+    /**
+     * Gets any overloaded gateways
+     * 
+     * @return the list of overloaded gateways
+     * @throws DataStreamingConfigException if there is a communication error requesting information from Network
+     *         Manager.
+     */
+    List<RfnGateway> getOverloadedGateways() throws DataStreamingConfigException;
 }
