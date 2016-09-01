@@ -12,15 +12,15 @@
 
 <%-- Form action will vary, depending on what type of program is being activated --%>
 <c:choose>
-	<c:when test="${isAdjust}">
+    <c:when test="${isAdjust}">
        <cti:url var="url" value="/dr/cc/program/${event.programId}/event/${event.adjustEventId}/completeEventAdjustment"/>
     </c:when>
-	<c:when test="${event.eventType.economic}">
-	    <cti:url var="url" value="/dr/cc/program/${event.programId}/pricing"/>
-	</c:when>
-	<c:otherwise>
-	   <cti:url var="url" value="/dr/cc/program/${event.programId}/groupSelection"/>
-	</c:otherwise>
+    <c:when test="${event.eventType.economic}">
+        <cti:url var="url" value="/dr/cc/program/${event.programId}/pricing"/>
+    </c:when>
+    <c:otherwise>
+       <cti:url var="url" value="/dr/cc/program/${event.programId}/groupSelection"/>
+    </c:otherwise>
 </c:choose>
 
 
@@ -29,49 +29,50 @@
     
     <tags:nameValueContainer2>
         <form:hidden path="eventType"/>
-        <form:hidden path="programId"/>
         <form:hidden path="initialEventId"/>
-        <form:hidden path="adjustEventId"/>
+        <c:if test="${isAdjust}">
+            <form:hidden path="adjustEventId"/>
+        </c:if>
         
         <%-- Start and notification times --%>
         <c:if test="${not event.eventExtension}">
-	        <c:set var="eventType" value="${event.eventType}"/>
-	        <c:if test="${eventType.notification or eventType.economic}">
-		        <tags:nameValue2 nameKey=".notificationTime">
-		            <dt:dateTime path="notificationTime"/>
-		        </tags:nameValue2>
-		    </c:if>
-		    <tags:nameValue2 nameKey=".startTime">
-		        <dt:dateTime path="startTime"/>
-		    </tags:nameValue2>
-	    </c:if>
-	    
-	    <%-- For extensions, the notification and start times are not editable. --%>
-	    <c:if test="${event.eventExtension}">
-	        <tags:nameValue2 nameKey=".notificationTime">
-	            <cti:formatDate value="${event.notificationTime}" type="FULL"/>
-	        </tags:nameValue2>
-	        <tags:nameValue2 nameKey=".startTime">
+            <c:set var="eventType" value="${event.eventType}"/>
+            <c:if test="${eventType.notification or eventType.economic}">
+                <tags:nameValue2 nameKey=".notificationTime">
+                    <dt:dateTime path="notificationTime"/>
+                </tags:nameValue2>
+            </c:if>
+            <tags:nameValue2 nameKey=".startTime">
+                <dt:dateTime path="startTime"/>
+            </tags:nameValue2>
+        </c:if>
+        
+        <%-- For extensions, the notification and start times are not editable. --%>
+        <c:if test="${event.eventExtension}">
+            <tags:nameValue2 nameKey=".notificationTime">
+                <cti:formatDate value="${event.notificationTime}" type="FULL"/>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".startTime">
                 <cti:formatDate value="${event.startTime}" type="FULL"/>
             </tags:nameValue2>
-	        <form:hidden path="startTime"/>
-	        <form:hidden path="notificationTime"/>
-	    </c:if>
-	    
-	    <%-- Duration --%>
-	    <c:if test="${eventType.accounting or eventType.notification}">
-	        <tags:nameValue2 nameKey=".duration">
-	            <tags:input path="duration"/>
-	        </tags:nameValue2>
-	    </c:if>
-	    
-	    <%-- Reason / Message --%>
-	    <c:if test="${eventType.accounting}">
-	       <tags:nameValue2 nameKey=".reason">
-	           <tags:input path="message"/>
-	       </tags:nameValue2>
-	    </c:if>
-	    <c:if test="${eventType.notification}">
+            <form:hidden path="startTime"/>
+            <form:hidden path="notificationTime"/>
+        </c:if>
+        
+        <%-- Duration --%>
+        <c:if test="${eventType.accounting or eventType.notification}">
+            <tags:nameValue2 nameKey=".duration">
+                <tags:input path="duration"/>
+            </tags:nameValue2>
+        </c:if>
+        
+        <%-- Reason / Message --%>
+        <c:if test="${eventType.accounting}">
+           <tags:nameValue2 nameKey=".reason">
+               <tags:input path="message"/>
+           </tags:nameValue2>
+        </c:if>
+        <c:if test="${eventType.notification}">
            <tags:nameValue2 nameKey=".message">
                <tags:input path="message"/>
            </tags:nameValue2>
