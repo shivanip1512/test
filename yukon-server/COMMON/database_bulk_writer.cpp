@@ -209,12 +209,7 @@ std::set<long> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& co
     }
     catch( DatabaseException & ex )
     {
-        CTILOG_EXCEPTION_ERROR(dout, ex, "Unable to select rows rejected on insert into " << _destTable << ":\n" <<
-            boost::join(rows |
-                boost::adaptors::indirected |
-                boost::adaptors::transformed(
-                    [](const Cti::Loggable &obj) {
-                        return obj.toString(); }), "\n"));
+        CTILOG_EXCEPTION_ERROR(dout, ex, "Unable to select rows rejected on insert into " << _destTable);
     }
 
     return rejectedRows;
