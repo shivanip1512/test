@@ -16,6 +16,7 @@ public class DeviceUnsupported {
     private String detail;
     private DeviceCollection deviceCollection;
     private MessageSourceAccessor accessor;
+    private boolean allAttributes;
     
     public List<Integer> getDeviceIds() {
         return deviceIds;
@@ -33,9 +34,10 @@ public class DeviceUnsupported {
         this.accessor = accessor;
     }
     public String getDetail() {
+        String allAttributesText = accessor.getMessage(nameKey + "AnyAttributes");
         List<String> attList = new ArrayList<String>();
         getAttributes().forEach(attribute -> attList.add(attribute.getDescription()));
-        detail = accessor.getMessage(nameKey, deviceIds.size(), String.join(", ", attList));
+        detail = accessor.getMessage(nameKey, deviceIds.size(), allAttributes ? allAttributesText : String.join(", ", attList));
         return detail;
     }
     public void setDetail(String detail) {
@@ -46,5 +48,11 @@ public class DeviceUnsupported {
     }
     public void setDeviceCollection(DeviceCollection deviceCollection) {
         this.deviceCollection = deviceCollection;
+    }
+    public boolean getAllAttributes() {
+        return allAttributes;
+    }
+    public void setAllAttributes(boolean allAttributes) {
+        this.allAttributes = allAttributes;
     }
 }

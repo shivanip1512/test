@@ -132,9 +132,14 @@ public class DataStreamingController {
         List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
 
+        long attCount = modelConfig.getAttributes().stream().filter(attribute -> attribute.getAttributeOn()).count();
+                                                                 
         VerificationInformation verifyInfo = dataStreamingService.verifyConfiguration(configId, deviceIds);
         verifyInfo.setConfiguration(modelConfig);
         verifyInfo.getDeviceUnsupported().forEach(device -> {
+            if (device.getAttributes().size() == attCount) {
+                device.setAllAttributes(true);
+            }
             device.setDeviceCollection(dcProducer.createDeviceCollection(device.getDeviceIds(), null));
             device.setAccessor(accessor);
         });
