@@ -22,6 +22,8 @@ import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.amr.meter.search.service.MeterSearchService;
 import com.cannontech.common.bulk.collection.DeviceFilterCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -87,6 +89,7 @@ public class MeterController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
     @Autowired private DataStreamingService dataStreamingService;
+    @Autowired private ConfigurationSource configurationSource;
 
    
     private static final String baseKey = "yukon.web.modules.amr.meterSearchResults";
@@ -230,7 +233,8 @@ public class MeterController {
         
         /** Other Device Properties */
         boolean configurableDevice = !deviceConfigDao.getAllConfigurationsByType(type).isEmpty();
-        boolean streamableDevice = !dataStreamingAttributeHelper.getSupportedAttributes(type).isEmpty();
+        boolean dataStreamingEnabled = configurationSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
+        boolean streamableDevice = dataStreamingEnabled && !dataStreamingAttributeHelper.getSupportedAttributes(type).isEmpty();
         boolean outageSupported = outageDevice && (outageLogAttribute || blinkCountAttribute);
         // Device has internal disconnect or a disconnect collar attached
         boolean disconnectDevice = disconnectService.supportsDisconnect(Collections.singleton(device), true);
