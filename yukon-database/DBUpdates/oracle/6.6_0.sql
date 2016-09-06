@@ -604,6 +604,10 @@ ALTER TABLE DYNAMICPOINTDISPATCH DROP (STALECOUNT, LastAlarmLogID);
 GO
 /* End YUK-15729 */
 
+/* Start YUK-15723*/
+UPDATE jobstatus SET message=' ' WHERE message IS null;
+/* End YUK-15723*/
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

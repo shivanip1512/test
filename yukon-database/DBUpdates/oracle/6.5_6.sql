@@ -88,6 +88,9 @@ INSERT INTO DeviceTypeCommand VALUES (-1227, -197, 'RFN-530S4eRT', 5, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1228, -198, 'RFN-530S4eRT', 6, 'Y', -1);
 /* End YUK-15502 */
 
+/* Start YUK-15723*/
+UPDATE jobstatus SET message=' ' WHERE message IS null;
+/* End YUK-15723*/
 
 /**************************************************************/
 /* VERSION INFO                                               */
