@@ -23,6 +23,7 @@
 #define WEB_NAME        "YukonWebApplicationService"
 #define NOTIF_NAME      "YukonNotificationServer"
 #define SM_NAME         "YukonServiceMgr"
+#define BROKER_NAME     "YukonMessageBroker"
 
 //---------------------------------------------------------------------------
 // The Installed event is sent after the feature Notification Server
@@ -116,6 +117,34 @@ begin
     //remove the Tomcat service
     ServiceRemoveService(WEB_NAME);
 end;
+
+
+//---------------------------------------------------------------------------
+// The Installed event is sent after the feature Yukon Message Broker
+// is installed.
+//--------------------------------------------------------------------------- 
+export prototype YukonMessageBroker_Installed();
+function YukonMessageBroker_Installed()
+string sProg, sCMD, svDir;
+begin
+	//Install as a service
+	sProg = "cmd.exe";
+	sCMD = "/c java -jar " + TARGETDIR ^ "\\Client\\bin\\wrapper.jar" + " -i " + TARGETDIR ^ "\\Client\\bin\\yukonmessagebroker.conf";
+	svDir = TARGETDIR + "\\Runtime\\bin";
+	LaunchApplication(sProg, sCMD, svDir, SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+end;
+
+//---------------------------------------------------------------------------
+// The UnInstalling event is sent just before the feature Yukon Message Broker 
+// is uninstalled.
+//--------------------------------------------------------------------------- 
+export prototype YukonMessageBroker_UnInstalling();
+function YukonMessageBroker_UnInstalling()
+begin
+    //remove the Yukon Message Broker Service
+    ServiceRemoveService(BROKER_NAME);
+end;
+
 
 //---------------------------------------------------------------------------
 // The Installed event is sent after the feature Yukon Service Manager

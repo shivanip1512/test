@@ -1,4 +1,4 @@
-package com.cannontech.services.jms;
+package com.cannontech.message.service;
 
 import java.lang.management.GarbageCollectorMXBean;
 import java.util.List;
@@ -83,7 +83,7 @@ public class BrokerServiceMonitor extends Thread implements NotificationListener
                     MemoryUsage usage = dest.getMemoryUsage();
                     DestinationStatistics stat = dest.getDestinationStatistics();
 
-                    if (usage.getUsage() > 0 && aMQdest.isTemporary())
+                    if (aMQdest.isTemporary())
                     {
                         log.info(aMQdest.getQualifiedName() + ":" +
                                  "Enque=" + stat.getEnqueues().getCount() +

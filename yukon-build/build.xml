@@ -168,6 +168,7 @@
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonSetup.ico"/>
             <fileset file="${basedir}/yukon-install/resources/shortcut_icons/YukonLogin.ico"/>
             <fileset dir="${basedir}/yukon-client/services/conf"/>
+            <fileset dir="${basedir}/yukon-client/yukon-message-broker/conf"/>
             <fileset dir="${basedir}/yukon-client/sensus-jms/conf"/>
         </copy>
         

@@ -69,4 +69,17 @@
             <ref bean="com.cannontech.context.common"/>
         </constructor-arg>
     </bean>
+    
+    <bean id="com.cannontech.context.broker"
+          class="org.springframework.context.support.ClassPathXmlApplicationContext" lazy-init="true">
+        <constructor-arg index="0">
+            <list merge="true">
+                <value>com/cannontech/broker/applicationContext.xml</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg index="1" value="true"/>
+        <constructor-arg index="2">
+            <ref bean="com.cannontech.context.common"/>
+        </constructor-arg>
+    </bean>
 </beans>

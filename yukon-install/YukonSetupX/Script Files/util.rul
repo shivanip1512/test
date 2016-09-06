@@ -10,6 +10,7 @@
 #define WEB_NAME		"YukonWebApplicationService"
 #define NOTIF_NAME		"YukonNotificationServer"
 #define SM_NAME			"YukonServiceMgr"
+#define BROKER_NAME     "YukonMessageBroker"
 #define SYS32			"C:\\WINDOWS\\System32\\"
 #define TOMCAT_REG_KEY	"SOFTWARE\\Wow6432Node\\Apache Software Foundation\\Procrun 2.0\\YukonWebApplicationService\\Parameters\\Java"
 #define JVM_MX			"JvmMx"
@@ -21,7 +22,7 @@
 #include "BackupSelectionDialog.rul"
 
 //global variable used to store service settings across the upgrade process
-string sServiceSettings(11);
+string sServiceSettings(12);
 number nTomcatSettingsExist;
 
 //-------------------------------------------------------
@@ -32,8 +33,8 @@ export prototype void PopulateServiceNameList(BYREF VARIANT); //array parameters
 function void PopulateServiceNameList(sServiceNameArray) //be prototyped as VARIANT
 begin
 	//if the array is too small, increase the size
-	if(SizeOf(sServiceNameArray) < 11) then
-		Resize(sServiceNameArray, 11);
+	if(SizeOf(sServiceNameArray) < 12) then
+		Resize(sServiceNameArray, 12);
 	endif;
 	//populate
 	sServiceNameArray(0) = SCANNER_NAME;
@@ -47,6 +48,7 @@ begin
 	sServiceNameArray(8) = WEB_NAME;
 	sServiceNameArray(9) = NOTIF_NAME;
 	sServiceNameArray(10) = SM_NAME;
+	sServiceNameArray(11) = BROKER_NAME;
 end;
 
 //-------------------------------------------------------
@@ -57,7 +59,7 @@ end;
 export prototype void SaveServiceSettings();
 function void SaveServiceSettings()
 number i, nType, nSize, nResult;
-string sServiceNameArray(11), sRegKey, sKeyValue;
+string sServiceNameArray(12), sRegKey, sKeyValue;
 begin
 	PopulateServiceNameList(sServiceNameArray);
 	RegDBSetDefaultRoot(HKEY_LOCAL_MACHINE);
@@ -82,7 +84,7 @@ end;
 export prototype void LoadServiceSettings();
 function void LoadServiceSettings()
 number i, nResult;
-string sServiceNameArray(11), sRegKey, sTemp;
+string sServiceNameArray(12), sRegKey, sTemp;
 BOOL bEntryFound;
 begin
 	PopulateServiceNameList(sServiceNameArray);
@@ -214,7 +216,7 @@ end;
 //-------------------------------------------------------
 export prototype BOOL AreYukonServicesRunning();
 function BOOL AreYukonServicesRunning()
-string sServiceNameArray(11);
+string sServiceNameArray(12);
 number i, nServiceState; 
 begin
 	PopulateServiceNameList(sServiceNameArray);
@@ -283,7 +285,7 @@ end;
 //---------------------------------------------------
 export prototype StartYukonServices(BOOL);
 function StartYukonServices(bStart)
-string sServiceNameArray(11);
+string sServiceNameArray(12);
 string sCMD;
 number i;
 begin

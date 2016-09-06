@@ -88,14 +88,6 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
             default: 
             case NORMAL: {
                 final String applicationName = BootstrapUtils.getApplicationName();
-    
-                if (applicationName.equals("ServiceManager")) {
-                    ServerEmbeddedBroker serverEmbeddedBroker =
-                            new ServerEmbeddedBroker(applicationName, serverListenConnection);
-                    serverEmbeddedBroker.start();
-                    log.info("created ServiceManager ConnectionFactory at " + serverListenConnection);
-                    return serverEmbeddedBroker.getConnectionFactory();
-                } 
                 if (!CtiUtilities.isRunningAsClient()) {
                     String clientBrokerConnection = 
                             configurationSource.getString(JMS_CLIENT_BROKER_CONNECTION, serverListenConnection);

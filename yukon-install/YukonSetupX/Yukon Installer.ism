@@ -122,6 +122,7 @@
 		<row><td>Log Config Files</td><td>{EF25096A-11B1-4303-8F1F-832FA2491155}</td><td>CONFIG</td><td>16</td><td/><td/><td>10769</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>MACS</td><td>{5C3D4FD9-B0F5-4A89-BBE8-1C5E5E05C074}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Master Config Example</td><td>{1689C282-6025-4B5B-97A9-90A18AF2E99E}</td><td>SERVER</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
+		<row><td>Message Broker</td><td>{49105FC9-2898-4EBF-BC18-3407E79CAE59}</td><td>BIN</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Notification Server</td><td>{BC8B8EFC-7A48-4A1E-93F5-393346B8C3F5}</td><td>BIN</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Porter</td><td>{B8FD7DEA-72DB-4128-B0C6-75799D04F69F}</td><td>BIN1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
 		<row><td>Prophecy Examples</td><td>{CDF3ADD9-37CB-4123-BDDE-BE0B9B7A7E01}</td><td>PROPHECY_EXAMPLES1</td><td>0</td><td/><td/><td>2577</td><td/><td/><td/><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td><td>/LogFile=</td></row>
@@ -418,6 +419,7 @@
 		<row><td>{CADF0B39-0005-47B0-A36A-33F801BE5E88}</td><td>{37AA5718-AAED-4365-BC7A-BF934E7C0DDE}</td><td>##IDS_FEATURE_DISPLAY_NAME24##</td><td>##ID_STRING23##</td><td>17</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Enterprise Integration Module</td></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>##IDS_FEATURE_DISPLAY_NAME7##</td><td>##ID_STRING17##</td><td>15</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Commander</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td/><td>##IDS_FEATURE_DISPLAY_NAME5##</td><td>##ID_STRING15##</td><td>5</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Yukon Client</td></row>
+		<row><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##ID_STRING20##</td><td>##ID_STRING41##</td><td>37</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Message Broker</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>{461D2490-036C-4FBE-B04A-7B82E9AF225F}</td><td>##IDS_FEATURE_DISPLAY_NAME21##</td><td>##ID_STRING13##</td><td>31</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Notification</td></row>
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>##IDS_FEATURE_DISPLAY_NAME11##</td><td>##ID_STRING21##</td><td>23</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Alarm Monitor</td></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>##IDS_FEATURE_DISPLAY_NAME8##</td><td>##ID_STRING18##</td><td>17</td><td>1</td><td>TARGETDIR</td><td>0</td><td/><td/><td/><td>Tabular Data Console</td></row>
@@ -529,6 +531,7 @@
 		<row><td>Log Config Files</td><td/><td/><td>_A70697BB_CF24_40EA_8ECA_E9EED0ADC95C_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>MACS</td><td/><td/><td>_B78E3D9A_FF75_4D46_9A1D_C909B84E0DEB_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Master Config Example</td><td/><td/><td>_0242FBC7_FEA6_4EC9_B30E_9D4BFEC9326F_FILTER</td><td/><td/><td/><td/></row>
+		<row><td>Message Broker</td><td/><td/><td>_7103DADA_63F6_4CB9_BF72_D107BC09CA22_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Notification Server</td><td/><td/><td>_4274A564_BCFD_4951_A85D_FC8757BB4CEE_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Porter</td><td/><td/><td>_5BCE3934_3F7C_4B35_B0D1_16362F9F7EA4_FILTER</td><td/><td/><td/><td/></row>
 		<row><td>Prophecy Examples</td><td/><td/><td>_59AC7133_7039_4C7D_805E_25316EE84B3D_FILTER</td><td/><td/><td/><td/></row>
@@ -605,6 +608,7 @@
 		<row><td>Log Config Files</td><td>&lt;PATH_TO_LOG_CONFIG_FILES&gt;</td><td>1</td><td>*.*</td><td/><td>0</td></row>
 		<row><td>MACS</td><td>&lt;PATH_TO_SERVER_BIN_FILES&gt;</td><td>1</td><td>macs.exe</td><td/><td>0</td></row>
 		<row><td>Master Config Example</td><td>&lt;PATH_TO_MASTER_CFG_EXAMPLE&gt;</td><td>1</td><td>*.*</td><td/><td>2</td></row>
+		<row><td>Message Broker</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;\Client\bin</td><td>1</td><td>yukonmessagebroker.conf</td><td/><td>0</td></row>
 		<row><td>Notification Server</td><td>&lt;PATH_TO_WRAPPER_FILES&gt;\Client\bin</td><td>1</td><td>notifserver.conf</td><td/><td>0</td></row>
 		<row><td>Porter</td><td>&lt;PATH_TO_SERVER_BIN_FILES&gt;</td><td>1</td><td>porter.exe</td><td/><td>0</td></row>
 		<row><td>Prophecy Examples</td><td>&lt;PATH_TO_EXTRAS_FILES&gt;\Prophecy Examples</td><td>1</td><td>*.*</td><td/><td>0</td></row>
@@ -650,6 +654,7 @@
 		<row><td>{CADF0B39-0005-47B0-A36A-33F801BE5E88}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING43##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING38##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING69##</td><td>36</td><td/><td/><td/></row>
+		<row><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td><td/><td>YukonMessageBroker_Installed</td><td/><td>YukonMessageBroker_UnInstalling</td><td/><td/><td/><td>##ID_STRING62##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td/><td>NotificationServer_Installed</td><td>NotificationServer_UnInstalling</td><td/><td/><td/><td/><td>##ID_STRING35##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING42##</td><td>36</td><td/><td/><td/></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td/><td/><td/><td/><td/><td/><td/><td>##ID_STRING39##</td><td>36</td><td/><td/><td/></row>
@@ -951,6 +956,7 @@
 		<row><td>{B5BF87E8-FF15-40CF-9003-838D672C71C8}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 		<row><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
+		<row><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
 		<row><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td><td>{7E0C5FC7-B54D-4F6D-8D1A-0946CFF2CE2E}</td></row>
@@ -1129,6 +1135,7 @@
 		<row><td>Complete</td><td>{CADF0B39-0005-47B0-A36A-33F801BE5E88}</td></row>
 		<row><td>Complete</td><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td></row>
 		<row><td>Complete</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td></row>
+		<row><td>Complete</td><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td></row>
 		<row><td>Complete</td><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td></row>
 		<row><td>Complete</td><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td></row>
 		<row><td>Complete</td><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td></row>
@@ -1151,6 +1158,7 @@
 		<row><td>Custom</td><td>{CADF0B39-0005-47B0-A36A-33F801BE5E88}</td></row>
 		<row><td>Custom</td><td>{CAEEBC8B-716D-4DC2-A248-89CA71879A6B}</td></row>
 		<row><td>Custom</td><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td></row>
+		<row><td>Custom</td><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td></row>
 		<row><td>Custom</td><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td></row>
 		<row><td>Custom</td><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td></row>
 		<row><td>Custom</td><td>{FB279D35-43A8-441C-8B56-F98EC5504F2F}</td></row>
@@ -1324,13 +1332,14 @@
 		<row><td>ID_STRING11</td><td>1033</td><td>Runs demand response operations based on data gathered by the system.</td><td>0</td><td/><td>-1516384245</td></row>
 		<row><td>ID_STRING12</td><td>1033</td><td>Yukon web server.</td><td>0</td><td/><td>-1516435413</td></row>
 		<row><td>ID_STRING13</td><td>1033</td><td>Schedules and sends email and voice notifications.</td><td>0</td><td/><td>-1516400597</td></row>
-		<row><td>ID_STRING14</td><td>1033</td><td>Runs general Yukon services including the primary message broker, monitors, validation processing, and other utilities.</td><td>0</td><td/><td>1302257129</td></row>
+		<row><td>ID_STRING14</td><td>1033</td><td>Runs general Yukon services, monitors, validation processing, and other utilities.</td><td>0</td><td/><td>-1004227791</td></row>
 		<row><td>ID_STRING15</td><td>1033</td><td>The Yukon clients are interfaces between the user and the Yukon system.  These selections affect which clients are available on the local machine and do not affect clients launched through the Yukon webpage.</td><td>0</td><td/><td>1176325225</td></row>
 		<row><td>ID_STRING16</td><td>1033</td><td>View, create or modify objects in the Yukon database.</td><td>0</td><td/><td>-1516416789</td></row>
 		<row><td>ID_STRING17</td><td>1033</td><td>Send real-time commands to field devices.</td><td>0</td><td/><td>-1516386069</td></row>
 		<row><td>ID_STRING18</td><td>1033</td><td>Interface for demand response, MAC schedules, alarms and custom data views.</td><td>0</td><td/><td>-1516433109</td></row>
 		<row><td>ID_STRING19</td><td>1033</td><td>Create and view graphical representations of stored data from the Yukon database.</td><td>0</td><td/><td>-1516392149</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>The Yukon services process and communicate data between the Yukon clients, database, and field devices.</td><td>0</td><td/><td>-1516390742</td></row>
+		<row><td>ID_STRING20</td><td>1033</td><td>Message Broker</td><td>0</td><td/><td>212088848</td></row>
 		<row><td>ID_STRING21</td><td>1033</td><td>Lightweight alarm monitoring notifier that runs in the windows system tray.</td><td>0</td><td/><td>-1516433013</td></row>
 		<row><td>ID_STRING22</td><td>1033</td><td>Additional modules for specialized needs.</td><td>0</td><td/><td>-1516377717</td></row>
 		<row><td>ID_STRING23</td><td>1033</td><td>Files related to the Yukon EIM application programming interface.</td><td>0</td><td/><td>-1516408373</td></row>
@@ -1353,6 +1362,7 @@
 		<row><td>ID_STRING39</td><td>1033</td><td>Tabular Data Console</td><td>0</td><td/><td>1176313065</td></row>
 		<row><td>ID_STRING4</td><td>1033</td><td>Controls communication channel and field hardware communications.</td><td>0</td><td/><td>-1516421366</td></row>
 		<row><td>ID_STRING40</td><td>1033</td><td>Trending</td><td>0</td><td/><td>1176319209</td></row>
+		<row><td>ID_STRING41</td><td>1033</td><td>Runs primary message broker</td><td>0</td><td/><td>-1272662445</td></row>
 		<row><td>ID_STRING42</td><td>1033</td><td>Alarm Monitor</td><td>0</td><td/><td>1176329449</td></row>
 		<row><td>ID_STRING43</td><td>1033</td><td>Enterprise Integration Module</td><td>0</td><td/><td>1176343785</td></row>
 		<row><td>ID_STRING44</td><td>1033</td><td>Prophecy IVR Examples</td><td>0</td><td/><td>1176349929</td></row>
@@ -1375,6 +1385,7 @@
 		<row><td>ID_STRING6</td><td>1033</td><td>Collects real-time and interval data from a list of devices.</td><td>0</td><td/><td>-1516390614</td></row>
 		<row><td>ID_STRING60</td><td>1033</td><td>Tabular Data Console</td><td>0</td><td/><td>-1113739986</td></row>
 		<row><td>ID_STRING61</td><td>1033</td><td>Trending</td><td>0</td><td/><td>-1113748114</td></row>
+		<row><td>ID_STRING62</td><td>1033</td><td>Message Broker</td><td>0</td><td/><td>212097040</td></row>
 		<row><td>ID_STRING63</td><td>1033</td><td>Alarm Monitor</td><td>0</td><td/><td>-1113753778</td></row>
 		<row><td>ID_STRING64</td><td>1033</td><td>http://www.eaton.com/cooperpowerseries</td><td>0</td><td/><td>-207405782</td></row>
 		<row><td>ID_STRING65</td><td>1033</td><td>1.800.815.2258</td><td>0</td><td/><td>-1113775696</td></row>
