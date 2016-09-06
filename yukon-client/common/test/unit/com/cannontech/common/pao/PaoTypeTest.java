@@ -147,6 +147,7 @@ public class PaoTypeTest {
                             PaoType.RTUWELCO,
                             PaoType.LM_GROUP_DIGI_SEP,
                             PaoType.LM_GROUP_ECOBEE,
+                            PaoType.LM_GROUP_HONEYWELL,
                             PaoType.LM_GROUP_EMETCON,
                             PaoType.LM_GROUP_EXPRESSCOMM,
                             PaoType.LM_GROUP_RFN_EXPRESSCOMM,
@@ -164,6 +165,7 @@ public class PaoTypeTest {
                             PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                             PaoType.LM_SEP_PROGRAM,
                             PaoType.LM_ECOBEE_PROGRAM,
+                            PaoType.LM_HONEYWELL_PROGRAM,
                             PaoType.LM_CONTROL_AREA,
                             PaoType.LM_SCENARIO,
                             PaoType.CAPBANK,
@@ -355,6 +357,7 @@ public class PaoTypeTest {
                         PaoType.RTUWELCO,
                         PaoType.LM_GROUP_DIGI_SEP,
                         PaoType.LM_GROUP_ECOBEE,
+                        PaoType.LM_GROUP_HONEYWELL,
                         PaoType.LM_GROUP_EMETCON,
                         PaoType.LM_GROUP_EXPRESSCOMM,
                         PaoType.LM_GROUP_RFN_EXPRESSCOMM,
@@ -372,6 +375,7 @@ public class PaoTypeTest {
                         PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
+                        PaoType.LM_HONEYWELL_PROGRAM,
                         PaoType.LM_CONTROL_AREA,
                         PaoType.LM_SCENARIO,
                         PaoType.CAPBANK,
@@ -418,7 +422,11 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_3,
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
-                        PaoType.GWY800);
+                        PaoType.GWY800,
+                        PaoType.HONEYWELL_9000,
+                        PaoType.HONEYWELL_FOCUSPRO,
+                        PaoType.HONEYWELL_THERMOSTAT,
+                        PaoType.HONEYWELL_VISIONPRO_8000);
 
     private static final ImmutableSet<PaoType> nonMeterTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -459,6 +467,7 @@ public class PaoTypeTest {
                         PaoType.RTUWELCO,
                         PaoType.LM_GROUP_DIGI_SEP,
                         PaoType.LM_GROUP_ECOBEE,
+                        PaoType.LM_GROUP_HONEYWELL,
                         PaoType.LM_GROUP_EMETCON,
                         PaoType.LM_GROUP_EXPRESSCOMM,
                         PaoType.LM_GROUP_RFN_EXPRESSCOMM,
@@ -476,6 +485,7 @@ public class PaoTypeTest {
                         PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
+                        PaoType.LM_HONEYWELL_PROGRAM,
                         PaoType.LM_CONTROL_AREA,
                         PaoType.LM_SCENARIO,
                         PaoType.CAPBANK,
@@ -537,7 +547,11 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
                         PaoType.GWY800,
-                        PaoType.RFN_1200);
+                        PaoType.RFN_1200,
+                        PaoType.HONEYWELL_9000,
+                        PaoType.HONEYWELL_FOCUSPRO,
+                        PaoType.HONEYWELL_THERMOSTAT,
+                        PaoType.HONEYWELL_VISIONPRO_8000);
 
     private static final ImmutableSet<PaoType> nonMctTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -639,6 +653,7 @@ public class PaoTypeTest {
                         PaoType.RTUWELCO,
                         PaoType.LM_GROUP_DIGI_SEP,
                         PaoType.LM_GROUP_ECOBEE,
+                        PaoType.LM_GROUP_HONEYWELL,
                         PaoType.LM_GROUP_EMETCON,
                         PaoType.LM_GROUP_EXPRESSCOMM,
                         PaoType.LM_GROUP_RFN_EXPRESSCOMM,
@@ -656,6 +671,7 @@ public class PaoTypeTest {
                         PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
+                        PaoType.LM_HONEYWELL_PROGRAM,
                         PaoType.LM_CONTROL_AREA,
                         PaoType.LM_SCENARIO,
                         PaoType.CAPBANK,
@@ -716,7 +732,11 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_3,
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
-                        PaoType.GWY800);
+                        PaoType.GWY800,
+                        PaoType.HONEYWELL_9000,
+                        PaoType.HONEYWELL_FOCUSPRO,
+                        PaoType.HONEYWELL_THERMOSTAT,
+                        PaoType.HONEYWELL_VISIONPRO_8000);
 
     private static final ImmutableSet<PaoType> nonIedTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -829,6 +849,7 @@ public class PaoTypeTest {
                         PaoType.RTUWELCO,
                         PaoType.LM_GROUP_DIGI_SEP,
                         PaoType.LM_GROUP_ECOBEE,
+                        PaoType.LM_GROUP_HONEYWELL,
                         PaoType.LM_GROUP_EMETCON,
                         PaoType.LM_GROUP_EXPRESSCOMM,
                         PaoType.LM_GROUP_RFN_EXPRESSCOMM,
@@ -846,6 +867,7 @@ public class PaoTypeTest {
                         PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
+                        PaoType.LM_HONEYWELL_PROGRAM,
                         PaoType.LM_CONTROL_AREA,
                         PaoType.LM_SCENARIO,
                         PaoType.CAPBANK,
@@ -906,7 +928,11 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_3,
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
-                        PaoType.GWY800);
+                        PaoType.GWY800,
+                        PaoType.HONEYWELL_9000,
+                        PaoType.HONEYWELL_FOCUSPRO,
+                        PaoType.HONEYWELL_THERMOSTAT,
+                        PaoType.HONEYWELL_VISIONPRO_8000);
 
     private static final ImmutableSet<PaoType> nonRtuTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -1035,6 +1061,7 @@ public class PaoTypeTest {
                         PaoType.ION_7330,
                         PaoType.LM_GROUP_DIGI_SEP,
                         PaoType.LM_GROUP_ECOBEE,
+                        PaoType.LM_GROUP_HONEYWELL,
                         PaoType.LM_GROUP_EMETCON,
                         PaoType.LM_GROUP_EXPRESSCOMM,
                         PaoType.LM_GROUP_RFN_EXPRESSCOMM,
@@ -1052,6 +1079,7 @@ public class PaoTypeTest {
                         PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
+                        PaoType.LM_HONEYWELL_PROGRAM,
                         PaoType.LM_CONTROL_AREA,
                         PaoType.LM_SCENARIO,
                         PaoType.CAPBANK,
@@ -1112,7 +1140,11 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_3,
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
-                        PaoType.GWY800);
+                        PaoType.GWY800,
+                        PaoType.HONEYWELL_9000,
+                        PaoType.HONEYWELL_FOCUSPRO,
+                        PaoType.HONEYWELL_THERMOSTAT,
+                        PaoType.HONEYWELL_VISIONPRO_8000);
 
     private static final ImmutableSet<PaoType> nonPortTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -1246,6 +1278,7 @@ public class PaoTypeTest {
                         PaoType.RTUWELCO,
                         PaoType.LM_GROUP_DIGI_SEP,
                         PaoType.LM_GROUP_ECOBEE,
+                        PaoType.LM_GROUP_HONEYWELL,
                         PaoType.LM_GROUP_EMETCON,
                         PaoType.LM_GROUP_EXPRESSCOMM,
                         PaoType.LM_GROUP_RFN_EXPRESSCOMM,
@@ -1263,6 +1296,7 @@ public class PaoTypeTest {
                         PaoType.LM_ENERGY_EXCHANGE_PROGRAM,
                         PaoType.LM_SEP_PROGRAM,
                         PaoType.LM_ECOBEE_PROGRAM,
+                        PaoType.LM_HONEYWELL_PROGRAM,
                         PaoType.LM_CONTROL_AREA,
                         PaoType.LM_SCENARIO,
                         PaoType.CAPBANK,
@@ -1311,7 +1345,11 @@ public class PaoTypeTest {
                         PaoType.ECOBEE_3,
                         PaoType.ECOBEE_SMART,
                         PaoType.RFN_GATEWAY,
-                        PaoType.GWY800);
+                        PaoType.GWY800,
+                        PaoType.HONEYWELL_9000,
+                        PaoType.HONEYWELL_FOCUSPRO,
+                        PaoType.HONEYWELL_THERMOSTAT,
+                        PaoType.HONEYWELL_VISIONPRO_8000);
     
     @Test
     public void testIsMeter() {
