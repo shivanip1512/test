@@ -261,6 +261,7 @@
     <bean id="hardwareTypeExtensionService" class="com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionServiceImpl"/>
     <bean class="com.cannontech.stars.dr.digi.builder.ZigbeeEndpointBuilder"/>
     <bean class="com.cannontech.stars.dr.ecobee.EcobeeBuilder"/>
+    <bean class="com.cannontech.stars.dr.honeywell.HoneywellBuilder"/>
 
     <bean class="com.cannontech.stars.dr.displayable.dao.impl.DisplayableInventoryEnrollmentDaoImpl"/>
     

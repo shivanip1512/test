@@ -168,6 +168,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     LM_GROUP_DIGI_SEP(DeviceTypes.LM_GROUP_DIGI_SEP, "DIGI SEP GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_ECOBEE(DeviceTypes.LM_GROUP_ECOBEE, "ECOBEE GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
+    LM_GROUP_HONEYWELL(DeviceTypes.LM_GROUP_HONEYWELL, "HONEYWELL GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_EMETCON(DeviceTypes.LM_GROUP_EMETCON, "EMETCON GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_EXPRESSCOMM(DeviceTypes.LM_GROUP_EXPRESSCOMM, "EXPRESSCOM GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
     LM_GROUP_RFN_EXPRESSCOMM(DeviceTypes.LM_GROUP_RFN_EXPRESSCOMM, "RFN EXPRESSCOM GROUP", PaoCategory.DEVICE, PaoClass.GROUP),
@@ -186,6 +187,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     LM_ENERGY_EXCHANGE_PROGRAM(DeviceTypes.LM_ENERGY_EXCHANGE_PROGRAM, "LM ENERGY EXCHANGE", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_SEP_PROGRAM(DeviceTypes.LM_SEP_PROGRAM, "LM SEP PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_ECOBEE_PROGRAM(DeviceTypes.LM_ECOBEE_PROGRAM, "ECOBEE PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
+    LM_HONEYWELL_PROGRAM(DeviceTypes.LM_HONEYWELL_PROGRAM, "HONEYWELL PROGRAM", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_CONTROL_AREA(DeviceTypes.LM_CONTROL_AREA, "LM CONTROL AREA", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     LM_SCENARIO(DeviceTypes.LM_SCENARIO, "LMSCENARIO", PaoCategory.LOADMANAGEMENT, PaoClass.LOADMANAGEMENT),
     
@@ -256,6 +258,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     ECOBEE_SMART_SI(DeviceTypes.ECOBEE_SMART_SI, "ecobee Smart Si", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     ECOBEE_3(DeviceTypes.ECOBEE_3, "ecobee3", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     ECOBEE_SMART(DeviceTypes.ECOBEE_SMART, "ecobee Smart", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
+    HONEYWELL_9000(DeviceTypes.HONEYWELL_9000, "Honeywell Wi-Fi 9000", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
+    HONEYWELL_VISIONPRO_8000(DeviceTypes.HONEYWELL_VISIONPRO_8000, "Honeywell Wi-Fi VisionPRO 8000", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
+    HONEYWELL_FOCUSPRO(DeviceTypes.HONEYWELL_FOCUSPRO, "Honeywell Wi-Fi FocusPRO", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
+    HONEYWELL_THERMOSTAT(DeviceTypes.HONEYWELL_THERMOSTAT, "Honeywell Wi-Fi Thermostat", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     ;
     
     private final int deviceTypeId;
@@ -291,6 +297,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> rfGatewayTypes;
     private final static ImmutableSet<PaoType> substationBusTypes;
     private final static ImmutableSet<PaoType> rfDaTypes;
+    private final static ImmutableSet<PaoType> honeywellTypes;
     
     public final static int INVALID = -1;
     
@@ -316,12 +323,14 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_DIRECT_PROGRAM,
             LM_ENERGY_EXCHANGE_PROGRAM,
             LM_SEP_PROGRAM,
-            LM_ECOBEE_PROGRAM);
+            LM_ECOBEE_PROGRAM,
+            LM_HONEYWELL_PROGRAM);
         
         directProgramTypes = ImmutableSet.of(
             LM_DIRECT_PROGRAM,
             LM_SEP_PROGRAM,
-            LM_ECOBEE_PROGRAM);
+            LM_ECOBEE_PROGRAM,
+            LM_HONEYWELL_PROGRAM);
         
         cbcTypes = ImmutableSet.of(
             CAPBANKCONTROLLER,
@@ -622,6 +631,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         routableTypes = b.build();
         
         ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI, ECOBEE_3, ECOBEE_SMART);
+        honeywellTypes = ImmutableSet.of(HONEYWELL_9000, HONEYWELL_FOCUSPRO, HONEYWELL_VISIONPRO_8000, HONEYWELL_THERMOSTAT);
         
         b = ImmutableSet.builder();
         b.addAll(ccuTypes);
@@ -702,6 +712,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public boolean isEcobee() {
         return ecobeeTypes.contains(this);
+    }
+    
+    public boolean isHoneywell() {
+        return honeywellTypes.contains(this);
     }
     
     public boolean isMeter() {
@@ -889,6 +903,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getEcobeeTypes() {
         return ecobeeTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getHoneywellTypes() {
+        return honeywellTypes;
     }
     
     public static ImmutableSet<PaoType> getTransmitterTypes() {

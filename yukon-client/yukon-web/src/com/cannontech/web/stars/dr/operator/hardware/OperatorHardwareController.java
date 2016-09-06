@@ -699,7 +699,7 @@ public class OperatorHardwareController {
         model.addAttribute("showVoltage", showVoltage);
         
         // Hide route for meters and ZigBee devices
-        if (!clazz.isMeter() && !type.isZigbee() && !type.isRf() && !type.isEcobee() && type != HardwareType.LCR_3102) {
+        if (!clazz.isMeter() && !type.isZigbee() && !type.isRf() && !type.isEcobee() && type != HardwareType.LCR_3102 && !type.isHoneywell()) {
             model.addAttribute("showRoute", true);
         }
         

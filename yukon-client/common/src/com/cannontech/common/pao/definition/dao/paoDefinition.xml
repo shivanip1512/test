@@ -4501,6 +4501,86 @@
         <displayName>ecobee Smart</displayName>
     </pao>
     
+    <!-- Honeywell Wifi Thermostats -->
+    <pao id="HONEYWELL" abstract="true">
+        <displayGroup>Demand Response</displayGroup>
+        <points>
+            <!-- ANALOG POINTS -->
+            <point type="Analog" offset="2">
+                <init>true</init>
+                <name>Indoor Temperature</name>
+                <archive><type>ON_UPDATE</type></archive>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Temp-F"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="3">
+                <init>true</init>
+                <name>Cool Set Temperature</name>
+                <archive><type>ON_CHANGE</type></archive>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Temp-F"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="4">
+                <init>true</init>
+                <name>Heat Set Temperature</name>
+                <archive><type>ON_CHANGE</type></archive>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Temp-F"/>
+                <decimalplaces value="0"/>
+            </point>
+            <point type="Analog" offset="5">
+                <init>true</init>
+                <name>Run Time Data Log</name>
+                <archive><type>ON_UPDATE</type></archive>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+                <decimalplaces value="0"/>
+            </point>
+            <!-- STATUS POINTS -->
+            <point type="Status" offset="1">
+                <init>true</init>
+                <name>Control Status</name>
+                <archive><type>ON_CHANGE</type></archive>
+                <stategroup value="TrueFalse" />
+            </point>
+        </points>
+        <attributes>
+            <attribute name="RELAY_1_RUN_TIME_DATA_LOG">
+                <basicLookup point="Run Time Data Log" />
+            </attribute>
+            <attribute name="INDOOR_TEMPERATURE">
+                <basicLookup point="Indoor Temperature" />
+            </attribute>
+            <attribute name="COOL_SET_TEMPERATURE">
+                <basicLookup point="Cool Set Temperature" />
+            </attribute>
+            <attribute name="HEAT_SET_TEMPERATURE">
+                <basicLookup point="Heat Set Temperature" />
+            </attribute>
+            <attribute name="CONTROL_STATUS">
+                <basicLookup point="Control Status" />
+            </attribute>
+        </attributes>
+        <tags>
+            <tag name="DB_EDITOR_INCOMPATIBLE" />
+        </tags>
+    </pao>
+   
+    <pao id="HONEYWELL_9000" inherits="HONEYWELL">
+        <displayName>Honeywell Wi-Fi 9000</displayName>
+    </pao>
+    <pao id="HONEYWELL_VISIONPRO_8000" inherits="HONEYWELL">
+        <displayName>Honeywell Wi-Fi VisionPRO 8000</displayName>
+    </pao>
+    <pao id="HONEYWELL_FOCUSPRO" inherits="HONEYWELL">
+        <displayName>Honeywell Wi-Fi FocusPRO</displayName>
+    </pao>
+    <pao id="HONEYWELL_THERMOSTAT" inherits="HONEYWELL">
+        <displayName>Honeywell Wi-Fi Thermostat</displayName>
+    </pao>
+    
     <!-- RF Gateway -->
     <pao id="RFN_GATEWAY_BASE" abstract="true">
         <displayGroup>RFMESH</displayGroup>

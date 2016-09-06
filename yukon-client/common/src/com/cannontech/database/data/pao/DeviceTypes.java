@@ -247,6 +247,13 @@ public interface DeviceTypes extends TypeBase
     public final static int RFN530FAX = DEVICE_OFFSET + 185;
     public final static int RFN530FRX = DEVICE_OFFSET + 186;
     
+    public final static int HONEYWELL_9000 = DEVICE_OFFSET + 187;
+    public final static int HONEYWELL_VISIONPRO_8000 = DEVICE_OFFSET + 188;
+    public final static int HONEYWELL_FOCUSPRO = DEVICE_OFFSET + 189;
+    public final static int HONEYWELL_THERMOSTAT = DEVICE_OFFSET + 190;
+    public final static int LM_GROUP_HONEYWELL = DEVICE_OFFSET + 191;
+    public final static int LM_HONEYWELL_PROGRAM = DEVICE_OFFSET + 192;
+    
     //all the possible text representation of each device type.
     //If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
     public static final String[] STRING_CCU_710 = {"CCU-710A", "CCU710A"};
@@ -331,6 +338,7 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_RFN_EXPRESSCOMM_GROUP = {"RFN EXPRESSCOM GROUP"};
     public static final String[] STRING_DIGI_SEP_GROUP = {"DIGI SEP GROUP"};
     public static final String[] STRING_ECOBEE_GROUP = {"ECOBEE GROUP"};
+    public static final String[] STRING_HONEYWELL_GROUP = {"HONEYWELL GROUP"};
     public static final String[] STRING_POINT_GROUP = {"POINT GROUP"};
     public static final String[] STRING_RIPPLE_GROUP = {"RIPPLE GROUP"};
     public static final String[] STRING_MACRO_GROUP = {"MACRO GROUP"};
@@ -342,6 +350,7 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_LM_DIRECT_PROGRAM = {"LM DIRECT PROGRAM"};
     public static final String[] STRING_LM_SEP_PROGRAM = {"LM SEP PROGRAM"};
     public static final String[] STRING_LM_ECOBEE_PROGRAM = {"LM ECOBEE PROGRAM"};
+    public static final String[] STRING_LM_HONEYWELL_PROGRAM = {"LM HONEYWELL PROGRAM"};
     public static final String[] STRING_LM_CURTAIL_PROGRAM = {"LM CURTAIL PROGRAM"};
     public static final String[] STRING_LM_CONTROL_AREA = {"LM CONTROL AREA"};
     public static final String[] STRING_LM_SCENARIO = {"LMSCENARIO"};
@@ -388,4 +397,8 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_ECOBEE_3 = {"ecobee3"};
     public static final String[] STRING_RFN_GATEWAY = {"RFN Gateway"};
     public static final String[] STRING_RFN_GATEWAY_2 = {"RFN Gateway 2"};
+    public static final String[] STRING_HONEYWELL_9000 = {"Honeywell Wi-Fi 9000"};
+    public static final String[] STRING_HONEYWELL_VISIONPRO_8000 = {"Honeywell Wi-Fi VisionPRO 8000"};
+    public static final String[] STRING_HONEYWELL_FOCUSPRO = {"Honeywell Wi-Fi FocusPRO"};
+    public static final String[] STRING_HONEYWELL_THERMOSTAT = {"Honeywell Wi-Fi Thermostat"};
 }
