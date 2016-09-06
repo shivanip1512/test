@@ -462,6 +462,8 @@
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Default Master Config</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>ExportArchive</td></row>
 		<row><td>{D4977EFB-6FBF-4DC4-9DB9-BA687BDA090E}</td><td>Master Config Example</td></row>
+		<row><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td><td>Java Service Wrapper</td></row>
+		<row><td>{D953C208-6D18-4C22-BB31-1363BE37C948}</td><td>Message Broker</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>Java Service Wrapper</td></row>
 		<row><td>{DB8BF790-EC25-4438-B29B-00CB57ED9746}</td><td>Notification Server</td></row>
 		<row><td>{E6E81A5E-ACA3-4C5B-8FD1-6A1881FCE8C6}</td><td>Alarm Monitor</td></row>
@@ -1339,7 +1341,7 @@
 		<row><td>ID_STRING18</td><td>1033</td><td>Interface for demand response, MAC schedules, alarms and custom data views.</td><td>0</td><td/><td>-1516433109</td></row>
 		<row><td>ID_STRING19</td><td>1033</td><td>Create and view graphical representations of stored data from the Yukon database.</td><td>0</td><td/><td>-1516392149</td></row>
 		<row><td>ID_STRING2</td><td>1033</td><td>The Yukon services process and communicate data between the Yukon clients, database, and field devices.</td><td>0</td><td/><td>-1516390742</td></row>
-		<row><td>ID_STRING20</td><td>1033</td><td>Message Broker</td><td>0</td><td/><td>212088848</td></row>
+		<row><td>ID_STRING20</td><td>1033</td><td>Message Broker</td><td>0</td><td/><td>346322636</td></row>
 		<row><td>ID_STRING21</td><td>1033</td><td>Lightweight alarm monitoring notifier that runs in the windows system tray.</td><td>0</td><td/><td>-1516433013</td></row>
 		<row><td>ID_STRING22</td><td>1033</td><td>Additional modules for specialized needs.</td><td>0</td><td/><td>-1516377717</td></row>
 		<row><td>ID_STRING23</td><td>1033</td><td>Files related to the Yukon EIM application programming interface.</td><td>0</td><td/><td>-1516408373</td></row>
@@ -1385,7 +1387,7 @@
 		<row><td>ID_STRING6</td><td>1033</td><td>Collects real-time and interval data from a list of devices.</td><td>0</td><td/><td>-1516390614</td></row>
 		<row><td>ID_STRING60</td><td>1033</td><td>Tabular Data Console</td><td>0</td><td/><td>-1113739986</td></row>
 		<row><td>ID_STRING61</td><td>1033</td><td>Trending</td><td>0</td><td/><td>-1113748114</td></row>
-		<row><td>ID_STRING62</td><td>1033</td><td>Message Broker</td><td>0</td><td/><td>212097040</td></row>
+		<row><td>ID_STRING62</td><td>1033</td><td>Message Broker</td><td>0</td><td/><td>346296044</td></row>
 		<row><td>ID_STRING63</td><td>1033</td><td>Alarm Monitor</td><td>0</td><td/><td>-1113753778</td></row>
 		<row><td>ID_STRING64</td><td>1033</td><td>http://www.eaton.com/cooperpowerseries</td><td>0</td><td/><td>-207405782</td></row>
 		<row><td>ID_STRING65</td><td>1033</td><td>1.800.815.2258</td><td>0</td><td/><td>-1113775696</td></row>
