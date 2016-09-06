@@ -483,21 +483,21 @@ IM_EX_CTIBASE AddrInfo makeSocketAddress(const char *nodename, const char* servn
     ADDRINFOA hints = {};
 
     // Set requirements
-	if (protocol == IPPROTO_UDP)
-	{
-		hints.ai_family = AF_INET;
-	}
-	else
-	{
-		if (nodename == 0)
-		{                                                   // Listening socket
-			hints.ai_family = AF_INET6;                     // accept either IPv4 or IPv6
-		}
-		else
-		{                                                   // connect socket
-			hints.ai_family = AF_UNSPEC;                    // IPv4 or IPv6 depending on connect string
-		}
-	}
+    if (protocol == IPPROTO_UDP)
+    {                                                       // UDP socket
+        hints.ai_family = AF_INET;                          // Always IPv4 (for now)
+    }
+    else
+    {
+        if (nodename == 0)
+        {                                                   // Listening socket
+            hints.ai_family = AF_INET6;                     // accept either IPv4 or IPv6
+        }
+        else
+        {                                                   // connect socket
+            hints.ai_family = AF_UNSPEC;                    // IPv4 or IPv6 depending on connect string
+        }
+    }
     hints.ai_socktype = socktype;                   // SOCK_STREAM (tcp) or SOCK_DGRAM (udp)
     hints.ai_protocol = protocol;                   // IPPROTO_TCP or IPPROTO_UDP
     hints.ai_flags = flags;                      // If node is not NULL, then the AI_PASSIVE flag is ignored.
