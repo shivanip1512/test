@@ -31,6 +31,14 @@ public class PaoPopupHelperImpl implements PaoPopupHelper {
                 MAX_DEVICES_DISPLAYED);
         List<DeviceCollectionReportDevice> deviceCollectionReportDevices = paoLoadingService
                 .getDeviceCollectionReportDevices(devicesToLoad);
+        
+        boolean allRfn = true;
+        for (DeviceCollectionReportDevice device : deviceCollectionReportDevices) {
+            if (!device.getPaoIdentifier().getPaoType().isRfn()) {
+                allRfn = false;
+                break;
+            }
+        }
 
         MessageSourceAccessor accessor = resolver
                 .getMessageSourceAccessor(context);
@@ -42,14 +50,22 @@ public class PaoPopupHelperImpl implements PaoPopupHelper {
         List<String> header = Lists.newArrayList();
         header.add(accessor.getMessage("yukon.common.deviceName"));
         header.add(accessor.getMessage("yukon.common.address"));
-        header.add(accessor.getMessage("yukon.common.route"));
+        if (allRfn) {
+            header.add(accessor.getMessage("yukon.common.deviceType"));
+        } else {
+            header.add(accessor.getMessage("yukon.common.route"));
+        }
         rows.add(header);
 
         for (DeviceCollectionReportDevice device : deviceCollectionReportDevices) {
             List<String> row = Lists.newArrayList();
             row.add(device.getName());
             row.add(device.getAddress());
-            row.add(device.getRoute());
+            if (allRfn) {
+                row.add(device.getType());
+            } else {
+                row.add(device.getRoute());
+            }
             rows.add(row);
         }
 
