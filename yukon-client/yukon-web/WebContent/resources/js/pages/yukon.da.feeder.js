@@ -29,6 +29,7 @@ yukon.da.feeder = (function () {
         var remove = btn.is('.js-remove-capbank'),
         container = btn.closest('.select-box').find(remove ? '.select-box-available' : '.select-box-selected'),
         tripContainer = btn.closest('.select-box').find('.select-box-trip-order'),
+        tripContainerHeading = tripContainer.find('#tripOrderHeading'),
         closeContainer = btn.closest('.select-box').find('.select-box-close-order'),
         item = btn.closest('.select-box-item'),
         dataId = item.attr('data-id'),
@@ -53,7 +54,7 @@ yukon.da.feeder = (function () {
         } else {
             tripItem
             .css('padding-left', '10px')
-            .appendTo(tripContainer)
+            .insertAfter(tripContainerHeading)
             .find('.js-add-capbank').remove();
             
             closeItem

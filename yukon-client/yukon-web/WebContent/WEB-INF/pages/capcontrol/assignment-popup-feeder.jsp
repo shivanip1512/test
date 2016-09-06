@@ -80,7 +80,7 @@ $(function() {
     </div>
     
      <div id="tripOrder" class="column one select-box-trip-order js-with-movables" data-item-selector=".select-box-item" style="margin-top:15px;">
-        <h3><i:inline key=".bankMove.tripOrder"/></h3>
+        <h3 id="tripOrderHeading"><i:inline key=".bankMove.tripOrder"/></h3>
         <c:forEach var="item" items="${tripOrders}" varStatus="status">
             <div class="select-box-item cm" style="padding-left:10px;"
                 data-id="${item.id}">${fn:escapeXml(item.name)}
