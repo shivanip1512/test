@@ -61,7 +61,7 @@ public class ClientEmbeddedBroker {
             //  network manager -> remote proxy -> local proxy -> service manager -> web
             networkConnector.setNetworkTTL(5);
             broker.setUseJmx(true);
-            if(name.equals("ServiceManager")) {
+            if (name.equals("ServiceManager")) {
                 broker.getManagementContext().setConnectorPort(1099);
             } else {
                 broker.getManagementContext().setConnectorPort(1098);
