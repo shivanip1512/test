@@ -83,7 +83,7 @@ public class BrokerServiceMonitor extends Thread implements NotificationListener
                     MemoryUsage usage = dest.getMemoryUsage();
                     DestinationStatistics stat = dest.getDestinationStatistics();
 
-                    if (aMQdest.isTemporary())
+                    if (usage.getUsage() > 0 && aMQdest.isTemporary())
                     {
                         log.info(aMQdest.getQualifiedName() + ":" +
                                  "Enque=" + stat.getEnqueues().getCount() +
