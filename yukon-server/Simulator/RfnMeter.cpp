@@ -196,8 +196,11 @@ std::vector<unsigned char> makeDataStreamingResponse(const unsigned char respons
                 ? mangleResponse(original, mangleHappen / mangleChance)  //  Normalize to a 0.0-1.0 number again
                 : original;
 
+    const auto disableChance = gConfigParms.getValueAsDouble("SIMULATOR_RFN_DATA_STREAMING_DISABLE_CHANCE");
+    const auto disableHappen = dist(rd) < disableChance;
+
     response.push_back(contents.metrics.size());
-    response.push_back(contents.enabled);
+    response.push_back(contents.enabled && disableHappen);
 
     for( const auto channel : contents.metrics )
     {
