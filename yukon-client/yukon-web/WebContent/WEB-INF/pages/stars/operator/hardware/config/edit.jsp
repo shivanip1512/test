@@ -154,7 +154,9 @@ updateSub = function (data) {
     
     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
         <cti:checkEnergyCompanySetting value="TRACK_HARDWARE_ADDRESSING" energyCompanyId="${energyCompanyId}">
-            <dr:hardwareAddressingInfo type="${hardware.hardwareType.hardwareConfigType}"/>
+        	<c:if test="${!hideHardareAddressing}">
+               <dr:hardwareAddressingInfo type="${hardware.hardwareType.hardwareConfigType}"/>
+            </c:if>
         </cti:checkEnergyCompanySetting>
     </cti:checkRolesAndProperties>
     
