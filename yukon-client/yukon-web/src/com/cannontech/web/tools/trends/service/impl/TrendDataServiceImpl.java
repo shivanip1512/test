@@ -12,6 +12,7 @@
 package com.cannontech.web.tools.trends.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -58,7 +59,7 @@ public class TrendDataServiceImpl implements TrendDataService {
                                                           Order.REVERSE,
                                                           maxRows);
         } else {
-            return rawPointHistoryDao.getPointData(pointId, instantRange, Order.REVERSE);
+            return rawPointHistoryDao.getPointData(pointId, instantRange, Order.FORWARD);
         }
 
     }
@@ -105,6 +106,10 @@ public class TrendDataServiceImpl implements TrendDataService {
     @Override
     public  List<Object[]> usageGraphDataProvider(List<PointValueHolder> data) {
         log.debug("UsageGraphDataProvider Called");
+        
+        ArrayList<PointValueHolder> seriesItemResult = new ArrayList<PointValueHolder>(data); 
+        Collections.reverse(seriesItemResult); 
+        
         List<Object[]> values = new ArrayList<>();
         DateTime dateNow = new DateTime().withTimeAtStartOfDay().plusDays(1);
         DateTime datePrime = getEarliestStartDate();
@@ -112,7 +117,7 @@ public class TrendDataServiceImpl implements TrendDataService {
         double previousPointValue = 0;
 
         boolean skipFirstPvh = true;
-        for (PointValueHolder pvh : data) {
+        for (PointValueHolder pvh : seriesItemResult) {
             
             double itemPointValue = pvh.getValue();
             DateTime itemTimeStamp = new DateTime(pvh.getPointDataTimeStamp().getTime());

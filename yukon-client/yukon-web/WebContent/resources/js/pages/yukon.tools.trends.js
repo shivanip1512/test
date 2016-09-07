@@ -37,9 +37,7 @@ yukon.tools.trends = (function () {
                         month:       [labelFormat,labelFormat],
                         year:        [labelFormat,labelFormat]
                     };
-                var legend;
-                if(trend.isTruncated){
-                    legend = {
+                var legend = {
                         enabled: true,
                         align: 'center',
                         backgroundColor: '#fefefe',
@@ -56,19 +54,7 @@ yukon.tools.trends = (function () {
                             text:trend.truncateMessage
                         }
                     };
-                }else{
-                    legend = {
-                            enabled: true,
-                            align: 'center',
-                            backgroundColor: '#fefefe',
-                            borderColor: '#ccc',
-                            borderWidth: 1,
-                            borderRadius: 1,
-                            layout: 'vertical',
-                            verticalAlign: 'bottom',
-                            shadow: true,
-                    };
-                }
+                
                 // Create the chart
                 $('[data-trend]').highcharts('StockChart', {
                     

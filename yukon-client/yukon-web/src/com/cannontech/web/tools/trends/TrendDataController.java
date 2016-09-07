@@ -231,7 +231,6 @@ public class TrendDataController {
             String truncateMessage = accessor.getMessage("yukon.web.modules.tools.trends.truncateWarning");
             json.put("truncateMessage", truncateMessage);
         }
-        json.put("isTruncated", isTruncated);
 
         List<Map<String, Object>> yAxis = new ArrayList<>();
         ImmutableMap<String, ImmutableMap<String, String>> labels = ImmutableMap.of("style", ImmutableMap.of("color", "#555"));
