@@ -71,12 +71,14 @@ public class SubstationServiceImpl implements SubstationService {
     }
     
     private int create(CapControlSubstation substation) {
+        // Volt Reduction Point of 0 means no volt reduction.
+        int voltReductionPoint = substation.getCapControlSubstation().getVoltReductionPointId() == null ? 0 : substation.getCapControlSubstation().getVoltReductionPointId();
         CompleteCapControlSubstation completeSubstation = new CompleteCapControlSubstation();
         completeSubstation.setPaoName(substation.getName());
         completeSubstation.setDisabled(substation.isDisabled());
         completeSubstation.setMapLocationId(substation.getCapControlSubstation().getMapLocationID());
         completeSubstation.setDescription(substation.getGeoAreaName());
-        completeSubstation.setVoltReductionPointId(substation.getCapControlSubstation().getVoltReductionPointId());
+        completeSubstation.setVoltReductionPointId(voltReductionPoint);
         paoPersistenceService.createPaoWithDefaultPoints(completeSubstation, substation.getPaoType());
         substation.setId(completeSubstation.getPaObjectId());
         return substation.getId();

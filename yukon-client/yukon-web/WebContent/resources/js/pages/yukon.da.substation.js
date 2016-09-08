@@ -45,7 +45,7 @@ yukon.da.substation = (function () {
             });
             
             /** User clicked volt reduction toggle button; show hide point picker. */
-            $(document).on('click', '.js-volt-reduct', function () {
+            $(document).on('change', '.js-volt-reduct', function () {
                 
                 var toggle = $(this),
                     row = toggle.closest('tr'),
@@ -54,11 +54,13 @@ yukon.da.substation = (function () {
                     active = row.find('.switch-btn-checkbox').prop('checked');
                 
                 btn.toggleClass('dn', !active);
-                
+                picker = yukon.pickers[btn.data('pickerId')];
+
                 if (!active) {
-                    picker = yukon.pickers[btn.data('pickerId')];
                     picker.clearSelected();
                     picker.clearEntireSelection();
+                } else {
+                    picker.show();
                 }
             });
         }
