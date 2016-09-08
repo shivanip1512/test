@@ -236,7 +236,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         return false;
     }
 
-    public boolean isSupportsIndivisualDeviceShed() {
+    public boolean isSupportsIndividualDeviceShed() {
         if (hardwareConfigType != null && hardwareConfigType.isSupportsServiceInOut()) {
             return true;
         }
