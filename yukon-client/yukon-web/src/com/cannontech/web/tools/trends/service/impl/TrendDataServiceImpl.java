@@ -3,11 +3,6 @@
  * <p>
  * TrendDataServiceImp provides consumable data factories to be used for Graph Data
  * <p>
- * 
- * @author      Thomas Red-Cloud
- * @email       ThomasRedCloud@Eaton.com
- * @version     %I%, %G%
- * @since       1.0
  */
 package com.cannontech.web.tools.trends.service.impl;
 
@@ -53,11 +48,14 @@ public class TrendDataServiceImpl implements TrendDataService {
         Range<Instant> instantRange = Range.inclusive(start, end);
         int maxRows = globalSettingDao.getInteger(GlobalSettingType.TRENDS_READING_PER_POINT);
         if (maxRows != 0) {
-            return rawPointHistoryDao.getLimitedPointData(pointId,
+            List<PointValueHolder> data = rawPointHistoryDao.getLimitedPointData(pointId,
                                                           instantRange,
                                                           false,
                                                           Order.REVERSE,
                                                           maxRows);
+            ArrayList<PointValueHolder> values = new ArrayList<PointValueHolder>(data);
+            Collections.reverse(values);
+            return values;
         } else {
             return rawPointHistoryDao.getPointData(pointId, instantRange, Order.FORWARD);
         }
@@ -107,9 +105,6 @@ public class TrendDataServiceImpl implements TrendDataService {
     public  List<Object[]> usageGraphDataProvider(List<PointValueHolder> data) {
         log.debug("UsageGraphDataProvider Called");
         
-        ArrayList<PointValueHolder> seriesItemResult = new ArrayList<PointValueHolder>(data); 
-        Collections.reverse(seriesItemResult); 
-        
         List<Object[]> values = new ArrayList<>();
         DateTime dateNow = new DateTime().withTimeAtStartOfDay().plusDays(1);
         DateTime datePrime = getEarliestStartDate();
@@ -117,7 +112,7 @@ public class TrendDataServiceImpl implements TrendDataService {
         double previousPointValue = 0;
 
         boolean skipFirstPvh = true;
-        for (PointValueHolder pvh : seriesItemResult) {
+        for (PointValueHolder pvh : data) {
             
             double itemPointValue = pvh.getValue();
             DateTime itemTimeStamp = new DateTime(pvh.getPointDataTimeStamp().getTime());
