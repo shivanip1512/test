@@ -608,6 +608,10 @@ GO
 UPDATE JobStatus SET Message=' ' WHERE Message IS NULL;
 /* End YUK-15723*/
 
+/* Start YUK-15720*/
+INSERT INTO YukonRoleProperty VALUES (-21316, -213, 'RF Data Streaming', 'false', 'Controls access to RF data streaming configuration actions.');
+/* End YUK-15720*/
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

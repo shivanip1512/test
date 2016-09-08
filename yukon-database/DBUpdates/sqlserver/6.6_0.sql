@@ -711,6 +711,10 @@ ALTER TABLE DYNAMICPOINTDISPATCH DROP COLUMN STALECOUNT, LastAlarmLogID;
 GO
 /* End YUK-15729 */
 
+/* Start YUK-15720*/
+INSERT INTO YukonRoleProperty VALUES (-21316, -213, 'RF Data Streaming', 'false', 'Controls access to RF data streaming configuration actions.');
+/* End YUK-15720*/
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
