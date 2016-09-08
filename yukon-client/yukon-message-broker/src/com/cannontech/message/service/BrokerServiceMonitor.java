@@ -57,12 +57,11 @@ public class BrokerServiceMonitor extends Thread implements NotificationListener
             .getInteger("com.cannontech.services.jms.BrokerServiceMonitor.reportingPeriodSeconds",
                         5 /* minutes */* 60 /* Seconds/Minute */));
 
-    /** Constructor.  Registers this class for GC notifications as well. */
+    /** Constructor. Registers this class for GC notifications as well. */
     public BrokerServiceMonitor() {
         super();
 
-        List<GarbageCollectorMXBean> gcbeans =
-            java.lang.management.ManagementFactory.getGarbageCollectorMXBeans();
+        List<GarbageCollectorMXBean> gcbeans = java.lang.management.ManagementFactory.getGarbageCollectorMXBeans();
 
         for (GarbageCollectorMXBean gcbean : gcbeans) {
             NotificationEmitter emitter = (NotificationEmitter) gcbean;
@@ -74,24 +73,21 @@ public class BrokerServiceMonitor extends Thread implements NotificationListener
 
     @Override
     public void run() {
-        while (true)
-        {
+        while (true) {
             try {
-                for (ActiveMQDestination aMQdest : broker.getDestinations())
-                {
+                for (ActiveMQDestination aMQdest : broker.getDestinations()) {
                     Destination dest = brokerService.getDestination(aMQdest);
                     MemoryUsage usage = dest.getMemoryUsage();
                     DestinationStatistics stat = dest.getDestinationStatistics();
 
-                    if (usage.getUsage() > 0 && aMQdest.isTemporary())
-                    {
-                        log.info(aMQdest.getQualifiedName() + ":" +
-                                 "Enque=" + stat.getEnqueues().getCount() +
-                                 ", Deque=" + stat.getDequeues().getCount() +
-                                 ", InFlight=" + stat.getInflight().getCount() +
-                                 ", Dispatch=" + stat.getDispatched().getCount() +
-                                 ", Expired=" + stat.getExpired().getCount() +
-                                 ", Mem=" + usage.getUsage());
+                    if (usage.getUsage() > 0) {
+                        log.info(aMQdest.getQualifiedName() + ":" + 
+                                "Enque=" + stat.getEnqueues().getCount() +
+                                ", Deque=" + stat.getDequeues().getCount() + 
+                                ", InFlight=" + stat.getInflight().getCount() +
+                                ", Dispatch=" + stat.getDispatched().getCount() +
+                                ", Expired=" + stat.getExpired().getCount() + 
+                                ", Mem=" + usage.getUsage());
                     }
                 }
 
@@ -116,30 +112,24 @@ public class BrokerServiceMonitor extends Thread implements NotificationListener
     public void handleNotification(Notification notification, Object handback) {
         // we only handle GARBAGE_COLLECTION_NOTIFICATION notifications here
         if (notification.getType()
-            .equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)) {
+                        .equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)) {
             long freeMemory = Runtime.getRuntime().freeMemory();
             long totalMemory = Runtime.getRuntime().totalMemory();
-            if (nextGCReport == null || nextGCReport.isBeforeNow() ||
-                    freeMemory < totalMemory/3)
-            {
-                nextGCReport=DateTime.now().plusHours(1);
-                
+            if (nextGCReport == null || nextGCReport.isBeforeNow() || freeMemory < totalMemory / 3) {
+                nextGCReport = DateTime.now().plusHours(1);
+
                 // get notification information
-                GarbageCollectionNotificationInfo info =
-                    GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
-    
+                GarbageCollectionNotificationInfo info = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
+
                 // GC info
                 GcInfo gcInfo = info.getGcInfo();
-                logGC.debug("GC start: " + gcInfo.getStartTime() + ", end: " + gcInfo.getEndTime()
-                            + ", duration: " + gcInfo.getDuration() + " (ms)");
-                logGC.debug("   reason: "+info.getGcCause());
-                
+                logGC.debug("GC start: " + gcInfo.getStartTime() + ", end: " + gcInfo.getEndTime() + ", duration: " + gcInfo.getDuration() + " (ms)");
+                logGC.debug("   reason: " + info.getGcCause());
+
                 // Get before and after GC stats
-                Map<String, java.lang.management.MemoryUsage> memBefore =
-                    gcInfo.getMemoryUsageBeforeGc();
-                Map<String, java.lang.management.MemoryUsage> memAfter =
-                    gcInfo.getMemoryUsageAfterGc();
-                
+                Map<String, java.lang.management.MemoryUsage> memBefore = gcInfo.getMemoryUsageBeforeGc();
+                Map<String, java.lang.management.MemoryUsage> memAfter = gcInfo.getMemoryUsageAfterGc();
+
                 // Print in a pretty table
                 logGC.debug(String.format("%22s|%7s|%7s", "Heap Used", "Before", "After"));
                 for (Entry<String, java.lang.management.MemoryUsage> entry : memBefore.entrySet()) {
@@ -152,7 +142,7 @@ public class BrokerServiceMonitor extends Thread implements NotificationListener
                                               memUsedAfter / 1024));
                 }
             }
-            
+
             // Just for grins...
             logGC.debug("Free/Total memory: " + freeMemory / 1024 + "k/" + totalMemory / 1024 + "k");
         }
