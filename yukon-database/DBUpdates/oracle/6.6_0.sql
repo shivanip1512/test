@@ -605,7 +605,7 @@ GO
 /* End YUK-15729 */
 
 /* Start YUK-15723*/
-UPDATE jobstatus SET message=' ' WHERE message IS null;
+UPDATE JobStatus SET Message=' ' WHERE Message IS NULL;
 /* End YUK-15723*/
 
 /**************************************************************/
