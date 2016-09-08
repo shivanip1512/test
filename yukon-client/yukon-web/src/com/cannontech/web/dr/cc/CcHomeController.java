@@ -1387,39 +1387,42 @@ public class CcHomeController {
     public String customerSave(@PathVariable int customerId,
                                @ModelAttribute CustomerModel customerModel,
                                FlashScope flash) {
-        
-        CICustomerStub customer = customerPointService.getCustomer(customerId);
-        customerPointService.savePointValues(customer, customerModel.getPointValues());
-        
-        //Java8
-        /*
-        List<LiteYukonPAObject> activeProgramPaos = customerModel.getActivePrograms()
-                .stream()
-                .mapToInt(model -> model.getPaoId())
-                .mapToObj(paoId -> serverDatabaseCache.getAllPaosMap().get(paoId))
-                .collect(Collectors.toList());
-         */
-        List<LiteYukonPAObject> activeProgramPaos = customerModel.getActivePrograms()
-                .stream()
-                .mapToInt(new ToIntFunction<ProgramPaoModel>() {
-                    @Override
-                    public int applyAsInt(ProgramPaoModel model) {
-                        return model.getPaoId();
-                    }
-                })
-                .mapToObj(new IntFunction<LiteYukonPAObject>() {
-                    @Override
-                    public LiteYukonPAObject apply(int paoId) {
-                        return serverDatabaseCache.getAllPaosMap().get(paoId);
-                    }
-                })
-                .collect(Collectors.toList());
-        
-        customerLMProgramService.saveProgramList(customer, activeProgramPaos);
-        
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.customerDetail.update.success", 
-                                                          customer.getCompanyName()));
-        return "redirect:/dr/cc/customerList";
+        try {
+            CICustomerStub customer = customerPointService.getCustomer(customerId);
+            customerPointService.savePointValues(customer, customerModel.getPointValues());
+            // Java8
+            /*
+             * List<LiteYukonPAObject> activeProgramPaos =
+             * customerModel.getActivePrograms() .stream() .mapToInt(model ->
+             * model.getPaoId()) .mapToObj(paoId ->
+             * serverDatabaseCache.getAllPaosMap().get(paoId))
+             * .collect(Collectors.toList());
+             */
+            List<LiteYukonPAObject> activeProgramPaos = customerModel.getActivePrograms().stream()
+                    .mapToInt(new ToIntFunction<ProgramPaoModel>() {
+                        @Override
+                        public int applyAsInt(ProgramPaoModel model) {
+                            return model.getPaoId();
+                        }
+                    }).mapToObj(new IntFunction<LiteYukonPAObject>() {
+                        @Override
+                        public LiteYukonPAObject apply(int paoId) {
+                            return serverDatabaseCache.getAllPaosMap().get(paoId);
+                        }
+                    }).collect(Collectors.toList());
+
+            customerLMProgramService.saveProgramList(customer, activeProgramPaos);
+
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.customerDetail.update.success",
+                    customer.getCompanyName()));
+            return "redirect:/dr/cc/customerList";
+
+        } catch (NullPointerException npe) {
+            flash.setError(
+                    new YukonMessageSourceResolvable("yukon.web.modules.dr.cc.customerDetail.missingPointsOrGroups",
+                            ""));
+            return "redirect:/dr/cc/customerDetail/" + customerId;
+        }
     }
     
     @RequestMapping("/cc/customerDetail/{customerId}/createPoint/{pointType}")

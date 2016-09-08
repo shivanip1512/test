@@ -15,20 +15,20 @@
 <div class="column-12-12">
     <div class="column one stacked-lg">
         <div class="stacked-md">
-	        <h3><i:inline key=".satisfiedPointGroups"/></h3>
-	        <c:choose>
-		        <c:when test="${not empty satisfiedPointGroups}">
-			        <ul>
-			            <c:forEach var="pointGroup" items="${satisfiedPointGroups}">
-			                <li>${pointGroup}</li>
-			            </c:forEach>
-			        </ul>
-		        </c:when>
-		        <c:otherwise>
-		            <div class="empty-list"><i:inline key=".noSatisfiedPointGroups"/></div>
-		        </c:otherwise>
-	        </c:choose>
-	    </div>
+            <h3><i:inline key=".satisfiedPointGroups"/></h3>
+            <c:choose>
+                <c:when test="${not empty satisfiedPointGroups}">
+                    <ul>
+                        <c:forEach var="pointGroup" items="${satisfiedPointGroups}">
+                            <li>${pointGroup}</li>
+                        </c:forEach>
+                    </ul>
+                </c:when>
+                <c:otherwise>
+                    <div class="empty-list"><i:inline key=".noSatisfiedPointGroups"/></div>
+                </c:otherwise>
+            </c:choose>
+        </div>
         
         <h3><i:inline key=".attachedPoints"/></h3>
         <table class="compact-results-table">

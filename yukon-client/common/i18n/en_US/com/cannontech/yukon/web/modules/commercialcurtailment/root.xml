@@ -93,6 +93,7 @@
     <entry key="yukon.web.modules.dr.cc.customerDetail.availablePrograms">Available Programs</entry>
     <entry key="yukon.web.modules.dr.cc.customerDetail.noSatisfiedPointGroups">No satisfied point groups</entry>
     <entry key="yukon.web.modules.dr.cc.customerDetail.update.success">"{0}" updated successfully.</entry>
+    <entry key="yukon.web.modules.dr.cc.customerDetail.missingPointsOrGroups">Points and Groups need to be added to this Customer to save it.</entry>
     
     <!-- economicDetail.jspf -->
     <entry key="yukon.web.modules.dr.cc.eventPricing.customer">Customer</entry>
