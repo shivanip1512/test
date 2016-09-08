@@ -96,6 +96,7 @@ public class DataStreamingPorterConnection {
                 try {
                     ReportedDataStreamingConfig config = JsonUtils.fromJson(value, ReportedDataStreamingConfig.class);
                     configCallback.receivedConfigReport(device, config);
+                    log.debug("last result="+value);
                 } catch(IOException e) {
                     DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(1027);
                     String error = "Unable to parse data streaming metric response json from Porter, for device " 

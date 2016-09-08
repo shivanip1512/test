@@ -12,6 +12,8 @@ public class DataStreamingConfig implements Cloneable {
     private static final String nameKey= "yukon.web.modules.tools.bulk.dataStreaming.configuration.name";
     
     private int id;
+    //behavior is always enabled, behavior report can be disabled
+    private boolean enabled = true;
     private boolean newConfiguration;
     private int selectedInterval;
     private int selectedConfiguration;
@@ -190,4 +192,11 @@ public class DataStreamingConfig implements Cloneable {
         return config;
     }
 
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
 }
