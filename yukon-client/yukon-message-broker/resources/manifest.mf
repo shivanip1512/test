@@ -28,10 +28,6 @@ Class-Path: ./
  spring-oxm-4.2.0.RELEASE.jar 
  spring-test-4.2.0.RELEASE.jar 
  spring-tx-4.2.0.RELEASE.jar 
- spring-web-4.2.0.RELEASE.jar 
- spring-webmvc-4.2.0.RELEASE.jar 
- spring-webmvc-portlet-4.2.0.RELEASE.jar 
- spring-websocket-4.2.0.RELEASE.jar 
  servlet-api.jar 
  ../log/ 
  ../export/ 
