@@ -38,7 +38,7 @@ public:
     virtual void reportControlStart(int isshed, int shedtime, int reductionratio, CtiMessageList  &vgList, std::string cmd = std::string(""), int priority = 0 );
 
     virtual ADDRESSING_COMPARE_RESULT compareAddressing(CtiDeviceGroupBaseSPtr otherGroup);
-    bool compareAddressValues(USHORT addressing, CtiDeviceGroupExpresscom *expGroup);
+    ADDRESSING_COMPARE_RESULT compareAddressValues(USHORT addressing, CtiDeviceGroupExpresscom *expGroup, ADDRESSING_COMPARE_RESULT presumption);
     virtual bool isAParent();
     virtual void addChild(CtiDeviceGroupBaseSPtr child);
     virtual void removeChild(long child);

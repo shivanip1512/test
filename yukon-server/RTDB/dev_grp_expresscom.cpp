@@ -498,28 +498,33 @@ CtiDeviceGroupBase::ADDRESSING_COMPARE_RESULT CtiDeviceGroupExpresscom::compareA
         if( _expresscomGroup.getAddressUsage() == expGroup->_expresscomGroup.getAddressUsage() )
         {
             //They have identical address levels, check every level they have to ensure they are the same.
-            if( compareAddressValues(_expresscomGroup.getAddressUsage(), expGroup) )
-            {
-                retVal = ADDRESSING_EQUIVALENT;
-            }
+            retVal = compareAddressValues(_expresscomGroup.getAddressUsage(), expGroup, ADDRESSING_EQUIVALENT);
         }
-        else if( _expresscomGroup.getAddressUsage() < expGroup->_expresscomGroup.getAddressUsage() &&
-                (_expresscomGroup.getAddressUsage() & expGroup->_expresscomGroup.getAddressUsage()) == _expresscomGroup.getAddressUsage() )
+        else if ( ( _expresscomGroup.getAddressUsage() & expGroup->_expresscomGroup.getAddressUsage()) == _expresscomGroup.getAddressUsage() )
         {
             //This means that *this is potentially the parent of the operand
-            if( compareAddressValues(_expresscomGroup.getAddressUsage(), expGroup) )
-            {
-                retVal = THIS_IS_PARENT;
-            }
+            retVal = compareAddressValues(_expresscomGroup.getAddressUsage(), expGroup, THIS_IS_PARENT);
         }
-        else if( _expresscomGroup.getAddressUsage() > expGroup->_expresscomGroup.getAddressUsage() &&
-                (_expresscomGroup.getAddressUsage() & expGroup->_expresscomGroup.getAddressUsage()) == expGroup->_expresscomGroup.getAddressUsage() )
+        else if( (_expresscomGroup.getAddressUsage() & expGroup->_expresscomGroup.getAddressUsage()) == expGroup->_expresscomGroup.getAddressUsage() )
         {
             //The operand is potentially the parent of *this;
-            if( compareAddressValues(expGroup->_expresscomGroup.getAddressUsage(), expGroup) )
-            {
-                retVal = OPERAND_IS_PARENT;
-            }
+            retVal = compareAddressValues(expGroup->_expresscomGroup.getAddressUsage(), expGroup, OPERAND_IS_PARENT);
+        }
+
+        switch (retVal)
+        {
+        case NO_RELATIONSHIP:
+            CTILOG_DEBUG(dout, _expresscomGroup.getId() << " unrelated to " << expGroup->_expresscomGroup.getId());
+            break;
+        case THIS_IS_PARENT:
+            CTILOG_DEBUG(dout, _expresscomGroup.getId() << " is parent of " << expGroup->_expresscomGroup.getId());
+            break;
+        case OPERAND_IS_PARENT:
+            CTILOG_DEBUG(dout, _expresscomGroup.getId() << " is child of " << expGroup->_expresscomGroup.getId());
+            break;
+        case ADDRESSING_EQUIVALENT:
+            CTILOG_DEBUG(dout, _expresscomGroup.getId() << " is equivelent of " << expGroup->_expresscomGroup.getId());
+            break;
         }
     }
 
@@ -552,9 +557,20 @@ void CtiDeviceGroupExpresscom::reportChildControlStart(int isshed, int shedtime,
     Inherited::reportControlStart(isshed, shedtime, reductionratio, vgList, cmd, controlPriority);
 }
 
-bool CtiDeviceGroupExpresscom::compareAddressValues(USHORT addressing, CtiDeviceGroupExpresscom *expGroup)
+/**
+    This method compares the contents of the address values.
+    If the address is specified (in addressing) it then compares the values for that type 
+    of address.  If they match, the search continutes to the next address type.
+
+    If the address does not match in any address type, it's marked as NO_RELATIONSHIP.
+    
+    If all the addresses match, then we pass back the presumptive relationship from compareAddressing()
+
+    Feeder addressing is special in that we determine if the group is a member of a subset of the parent.
+
+*/
+CtiDeviceGroupBase::ADDRESSING_COMPARE_RESULT CtiDeviceGroupExpresscom::compareAddressValues(USHORT addressing, CtiDeviceGroupExpresscom *expGroup, CtiDeviceGroupBase::ADDRESSING_COMPARE_RESULT presumption)
 {
-    bool retVal = true;
     if( expGroup != NULL )
     {
         int serial = (int)(getExpresscomGroup().getSerial());
@@ -562,36 +578,98 @@ bool CtiDeviceGroupExpresscom::compareAddressValues(USHORT addressing, CtiDevice
         // However horrible this is, this is what is currently expected as seen above in executeRequest
         if(serial != 0)
         {
-            retVal &= (getExpresscomGroup().getSerial() == expGroup->getExpresscomGroup().getSerial());
+            if (getExpresscomGroup().getSerial() != expGroup->getExpresscomGroup().getSerial())
+            {
+                return NO_RELATIONSHIP;
+            }
         }
         else
         {
-            if(addressing & CtiProtocolExpresscom::atSpid)
-                retVal &= (getExpresscomGroup().getServiceProvider() == expGroup->getExpresscomGroup().getServiceProvider());
-            if(addressing & CtiProtocolExpresscom::atGeo)
-                retVal &= (getExpresscomGroup().getGeo() == expGroup->getExpresscomGroup().getGeo());
-            if(addressing & CtiProtocolExpresscom::atSubstation)
-                retVal &= (getExpresscomGroup().getSubstation() == expGroup->getExpresscomGroup().getSubstation());
-            if(addressing & CtiProtocolExpresscom::atFeeder)
-                retVal &= (getExpresscomGroup().getFeeder() == expGroup->getExpresscomGroup().getFeeder());
-            if(addressing & CtiProtocolExpresscom::atZip)
-                retVal &= (getExpresscomGroup().getZip() == expGroup->getExpresscomGroup().getZip());
-            if(addressing & CtiProtocolExpresscom::atUser)
-                retVal &= (getExpresscomGroup().getUda() == expGroup->getExpresscomGroup().getUda());
-            if(addressing & CtiProtocolExpresscom::atProgram)
-                retVal &= (getExpresscomGroup().getProgram() == expGroup->getExpresscomGroup().getProgram());
-            if(addressing & CtiProtocolExpresscom::atSplinter)
-                retVal &= (getExpresscomGroup().getSplinter() == expGroup->getExpresscomGroup().getSplinter());
-            if(addressing & CtiProtocolExpresscom::atLoad)
-                retVal &= (getExpresscomGroup().getLoadMask() == expGroup->getExpresscomGroup().getLoadMask());
+            if (addressing & CtiProtocolExpresscom::atSpid)
+            {
+                if (getExpresscomGroup().getServiceProvider() != expGroup->getExpresscomGroup().getServiceProvider())
+                {
+                    return NO_RELATIONSHIP;
+                }
+            }
+
+            if (addressing & CtiProtocolExpresscom::atGeo)
+            {
+                if (getExpresscomGroup().getGeo() != expGroup->getExpresscomGroup().getGeo())
+                {
+                    return NO_RELATIONSHIP;
+                }
+            }
+
+            if (addressing & CtiProtocolExpresscom::atSubstation)
+            {
+                if (getExpresscomGroup().getSubstation() != expGroup->getExpresscomGroup().getSubstation())
+                {
+                    return NO_RELATIONSHIP;
+                }
+            }
+
+            if (addressing & CtiProtocolExpresscom::atZip)
+            {
+                if (getExpresscomGroup().getZip() != expGroup->getExpresscomGroup().getZip())
+                {
+                    return NO_RELATIONSHIP;
+                }
+            }
+
+            if (addressing & CtiProtocolExpresscom::atUser)
+            {
+                if (getExpresscomGroup().getUda() != expGroup->getExpresscomGroup().getUda())
+                {
+                    return NO_RELATIONSHIP;
+                }
+            }
+
+            if (addressing & CtiProtocolExpresscom::atProgram)
+            {
+                if (getExpresscomGroup().getProgram() != expGroup->getExpresscomGroup().getProgram())
+                {
+                    return NO_RELATIONSHIP;
+                }
+            }
+
+            if (addressing & CtiProtocolExpresscom::atSplinter)
+            {
+                if (getExpresscomGroup().getSplinter() != expGroup->getExpresscomGroup().getSplinter())
+                {
+                    return NO_RELATIONSHIP;
+                }
+            }
+
+            if (addressing & CtiProtocolExpresscom::atLoad)
+            {
+                if (getExpresscomGroup().getLoadMask() != expGroup->getExpresscomGroup().getLoadMask())
+                {
+                    return NO_RELATIONSHIP;
+                }
+            }
+
+            /* Determine if this one is a subset of the other based on the feeder bits. */
+            if (addressing & CtiProtocolExpresscom::atFeeder)
+            {
+                if (getExpresscomGroup().getFeeder() != expGroup->getExpresscomGroup().getFeeder())
+                {
+                    if ((getExpresscomGroup().getFeeder() & expGroup->getExpresscomGroup().getFeeder()) == expGroup->getExpresscomGroup().getFeeder())
+                    {
+                        return THIS_IS_PARENT;
+                    }
+                    else if (getExpresscomGroup().getFeeder() == (expGroup->getExpresscomGroup().getFeeder() & getExpresscomGroup().getFeeder()))
+                    {
+                        return OPERAND_IS_PARENT;
+                    }
+                    /* If neither is a subset of the other, these are disjoint */
+                    return NO_RELATIONSHIP;
+                }
+            }
         }
     }
-    else
-    {
-        retVal = false;
-    }
 
-    return retVal;
+    return presumption;
 }
 
 bool CtiDeviceGroupExpresscom::isAParent()

@@ -118,7 +118,13 @@ BOOST_AUTO_TEST_CASE(test_expresscom_address_comparison)
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, parent->compareAddressing(child));
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, child->compareAddressing(parent));
 
-    parentGrpPtr->getExpresscomGroup().setFeeder(10);
+    parentGrpPtr->getExpresscomGroup().setFeeder(7);    // child is in feeder subset
+    childGrpPtr->getExpresscomGroup().setFeeder(1);
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::THIS_IS_PARENT, parent->compareAddressing(child));
+    BOOST_CHECK_EQUAL(CtiDeviceGroupBase::OPERAND_IS_PARENT, child->compareAddressing(parent));
+
+    parentGrpPtr->getExpresscomGroup().setFeeder(6);    // disjoint set
+    childGrpPtr->getExpresscomGroup().setFeeder(1);
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::NO_RELATIONSHIP, parent->compareAddressing(child));
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::NO_RELATIONSHIP, child->compareAddressing(parent));
 
@@ -150,7 +156,6 @@ BOOST_AUTO_TEST_CASE(test_expresscom_address_comparison)
     childGrpPtr->getExpresscomGroup().setUda(2);
     childGrpPtr->getExpresscomGroup().setProgram(1);
     childGrpPtr->getExpresscomGroup().setSplinter(13);
-
 
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::THIS_IS_PARENT, parent->compareAddressing(child));
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::OPERAND_IS_PARENT, child->compareAddressing(parent));
