@@ -72,10 +72,8 @@
                                             <cti:url var="resendUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/resend"/>
                                             <cm:dropdownOption id="resendConfiguration_${discrepancy.deviceId}" key=".resend" icon="icon-control-repeat-blue" data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:resend"/>
                                             <d:confirm on="#resendConfiguration_${discrepancy.deviceId}" nameKey="resendConfirmation" argument="${discrepancy.paoName}"/>
-                                            <c:if test="${discrepancy.status != 'PENDING' && discrepancy.actual.attributes.size() > 0}">
-                                                <cm:dropdownOption id="acceptConfiguration_${discrepancy.deviceId}" key=".accept" icon="icon-accept" data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:accept"/>
-                                                <d:confirm on="#acceptConfiguration_${discrepancy.deviceId}" nameKey="acceptConfirmation" argument="${discrepancy.paoName}"/>
-                                            </c:if>
+                                            <cm:dropdownOption id="acceptConfiguration_${discrepancy.deviceId}" key=".accept" icon="icon-accept" data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:accept"/>
+                                            <d:confirm on="#acceptConfiguration_${discrepancy.deviceId}" nameKey="acceptConfirmation" argument="${discrepancy.paoName}"/>
                                             <cm:dropdownOption id="removeConfiguration_${discrepancy.deviceId}" key=".remove" icon="icon-cross" data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:remove"/>
                                             <d:confirm on="#removeConfiguration_${discrepancy.deviceId}" nameKey="removeConfirmation" argument="${discrepancy.paoName}"/>
                                         </cm:dropdown>
