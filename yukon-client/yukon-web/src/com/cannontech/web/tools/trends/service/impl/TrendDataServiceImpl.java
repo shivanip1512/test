@@ -48,12 +48,9 @@ public class TrendDataServiceImpl implements TrendDataService {
         Range<Instant> instantRange = Range.inclusive(start, end);
         int maxRows = globalSettingDao.getInteger(GlobalSettingType.TRENDS_READING_PER_POINT);
         if (maxRows != 0) {
-            List<PointValueHolder> data = rawPointHistoryDao.getLimitedPointData(pointId,
-                                                          instantRange,
-                                                          false,
-                                                          Order.REVERSE,
-                                                          maxRows);
-            ArrayList<PointValueHolder> values = new ArrayList<PointValueHolder>(data);
+            List<PointValueHolder> values =
+                new ArrayList<PointValueHolder>(rawPointHistoryDao.getLimitedPointData(pointId, instantRange, false,
+                    Order.REVERSE, maxRows));
             Collections.reverse(values);
             return values;
         } else {
