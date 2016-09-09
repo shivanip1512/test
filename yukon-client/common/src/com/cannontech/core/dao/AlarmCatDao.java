@@ -6,22 +6,12 @@ import com.cannontech.database.data.lite.LiteAlarmCategory;
 
 public interface AlarmCatDao {
 
-    /**
-     * Loads from database directly.
-     */
     public abstract LiteAlarmCategory getAlarmCategory(int alarmCategoryId);
-    /**
-     * Loads from databaseCache
-     */
-    public abstract LiteAlarmCategory getAlarmCategoryFromCache(int alarmCategoryId);
+
+    public abstract int getAlarmCategoryId(String categoryName);
 
     /**
-     * Loads from databaseCache
-     */
-    public abstract int getAlarmCategoryIdFromCache(String categoryName);
-
-    /**
-     * Loads from databaseCache
+     * Returns a sorted (by AlarmCategoryId) list of alarm categories
      */
     public abstract List<LiteAlarmCategory> getAlarmCategories();
 }

@@ -25,7 +25,6 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.database.TransactionType;
-import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.point.PointBase;
@@ -134,7 +133,6 @@ public class PointEditorServiceImpl implements PointEditorService {
         int ptType = PointTypes.getType(pointBase.getPoint().getPointType());
 
         ArrayList<AlarmTableEntry> notifEntries = new ArrayList<>();
-        List<LiteAlarmCategory> allAlarmStates = DefaultDatabaseCache.getInstance().getAllAlarmCategories();
         
         // be sure we have a 32 character string
         String alarmStates = pointBase.getPointAlarming().getAlarmStates().length() != PointAlarming.ALARM_STATE_COUNT ?
@@ -185,7 +183,7 @@ public class PointEditorServiceImpl implements PointEditorService {
      * Helper method for use within getAlarmTableEntries
      */
     private void setupAlarmTableEntry(AlarmTableEntry entry, char gen, char category) {
-        LiteAlarmCategory liteAlarmCategory = alarmCatDao.getAlarmCategoryFromCache(category);
+        LiteAlarmCategory liteAlarmCategory = alarmCatDao.getAlarmCategory(category);
         entry.setGenerate(liteAlarmCategory.getCategoryName());
         entry.setExcludeNotify(PointAlarming.getExcludeNotifyString(gen));
     }
@@ -252,7 +250,7 @@ public class PointEditorServiceImpl implements PointEditorService {
         String exclNotify = "";
 
         for (AlarmTableEntry entry : alarmTableEntries) {
-            alarmStates += (char) alarmCatDao.getAlarmCategoryIdFromCache(entry.getGenerate());
+            alarmStates += (char) alarmCatDao.getAlarmCategoryId(entry.getGenerate());
             exclNotify += PointAlarming.getExcludeNotifyChar(entry.getExcludeNotify());
         }
 

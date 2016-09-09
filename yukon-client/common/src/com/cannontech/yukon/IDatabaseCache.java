@@ -6,7 +6,6 @@ import java.util.Set;
 
 import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteBaseline;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -38,8 +37,6 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 public interface IDatabaseCache {
     
     DBChangeMsg[] createDBChangeMessages(CTIDbChange newItem, DbChangeType dbChangeType);
-
-    List<LiteAlarmCategory> getAllAlarmCategories();
 
     List<LiteYukonPAObject> getAllCapControlFeeders();
 
@@ -140,8 +137,6 @@ public interface IDatabaseCache {
     LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg, boolean noObjectNeeded);
 
     LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg);
-
-    void releaseAllAlarmCategories();
 
     void releaseAllCache();
 

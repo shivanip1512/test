@@ -24,6 +24,7 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnitMeasureDao;
@@ -75,6 +76,7 @@ public class PointController {
     @Autowired private PointValidator pointValidator;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private StateGroupDao stateGroupDao;
+    @Autowired private AlarmCatDao alarmCatDao;
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
@@ -181,7 +183,7 @@ public class PointController {
 
         model.addAttribute("notificationGroups", notificationGroups);
 
-        model.addAttribute("alarmCategories", dbCache.getAllAlarmCategories());
+        model.addAttribute("alarmCategories", alarmCatDao.getAlarmCategories());
 
         List<List<Map<String, Object>>> fdrProperties = new ArrayList<>();
         for (FDRTranslation fdr : base.getPointFDRList()) {

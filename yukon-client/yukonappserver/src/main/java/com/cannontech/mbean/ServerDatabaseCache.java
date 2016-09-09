@@ -19,7 +19,6 @@ import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
@@ -31,7 +30,6 @@ import com.cannontech.core.dao.YukonGroupDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.image.dao.YukonImageDao;
 import com.cannontech.core.users.dao.UserGroupDao;
-import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteBaseline;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -62,7 +60,6 @@ import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.yukon.IDatabaseCache;
-import com.cannontech.yukon.server.cache.AlarmCategoryLoader;
 import com.cannontech.yukon.server.cache.BaselineLoader;
 import com.cannontech.yukon.server.cache.CICustomerLoader;
 import com.cannontech.yukon.server.cache.ConfigLoader;
@@ -90,7 +87,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     // stores a soft reference to the cache
     private static ServerDatabaseCache cache;
     
-    @Autowired private AlarmCatDao alarmCatDao;
     @Autowired private CommandDao commandDao;
     @Autowired private ContactDao contactDao;
     @Autowired private ContactNotificationDao contactNotificationDao;
@@ -113,7 +109,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     private List<LitePoint> allSystemPoints;
     private List<LiteNotificationGroup> allNotificationGroups;
     
-    private List<LiteAlarmCategory> allAlarmCategories;
     private List<LiteGraphDefinition> allGraphDefinitions;
     private List<LiteYukonPAObject> allMcts;
     private List<LiteHolidaySchedule> allHolidaySchedules;
@@ -159,17 +154,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
     @Override
     public synchronized DBChangeMsg[] createDBChangeMessages(CTIDbChange newItem, DbChangeType dbChangeType) {
         return newItem.getDBChangeMsgs(dbChangeType);
-    }
-    
-    @Override
-    public synchronized List<LiteAlarmCategory> getAllAlarmCategories() {
-        if (allAlarmCategories != null) {
-            return allAlarmCategories;
-        }
-        allAlarmCategories = new ArrayList<>();
-        AlarmCategoryLoader alarmStateLoader = new AlarmCategoryLoader(allAlarmCategories, databaseAlias);
-        alarmStateLoader.run();
-        return allAlarmCategories;
     }
     
     @Override
@@ -722,59 +706,7 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         return cache;
     }
 
-    private synchronized LiteBase handleAlarmCategoryChange(DbChangeType dbChangeType, int id) {
-        boolean alreadyAdded = false;
-        LiteBase lBase = null;
 
-        // if the storage is not already loaded, we must not care about it
-        if (allAlarmCategories == null) {
-            return lBase;
-        }
-
-        switch (dbChangeType) {
-        case ADD:
-            for (LiteAlarmCategory liteAlarmCategory : allAlarmCategories) {
-                if (liteAlarmCategory.getAlarmCategoryId() == id) {
-                    alreadyAdded = true;
-                    lBase = liteAlarmCategory;
-                    break;
-                }
-            }
-            if (!alreadyAdded) {
-                
-                LiteAlarmCategory la = alarmCatDao.getAlarmCategory(id);
-                allAlarmCategories.add(la);
-                lBase = la;
-            }
-            break;
-
-        case UPDATE:
-            for (LiteAlarmCategory liteAlarmCategory : allAlarmCategories) {
-                if (liteAlarmCategory.getAlarmCategoryId() == id) {
-                    allAlarmCategories.remove(liteAlarmCategory);
-                    lBase = alarmCatDao.getAlarmCategory(id);
-                    allAlarmCategories.add((LiteAlarmCategory)lBase);
-                    break;
-                }
-            }
-            break;
-        case DELETE:
-            for (LiteAlarmCategory liteAlarmCategory : allAlarmCategories) {
-                if (liteAlarmCategory.getAlarmCategoryId() == id) {
-                    allAlarmCategories.remove(liteAlarmCategory);
-                    lBase = liteAlarmCategory;
-                    break;
-                }
-            }
-            break;
-        default:
-            releaseAllAlarmCategories();
-            break;
-        }
-
-        return lBase;
-    }
-    
     private synchronized LiteBase handleYukonImageChange(DbChangeType type, int id) {
         
         if (type == DbChangeType.ADD || type == DbChangeType.UPDATE) {
@@ -897,8 +829,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
             } else if (dbCategory.equalsIgnoreCase(PaoCategory.ROUTE.getDbString())) {
                 allRoutes = null;
             }
-        } else if (database == DBChangeMsg.CHANGE_ALARM_CATEGORY_DB) {
-            retLBase = handleAlarmCategoryChange(dbChangeType, id);
         } else if (database == DBChangeMsg.CHANGE_YUKON_IMAGE) {
             retLBase = handleYukonImageChange(dbChangeType, id);
         } else if (database == DBChangeMsg.CHANGE_NOTIFICATION_GROUP_DB) {
@@ -1626,11 +1556,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         return lBase;
     }
     
-    @Override
-    public synchronized void releaseAllAlarmCategories() {
-        allAlarmCategories = null;
-    }
-    
     /**
      * Drop all the junk we have accumulated.
      * Please be keeping this method in sync
@@ -1643,7 +1568,6 @@ public class ServerDatabaseCache extends CTIMBeanBase implements IDatabaseCache 
         allNotificationGroups = null;
         allContactNotifsMap = null;
         
-        allAlarmCategories = null;
         allGraphDefinitions = null;
         allMcts = null;
         allHolidaySchedules = null;

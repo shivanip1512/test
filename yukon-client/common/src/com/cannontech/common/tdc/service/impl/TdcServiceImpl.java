@@ -464,7 +464,7 @@ public class TdcServiceImpl implements TdcService {
     }
        
     private List<DisplayData> getCustomDisplayDataByAlarmCategory(Display display) {
-        int catId = alarmCatDao.getAlarmCategoryIdFromCache(display.getName());
+        int catId = alarmCatDao.getAlarmCategoryId(display.getName());
         Set<Signal> signals = asyncDynamicDataSource.getCachedSignalsByCategory(catId);
         return getDisplayData(signals, true);
     }

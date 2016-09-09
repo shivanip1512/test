@@ -11,10 +11,10 @@ import java.util.Vector;
 
 import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.cache.DefaultDatabaseCache;
+import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteComparators;
-import com.cannontech.yukon.IDatabaseCache;
+import com.cannontech.spring.YukonSpringHook;
 
 public class AlarmCategoryCheckBoxTreeModel extends DBTreeModel implements Checkable
 {
@@ -68,61 +68,29 @@ public class AlarmCategoryCheckBoxTreeModel extends DBTreeModel implements Check
         runUpdate();
     }
     
-    /**
-     * Insert the method's description here.
-     * Creation date: (4/24/2002 9:24:01 AM)
-     * @return java.util.List
-     */
-    /* This method will return what List of LiteYukonPAObjects we 
-       want to use.  Example, a device tree model will use :
-           cache.getAllDevices()
-       and a LoadManagement tree model will use:
-           cache.getAllLoadManagement()
-
-        Override this method when using a differnt List
-    */
-       
-    protected synchronized List getCacheList(IDatabaseCache cache ) 
-    {
-        return cache.getAllAlarmCategories();
-    }
-    
-    /**
-     * Insert the method's description here.
-     * Creation date: (4/16/2002 5:16:19 PM)
-     */
     // Override me if you want a sub class to do something different.
     protected synchronized void runUpdate() 
     {
-        IDatabaseCache cache = DefaultDatabaseCache.getInstance();
+        List<LiteAlarmCategory> alarmCats = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategories();
+        Collections.sort(alarmCats, LiteComparators.liteBaseIDComparator);
+        ListIterator alarmCatsIter = alarmCats.listIterator();
         
-        synchronized (cache)
+        alarmCategoryMap = new HashMap();
+        
+        DBTreeNode rootNode = (DBTreeNode) getRoot();
+        rootNode.removeAllChildren();
+        
+        while ( alarmCatsIter.hasNext())
         {
-            List alarmCats = getCacheList(cache);
-            Collections.sort(alarmCats, LiteComparators.liteBaseIDComparator);
-            ListIterator alarmCatsIter = alarmCats.listIterator();
-            
-            alarmCategoryMap = new HashMap();
-            
-            DBTreeNode rootNode = (DBTreeNode) getRoot();
-            rootNode.removeAllChildren();
-            
-            int deviceDevID;
-            int deviceClass;
-            
-            while ( alarmCatsIter.hasNext())
+            LiteAlarmCategory alarmCategory = (LiteAlarmCategory)alarmCatsIter.next();
+            // exclude the "(none)" entry
+            if( !alarmCategory.getCategoryName().equalsIgnoreCase(CtiUtilities.STRING_NONE))
             {
-                LiteAlarmCategory alarmCategory = (LiteAlarmCategory)alarmCatsIter.next();
-                // exclude the "(none)" entry
-                if( !alarmCategory.getCategoryName().equalsIgnoreCase(CtiUtilities.STRING_NONE))
-                {
-                    DBTreeNode deviceNode = getNewNode(alarmCategory);
-                    rootNode.add(deviceNode);
-                    alarmCategoryMap.put( alarmCategory.getLiteID(), deviceNode );
-                }
-            } //for loop
-            
-        } //synch
+                DBTreeNode deviceNode = getNewNode(alarmCategory);
+                rootNode.add(deviceNode);
+                alarmCategoryMap.put( alarmCategory.getLiteID(), deviceNode );
+            }
+        } //for loop
         reload();   
     }
     

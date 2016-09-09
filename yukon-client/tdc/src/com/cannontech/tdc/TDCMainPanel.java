@@ -50,6 +50,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
+import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.TagDao;
 import com.cannontech.core.image.dao.YukonImageDao;
@@ -879,29 +880,25 @@ private void fireJComboCurrentDisplayAction_actionPerformed(java.util.EventObjec
  */
 private Object[][] getAlarmStatesCache()
 {
-	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	java.util.List alarmStates = cache.getAllAlarmCategories();
+	java.util.List alarmStates = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategories();
 	Object[][] data = null;
 	
-	synchronized(cache)
+	// We want do disclude the EVENT alarmStateId which is 1
+	data = new Object[alarmStates.size()-1][5];
+	long displayNumber = Display.GLOBAL_ALARM_DISPLAY + 1;  // always one after the global display alarm display number
+	int indx = 0;
+
+	for( int i = 0; i < alarmStates.size(); i++ )
 	{
-		// We want do disclude the EVENT alarmStateId which is 1
-		data = new Object[alarmStates.size()-1][5];
-		long displayNumber = Display.GLOBAL_ALARM_DISPLAY + 1;  // always one after the global display alarm display number
-		int indx = 0;
+		LiteAlarmCategory liteAlarm = (LiteAlarmCategory)alarmStates.get(i);
+		if( liteAlarm.getAlarmCategoryId() == Signal.EVENT_SIGNAL )
+			continue;
 
-		for( int i = 0; i < alarmStates.size(); i++ )
-		{
-			LiteAlarmCategory liteAlarm = (LiteAlarmCategory)alarmStates.get(i);
-			if( liteAlarm.getAlarmCategoryId() == Signal.EVENT_SIGNAL )
-				continue;
-
-			data[indx][0] = liteAlarm.getCategoryName();
-			data[indx][1] = String.valueOf( displayNumber++ );
-			data[indx][2] = liteAlarm.getCategoryName();
-			data[indx][3] = Display.DISPLAY_TYPES[Display.ALARMS_AND_EVENTS_TYPE_INDEX];
-			data[indx++][4] = liteAlarm.getCategoryName();
-		}
+		data[indx][0] = liteAlarm.getCategoryName();
+		data[indx][1] = String.valueOf( displayNumber++ );
+		data[indx][2] = liteAlarm.getCategoryName();
+		data[indx][3] = Display.DISPLAY_TYPES[Display.ALARMS_AND_EVENTS_TYPE_INDEX];
+		data[indx++][4] = liteAlarm.getCategoryName();
 	}
 
 	if( alarmStates.size() <= 1 )

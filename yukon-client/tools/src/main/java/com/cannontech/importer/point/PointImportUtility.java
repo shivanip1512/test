@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
@@ -30,7 +31,6 @@ import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointLimit;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yukon.IDatabaseCache;
 
 
 //THIS ENTIRE CLASS SHOULD BE REDONE AT SOME POINT.  DO NOT HANDLE CSV FILES LIKE THIS!
@@ -423,54 +423,50 @@ public class PointImportUtility
 			String alarmStates = new String();
 			int inputCounter = 0;
 				
-			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-			synchronized( cache )	
+			List<LiteAlarmCategory> liteAlarms = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategories();
+			
+			int alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
+			
+			while(tokenizer.hasMoreTokens())
 			{
-				List<LiteAlarmCategory> liteAlarms = cache.getAllAlarmCategories();
+				inputCounter++;
 				
-				int alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
-				
-				while(tokenizer.hasMoreTokens())
+				alarmCategory = tokenizer.nextElement().toString();
+				tokenCounter++;
+				if(emptyField(alarmCategory))
 				{
-					inputCounter++;
-					
-					alarmCategory = tokenizer.nextElement().toString();
-					tokenCounter++;
-					if(emptyField(alarmCategory))
-					{
-						alarmCategory = "(none)";
-					}
-					if(alarmCategory.compareTo("none") == 0)
-						alarmCategory = "(none)";
-										
-					for( int j = 0; j < liteAlarms.size(); j++ )
-					{
-						if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
-						{
-							alarmCategoryID = liteAlarms.get(j).getAlarmCategoryId();
-							break;
-						}
-					}
-					
-					//get the char value to put into the alarm state string for the database
-					char generate = (char)alarmCategoryID;
-					alarmStates += generate;
+					alarmCategory = "(none)";
+				}
+				if(alarmCategory.compareTo("none") == 0)
+					alarmCategory = "(none)";
 									
-				}	
-					
-				//fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
-				alarmStates += com.cannontech.database.db.point.PointAlarming.DEFAULT_ALARM_STATES.substring(inputCounter);
-				//System.out.println(alarmStates);
-				analogPoint.getPointAlarming().setAlarmStates(alarmStates);
-				analogPoint.getPointAlarming().setExcludeNotifyStates(com.cannontech.database.db.point.PointAlarming.DEFAULT_EXCLUDE_NOTIFY);
-				analogPoint.getPointAlarming().setNotifyOnAcknowledge("N");	
-				analogPoint.getPointAlarming().setPointID(pointID);
-			
-			
-			multi.getDBPersistentVector().add( analogPoint );
-			++addCount;
-			System.out.println("POINT #: " + (addCount) + " ADDED TO THE MULTI OBJECT.");
-			}
+				for( int j = 0; j < liteAlarms.size(); j++ )
+				{
+					if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
+					{
+						alarmCategoryID = liteAlarms.get(j).getAlarmCategoryId();
+						break;
+					}
+				}
+				
+				//get the char value to put into the alarm state string for the database
+				char generate = (char)alarmCategoryID;
+				alarmStates += generate;
+								
+			}	
+				
+			//fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
+			alarmStates += com.cannontech.database.db.point.PointAlarming.DEFAULT_ALARM_STATES.substring(inputCounter);
+			//System.out.println(alarmStates);
+			analogPoint.getPointAlarming().setAlarmStates(alarmStates);
+			analogPoint.getPointAlarming().setExcludeNotifyStates(com.cannontech.database.db.point.PointAlarming.DEFAULT_EXCLUDE_NOTIFY);
+			analogPoint.getPointAlarming().setNotifyOnAcknowledge("N");	
+			analogPoint.getPointAlarming().setPointID(pointID);
+		
+		
+		multi.getDBPersistentVector().add( analogPoint );
+		++addCount;
+		System.out.println("POINT #: " + (addCount) + " ADDED TO THE MULTI OBJECT.");
 		}
 		boolean success = writeToSQLDatabase(multi);
 
@@ -838,54 +834,50 @@ public class PointImportUtility
             String alarmStates = new String();
             int inputCounter = 0;
                 
-            IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-            synchronized( cache )   
+            List<LiteAlarmCategory> liteAlarms = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategories();
+            
+            int alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
+            
+            while(tokenizer.hasMoreTokens())
             {
-                List<LiteAlarmCategory> liteAlarms = cache.getAllAlarmCategories();
+                inputCounter++;
                 
-                int alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
-                
-                while(tokenizer.hasMoreTokens())
+                alarmCategory = tokenizer.nextElement().toString();
+                tokenCounter++;
+                if(emptyField(alarmCategory))
                 {
-                    inputCounter++;
-                    
-                    alarmCategory = tokenizer.nextElement().toString();
-                    tokenCounter++;
-                    if(emptyField(alarmCategory))
-                    {
-                        alarmCategory = "(none)";
-                    }
-                    if(alarmCategory.compareTo("none") == 0)
-                        alarmCategory = "(none)";
-                                        
-                    for( int j = 0; j < liteAlarms.size(); j++ )
-                    {
-                        if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
-                        {
-                            alarmCategoryID = liteAlarms.get(j).getAlarmCategoryId();
-                            break;
-                        }
-                    }
-                    
-                    //get the char value to put into the alarm state string for the database
-                    char generate = (char)alarmCategoryID;
-                    alarmStates += generate;
+                    alarmCategory = "(none)";
+                }
+                if(alarmCategory.compareTo("none") == 0)
+                    alarmCategory = "(none)";
                                     
-                }   
-                    
-                //fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
-                alarmStates += com.cannontech.database.db.point.PointAlarming.DEFAULT_ALARM_STATES.substring(inputCounter);
-                //System.out.println(alarmStates);
-                accumulatorPoint.getPointAlarming().setAlarmStates(alarmStates);
-                accumulatorPoint.getPointAlarming().setExcludeNotifyStates(com.cannontech.database.db.point.PointAlarming.DEFAULT_EXCLUDE_NOTIFY);
-                accumulatorPoint.getPointAlarming().setNotifyOnAcknowledge("N"); 
-                accumulatorPoint.getPointAlarming().setPointID(pointID);
-            
-            
-            multi.getDBPersistentVector().add( accumulatorPoint );
-            ++addCount;
-            System.out.println("POINT #: " + (addCount) + " ADDED TO THE MULTI OBJECT.");
-            }
+                for( int j = 0; j < liteAlarms.size(); j++ )
+                {
+                    if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
+                    {
+                        alarmCategoryID = liteAlarms.get(j).getAlarmCategoryId();
+                        break;
+                    }
+                }
+                
+                //get the char value to put into the alarm state string for the database
+                char generate = (char)alarmCategoryID;
+                alarmStates += generate;
+                                
+            }   
+                
+            //fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
+            alarmStates += com.cannontech.database.db.point.PointAlarming.DEFAULT_ALARM_STATES.substring(inputCounter);
+            //System.out.println(alarmStates);
+            accumulatorPoint.getPointAlarming().setAlarmStates(alarmStates);
+            accumulatorPoint.getPointAlarming().setExcludeNotifyStates(com.cannontech.database.db.point.PointAlarming.DEFAULT_EXCLUDE_NOTIFY);
+            accumulatorPoint.getPointAlarming().setNotifyOnAcknowledge("N"); 
+            accumulatorPoint.getPointAlarming().setPointID(pointID);
+        
+        
+        multi.getDBPersistentVector().add( accumulatorPoint );
+        ++addCount;
+        System.out.println("POINT #: " + (addCount) + " ADDED TO THE MULTI OBJECT.");
         }
         boolean success = writeToSQLDatabase(multi);
 
@@ -1255,118 +1247,114 @@ public class PointImportUtility
             String alarmStates = new String();
             int inputCounter = 0;
                 
-            IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-            synchronized( cache )   
-            {
-                List<LiteAlarmCategory> liteAlarms = cache.getAllAlarmCategories();
-                
-                int alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
+            List<LiteAlarmCategory> liteAlarms = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategories();
+            
+            int alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
 
-                for( int x = 0; x < 4; x++)
+            for( int x = 0; x < 4; x++)
+            {
+                inputCounter++;
+                
+                alarmCategory = tokenizer.nextElement().toString();
+                tokenCounter++;
+                if(emptyField(alarmCategory))
                 {
-                    inputCounter++;
-                    
-                    alarmCategory = tokenizer.nextElement().toString();
-                    tokenCounter++;
-                    if(emptyField(alarmCategory))
-                    {
-                        alarmCategory = "(none)";
-                    }
-                    if(alarmCategory.compareTo("none") == 0)
-                        alarmCategory = "(none)";
-                                        
-                    for( int j = 0; j < liteAlarms.size(); j++ )
-                    {
-                        if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
-                        {
-                            alarmCategoryID = liteAlarms.get(j).getAlarmCategoryId();
-                            break;
-                        }
-                    }
-                    
-                    //get the char value to put into the alarm state string for the database
-                    char generate = (char)alarmCategoryID;
-                    alarmStates += generate;
+                    alarmCategory = "(none)";
+                }
+                if(alarmCategory.compareTo("none") == 0)
+                    alarmCategory = "(none)";
                                     
-                }   
-                    
-                //fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
-                alarmStates += com.cannontech.database.db.point.PointAlarming.DEFAULT_ALARM_STATES.substring(inputCounter);
-                //System.out.println(alarmStates);
-                calcPoint.getPointAlarming().setAlarmStates(alarmStates);
-                calcPoint.getPointAlarming().setExcludeNotifyStates(com.cannontech.database.db.point.PointAlarming.DEFAULT_EXCLUDE_NOTIFY);
-                calcPoint.getPointAlarming().setNotifyOnAcknowledge("N"); 
-                calcPoint.getPointAlarming().setPointID(pointID);
-             
-                //Read in Calc table things;
-                boolean ok = true;
-                int cmpOrder = 1;
-                do{
-                    String FunctionType = null;
-                    String DeviceName = null;
-                    String PointName = null;
-                    String OperationType = null;
-                    String temp = null;
-                    
-                    if( tokenizer.hasMoreElements() ){
-                        FunctionType = tokenizer.nextElement().toString();
-                    }else{
-                        ok = false;
+                for( int j = 0; j < liteAlarms.size(); j++ )
+                {
+                    if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
+                    {
+                        alarmCategoryID = liteAlarms.get(j).getAlarmCategoryId();
                         break;
                     }
-                    if( tokenizer.hasMoreElements() ){
-                        temp = tokenizer.nextElement().toString();
-                        int pos = temp.indexOf('/');
-                        if( pos != -1){
-                            DeviceName = temp.substring(0, pos);
-                            PointName = temp.substring(pos+1,temp.length());
-                        }//assuming these are correct.
-                    }else{
-                        ok = false;
-                    }                        
-                    if( tokenizer.hasMoreElements() ){
-                        OperationType = tokenizer.nextElement().toString();
-                    }else{
-                        ok = false;
-                    }
-                    // CtiUtilities.NONE_ZERO_ID
-                    int pid = 0;
-                    if( FunctionType.compareTo("Constant") == 0 || temp.compareTo("@") == 0 )
-                    {
-                        pid = 0;
-                    }else{
-                        pid = findPointIdOnDeviceName(PointName,DeviceName);
-                    }
-                    CalcComponent cmp= new CalcComponent();
-                    cmp.setPointID( pointID );
-                    cmp.setComponentOrder(cmpOrder);
-                    cmp.setComponentType(FunctionType);
-                    cmp.setComponentPointID(pid);
-                    if( FunctionType.compareTo("Function") == 0)
-                        cmp.setOperation("(none)");
-                    else
-                        cmp.setOperation(OperationType);
-                    if( FunctionType.compareTo("Constant") == 0 )
-                        cmp.setConstant(Double.parseDouble(temp) );
-                    else
-                        cmp.setConstant( new Double(0) );
-                    if( FunctionType.compareTo("Function") == 0)
-                        cmp.setFunctionName(OperationType);
-                    else
-                        cmp.setFunctionName("(none)");
-                    System.out.println( cmp.getPointID() + " " + cmp.getComponentOrder() + " " + cmp.getComponentType() + " " + 
-                            cmp.getComponentPointID() + " " + cmp.getOperation() + " " + cmp.getConstant() + " " + cmp.getFunctionName() );
-                    
-                    //add object to vector
-                    calcPoint.getCalcComponents().add(cmp);
-                    
-                    cmpOrder++;
-                }while(ok);
+                }
                 
-                multi.getDBPersistentVector().add( calcPoint );
-                ++addCount;
-                System.out.println("POINT #: " + (addCount) + " ADDED TO THE MULTI OBJECT.");
-            }
+                //get the char value to put into the alarm state string for the database
+                char generate = (char)alarmCategoryID;
+                alarmStates += generate;
+                                
+            }   
+                
+            //fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
+            alarmStates += com.cannontech.database.db.point.PointAlarming.DEFAULT_ALARM_STATES.substring(inputCounter);
+            //System.out.println(alarmStates);
+            calcPoint.getPointAlarming().setAlarmStates(alarmStates);
+            calcPoint.getPointAlarming().setExcludeNotifyStates(com.cannontech.database.db.point.PointAlarming.DEFAULT_EXCLUDE_NOTIFY);
+            calcPoint.getPointAlarming().setNotifyOnAcknowledge("N"); 
+            calcPoint.getPointAlarming().setPointID(pointID);
+         
+            //Read in Calc table things;
+            boolean ok = true;
+            int cmpOrder = 1;
+            do{
+                String FunctionType = null;
+                String DeviceName = null;
+                String PointName = null;
+                String OperationType = null;
+                String temp = null;
+                
+                if( tokenizer.hasMoreElements() ){
+                    FunctionType = tokenizer.nextElement().toString();
+                }else{
+                    ok = false;
+                    break;
+                }
+                if( tokenizer.hasMoreElements() ){
+                    temp = tokenizer.nextElement().toString();
+                    int pos = temp.indexOf('/');
+                    if( pos != -1){
+                        DeviceName = temp.substring(0, pos);
+                        PointName = temp.substring(pos+1,temp.length());
+                    }//assuming these are correct.
+                }else{
+                    ok = false;
+                }                        
+                if( tokenizer.hasMoreElements() ){
+                    OperationType = tokenizer.nextElement().toString();
+                }else{
+                    ok = false;
+                }
+                // CtiUtilities.NONE_ZERO_ID
+                int pid = 0;
+                if( FunctionType.compareTo("Constant") == 0 || temp.compareTo("@") == 0 )
+                {
+                    pid = 0;
+                }else{
+                    pid = findPointIdOnDeviceName(PointName,DeviceName);
+                }
+                CalcComponent cmp= new CalcComponent();
+                cmp.setPointID( pointID );
+                cmp.setComponentOrder(cmpOrder);
+                cmp.setComponentType(FunctionType);
+                cmp.setComponentPointID(pid);
+                if( FunctionType.compareTo("Function") == 0)
+                    cmp.setOperation("(none)");
+                else
+                    cmp.setOperation(OperationType);
+                if( FunctionType.compareTo("Constant") == 0 )
+                    cmp.setConstant(Double.parseDouble(temp) );
+                else
+                    cmp.setConstant( new Double(0) );
+                if( FunctionType.compareTo("Function") == 0)
+                    cmp.setFunctionName(OperationType);
+                else
+                    cmp.setFunctionName("(none)");
+                System.out.println( cmp.getPointID() + " " + cmp.getComponentOrder() + " " + cmp.getComponentType() + " " + 
+                        cmp.getComponentPointID() + " " + cmp.getOperation() + " " + cmp.getConstant() + " " + cmp.getFunctionName() );
+                
+                //add object to vector
+                calcPoint.getCalcComponents().add(cmp);
+                
+                cmpOrder++;
+            }while(ok);
+            
+            multi.getDBPersistentVector().add( calcPoint );
+            ++addCount;
+            System.out.println("POINT #: " + (addCount) + " ADDED TO THE MULTI OBJECT.");
         }
         boolean success = writeToSQLDatabase(multi);
 
@@ -1553,39 +1541,34 @@ public class PointImportUtility
 			String alarmStates = new String();
 			int inputCounter = 0;
 				
-			IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-			synchronized( cache )	
+			List<LiteAlarmCategory> liteAlarms = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategories();
+			
+			int alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
+			
+			while(tokenizer.hasMoreTokens())
 			{
-				List<LiteAlarmCategory> liteAlarms = cache.getAllAlarmCategories();
+				inputCounter++;
 				
-				int alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
-				
-				while(tokenizer.hasMoreTokens())
+				alarmCategory = tokenizer.nextElement().toString();
+				tokenCounter++;
+				if(emptyField(alarmCategory))
 				{
-					inputCounter++;
+					alarmCategory = "(none)";
+				}
+				for( int j = 0; j < liteAlarms.size(); j++ )
+				{
+					alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
 					
-					alarmCategory = tokenizer.nextElement().toString();
-					tokenCounter++;
-					if(emptyField(alarmCategory))
+					if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
 					{
-						alarmCategory = "(none)";
+						alarmCategoryID = liteAlarms.get(j).getAlarmCategoryId();
+						break;
 					}
-					for( int j = 0; j < liteAlarms.size(); j++ )
-					{
-						alarmCategoryID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
-						
-						if(liteAlarms.get(j).getCategoryName().compareTo(alarmCategory) == 0)
-						{
-							alarmCategoryID = liteAlarms.get(j).getAlarmCategoryId();
-							break;
-						}
-					}
-					
-					//get the char value to put into the alarm state string for the database
-					char generate = (char)alarmCategoryID;
-					alarmStates += generate;
-									
-				}	
+				}
+				
+				//get the char value to put into the alarm state string for the database
+				char generate = (char)alarmCategoryID;
+				alarmStates += generate;
 			
 			//fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
 			alarmStates += com.cannontech.database.db.point.PointAlarming.DEFAULT_ALARM_STATES.substring(inputCounter);

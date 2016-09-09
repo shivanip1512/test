@@ -1,5 +1,7 @@
 package com.cannontech.dbeditor.editor.point;
 
+import java.util.List;
+
 /**
  * This type was created in VisualAge.
  */
@@ -7,7 +9,9 @@ package com.cannontech.dbeditor.editor.point;
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
+import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.StateGroupDao;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteNotificationGroup;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -365,39 +369,35 @@ public Object getValue(Object val)
 	String excludeNotifyState = new String();
 
 	int i = 0;
-	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized( cache )	
+	List<LiteAlarmCategory> liteAlarmStates = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategories();
+	
+	for( i = 0; i < getJTableAlarmStates().getRowCount(); i++ )
 	{
-		java.util.List liteAlarmStates = cache.getAllAlarmCategories();
+		int alarmStateID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
 		
-		for( i = 0; i < getJTableAlarmStates().getRowCount(); i++ )
+		for( int j = 0; j < liteAlarmStates.size(); j++ )
 		{
-			int alarmStateID = com.cannontech.database.db.point.PointAlarming.NONE_NOTIFICATIONID;
-			
-			for( int j = 0; j < liteAlarmStates.size(); j++ )
+			if( ((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarmStates.get(j)).getCategoryName() == getTableModel().getGenerateAt(i) )
 			{
-				if( ((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarmStates.get(j)).getCategoryName() == getTableModel().getGenerateAt(i) )
-				{
-					alarmStateID = ((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarmStates.get(j)).getAlarmCategoryId();
-					break;
-				}
+				alarmStateID = ((com.cannontech.database.data.lite.LiteAlarmCategory)liteAlarmStates.get(j)).getAlarmCategoryId();
+				break;
 			}
-				
-			char generate = (char)alarmStateID;
-			String notify = getTableModel().getExcludeNotifyAt(i);
-
-			alarmStates += generate;
-			
-			if(notify.equals(AlarmNotificationTypes.EXCLUDE_NOTIFY.getDbString()))
-				excludeNotifyState += 'E';
-			else if(notify.equals(AlarmNotificationTypes.AUTO_ACK.getDbString()))
-				excludeNotifyState += 'A';
-			else if(notify.equals(AlarmNotificationTypes.BOTH_OPTIONS.getDbString()))
-					excludeNotifyState += 'B';
-			else
-				excludeNotifyState += 'N';
-			
 		}
+			
+		char generate = (char)alarmStateID;
+		String notify = getTableModel().getExcludeNotifyAt(i);
+
+		alarmStates += generate;
+		
+		if(notify.equals(AlarmNotificationTypes.EXCLUDE_NOTIFY.getDbString()))
+			excludeNotifyState += 'E';
+		else if(notify.equals(AlarmNotificationTypes.AUTO_ACK.getDbString()))
+			excludeNotifyState += 'A';
+		else if(notify.equals(AlarmNotificationTypes.BOTH_OPTIONS.getDbString()))
+				excludeNotifyState += 'B';
+		else
+			excludeNotifyState += 'N';
+		
 	}
 	
 	// fill in the rest of the alarmStates and excludeNotifyState so we have 32 chars
@@ -528,52 +528,46 @@ private void initJTableCellComponents()
     notifyComboBxRender.addItem(AlarmNotificationTypes.BOTH_OPTIONS.getDbString());
     notifyColumn.setCellRenderer(notifyComboBxRender);
 
-	// Get the alarm data from the cache	
-	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-	synchronized( cache )	
+	List<LiteAlarmCategory> allAlarmStates = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategories();
+
+	for( int i = 0; i < allAlarmStates.size(); i++ )
+		comboBxRender.addItem( ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get(i)).getCategoryName() );
+
+	generateColumn.setCellRenderer(comboBxRender);
+
+	// Create and add the column CellEditors
+	javax.swing.JComboBox combo = new javax.swing.JComboBox();
+	javax.swing.JComboBox notifyCombo = new javax.swing.JComboBox();
+	combo.setBackground(getJTableAlarmStates().getBackground());
+	notifyCombo.setBackground(getJTableAlarmStates().getBackground());
+	combo.addActionListener( new java.awt.event.ActionListener()
 	{
-		java.util.List allAlarmStates = cache.getAllAlarmCategories();
+		@Override
+        public void actionPerformed(java.awt.event.ActionEvent e) 
+		{
+			fireInputUpdate();
+		}
+	});
 	
-		for( int i = 0; i < allAlarmStates.size(); i++ )
-			comboBxRender.addItem( ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get(i)).getCategoryName() );
-
-		generateColumn.setCellRenderer(comboBxRender);
-
-		// Create and add the column CellEditors
-		javax.swing.JComboBox combo = new javax.swing.JComboBox();
-		javax.swing.JComboBox notifyCombo = new javax.swing.JComboBox();
-		combo.setBackground(getJTableAlarmStates().getBackground());
-		notifyCombo.setBackground(getJTableAlarmStates().getBackground());
-		combo.addActionListener( new java.awt.event.ActionListener()
+	notifyCombo.addActionListener( new java.awt.event.ActionListener()
+	{
+		@Override
+        public void actionPerformed(java.awt.event.ActionEvent e) 
 		{
-			@Override
-            public void actionPerformed(java.awt.event.ActionEvent e) 
-			{
-				fireInputUpdate();
-			}
-		});
-		
-		notifyCombo.addActionListener( new java.awt.event.ActionListener()
-		{
-			@Override
-            public void actionPerformed(java.awt.event.ActionEvent e) 
-			{
-				fireInputUpdate();
-			}
-		});
+			fireInputUpdate();
+		}
+	});
 
-		for( int i = 0; i < allAlarmStates.size(); i++ )
-			combo.addItem( ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get(i)).getCategoryName() );
+	for( int i = 0; i < allAlarmStates.size(); i++ )
+		combo.addItem( ((com.cannontech.database.data.lite.LiteAlarmCategory)allAlarmStates.get(i)).getCategoryName() );
 
-		generateColumn.setCellEditor( new javax.swing.DefaultCellEditor(combo) );
-		
-		notifyCombo.addItem(AlarmNotificationTypes.NONE.getDbString());
-		notifyCombo.addItem(AlarmNotificationTypes.EXCLUDE_NOTIFY.getDbString());
-		notifyCombo.addItem(AlarmNotificationTypes.AUTO_ACK.getDbString());
-		notifyCombo.addItem(AlarmNotificationTypes.BOTH_OPTIONS.getDbString());
-		notifyColumn.setCellEditor( new javax.swing.DefaultCellEditor(notifyCombo) );
-	}
-		
+	generateColumn.setCellEditor( new javax.swing.DefaultCellEditor(combo) );
+	
+	notifyCombo.addItem(AlarmNotificationTypes.NONE.getDbString());
+	notifyCombo.addItem(AlarmNotificationTypes.EXCLUDE_NOTIFY.getDbString());
+	notifyCombo.addItem(AlarmNotificationTypes.AUTO_ACK.getDbString());
+	notifyCombo.addItem(AlarmNotificationTypes.BOTH_OPTIONS.getDbString());
+	notifyColumn.setCellEditor( new javax.swing.DefaultCellEditor(notifyCombo) );
 }
 /**
  * Insert the method's description here.
@@ -637,8 +631,7 @@ public void setValue(Object val)
 	IDatabaseCache cache = com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
 	synchronized( cache )	
 	{
-		java.util.List allAlarmStates = cache.getAllAlarmCategories();
-		//java.util.List allStateGroups = cache.getAllStateGroups();
+		List<LiteAlarmCategory> allAlarmStates = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategories();
 		String generate = new String();
 
 		if( allAlarmStates.size() <= 0 )

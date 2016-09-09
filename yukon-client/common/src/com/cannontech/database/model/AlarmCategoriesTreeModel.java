@@ -1,6 +1,10 @@
 package com.cannontech.database.model;
 
-import com.cannontech.yukon.IDatabaseCache;
+import java.util.List;
+
+import com.cannontech.core.dao.AlarmCatDao;
+import com.cannontech.database.data.lite.LiteAlarmCategory;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -29,23 +33,17 @@ public boolean isLiteTypeSupported( int liteType )
  */
 public void update() {
 
-	IDatabaseCache cache =
-					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
+	List<LiteAlarmCategory> alarmStates = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategories();
 
-	synchronized(cache)
+	DBTreeNode rootNode = (DBTreeNode) getRoot();
+	rootNode.removeAllChildren();
+
+	// We start at 1 to leave out the EVENT alarmCategory
+	for( int i = 1; i < alarmStates.size(); i++ )
 	{
-		java.util.List alarmStates = cache.getAllAlarmCategories();
-
-		DBTreeNode rootNode = (DBTreeNode) getRoot();
-		rootNode.removeAllChildren();
-
-		// We start at 1 to leave out the EVENT alarmCategory
-		for( int i = 1; i < alarmStates.size(); i++ )
-		{
-			DBTreeNode notifGroupNode = new DBTreeNode( alarmStates.get(i) );
-			notifGroupNode.setIsSystemReserved( true );
-			rootNode.add( notifGroupNode );
-		}
+		DBTreeNode notifGroupNode = new DBTreeNode( alarmStates.get(i) );
+		notifGroupNode.setIsSystemReserved( true );
+		rootNode.add( notifGroupNode );
 	}
 
 	reload();

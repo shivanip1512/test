@@ -180,7 +180,7 @@ class SignalAlarmHandler {
         newItem.setBackground(java.awt.SystemColor.control);
         newItem.setForeground(java.awt.SystemColor.controlText);
 
-        LiteAlarmCategory liteAlarmCategory = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategoryFromCache((int) sig.getCategoryID());
+        LiteAlarmCategory liteAlarmCategory = YukonSpringHook.getBean(AlarmCatDao.class).getAlarmCategory((int) sig.getCategoryID());
         String categoryText = (liteAlarmCategory == null ? null : liteAlarmCategory.getCategoryName());
 
         newItem.putClientProperty(TDCMainPanel.PROP_BOOKMARK,

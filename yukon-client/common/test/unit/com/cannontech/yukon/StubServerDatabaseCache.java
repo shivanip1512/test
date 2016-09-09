@@ -7,7 +7,6 @@ import java.util.Set;
 import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.MethodNotImplementedException;
-import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteBaseline;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -45,11 +44,6 @@ public class StubServerDatabaseCache implements IDatabaseCache {
 
     @Override
     public DBChangeMsg[] createDBChangeMessages(CTIDbChange newItem, DbChangeType dbChangeType) {
-        throw new MethodNotImplementedException("Method not implemented yet.");
-    }
-
-    @Override
-    public List<LiteAlarmCategory> getAllAlarmCategories() {
         throw new MethodNotImplementedException("Method not implemented yet.");
     }
 
@@ -261,10 +255,6 @@ public class StubServerDatabaseCache implements IDatabaseCache {
     @Override
     public LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg) {
         throw new MethodNotImplementedException("Method not implemented yet.");
-    }
-
-    @Override
-    public void releaseAllAlarmCategories() {
     }
 
     @Override
