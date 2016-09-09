@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.builder.StandardToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 
@@ -196,5 +198,17 @@ public class DataStreamingConfig implements Cloneable {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+    
+    @Override
+    public String toString() {
+        StandardToStringStyle style = new StandardToStringStyle();
+        style.setFieldSeparator(", ");
+        style.setUseShortClassName(true);
+        ToStringBuilder builder = new ToStringBuilder(this, style);
+        builder.append("id", id);
+        builder.append("selectedInterval", selectedInterval);
+        builder.append("attributes", attributes);
+        return builder.toString();
     }
 }

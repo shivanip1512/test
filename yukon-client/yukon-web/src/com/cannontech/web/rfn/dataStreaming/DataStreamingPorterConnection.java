@@ -31,14 +31,13 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.dev.dataStreaming.DataStreamingDevSettings;
-import com.cannontech.web.tools.commander.service.CommanderServiceImpl;
 
 /**
  * Abstraction of the Porter connection for data streaming purposes. This class handles the actual data streaming config
  * messages sent to Porter, which then sends configuration messages to the devices.
  */
 public class DataStreamingPorterConnection {
-    private static final Logger log = YukonLogManager.getLogger(CommanderServiceImpl.class);
+    private static final Logger log = YukonLogManager.getLogger(DataStreamingPorterConnection.class);
     private static final CommandCallback commandCallback = new PorterCommandCallback("putconfig behavior rfndatastreaming");
 
     @Autowired private CommandRequestDeviceExecutor commandExecutor;

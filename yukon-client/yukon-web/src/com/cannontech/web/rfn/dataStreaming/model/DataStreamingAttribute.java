@@ -1,5 +1,8 @@
 package com.cannontech.web.rfn.dataStreaming.model;
 
+import org.apache.commons.lang3.builder.StandardToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
 public class DataStreamingAttribute {
@@ -67,6 +70,16 @@ public class DataStreamingAttribute {
             return false;
         }
         return true;
+    }
+    
+    @Override
+    public String toString() {
+        StandardToStringStyle style = new StandardToStringStyle();
+        style.setFieldSeparator(", ");
+        style.setUseShortClassName(true);
+        ToStringBuilder builder = new ToStringBuilder(this, style);
+        builder.append("attribute", attribute);
+        return builder.toString();
     }
     
 }
