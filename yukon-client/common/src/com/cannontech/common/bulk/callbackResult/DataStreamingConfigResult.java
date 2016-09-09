@@ -6,11 +6,14 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 
 public class DataStreamingConfigResult implements BackgroundProcessResultHolder {
     
@@ -26,12 +29,29 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
     private DeviceCollection unsupportedDeviceCollection;
     private int configId;
     
+    private StoredDeviceGroup allDevicesGroup;
+    private StoredDeviceGroup successGroup;
+    private StoredDeviceGroup failedGroup;
+    private StoredDeviceGroup canceledGroup ;
+    private StoredDeviceGroup unsupportedGroup;
+    
     private DataStreamingConfigCallback configCallback;
     private CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback;
     private CommandRequestExecution execution;
     
-    public DataStreamingConfigResult(){
+    public DataStreamingConfigResult(TemporaryDeviceGroupService tempDeviceGroupService,
+            DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
         startTime = new Date();
+        allDevicesGroup = tempDeviceGroupService.createTempGroup();
+        successGroup = tempDeviceGroupService.createTempGroup();
+        failedGroup = tempDeviceGroupService.createTempGroup();
+        canceledGroup = tempDeviceGroupService.createTempGroup();
+        unsupportedGroup = tempDeviceGroupService.createTempGroup();
+        setAllDevicesCollection(deviceGroupCollectionHelper.buildDeviceCollection(allDevicesGroup));
+        setSuccessDeviceCollection(deviceGroupCollectionHelper.buildDeviceCollection(successGroup));
+        setFailureDeviceCollection(deviceGroupCollectionHelper.buildDeviceCollection(failedGroup));
+        setCanceledDeviceCollection(deviceGroupCollectionHelper.buildDeviceCollection(canceledGroup));
+        setUnsupportedCollection(deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup));
     }
   
     @Override
@@ -249,5 +269,25 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
 
     public void setConfigId(int configId) {
         this.configId = configId;
+    }
+    
+    public StoredDeviceGroup getAllDevicesGroup() {
+        return allDevicesGroup;
+    }
+
+    public StoredDeviceGroup getSuccessGroup() {
+        return successGroup;
+    }
+
+    public StoredDeviceGroup getFailedGroup() {
+        return failedGroup;
+    }
+
+    public StoredDeviceGroup getCanceledGroup() {
+        return canceledGroup;
+    }
+
+    public StoredDeviceGroup getUnsupportedGroup() {
+        return unsupportedGroup;
     }
 }
