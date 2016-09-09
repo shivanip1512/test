@@ -20,6 +20,9 @@ public final class LMFactory {
         case LM_GROUP_ECOBEE:
             retLm = new LMGroupEcobee();
             break;
+        case LM_GROUP_HONEYWELL:
+            retLm = new LMGroupHoneywell();
+            break;
         case LM_GROUP_VERSACOM:
             retLm = new LMGroupVersacom();
             break;
@@ -61,6 +64,9 @@ public final class LMFactory {
             break;
         case LM_ECOBEE_PROGRAM:
             retLm = new LmProgramEcobee();
+            break;
+        case LM_HONEYWELL_PROGRAM:
+            retLm = new LmProgramHoneywell();
             break;
         case LM_CURTAIL_PROGRAM:
             retLm = new LMProgramCurtailment();

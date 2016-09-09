@@ -4,6 +4,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.database.data.device.lm.BeatThePeakGear;
 import com.cannontech.database.data.device.lm.EcobeeCycleGear;
+import com.cannontech.database.data.device.lm.HoneywellCycleGear;
 import com.cannontech.database.data.device.lm.LatchingGear;
 import com.cannontech.database.data.device.lm.MagnitudeCycleGear;
 import com.cannontech.database.data.device.lm.MasterCycleGear;
@@ -23,6 +24,7 @@ public enum GearControlMethod implements DatabaseRepresentationSource, Displayab
     SmartCycle(SmartCycleGear.class, "Smart Cycle"),
     SepCycle(SepCycleGear.class, "SEP Cycle"),
     EcobeeCycle(EcobeeCycleGear.class, "ecobee Cycle"),
+    HoneywellCycle(HoneywellCycleGear.class, "Honeywell Cycle"),
     SepTemperatureOffset(SepTemperatureOffsetGear.class, "SEP Temperature Offset"),
     MasterCycle(MasterCycleGear.class, "Master Cycle"),
     Rotation(RotationGear.class, "Rotation"),

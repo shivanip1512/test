@@ -24,13 +24,13 @@ public class SwitchTypePanel extends DataInputPanel {
     public static final long SHOW_PROTOCOL = 
             Long.parseLong(ClientSession.getInstance().getRolePropertyValue(YukonRoleProperty.DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV), 16);
 
-    private static final PaoType[] GROUP_LIST = { PaoType.LM_GROUP_DIGI_SEP, PaoType.LM_GROUP_ECOBEE,
+    private static final PaoType[] GROUP_LIST = { PaoType.LM_GROUP_DIGI_SEP, PaoType.LM_GROUP_ECOBEE, PaoType.LM_GROUP_HONEYWELL,
             PaoType.LM_GROUP_EMETCON, PaoType.LM_GROUP_EXPRESSCOMM,
             PaoType.LM_GROUP_GOLAY, PaoType.LM_GROUP_MCT,
             PaoType.LM_GROUP_POINT, PaoType.LM_GROUP_RFN_EXPRESSCOMM,
             PaoType.LM_GROUP_RIPPLE, PaoType.LM_GROUP_VERSACOM };
 
-    private static final PaoType[] GROUP_LIST_SA = { PaoType.LM_GROUP_DIGI_SEP, PaoType.LM_GROUP_ECOBEE,
+    private static final PaoType[] GROUP_LIST_SA = { PaoType.LM_GROUP_DIGI_SEP, PaoType.LM_GROUP_ECOBEE, PaoType.LM_GROUP_HONEYWELL,
             PaoType.LM_GROUP_EMETCON, PaoType.LM_GROUP_EXPRESSCOMM,
             PaoType.LM_GROUP_GOLAY, PaoType.LM_GROUP_MCT,
             PaoType.LM_GROUP_POINT, PaoType.LM_GROUP_RFN_EXPRESSCOMM,

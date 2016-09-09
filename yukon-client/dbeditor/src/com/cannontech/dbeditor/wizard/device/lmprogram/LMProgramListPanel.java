@@ -158,6 +158,7 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
 
                     boolean isSepProgram = programType == PaoType.LM_SEP_PROGRAM;
                     boolean isEcobeeProgram = programType == PaoType.LM_ECOBEE_PROGRAM;
+                    boolean isHoneywellProgram = programType == PaoType.LM_HONEYWELL_PROGRAM;
                     // SEP compatible groups are shown for SEP programs and
                     // hidden for all others
                     // ecobee compatible groups are shown for ecobee programs
@@ -169,6 +170,14 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
                     } else if (isEcobeeProgram && isGroupEcobeeCompatible(paoType)) {
                         newList.addElement(group);
                     } else if ((!isEcobeeProgram && !isGroupEcobeeCompatible(paoType)) && (!isSepProgram && !isGroupSepCompatible(paoType))) {
+                        newList.addElement(group);
+                    } else if ((!isSepProgram && !isGroupSepCompatible(paoType))
+                        && (!isHoneywellProgram && !isGroupHoneywellCompatible(paoType))) {
+                        newList.addElement(group);
+                    } else if (isHoneywellProgram && isGroupHoneywellCompatible(paoType)) {
+                        newList.addElement(group);
+                    } else if ((!isHoneywellProgram && !isGroupHoneywellCompatible(paoType))
+                        && (!isSepProgram && !isGroupSepCompatible(paoType))) {
                         newList.addElement(group);
                     }
                 }
@@ -187,6 +196,10 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
 
     private boolean isGroupEcobeeCompatible(PaoType groupType) {
         return groupType == PaoType.LM_GROUP_ECOBEE;
+    }
+    
+    private boolean isGroupHoneywellCompatible(PaoType groupType) {
+        return groupType == PaoType.LM_GROUP_HONEYWELL;
     }
 
     @Override

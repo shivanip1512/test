@@ -234,12 +234,12 @@ public class DatabaseEditor implements PropertyPanelListener, WizardPanelListene
 
     };
     private static final TreeModelEnum[] LM_MODELS = { TreeModelEnum.LMCONSTRAINT, TreeModelEnum.LMCONTROLAREA,
-            TreeModelEnum.LMGROUPDIGISEP, TreeModelEnum.LMGROUPECOBEE, TreeModelEnum.LMGROUPEMETCON,
+            TreeModelEnum.LMGROUPDIGISEP, TreeModelEnum.LMGROUPECOBEE, TreeModelEnum.LMGROUPEMETCON, TreeModelEnum.LMGROUPHONEYWELL,
             TreeModelEnum.LMGROUPEXPRESSCOM, TreeModelEnum.GOLAY, TreeModelEnum.LMGROUPS, TreeModelEnum.LMPROGRAM,
             TreeModelEnum.LMGROUPMACRO, TreeModelEnum.LMSCENARIO, TreeModelEnum.LMGROUPVERSACOM, };
 
     private static final TreeModelEnum[] LM_MODELS_WITH_SA = { TreeModelEnum.LMCONSTRAINT, TreeModelEnum.LMCONTROLAREA,
-            TreeModelEnum.LMGROUPDIGISEP, TreeModelEnum.LMGROUPECOBEE, TreeModelEnum.LMGROUPEMETCON,
+            TreeModelEnum.LMGROUPDIGISEP, TreeModelEnum.LMGROUPECOBEE, TreeModelEnum.LMGROUPEMETCON, TreeModelEnum.LMGROUPHONEYWELL,
             TreeModelEnum.LMGROUPEXPRESSCOM, TreeModelEnum.GOLAY, TreeModelEnum.LMGROUPS, TreeModelEnum.LMPROGRAM,
             TreeModelEnum.LMGROUPMACRO, TreeModelEnum.LMGROUPSA305, TreeModelEnum.LMGROUPSA205,
             TreeModelEnum.LMGROUPSADIGITAL, TreeModelEnum.LMSCENARIO, TreeModelEnum.LMGROUPVERSACOM, };

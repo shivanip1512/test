@@ -22,6 +22,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.data.device.lm.BeatThePeakGear;
 import com.cannontech.database.data.device.lm.EcobeeCycleGear;
+import com.cannontech.database.data.device.lm.HoneywellCycleGear;
 import com.cannontech.database.data.device.lm.LatchingGear;
 import com.cannontech.database.data.device.lm.MasterCycleGear;
 import com.cannontech.database.data.device.lm.NoControlGear;
@@ -49,6 +50,7 @@ public class DirectModifyGearPanel extends com.cannontech.common.gui.util.DataIn
     private SepCycleGearPanel sepCycleGearPanel;
     private SepTemperatureOffsetGearPanel sepTemperatureOffsetGearPanel;
     private EcobeeCycleGearPanel ecobeeCycleGearPanel;
+    private HoneywellCycleGearPanel honeywellCycleGearPanel;
     private TimeRefreshGearPanel ivjTimeGearPanel1;
     private RotationGearPanel ivjRotationGearPanel1;
     private ThermostatSetbackGearPanel ivjThermoSetbackGearPanel1;
@@ -272,6 +274,8 @@ private JComboBox<GearControlMethod> getJComboBoxGearType() {
                 ivjJComboBoxGearType.addItem(GearControlMethod.NoControl);  
             } else if(programType == PaoType.LM_ECOBEE_PROGRAM) {
                 ivjJComboBoxGearType.addItem(GearControlMethod.EcobeeCycle);
+            } else if(programType == PaoType.LM_HONEYWELL_PROGRAM) {
+                ivjJComboBoxGearType.addItem(GearControlMethod.HoneywellCycle);
             } else {
                 for(GearControlMethod gearControlMethod : GearControlMethod.values()) {
                     ivjJComboBoxGearType.addItem(gearControlMethod);
@@ -280,6 +284,7 @@ private JComboBox<GearControlMethod> getJComboBoxGearType() {
                 ivjJComboBoxGearType.removeItem(GearControlMethod.SepCycle);
                 ivjJComboBoxGearType.removeItem(GearControlMethod.SepTemperatureOffset);
                 ivjJComboBoxGearType.removeItem(GearControlMethod.EcobeeCycle);
+                ivjJComboBoxGearType.removeItem(GearControlMethod.HoneywellCycle);
             }
 	            
         } catch (java.lang.Throwable ivjExc) {
@@ -408,6 +413,9 @@ public Object getValue(Object o)
 	    case EcobeeCycle:
 	        obj = getEcobeeCycleGearPanel().getValue(gear);
 	        break;
+	    case HoneywellCycle:
+            obj = getHoneywellCycleGearPanel().getValue(gear);
+            break;
 	    case SepCycle:
 	        obj = getSepCycleGearPanel().getValue(gear);
 	        break;
@@ -483,6 +491,7 @@ private void initConnections() throws java.lang.Exception {
     getIvjRotationGearPanel1().addDataInputPanelListener(this);
     getIvjSmartGearPanel1().addDataInputPanelListener(this);
     getEcobeeCycleGearPanel().addDataInputPanelListener(this);
+    getHoneywellCycleGearPanel().addDataInputPanelListener(this);
     getSepCycleGearPanel().addDataInputPanelListener(this);
     getSepTemperatureOffsetGearPanel().addDataInputPanelListener(this);
     getIvjThermoSetbackGearPanel1().addDataInputPanelListener(this);
@@ -620,6 +629,9 @@ private void setGearType(GearControlMethod method)
     case EcobeeCycle:
         getJScrollPane1().setViewportView(getEcobeeCycleGearPanel());
         break;
+    case HoneywellCycle:
+        getJScrollPane1().setViewportView(getHoneywellCycleGearPanel());
+        break;
     case SepCycle:
         getJScrollPane1().setViewportView(getSepCycleGearPanel());
         break;
@@ -699,6 +711,8 @@ public void setValue(Object o) {
         getIvjBeatThePeakGearPanel1().setValue(gear);
     } else if(gear instanceof NoControlGear) {
         getNoControlGearPanel().setValue(gear); 
+    }  else if(gear instanceof HoneywellCycleGear) {
+        getHoneywellCycleGearPanel().setValue(gear); 
     } else {
         return;
     }
@@ -768,6 +782,13 @@ public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1)
             ecobeeCycleGearPanel = new EcobeeCycleGearPanel();
         }
         return ecobeeCycleGearPanel;
+    }
+    
+    public HoneywellCycleGearPanel getHoneywellCycleGearPanel() {
+        if (honeywellCycleGearPanel == null) {
+            honeywellCycleGearPanel = new HoneywellCycleGearPanel();
+        }
+        return honeywellCycleGearPanel;
     }
     
     public SepCycleGearPanel getSepCycleGearPanel() {

@@ -54,8 +54,10 @@
 <entry key="yukon.web.modules.dr.paoType.LM_DIRECT_PROGRAM">Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_SEP_PROGRAM">SEP Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_ECOBEE_PROGRAM">ecobee Program</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_HONEYWELL_PROGRAM">Honeywell Program</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_DIGI_SEP">Digi SEP Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_ECOBEE">ecobee Group</entry>
+<entry key="yukon.web.modules.dr.paoType.LM_GROUP_HONEYWELL">Honeywell Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_EMETCON">Emetcon Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_EXPRESSCOMM">Expresscom Group</entry>
 <entry key="yukon.web.modules.dr.paoType.LM_GROUP_RFN_EXPRESSCOMM">RFN Expresscom Group</entry>
@@ -813,6 +815,7 @@ The devices in this category have not reported data accumulated during the expec
 <entry key="yukon.web.modules.dr.gearControlMethod.SmartCycle">Smart Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.SepCycle">SEP Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.EcobeeCycle">ecobee Cycle</entry>
+<entry key="yukon.web.modules.dr.gearControlMethod.HoneywellCycle">Honeywell Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.SepTemperatureOffset">SEP Temperature Offset</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.MasterCycle">Master Cycle</entry>
 <entry key="yukon.web.modules.dr.gearControlMethod.Rotation">Rotation</entry>

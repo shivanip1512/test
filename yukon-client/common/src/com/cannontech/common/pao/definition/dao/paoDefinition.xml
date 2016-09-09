@@ -12446,6 +12446,9 @@
     <pao id="LM_GROUP_ECOBEE" inherits="LM_GROUP">
         <displayName>ecobee Group</displayName>
     </pao>
+    <pao id="LM_GROUP_HONEYWELL" inherits="LM_GROUP">
+        <displayName>Honeywell Group</displayName>
+    </pao>
     <pao id="MACRO_GROUP" inherits="LM_GROUP">
         <displayName>MACRO GROUP</displayName>
     </pao>
@@ -12533,6 +12536,12 @@
         <displayName>LM ECOBEE PROGRAM</displayName>
         <tags>
             <tag name="ECOBEE_PROGRAM_ENROLLMENT" />
+        </tags>
+    </pao>
+    <pao id="LM_HONEYWELL_PROGRAM" inherits="LM_PROGRAM_BASE">
+        <displayName>LM HONEYWELL PROGRAM</displayName>
+        <tags>
+            <tag name="HONEYWELL_PROGRAM_ENROLLMENT" />
         </tags>
     </pao>
 
