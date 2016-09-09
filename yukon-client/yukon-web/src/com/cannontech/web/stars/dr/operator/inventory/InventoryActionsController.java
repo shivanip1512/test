@@ -61,6 +61,7 @@ import com.cannontech.web.stars.dr.operator.inventory.model.ShedLoad;
 import com.cannontech.web.stars.dr.operator.inventory.model.collection.MemoryCollectionProducer;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeDeviceStatusHelper.ChangeDeviceStatusTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeServiceCompanyHelper.ChangeServiceCompanyTask;
+import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeTypeHelper.ChangeTypeTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.ChangeWarehouseHelper.ChangeWarehouseTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.DeleteInventoryHelper.DeleteInventoryTask;
 import com.cannontech.web.stars.dr.operator.inventory.service.impl.NewLmConfigHelper.NewLmConfigTask;
@@ -114,6 +115,8 @@ public class InventoryActionsController {
             return "redirect:/stars/operator/inventory/saveToBatch/" + id + "/status";
         } else if (task instanceof ControlAuditTask) {
             return "redirect:/stars/operator/inventory/controlAudit/" + id + "/status";
+        } else if (task instanceof ChangeTypeTask) {
+            return "redirect:/stars/operator/inventory/changeType/" + id + "/status";
         }
         
         resp.setStatus(HttpStatus.NOT_FOUND.value());

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
@@ -76,7 +77,21 @@ public class ChangeDeviceTypeController {
             ChangeTypeTask task = (ChangeTypeTask) resultsCache.getResult(taskId);
             model.addAttribute("task", task);
         }
+        /*
+         * This (fromAssetsActions) is just to identify that ChangeType JSP is accessing from Assets
+         * Actions. This will be used to create NewAction (hyperlink) in
+         * ChangeType JSP.
+         */
+        model.addAttribute("fromAssetsActions", true);
+        return "operator/inventory/changeType.jsp";
+    }
+    
+    @RequestMapping("{taskId}/status")
+    public String view(ModelMap model, @PathVariable String taskId, LiteYukonUser user) {
         
+        ChangeTypeTask task = (ChangeTypeTask) resultsCache.getResult(taskId);
+        model.addAttribute("task", task);
+        model.addAttribute("inventoryCollection", task.getCollection());
         return "operator/inventory/changeType.jsp";
     }
     

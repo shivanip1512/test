@@ -59,13 +59,17 @@
             <tags:nameValue2 nameKey=".successful">
                 <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/SUCCESS_COUNT" styleClass="success fwb"/>&nbsp;
                 <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_SUCCESS">
-                    <a href="${newOperationSuccess}"><i:inline key=".newOperation"/></a>
+                    <c:if test="${fromAssetsActions}">
+                        <a href="${newOperationSuccess}"><i:inline key=".newOperation"/></a>
+                    </c:if>
                 </cti:classUpdater>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".unsupported">
                 <cti:dataUpdaterValue type="INVENTORY_TASK" identifier="${task.taskId}/UNSUPPORTED_COUNT" styleClass="warning fwb"/>&nbsp;
                 <cti:classUpdater type="INVENTORY_TASK" identifier="${task.taskId}/NEW_OPERATION_FOR_UNSUPPORTED">
-                    <a href="${newOperationUnsupported}"><i:inline key=".newOperation"/></a>
+                    <c:if test="${fromAssetsActions}">
+                        <a href="${newOperationUnsupported}"><i:inline key=".newOperation"/></a>
+                    </c:if>
                 </cti:classUpdater>
             </tags:nameValue2>
         </tags:nameValueContainer2>
