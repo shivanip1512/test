@@ -15,9 +15,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.IntFunction;
 import java.util.function.Predicate;
-import java.util.function.ToIntFunction;
 import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
@@ -110,7 +108,6 @@ import com.cannontech.web.dr.cc.model.CiEventStatus;
 import com.cannontech.web.dr.cc.model.CiEventType;
 import com.cannontech.web.dr.cc.model.CiInitEventModel;
 import com.cannontech.web.dr.cc.model.CustomerModel;
-import com.cannontech.web.dr.cc.model.CustomerModel.ProgramPaoModel;
 import com.cannontech.web.dr.cc.model.Exclusion;
 import com.cannontech.web.dr.cc.service.CiCurtailmentService;
 import com.cannontech.web.dr.cc.service.CiCustomerVerificationService;
@@ -1391,25 +1388,10 @@ public class CcHomeController {
             CICustomerStub customer = customerPointService.getCustomer(customerId);
             customerPointService.savePointValues(customer, customerModel.getPointValues());
             // Java8
-            /*
-             * List<LiteYukonPAObject> activeProgramPaos =
-             * customerModel.getActivePrograms() .stream() .mapToInt(model ->
-             * model.getPaoId()) .mapToObj(paoId ->
-             * serverDatabaseCache.getAllPaosMap().get(paoId))
-             * .collect(Collectors.toList());
-             */
+            
             List<LiteYukonPAObject> activeProgramPaos = customerModel.getActivePrograms().stream()
-                    .mapToInt(new ToIntFunction<ProgramPaoModel>() {
-                        @Override
-                        public int applyAsInt(ProgramPaoModel model) {
-                            return model.getPaoId();
-                        }
-                    }).mapToObj(new IntFunction<LiteYukonPAObject>() {
-                        @Override
-                        public LiteYukonPAObject apply(int paoId) {
-                            return serverDatabaseCache.getAllPaosMap().get(paoId);
-                        }
-                    }).collect(Collectors.toList());
+                    .mapToInt(model -> model.getPaoId())
+                    .mapToObj(paoId -> serverDatabaseCache.getAllPaosMap().get(paoId)).collect(Collectors.toList());
 
             customerLMProgramService.saveProgramList(customer, activeProgramPaos);
 
