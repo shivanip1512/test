@@ -54,9 +54,9 @@ public interface DeviceBehaviorDao {
     void unassignBehavior(BehaviorType type, List<Integer> deviceIds);
 
     /**
-     * Assigns behavior to devices and deletes unused behaviors..
+     * Assigns behavior to devices and deletes unused behaviors if deleteUnusedBehaviors is true.
      */
-    void assignBehavior(int behaviorId, BehaviorType type, List<Integer> deviceIds);
+    void assignBehavior(int behaviorId, BehaviorType type, List<Integer> deviceIds, boolean deleteUnusedBehaviors);
 
     /**
      * Finds the Behavior of the specified type that is assigned to the device.
@@ -95,4 +95,5 @@ public interface DeviceBehaviorDao {
      * Returns a map of all device ids to behavior.
      */
     Map<Integer, Behavior> getBehaviorsByType(BehaviorType type);
+
 }

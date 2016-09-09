@@ -782,7 +782,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             sendNmConfiguration(config, deviceIds, correlationId);
 
             if (!deviceIds.isEmpty()) {
-                deviceBehaviorDao.assignBehavior(config.getId(), TYPE, deviceIds);
+                deviceBehaviorDao.assignBehavior(config.getId(), TYPE, deviceIds, true);
                 deviceIds.forEach(id -> {
                     BehaviorReport report = buildPendingReport(id);
                     deviceBehaviorDao.saveBehaviorReport(report);
@@ -887,12 +887,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                         configIdsToDeviceIds.put(config.getId(), deviceId);
                     }
                 }
-
+                
                 // assign behaviors
                 for (int configId : configIdsToDeviceIds.keys()) {
                     deviceBehaviorDao.assignBehavior(configId, TYPE,
-                        new ArrayList<>(configIdsToDeviceIds.get(configId)));
+                        new ArrayList<>(configIdsToDeviceIds.get(configId)), false);
                 }
+                
+                deviceBehaviorDao.deleteUnusedBehaviors();
 
                 if (result == null) {
                     result = createEmptyResult(deviceCollection, null);
@@ -1086,41 +1088,44 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         config.setId(behavior.getId());
         int i = 0;
         int intervalValue = 0;
-        int channels = behavior.getIntValue(CHANNELS_STRING);
-        String enabled = behavior.getValue(STREAMING_ENABLED_STRING);
-        if (!StringUtils.isEmpty(enabled)) {
-            // behavior report can be enabled or disabled
-            config.setEnabled(Boolean.parseBoolean(enabled));
-        }
-        
-        if (config.isEnabled()) {
-            for (i = 0; i < channels; i++) {
-                String key = CHANNELS_STRING + "." + i;
-                boolean attributeEnabled = true;
-                String attributeEnabledValue = behavior.getValue(key + ENABLED_STRING);
-                if (!StringUtils.isEmpty(attributeEnabledValue)
-                    && Boolean.parseBoolean(attributeEnabledValue) == false) {
-                    attributeEnabled = false;
-                }
-                /**
-                 * This method converts behavior and behavior report to config.
-                 * Behavior report contains disabled attributes.
-                 * Behavior contains only enabled attributes.
-                 * Add only enabled attributed to config
-                 */
-                if (attributeEnabled) {
-                    BuiltInAttribute attributeValue =
-                        behavior.getEnumValue(key + ATTRIBUTE_STRING, BuiltInAttribute.class);
-                    intervalValue = behavior.getIntValue(key + INTERVAL_STRING);
-                    DataStreamingAttribute dataStreamingAttribute = new DataStreamingAttribute();
-                    dataStreamingAttribute.setAttribute(attributeValue);
-                    dataStreamingAttribute.setInterval(intervalValue);
-                    dataStreamingAttribute.setAttributeOn(Boolean.TRUE);
-                    config.addAttribute(dataStreamingAttribute);
+        // there is no channels if porter return a failure
+        if (!behavior.getValuesMap().isEmpty()) {
+            int channels = behavior.getIntValue(CHANNELS_STRING);
+            String enabled = behavior.getValue(STREAMING_ENABLED_STRING);
+            if (!StringUtils.isEmpty(enabled)) {
+                // behavior report can be enabled or disabled
+                config.setEnabled(Boolean.parseBoolean(enabled));
+            }
+
+            if (config.isEnabled()) {
+                for (i = 0; i < channels; i++) {
+                    String key = CHANNELS_STRING + "." + i;
+                    boolean attributeEnabled = true;
+                    String attributeEnabledValue = behavior.getValue(key + ENABLED_STRING);
+                    if (!StringUtils.isEmpty(attributeEnabledValue)
+                        && Boolean.parseBoolean(attributeEnabledValue) == false) {
+                        attributeEnabled = false;
+                    }
+                    /**
+                     * This method converts behavior and behavior report to config.
+                     * Behavior report contains disabled attributes.
+                     * Behavior contains only enabled attributes.
+                     * Add only enabled attributed to config
+                     */
+                    if (attributeEnabled) {
+                        BuiltInAttribute attributeValue =
+                            behavior.getEnumValue(key + ATTRIBUTE_STRING, BuiltInAttribute.class);
+                        intervalValue = behavior.getIntValue(key + INTERVAL_STRING);
+                        DataStreamingAttribute dataStreamingAttribute = new DataStreamingAttribute();
+                        dataStreamingAttribute.setAttribute(attributeValue);
+                        dataStreamingAttribute.setInterval(intervalValue);
+                        dataStreamingAttribute.setAttributeOn(Boolean.TRUE);
+                        config.addAttribute(dataStreamingAttribute);
+                    }
                 }
             }
+            config.setSelectedInterval(intervalValue);
         }
-        config.setSelectedInterval(intervalValue);
         return config;
     }
 

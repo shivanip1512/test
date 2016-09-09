@@ -127,8 +127,8 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     
     @Override
     @Transactional
-    public void assignBehavior(int behaviorId,  BehaviorType type, List<Integer> deviceIds) {
-        log.debug("Devices to assign=" + deviceIds.size());
+    public void assignBehavior(int behaviorId,  BehaviorType type, List<Integer> deviceIds, boolean deleteUnusedBehaviors) {
+        log.debug("Assigning behavior behaviorId="+behaviorId+ ", devices=" + deviceIds);
 
         List<List<Integer>> ids = Lists.partition(deviceIds, ChunkingSqlTemplate.DEFAULT_SIZE);
         ids.forEach(idBatch -> {
@@ -155,7 +155,9 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             });
         });
         
-        deleteUnusedBehaviors();
+        if (deleteUnusedBehaviors) {
+            deleteUnusedBehaviors();
+        }
     }
 
     @Override
