@@ -260,8 +260,8 @@ bool RawPointHistoryArchiver::wasPreviouslyArchived(const CtiTableRawPointHistor
     //  If the records aren't a multiple of the interval apart, recalculate the interval
     if( minutesApart % record->interval_minutes )
     {
-        //  find the new interval
-        const auto new_interval_minutes = Cti::find_gcd(minutesApart % MaxInterval, record->interval_minutes);
+        //  find the new interval - note that interval_minutes is less than MaxInterval at this point, so the GCD will be, too
+        const auto new_interval_minutes = Cti::find_gcd(minutesApart, record->interval_minutes);
         //  adjust the existing intervals to the new interval
         const auto new_intervals = adjust_intervals(record->intervals, record->interval_minutes / new_interval_minutes);
 
