@@ -42,19 +42,32 @@
     <!-- DATA STREAMING DISCREPANCIES PAGE-->
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.pageName">Data Streaming Discrepancies</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.pageDescription">Data Streaming Discrepancies</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.instructions">Note: This page shows the data streaming discrepancies from what Yukon expects and what Network Manager actually has configured.  The gear icon on the right of each row has the option to Re-send the expected attributes/interval to Network Manager.  The Accept option will accept the actual configuration that Network Manager has to use within Yukon.  The Remove option will remove the data streaming configuration.</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.instructions">Note: This page shows the data streaming discrepancies between Yukon and the device.  The gear icon on the right of each row has the option to Re-send the Yukon attributes/interval to the device.  The Accept option will change the Yukon configuration to match what the device has reported.  The Remove option will remove the data streaming configuration.</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.device">Device</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.expectedAttributes">Expected Attribute(s)</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.actualAttributes">Actual Attribute(s)</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.expectedInterval">Expected Interval</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.actualInterval">Actual Interval</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.expectedAttributes">Yukon Attribute(s)</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.actualAttributes">Device Attribute(s)</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.expectedInterval">Yukon Interval</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.actualInterval">Device Interval</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.status">Status</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.lastCommunicated">Last Communicated  </entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resendAll.label">Re-send All</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptAll.label">Accept All</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resend">Re-send</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.accept">Accept</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.remove">Remove</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resend">Re-send Yukon Configuration</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.accept">Accept Device Configiuration</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.remove">Remove Configuration</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptConfirmation.title">Accept Device Configuration</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptConfirmation.message">This will change the Yukon configuration for device {0} to match what the device has reported.</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resendConfirmation.title">Re-send Yukon Configuration</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resendConfirmation.message">This will re-send the Yukon configuration for device {0}.</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.removeConfirmation.title">Remove Data Streaming Configuration</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.removeConfirmation.message">This will remove the data streaming configuration for device {0}</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptAllConfirmation.title">Accept All Device Configurations</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptAllConfirmation.message">This will change the Yukon Configuration for all devices to match what each device has reported.</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resendAllConfirmation.title">Re-send All Yukon Configurations</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resendAllConfirmation.message">This will re-send the Yukon Configuration to each device.</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptSuccess">The Yukon Configuration has been updated.</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptAllSuccess">All Yukon Configurations have been updated.</entry>
+    
     
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.CONFIRMED">Confirmed Discrepancy</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.PENDING">Pending</entry>

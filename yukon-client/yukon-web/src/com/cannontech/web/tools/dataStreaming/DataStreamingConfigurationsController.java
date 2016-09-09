@@ -71,6 +71,8 @@ import com.google.common.collect.Ordering;
 @RequestMapping("/dataStreaming/*")
 @CheckCparm(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED)
 public class DataStreamingConfigurationsController {
+    
+    private final static String baseKey = "yukon.web.modules.tools.dataStreaming.";
 
     @Autowired private DataStreamingService dataStreamingService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -383,9 +385,9 @@ public class DataStreamingConfigurationsController {
     public String acceptDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
         LiteYukonUser user = userContext.getYukonUser();
         try {
-            DataStreamingConfigResult result = dataStreamingService.accept(Arrays.asList(deviceId), user);
-            model.addAttribute("resultsId", result.getResultsId());
-            return "redirect:/bulk/dataStreaming/dataStreamingResults";
+            dataStreamingService.accept(Arrays.asList(deviceId), user);
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptSuccess"));
+            return "redirect:/tools/dataStreaming/discrepancies";
         } catch (DataStreamingConfigException e) {
             flash.setError(e.getMessageSourceResolvable());
             return "redirect:/tools/dataStreaming/discrepancies";
@@ -439,9 +441,9 @@ public class DataStreamingConfigurationsController {
         
         LiteYukonUser user = userContext.getYukonUser();
         try {
-            DataStreamingConfigResult result = dataStreamingService.accept(deviceList, user);
-            model.addAttribute("resultsId", result.getResultsId());
-            return "redirect:/bulk/dataStreaming/dataStreamingResults";
+            dataStreamingService.accept(deviceList, user);
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptAllSuccess"));
+            return "redirect:/tools/dataStreaming/discrepancies";
         } catch (DataStreamingConfigException e) {
             flash.setError(e.getMessageSourceResolvable());
             return "redirect:/tools/dataStreaming/discrepancies";

@@ -2,6 +2,7 @@ package com.cannontech.web.rfn.dataStreaming.model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.BooleanUtils;
 
@@ -64,12 +65,9 @@ public class DataStreamingConfig implements Cloneable {
      * 
      */
     public String getName() {
-        List<DataStreamingAttribute> onAttributes = new ArrayList<>();
-        attributes.forEach(attribute -> {
-            if (attribute.getAttributeOn()) {
-                onAttributes.add(attribute);
-            }
-        });
+        List<DataStreamingAttribute> onAttributes = attributes.stream()
+                .filter(DataStreamingAttribute::getAttributeOn)
+                .collect(Collectors.toList());
         if (accessor != null && onAttributes.size() > 0) {
             String attrName = accessor.getMessage(onAttributes.get(0).getAttribute());
             int interval = onAttributes.get(0).getInterval();

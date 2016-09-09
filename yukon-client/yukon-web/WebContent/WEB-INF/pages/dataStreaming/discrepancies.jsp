@@ -5,6 +5,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="tools" page="dataStreaming.discrepancies">
 
@@ -17,8 +18,8 @@
                 <tr>
                     <tags:sort column="${device}"/>
                     <tags:sort column="${expectedAttributes}"/>
-                    <tags:sort column="${actualAttributes}"/>
                     <tags:sort column="${expectedInterval}"/>
+                    <tags:sort column="${actualAttributes}"/>
                     <tags:sort column="${actualInterval}"/>
                     <tags:sort column="${status}"/>
                     <tags:sort column="${lastCommunicated}"/>
@@ -34,7 +35,6 @@
                             <tr>
                                 <td><a href="${detailUrl}">${fn:escapeXml(discrepancy.paoName)}</a></td>
                                 <td class="wrbw">${discrepancy.expected.commaDelimitedAttributesOnOff}</td>
-                                <td class="wrbw">${discrepancy.actual.commaDelimitedAttributesOnOff}</td>
                                 <td class="wsnw"><c:if test="${discrepancy.expected.selectedInterval > 0}">${discrepancy.expected.selectedInterval}</c:if>
                                     <c:choose>
                                         <c:when test="${discrepancy.expected.selectedInterval == 1}">
@@ -48,6 +48,7 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
+                                <td class="wrbw">${discrepancy.actual.commaDelimitedAttributesOnOff}</td>
                                 <td class="wsnw"><c:if test="${discrepancy.actual.selectedInterval > 0}">${discrepancy.actual.selectedInterval}</c:if>
                                     <c:choose>
                                         <c:when
@@ -69,13 +70,14 @@
                                     <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
                                         <cm:dropdown icon="icon-cog" triggerClasses="fr">
                                             <cti:url var="resendUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/resend"/>
-                                            <cm:dropdownOption key=".resend" href="${resendUrl}" icon="icon-control-repeat-blue"/>
-                                            <cti:url var="acceptUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/accept"/>
+                                            <cm:dropdownOption id="resendConfiguration_${discrepancy.deviceId}" key=".resend" icon="icon-control-repeat-blue" data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:resend"/>
+                                            <d:confirm on="#resendConfiguration_${discrepancy.deviceId}" nameKey="resendConfirmation" argument="${discrepancy.paoName}"/>
                                             <c:if test="${discrepancy.status != 'PENDING' && discrepancy.actual.attributes.size() > 0}">
-                                                <cm:dropdownOption key=".accept" href="${acceptUrl}" icon="icon-accept"/>
+                                                <cm:dropdownOption id="acceptConfiguration_${discrepancy.deviceId}" key=".accept" icon="icon-accept" data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:accept"/>
+                                                <d:confirm on="#acceptConfiguration_${discrepancy.deviceId}" nameKey="acceptConfirmation" argument="${discrepancy.paoName}"/>
                                             </c:if>
-                                            <cti:url var="removeUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/remove"/>
-                                            <cm:dropdownOption key=".remove" href="${removeUrl}" icon="icon-cross"/>
+                                            <cm:dropdownOption id="removeConfiguration_${discrepancy.deviceId}" key=".remove" icon="icon-cross" data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:remove"/>
+                                            <d:confirm on="#removeConfiguration_${discrepancy.deviceId}" nameKey="removeConfirmation" argument="${discrepancy.paoName}"/>
                                         </cm:dropdown>
                                     </cti:checkRolesAndProperties>
                                </td>
@@ -103,18 +105,23 @@
             <form:form id="resendAll" action="${resendAllUrl}" method="POST">
                 <cti:csrfToken/>
                 <input type="hidden" id="deviceIds" name="deviceIds" value="${deviceIds}"/>
-                <cti:button type="submit" nameKey="resendAll" disabled="${disableButtons}" />
+                <cti:button id="resendAllConfigurations" nameKey="resendAll" disabled="${disableButtons}" data-ok-event="yukon:tools:dataStreaming:resendAll"/>
+                <d:confirm on="#resendAllConfigurations" nameKey="resendAllConfirmation" />
             </form:form>
             
             <cti:url var="acceptAllUrl" value="/tools/dataStreaming/discrepancies/acceptAll"/>
             <form:form id="acceptAll" action="${acceptAllUrl}" method="POST">
                 <cti:csrfToken/>
                 <input type="hidden" id="deviceIds" name="deviceIds" value="${deviceIds}"/>
-                <cti:button type="submit" nameKey="acceptAll" disabled="${disableButtons}"/>
+                <cti:button id="acceptAllConfigurations" nameKey="acceptAll" disabled="${disableButtons}" data-ok-event="yukon:tools:dataStreaming:acceptAll"/>
+                <d:confirm on="#acceptAllConfigurations" nameKey="acceptAllConfirmation" />
             </form:form>
           
         </div>
     
     </cti:checkRolesAndProperties>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.tools.dataStreaming.js"/>
+    
 
 </cti:standardPage>

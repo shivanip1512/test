@@ -134,6 +134,34 @@ yukon.tools.dataStreaming = (function () {
             $(document).on('click', '.js-show-all', function (ev) {
                 window.location.href = yukon.url('/tools/dataStreaming/summary');
             });
+            
+            $(document).on('yukon:tools:dataStreaming:resend', function (ev) {
+                var container = $(ev.target),
+                deviceId = container.data('deviceId');
+                window.location.href = yukon.url('/tools/dataStreaming/discrepancies/' + deviceId + '/resend');
+            });
+            
+            $(document).on('yukon:tools:dataStreaming:accept', function (ev) {
+                var container = $(ev.target),
+                deviceId = container.data('deviceId');
+                window.location.href = yukon.url('/tools/dataStreaming/discrepancies/' + deviceId + '/accept');
+            });
+            
+            $(document).on('yukon:tools:dataStreaming:remove', function (ev) {
+                var container = $(ev.target),
+                deviceId = container.data('deviceId');
+                window.location.href = yukon.url('/tools/dataStreaming/discrepancies/' + deviceId + '/remove');
+            });
+            
+            $(document).on('yukon:tools:dataStreaming:resendAll', function (ev) {
+                var container = $(ev.target);
+                container.closest("form").submit();
+            });
+            
+            $(document).on('yukon:tools:dataStreaming:acceptAll', function (ev) {
+                var container = $(ev.target);
+                container.closest("form").submit();
+            });
 
             _initialized = true;
         }
