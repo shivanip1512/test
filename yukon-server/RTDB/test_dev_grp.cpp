@@ -118,6 +118,13 @@ BOOST_AUTO_TEST_CASE(test_expresscom_address_comparison)
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, parent->compareAddressing(child));
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::ADDRESSING_EQUIVALENT, child->compareAddressing(parent));
 
+    /* 
+    Feeder addresses create a directed graph, a tree with multiple parents.
+    The feeder address is a bitmap where a child will contain all the bits of the parent.
+
+    In this case, well set one with address 1, and one with address 7.  Since 7 contains all 
+    the bits in 1, 7 becomes the parent.
+    */
     parentGrpPtr->getExpresscomGroup().setFeeder(7);    // child is in feeder subset
     childGrpPtr->getExpresscomGroup().setFeeder(1);
     BOOST_CHECK_EQUAL(CtiDeviceGroupBase::THIS_IS_PARENT, parent->compareAddressing(child));
