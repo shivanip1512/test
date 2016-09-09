@@ -98,7 +98,7 @@ BOOL CEventLog::LogEvent(DWORD  dwEventID,  DWORD    dwDataSize,
 BOOL CEventLog::LogWin32Error(DWORD dwEventID,
                                            LPCTSTR szString, DWORD dwErrorNum)
 {
-   LPVOID lpvMsgBuf;
+   LPTSTR lpvMsgBuf;
    TCHAR szErrorDesc[1024];
    if(!FormatMessage(
                   FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_ALLOCATE_BUFFER,
@@ -106,24 +106,32 @@ BOOL CEventLog::LogWin32Error(DWORD dwEventID,
                   (LPTSTR)&lpvMsgBuf, 0, 0))
    {
       if(szString != NULL)
-         wsprintf(szErrorDesc,
-                  _T("Function: %s returned Win32 Error: %d, Unknown Error"),
-                  szString, dwErrorNum);
+      {
+          sprintf_s(szErrorDesc, 
+                    _T("Function: %s returned Win32 Error: %d, Unknown Error"),
+                    szString, dwErrorNum);
+      }
       else
-         wsprintf(szErrorDesc,
-                  _T("Win32 Error: %d, Unknown Error"),
-                  dwErrorNum);
+      {
+          sprintf_s(szErrorDesc, 
+                    _T("Win32 Error: %d, Unknown Error"),
+                    dwErrorNum);
+      }
    }
    else
    {
       if(szString != NULL)
-         wsprintf(szErrorDesc,
-                  _T("Function: %s returned Win32 Error: %d Description: %s"),
-                  szString, dwErrorNum, lpvMsgBuf);
+      {
+          sprintf_s(szErrorDesc, 
+                    _T("Function: %s returned Win32 Error: %d Description: %s"),
+                    szString, dwErrorNum, lpvMsgBuf);
+      }
       else
-         wsprintf(szErrorDesc,
-                  _T("Win32 Error: %d Description: %s"),
-                  dwErrorNum, lpvMsgBuf);
+      {
+          sprintf_s(szErrorDesc, 
+                    _T("Win32 Error: %d Description: %s"),
+                    dwErrorNum, lpvMsgBuf);
+      }
       LocalFree(lpvMsgBuf);
    }
 
@@ -142,9 +150,9 @@ BOOL CEventLog::RegisterLog(LPTSTR szPath)
    DWORD dwData;
    TCHAR szBuf[256];
    TCHAR szKey[256];
-   wsprintf(szKey,
-         _T("SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\%s"),
-         m_pszSource);
+   sprintf_s(szKey,
+             _T("SYSTEM\\CurrentControlSet\\Services\\EventLog\\Application\\%s"),
+             m_pszSource);
 
    // Does the key already exist?
    if(RegOpenKey(HKEY_LOCAL_MACHINE, szKey, &hk) == ERROR_SUCCESS)
