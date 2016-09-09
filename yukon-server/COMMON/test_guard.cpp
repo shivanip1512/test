@@ -24,7 +24,7 @@ std::string makeTID(boost::thread::id threadid)
     return tid.str();
 }
 
-
+#if 0
 /**
 Happy guard test.  We acquire it, and then release it.
 **/
@@ -427,3 +427,5 @@ void lockGuardTestChildRRW(DWORD parentTid, int childIndex)
 }
 
 BOOST_AUTO_TEST_SUITE_END()
+
+#endif
