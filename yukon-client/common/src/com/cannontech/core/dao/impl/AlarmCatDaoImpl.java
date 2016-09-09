@@ -79,7 +79,7 @@ public final class AlarmCatDaoImpl implements AlarmCatDao {
     public List<LiteAlarmCategory> getAlarmCategories() {
         List<LiteAlarmCategory> sortedAlarmCategories = new ArrayList<LiteAlarmCategory>(getAlarmCategoryCache().values());
         Collections.sort(sortedAlarmCategories);
-        return sortedAlarmCategories;
+        return Collections.unmodifiableList(sortedAlarmCategories);
     }
 
     private Map<Integer, LiteAlarmCategory> getAlarmCategoryCache() {
