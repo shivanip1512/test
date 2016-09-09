@@ -5,7 +5,6 @@
 #include "dbaccess.h"
 #include "ccexecutor.h"
 #include "ccservice.h"
-#include "precomp.h"
 #include "monitor.h"
 #include "CServiceConfig.h"
 #include "rtdb.h"

@@ -288,7 +288,10 @@ void CService::OnContinue()
 {}
 
 void CService::OnShutdown()
-{}
+{
+    //  Default shutdown behavior is to stop the service.
+    OnStop();
+}
 
 void CService::HandleUserDefined(DWORD dwControl)
 {}
