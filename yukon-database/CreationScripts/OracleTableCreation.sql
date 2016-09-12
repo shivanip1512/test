@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     8/31/2016 2:00:08 PM                         */
+/* Created on:     9/12/2016 12:06:11 AM                        */
 /*==============================================================*/
 
 
@@ -2693,6 +2693,8 @@ create table DYNAMICPOINTDISPATCH  (
    VALUE                FLOAT                           not null,
    TAGS                 NUMBER                          not null,
    NEXTARCHIVE          DATE                            not null,
+   STALECOUNT           NUMBER                          not null,
+   LastAlarmLogID       NUMBER                          not null,
    millis               SMALLINT                        not null,
    constraint PK_DYNAMICPOINTDISPATCH primary key (POINTID)
 );
@@ -9793,6 +9795,7 @@ INSERT INTO YukonRoleProperty VALUES (-21312,-213,'Manage FDR Translations','fal
 INSERT INTO YukonRoleProperty VALUES (-21313,-213,'Archived Data Export','true','Controls access to Archived Data Export');
 INSERT INTO YukonRoleProperty VALUES (-21314,-213,'Connect/Disconnect','true','Controls access to Connect/Disconnect collection action.');
 INSERT INTO YukonRoleProperty VALUES (-21315,-213,'Demand Reset','true','Controls access to Demand Reset collection action.');
+INSERT INTO YukonRoleProperty VALUES (-21316, -213, 'RF Data Streaming', 'false', 'Controls access to RF data streaming configuration actions.');
 
 /* Device Management Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-21400, -214, 'Infrastructure Create/Edit', 'false', 'Controls the ability to create and edit infrastructure devices. i.e. RF Gateways.');
@@ -13127,3 +13130,4 @@ alter table Zone
 alter table Zone
    add constraint FK_Zone_Zone foreign key (ParentId)
       references Zone (ZoneId);
+
