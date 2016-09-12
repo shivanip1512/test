@@ -37,8 +37,8 @@ yukon.admin.user = (function () {
                         window.location.reload();
                     },
                     error: function (xhr) {
-                        var result = $.parseJSON(xhr.responseText);
-                        $('#change-password-popup').addMessage({ messageClass: 'error', message: result });
+                        
+                        $('#change-password-popup').html(xhr.responseText);
                     }
                 });
                 

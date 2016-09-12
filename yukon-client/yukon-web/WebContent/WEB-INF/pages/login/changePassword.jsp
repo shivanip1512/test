@@ -11,7 +11,12 @@
         <div class="one column nogutter">
             <div class="page-title-bar">
                 <h1><i:inline key=".pageName"/></h1>
-            </div>    
+            </div>
+            <div id="change-password-popup-alerts">
+                <c:if test="${ minPasswordAgeNotMet }">
+                    <tags:alertBox key="yukon.web.modules.passwordPolicyError.MIN_PASSWORD_AGE_NOT_MET"/>
+                </c:if>
+            </div>
             <form:form id="change-password-form" commandName="login" action="change-password">
                 <cti:csrfToken/>
                 <div class="column-12-12">

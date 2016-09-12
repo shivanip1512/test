@@ -7,8 +7,12 @@
 
 
 <cti:msgScope paths="changelogin">
-
     <div class="column-12-12">
+        <div id="change-password-popup-alerts">
+        <c:if test="${ minPasswordAgeNotMet }">
+            <tags:alertBox key="yukon.web.modules.passwordPolicyError.MIN_PASSWORD_AGE_NOT_MET"/>
+        </c:if>
+        </div>
         <div class="column one">
             <cti:url var="url" value="/admin/users/${userId}/change-password" />
             <form:form id="change-password-form" commandName="password" action="${url}" method="post">
@@ -21,10 +25,10 @@
                         </tags:nameValue2>
                     </c:if>
                     <tags:nameValue2 nameKey=".newPassword">
-                        <tags:password path="password" cssClass="js-new-password" autocomplete="off" />
+                        <tags:password path="password" cssClass="js-new-password" autocomplete="off" disabled='${not empty minPasswordAgeNotMet }'/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".confirmPassword">
-                        <tags:password path="confirmPassword" cssClass="js-confirm-password" autocomplete="off" />
+                        <tags:password path="confirmPassword" cssClass="js-confirm-password" autocomplete="off" disabled='${not empty minPasswordAgeNotMet }'/>
                     </tags:nameValue2>
                     <tags:nameValue2 excludeColon="true">
                         <div class="js-password-mismatch error">
