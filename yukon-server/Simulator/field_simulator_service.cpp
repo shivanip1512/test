@@ -90,7 +90,7 @@ void FieldSimulatorService::Run()
    SetThreadName(-1, "SimulatorSvc ");
 
    // set service as running Now
-   SetStatus(SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
+   SetStatus(SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN | SERVICE_ACCEPT_PRESHUTDOWN );
 
    simulatorThread.join();
 

@@ -85,8 +85,6 @@ void CtiDispatchService::OnStop()
 
 void CtiDispatchService::Run()
 {
-
-    // SetStatus( SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP  );
     SetStatus(SERVICE_START_PENDING, 33, 5000 );
 
     //Start dispatch main thread
@@ -94,7 +92,7 @@ void CtiDispatchService::Run()
 
     // set service as running
     SetStatus(SERVICE_RUNNING, 0, 0,
-              SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
+              SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN | SERVICE_ACCEPT_PRESHUTDOWN );
 
     _dispatchThread.join();
 

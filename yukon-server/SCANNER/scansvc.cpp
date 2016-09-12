@@ -82,7 +82,7 @@ void CtiScannerService::Run()
    boost::thread _scannerThread( ScannerMainFunction, _myargc, _myargv );
 
    // set service as running
-   SetStatus(SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
+   SetStatus(SERVICE_RUNNING, 0, 0, SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN | SERVICE_ACCEPT_PRESHUTDOWN );
 
    _scannerThread.join();
 

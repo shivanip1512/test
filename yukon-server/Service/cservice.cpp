@@ -150,6 +150,12 @@ void CService::HandlerMember(DWORD dwControl)
       SetEvent(m_hEvents[SHUTDOWN]);
       break;
 
+   case SERVICE_CONTROL_PRESHUTDOWN:
+      m_dwRequestedControl = dwControl;
+
+      SetEvent(m_hEvents[PRESHUTDOWN]);
+      break;
+
    case SERVICE_CONTROL_INTERROGATE:
       // Return current status on interrogation
       SetStatus(GetStatus());
@@ -199,6 +205,11 @@ DWORD CService::WatcherThreadMemberProc()
 
       case SHUTDOWN:
          OnShutdown();
+         bControlWait = false;
+         break;
+
+      case PRESHUTDOWN:
+         OnPreShutdown();
          bControlWait = false;
          break;
       }
@@ -291,6 +302,12 @@ void CService::OnShutdown()
 {
     //  Default shutdown behavior is to stop the service.
     OnStop();
+}
+
+void CService::OnPreShutdown()
+{
+    //  Default preshutdown behavior is the same as shutdown (stop the service).
+    OnShutdown();
 }
 
 void CService::HandleUserDefined(DWORD dwControl)

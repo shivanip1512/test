@@ -63,6 +63,7 @@ protected:
    virtual void OnPause();
    virtual void OnContinue();
    virtual void OnShutdown();
+   virtual void OnPreShutdown();
    virtual void HandleUserDefined(DWORD dwControl);
 
    virtual void Run() = 0;
@@ -91,7 +92,7 @@ protected:
    TCHAR m_szDisplay[MAX_SERVICE_LEN + 1];
    DWORD m_dwType;
 
-   enum EVENTS { STOP, PAUSE, CONTINUE, SHUTDOWN };
+   enum EVENTS { STOP, PAUSE, CONTINUE, SHUTDOWN, PRESHUTDOWN };
 };
 
 // Implements static thread functions for derived classes

@@ -205,7 +205,7 @@ void CtiLMService::OnStop()
 void CtiLMService::Run()
 {
     SetStatus(SERVICE_RUNNING, 0, 0,
-              SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
+              SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN | SERVICE_ACCEPT_PRESHUTDOWN );
 
     try
     {

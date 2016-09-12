@@ -213,7 +213,7 @@ void CtiFDRService::Run( )
 {
     // set service as running
     SetStatus(SERVICE_RUNNING, 0, 0,
-              SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN );
+              SERVICE_ACCEPT_STOP | SERVICE_ACCEPT_SHUTDOWN | SERVICE_ACCEPT_PRESHUTDOWN );
 
     // Make sure the database is available before we try to load anything from it.
     {
