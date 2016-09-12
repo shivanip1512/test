@@ -14465,5 +14465,3 @@ INSERT INTO StoredProcedureLog VALUES (
             'sp_SmartIndexMaintenance', 
             GETDATE(), 'Smart Index Maintenance Complete');
 go
-
-INSERT INTO YukonRoleProperty VALUES (-21316, -213, 'RF Data Streaming', 'false', 'Controls access to RF data streaming configuration actions.'); 
