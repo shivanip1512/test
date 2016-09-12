@@ -55,8 +55,7 @@ public class HoneywellCycleGearPanel extends GenericGearPanel {
     private JPanel changeMethodPanel;
     private JTextField changeTriggerOffsetTextField;
     private JTextField kwReductionTextField;
-    private JCheckBox checkBoxRampIn;
-    private JCheckBox checkBoxRampOut;
+    private JCheckBox checkBoxRampInOut;
     private javax.swing.JLabel ivjJLabelCyclePeriod = null;
     private javax.swing.JComboBox<Integer> ivjJComboBoxCyclePeriod = null;
 
@@ -81,24 +80,14 @@ public class HoneywellCycleGearPanel extends GenericGearPanel {
         fireInputUpdate();
     }
 
-    private JCheckBox getCheckBoxRampIn() {
-        if (checkBoxRampIn == null) {
-            checkBoxRampIn = new JCheckBox();
-            checkBoxRampIn.setText("Ramp In");
-            checkBoxRampIn.setPreferredSize(new Dimension(165, 23));
-            checkBoxRampIn.setSelected(true);
+    private JCheckBox getCheckBoxRampInOut() {
+        if (checkBoxRampInOut == null) {
+            checkBoxRampInOut = new JCheckBox();
+            checkBoxRampInOut.setText("Ramp In/Out");
+            checkBoxRampInOut.setPreferredSize(new Dimension(165, 23));
+            checkBoxRampInOut.setSelected(true);
         }
-        return checkBoxRampIn;
-    }
-
-    private JCheckBox getCheckBoxRampOut() {
-        if (checkBoxRampOut == null) {
-            checkBoxRampOut = new JCheckBox();
-            checkBoxRampOut.setText("Ramp Out");
-            checkBoxRampOut.setPreferredSize(new Dimension(165, 23));
-            checkBoxRampOut.setSelected(true);
-        }
-        return checkBoxRampOut;
+        return checkBoxRampInOut;
     }
 
     private javax.swing.JComboBox<Integer> getJComboBoxCyclePeriod() {
@@ -617,8 +606,7 @@ public class HoneywellCycleGearPanel extends GenericGearPanel {
             gear.setChangeTriggerOffset(Double.valueOf(getJTextFieldChangeTriggerOffset().getText()));
         }
         gear.setControlPercent(toInteger(getJCSpinFieldControlPercent().getValue()));
-        gear.setFrontRampEnabled(getCheckBoxRampIn().isSelected());
-        gear.setBackRampEnabled(getCheckBoxRampOut().isSelected());
+        gear.setFrontRampEnabled(getCheckBoxRampInOut().isSelected());
         com.cannontech.database.data.device.lm.HoneywellCycleGear sGear =
             (com.cannontech.database.data.device.lm.HoneywellCycleGear) gear;
         sGear.setCyclePeriod((Integer) getJComboBoxCyclePeriod().getSelectedItem());
@@ -645,8 +633,7 @@ public class HoneywellCycleGearPanel extends GenericGearPanel {
         getJComboBoxHowToStop().addActionListener(this);
         getJTextFieldChangeTriggerOffset().addCaretListener(this);
         getJTextFieldKWReduction().addCaretListener(this);
-        getCheckBoxRampIn().addActionListener(this);
-        getCheckBoxRampOut().addActionListener(this);
+        getCheckBoxRampInOut().addActionListener(this);
         getJComboBoxCyclePeriod().addActionListener(this);
     }
 
@@ -730,8 +717,7 @@ public class HoneywellCycleGearPanel extends GenericGearPanel {
             constraintJComboBoxCyclePeriod.gridx = 2;
 
             setLayout(new GridBagLayout());
-            this.add(getCheckBoxRampIn(), constraintJCheckBoxRampIn);
-            this.add(getCheckBoxRampOut(), constraintJCheckBoxRampOut);
+            this.add(getCheckBoxRampInOut(), constraintJCheckBoxRampIn);
             this.add(getJLabelControlPercent(), constraintJLabelDutyCyclePercent);
             this.add(getJCSpinFieldControlPercent(), constraintJCSpinFieldDutyCyclePercent);
             this.add(getJPanelChangeMethod(), constraintJPanelChangeMethod);
@@ -849,8 +835,7 @@ public class HoneywellCycleGearPanel extends GenericGearPanel {
         final DecimalFormat format = new DecimalFormat("#####.####");
         getJTextFieldChangeTriggerOffset().setText(format.format(gear.getChangeTriggerOffset()));
         getJCSpinFieldControlPercent().setValue(gear.getControlPercent());
-        getCheckBoxRampIn().setSelected(gear.isFrontRampEnabled());
-        getCheckBoxRampOut().setSelected(gear.isBackRampEnabled());
+        getCheckBoxRampInOut().setSelected(gear.isFrontRampEnabled());
         com.cannontech.database.data.device.lm.HoneywellCycleGear hGear =
             (com.cannontech.database.data.device.lm.HoneywellCycleGear) gear;
         getJComboBoxCyclePeriod().setSelectedItem(hGear.getCyclePeriod());
