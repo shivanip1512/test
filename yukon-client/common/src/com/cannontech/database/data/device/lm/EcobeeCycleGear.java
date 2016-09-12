@@ -19,7 +19,7 @@ public class EcobeeCycleGear extends com.cannontech.database.db.device.lm.LMProg
     }
 
     public boolean isFrontRampEnabled() {
-        return RAMP_RANDOM.equals(getBackRampOption());
+        return RAMP_RANDOM.equals(getFrontRampOption());
     }
 
     public void setFrontRampEnabled(boolean doRamp) {
