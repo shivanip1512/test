@@ -30,13 +30,13 @@ public:
 
    // All derived class static ServiceMain functions are delegated to me
    void ServiceMainMember(DWORD argc, LPTSTR* argv,
-                        LPHANDLER_FUNCTION pf, LPTHREAD_START_ROUTINE pfnWTP);
+                        LPHANDLER_FUNCTION_EX pf, LPTHREAD_START_ROUTINE pfnWTP);
 
    // All derived class static handler functions are delegated to me
-   void HandlerMember(DWORD dwControl);
+   void HandlerExMember(DWORD dwControl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext);
 
 protected:
-   bool SetupHandlerInside(LPHANDLER_FUNCTION lpHandlerProc);
+   bool SetupHandlerInside(LPHANDLER_FUNCTION_EX lpHandlerProc, LPVOID lpContext);
 
    // Launches a thread to look for control requests
    virtual void LaunchWatcherThread(LPTHREAD_START_ROUTINE pfnWTP);
@@ -100,7 +100,7 @@ protected:
 public: \
    static class_name##* m_pThis; \
    static void WINAPI service_name##Main(DWORD argc, LPTSTR* argv); \
-   static void WINAPI service_name##Handler(DWORD dwControl); \
+   static void WINAPI service_name##HandlerEx(DWORD dwControl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext); \
    static DWORD WINAPI service_name##WatcherThreadProc(LPVOID lpParameter);
 
 #define IMPLEMENT_SERVICE(class_name, service_name) \
@@ -108,12 +108,12 @@ class_name##* class_name::m_pThis = NULL; \
 void WINAPI class_name::service_name##Main(DWORD argc, LPTSTR* argv) \
 { \
    m_pThis->ServiceMainMember(argc, argv, \
-                   (LPHANDLER_FUNCTION)service_name##Handler, \
+                   (LPHANDLER_FUNCTION_EX)service_name##HandlerEx, \
                    (LPTHREAD_START_ROUTINE)service_name##WatcherThreadProc); \
 } \
-void WINAPI class_name::service_name##Handler(DWORD dwControl) \
+void WINAPI class_name::service_name##HandlerEx(DWORD dwControl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext) \
 { \
-   m_pThis->HandlerMember(dwControl); \
+   m_pThis->HandlerExMember(dwControl, dwEventType, lpEventData, lpContext); \
 } \
 DWORD WINAPI class_name::service_name##WatcherThreadProc(LPVOID lpParameter) \
 { \

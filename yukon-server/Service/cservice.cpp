@@ -83,12 +83,12 @@ void CService::RunInConsole(DWORD argc, LPTSTR* argv)
     ParseArgs(argc, argv);
 }
 
-void CService::ServiceMainMember(DWORD argc, LPTSTR* argv, LPHANDLER_FUNCTION pf, LPTHREAD_START_ROUTINE pfnWTP)
+void CService::ServiceMainMember(DWORD argc, LPTSTR* argv, LPHANDLER_FUNCTION_EX pf, LPTHREAD_START_ROUTINE pfnWTP)
 {
    DWORD dwErr = 0;
 
       PreInit();
-      SetupHandlerInside(pf);
+      SetupHandlerInside(pf, nullptr);
       ParseArgs(argc, argv);
       LaunchWatcherThread(pfnWTP);
       Init();
@@ -98,9 +98,9 @@ void CService::ServiceMainMember(DWORD argc, LPTSTR* argv, LPHANDLER_FUNCTION pf
 }
 
 // Register the control handler for the service
-bool CService::SetupHandlerInside(LPHANDLER_FUNCTION lpHandlerProc)
+bool CService::SetupHandlerInside(LPHANDLER_FUNCTION_EX lpHandlerProc, LPVOID lpContext)
 {
-   m_hServiceStatus = RegisterServiceCtrlHandler(m_szName, lpHandlerProc);
+   m_hServiceStatus = RegisterServiceCtrlHandlerEx(m_szName, lpHandlerProc, lpContext);
    if(!m_hServiceStatus)
    {
       ErrorHandler(_T("RegisterServiceCtrlHandler"));
@@ -111,7 +111,7 @@ bool CService::SetupHandlerInside(LPHANDLER_FUNCTION lpHandlerProc)
    return true;
 }
 
-void CService::HandlerMember(DWORD dwControl)
+void CService::HandlerExMember(DWORD dwControl, DWORD dwEventType, LPVOID lpEventData, LPVOID lpContext)
 {
    // Keep an additional control request of the same type
    //  from coming in when you're already handling it
