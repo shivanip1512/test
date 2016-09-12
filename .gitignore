@@ -66,6 +66,8 @@ yukon-client/trending/bin
 yukon-client/trending/build
 yukon-client/web-common/bin
 yukon-client/web-common/build
+yukon-client/yukon-message-broker/activemq-data
+yukon-client/yukon-message-broker/bin
 yukon-client/yukon-web/.tomcatplugin
 yukon-client/yukon-web/WebContent/WEB-INF/classes
 yukon-client/yukon-web/WebContent/capcontrol/_notes
