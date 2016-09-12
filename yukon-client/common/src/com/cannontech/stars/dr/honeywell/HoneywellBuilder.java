@@ -14,7 +14,7 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.model.CompleteDevice;
+import com.cannontech.common.pao.model.CompleteHoneywellThermostat;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
@@ -45,7 +45,7 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
         try {
           //TODO: Code to register new device with honeywell service??
 
-            CompleteDevice honeywellPao = new CompleteDevice();
+            CompleteHoneywellThermostat honeywellPao = new CompleteHoneywellThermostat();
             honeywellPao.setPaoName(serialNumber);
             paoPersistenceService.createPaoWithDefaultPoints(honeywellPao, hardwareTypeToPaoType.get(hardwareType));
 
@@ -82,7 +82,16 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void updateDevice(Hardware hardware) {
-        // Nothing extra to do
+       //TODO:Need to decide on if we need a new table for storing mac address for Honeywell.
+       /* CompleteHoneywellThermostat honeywellThermostat = paoPersistenceService.retreivePao(hardware.getYukonPao(), CompleteHoneywellThermostat.class);
+        
+        if (hardware.getMacAddress() != null) {
+            honeywellThermostat.setMacAddress(hardware.getMacAddress());
+        }
+        
+        paoPersistenceService.updatePao(honeywellThermostat);
+        
+        inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), hardware.getDeviceId());*/
     }
 
     @Override

@@ -488,5 +488,12 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     public boolean isLmHardware() {
         return getInventoryCategory().isLmHardware();
     }
-    
+ 
+    public boolean isHideHardwareAddressing() {
+        if (this.isEcobee() || this.isHoneywell()) {
+            return true;
+        }
+        return false;
+    }
+
 }

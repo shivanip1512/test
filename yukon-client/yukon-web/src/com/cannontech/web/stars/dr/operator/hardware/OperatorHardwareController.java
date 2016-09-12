@@ -686,7 +686,7 @@ public class OperatorHardwareController {
         HardwareClass clazz = type.getHardwareClass();
         model.addAttribute("displayTypeKey", ".displayType." + clazz);
 
-        if (type.isZigbee()) {
+        if (type.isZigbee() || type.isHoneywell()) {
             model.addAttribute("showMacAddress", true);
             if (!type.isGateway()) {
                 model.addAttribute("showInstallCode", true);
@@ -698,8 +698,7 @@ public class OperatorHardwareController {
         boolean showVoltage = !type.isZigbee() && !clazz.isGateway() && !clazz.isThermostat();
         model.addAttribute("showVoltage", showVoltage);
         
-        // Hide route for meters and ZigBee devices
-        if (!clazz.isMeter() && !type.isZigbee() && !type.isRf() && !type.isEcobee() && type != HardwareType.LCR_3102 && !type.isHoneywell()) {
+        if (!clazz.isMeter() && type.isRoutable()) {
             model.addAttribute("showRoute", true);
         }
         

@@ -51,8 +51,6 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PaoType.RFN510FL, PaoType.RFN520FAX, PaoType.RFN520FRX, PaoType.RFN520FAXD, PaoType.RFN520FRXD,
             PaoType.RFN530FAX, PaoType.RFN530FRX, 
             PaoType.RFN530S4X, PaoType.RFN530S4EAD, PaoType.RFN530S4EAT, PaoType.RFN530S4ERD, PaoType.RFN530S4ERT,
-            PaoType.RFN_1200, PaoType.ECOBEE_SMART_SI, PaoType.ECOBEE_3, PaoType.ECOBEE_SMART,
-            PaoType.HONEYWELL_9000, PaoType.HONEYWELL_FOCUSPRO, PaoType.HONEYWELL_THERMOSTAT, PaoType.HONEYWELL_VISIONPRO_8000
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
 			PaoType.ALPHA_A1, PaoType.ALPHA_PPLUS, PaoType.FULCRUM, PaoType.VECTRON, PaoType.QUANTUM, 
