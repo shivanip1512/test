@@ -110,8 +110,6 @@ public class DataStreamingConfigurationsController {
         discrepancyBuilder.put(DiscrepancySortBy.device, getDeviceComparator());
         discrepancyBuilder.put(DiscrepancySortBy.expectedAttributes, getExpectedAttributesComparator());
         discrepancyBuilder.put(DiscrepancySortBy.actualAttributes, getActualAttributesComparator());
-        discrepancyBuilder.put(DiscrepancySortBy.expectedInterval, getExpectedIntervalComparator());
-        discrepancyBuilder.put(DiscrepancySortBy.actualInterval, getActualIntervalComparator());
         discrepancyBuilder.put(DiscrepancySortBy.status, getStatusComparator());
         discrepancyBuilder.put(DiscrepancySortBy.lastCommunicated, getLastCommunicatedComparator());
         discrepancySorters = discrepancyBuilder.build();
@@ -455,8 +453,6 @@ public class DataStreamingConfigurationsController {
         device,
         expectedAttributes,
         actualAttributes,
-        expectedInterval,
-        actualInterval,
         status,
         lastCommunicated;
 
@@ -500,30 +496,6 @@ public class DataStreamingConfigurationsController {
                 }
             });
         return attOrdering;
-    }
-    
-    private Comparator<DiscrepancyResult> getExpectedIntervalComparator() {
-        Ordering<Integer> normalIntComparer = Ordering.natural();
-        Ordering<DiscrepancyResult> intervalOrdering = normalIntComparer
-            .onResultOf(new Function<DiscrepancyResult, Integer>() {
-                @Override
-                public Integer apply(DiscrepancyResult from) {
-                    return from.getExpected().getSelectedInterval();
-                }
-            });
-        return intervalOrdering;
-    }
-    
-    private Comparator<DiscrepancyResult> getActualIntervalComparator() {
-        Ordering<Integer> normalIntComparer = Ordering.natural();
-        Ordering<DiscrepancyResult> intervalOrdering = normalIntComparer
-            .onResultOf(new Function<DiscrepancyResult, Integer>() {
-                @Override
-                public Integer apply(DiscrepancyResult from) {
-                    return from.getActual().getSelectedInterval();
-                }
-            });
-        return intervalOrdering;
     }
     
     private Comparator<DiscrepancyResult> getStatusComparator() {
