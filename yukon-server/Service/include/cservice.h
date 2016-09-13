@@ -1,6 +1,6 @@
 #define STATE_NO_CHANGE 0xffffffff
 
-#define NUMEVENTS 4
+#define NUMEVENTS 5
 #define MAX_SERVICE_LEN 256
 
 #include <windows.h>
