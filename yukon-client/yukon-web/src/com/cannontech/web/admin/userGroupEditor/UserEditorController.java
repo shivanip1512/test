@@ -240,17 +240,7 @@ public class UserEditorController {
             model.addAttribute("otherUser", true);
         }
 
-        PasswordPolicy pwp = passwordPolicyService.getPasswordPolicy(yukonUser);
-        String tempPW = "";
-        while (tempPW.length() < pwp.getMinPasswordLength() - 2) {
-            tempPW += "a";
-        }
-        tempPW += "A1!"; // covers lower, upper, number, and symbol while
-                         // meeting the minimum length incase the order we check
-                         // password policies changes
-        PasswordPolicyError pwpErr = passwordPolicyService.checkPasswordPolicy(tempPW, yukonUser);
-
-        model.addAttribute("minPasswordAgeNotMet", PasswordPolicyError.MIN_PASSWORD_AGE_NOT_MET.equals(pwpErr));
+        model.addAttribute("minPasswordAgeNotMet", !passwordPolicyService.isMinPasswordAgeMet(yukonUser, null));
         Password password = new Password();
         model.addAttribute("password", password);
         model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(yukonUser));

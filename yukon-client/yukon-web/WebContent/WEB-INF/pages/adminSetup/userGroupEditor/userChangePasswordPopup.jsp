@@ -25,10 +25,10 @@
                         </tags:nameValue2>
                     </c:if>
                     <tags:nameValue2 nameKey=".newPassword">
-                        <tags:password path="password" cssClass="js-new-password" autocomplete="off" disabled='${not empty minPasswordAgeNotMet }'/>
+                        <tags:password path="password" cssClass="js-new-password" autocomplete="off" disabled='${minPasswordAgeNotMet }'/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".confirmPassword">
-                        <tags:password path="confirmPassword" cssClass="js-confirm-password" autocomplete="off" disabled='${not empty minPasswordAgeNotMet }'/>
+                        <tags:password path="confirmPassword" cssClass="js-confirm-password" autocomplete="off" disabled='${minPasswordAgeNotMet }'/>
                     </tags:nameValue2>
                     <tags:nameValue2 excludeColon="true">
                         <div class="js-password-mismatch error">

@@ -178,20 +178,10 @@ public class PasswordController {
         
         Login login = new Login();
         login.setUserId(user.getUserID());
-        
-        PasswordPolicy pwp = passwordPolicyService.getPasswordPolicy(user);
-        String tempPW = "";
-        while (tempPW.length() < pwp.getMinPasswordLength() - 2) {
-            tempPW += "a";
-        }
-        tempPW += "A1!"; // covers lower, upper, number, and symbol while
-                         // meeting the minimum length incase the order we check
-                         // password policies changes
-        PasswordPolicyError pwpErr = passwordPolicyService.checkPasswordPolicy(tempPW, user);
 
-        model.addAttribute("minPasswordAgeNotMet", PasswordPolicyError.MIN_PASSWORD_AGE_NOT_MET.equals(pwpErr));
+        model.addAttribute("minPasswordAgeNotMet", !passwordPolicyService.isMinPasswordAgeMet(user, null));
         model.addAttribute("login", login);
-        model.addAttribute("passwordPolicy", pwp);
+        model.addAttribute("passwordPolicy", passwordPolicyService.getPasswordPolicy(user));
         
         return "changePasswordPopup.jsp";
     }

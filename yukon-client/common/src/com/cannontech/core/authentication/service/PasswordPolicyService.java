@@ -54,4 +54,10 @@ public interface PasswordPolicyService {
      * If neither are found it will use the yukon password policy.
      */
     public Set<PolicyRule> getValidPolicyRules(String password, LiteYukonUser user, LiteUserGroup group);
+
+    /**
+     * Check password age to avoid policy exception prior to any new password
+     * entry
+     */
+    public boolean isMinPasswordAgeMet(LiteYukonUser user, LiteUserGroup group);
 }

@@ -156,6 +156,14 @@ public class PasswordPolicyServiceImpl implements PasswordPolicyService {
         return passwordPolicy.getValidPolicyRules(password);
     }
     
+    // group may be null
+    @Override
+    public boolean isMinPasswordAgeMet(LiteYukonUser user, LiteUserGroup group) {
+        PasswordPolicy policy = getPasswordPolicy(user, group);
+        UserAuthenticationInfo userAuthenticationInfo = yukonUserDao.getUserAuthenticationInfo(user.getUserID());
+        return policy.isPasswordAgeRequirementMet(userAuthenticationInfo);
+    }
+
     /**
      * Attempts to find the password policy for the user supplied.  If there is not one null will be returned. 
      */
