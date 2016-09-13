@@ -15,11 +15,11 @@
     class="dn">
         <tags:nameValueContainer2 tableClass="with-form-controls">
             <tags:nameValue2 nameKey=".strategy">
-                <input type="text" class="js-edit-mapping-popup js-strategy-popup">
+                <input type="text" class="js-edit-mapping-popup js-strategy-popup"  maxlength="100">
                 <span class="errors dn js-edit-mapping-popup-errors js-strategy-popup"><i:inline key=".error.noStrategy"/></span>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".substation">
-                <input type="text" class="js-edit-mapping-popup js-substation-popup" >
+                <input type="text" class="js-edit-mapping-popup js-substation-popup"  maxlength="100">
                 <span class="errors dn js-edit-mapping-popup-errors js-substation-popup"><i:inline key=".error.noSubstation"/></span>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".pao" valueClass="pao-values">

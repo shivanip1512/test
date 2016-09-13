@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -80,12 +81,10 @@ public class LMMappingsController {
             response.put("error", "mappedNameId not found");
         } else if (mappedNameId <= 0) {
             response.put("error", "mappedNameId must be positive");
-        } else if (strategyName.length() > 100 || substationName.length() > 100) {
-            String excessive = "Substation name ";
-            if (strategyName.length() > 100) {
-                excessive = "Strategy name ";
-            }
-            response.put("error", excessive + "has exceeded the allowable length.");
+        } else if (StringUtils.length(strategyName) > 100 || StringUtils.length(strategyName) < 1) {
+            response.put("error", "Strategy name must be between 1 and 100 characters");
+        } else if (StringUtils.length(substationName) > 100 || StringUtils.length(substationName) < 1) {
+            response.put("error", "Substation name must be between 1 and 100 characters");
         } else {
             if (existingMspLmInterfaceid == null) {
                 response.put("action", "add");
