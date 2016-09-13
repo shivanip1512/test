@@ -23,11 +23,11 @@
     <tags:sectionContainer2 nameKey="setMappings">
         <tags:nameValueContainer2 tableClass="with-form-controls">
             <tags:nameValue2 nameKey=".strategy">
-                <input type="text" class="js-mapping-input js-strategy">
+                <input type="text" class="js-mapping-input js-strategy" maxlength="100">
                 <span class="errors dn js-mapping-errors js-strategy"><i:inline key=".error.noStrategy"/></span>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".substation">
-                <input type="text" class="js-mapping-input js-substation" >
+                <input type="text" class="js-mapping-input js-substation" maxlength="100">
                 <span class="errors dn js-mapping-errors js-substation"><i:inline key=".error.noSubstation"/></span>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".pao" valueClass="pao-values">

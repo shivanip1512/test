@@ -16,7 +16,6 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.multispeak.dao.MspLmInterfaceMappingDao;
@@ -81,6 +80,12 @@ public class LMMappingsController {
             response.put("error", "mappedNameId not found");
         } else if (mappedNameId <= 0) {
             response.put("error", "mappedNameId must be positive");
+        } else if (strategyName.length() > 100 || substationName.length() > 100) {
+            String excessive = "Substation name ";
+            if (strategyName.length() > 100) {
+                excessive = "Strategy name ";
+            }
+            response.put("error", excessive + "has exceeded the allowable length.");
         } else {
             if (existingMspLmInterfaceid == null) {
                 response.put("action", "add");
