@@ -131,11 +131,6 @@ metric_response mangleResponse(metric_response contents, double mangleFactor)
 
     CTILOG_INFO(dout, "mangler = " << steve);
 
-    if( steve & 0x01 )
-    {
-        contents.enabled = ! contents.enabled;
-    }
-    steve >>= 1;
     if( steve & 0x01 && ! contents.metrics.empty() )
     {
         auto interval = contents.metrics[0].interval;
