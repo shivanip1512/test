@@ -4608,17 +4608,6 @@
                 <decimalplaces value="2" />
             </point>
         </points>
-        <attributes>
-            <attribute name="CONNECTED_DEVICE_COUNT">
-                <basicLookup point="Connected Device Count" />
-            </attribute>
-            <attribute name="STREAMING_DEVICE_COUNT">
-                <basicLookup point="Streaming Device Count" />
-            </attribute>
-            <attribute name="DATA_STREAMING_LOAD">
-                <basicLookup point="Data Streaming Load" />
-            </attribute>
-        </attributes>
         <tags>
             <tag name="DB_EDITOR_INCOMPATIBLE" />
         </tags>
