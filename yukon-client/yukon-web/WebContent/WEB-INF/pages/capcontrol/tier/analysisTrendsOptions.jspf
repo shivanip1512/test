@@ -67,10 +67,10 @@ function showTrends(title, url, id) {
 
 
 <div class="action-area">
-    <cti:button nameKey="todayKvarWatt" disabled="true" onclick="showTrends('${todayKvarWatt}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY'), ${id})"/>
-    <cti:button nameKey="thirtyDayKvarWatt" disabled="true" onclick="showTrends('${thirtyDayKvarWatt}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH'), ${id})"/>
-    <cti:button nameKey="todayPf" disabled="true" onclick="showTrends('${todayPf}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY'), ${id})"/>
-    <cti:button nameKey="thirtyDayPf" disabled="true" onclick="showTrends('${thirtyDayPf}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH'), ${id})"/>
+    <cti:button nameKey="todayKvarWatt" disabled="true" onclick="showTrends('${todayKvarWatt}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY'), '${id}')" />
+    <cti:button nameKey="thirtyDayKvarWatt" disabled="true" onclick="showTrends('${thirtyDayKvarWatt}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH'), '${id}')" />
+    <cti:button nameKey="todayPf" disabled="true" onclick="showTrends('${todayPf}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY'), '${id}')" />
+    <cti:button nameKey="thirtyDayPf" disabled="true" onclick="showTrends('${thirtyDayPf}', yukon.url('/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH'), '${id}')" />
 </div>
 
 
