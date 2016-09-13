@@ -269,6 +269,21 @@
             <%@ include file="sequences.jsp" %>
         </div>
     </tags:sectionContainer2>
+    
+    <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+        <c:if test="${points.size() > 0}">
+            <tags:sectionContainer2 nameKey="points">
+                <div class="column-12-12 clearfix">
+                    <div class="column one">
+                        <div class="scroll-md">
+                            <%@ include file="/WEB-INF/pages/capcontrol/pointsTable.jsp" %>
+                        </div>
+                    </div>
+                </div>
+            </tags:sectionContainer2>
+        </c:if>
+    </cti:checkRolesAndProperties>
+    
 </div>
 
 <div id="gateway-templates" class="dn"><cti:toJson object="${text}" id="gateway-text"/></div>

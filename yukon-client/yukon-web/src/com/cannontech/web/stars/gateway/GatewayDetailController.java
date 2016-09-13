@@ -22,9 +22,12 @@ import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.TimeoutExecutionException;
 import com.cannontech.common.rfn.service.RfnGatewayService;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.point.PointInfo;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -50,6 +53,7 @@ public class GatewayDetailController {
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private GatewayEventLogService gatewayEventLogService;
+    @Autowired private PointDao pointDao;
     
     @RequestMapping("/gateways/{id}")
     public String detail(ModelMap model, YukonUserContext userContext, @PathVariable int id) {
@@ -68,6 +72,9 @@ public class GatewayDetailController {
             helper.sortSequences(sequences, userContext);
             model.addAttribute("sequences", sequences);
         }
+        
+        Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(gateway.getId());
+        model.addAttribute("points", points);
         
         return "gateways/detail.jsp";
     }
