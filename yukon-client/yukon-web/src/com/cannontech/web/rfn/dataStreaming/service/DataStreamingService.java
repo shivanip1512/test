@@ -126,10 +126,8 @@ public interface DataStreamingService {
      *    a. If behavior doesn't exist creates a new behavior
      * 3. Assigns device to behavior that was found/created
      * 
-     * @throws DataStreamingConfigException if there is a communication error requesting information from Network
-     *         Manager.
      */
-    DataStreamingConfigResult accept(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException;
+    DataStreamingConfigResult accept(List<Integer> deviceIds, LiteYukonUser user);
 
     /**
      * Gets any overloaded gateways

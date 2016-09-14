@@ -795,123 +795,79 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     @Override
-    public DataStreamingConfigResult accept(List<Integer> allDeviceIds, LiteYukonUser user)
-            throws DataStreamingConfigException {
+    public DataStreamingConfigResult accept(List<Integer> allDeviceIds, LiteYukonUser user){
 
         DeviceCollection deviceCollection = createDeviceCollectionForIds(allDeviceIds);
         if (isValidPorterConnection()) {
 
-            log.debug("Attempting to accept reported config for devices=" +  allDeviceIds);
-            
-            List<Integer> devicesIdsToAccept = new ArrayList<>();
-            devicesIdsToAccept.addAll(allDeviceIds);
+            log.debug("Attempting to accept reported config for devices=" + allDeviceIds);
 
-            List<Integer> devicesIdsToUnassign = new ArrayList<>();
-
-            DataStreamingConfigResult result = null;
-
+            DataStreamingConfigResult result = createEmptyResult(deviceCollection, null);
             // deviceId, report
             Map<Integer, BehaviorReport> deviceIdToReport =
                 deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, allDeviceIds);
 
-            for (Integer deviceId : deviceIdToReport.keySet()) {
+            Collection<LiteYukonPAObject> meters =
+                deviceIdToReport.keySet().stream().map(id -> serverDatabaseCache.getAllPaosMap().get(id)).collect(
+                    Collectors.toList());
+            // mark devices as success
+            deviceGroupMemberEditorDao.addDevices(result.getSuccessGroup(), meters);
+
+            List<Integer> devicesIdsToUnassign = new ArrayList<>();
+
+            List<DataStreamingConfig> allConfigs = getAllDataStreamingConfigurations();
+
+            for (int deviceId : allDeviceIds) {
+
                 BehaviorReport report = deviceIdToReport.get(deviceId);
-                // behavior report
                 DataStreamingConfig reportedConfig = convertBehaviorToConfig(report);
-                if (!reportedConfig.isEnabled()) {
-                    // this reported config is not enabled - device will be unassigned
+
+                if (report == null || !reportedConfig.isEnabled() || reportedConfig.getAttributes().isEmpty()) {
                     devicesIdsToUnassign.add(deviceId);
-                } else {
-                    // config is enabled
-                    if (reportedConfig.getAttributes().isEmpty()) {
-                        // this config has all channels disabled - device will be unassigned
-                        devicesIdsToUnassign.add(deviceId);
-                    }
+                    continue;
                 }
-            }
 
-            List<Integer> devicesWithoutBehaviorReport = new ArrayList<>();
-            devicesWithoutBehaviorReport.addAll(allDeviceIds);
-            devicesWithoutBehaviorReport.removeAll(deviceIdToReport.keySet());
+                List<BuiltInAttribute> attributes =
+                    reportedConfig.getAttributes().stream().map(a -> a.getAttribute()).collect(Collectors.toList());
 
-            devicesIdsToUnassign.addAll(devicesWithoutBehaviorReport);
-
-            /*
-             * Devices that will be unassigned
-             *  * Devices that have no Behavior
-             *  * Devices that have report config disabled
-             *  * Devices that have report config enabled but all the channels disabled
-             *  
-             *  Unassigning behavior, sends putconfig behavior rfndatastreaming to porter
-             *  Porter sets global streaming enabled off
-             */
-            if (!devicesIdsToUnassign.isEmpty()) {
- 
-                log.debug("Unassigning devices=" + allDeviceIds);
-
-                result = unassignDataStreamingConfig(devicesIdsToUnassign, user);
-            }
-
-            devicesIdsToAccept.removeAll(devicesIdsToUnassign);
-
-            if (!devicesIdsToAccept.isEmpty()) {
-
-                log.debug("Accepting devices=" + devicesIdsToAccept);
-
-                List<DataStreamingConfig> allConfigs = getAllDataStreamingConfigurations();
-
+                log.debug("Searching behaviors for attributes=" + attributes + " and interval="
+                    + reportedConfig.getSelectedInterval());
+                // search for behavior with the same attributes and interval
+                DataStreamingConfig config = allConfigs.stream().filter(
+                    e -> compareByAttributesAndInterval(e, reportedConfig)).findFirst().orElse(null);
                 Multimap<Integer, Integer> configIdsToDeviceIds = ArrayListMultimap.create();
 
-                for (Integer deviceId : devicesIdsToAccept) {
-                    BehaviorReport report = deviceIdToReport.get(deviceId);
-                    // behavior report
-                    DataStreamingConfig reportedConfig = convertBehaviorToConfig(report);
-
-                    List<BuiltInAttribute> attributes =
-                        reportedConfig.getAttributes().stream().map(a -> a.getAttribute()).collect(Collectors.toList());
-
-                    log.debug("Searching behaviors for attributes=" + attributes + " and interval="
-                        + reportedConfig.getSelectedInterval());
-                    // search for behavior with the same attributes and interval
-                    DataStreamingConfig config = allConfigs.stream().filter(
-                        e -> compareByAttributesAndInterval(e, reportedConfig)).findFirst().orElse(null);
-
-                    if (config == null) {
-                        Behavior behavior = convertConfigToBehavior(reportedConfig);
-                        // create behavior
-                        int behaviorId = deviceBehaviorDao.saveBehavior(behavior);
-                        configIdsToDeviceIds.put(behaviorId, deviceId);
-                        log.debug("Match not found, created new behavior with id=" + behaviorId);
-                    } else {
-                        log.debug("Match found, behavior id=" + config.getId());
-                        configIdsToDeviceIds.put(config.getId(), deviceId);
-                    }
+                if (config == null) {
+                    Behavior behavior = convertConfigToBehavior(reportedConfig);
+                    // create behavior
+                    int behaviorId = deviceBehaviorDao.saveBehavior(behavior);
+                    configIdsToDeviceIds.put(behaviorId, deviceId);
+                    log.debug("Match not found, created new behavior with id=" + behaviorId);
+                } else {
+                    log.debug("Match found, behavior id=" + config.getId());
+                    configIdsToDeviceIds.put(config.getId(), deviceId);
                 }
                 
+                log.debug("Accepting devices=" + allDeviceIds);
+                log.debug("Assigning devices=" + configIdsToDeviceIds.values());
+                log.debug("Unassigning devices=" + devicesIdsToUnassign);
                 // assign behaviors
                 for (int configId : configIdsToDeviceIds.keys()) {
                     deviceBehaviorDao.assignBehavior(configId, TYPE,
                         new ArrayList<>(configIdsToDeviceIds.get(configId)), false);
                 }
-                
                 deviceBehaviorDao.deleteUnusedBehaviors();
-
-                if (result == null) {
-                    result = createEmptyResult(deviceCollection, null);
+                
+                if(!devicesIdsToUnassign.isEmpty()){
+                    deviceBehaviorDao.unassignBehavior(TYPE, devicesIdsToUnassign);
                 }
-
-                Collection<LiteYukonPAObject> meters =
-                    deviceIdToReport.keySet().stream().map(id -> serverDatabaseCache.getAllPaosMap().get(id)).collect(
-                        Collectors.toList());
-                // mark devices as success
-                deviceGroupMemberEditorDao.addDevices(result.getSuccessGroup(), meters);
             }
             return result;
         } else {
             return createEmptyResult(deviceCollection, "Porter connection is invalid.");
         }
     }
-    
+
     /**
      * Compares 2 configs by attributes and interval
      * @return true if configs are equal
