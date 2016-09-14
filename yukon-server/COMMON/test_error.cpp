@@ -243,8 +243,8 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Endpoint indicated request not acceptable.")
     ("The device has no points attached.")
     ("Network service failure.")
-    ("Unknown Error Code (298)")
-    ("Unknown Error Code (299)")
+    ("Channel not enabled in RF node.")
+    ("Channel not supported by meter.")
     //  300
     .repeat(50, UnknownErrorHelper(300));
 

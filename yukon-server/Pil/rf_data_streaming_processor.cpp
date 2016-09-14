@@ -127,12 +127,13 @@ PointQuality_t convertQuality(uint8_t quality)
     switch( quality )
     {
         case 0:  return NormalQuality;    //  OK                 
-        case 1:  return AbnormalQuality;  //  MeterReadTimeout  
-        case 2:  return InvalidQuality;   //  NoSuchChannel     
-        case 3:  return AbnormalQuality;  //  MeterAccessError  
-        case 4:  return AbnormalQuality;  //  MeterOrNodeBusy   
-        case 5:  return AbnormalQuality;  //  MeterProtocolError
+        case 1:  return AbnormalQuality;  //  MeterAccessError  
+        case 2:  return AbnormalQuality;  //  MeterOrNodeBusy   
+        case 3:  return AbnormalQuality;  //  MeterReadTimeout  
+        case 4:  return AbnormalQuality;  //  MeterProtocolError
+        case 5:  return InvalidQuality;   //  ChannelNotSupported
         case 6:  return AbnormalQuality;  //  UnknownError     
+        case 7:  return InvalidQuality;   //  ChannelNotEnabled
         default: return UnknownQuality;
     }
 }

@@ -72,8 +72,8 @@ BOOST_AUTO_TEST_CASE(test_parsing_invalid_attribute)
         {
             42,
             {   { "channels", "1" },
-            { "channels.0.attribute", "BANANA" },  //  Invalid attribute
-            { "channels.0.interval", "15" } } };
+                { "channels.0.attribute", "BANANA" },  //  Invalid attribute
+                { "channels.0.interval", "15" } } };
 
         BOOST_FAIL("Did not throw");
     }

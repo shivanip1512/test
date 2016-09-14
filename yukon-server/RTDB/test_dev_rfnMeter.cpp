@@ -631,12 +631,15 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_unassigned )
                 0x00, 0x05,  //  metric ID 1
                 0x01,        //  metric ID 1 enable/disable
                 0x05,        //  metric ID 1 interval
+                0x00,        //  metric ID 1 status
                 0x00, 0x73,  //  metric ID 2
                 0x00,        //  metric ID 2 enable/disable
                 0x0f,        //  metric ID 2 interval
+                0x00,        //  metric ID 2 status
                 0x00, 0x53,  //  metric ID 3
                 0x01,        //  metric ID 3 enable/disable
                 0x1e,        //  metric ID 3 interval
+                0x00,        //  metric ID 3 status
                 0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
 
             const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand(decode_time, response);
@@ -648,17 +651,20 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_unassigned )
   {
     "attribute" : "DEMAND",
     "interval" : 5,
-    "enabled" : true
+    "enabled" : true,
+    "status" : "OK"
   },
   {
     "attribute" : "VOLTAGE",
     "interval" : 15,
-    "enabled" : false
+    "enabled" : false,
+    "status" : "OK"
   },
   {
     "attribute" : "POWER_FACTOR",
     "interval" : 30,
-    "enabled" : true
+    "enabled" : true,
+    "status" : "OK"
   }],
 "sequence" : 3735928559
 })json";

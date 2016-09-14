@@ -33,14 +33,17 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand)
             0x03,  //  number of metrics
             0x01,  //  data streaming on/off
             0x00, 0x05,  //  metric ID 1
-            0x01,         //  metric ID 1 enable/disable
-            0x05,        //  metric ID 1 interval
+            0x01,          //  metric ID 1 enable/disable
+            0x05,          //  metric ID 1 interval
+            0x00,          //  metric ID 1 status
             0x00, 0x73,  //  metric ID 2
-            0x00,         //  metric ID 2 enable/disable
-            0x0f,        //  metric ID 2 interval
+            0x00,          //  metric ID 2 enable/disable
+            0x0f,          //  metric ID 2 interval
+            0x01,          //  metric ID 2 status
             0x00, 0x53,  //  metric ID 3
-            0x01,         //  metric ID 3 enable/disable
-            0x1e,        //  metric ID 3 interval
+            0x01,          //  metric ID 3 enable/disable
+            0x1e,          //  metric ID 3 interval
+            0x02,          //  metric ID 3 status
             0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
 
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
@@ -52,17 +55,20 @@ R"json({
   {
     "attribute" : "DEMAND",
     "interval" : 5,
-    "enabled" : true
+    "enabled" : true,
+    "status" : "OK"
   },
   {
     "attribute" : "VOLTAGE",
     "interval" : 15,
-    "enabled" : false
+    "enabled" : false,
+    "status" : "METER_ACCESS_ERROR"
   },
   {
     "attribute" : "POWER_FACTOR",
     "interval" : 30,
-    "enabled" : true
+    "enabled" : true,
+    "status" : "METER_OR_NODE_BUSY"
   }],
 "sequence" : 3735928559
 })json";
@@ -95,39 +101,51 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_globally_disable
             0x00, 0x05,  //  metric ID 1
             0x01,        //  metric ID 1 enable/disable
             0x05,        //  metric ID 1 interval
+            0x03,        //  metric ID 1 status
             0x00, 0x73,  //  metric ID 2
             0x00,        //  metric ID 2 enable/disable
             0x0f,        //  metric ID 2 interval
+            0x04,        //  metric ID 2 status
             0x00, 0x53,  //  metric ID 3
             0x01,        //  metric ID 3 enable/disable
             0x1e,        //  metric ID 3 interval
+            0x05,        //  metric ID 3 status
             0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
 
-        RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
-
-        const std::string desc_exp =
+        try
+        {
+            RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
+            BOOST_FAIL("Did not throw");
+        }
+        catch( const Cti::YukonErrorException& e )
+        {
+            const std::string desc_exp =
 R"json({
 "streamingEnabled" : false,
 "configuredMetrics" : [
   {
     "attribute" : "DEMAND",
     "interval" : 5,
-    "enabled" : true
+    "enabled" : true,
+    "status" : "METER_READ_TIMEOUT"
   },
   {
     "attribute" : "VOLTAGE",
     "interval" : 15,
-    "enabled" : false
+    "enabled" : false,
+    "status" : "METER_PROTOCOL_ERROR"
   },
   {
     "attribute" : "POWER_FACTOR",
     "interval" : 30,
-    "enabled" : true
+    "enabled" : true,
+    "status" : "CHANNEL_NOT_SUPPORTED"
   }],
 "sequence" : 3735928559
 })json";
 
-        BOOST_CHECK_EQUAL(rcv.description, desc_exp);
+            BOOST_CHECK_EQUAL(e.error_description, desc_exp);
+        }
     }
 }
 
@@ -155,29 +173,34 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_invalid_metric_i
             0xff, 0xff,  //  metric ID 1  //  Invalid metric ID (65535), so this metric will be excluded entirely
             0x01,        //  metric ID 1 enable/disable
             0x05,        //  metric ID 1 interval
+            0x06,        //  metric ID 1 status
             0x00, 0x73,  //  metric ID 2
             0x00,        //  metric ID 2 enable/disable
             0x0f,        //  metric ID 2 interval
+            0x07,        //  metric ID 2 status
             0x00, 0x53,  //  metric ID 3
             0x01,        //  metric ID 3 enable/disable
             0x1e,        //  metric ID 3 interval
+            0x08,        //  metric ID 3 status
             0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
 
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
-        const std::string desc_exp =
-            R"json({
+        const std::string desc_exp = 
+R"json({
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
     "attribute" : "VOLTAGE",
     "interval" : 15,
-    "enabled" : false
+    "enabled" : false,
+    "status" : "CHANNEL_NOT_ENABLED"
   },
   {
     "attribute" : "POWER_FACTOR",
     "interval" : 30,
-    "enabled" : true
+    "enabled" : true,
+    "status" : "INVALID_ERROR_8"
   }],
 "sequence" : 3735928559
 })json";
@@ -210,12 +233,15 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_enable)
             0x00, 0x05,  //  metric ID 1
             0x01,        //  metric ID 1 enable/disable
             0x05,        //  metric ID 1 interval
+            0x00,        //  metric ID 1 status
             0x00, 0x73,  //  metric ID 2
             0x00,        //  metric ID 2 enable/disable
             0x0f,        //  metric ID 2 interval
+            0x00,        //  metric ID 2 status
             0x00, 0x53,  //  metric ID 3
             0x01,        //  metric ID 3 enable/disable
             0x1e,        //  metric ID 3 interval
+            0x00,        //  metric ID 3 status
             0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
 
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
@@ -227,17 +253,20 @@ R"json({
   {
     "attribute" : "DEMAND",
     "interval" : 5,
-    "enabled" : true
+    "enabled" : true,
+    "status" : "OK"
   },
   {
     "attribute" : "VOLTAGE",
     "interval" : 15,
-    "enabled" : false
+    "enabled" : false,
+    "status" : "OK"
   },
   {
     "attribute" : "POWER_FACTOR",
     "interval" : 30,
-    "enabled" : true
+    "enabled" : true,
+    "status" : "OK"
   }],
 "sequence" : 3735928559
 })json";
@@ -270,12 +299,15 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_disable)
             0x00, 0x05,  //  metric ID 1
             0x01,        //  metric ID 1 enable/disable
             0x05,        //  metric ID 1 interval
+            0x00,        //  metric ID 1 status
             0x00, 0x73,  //  metric ID 2
             0x00,        //  metric ID 2 enable/disable
             0x0f,        //  metric ID 2 interval
+            0x00,        //  metric ID 2 status
             0x00, 0x53,  //  metric ID 3
             0x01,        //  metric ID 3 enable/disable
             0x1e,        //  metric ID 3 interval
+            0x00,        //  metric ID 3 status
             0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
 
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
@@ -287,17 +319,20 @@ R"json({
   {
     "attribute" : "DEMAND",
     "interval" : 5,
-    "enabled" : true
+    "enabled" : true,
+    "status" : "OK"
   },
   {
     "attribute" : "VOLTAGE",
     "interval" : 15,
-    "enabled" : false
+    "enabled" : false,
+    "status" : "OK"
   },
   {
     "attribute" : "POWER_FACTOR",
     "interval" : 30,
-    "enabled" : true
+    "enabled" : true,
+    "status" : "OK"
   }],
 "sequence" : 3735928559
 })json";
@@ -337,6 +372,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_one)
             0x00, 0x05,  //  metric ID 1
             0x01,        //  metric ID 1 enable/disable
             0x05,        //  metric ID 1 interval
+            0x00,        //  metric ID 1 status
             0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
 
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
@@ -348,7 +384,8 @@ R"json({
   {
     "attribute" : "DEMAND",
     "interval" : 5,
-    "enabled" : true
+    "enabled" : true,
+    "status" : "OK"
   }],
 "sequence" : 3735928559
 })json";
@@ -388,6 +425,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_disable_one)
             0x00, 0x53,  //  metric ID 1
             0x00,        //  metric ID 1 enable/disable
             0x1e,        //  metric ID 1 interval
+            0x00,        //  metric ID 1 status
             0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
 
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
@@ -399,7 +437,8 @@ R"json({
   {
     "attribute" : "POWER_FACTOR",
     "interval" : 30,
-    "enabled" : false
+    "enabled" : false,
+    "status" : "OK"
   }],
 "sequence" : 3735928559
 })json";

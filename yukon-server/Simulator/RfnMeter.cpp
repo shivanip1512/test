@@ -119,6 +119,7 @@ struct metric_response
     {
         unsigned metricId : 16;
         unsigned interval :  5;
+        unsigned error    :  4;
         unsigned enabled  :  1;
     };
 
@@ -203,6 +204,7 @@ std::vector<unsigned char> makeDataStreamingResponse(const unsigned char respons
         response.push_back(channel.metricId);
         response.push_back(channel.enabled);
         response.push_back(channel.interval);
+        response.push_back(channel.error);
     }
 
     //  Sequence number
@@ -226,7 +228,7 @@ std::vector<unsigned char> DataStreamingRead(const std::vector<unsigned char>& r
         {
             for( const auto metricId : *metrics )
             {
-                response.metrics.push_back(metric_response::channel{metricId, 5, false});
+                response.metrics.push_back(metric_response::channel{metricId, 5, 0, false});
             }
         }
     }
@@ -266,6 +268,7 @@ std::vector<unsigned char> DataStreamingWrite(const std::vector<unsigned char>& 
 
                     requestedChannel.enabled  = enabled;
                     requestedChannel.interval = interval;
+                    requestedChannel.error    = 0;
 
                     requestedChannels.emplace(metricId, requestedChannel);
                 }
@@ -287,7 +290,7 @@ std::vector<unsigned char> DataStreamingWrite(const std::vector<unsigned char>& 
                 }
                 else
                 {
-                    response.metrics.push_back(metric_response::channel{metricId, 5, false});
+                    response.metrics.push_back(metric_response::channel{metricId, 5, 0, false});
                 }
             }
         }

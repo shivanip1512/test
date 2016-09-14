@@ -9,9 +9,22 @@ namespace Devices  {
 namespace Commands {
 
 static const size_t HeaderLength = 2;
-static const size_t BytesPerMetric = 4;
+static const size_t BytesPerMetric = 5;
 static const size_t SequenceLength = 4;
 static const size_t ResponseHeaderLength = 1 + HeaderLength;
+
+//  These need to match the Java enum in DataStreamingMetricStatus.java
+std::array<std::string, 8> statusStrings {
+    "OK",
+    "METER_ACCESS_ERROR",
+    "METER_OR_NODE_BUSY",
+    "METER_READ_TIMEOUT",
+    "METER_PROTOCOL_ERROR",
+    "CHANNEL_NOT_SUPPORTED",
+    "UNKNOWN_ERROR",
+    "CHANNEL_NOT_ENABLED"
+};
+
 
 unsigned char RfnDataStreamingConfigurationCommand::getOperation() const
 { 
@@ -50,12 +63,16 @@ RfnCommandResult RfnDataStreamingConfigurationCommand::decodeCommand(const CtiTi
 
     metricDescription << ",\n\"configuredMetrics\" : [";
 
+    bool seenDisabledChannel    = false;
+    bool seenUnsupportedChannel = false;
+
     for( int i = 0, metricsPrinted = 0; i < metricCount; ++i )
     {
         const auto offset = ResponseHeaderLength + i * BytesPerMetric;
         const auto metricId = getValueFromBytes_bEndian(response, offset, 2);
         const auto enabled  = response[offset + 2];
         const auto interval = response[offset + 3];
+        const auto status   = response[offset + 4];
 
         try
         {
@@ -65,11 +82,22 @@ RfnCommandResult RfnDataStreamingConfigurationCommand::decodeCommand(const CtiTi
             {
                 metricDescription << ",";
             }
-            
+
+            const auto statusString = (status < statusStrings.size() ? statusStrings[status] : "INVALID_STATUS");
+
             metricDescription << "\n  {"
                 "\n    \"attribute\" : \"" << attribute.getName() << "\","
                 "\n    \"interval\" : " << interval << ","
-                "\n    \"enabled\" : " << (enabled ? "true" : "false") << "\n  }";
+                "\n    \"enabled\" : " << (enabled ? "true" : "false") << ","
+                "\n    \"status\" : \"" << statusString << "\"\n  }";
+
+            if( enabled && status )
+            {
+                seenUnsupportedChannel |= (status == 5);
+                seenDisabledChannel    |= (status == 7);
+
+                CTILOG_WARN(dout, "Received status " << status << " (" << statusString << ") for enabled metric " << metricId);
+            }
         }
         catch( AttributeMappingNotFound &ex )
         {
@@ -83,6 +111,18 @@ RfnCommandResult RfnDataStreamingConfigurationCommand::decodeCommand(const CtiTi
     const unsigned sequence = getValueFromBytes_bEndian(response, offset, 4);
 
     metricDescription << "],\n\"sequence\" : " << sequence << "\n}";
+
+    //  Disabled channel can be fixed by the user (by enabling the channel in rfnChannelConfiguration)
+    //    so notify them about this first.
+    if( seenDisabledChannel )
+    {
+        throw YukonErrorException(ClientErrors::ChannelDisabled, metricDescription);
+    }
+    //  If no disabled channels exist, then warn about Unsupported (not enabled in the meter itself).
+    if( seenUnsupportedChannel )
+    {
+        throw YukonErrorException(ClientErrors::ChannelUnsupported, metricDescription);
+    }
 
     return metricDescription;
 }

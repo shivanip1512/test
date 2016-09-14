@@ -160,6 +160,8 @@ static const std::map<YukonError_t, error_info> CtiErrors = {
         { ClientErrors::E2eRequestNotAcceptable,     ei{ ERRTYPESYSTEM,   "Endpoint indicated request not acceptable."  } },
         { ClientErrors::NoPointsOnDevice,            ei{ ERRTYPESYSTEM,   "The device has no points attached."          } },
         { ClientErrors::E2eNetworkServiceFailure,    ei{ ERRTYPESYSTEM,   "Network service failure."                    } },
+        { ClientErrors::ChannelDisabled,             ei{ ERRTYPESYSTEM,   "Channel not enabled in RF node."             } },
+        { ClientErrors::ChannelUnsupported,          ei{ ERRTYPESYSTEM,   "Channel not supported by meter."             } },
     };
 
 }

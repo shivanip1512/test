@@ -376,6 +376,9 @@ struct ClientErrors
         NoPointsOnDevice,
 
         E2eNetworkServiceFailure,
+
+        ChannelDisabled,
+        ChannelUnsupported,
     };
 };
 

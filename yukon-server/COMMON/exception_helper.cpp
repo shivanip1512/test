@@ -3,6 +3,7 @@
 #include <SQLAPI.h>
 #include <xercesc/util/XMLException.hpp>
 #include <xercesc/sax/SAXException.hpp>
+#include <boost/thread.hpp>
 
 #include "streamBuffer.h"
 #include "exception_helper.h"
@@ -61,6 +62,10 @@ std::string getUnknownExceptionCause()
     catch(const xercesc::SAXException& e)
     {
         cause <<"exception "<< typeid(e).name() <<" - "<< getExceptionCause(e);
+    }
+    catch(const boost::thread_interrupted& e)
+    {
+        cause <<"exception "<< typeid(e).name();
     }
     catch(...)
     {

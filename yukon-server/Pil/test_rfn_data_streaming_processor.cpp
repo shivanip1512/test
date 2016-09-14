@@ -220,15 +220,15 @@ BOOST_AUTO_TEST_CASE( test_processPacket_three_points )
         0x03, 
         0x00, 0x05, 
         0x00, 0xff, 0xa9, 0xfe,  //    12 Jul 2016 22:13:18
-        0x51, 
+        0x51,                    //    scaling 5, status 1 (MeterAccessError, maps to AbnormalQuality)
         0xde, 0xad, 0xbe, 0xef, 
         0x00, 0x73, 
         0x00, 0xff, 0xa9, 0xfd,  //    12 Jul 2016 22:13:17
-        0x72, 
+        0x75,                    //    scaling 7, status 5 (ChannelNotSupported, maps to Invalid)
         0x00, 0x03, 0xbf, 0xae,
         0x00, 0x53, 
         0xff, 0xff, 0xff, 0xff,  //    07 Feb 2152 06:28:15 GMT
-        0x3f, 
+        0x3f,                    //    scaling 3, status 15 (Unknown, maps to UnknownQuality)
         0xff, 0xff, 0xff, 0xff };
 
     auto report = test_RfDataStreamingProcessor::processPacket(p);
