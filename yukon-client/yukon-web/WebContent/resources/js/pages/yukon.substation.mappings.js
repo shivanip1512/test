@@ -232,13 +232,18 @@ yukon.substation.mappings = (function () {
                     }
                 ).done(function (data, textStatus, jqXHR) {
                     $('.mapped-pao-name').text($('#mappedName').val());
+                    if ('error' in data) {
+                        $('#js-errors-created').removeClass('dn').html(data.error);
+                    } else {
+                        $('#js-errors-created').addClass('dn');
+                    }
                     _reloadAllMappingsTable();
                 });
             },
             /**
              * Sets Mapped Name Id  in pop-up 
              */
-            setMappedNameIdOnEdit : function () {                
+            setMappedNameIdOnEdit : function () {
                     $('span.mapped-pao-name-popup').text($('#mappedName-popup').val().trim());
             }
         };

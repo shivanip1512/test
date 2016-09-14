@@ -77,14 +77,9 @@ public class LMMappingsController {
 
         Integer existingMspLmInterfaceid = mspLMMappingDao.findIdForStrategyAndSubstation(strategyName, substationName);
 
-        if (mappedNameId == null) {
-            response.put("error", "mappedNameId not found");
-        } else if (mappedNameId <= 0) {
-            response.put("error", "mappedNameId must be positive");
-        } else if (StringUtils.length(strategyName) > 100 || StringUtils.length(strategyName) < 1) {
-            response.put("error", "Strategy name must be between 1 and 100 characters");
-        } else if (StringUtils.length(substationName) > 100 || StringUtils.length(substationName) < 1) {
-            response.put("error", "Substation name must be between 1 and 100 characters");
+        String result = validateMapping(strategyName, substationName, mappedNameId);
+        if (!result.equals("success")) {
+            response.put("error", result);
         } else {
             if (existingMspLmInterfaceid == null) {
                 response.put("action", "add");
@@ -103,15 +98,9 @@ public class LMMappingsController {
     public @ResponseBody Map<String, Object> updateMappingById(Integer mappingId, String strategyName, String substationName, Integer mappedNameId){
         Map<String,Object> response = new HashMap<>();
         Integer existingMspLmInterfaceid = mspLMMappingDao.findIdForStrategyAndSubstation(strategyName, substationName);
-
-        if (mappedNameId == null) {
-            response.put("error", "mappedNameId not found");
-        } else if (mappedNameId <= 0) {
-            response.put("error", "mappedNameId must be greater than 0");
-        } else if (mappingId == null) {
-            response.put("error", "mappingId not found");
-        } else if (existingMspLmInterfaceid != null && existingMspLmInterfaceid.intValue() != mappingId.intValue()) {
-            response.put("error", "Selected strategy name and substation name already exist.");
+        String result = validateMapping(strategyName, substationName, mappedNameId);
+        if (!result.equals("success")) {
+            response.put("error", result);
         } else {
             response.put("action", "update");
             boolean updated = mspLMMappingDao.updateMappingById(mappingId, strategyName, substationName, mappedNameId);
@@ -174,5 +163,23 @@ public class LMMappingsController {
         Collections.sort(allMappings, new MspLmMappingComparator(column, asc));
 
         model.addAttribute("allMappings", allMappings);
+    }
+
+    private String validateMapping(String strategyName, String substationName, Integer mappedNameId) {
+        if (mappedNameId == null) {
+            return "mappedNameId not found";
+        } else if (mappedNameId <= 0) {
+            return "mappedNameId must be positive";
+        } else if (StringUtils.length(strategyName) > 100 || StringUtils.length(strategyName) < 1) {
+            return "Strategy name must be between 1 and 100 characters";
+        } else if (StringUtils.length(substationName) > 100 || StringUtils.length(substationName) < 1) {
+            return "Substation name must be between 1 and 100 characters";
+        } else if (StringUtils.contains(strategyName, "&") || StringUtils.contains(strategyName, "'")) {
+            return "Strategy name cannot contain \"&\" or '";
+        } else if (StringUtils.contains(substationName, "&") || StringUtils.contains(substationName, "'")) {
+            return "Substation name cannot contain \"&\" or '";
+        }
+
+        return "success";
     }
 }

@@ -19,7 +19,9 @@
         <c:url value="/multispeak/setup/deviceGroupSync/home" />
     </cti:linkTab>
 </cti:linkTabbedContainer>
-
+    <div id="js-errors-created" class="dn user-message error">
+        
+    </div>
     <tags:sectionContainer2 nameKey="setMappings">
         <tags:nameValueContainer2 tableClass="with-form-controls">
             <tags:nameValue2 nameKey=".strategy">
