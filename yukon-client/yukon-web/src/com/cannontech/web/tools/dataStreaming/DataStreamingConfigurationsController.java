@@ -382,14 +382,10 @@ public class DataStreamingConfigurationsController {
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String acceptDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
         LiteYukonUser user = userContext.getYukonUser();
-        try {
-            dataStreamingService.accept(Arrays.asList(deviceId), user);
-            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptSuccess"));
-            return "redirect:/tools/dataStreaming/discrepancies";
-        } catch (DataStreamingConfigException e) {
-            flash.setError(e.getMessageSourceResolvable());
-            return "redirect:/tools/dataStreaming/discrepancies";
-        }
+
+        dataStreamingService.accept(Arrays.asList(deviceId), user);
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptSuccess"));
+        return "redirect:/tools/dataStreaming/discrepancies";
     }
     
     @RequestMapping("discrepancies/{deviceId}/remove")
@@ -438,14 +434,11 @@ public class DataStreamingConfigurationsController {
         }
         
         LiteYukonUser user = userContext.getYukonUser();
-        try {
-            dataStreamingService.accept(deviceList, user);
-            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptAllSuccess"));
-            return "redirect:/tools/dataStreaming/discrepancies";
-        } catch (DataStreamingConfigException e) {
-            flash.setError(e.getMessageSourceResolvable());
-            return "redirect:/tools/dataStreaming/discrepancies";
-        }
+    
+        dataStreamingService.accept(deviceList, user);
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptAllSuccess"));
+        return "redirect:/tools/dataStreaming/discrepancies";
+      
     }
     
     public enum DiscrepancySortBy implements DisplayableEnum {
