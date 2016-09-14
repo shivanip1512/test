@@ -196,7 +196,7 @@ std::vector<unsigned char> makeDataStreamingResponse(const unsigned char respons
     const auto disableHappen = dist(rd) < disableChance;
 
     response.push_back(contents.metrics.size());
-    response.push_back(contents.enabled && disableHappen);
+    response.push_back(contents.enabled && ! disableHappen);
 
     for( const auto channel : contents.metrics )
     {
@@ -247,7 +247,7 @@ std::vector<unsigned char> DataStreamingWrite(const std::vector<unsigned char>& 
     //      0x05         //  metric ID 1 interval
 
     std::map<unsigned, metric_response::channel> requestedChannels;
-    metric_response response { false };
+    metric_response response { true };
 
     if( request.size() >= 3 )
     {
