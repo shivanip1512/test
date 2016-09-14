@@ -814,8 +814,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             deviceGroupMemberEditorDao.addDevices(result.getSuccessGroup(), meters);
 
             List<Integer> devicesIdsToUnassign = new ArrayList<>();
-
             List<DataStreamingConfig> allConfigs = getAllDataStreamingConfigurations();
+            Multimap<Integer, Integer> configIdsToDeviceIds = ArrayListMultimap.create();
 
             for (int deviceId : allDeviceIds) {
 
@@ -826,16 +826,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     devicesIdsToUnassign.add(deviceId);
                     continue;
                 }
-
-                List<BuiltInAttribute> attributes =
-                    reportedConfig.getAttributes().stream().map(a -> a.getAttribute()).collect(Collectors.toList());
-
-                log.debug("Searching behaviors for attributes=" + attributes + " and interval="
-                    + reportedConfig.getSelectedInterval());
-                // search for behavior with the same attributes and interval
-                DataStreamingConfig config = allConfigs.stream().filter(
-                    e -> compareByAttributesAndInterval(e, reportedConfig)).findFirst().orElse(null);
-                Multimap<Integer, Integer> configIdsToDeviceIds = ArrayListMultimap.create();
+   
+                DataStreamingConfig config = findConfig(allConfigs, reportedConfig);
 
                 if (config == null) {
                     Behavior behavior = convertConfigToBehavior(reportedConfig);
@@ -847,25 +839,37 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     log.debug("Match found, behavior id=" + config.getId());
                     configIdsToDeviceIds.put(config.getId(), deviceId);
                 }
-                
-                log.debug("Accepting devices=" + allDeviceIds);
-                log.debug("Assigning devices=" + configIdsToDeviceIds.values());
-                log.debug("Unassigning devices=" + devicesIdsToUnassign);
-                // assign behaviors
-                for (int configId : configIdsToDeviceIds.keys()) {
-                    deviceBehaviorDao.assignBehavior(configId, TYPE,
-                        new ArrayList<>(configIdsToDeviceIds.get(configId)), false);
-                }
-                deviceBehaviorDao.deleteUnusedBehaviors();
-                
-                if(!devicesIdsToUnassign.isEmpty()){
-                    deviceBehaviorDao.unassignBehavior(TYPE, devicesIdsToUnassign);
-                }
             }
+            
+            log.debug("Accepting devices=" + allDeviceIds);
+            log.debug("Assigning devices=" + configIdsToDeviceIds.values());
+            log.debug("Unassigning devices=" + devicesIdsToUnassign);
+            // assign behaviors
+            for (int configId : configIdsToDeviceIds.keys()) {
+                deviceBehaviorDao.assignBehavior(configId, TYPE,
+                    new ArrayList<>(configIdsToDeviceIds.get(configId)), false);
+            }
+            deviceBehaviorDao.deleteUnusedBehaviors();
+            
+            if(!devicesIdsToUnassign.isEmpty()){
+                deviceBehaviorDao.unassignBehavior(TYPE, devicesIdsToUnassign);
+            }
+            
             return result;
         } else {
             return createEmptyResult(deviceCollection, "Porter connection is invalid.");
         }
+    }
+    
+    /**
+     * Searches allConfigs list for behavior with the same attributes and interval as reportedConfig.
+     * 
+     * @return null if the config is not found
+     */
+    private DataStreamingConfig findConfig(List<DataStreamingConfig> allConfigs, DataStreamingConfig reportedConfig) {
+        // search for behavior with the same attributes and interval
+        return allConfigs.stream().filter(e -> compareByAttributesAndInterval(e, reportedConfig)).findFirst().orElse(
+            null);
     }
 
     /**
