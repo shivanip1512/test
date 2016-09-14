@@ -200,7 +200,7 @@ R"json({
     "attribute" : "POWER_FACTOR",
     "interval" : 30,
     "enabled" : true,
-    "status" : "INVALID_ERROR_8"
+    "status" : "INVALID_STATUS"
   }],
 "sequence" : 3735928559
 })json";
