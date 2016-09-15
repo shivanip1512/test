@@ -14,10 +14,12 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,8 @@ import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallback;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutionStatus;
@@ -122,6 +126,15 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PointDao pointDao;
+    @Autowired private ConfigurationSource configurationSource;
+    
+    boolean ignoreTimeCheck;
+
+    @PostConstruct
+    public void init() {
+        ignoreTimeCheck =
+            configurationSource.getBoolean(MasterConfigBoolean.SIMULATOR_DISCREPANCY_REPORT_IGNORE_TIME_CHECK, false);
+    }
 
     @Override
     public DataStreamingConfigResult findDataStreamingResult(String resultKey) {
@@ -220,7 +233,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
     @Override
     public List<SummarySearchResult> search(SummarySearchCriteria criteria) throws DataStreamingConfigException {
-        log.debug("Searching by criteria=" + criteria);
+        log.info("Searching by criteria=" + criteria);
         List<SummarySearchResult> results = new ArrayList<>();
         Map<Integer, DeviceInfo> deviceIdToDeviceInfo = new HashMap<>();
         Map<RfnIdentifier, RfnGateway> gatewaysForLoadingRange = getGatewaysForLoadingRange(criteria);
@@ -327,15 +340,22 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 // behavior
                 DataStreamingConfig expectedConfig = convertBehaviorToConfig(behavior);
                 // behavior report
-                DataStreamingConfig actualConfig = convertBehaviorToConfig(report);
-                if (hasDiscrepancy(expectedConfig, actualConfig)) {
+                DataStreamingConfig reportedConfig = convertBehaviorToConfig(report);
+                if (hasDiscrepancy(expectedConfig, reportedConfig)) {
                     DiscrepancyResult result = new DiscrepancyResult();
-                    result.setActual(actualConfig);
+                    result.setActual(reportedConfig);
                     result.setExpected(expectedConfig);
                     result.setStatus(report.getStatus());
                     result.setLastCommunicated(getLastCommunicatedTime(deviceId, devicePointIds));
                     result.setPaoName(serverDatabaseCache.getAllPaosMap().get(deviceId).getPaoName());
                     result.setDeviceId(deviceId);
+                    if(!ignoreTimeCheck){
+                        DateTime oneWeekAgo = new DateTime().minusWeeks(1);
+                        if (result.getLastCommunicated().isBefore(oneWeekAgo)) {
+                            result.setDisplayRemove(true);
+                            log.debug(result + " didn't communticate for a week. Displaying remove option.");
+                        }
+                    }
                     results.add(result);
                 }
             }
@@ -366,8 +386,13 @@ public class DataStreamingServiceImpl implements DataStreamingService {
      * @return true - if the behavior can be shown
      */
     private boolean checkPending(BehaviorReport report) {
-        if (report.getStatus() == BehaviorReportStatus.PENDING) {
-            return false;
+        if (!ignoreTimeCheck && report.getStatus() == BehaviorReportStatus.PENDING) {
+            DateTime reportedTimePlus24Hours =  new DateTime(report.getTimestamp()).plusHours(24);
+            DateTime now = new DateTime();
+            if(now.isBefore(reportedTimePlus24Hours)){
+                //24 hours didn't pass yet, do not display the report.
+                return false;
+            }
         }
         return true;
     }
@@ -375,11 +400,11 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     /**
      * Compares 2 configs, returns true if the configs are not equal
      */
-    private boolean hasDiscrepancy(DataStreamingConfig expectedConfig, DataStreamingConfig actualConfig) {
+    private boolean hasDiscrepancy(DataStreamingConfig expectedConfig, DataStreamingConfig reportedConfig) {
 
         if (expectedConfig == null) {
-            if (actualConfig.isEnabled()) {
-                if (actualConfig.getAttributes().isEmpty()) {
+            if (reportedConfig.isEnabled()) {
+                if (reportedConfig.getAttributes().isEmpty()) {
                     // enabled
                     // all channels.0.enabled = false
                     // do not display
@@ -393,7 +418,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             }
         }
 
-        return !compareByAttributesAndInterval(expectedConfig, actualConfig);
+        return !compareByAttributesAndInterval(expectedConfig, reportedConfig);
     }
 
     @Override
@@ -631,45 +656,16 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     @Override
-    public DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user)
-            throws DataStreamingConfigException {
+    public DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user) {
 
-        log.debug("Re-sending configuration for devices=" + deviceIds);
+        log.info("Re-sending configuration for devices=" + deviceIds);
 
         DeviceCollection deviceCollection = createDeviceCollectionForIds(deviceIds);
         if (isValidPorterConnection()) {
             String correlationId = UUID.randomUUID().toString();
 
-            Map<Integer, Behavior> deviceIdToBehavior =
-                deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, deviceIds);
-
             Map<Integer, BehaviorReport> deviceIdToBehaviorReport =
                 deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, deviceIds);
-
-            // add all devices that have behavior
-            Multimap<DataStreamingConfig, Integer> configsToDeviceIds = HashMultimap.create();
-
-            for (Entry<Integer, Behavior> entry : deviceIdToBehavior.entrySet()) {
-                // convert behavior to config
-                configsToDeviceIds.put(convertBehaviorToConfig(entry.getValue()), entry.getKey());
-            }
-
-            List<Integer> devicesWithoutBehavior = new ArrayList<>();
-            // add all devices
-            devicesWithoutBehavior.addAll(deviceIds);
-            // remove devices that have behaviors
-            devicesWithoutBehavior.removeAll(deviceIdToBehavior.keySet());
-
-            if (!devicesWithoutBehavior.isEmpty()) {
-                log.debug("Devices ids " + devicesWithoutBehavior + "do not have a behavior assigned.");
-            }
-            // for reports that do not have behavior convert behavior report to config
-            devicesWithoutBehavior.forEach(id -> {
-                BehaviorReport report = deviceIdToBehaviorReport.get(id);
-                configsToDeviceIds.put(convertBehaviorToConfig(report), id);
-            });
-
-            sendNmConfiguration(configsToDeviceIds, correlationId);
 
             deviceIds.forEach(id -> {
                 BehaviorReport report = deviceIdToBehaviorReport.get(id);
@@ -696,7 +692,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             List<Integer> deviceIds =
                 getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
 
-            log.debug("Unassign data streaming config from devices=" + deviceIds);
+            log.info("Unassign data streaming config from devices=" + deviceIds);
 
             Map<Integer, Behavior> deviceIdToBehavior =
                 deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, deviceIds);
@@ -706,27 +702,17 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             devicesIdsWithoutBehaviors.addAll(deviceIds);
             devicesIdsWithoutBehaviors.removeAll(deviceIdToBehavior.keySet());
 
-            Collection<LiteYukonPAObject> devicesWithoutBehaviors =
-                devicesIdsWithoutBehaviors.stream().map(id -> serverDatabaseCache.getAllPaosMap().get(id)).collect(
-                    Collectors.toList());
 
-            if (deviceIds.size() == devicesWithoutBehaviors.size()) {
+            if (deviceIds.size() == devicesIdsWithoutBehaviors.size()) {
                 // none of the devices have behavior assigned
                 // creating a result
                 DataStreamingConfigResult result = createEmptyResult(deviceCollection, null);
                 // mark devices as "success"
-                deviceGroupMemberEditorDao.addDevices(result.getSuccessGroup(), devicesWithoutBehaviors);
-
+                addDevicesToGroup(devicesIdsWithoutBehaviors, result.getSuccessGroup());
                 List<Integer> unsupportedDeviceIds = removeDataStreamingUnsupportedDevices(
                     deviceCollection.getDeviceList().stream().map(s -> s.getDeviceId()).collect(Collectors.toList()));
-                if (!unsupportedDeviceIds.isEmpty()) {
-                    Collection<LiteYukonPAObject> unsupportedDevices =
-                        unsupportedDeviceIds.stream().map(id -> serverDatabaseCache.getAllPaosMap().get(id)).collect(
-                            Collectors.toList());
-                    // mark devices as "unsupported"
-                    deviceGroupMemberEditorDao.addDevices(result.getUnsupportedGroup(), unsupportedDevices);
-                }
-
+               // mark devices as "unsupported"
+                addDevicesToGroup(unsupportedDeviceIds, result.getUnsupportedGroup());
                 return result;
             }
 
@@ -750,10 +736,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             });
             deviceBehaviorDao.unassignBehavior(TYPE, deviceIds);
             DataStreamingConfigResult result = sendConfiguration(user, deviceCollection, correlationId);
-            if (!devicesWithoutBehaviors.isEmpty()) {
-                // mark devices that do not have behavior as success
-                deviceGroupMemberEditorDao.addDevices(result.getSuccessGroup(), devicesWithoutBehaviors);
-            }
+            // mark devices as "success"
+            addDevicesToGroup(devicesIdsWithoutBehaviors, result.getSuccessGroup());
             return result;
         } else {
             return createEmptyResult(deviceCollection, "Porter connection is invalid.");
@@ -761,10 +745,30 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     @Override
-    public DataStreamingConfigResult unassignDataStreamingConfig(List<Integer> deviceIds, LiteYukonUser user)
-            throws DataStreamingConfigException {
-        DeviceCollection deviceCollection = createDeviceCollectionForIds(deviceIds);
-        return unassignDataStreamingConfig(deviceCollection, user);
+    public DataStreamingConfigResult deleteDataStreamingReportAndUnassignConfig(int deviceId) {
+        
+        log.info("Deleting report and unassigning config for "+deviceId);
+        
+        List<Integer> devicesIds = Arrays.asList(deviceId);
+        DeviceCollection deviceCollection = createDeviceCollectionForIds(devicesIds);
+        // creating a result
+        DataStreamingConfigResult result = createEmptyResult(deviceCollection, null);
+        // mark devices as "success"
+        addDevicesToGroup(devicesIds, result.getSuccessGroup());
+
+        deviceBehaviorDao.unassignBehavior(TYPE, devicesIds);
+        Map<Integer, BehaviorReport> reports = deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, devicesIds);
+        deviceBehaviorDao.deleteBehaviorReport(reports.get(deviceId).getId());
+
+        return result;
+    }
+
+    private void addDevicesToGroup(List<Integer> deviceIds, StoredDeviceGroup group) {
+        if (!deviceIds.isEmpty()) {
+            Collection<LiteYukonPAObject> paos =
+                deviceIds.stream().map(id -> serverDatabaseCache.getAllPaosMap().get(id)).collect(Collectors.toList());
+            deviceGroupMemberEditorDao.addDevices(group, paos);
+        }
     }
 
     @Override
@@ -777,7 +781,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
             String correlationId = UUID.randomUUID().toString();
 
-            log.debug("Assigning data streaming config " + config + " devices=" + deviceIds);
+            log.info("Assigning data streaming config " + config + " devices=" + deviceIds);
 
             sendNmConfiguration(config, deviceIds, correlationId);
 
@@ -795,23 +799,20 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     @Override
-    public DataStreamingConfigResult accept(List<Integer> allDeviceIds, LiteYukonUser user){
+    public DataStreamingConfigResult accept(List<Integer> allDeviceIds){
 
         DeviceCollection deviceCollection = createDeviceCollectionForIds(allDeviceIds);
         if (isValidPorterConnection()) {
 
-            log.debug("Attempting to accept reported config for devices=" + allDeviceIds);
+            log.info("Attempting to accept reported config for devices=" + allDeviceIds);
 
             DataStreamingConfigResult result = createEmptyResult(deviceCollection, null);
             // deviceId, report
             Map<Integer, BehaviorReport> deviceIdToReport =
                 deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, allDeviceIds);
 
-            Collection<LiteYukonPAObject> meters =
-                deviceIdToReport.keySet().stream().map(id -> serverDatabaseCache.getAllPaosMap().get(id)).collect(
-                    Collectors.toList());
-            // mark devices as success
-            deviceGroupMemberEditorDao.addDevices(result.getSuccessGroup(), meters);
+            //mark devices as success
+            addDevicesToGroup(new ArrayList<>(deviceIdToReport.keySet()), result.getSuccessGroup());
 
             List<Integer> devicesIdsToUnassign = new ArrayList<>();
             List<DataStreamingConfig> allConfigs = getAllDataStreamingConfigurations();
@@ -1301,6 +1302,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         private StoredDeviceGroup cancelGroup;
         private CommandRequestExecution execution;
         private List<SimpleDevice> deviceList;
+        Map<Integer, Behavior> deviceIdToBehavior; 
 
         public DataStreamingConfigCallbackImpl(DataStreamingConfigResult result, CommandRequestExecution execution,
                 List<SimpleDevice> deviceList, String correlationId) {
@@ -1311,16 +1313,34 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             this.deviceList = deviceList;
             this.cancelGroup = result.getCanceledGroup();
             this.correlationId = correlationId;
+            deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE,
+                deviceList.stream().map(d -> d.getDeviceId()).collect(Collectors.toList()));
         }
 
         @Override
         public void receivedConfigReport(SimpleDevice device, ReportedDataStreamingConfig config) {
+            
+            BehaviorReport reportedBehavior = buildConfirmedReport(config, device.getDeviceId());
+            Behavior expectedBehavior = deviceIdToBehavior.get(device.getDeviceId());
+            
+            // behavior
+            DataStreamingConfig expectedConfig = convertBehaviorToConfig(expectedBehavior);
+            // behavior report
+            DataStreamingConfig reportedConfig = convertBehaviorToConfig(reportedBehavior);
+                    
+            boolean hasDiscrepancy = hasDiscrepancy(expectedConfig, reportedConfig);
+            
             // Add to result
-            deviceGroupMemberEditorDao.addDevices(successGroup, device);
-
+            if(hasDiscrepancy){
+                //mark device as failed
+                deviceGroupMemberEditorDao.addDevices(failedGroup, device);
+            }else{
+                //mark device as success
+                deviceGroupMemberEditorDao.addDevices(successGroup, device);
+            }
+            
             // Update DB
-            BehaviorReport report = buildConfirmedReport(config, device.getDeviceId());
-            deviceBehaviorDao.saveBehaviorReport(report);
+            deviceBehaviorDao.saveBehaviorReport(reportedBehavior);
 
             // Send sync to NM
             DeviceDataStreamingConfigRequest request =

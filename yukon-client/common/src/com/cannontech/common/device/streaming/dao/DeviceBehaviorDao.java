@@ -96,4 +96,9 @@ public interface DeviceBehaviorDao {
      */
     Map<Integer, Behavior> getBehaviorsByType(BehaviorType type);
 
+    /**
+     * Deletes behavior report
+     */
+    void deleteBehaviorReport(int behaviorReportId);
+
 }

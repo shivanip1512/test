@@ -224,10 +224,19 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     @Override
     @Transactional
     public void deleteBehavior(int behaviorId) {
-        deleteBehaviorValues(behaviorId);
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM Behavior");
         sql.append("WHERE BehaviorId").eq(behaviorId);
+
+        jdbcTemplate.update(sql);
+    }
+    
+    @Override
+    @Transactional
+    public void deleteBehaviorReport(int behaviorReportId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM BehaviorReport");
+        sql.append("WHERE BehaviorReportId").eq(behaviorReportId);
 
         jdbcTemplate.update(sql);
     }

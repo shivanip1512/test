@@ -30,6 +30,7 @@ public enum MasterConfigBoolean {
     RF_DATA_STREAMING_ENABLED,  //Enables Data Streaming Functionality
     SCHEDULED_REQUEST_TIMEOUT_IN_MINUTES, //Used for debugging Web schedules (YUK-14711)
     SEND_INDIVIDUAL_SWITCH_CONFIG, // YUK-13985 For GRE's old config by range feature
+    SIMULATOR_DISCREPANCY_REPORT_IGNORE_TIME_CHECK, //pending reports and remove option will show up without the time check 
     USE_OLD_FORGOTTEN_PASSWORD_PAGE,
     USER_FEEDBACK_ENABLED,
     VIRTUAL_PROGRAMS,

@@ -91,9 +91,11 @@
                                             <cm:dropdownOption id="acceptConfiguration_${discrepancy.deviceId}" key=".accept" icon="icon-accept"
                                                 data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:accept" />
                                             <d:confirm on="#acceptConfiguration_${discrepancy.deviceId}" nameKey="acceptConfirmation" argument="${discrepancy.paoName}" />
-                                            <cm:dropdownOption id="removeConfiguration_${discrepancy.deviceId}" key=".remove" icon="icon-cross"
-                                                data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:remove" />
-                                            <d:confirm on="#removeConfiguration_${discrepancy.deviceId}" nameKey="removeConfirmation" argument="${discrepancy.paoName}" />
+                                            <c:if test="${discrepancy.displayRemove()}">
+                                                <cm:dropdownOption id="removeConfiguration_${discrepancy.deviceId}" key=".remove" icon="icon-cross"
+                                                    data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:remove" />
+                                                <d:confirm on="#removeConfiguration_${discrepancy.deviceId}" nameKey="removeConfirmation" argument="${discrepancy.paoName}" />
+                                            </c:if>
                                         </cm:dropdown>
                                     </cti:checkRolesAndProperties>
                                 </td>

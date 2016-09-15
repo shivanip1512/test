@@ -366,40 +366,34 @@ public class DataStreamingConfigurationsController {
     
     @RequestMapping("discrepancies/{deviceId}/resend")
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
-    public String resendDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
+    public String resendDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext,
+            FlashScope flash) {
         LiteYukonUser user = userContext.getYukonUser();
-        try {
-            DataStreamingConfigResult result = dataStreamingService.resend(Arrays.asList(deviceId), user);
-            model.addAttribute("resultsId", result.getResultsId());
-            return "redirect:/bulk/dataStreaming/dataStreamingResults";
-        } catch (DataStreamingConfigException e) {
-            flash.setError(e.getMessageSourceResolvable());
-            return "redirect:/tools/dataStreaming/discrepancies";
-        }
+
+        DataStreamingConfigResult result = dataStreamingService.resend(Arrays.asList(deviceId), user);
+        model.addAttribute("resultsId", result.getResultsId());
+        return "redirect:/bulk/dataStreaming/dataStreamingResults";
+
     }
     
     @RequestMapping("discrepancies/{deviceId}/accept")
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String acceptDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
-        LiteYukonUser user = userContext.getYukonUser();
 
-        dataStreamingService.accept(Arrays.asList(deviceId), user);
+        dataStreamingService.accept(Arrays.asList(deviceId));
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptSuccess"));
         return "redirect:/tools/dataStreaming/discrepancies";
     }
     
     @RequestMapping("discrepancies/{deviceId}/remove")
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
-    public String removeDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
-        LiteYukonUser user = userContext.getYukonUser();
-        try {
-            DataStreamingConfigResult result = dataStreamingService.unassignDataStreamingConfig(Arrays.asList(deviceId), user);
-            model.addAttribute("resultsId", result.getResultsId());
-            return "redirect:/bulk/dataStreaming/dataStreamingResults";
-        } catch (DataStreamingConfigException e) {
-            flash.setError(e.getMessageSourceResolvable());
-            return "redirect:/tools/dataStreaming/discrepancies";
-        }
+    public String removeDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext,
+            FlashScope flash) {
+
+        DataStreamingConfigResult result = dataStreamingService.deleteDataStreamingReportAndUnassignConfig(deviceId);
+        model.addAttribute("resultsId", result.getResultsId());
+        return "redirect:/bulk/dataStreaming/dataStreamingResults";
+
     }
     
     @RequestMapping(value="discrepancies/resendAll", method=RequestMethod.POST)
@@ -413,14 +407,10 @@ public class DataStreamingConfigurationsController {
         }
         
         LiteYukonUser user = userContext.getYukonUser();
-        try {
-            DataStreamingConfigResult result = dataStreamingService.resend(deviceList, user);
-            model.addAttribute("resultsId", result.getResultsId());
-            return "redirect:/bulk/dataStreaming/dataStreamingResults";
-        } catch (DataStreamingConfigException e) {
-            flash.setError(e.getMessageSourceResolvable());
-            return "redirect:/tools/dataStreaming/discrepancies";
-        }
+    
+        DataStreamingConfigResult result = dataStreamingService.resend(deviceList, user);
+        model.addAttribute("resultsId", result.getResultsId());
+        return "redirect:/bulk/dataStreaming/dataStreamingResults";
     }
     
     @RequestMapping(value="discrepancies/acceptAll", method=RequestMethod.POST)
@@ -433,9 +423,7 @@ public class DataStreamingConfigurationsController {
             deviceList.add(Integer.parseInt(deviceId));
         }
         
-        LiteYukonUser user = userContext.getYukonUser();
-    
-        dataStreamingService.accept(deviceList, user);
+        dataStreamingService.accept(deviceList);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptAllSuccess"));
         return "redirect:/tools/dataStreaming/discrepancies";
       

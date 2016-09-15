@@ -57,9 +57,6 @@ public interface DataStreamingService {
      */
     DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection, LiteYukonUser user) throws DataStreamingConfigException;
     
-    DataStreamingConfigResult unassignDataStreamingConfig(List<Integer> devicesIds, LiteYukonUser user)
-            throws DataStreamingConfigException;
-
     /**
      * Compares config to all saved configs by attributes and interval.
      * If saved config was found returns config id otherwise creates new config.
@@ -84,10 +81,8 @@ public interface DataStreamingService {
      * Resends config
      * 
      * @param deviceIds - to re-send config to
-     * @throws DataStreamingConfigException if there is a communication error requesting information from Network
-     *         Manager.
      */
-    DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException;
+    DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user);
 
     /**
      * Returns map of configurations to device collection that contains all assigned devices.
@@ -127,7 +122,7 @@ public interface DataStreamingService {
      * 3. Assigns device to behavior that was found/created
      * 
      */
-    DataStreamingConfigResult accept(List<Integer> deviceIds, LiteYukonUser user);
+    DataStreamingConfigResult accept(List<Integer> deviceIds);
 
     /**
      * Gets any overloaded gateways
@@ -137,4 +132,6 @@ public interface DataStreamingService {
      *         Manager.
      */
     List<RfnGateway> getOverloadedGateways() throws DataStreamingConfigException;
+
+    DataStreamingConfigResult deleteDataStreamingReportAndUnassignConfig(int deviceId);
 }

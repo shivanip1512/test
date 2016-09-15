@@ -1,5 +1,7 @@
 package com.cannontech.web.rfn.dataStreaming.model;
 
+import java.util.Date;
+
 import org.apache.commons.lang3.builder.StandardToStringStyle;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.joda.time.Instant;
@@ -13,6 +15,7 @@ public class DiscrepancyResult {
     private DataStreamingConfig actual;
     private BehaviorReportStatus status;
     private Instant lastCommunicated;
+    private boolean displayRemove;
 
     public DataStreamingConfig getExpected() {
         return expected;
@@ -62,6 +65,14 @@ public class DiscrepancyResult {
         this.paoName = paoName;
     }
     
+    public boolean displayRemove() {
+        return displayRemove;
+    }
+
+    public void setDisplayRemove(boolean displayRemove) {
+        this.displayRemove = displayRemove;
+    }
+    
     @Override
     public String toString() {
         StandardToStringStyle style = new StandardToStringStyle();
@@ -71,7 +82,7 @@ public class DiscrepancyResult {
         builder.append("paoName", paoName);
         builder.append("deviceId", deviceId);
         builder.append("status", status);
-        builder.append("lastCommunicated", lastCommunicated);
+        builder.append("lastCommunicated", new Date(lastCommunicated.getMillis()));
         return builder.toString();
     }
 }

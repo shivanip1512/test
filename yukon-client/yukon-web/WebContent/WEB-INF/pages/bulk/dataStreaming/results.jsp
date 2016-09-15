@@ -37,12 +37,14 @@
 
         </div>
         
-        <div class="stacked js-results-detail dn">
-            <cti:url var="creResultsUrl" value="/common/commandRequestExecutionResults/detail">
-                <cti:param name="commandRequestExecutionId" value="${result.execution.id}" />
-            </cti:url>
-            <a href="${creResultsUrl}"><i:inline key=".results.view" /></a>
-        </div>
+        <c:if test="${result.execution != null}">
+            <div class="stacked js-results-detail dn">
+                <cti:url var="creResultsUrl" value="/common/commandRequestExecutionResults/detail">
+                    <cti:param name="commandRequestExecutionId" value="${result.execution.id}" />
+                </cti:url>
+                <a href="${creResultsUrl}"><i:inline key=".results.view" /></a>
+            </div>
+        </c:if>
 
         <%-- SUCCESS COUNT --%>
         <div class="fwb stacked">
