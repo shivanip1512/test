@@ -286,7 +286,7 @@ std::vector<unsigned char> DataStreamingWrite(const std::vector<unsigned char>& 
             {
                 if( auto channel = Cti::mapFind(requestedChannels, metricId) )
                 {
-                    response.metrics.push_back(metric_response::channel{metricId, channel->interval, channel->enabled});
+                    response.metrics.push_back(metric_response::channel{metricId, channel->interval, 0, channel->enabled});
                 }
                 else
                 {
