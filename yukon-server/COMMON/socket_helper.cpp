@@ -74,25 +74,6 @@ IM_EX_CTIBASE std::string getIpAddressFromSocketAddress(const SOCKADDR *addr, in
 {
     char host[INET6_ADDRSTRLEN]; // array of byte that can contain the largest IP address (IPV6)
 
-    if (addr->sa_family == AF_INET6)
-    {
-        struct sockaddr_in6 *addr6 = (struct sockaddr_in6*)(addr);
-        if (IN6_IS_ADDR_V4MAPPED(&addr6->sin6_addr))
-        {
-            SOCKADDR_IN addr4{};
-            addr4.sin_family = AF_INET;
-            memcpy(&addr4.sin_addr, ((in_addr*)(addr6->sin6_addr.s6_addr + 12)), sizeof addr4.sin_addr);
-            addr4.sin_port = addr6->sin6_port;
-
-            char host6[46]; // array of byte that can contain the largest IP address (IPV6)
-            if (getnameinfo((SOCKADDR *)(&addr4), sizeof(SOCKADDR), host6, sizeof(host), 0, 0, NI_NUMERICHOST) != 0)
-            {
-                return std::string();   // on error, return an empty string
-            }
-            return host6;
-        }
-    }
-
     if (getnameinfo(addr, addrlen, host, sizeof(host), 0, 0, NI_NUMERICHOST) != 0)
     {
         return std::string();   // on error, return an empty string
@@ -483,20 +464,13 @@ IM_EX_CTIBASE AddrInfo makeSocketAddress(const char *nodename, const char* servn
     ADDRINFOA hints = {};
 
     // Set requirements
-    if (protocol == IPPROTO_UDP)
-    {                                                       // UDP socket
-        hints.ai_family = AF_INET;                          // Always IPv4 (for now)
-    }
-    else
-    {
-        if (nodename == 0)
+    if (nodename == 0)
         {                                                   // Listening socket
             hints.ai_family = AF_INET6;                     // accept either IPv4 or IPv6
-        }
-        else
-        {                                                   // connect socket
-            hints.ai_family = AF_UNSPEC;                    // IPv4 or IPv6 depending on connect string
-        }
+    }
+    else
+    {                                                   // connect socket
+        hints.ai_family = AF_UNSPEC;                    // IPv4 or IPv6 depending on connect string
     }
     hints.ai_socktype = socktype;                   // SOCK_STREAM (tcp) or SOCK_DGRAM (udp)
     hints.ai_protocol = protocol;                   // IPPROTO_TCP or IPPROTO_UDP
@@ -806,7 +780,7 @@ SOCKET const ServerSockets::getFamilySocket(const int family)
         if (addr._addr.sa.sa_family == family)
         {
             return s;
-    }
+        }
     }
 
     return INVALID_SOCKET;
