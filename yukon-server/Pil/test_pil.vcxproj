@@ -353,13 +353,6 @@
     </ClCompile>
     <ClCompile Include="test_rfn_data_streaming_processor.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\exe_pcreq.h" />
-    <ClInclude Include="include\mgr_rfn_request.h" />
-    <ClInclude Include="include\pil_exefct.h" />
-    <ClInclude Include="include\pilserver.h" />
-    <ClInclude Include="include\rfn_statistics.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

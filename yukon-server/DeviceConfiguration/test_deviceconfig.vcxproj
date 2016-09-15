@@ -351,16 +351,6 @@
     <ClCompile Include="test_main.cpp" />
     <ClCompile Include="test_mgr_behavior.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\config_data_dnp.h" />
-    <ClInclude Include="include\config_data_mct.h" />
-    <ClInclude Include="include\config_data_regulator.h" />
-    <ClInclude Include="include\config_data_rfn.h" />
-    <ClInclude Include="include\config_device.h" />
-    <ClInclude Include="include\da_lp_deviceconfig.h" />
-    <ClInclude Include="include\id_dcdll.h" />
-    <ClInclude Include="include\mgr_config.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

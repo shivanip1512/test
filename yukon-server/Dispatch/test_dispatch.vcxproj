@@ -379,26 +379,6 @@
     </ClCompile>
     <ClCompile Include="vgexe_factory.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\con_mgr_vg.h" />
-    <ClInclude Include="include\control_history_association.h" />
-    <ClInclude Include="include\ctivangogh.h" />
-    <ClInclude Include="include\dispsvc.h" />
-    <ClInclude Include="include\exe_ptchg.h" />
-    <ClInclude Include="include\exe_signal.h" />
-    <ClInclude Include="include\id_vg.h" />
-    <ClInclude Include="include\mgr_ptclients.h" />
-    <ClInclude Include="include\pendable.h" />
-    <ClInclude Include="include\pending_info.h" />
-    <ClInclude Include="include\pendingOpThread.h" />
-    <ClInclude Include="include\ptconnect.h" />
-    <ClInclude Include="include\rph_archiver.h" />
-    <ClInclude Include="include\signalmanager.h" />
-    <ClInclude Include="include\tagmanager.h" />
-    <ClInclude Include="include\tbl_rawpthistory.h" />
-    <ClInclude Include="include\tbl_signal.h" />
-    <ClInclude Include="include\vgexe_factory.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

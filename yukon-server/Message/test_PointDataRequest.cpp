@@ -24,6 +24,8 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_watchlist_creation)
 
     DispatchPointDataRequest * request = dynamic_cast<DispatchPointDataRequest*>( pd_request.get() );
 
+    BOOST_REQUIRE( request );
+
     std::set<PointRequest>  emptyWatchlist, watchlist;
 
     // Add 5 point IDs to the watchlist
@@ -69,6 +71,8 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_ignore_points_not_on_watchl
 
     DispatchPointDataRequest * request = dynamic_cast<DispatchPointDataRequest*>( pd_request.get() );
 
+    BOOST_REQUIRE( request );
+
     std::set<PointRequest>  watchlist;
 
     // Add 5 point IDs to the watchlist
@@ -102,6 +106,8 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_all_good_data)
     // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
 
     DispatchPointDataRequest * request = dynamic_cast<DispatchPointDataRequest*>( pd_request.get() );
+
+    BOOST_REQUIRE( request );
 
     std::set<PointRequest>  watchlist;
 
@@ -157,6 +163,8 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_all_good_data_for_one_point
 
     DispatchPointDataRequest * request = dynamic_cast<DispatchPointDataRequest*>( pd_request.get() );
 
+    BOOST_REQUIRE( request );
+
     std::set<PointRequest>  watchlist;
 
     // Add 5 point IDs to the watchlist
@@ -194,6 +202,8 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_mixed_data_for_one_point_1)
     // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
 
     DispatchPointDataRequest * request = dynamic_cast<DispatchPointDataRequest*>( pd_request.get() );
+
+    BOOST_REQUIRE( request );
 
     std::set<PointRequest>  watchlist;
 
@@ -233,6 +243,8 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_mixed_data_for_one_point_2)
 
     DispatchPointDataRequest * request = dynamic_cast<DispatchPointDataRequest*>( pd_request.get() );
 
+    BOOST_REQUIRE( request );
+
     std::set<PointRequest>  watchlist;
 
     // Add 5 point IDs to the watchlist
@@ -271,6 +283,8 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_all_bad_data_for_one_point)
 
     DispatchPointDataRequest * request = dynamic_cast<DispatchPointDataRequest*>( pd_request.get() );
 
+    BOOST_REQUIRE( request );
+
     std::set<PointRequest>  watchlist;
 
     // Add 5 point IDs to the watchlist
@@ -308,6 +322,8 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_complete_data)
     // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
 
     DispatchPointDataRequest * request = dynamic_cast<DispatchPointDataRequest*>( pd_request.get() );
+
+    BOOST_REQUIRE( request );
 
     std::set<PointRequest>  watchlist;
 
@@ -373,6 +389,8 @@ BOOST_AUTO_TEST_CASE(test_point_data_request_factory_incomplete_data)
     // Need an actual DispatchPointDataRequest pointer so we can call processNewMessage().
 
     DispatchPointDataRequest * request = dynamic_cast<DispatchPointDataRequest*>( pd_request.get() );
+
+    BOOST_REQUIRE( request );
 
     std::set<PointRequest>  watchlist;
 

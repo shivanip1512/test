@@ -65,7 +65,7 @@ std::string getUnknownExceptionCause()
     }
     catch(const boost::thread_interrupted& e)
     {
-        cause <<"exception "<< typeid(e).name();
+        cause <<"exception "<< typeid(e).name();  e;  //  to avoid C4101: 'e': unreferenced local variable
     }
     catch(...)
     {

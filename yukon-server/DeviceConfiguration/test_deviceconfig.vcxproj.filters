@@ -33,30 +33,4 @@
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\config_data_dnp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\config_data_mct.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\config_data_regulator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\config_data_rfn.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\config_device.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\da_lp_deviceconfig.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\id_dcdll.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\mgr_config.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-  </ItemGroup>
 </Project>

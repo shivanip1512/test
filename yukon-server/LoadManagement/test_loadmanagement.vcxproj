@@ -458,65 +458,6 @@
     <ClCompile Include="test_main.cpp">
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\BeatThePeakControlInterface.h" />
-    <ClInclude Include="include\clistener.h" />
-    <ClInclude Include="include\ConstraintViolation.h" />
-    <ClInclude Include="include\ecobeeControlInterface.h" />
-    <ClInclude Include="include\ecobeeCycleGear.h" />
-    <ClInclude Include="include\executor.h" />
-    <ClInclude Include="include\GroupControlInterface.h" />
-    <ClInclude Include="include\id_loadmanagement.h" />
-    <ClInclude Include="include\lm_group_serialization.h" />
-    <ClInclude Include="include\lm_message_serialization.h" />
-    <ClInclude Include="include\lm_program_serialization.h" />
-    <ClInclude Include="include\lmcicustomerbase.h" />
-    <ClInclude Include="include\lmconstraint.h" />
-    <ClInclude Include="include\lmcontrolarea.h" />
-    <ClInclude Include="include\lmcontrolareastore.h" />
-    <ClInclude Include="include\lmcontrolareatrigger.h" />
-    <ClInclude Include="include\lmcurtailcustomer.h" />
-    <ClInclude Include="include\lmenergyexchangecustomer.h" />
-    <ClInclude Include="include\lmenergyexchangecustomerreply.h" />
-    <ClInclude Include="include\lmenergyexchangehourlycustomer.h" />
-    <ClInclude Include="include\lmenergyexchangehourlyoffer.h" />
-    <ClInclude Include="include\lmenergyexchangeoffer.h" />
-    <ClInclude Include="include\lmenergyexchangeofferrevision.h" />
-    <ClInclude Include="include\lmfactory.h" />
-    <ClInclude Include="include\lmgroupbase.h" />
-    <ClInclude Include="include\lmgroupdigisep.h" />
-    <ClInclude Include="include\lmgroupecobee.h" />
-    <ClInclude Include="include\lmgroupemetcon.h" />
-    <ClInclude Include="include\lmgroupexpresscom.h" />
-    <ClInclude Include="include\lmgroupgolay.h" />
-    <ClInclude Include="include\lmgroupmacro.h" />
-    <ClInclude Include="include\lmgroupmct.h" />
-    <ClInclude Include="include\lmgrouppoint.h" />
-    <ClInclude Include="include\lmgroupripple.h" />
-    <ClInclude Include="include\lmgroupsa105.h" />
-    <ClInclude Include="include\lmgroupsa205.h" />
-    <ClInclude Include="include\lmgroupsa305.h" />
-    <ClInclude Include="include\lmgroupsadigital.h" />
-    <ClInclude Include="include\lmgroupversacom.h" />
-    <ClInclude Include="include\lmid.h" />
-    <ClInclude Include="include\lmmessage.h" />
-    <ClInclude Include="include\lmprogrambase.h" />
-    <ClInclude Include="include\lmprogrambeatthepeakgear.h" />
-    <ClInclude Include="include\lmprogramcontrolwindow.h" />
-    <ClInclude Include="include\lmprogramcurtailment.h" />
-    <ClInclude Include="include\lmprogramdirect.h" />
-    <ClInclude Include="include\lmprogramdirectgear.h" />
-    <ClInclude Include="include\lmprogramenergyexchange.h" />
-    <ClInclude Include="include\lmprogramthermostatgear.h" />
-    <ClInclude Include="include\lmservice.h" />
-    <ClInclude Include="include\lmutility.h" />
-    <ClInclude Include="include\loadmanager.h" />
-    <ClInclude Include="include\SEPControlInterface.h" />
-    <ClInclude Include="include\sepcyclegear.h" />
-    <ClInclude Include="include\septempoffsetgear.h" />
-    <ClInclude Include="include\smartgearbase.h" />
-    <ClInclude Include="include\test_lm_serialization.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

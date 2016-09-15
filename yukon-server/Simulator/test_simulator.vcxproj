@@ -403,35 +403,6 @@
     <ClCompile Include="test_random_consumption_behavior.cpp">
     </ClCompile>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="include\BchBehavior.h" />
-    <ClInclude Include="include\Behavior.h" />
-    <ClInclude Include="include\BehaviorCollection.h" />
-    <ClInclude Include="include\Ccu710.h" />
-    <ClInclude Include="include\Ccu711.h" />
-    <ClInclude Include="include\Ccu721.h" />
-    <ClInclude Include="include\CcuIDLC.h" />
-    <ClInclude Include="include\CommInterface.h" />
-    <ClInclude Include="include\CommsBehavior.h" />
-    <ClInclude Include="include\DelayBehavior.h" />
-    <ClInclude Include="include\DeviceMemoryManager.h" />
-    <ClInclude Include="include\EmetconWords.h" />
-    <ClInclude Include="include\FrozenPeakTimestampBehavior.h" />
-    <ClInclude Include="include\FrozenReadParityBehavior.h" />
-    <ClInclude Include="include\InvalidUsageReadingBehavior.h" />
-    <ClInclude Include="include\Mct410.h" />
-    <ClInclude Include="include\MctBehavior.h" />
-    <ClInclude Include="include\NackBehavior.h" />
-    <ClInclude Include="include\PlcBehavior.h" />
-    <ClInclude Include="include\PlcInfrastructure.h" />
-    <ClInclude Include="include\PlcTransmitter.h" />
-    <ClInclude Include="include\PortLogger.h" />
-    <ClInclude Include="include\RandomConsumptionBehavior.h" />
-    <ClInclude Include="include\ScopedLogger.h" />
-    <ClInclude Include="include\SimulatorLogger.h" />
-    <ClInclude Include="include\SimulatorUtils.h" />
-    <ClInclude Include="include\Types.h" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
