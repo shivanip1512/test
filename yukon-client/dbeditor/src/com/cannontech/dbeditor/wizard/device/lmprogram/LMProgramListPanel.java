@@ -163,20 +163,19 @@ public class LMProgramListPanel extends DataInputPanel implements AddRemovePanel
                     // hidden for all others
                     // ecobee compatible groups are shown for ecobee programs
                     // and hidden for all others
+                    // honeywell compatible groups are shown for honeywell programs
+                    // and hidden for all others
                     if (isSepProgram && isGroupSepCompatible(paoType)) {
                         newList.addElement(group);
-                    } else if ((!isSepProgram && !isGroupSepCompatible(paoType)) && (!isEcobeeProgram && !isGroupEcobeeCompatible(paoType))) {
+                    } else if ((!isSepProgram && !isGroupSepCompatible(paoType))
+                        && (!isEcobeeProgram && !isGroupEcobeeCompatible(paoType))
+                        && (!isHoneywellProgram && !isGroupHoneywellCompatible(paoType))) {
                         newList.addElement(group);
                     } else if (isEcobeeProgram && isGroupEcobeeCompatible(paoType)) {
                         newList.addElement(group);
-                    } else if ((!isEcobeeProgram && !isGroupEcobeeCompatible(paoType)) && (!isSepProgram && !isGroupSepCompatible(paoType))) {
-                        newList.addElement(group);
-                    } else if ((!isSepProgram && !isGroupSepCompatible(paoType))
-                        && (!isHoneywellProgram && !isGroupHoneywellCompatible(paoType))) {
-                        newList.addElement(group);
                     } else if (isHoneywellProgram && isGroupHoneywellCompatible(paoType)) {
                         newList.addElement(group);
-                    } 
+                    }
                 }
             }
 
