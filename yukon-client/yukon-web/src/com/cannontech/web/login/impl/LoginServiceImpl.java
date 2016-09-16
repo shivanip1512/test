@@ -71,13 +71,16 @@ public class LoginServiceImpl implements LoginService {
         try {
             // Need to find the user so we can check role _before_ authentication.
             LiteYukonUser user = yukonUserDao.findUserByUsername(username);
+            if (user == null) {
+                log.info("Authentication failed (unknown user): username=" + username);
+                throw new BadAuthenticationException(BadAuthenticationException.Type.UNKNOWN_USER);
+            }
             rolePropertyDao.verifyRole(YukonRole.WEB_CLIENT, user);
             
             user = authenticationService.login(username, password);
             createSession(request, user);
             log.info("User " + user.getUsername() + " (userid=" + user.getUserID() + ") has logged in from " 
                     + request.getRemoteAddr());
-            
         } catch (AuthenticationThrottleException e) {
             log.info("Login attempt as " + username + " failed from " + request.getRemoteAddr()
                 + "due to incorrect Password!Account Locked, throttleSeconds=" + e.getThrottleSeconds());
