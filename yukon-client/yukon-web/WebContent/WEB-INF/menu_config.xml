@@ -82,7 +82,10 @@
       </option>
       <option name="estimatedLoad">
         <permissions>
-            <masterConfig name="ENABLE_ESTIMATED_LOAD" />              
+            <and>
+                <role name="DEMAND_RESPONSE" />
+                <masterConfig name="ENABLE_ESTIMATED_LOAD" />
+            </and>              
         </permissions>
         <link>/dr/estimatedLoad/home</link>
       </option>
