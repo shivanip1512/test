@@ -44,6 +44,7 @@
 #define CTILMCONSTRAINTVIOLATION_ID             639
 #define LMGROUPDIGISEP_ID                       640
 #define LMGROUPECOBEE_ID                        641
+#define LMGROUPHONEYWELL_ID                     642
 
 
 /* Various debug levels */

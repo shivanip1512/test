@@ -208,6 +208,7 @@ string desolveDeviceType( int aType )
         case TYPE_LMGROUP_RFN_EXPRESSCOM: Ret = "rfn expresscom group"; break;
         case TYPE_LMGROUP_DIGI_SEP:       Ret = "digi sep group";       break;
         case TYPE_LMGROUP_ECOBEE:         Ret = "ecobee group";         break;
+        case TYPE_LMGROUP_HONEYWELL:      Ret = "honeywell group";      break;
         case TYPE_LMGROUP_MCT:            Ret = "mct group";            break;
         case TYPE_LMGROUP_GOLAY:          Ret = "golay group";          break;
         case TYPE_LMGROUP_SADIGITAL:      Ret = "sa-digital group";     break;

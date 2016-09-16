@@ -357,6 +357,8 @@
     </ClCompile>
     <ClCompile Include="executor.cpp">
     </ClCompile>
+    <ClCompile Include="honeywellCycleGear.cpp" />
+    <ClCompile Include="lmgrouphoneywell.cpp" />
     <ClCompile Include="lm_group_serialization.cpp">
     </ClCompile>
     <ClCompile Include="lm_message_serialization.cpp">

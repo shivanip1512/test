@@ -315,6 +315,7 @@ static const std::map<std::string, DeviceTypes> device_lookups
     { "ecobee program",     TYPE_LMPROGRAM_DIRECT },
     { "digi sep group",     TYPE_LMGROUP_DIGI_SEP },
     { "ecobee group",       TYPE_LMGROUP_ECOBEE },
+    { "honeywell group",    TYPE_LMGROUP_HONEYWELL },
     { "emetcon group",      TYPE_LMGROUP_EMETCON },
     { "expresscom group",   TYPE_LMGROUP_EXPRESSCOM },
     { "rfn expresscom group",TYPE_LMGROUP_RFN_EXPRESSCOM },

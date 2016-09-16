@@ -359,6 +359,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="executor.cpp">
     </ClCompile>
+    <ClCompile Include="lmgrouphoneywell.cpp" />
     <ClCompile Include="lm_group_serialization.cpp">
     </ClCompile>
     <ClCompile Include="lm_message_serialization.cpp">
