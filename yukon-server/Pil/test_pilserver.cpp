@@ -127,13 +127,12 @@ struct pilEnvironment
 {
     Test_PilServer testPilServer;
 
-    std::list<CtiRequestMsg *> execList;
+    std::vector<std::unique_ptr<CtiRequestMsg>> execList;
     std::list<CtiMessage *> retList;
     boost::ptr_deque<CtiRequestMsg> groupRequests;
 
     ~pilEnvironment()
     {
-        delete_container(execList);
         delete_container(retList);
     }
 };
@@ -198,7 +197,7 @@ BOOST_AUTO_TEST_CASE(test_analyzeWhiteRabbits_no_op)
 
     BOOST_REQUIRE_EQUAL(execList.size(), 1);
 
-    CtiRequestMsg *reqMsg = execList.front();
+    CtiRequestMsg *reqMsg = execList.front().get();
 
     BOOST_REQUIRE(reqMsg);
 
@@ -218,7 +217,7 @@ BOOST_AUTO_TEST_CASE(test_analyzeWhiteRabbits_select_device_id)
 
     BOOST_REQUIRE_EQUAL(execList.size(), 1);
 
-    CtiRequestMsg *reqMsg = execList.front();
+    CtiRequestMsg *reqMsg = execList.front().get();
 
     BOOST_REQUIRE(reqMsg);
 
@@ -237,7 +236,7 @@ BOOST_AUTO_TEST_CASE(test_analyzeWhiteRabbits_select_device_name)
 
     BOOST_REQUIRE_EQUAL(execList.size(), 1);
 
-    CtiRequestMsg *reqMsg = execList.front();
+    CtiRequestMsg *reqMsg = execList.front().get();
 
     BOOST_REQUIRE(reqMsg);
 
@@ -276,7 +275,7 @@ BOOST_AUTO_TEST_CASE(test_analyzeWhiteRabbits_select_route_id)
 
     BOOST_CHECK_EQUAL(execList.size(), 1);
 
-    CtiRequestMsg *reqMsg = execList.front();
+    CtiRequestMsg *reqMsg = execList.front().get();
 
     BOOST_REQUIRE(reqMsg);
 
@@ -296,7 +295,7 @@ BOOST_AUTO_TEST_CASE(test_analyzeWhiteRabbits_select_route_name)
 
     BOOST_REQUIRE_EQUAL(execList.size(), 1);
 
-    CtiRequestMsg *reqMsg = execList.front();
+    CtiRequestMsg *reqMsg = execList.front().get();
 
     BOOST_REQUIRE(reqMsg);
 
@@ -317,7 +316,7 @@ BOOST_AUTO_TEST_CASE(test_analyzeWhiteRabbits_select_route_name_not_found)
 
     BOOST_REQUIRE_EQUAL(execList.size(), 1);
 
-    CtiRequestMsg *reqMsg = execList.front();
+    CtiRequestMsg *reqMsg = execList.front().get();
 
     BOOST_REQUIRE(reqMsg);
 

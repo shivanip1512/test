@@ -102,9 +102,9 @@ public:
    void  schedulerThread();
    void  periodicActionThread();
 
-   void analyzeWhiteRabbits(const CtiRequestMsg& pReq, CtiCommandParser &parse, std::list< CtiRequestMsg* > & execList, boost::ptr_deque<CtiRequestMsg> &groupRequests, std::list< CtiMessage* > & retList);
-   INT analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, std::list< CtiRequestMsg* > & execList, std::list< CtiMessage* > & retList);
-   INT analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, std::list< CtiRequestMsg* > & execList, std::list< CtiMessage* > & retList);
+   void analyzeWhiteRabbits(const CtiRequestMsg& pReq, CtiCommandParser &parse, std::vector<std::unique_ptr<CtiRequestMsg>>& execList, boost::ptr_deque<CtiRequestMsg> &groupRequests, std::list< CtiMessage* > & retList);
+   INT  analyzeAutoRole    (CtiRequestMsg& Req, CtiCommandParser &parse, std::vector<std::unique_ptr<CtiRequestMsg>>& execList, std::list< CtiMessage* > & retList);
+   INT  analyzePointGroup  (CtiRequestMsg& Req, CtiCommandParser &parse, std::vector<std::unique_ptr<CtiRequestMsg>>& execList, std::list< CtiMessage* > & retList);
 
    void putQueue(CtiMessage *Msg);
 

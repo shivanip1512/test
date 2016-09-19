@@ -1115,7 +1115,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
     list< CtiMessage* >  retList;
     list< OUTMESS* >     outList;
 
-    list< CtiRequestMsg* >  execList;
+    std::vector<std::unique_ptr<CtiRequestMsg>> execList;
 
     try
     {
@@ -1136,7 +1136,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
 
     try
     {
-        for each( CtiRequestMsg *pExecReq in execList )
+        for( auto& pExecReq : execList )
         {
             if( CtiDeviceSPtr pDev = DeviceManager->getDeviceByID(pExecReq->DeviceId()) )
             {
@@ -1159,7 +1159,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
                     pExecReq->setSOE( SystemLogIdGen() );  // Get us a new number to deal with
                 }
 
-                RequestExecuter executer(pExecReq, _currentParse);
+                RequestExecuter executer(pExecReq.get(), _currentParse);
 
                 if(Dev.isGroup())                          // We must indicate any group which is protocol/heirarchy controlled!
                 {
@@ -1536,9 +1536,9 @@ vector<long> PilServer::getDeviceGroupMembers( string groupname ) const
 }
 
 
-void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, boost::ptr_deque<CtiRequestMsg> &groupRequests, list< CtiMessage* > & retList)
+void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &parse, std::vector<std::unique_ptr<CtiRequestMsg>>& execList, boost::ptr_deque<CtiRequestMsg> &groupRequests, list< CtiMessage* > & retList)
 {
-    std::auto_ptr<CtiRequestMsg> pReq(static_cast<CtiRequestMsg *>(Req.replicateMessage()));
+    std::unique_ptr<CtiRequestMsg> pReq(static_cast<CtiRequestMsg *>(Req.replicateMessage()));
     pReq->setConnectionHandle( Req.getConnectionHandle() );
 
     if( parse.isKeyValid("serial") )
@@ -1796,9 +1796,9 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
         }
     }
 
-    if( execList.empty() && pReq.get())
+    if( execList.empty() )
     {
-        execList.push_back( pReq.release() );
+        execList.push_back(std::move(pReq));
     }
 }
 
@@ -1838,7 +1838,7 @@ void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager
     return;
 }
 
-INT PilServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList)
+INT PilServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, std::vector<std::unique_ptr<CtiRequestMsg>>& execList, list< CtiMessage* > & retList)
 {
     INT status = ClientErrors::None;
     int i;
@@ -1913,7 +1913,7 @@ INT PilServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, list
 }
 
 
-INT PilServer::analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, list< CtiRequestMsg* > & execList, list< CtiMessage* > & retList)
+INT PilServer::analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, std::vector<std::unique_ptr<CtiRequestMsg>>& execList, list< CtiMessage* > & retList)
 {
     CtiDeviceManager::coll_type::reader_lock_guard_t guard(DeviceManager->getLock());  //  I don't think we need this, but I'm leaving it until we prove that out
 
@@ -1921,12 +1921,12 @@ INT PilServer::analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, li
 
     if(ptGroup)
     {
-        CtiRequestMsg *pReq = new CtiRequestMsg;
-        ((CtiDeviceGroupPoint*)ptGroup.get())->generateRequest(pReq, parse);
+        auto pReq = std::make_unique<CtiRequestMsg>();
+        ((CtiDeviceGroupPoint*)ptGroup.get())->generateRequest(pReq.get(), parse);
         pReq->setUser( Req.getUser() );
 
-        execList.push_back( pReq );                                        // Fine then.
-        execList.push_back( (CtiRequestMsg*)Req.replicateMessage() );
+        execList.push_back( std::move(pReq) );                                        // Fine then.
+        execList.emplace_back( (CtiRequestMsg*)Req.replicateMessage() );
     }
 
     return ClientErrors::None;
