@@ -73,31 +73,42 @@ IM_EX_CTIBASE std::string socketAddressToString(const SOCKADDR *addr, int addrle
 IM_EX_CTIBASE std::string getIpAddressFromSocketAddress(const SOCKADDR *addr, int addrlen)
 {
     char host[INET6_ADDRSTRLEN]; // array of byte that can contain the largest IP address (IPV6)
-
-    if (addr->sa_family == AF_INET6)
+    if (addr->sa_family == AF_INET)
     {
-        struct sockaddr_in6 *addr6 = (struct sockaddr_in6*)(addr);
-        if (IN6_IS_ADDR_V4MAPPED(&addr6->sin6_addr))
-        {
-            SOCKADDR_IN addr4{};
-            addr4.sin_family = AF_INET;
-            memcpy(&addr4.sin_addr, ((in_addr*)(addr6->sin6_addr.s6_addr + 12)), sizeof addr4.sin_addr);
-            addr4.sin_port = addr6->sin6_port;
+        SOCKADDR_IN *addr4 = (SOCKADDR_IN *)addr;
 
-            char host6[46]; // array of byte that can contain the largest IP address (IPV6)
-            if (getnameinfo((SOCKADDR *)(&addr4), sizeof(SOCKADDR), host6, sizeof(host), 0, 0, NI_NUMERICHOST) != 0)
-            {
-                return std::string();   // on error, return an empty string
-            }
-            return host6;
-        }
+        CTILOG_DEBUG(dout, "getIpAddressFromSocketAddress("
+            << addr4->sin_addr.S_un.S_un_b.s_b1 << "."
+            << addr4->sin_addr.S_un.S_un_b.s_b2 << "."
+            << addr4->sin_addr.S_un.S_un_b.s_b3 << "."
+            << addr4->sin_addr.S_un.S_un_b.s_b4 << ":"
+            << addr4->sin_port
+        );
+    }
+    else
+    {
+        SOCKADDR_IN6 *addr6 = (SOCKADDR_IN6 *)addr;
+
+        CTILOG_DEBUG(dout, "getIpAddressFromSocketAddress(["
+            << addr6->sin6_addr.u.Word[0] << ":"
+            << addr6->sin6_addr.u.Word[1] << ":"
+            << addr6->sin6_addr.u.Word[2] << ":"
+            << addr6->sin6_addr.u.Word[3] << ":"
+            << addr6->sin6_addr.u.Word[4] << ":"
+            << addr6->sin6_addr.u.Word[5] << ":"
+            << addr6->sin6_addr.u.Word[6] << ":"
+            << addr6->sin6_addr.u.Word[7] << "]:"
+            << addr6->sin6_port
+        );
     }
 
     if (getnameinfo(addr, addrlen, host, sizeof(host), 0, 0, NI_NUMERICHOST) != 0)
     {
-        return std::string();   // on error, return an empty string
+            CTILOG_DEBUG(dout, "getIpAddressFromSocketAddress returned ''")
+            return std::string();   // on error, return an empty string
     }
 
+    CTILOG_DEBUG(dout, "getIpAddressFromSocketAddress returned " << host);
     return host;
 }
 
@@ -346,7 +357,9 @@ std::string SocketAddress::getIpAddress() const
         return std::string(); // if address length is null, return empty string
     }
 
-    return getIpAddressFromSocketAddress(&_addr.sa, _addrlen);
+    std::string addr = getIpAddressFromSocketAddress(&_addr.sa, _addrlen);
+    CTILOG_DEBUG(dout, "getIPAddress returned " << addr);
+    return addr;
 }
 
 // get the 16-bit port number from network byte order
@@ -480,23 +493,17 @@ PADDRINFOA AddrInfo::get() const
 //-----------------------------------------------------------------------------
 IM_EX_CTIBASE AddrInfo makeSocketAddress(const char *nodename, const char* servname, const int socktype, const int protocol, const int flags)
 {
+    CTILOG_DEBUG(dout, "Finding addr for " << (nodename ? nodename : "listener") << " for " << servname << " socktype " << socktype << " protocol " << protocol);
     ADDRINFOA hints = {};
 
     // Set requirements
-    if (protocol == IPPROTO_UDP)
-    {                                                       // UDP socket
-        hints.ai_family = AF_INET;                          // Always IPv4 (for now)
-    }
-    else
-    {
-        if (nodename == 0)
+    if (nodename == 0)
         {                                                   // Listening socket
             hints.ai_family = AF_INET6;                     // accept either IPv4 or IPv6
-        }
-        else
-        {                                                   // connect socket
-            hints.ai_family = AF_UNSPEC;                    // IPv4 or IPv6 depending on connect string
-        }
+    }
+    else
+    {                                                   // connect socket
+        hints.ai_family = AF_UNSPEC;                    // IPv4 or IPv6 depending on connect string
     }
     hints.ai_socktype = socktype;                   // SOCK_STREAM (tcp) or SOCK_DGRAM (udp)
     hints.ai_protocol = protocol;                   // IPPROTO_TCP or IPPROTO_UDP
@@ -627,7 +634,7 @@ void ServerSockets::createSockets(PADDRINFOA p_ai)
             shutdownAndClose(sockets);
             throw SocketException("socket creation has failed", _lastError);
         }
-
+        CTILOG_DEBUG(dout, "Created socket " << s_new << " for family " << p_ai->ai_family << " type " << p_ai->ai_socktype << " protocol " << p_ai->ai_protocol);
         sockets.push_back(s_new);
         p_ai = p_ai->ai_next;
     }
@@ -806,7 +813,7 @@ SOCKET const ServerSockets::getFamilySocket(const int family)
         if (addr._addr.sa.sa_family == family)
         {
             return s;
-    }
+        }
     }
 
     return INVALID_SOCKET;

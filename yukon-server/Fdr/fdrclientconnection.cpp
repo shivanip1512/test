@@ -378,6 +378,17 @@ int CtiFDRClientConnection::initializeConnection( const Cti::SocketAddress& aAdd
         return SOCKET_ERROR;
     }
 
+    DWORD v6only = 0;
+    if (::setsockopt(tmpConnection, IPPROTO_IPV6, IPV6_V6ONLY, (char *)&v6only, sizeof v6only) == SOCKET_ERROR)
+    {
+        int _lastError = WSAGetLastError();
+        CTILOG_ERROR(dout, "Failed to set v6only" << aAddr );
+
+        shutdown(tmpConnection, SD_BOTH);
+        closesocket(tmpConnection);
+        return SOCKET_ERROR;
+    }
+
     const string hostIp = getParent()->getIpMask();
     if( hostIp != "" )
     {
@@ -403,6 +414,7 @@ int CtiFDRClientConnection::initializeConnection( const Cti::SocketAddress& aAdd
         CTILOG_INFO(dout, "Successful bind on the return connection to "<< ai);
     }
 
+    CTILOG_DEBUG(dout, "Connecting to " << aAddr);
     if( connect( tmpConnection, &aAddr._addr.sa, aAddr._addrlen ) == SOCKET_ERROR )
     {
         int lastError = WSAGetLastError();
@@ -411,6 +423,7 @@ int CtiFDRClientConnection::initializeConnection( const Cti::SocketAddress& aAdd
         closesocket(tmpConnection);
         return SOCKET_ERROR;
     }
+    CTILOG_INFO(dout, "Successful connect to " << aAddr << " with socket " << tmpConnection);
 
     setConnection(tmpConnection);
 
@@ -429,7 +442,8 @@ INT CtiFDRClientConnection::writeSocket (CHAR *aBuffer, ULONG length, ULONG &aBy
     try
     {
         // send the data
-        while((bytesSent = send(getConnection(), aBuffer, length, 0)) == SOCKET_ERROR &&
+        SOCKET socket = getConnection();
+        while((bytesSent = send(socket, aBuffer, length, 0)) == SOCKET_ERROR &&
           WSAGetLastError() == WSAEWOULDBLOCK)
         {
             Sleep(0);   // surrender remaining timeslice to other threads
@@ -438,7 +452,7 @@ INT CtiFDRClientConnection::writeSocket (CHAR *aBuffer, ULONG length, ULONG &aBy
         if (bytesSent == SOCKET_ERROR)
         {
             const DWORD error = WSAGetLastError();
-            CTILOG_DEBUG(dout, "Socket send() failed with error code "<< error <<" / "<< Cti::getSystemErrorMessage(error));
+            CTILOG_DEBUG(dout, "Socket " << socket << " send() failed with error code "<< error <<" / "<< Cti::getSystemErrorMessage(error));
 
             retVal =  SOCKET_ERROR;
         }
