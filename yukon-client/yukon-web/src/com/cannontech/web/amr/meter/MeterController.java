@@ -279,6 +279,7 @@ public class MeterController {
         model.addAttribute("showMoveInOut", moveDevice && moveUser);
         model.addAttribute("showProfile", loadProfileDevice || peakReportDevice || voltageProfileDevice);
         model.addAttribute("showVoltageAndTou", voltageAndTouDevice);
+        model.addAttribute("showMapNetwork", rfDevice);
         
         model.addAttribute("hasActions", hasActions);
         

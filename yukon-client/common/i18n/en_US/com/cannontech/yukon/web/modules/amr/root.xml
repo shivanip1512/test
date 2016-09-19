@@ -101,6 +101,7 @@
     <entry key="yukon.web.modules.amr.meterDetail.otherActions.label">Other Actions...</entry>
     <entry key="yukon.web.modules.amr.meterDetail.otherActions">Other Actions...</entry>
     <entry key="yukon.web.modules.amr.meterDetail.actions.title">Actions</entry>
+    <entry key="yukon.web.modules.amr.meterDetail.mapNetwork">Map Network</entry>
     
     <!-- moveIn.jsp -->
     <entry key="yukon.web.modules.amr.moveIn.pageName">Move In</entry>

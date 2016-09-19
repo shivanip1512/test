@@ -19,6 +19,11 @@
     </cti:url>
     <div id="page-actions" class="dn">
         <cm:dropdownOption key=".waterLeakReport.report.pageName" href="${waterLeakReportUrl}" />
+        <!-- Actions: Map Network -->
+        <c:if test="${showMapNetwork}">
+            <cti:url var="mapNetworkUrl" value="/stars/mapNetwork/home?deviceId=${deviceId}"/>
+            <cm:dropdownOption key=".mapNetwork" href="${mapNetworkUrl}"/>
+        </c:if>
         <cm:dropdownOption key=".otherActions.label" href="${collectionActionsUrl}" />
     </div>
 

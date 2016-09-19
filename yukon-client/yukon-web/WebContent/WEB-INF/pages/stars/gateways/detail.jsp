@@ -28,6 +28,8 @@
 <div id="page-buttons" class="dn">
     <cm:dropdown type="button" data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}">
         <cm:dropdownOption icon="icon-table-row-insert" key=".collectData" classes="js-gw-collect-data"/>
+        <cti:url var="mapNetworkUrl" value="/stars/mapNetwork/home?deviceId=${gateway.paoIdentifier.paoId}"/>
+        <cm:dropdownOption icon="icon-map" key=".mapNetwork" href="${mapNetworkUrl}"/>
         <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
             <li class="divider"></li>
             <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>

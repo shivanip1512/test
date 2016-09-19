@@ -59,6 +59,7 @@ public class WaterMeterController {
         mav.addObject("cisInfoWidgetName", cisDetail.getWidgetName());
         
         boolean isRfMesh = device.getDeviceType().getPaoClass() == PaoClass.RFMESH;
+        mav.addObject("showMapNetwork", isRfMesh);
         if (isRfMesh) {
             mav.addObject("isRFMesh", true);
             mav.addObject("showRfMetadata", true);
