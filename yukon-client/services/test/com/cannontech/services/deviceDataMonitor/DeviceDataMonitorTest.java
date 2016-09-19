@@ -7,21 +7,19 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitor;
 import com.cannontech.amr.deviceDataMonitor.model.DeviceDataMonitorProcessor;
 import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorCalculationService;
-import com.cannontech.amr.deviceDataMonitor.service.DeviceDataMonitorService;
 import com.cannontech.amr.deviceDataMonitor.service.impl.DeviceDataMonitorCalculationServiceImpl;
-import com.cannontech.amr.deviceDataMonitor.service.impl.DeviceDataMonitorServiceImpl;
 import com.cannontech.amr.monitors.impl.DeviceDataMonitorProcessorFactoryImpl;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.impl.DeviceGroupProviderDaoMain;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.dao.impl.DeviceGroupEditorDaoImpl;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -52,13 +50,11 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
-@Ignore("Todo fix me")
 public class DeviceDataMonitorTest {
     
     /* resources */
     private DeviceDataMonitorProcessorFactoryImpl deviceDataMonitorProcessorFactory;
     private AttributeService attributeService;
-    private DeviceDataMonitorService deviceDataMonitorService;
     private DeviceDataMonitorCalculationService deviceDataMonitorCalculationService;
     private DeviceGroupService deviceGroupService;
     private DeviceGroupEditorDao deviceGroupEditorDao;
@@ -75,12 +71,6 @@ public class DeviceDataMonitorTest {
                                                                                          3, point3,
                                                                                          4, point4);
     private DeviceDataMonitor monitor1;
-    private DeviceDataMonitor monitor1WithNameChanged;
-    private DeviceDataMonitor monitor1Disabled;
-    private DeviceDataMonitor monitor1WithGroupChanged;
-    private DeviceDataMonitor monitor1WithProcessorsChanged;
-    private DeviceDataMonitor monitor1WithNoProcessors;
-
     private DeviceDataMonitor monitor2;
 
     private final static LiteStateGroup STATE_GROUP_1 = new LiteStateGroup(1);
@@ -153,6 +143,14 @@ public class DeviceDataMonitorTest {
                 String groupName = fullName.substring(lastIndexOfSlash+1);
                 return VIOLATIONS_GROUP_MAP.get(groupName);
             }
+
+            @Override
+            public StoredDeviceGroup getStoredGroup(SystemGroupEnum systemGroupEnum, String groupName, boolean create)
+                    throws NotFoundException {
+                int lastIndexOfSlash = groupName.lastIndexOf("/");
+                String name = groupName.substring(lastIndexOfSlash + 1);
+                return VIOLATIONS_GROUP_MAP.get(name);
+            }
         };
         deviceGroupMemberEditorDao = new DeviceGroupEditorDaoImpl() {
             @Override
@@ -201,14 +199,13 @@ public class DeviceDataMonitorTest {
         };
 
         deviceDataMonitorCalculationService = new DeviceDataMonitorCalculationServiceImpl();
-        deviceDataMonitorService = new DeviceDataMonitorServiceImpl();
         deviceDataMonitorProcessorFactory = new DeviceDataMonitorProcessorFactoryImpl();
         ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "attributeService", attributeService);
-        ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "deviceDataMonitorService", deviceDataMonitorService);
         ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "deviceGroupEditorDao", deviceGroupEditorDao);
         ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "deviceGroupMemberEditorDao", deviceGroupMemberEditorDao);
         ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "deviceGroupService", deviceGroupService);
         ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "pointDao", pointDao);
+        ReflectionTestUtils.setField(deviceDataMonitorProcessorFactory, "deviceDataMonitorCalculationService", deviceDataMonitorCalculationService);
         
         deviceGroupPaos = Maps.newHashMap();
         deviceGroupPaos.put(MONITORING_GROUP_1, Sets.newHashSet(PAO_IDENTIFIER_1));
@@ -223,14 +220,8 @@ public class DeviceDataMonitorTest {
         List<DeviceDataMonitorProcessor> processors2 = Lists.newArrayList(processors1);
         processors2.add(getProcessor(BuiltInAttribute.CONFIGURATION_ERROR, STATE_GROUP_3, STATE_3));
         
-        monitor1                      = new DeviceDataMonitor(null, VIOLATIONS_GROUP_1.testName, MONITORING_GROUP_1.testName, true, processors1);
-        monitor1Disabled              = new DeviceDataMonitor(null, VIOLATIONS_GROUP_1.testName, MONITORING_GROUP_1.testName, false, processors1);
-        monitor1WithNameChanged       = new DeviceDataMonitor(null, VIOLATIONS_GROUP_2.testName, MONITORING_GROUP_1.testName, true, processors1);
-        monitor1WithGroupChanged      = new DeviceDataMonitor(null, VIOLATIONS_GROUP_1.testName, MONITORING_GROUP_2.testName, true, processors1);
-        monitor1WithProcessorsChanged = new DeviceDataMonitor(null, VIOLATIONS_GROUP_1.testName, MONITORING_GROUP_1.testName, true, processors2);
-        monitor1WithNoProcessors      = new DeviceDataMonitor(null, VIOLATIONS_GROUP_1.testName, MONITORING_GROUP_1.testName, true, null);
-
-        monitor2                      = new DeviceDataMonitor(null, VIOLATIONS_GROUP_2.testName, MONITORING_GROUP_2.testName, true, processors2);
+        monitor1 = new DeviceDataMonitor(null, VIOLATIONS_GROUP_1.testName, MONITORING_GROUP_1.testName, true, processors1);
+        monitor2 = new DeviceDataMonitor(null, VIOLATIONS_GROUP_2.testName, MONITORING_GROUP_2.testName, true, processors2);
     }
 
     @Test

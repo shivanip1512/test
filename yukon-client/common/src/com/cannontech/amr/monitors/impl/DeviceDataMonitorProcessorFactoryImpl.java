@@ -2,6 +2,7 @@ package com.cannontech.amr.monitors.impl;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,8 @@ import com.cannontech.core.dynamic.RichPointData;
 import com.cannontech.core.dynamic.RichPointDataListener;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFactoryBase<DeviceDataMonitor> implements DeviceDataMonitorProcessorFactory {
 
@@ -42,6 +45,9 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+
+    private final Cache<CacheKey<Integer, DeviceGroup>, DeviceGroup> deviceGroupCache =
+        CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
 
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorProcessorFactoryImpl.class);
 
@@ -81,13 +87,23 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
         
         PaoIdentifier paoIdentifier = richPointData.getPaoPointIdentifier().getPaoIdentifier();
         SimpleDevice simpleDevice = new SimpleDevice(paoIdentifier);
-        boolean deviceInGroup = deviceGroupService.isDeviceInGroup(groupToMonitor, simpleDevice);
-        if (!deviceInGroup) {
-            // if this device isn't in the group we're monitoring
-            LogHelper.debug(log, "device [%s] not in monitoring group [%s]", simpleDevice, groupToMonitor);
-            return;
-        }
         
+        /* Creating key using paoId and DeviceGroup as combination of both must be unique */
+        CacheKey<Integer, DeviceGroup> cacheKey =
+            new CacheKey<Integer, DeviceGroup>(simpleDevice.getDeviceId(), groupToMonitor);
+
+        if (deviceGroupCache.getIfPresent(cacheKey) == null) {
+            boolean deviceInGroup = deviceGroupService.isDeviceInGroup(groupToMonitor, simpleDevice);
+
+            if (deviceInGroup) {
+                deviceGroupCache.put(cacheKey, groupToMonitor);
+            } else {
+                // if this device isn't in the group we're monitoring
+                LogHelper.debug(log, "device [%s] not in monitoring group [%s]", simpleDevice, groupToMonitor);
+                return;
+            }
+        }
+
         PointValueHolder pointValueHolder = richPointData.getPointValue();
         LitePoint litePoint = pointDao.getLitePoint(pointValueHolder.getId());
         
@@ -173,5 +189,47 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
         }
         
         return true;
+    }
+
+    private static class CacheKey<T1, T2> {
+        private T1 paoId;
+        private T2 deviceGroup;
+
+        public CacheKey(T1 paoId, T2 deviceGroup) {
+            this.paoId = paoId;
+            this.deviceGroup = deviceGroup;
+        }
+
+        @Override
+        public int hashCode() {
+            final int prime = 31;
+            int result = 1;
+            result = prime * result + ((deviceGroup == null) ? 0 : deviceGroup.hashCode());
+            result = prime * result + ((paoId == null) ? 0 : paoId.hashCode());
+            return result;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj)
+                return true;
+            if (obj == null)
+                return false;
+            if (getClass() != obj.getClass())
+                return false;
+            CacheKey<?, ?> other = (CacheKey<?, ?>) obj;
+            if (deviceGroup == null) {
+                if (other.deviceGroup != null)
+                    return false;
+            } else if (!deviceGroup.equals(other.deviceGroup))
+                return false;
+            if (paoId == null) {
+                if (other.paoId != null)
+                    return false;
+            } else if (!paoId.equals(other.paoId))
+                return false;
+            return true;
+        }
+
     }
 }
