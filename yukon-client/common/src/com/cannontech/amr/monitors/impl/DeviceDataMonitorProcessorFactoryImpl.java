@@ -46,8 +46,8 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 
-    private final Cache<CacheKey<Integer, DeviceGroup>, DeviceGroup> deviceGroupCache =
-        CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
+    private final Cache<CacheKey, DeviceGroup> deviceGroupCache = CacheBuilder.newBuilder().expireAfterWrite(30,
+        TimeUnit.SECONDS).build();
 
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorProcessorFactoryImpl.class);
 
@@ -89,8 +89,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
         SimpleDevice simpleDevice = new SimpleDevice(paoIdentifier);
         
         /* Creating key using paoId and DeviceGroup as combination of both must be unique */
-        CacheKey<Integer, DeviceGroup> cacheKey =
-            new CacheKey<Integer, DeviceGroup>(simpleDevice.getDeviceId(), groupToMonitor);
+        CacheKey cacheKey = new CacheKey(simpleDevice.getDeviceId(), groupToMonitor);
 
         if (deviceGroupCache.getIfPresent(cacheKey) == null) {
             boolean deviceInGroup = deviceGroupService.isDeviceInGroup(groupToMonitor, simpleDevice);
@@ -191,11 +190,11 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
         return true;
     }
 
-    private static class CacheKey<T1, T2> {
-        private T1 paoId;
-        private T2 deviceGroup;
+    private static class CacheKey {
+        private Integer paoId;
+        private DeviceGroup deviceGroup;
 
-        public CacheKey(T1 paoId, T2 deviceGroup) {
+        public CacheKey(Integer paoId, DeviceGroup deviceGroup) {
             this.paoId = paoId;
             this.deviceGroup = deviceGroup;
         }
@@ -217,7 +216,7 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
                 return false;
             if (getClass() != obj.getClass())
                 return false;
-            CacheKey<?, ?> other = (CacheKey<?, ?>) obj;
+            CacheKey other = (CacheKey) obj;
             if (deviceGroup == null) {
                 if (other.deviceGroup != null)
                     return false;
