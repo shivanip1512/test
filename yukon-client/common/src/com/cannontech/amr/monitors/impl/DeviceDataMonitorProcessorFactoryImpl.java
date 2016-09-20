@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,8 +47,8 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
 
-    private final Cache<CacheKey, DeviceGroup> deviceGroupCache = CacheBuilder.newBuilder().expireAfterWrite(30,
-        TimeUnit.SECONDS).build();
+    private final Cache<ImmutablePair<Integer, DeviceGroup>, Boolean> deviceInGroupCache =
+        CacheBuilder.newBuilder().expireAfterWrite(30, TimeUnit.SECONDS).build();
 
     private static final Logger log = YukonLogManager.getLogger(DeviceDataMonitorProcessorFactoryImpl.class);
 
@@ -87,20 +88,19 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
         
         PaoIdentifier paoIdentifier = richPointData.getPaoPointIdentifier().getPaoIdentifier();
         SimpleDevice simpleDevice = new SimpleDevice(paoIdentifier);
-        
+
         /* Creating key using paoId and DeviceGroup as combination of both must be unique */
-        CacheKey cacheKey = new CacheKey(simpleDevice.getDeviceId(), groupToMonitor);
+        ImmutablePair<Integer, DeviceGroup> cacheKey = new ImmutablePair<>(simpleDevice.getDeviceId(), groupToMonitor);
 
-        if (deviceGroupCache.getIfPresent(cacheKey) == null) {
+        if (deviceInGroupCache.getIfPresent(cacheKey) == null) {
             boolean deviceInGroup = deviceGroupService.isDeviceInGroup(groupToMonitor, simpleDevice);
+            deviceInGroupCache.put(cacheKey, deviceInGroup);
+        }
 
-            if (deviceInGroup) {
-                deviceGroupCache.put(cacheKey, groupToMonitor);
-            } else {
-                // if this device isn't in the group we're monitoring
-                LogHelper.debug(log, "device [%s] not in monitoring group [%s]", simpleDevice, groupToMonitor);
-                return;
-            }
+        if (!deviceInGroupCache.getIfPresent(cacheKey)) {
+            // if this device isn't in the group we're monitoring
+            LogHelper.debug(log, "device [%s] not in monitoring group [%s]", simpleDevice, groupToMonitor);
+            return;
         }
 
         PointValueHolder pointValueHolder = richPointData.getPointValue();
@@ -190,45 +190,5 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
         return true;
     }
 
-    private static class CacheKey {
-        private Integer paoId;
-        private DeviceGroup deviceGroup;
-
-        public CacheKey(Integer paoId, DeviceGroup deviceGroup) {
-            this.paoId = paoId;
-            this.deviceGroup = deviceGroup;
-        }
-
-        @Override
-        public int hashCode() {
-            final int prime = 31;
-            int result = 1;
-            result = prime * result + ((deviceGroup == null) ? 0 : deviceGroup.hashCode());
-            result = prime * result + ((paoId == null) ? 0 : paoId.hashCode());
-            return result;
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj)
-                return true;
-            if (obj == null)
-                return false;
-            if (getClass() != obj.getClass())
-                return false;
-            CacheKey other = (CacheKey) obj;
-            if (deviceGroup == null) {
-                if (other.deviceGroup != null)
-                    return false;
-            } else if (!deviceGroup.equals(other.deviceGroup))
-                return false;
-            if (paoId == null) {
-                if (other.paoId != null)
-                    return false;
-            } else if (!paoId.equals(other.paoId))
-                return false;
-            return true;
-        }
-
-    }
+    
 }
