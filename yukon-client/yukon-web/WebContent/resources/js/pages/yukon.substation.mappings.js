@@ -99,9 +99,9 @@ yukon.substation.mappings = (function () {
                 
                 $(document).on('click','.js-edit-mapping', function() {
                     var rowId = $(this).attr('data-mapping-id');
-                        $('.js-strategy-popup.js-edit-mapping-popup').val($('#strategy'+rowId).html());
-                        $('.js-substation-popup.js-edit-mapping-popup').val($('#substation'+rowId).html());
-                        $('span.mapped-pao-name-popup').text($('#tpao-name'+rowId).html());
+                        $('.js-strategy-popup.js-edit-mapping-popup').val($('#strategy'+rowId).text());
+                        $('.js-substation-popup.js-edit-mapping-popup').val($('#substation'+rowId).text());
+                        $('span.mapped-pao-name-popup').text($('#tpao-name'+rowId).text());
                         _getMappedId(function (data) {
                             if(data.found){
                                 $('#mappedNameId-popup').val(data.mappedNameId);
