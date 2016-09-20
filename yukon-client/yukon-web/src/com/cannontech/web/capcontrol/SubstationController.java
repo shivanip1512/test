@@ -238,7 +238,7 @@ public class SubstationController {
         }
         
         // Success
-        flash.setConfirm(new YukonMessageSourceResolvable(subKey + ".updated"));
+        flash.setConfirm(new YukonMessageSourceResolvable(subKey + ".saved"));
         return "redirect:/capcontrol/substations/" + id;
     }
     

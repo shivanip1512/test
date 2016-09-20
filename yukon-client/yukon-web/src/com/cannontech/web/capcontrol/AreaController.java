@@ -265,7 +265,7 @@ public class AreaController {
         }
         
         // Success
-        flash.setConfirm(new YukonMessageSourceResolvable(areaKey + "info.updated"));
+        flash.setConfirm(new YukonMessageSourceResolvable(areaKey + "info.saved"));
         return "redirect:/capcontrol/areas/" + id;
     }
     

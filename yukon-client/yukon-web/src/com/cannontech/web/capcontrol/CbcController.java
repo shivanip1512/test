@@ -124,7 +124,7 @@ public class CbcController {
         cbcService.save(cbc);
 
         // Success
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".info.updated"));
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".info.saved"));
         return "redirect:/capcontrol/cbc/" + cbc.getId();
     }
 

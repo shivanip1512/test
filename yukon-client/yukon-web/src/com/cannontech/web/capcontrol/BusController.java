@@ -217,7 +217,7 @@ public class BusController {
         }
 
         // Success
-        flash.setConfirm(new YukonMessageSourceResolvable(busKey + ".updated"));
+        flash.setConfirm(new YukonMessageSourceResolvable(busKey + ".saved"));
         return "redirect:/capcontrol/buses/" + id;
     }
 

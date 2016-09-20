@@ -168,7 +168,7 @@
     <entry key="yukon.web.modules.capcontrol.capbank.switchType">Type of Switch</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.additionalInfoTab">Additional Info</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.setupTab">Setup</entry> 
-    <entry key="yukon.web.modules.capcontrol.capbank.updated">CapBank was updated successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.capbank.saved">CapBank was saved successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.delete.success">CapBank {0} deleted successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.maintenanceSection.title">Maintenance</entry>
     <entry key="yukon.web.modules.capcontrol.capbank.communicationSection.title">Communication</entry>
@@ -439,7 +439,7 @@
     <entry key="yukon.web.modules.capcontrol.area.substationsContainer.title">Substations</entry>
     <entry key="yukon.web.modules.capcontrol.area.edit.stations">Add/Remove Substations</entry>
     <entry key="yukon.web.modules.capcontrol.area.edit.stations.label">Add/Remove Substations</entry>
-    <entry key="yukon.web.modules.capcontrol.area.info.updated">Area info updated successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.area.info.saved">Area info saved successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.area.deleted.success">Area {0} Deleted successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.area.subs.updated">Substations updated successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.area.strat.updated">Strategy assignment updated successfully.</entry>   
@@ -559,7 +559,7 @@
     <entry key="yukon.web.modules.capcontrol.substation.edit.buses.label">Add/Remove Buses</entry>
     <entry key="yukon.web.modules.capcontrol.substation.buses.updated">Buses successfully updated. Please allow a few seconds for changes to be reflected.</entry>
     <entry key="yukon.web.modules.capcontrol.substation.delete.success">Substation {0} deleted successfully.</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.updated">Substation was updated successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.saved">Substation was saved successfully.</entry>
         
     <entry key="yukon.web.modules.capcontrol.bus.CREATE.pageHeading">Create Bus</entry>
     <entry key="yukon.web.modules.capcontrol.bus.CREATE.crumbTitle">Create Bus</entry>
@@ -603,7 +603,7 @@
     <entry key="yukon.web.modules.capcontrol.bus.edit.feeders">Add/Remove Feeders</entry>
     <entry key="yukon.web.modules.capcontrol.bus.edit.feeders.label">Add/Remove Feeders</entry>
     <entry key="yukon.web.modules.capcontrol.bus.schedules.updated">Schedules successfully updated.</entry>
-    <entry key="yukon.web.modules.capcontrol.bus.updated">Bus was updated successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.bus.saved">Bus was saved successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.bus.delete.success">Bus {0} deleted successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.bus.noAssignedFeeders">No Assigned Feeders</entry>
     
@@ -611,7 +611,7 @@
     <entry key="yukon.web.modules.capcontrol.edit.capbanks.label">Add/Remove CapBanks</entry>
     <entry key="yukon.web.modules.capcontrol.feeder.capbanks.updated">CapBanks successfully updated. Please allow a few seconds for changes to be reflected.</entry>
     <entry key="yukon.web.modules.capcontrol.feeder.delete.success">Feeder {0} deleted successfully.</entry>
-    <entry key="yukon.web.modules.capcontrol.feeder.updated">Feeder was updated successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.feeder.saved">Feeder was saved successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.feeder.noAssignedCapBanks">No Assigned CapBanks</entry>
     
     <!-- cbcChart.jsp -->
@@ -682,7 +682,7 @@
     <entry key="yukon.web.modules.capcontrol.strategies.offPeakSetting">Off Peak Setting</entry>
     <entry key="yukon.web.modules.capcontrol.strategies.confirmDelete">Are you sure you want to delete {0}?</entry>
     <entry key="yukon.web.modules.capcontrol.strategies.deleteSuccess">Strategy {0} was deleted successfully.</entry>
-    <entry key="yukon.web.modules.capcontrol.strategies.updateSuccess">Strategy was updated successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.strategies.saved">Strategy was saved successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.strategies.updateFailed">There was an error saving the strategy.</entry>
     <entry key="yukon.web.modules.capcontrol.strategies.deleteFailed">
     Strategy {0} was not deleted. Strategy still in use by
@@ -1135,7 +1135,7 @@
     <entry key="yukon.web.modules.capcontrol.cbc.unsolicit2">Unsolicited Class 2</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.unsolicit3">Unsolicited Class 3</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.save.fail">Unable to Save CBC: {0}</entry>
-    <entry key="yukon.web.modules.capcontrol.cbc.info.updated">CBC info was successfully updated.</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.info.saved">CBC info was successfully saved.</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.copy.success">Copy of CBC was successfully created.</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.copy.fail">Name not available</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.delete.success">Deleted CBC</entry>

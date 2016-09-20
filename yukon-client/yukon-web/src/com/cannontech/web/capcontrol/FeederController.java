@@ -206,7 +206,7 @@ public class FeederController {
         }
         
         // Success
-        flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".updated"));
+        flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".saved"));
         return "redirect:/capcontrol/feeders/" + id;
     }
 
@@ -297,7 +297,7 @@ public class FeederController {
             @RequestParam(value="tripOrder[]", required=false, defaultValue="") Integer[] tripOrder,
             @RequestParam(value="closeOrder[]", required=false, defaultValue="") Integer[] closeOrder) {
         feederService.assignCapBanks(feederId, Arrays.asList(capBankIds), Arrays.asList(closeOrder), Arrays.asList(tripOrder));
-        flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".capbanks.updated"));
+        flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".capbanks.saved"));
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
 }

@@ -153,7 +153,7 @@ public class StrategyController {
             return bindAndForward(strategy, result, redirectAttributes);
         }
         
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".updateSuccess"));
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".saved"));
         
         return "redirect:strategies/" + id;
     }

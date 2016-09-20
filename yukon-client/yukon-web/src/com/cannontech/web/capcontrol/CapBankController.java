@@ -127,7 +127,7 @@ public class CapBankController {
         }
 
         // Success
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".updated"));
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".saved"));
         return "redirect:/capcontrol/capbanks/" + capbank.getId();
     }
 
