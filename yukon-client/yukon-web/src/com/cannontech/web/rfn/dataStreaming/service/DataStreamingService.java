@@ -122,7 +122,7 @@ public interface DataStreamingService {
      * 3. Assigns device to behavior that was found/created
      * 
      */
-    DataStreamingConfigResult accept(List<Integer> deviceIds);
+    DataStreamingConfigResult accept(List<Integer> deviceIds, LiteYukonUser user);
 
     /**
      * Gets any overloaded gateways
@@ -133,5 +133,5 @@ public interface DataStreamingService {
      */
     List<RfnGateway> getOverloadedGateways() throws DataStreamingConfigException;
 
-    DataStreamingConfigResult deleteDataStreamingReportAndUnassignConfig(int deviceId);
+    DataStreamingConfigResult deleteDataStreamingReportAndUnassignConfig(int deviceId, LiteYukonUser user);
 }

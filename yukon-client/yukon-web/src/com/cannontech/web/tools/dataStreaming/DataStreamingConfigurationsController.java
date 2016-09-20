@@ -379,8 +379,9 @@ public class DataStreamingConfigurationsController {
     @RequestMapping("discrepancies/{deviceId}/accept")
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String acceptDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
+        LiteYukonUser user = userContext.getYukonUser();
 
-        dataStreamingService.accept(Arrays.asList(deviceId));
+        dataStreamingService.accept(Arrays.asList(deviceId), user);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptSuccess"));
         return "redirect:/tools/dataStreaming/discrepancies";
     }
@@ -389,8 +390,9 @@ public class DataStreamingConfigurationsController {
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String removeDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext,
             FlashScope flash) {
-
-        DataStreamingConfigResult result = dataStreamingService.deleteDataStreamingReportAndUnassignConfig(deviceId);
+        LiteYukonUser user = userContext.getYukonUser();
+        
+        DataStreamingConfigResult result = dataStreamingService.deleteDataStreamingReportAndUnassignConfig(deviceId, user);
         model.addAttribute("resultsId", result.getResultsId());
         return "redirect:/bulk/dataStreaming/dataStreamingResults";
 
@@ -423,7 +425,9 @@ public class DataStreamingConfigurationsController {
             deviceList.add(Integer.parseInt(deviceId));
         }
         
-        dataStreamingService.accept(deviceList);
+        LiteYukonUser user = userContext.getYukonUser();
+        
+        dataStreamingService.accept(deviceList, user);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptAllSuccess"));
         return "redirect:/tools/dataStreaming/discrepancies";
       

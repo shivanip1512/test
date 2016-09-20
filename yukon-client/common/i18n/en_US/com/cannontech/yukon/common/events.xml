@@ -270,6 +270,20 @@
     <entry key="yukon.common.events.system.rfn.gateway.sentFirmwareUpdate">Firmware update sent to {7} gateways by {1}.</entry>
     <entry key="yukon.common.events.system.rfn.gateway.sentFirmwareUpdate.7">Gateways Affected</entry>
     
+    <!-- Data Streaming -->
+    <entry key="yukon.common.events.system.rfn.dataStreaming.unassignAttempted">Unassign attempted by {1} on {7} devices. Key:{2}</entry>
+    <entry key="yukon.common.events.system.rfn.dataStreaming.assignAttempted">Assign attempted by {1} on {7} devices. Key:{2}</entry>
+    <entry key="yukon.common.events.system.rfn.dataStreaming.resendAttempted">Re-send attempted by {1} on {7} devices. Key:{2}</entry>
+    <entry key="yukon.common.events.system.rfn.dataStreaming.completedResults">Action completed: {7} devices selected (Success:{8} Failure:{9} Not Attempted:{10}). Key:{1}</entry>
+    <entry key="yukon.common.events.system.rfn.dataStreaming.cancelAttempted">Cancel attempted by {1}. Key:{2}</entry>
+    <entry key="yukon.common.events.system.rfn.dataStreaming.cancelCompleted">Cancel completed: {7} devices selected (Success:{8} Failure:{9} Not Attempted:{10} Canceled:{2}). Key:{1}</entry>
+    <entry key="yukon.common.events.system.rfn.dataStreaming.acceptAttempted">Accept attempted by {1} on {7} devices. Key:{2}</entry>
+    <entry key="yukon.common.events.system.rfn.dataStreaming.acceptCompleted">Accept completed: {7} devices selected (Assigned:{8} Unassigned:{9}). Key:{1}</entry>
+    <entry key="yukon.common.events.system.rfn.dataStreaming.acceptResult.8">Assigned</entry>
+    <entry key="yukon.common.events.system.rfn.dataStreaming.acceptResult.9">Unassigned</entry>
+    <entry key="yukon.common.events.system.rfn.dataStreaming.removeAttempted">Remove (deleting data streaming report and unassigning configuration) attempted by {1} on {7} devices. Key:{2}</entry>
+    <entry key="yukon.common.events.system.rfn.dataStreaming.removeCompleted">Remove (deleting data streaming report and unassigning configuration) completed: {7} devices selected (Success:{7}). Key:{1}</entry>
+    
 	<!-- CommandSchedule -->
     <entry key="yukon.common.events.system.commandSchedule.scheduleCreated">ScheduleId {7} created by {1}.</entry>
     <entry key="yukon.common.events.system.commandSchedule.scheduleUpdated">ScheduleId {7} updated by {1}.</entry>
