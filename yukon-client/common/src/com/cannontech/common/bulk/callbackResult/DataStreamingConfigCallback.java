@@ -15,9 +15,9 @@ public interface DataStreamingConfigCallback {
     void receivedConfigReport(SimpleDevice device, ReportedDataStreamingConfig config);
     
     /**
-     * Handle a failure response, with the reported error.
+     * Handle a failure response, with the reported error, and store the reported config if not null.
      */
-    void receivedConfigError(SimpleDevice device, SpecificDeviceErrorDescription error);
+    void receivedConfigError(SimpleDevice device, SpecificDeviceErrorDescription error, ReportedDataStreamingConfig config);
     
     /**
      * Called when the operation is complete.

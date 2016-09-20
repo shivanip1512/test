@@ -1151,11 +1151,11 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return behavior;
     }
 
-    private BehaviorReport buildConfirmedReport(ReportedDataStreamingConfig config, int deviceId) {
+    private BehaviorReport buildBehaviorReport(ReportedDataStreamingConfig config, int deviceId, BehaviorReportStatus status) {
         BehaviorReport report = new BehaviorReport();
         report.setType(TYPE);
         report.setDeviceId(deviceId);
-        report.setStatus(BehaviorReportStatus.CONFIRMED);
+        report.setStatus(status);
         report.setTimestamp(new Instant());
         List<ReportedDataStreamingAttribute> attributes = config.getConfiguredMetrics();
         report.addValue(CHANNELS_STRING, attributes.size());
@@ -1360,7 +1360,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         @Override
         public void receivedConfigReport(SimpleDevice device, ReportedDataStreamingConfig config) {
             
-            BehaviorReport reportedBehavior = buildConfirmedReport(config, device.getDeviceId());
+            BehaviorReport reportedBehavior = buildBehaviorReport(config, device.getDeviceId(), BehaviorReportStatus.CONFIRMED);
             Behavior expectedBehavior = deviceIdToBehavior.get(device.getDeviceId());
             
             // behavior
@@ -1379,6 +1379,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 deviceGroupMemberEditorDao.addDevices(successGroup, device);
             }
             
+            handleReportedDataStreamingConfig(device, config, reportedBehavior);
+        }
+
+        private void handleReportedDataStreamingConfig(SimpleDevice device, ReportedDataStreamingConfig config, BehaviorReport reportedBehavior) {
             // Update DB
             deviceBehaviorDao.saveBehaviorReport(reportedBehavior);
 
@@ -1393,11 +1397,18 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         }
 
         @Override
-        public void receivedConfigError(SimpleDevice device, SpecificDeviceErrorDescription error) {
-            log.debug("Recieved a config error for device=" + device + " error=" + error.getDescription());
+        public void receivedConfigError(SimpleDevice device, SpecificDeviceErrorDescription error, ReportedDataStreamingConfig config) {
+            log.debug("Recieved a config error for device=" + device + " error=" + error.getDescription() + " config=" + config);
             deviceGroupMemberEditorDao.addDevices(failedGroup, device);
-            deviceBehaviorDao.updateBehaviorReportStatus(TYPE, BehaviorReportStatus.FAILED,
-                Arrays.asList(device.getDeviceId()));
+            
+            if (config != null) {
+                BehaviorReport report = buildBehaviorReport(config, device.getDeviceId(), BehaviorReportStatus.FAILED);
+
+                handleReportedDataStreamingConfig(device, config, report);
+            } else {
+                deviceBehaviorDao.updateBehaviorReportStatus(TYPE, BehaviorReportStatus.FAILED,
+                    Arrays.asList(device.getDeviceId()));
+            }
         }
 
         @Override

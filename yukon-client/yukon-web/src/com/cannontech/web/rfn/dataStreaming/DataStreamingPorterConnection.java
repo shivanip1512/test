@@ -86,7 +86,16 @@ public class DataStreamingPorterConnection {
             @Override
             public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
                 log.info("Recieved error for device="+ command.getDevice()+" error="+error);
-                configCallback.receivedConfigError(command.getDevice(), error);
+                ReportedDataStreamingConfig config = null;
+                //  If the error is a JSON string, it's a config report
+                if (error.getPorter().startsWith("{\n")) {
+                    try {
+                        config = JsonUtils.fromJson(error.getPorter(), ReportedDataStreamingConfig.class);
+                    } catch(IOException e) {
+                        log.debug("Error text appeared to be JSON, but could not be decoded: " + error);
+                    }
+                }
+                configCallback.receivedConfigError(command.getDevice(), error, config);
             }
             
             @Override
@@ -105,7 +114,7 @@ public class DataStreamingPorterConnection {
                         "yukon.common.device.errorDetail", error);
                     SpecificDeviceErrorDescription deviceError =
                         new SpecificDeviceErrorDescription(errorDescription, error, detail);
-                    configCallback.receivedConfigError(device, deviceError);
+                    configCallback.receivedConfigError(device, deviceError, null);
                 }
             }
 

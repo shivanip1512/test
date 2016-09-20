@@ -10,6 +10,7 @@ public class ReportedDataStreamingAttribute {
     private String attribute;
     private int interval;
     private boolean enabled;
+    private DataStreamingMetricStatus status;
     
     public String getAttribute() {
         return attribute;
@@ -34,9 +35,17 @@ public class ReportedDataStreamingAttribute {
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
+    
+    public DataStreamingMetricStatus getStatus() {
+        return status;
+    }
+    
+    public void setStatus(DataStreamingMetricStatus status) {
+        this.status = status;
+    }
 
     @Override
     public String toString() {
-        return "DataStreamingMetric [attribute=" + attribute + ", interval=" + interval + ", enabled=" + enabled + "]";
+        return "DataStreamingMetric [attribute=" + attribute + ", interval=" + interval + ", enabled=" + enabled + ", status=" + status + "]";
     }
 }
