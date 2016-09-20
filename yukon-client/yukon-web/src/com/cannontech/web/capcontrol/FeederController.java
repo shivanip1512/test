@@ -297,7 +297,7 @@ public class FeederController {
             @RequestParam(value="tripOrder[]", required=false, defaultValue="") Integer[] tripOrder,
             @RequestParam(value="closeOrder[]", required=false, defaultValue="") Integer[] closeOrder) {
         feederService.assignCapBanks(feederId, Arrays.asList(capBankIds), Arrays.asList(closeOrder), Arrays.asList(tripOrder));
-        flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".capbanks.saved"));
+        flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".capbanks.updated"));
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
 }
