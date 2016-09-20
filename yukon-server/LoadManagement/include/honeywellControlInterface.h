@@ -10,8 +10,7 @@ namespace Cti {
         {
             virtual bool sendCycleControl(long dutyCycle,
                                           long controlDurationSeconds,
-                                          bool rampInOption,
-                                          bool rampOutOption) = 0;
+                                          bool rampInOutOption) = 0;
         };
 
         typedef boost::shared_ptr<HoneywellControlInterface> HoneywellControlInterfacePtr;

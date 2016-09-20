@@ -29,25 +29,22 @@ CtiLMGroupBase* LMGroupHoneywell::replicate() const
 
 bool LMGroupHoneywell::sendCycleControl(long dutyCycle,
                                         long controlDurationSeconds,
-                                        bool rampInOption,
-                                        bool rampOutOption)
+                                        bool rampInOutOption)
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
     CtiTime now;
-    CtiTime utcNow(now - now.secondOffsetToGMT());
 
     //ActiveMQConnectionManager::enqueueMessage(
     //    OutboundQueue::HoneywellCyclingControl,
     //    std::make_unique<LMHoneywellCyclingControlMessage>(
     //        getPAOId(),
     //        dutyCycle,
-    //        static_cast<int>(utcNow.seconds()),
+    //        static_cast<int>(now.seconds()),
     //        controlDurationSeconds,
-    //        rampInOption,
-    //        rampOutOption));
+    //        rampInOutOption));
 
     if (_LM_DEBUG & LM_DEBUG_STANDARD)
     {
@@ -78,13 +75,12 @@ bool LMGroupHoneywell::sendStopControl(bool stopImmediately /* unused */)
     using Cti::Messaging::ActiveMQ::Queues::OutboundQueue;
 
     CtiTime now;
-    CtiTime utcNow(now - now.secondOffsetToGMT());
 
     //ActiveMQConnectionManager::enqueueMessage(
     //    OutboundQueue::HoneywellRestore,
     //    std::make_unique<LMHoneywellRestoreMessage>(
     //        getPAOId(),
-    //        static_cast<int>(utcNow.seconds())));
+    //        static_cast<int>(now.seconds())));
 
     if (_LM_DEBUG & LM_DEBUG_STANDARD)
     {
@@ -106,14 +102,13 @@ bool LMGroupHoneywell::sendShedControl(long controlMinutes)
     // shed == cycle at 100% duty cycle with no ramp in/out
 
     CtiTime now;
-    CtiTime utcNow(now - now.secondOffsetToGMT());
 
     //ActiveMQConnectionManager::enqueueMessage(
     //    OutboundQueue::HoneywellCyclingControl,
     //    std::make_unique<LMHoneywellCyclingControlMessage>(
     //        getPAOId(),
     //        100,
-    //        static_cast<int>(utcNow.seconds()),
+    //        static_cast<int>(now.seconds()),
     //        controlMinutes * 60,
     //        false,
     //        false));

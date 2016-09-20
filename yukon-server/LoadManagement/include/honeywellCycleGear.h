@@ -11,14 +11,14 @@ public:
 
     HoneywellCycleGear(Cti::RowReader & rdr);
 
-    virtual CtiLMProgramDirectGear * replicate() const;
+    CtiLMProgramDirectGear * replicate() const override;
 
     // from SmartGearBase
-    virtual bool attemptControl(CtiLMGroupPtr  currentLMGroup,
-                                long           controlSeconds,
-                                DOUBLE       & expectedLoadReduced);
+    bool attemptControl(CtiLMGroupPtr  currentLMGroup,
+                        long           controlSeconds,
+                        DOUBLE       & expectedLoadReduced) override;
 
-    virtual bool stopControl(CtiLMGroupPtr currentLMGroup);
+    bool stopControl(CtiLMGroupPtr currentLMGroup) override;
 
-    virtual unsigned long estimateOffTime(long controlSeconds);
+    unsigned long estimateOffTime(long controlSeconds) override;
 };

@@ -452,6 +452,7 @@ INT resolveLoadManagementType(const string& _typeStr)
         { "lm direct program",  TYPE_LMPROGRAM_DIRECT },
         { "lm sep program",     TYPE_LMPROGRAM_DIRECT },
         { "ecobee program",     TYPE_LMPROGRAM_DIRECT },
+        { "honeywell program",  TYPE_LMPROGRAM_DIRECT },
         { "lm curtail program", TYPE_LMPROGRAM_CURTAILMENT },
         { "lm control area",    TYPE_LM_CONTROL_AREA },
         { "ci customer",        TYPE_CI_CUSTOMER },

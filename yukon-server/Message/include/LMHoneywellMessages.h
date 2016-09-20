@@ -6,54 +6,45 @@
 
 namespace Cti {
     namespace Messaging {
-        namespace LoadManagement {
+    namespace LoadManagement {
 
-            class IM_EX_MSG LMHoneywellCyclingControlMessage : public StreamableMessage
-            {
-            public:
+        class IM_EX_MSG LMHoneywellCyclingControlMessage : public StreamableMessage
+        {
+        public:
 
-                LMHoneywellCyclingControlMessage(int  groupId,
-                                                 int  dutyCycle,
-                                                 int  startTime,
-                                                 int  controlDuration,
-                                                 bool rampIn,
-                                                 bool rampOut);
+            LMHoneywellCyclingControlMessage(int  groupId,
+                                             int  dutyCycle,
+                                             int  startTime,
+                                             int  controlDuration,
+                                             bool rampInOut);
 
-                void streamInto(cms::StreamMessage & message) const;
+            void streamInto(cms::StreamMessage & message) const;
 
-            private:
+        private:
 
-                enum RampOptionFlags
-                {
-                    RampOut = (1 << 0),
-                    RampIn = (1 << 1)
-                };
+            int  _groupId;
+            char _rampingOption;
+            char _dutyCycle;
+            int  _startTime;
+            int  _stopTime;
+        };
 
-                int  _groupId;
-                char _rampingOption;
-                char _dutyCycle;
-                int  _startTime;
-                int  _stopTime;
-            };
+        class IM_EX_MSG LMHoneywellRestoreMessage : public StreamableMessage
+        {
+        public:
 
-            ///
+            LMHoneywellRestoreMessage(int groupId,
+                                      int restoreTime);
 
-            class IM_EX_MSG LMHoneywellRestoreMessage : public StreamableMessage
-            {
-            public:
+            void streamInto(cms::StreamMessage & message) const;
 
-                LMHoneywellRestoreMessage(int groupId,
-                    int restoreTime);
+        private:
 
-                void streamInto(cms::StreamMessage & message) const;
+            int _groupId;
+            int _restoreTime;
+        };
 
-            private:
-
-                int _groupId;
-                int _restoreTime;
-            };
-
-        }
+    }
     }
 }
 
