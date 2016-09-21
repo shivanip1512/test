@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(test_send_no_items_disconnect_omitted)
         RfnCommand::RfnRequestPayload rcv = lcdConfiguration.executeCommand(execute_time);
 
         const std::vector<unsigned> exp{
-            0x70, 0x00, 0x03, 0xfd, 0x05, 0xfe, 0x00 };
+            0x70, 0x00, 0x02, 0xfd, 0x05, 0xfe, 0x00 };
 
         BOOST_CHECK_EQUAL_RANGES(rcv, exp);
     }

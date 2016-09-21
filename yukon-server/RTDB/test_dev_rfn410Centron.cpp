@@ -103,7 +103,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfn410Centron_putconfig_display )
             std::vector<unsigned char> exp = boost::assign::list_of
                     (0x70)  //  LCD configuration
                     (0x00)  //  write
-                    (0x1d)  //  29 metrics (26 + 3 for display digits, cycle delay, and disconnect)
+                    (0x1c)  //  28 metrics (26 + 2 for display digits and cycle delay, but NOT disconnect)
                     (0x00)(0x10)(0x01)(0x11)(0x02)(0x12)(0x03)(0x00)
                     (0x04)(0x00)(0x05)(0x00)(0x06)(0x00)(0x07)(0x00)
                     (0x08)(0x00)(0x09)(0x00)(0x0a)(0x00)(0x0b)(0x00)

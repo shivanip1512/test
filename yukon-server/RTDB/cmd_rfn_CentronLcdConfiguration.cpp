@@ -325,7 +325,7 @@ RfnCommand::Bytes RfnCentronSetLcdConfigurationCommand::getCommandData()
 {
     Bytes data;
 
-    data.push_back(display_metrics.size() + 3);  //  add 3 for the digit config, cycle delay, and disconnect display
+    data.push_back(display_metrics.size() + 2 + disconnect_display.is_initialized());  //  add 2 for the digit config and cycle delay, and add disconnect display if it's set
 
     unsigned metric_number = 0;
 
