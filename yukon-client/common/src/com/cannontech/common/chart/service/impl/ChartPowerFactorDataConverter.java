@@ -30,7 +30,7 @@ public class ChartPowerFactorDataConverter implements ChartDataConverter {
             }
             val *= 100;
 
-        	chartValue.setValue(val);
+            chartValue.setValue(val);
             chartValue.setDescription("<div>" + chartValue.getFormattedValue() + "</div>" + chartValue.getDescription()
                 + "\nRaw Value: " + origVal.toString());
         }
