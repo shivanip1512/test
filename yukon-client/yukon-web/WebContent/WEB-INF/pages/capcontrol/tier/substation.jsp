@@ -69,9 +69,11 @@ $(function() {
     </i:simplePopup>
     <cm:dropdownOption key=".recentEvents.label" id="recentEventsButton" icon="icon-application-view-columns" />
 
-    <cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
-        <cm:dropdownOption linkId="substationState_${substationId}" key=".substation.actions" icon="icon-cog" href="javascript:void(0);" />
-    </cti:checkRolesAndProperties>
+    <c:if test="${!orphan}">
+        <cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
+            <cm:dropdownOption linkId="substationState_${substationId}" key=".substation.actions" icon="icon-cog" href="javascript:void(0);" />
+        </cti:checkRolesAndProperties>
+    </c:if>
     
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <cti:url var="editUrl" value="/capcontrol/substations/${substationId}/edit" />

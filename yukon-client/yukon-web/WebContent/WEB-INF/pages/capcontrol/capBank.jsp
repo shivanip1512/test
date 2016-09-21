@@ -28,9 +28,11 @@
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <li class="divider" />
     </cti:checkRolesAndProperties>
-    <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
-        <cm:dropdownOption linkId="capbankState_${capbank.id}" key=".substation.capBank.actions" icon="icon-cog" href="javascript:void(0);" />
-    </cti:checkRolesAndProperties>
+    <c:if test="${!orphan}">
+        <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
+            <cm:dropdownOption linkId="capbankState_${capbank.id}" key=".substation.capBank.actions" icon="icon-cog" href="javascript:void(0);" />
+        </cti:checkRolesAndProperties>
+    </c:if>
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <cti:url var="editUrl" value="/capcontrol/capbanks/${capbank.id}/edit" />
         <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
