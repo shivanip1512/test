@@ -1,6 +1,6 @@
 package com.cannontech.common.rfn.dataStreaming;
 
-enum DataStreamingMetricStatus {
+public enum DataStreamingMetricStatus {
     INVALID_STATUS,
     OK,
     METER_ACCESS_ERROR,

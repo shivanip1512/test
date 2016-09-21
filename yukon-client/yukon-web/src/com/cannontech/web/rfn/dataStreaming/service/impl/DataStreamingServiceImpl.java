@@ -110,6 +110,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     public final static String ATTRIBUTE_STRING = ".attribute";
     public final static String INTERVAL_STRING = ".interval";
     public final static String ENABLED_STRING = ".enabled";
+    public final static String STATUS_STRING = ".status";
 
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
@@ -1168,6 +1169,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             report.addValue(key + ATTRIBUTE_STRING, attribute);
             report.addValue(key + INTERVAL_STRING, interval);
             report.addValue(key + ENABLED_STRING, attributes.get(i).isEnabled());
+            report.addValue(key + STATUS_STRING, attributes.get(i).getStatus());
         }
         return report;
     }
