@@ -258,7 +258,7 @@ public class UserEditorController {
     
     private void setupModelMap(ModelMap model, User user, PageEditMode mode, YukonUserContext userContext) {
         
-        PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(userContext.getYukonUser());
+        PasswordPolicy passwordPolicy = passwordPolicyService.getPasswordPolicy(new LiteYukonUser(user.getUserId()));
         model.addAttribute("passwordPolicy", passwordPolicy);
         model.addAttribute("changePwdKey", passwordResetService.getPasswordKey(userContext.getYukonUser()));
         model.addAttribute("user", user);

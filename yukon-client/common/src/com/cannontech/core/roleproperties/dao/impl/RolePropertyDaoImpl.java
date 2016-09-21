@@ -25,6 +25,8 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.roleproperties.BadPropertyTypeException;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.InputTypeFactory;
@@ -37,8 +39,10 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.google.common.base.Predicate;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -74,7 +78,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private ConfigurationSource configurationSource;
-
+    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private YukonUserDao yukonUserDao;
     private ImmutableMap<YukonRoleProperty, Object> defaultValueLookup;
     private LeastRecentlyUsedCacheMap<PropertyTuple, Object> convertedValueCache =
             new LeastRecentlyUsedCacheMap<PropertyTuple, Object>(10000);
@@ -95,6 +100,40 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     private AtomicLong totalCacheHits = new AtomicLong(0);
     private AtomicLong totalDbHits = new AtomicLong(0);
     
+    private void createDatabaseChangeListener() {
+        asyncDynamicDataSource.addDBChangeListener(new DBChangeListener() {
+            @Override
+            public void dbChangeReceived(DBChangeMsg dbChange) {
+                if (dbChange.getDatabase() == DBChangeMsg.CHANGE_USER_GROUP_DB) {
+                    synchronized (RolePropertyDaoImpl.this) {
+                        if (!convertedValueCache.isEmpty() || userRoleCache.size() > 0) {
+                            List<Integer> users = yukonUserDao.getUserIdsForUserGroup(dbChange.getId());
+                            for (Integer userId : users) {
+                                LiteYukonUser user = new LiteYukonUser(userId);
+                                convertedValueCache.remove(new UserPropertyTuple(user ,
+                                                                YukonRoleProperty.LOCKOUT_DURATION));
+                                convertedValueCache.remove(new UserPropertyTuple(user,
+                                                                YukonRoleProperty.LOCKOUT_THRESHOLD));
+                                convertedValueCache.remove(new UserPropertyTuple(user,
+                                                                YukonRoleProperty.MAXIMUM_PASSWORD_AGE));
+                                convertedValueCache.remove(new UserPropertyTuple(user,
+                                                                YukonRoleProperty.MINIMUM_PASSWORD_AGE));
+                                convertedValueCache.remove(new UserPropertyTuple(user,
+                                                                YukonRoleProperty.MINIMUM_PASSWORD_LENGTH));
+                                convertedValueCache.remove(new UserPropertyTuple(user,
+                                                                YukonRoleProperty.PASSWORD_HISTORY));
+                                convertedValueCache.remove(new UserPropertyTuple(user,
+                                                                YukonRoleProperty.POLICY_QUALITY_CHECK));
+                                
+                                userRoleCache.invalidate(userId);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
     private class IsCheckPropertyCompatiblePredicate implements Predicate<YukonRoleProperty> {
         @Override
         public boolean apply(YukonRoleProperty property) {
@@ -183,6 +222,9 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         // determine of role conflicts are allowed
         String allowedStr = configurationSource.getString("ROLE_PROPERTY_CONFLICTS_ALLOWED", Boolean.FALSE.toString());
         allowRoleConflicts = Boolean.parseBoolean(allowedStr.trim());
+
+        //initialize DB change listener
+        createDatabaseChangeListener();
     }
     
     public void clearCache() {
