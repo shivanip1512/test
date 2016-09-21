@@ -797,9 +797,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         if (isValidPorterConnection()) {
 
             DataStreamingConfigResult result = createUncompletedResult();
-            
-            logService.assignAttempted(user, result.getResultsId(), deviceCollection.getDeviceCount());
-            
+                
+            logService.assignAttempted(user, result.getResultsId(), config.getName(),
+                deviceCollection.getDeviceCount());
+
             List<Integer> deviceIds =
                 getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
             String correlationId = UUID.randomUUID().toString();

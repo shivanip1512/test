@@ -13,7 +13,7 @@ public interface DataStreamingEventLogService {
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn.dataStreaming")
     public void assignAttempted(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.resultKey) String resultKey,
-            @Arg(ArgEnum.totalCount) Integer total);
+            String description, @Arg(ArgEnum.totalCount) Integer total);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn.dataStreaming")
     public void resendAttempted(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.resultKey) String resultKey,

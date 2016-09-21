@@ -272,7 +272,7 @@
     
     <!-- Data Streaming -->
     <entry key="yukon.common.events.system.rfn.dataStreaming.unassignAttempted">Unassign attempted by {1} on {7} devices. Key:{2}</entry>
-    <entry key="yukon.common.events.system.rfn.dataStreaming.assignAttempted">Assign attempted by {1} on {7} devices. Key:{2}</entry>
+    <entry key="yukon.common.events.system.rfn.dataStreaming.assignAttempted">Assign attempted for "{3}" by {1} on 7 devices. Key:{2}</entry>
     <entry key="yukon.common.events.system.rfn.dataStreaming.resendAttempted">Re-send attempted by {1} on {7} devices. Key:{2}</entry>
     <entry key="yukon.common.events.system.rfn.dataStreaming.completedResults">Action completed: {7} devices selected (Success:{8} Failure:{9} Not Attempted:{10}). Key:{1}</entry>
     <entry key="yukon.common.events.system.rfn.dataStreaming.cancelAttempted">Cancel attempted by {1}. Key:{2}</entry>

@@ -81,7 +81,7 @@ public class DataStreamingController {
             newConfig.addAttribute(attribute);
         });
         
-        List<DataStreamingConfig> supportedConfigs = new ArrayList<DataStreamingConfig>();
+        List<DataStreamingConfig> supportedConfigs = new ArrayList<>();
         List<DataStreamingConfig> existingConfigs = dataStreamingService.getAllDataStreamingConfigurations();
         
         //only display configs that have attributes that the selected devices support
@@ -194,6 +194,9 @@ public class DataStreamingController {
         
         DataStreamingConfig config = verificationInfo.getConfiguration();
         int configId = verificationInfo.getConfiguration().getId();
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        config.setAccessor(accessor);
+        System.out.println(config.getName());
         
         try {
             DataStreamingConfigResult result = dataStreamingService.assignDataStreamingConfig(config, deviceCollection, user);
