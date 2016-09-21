@@ -90,7 +90,7 @@ public class DataStreamingPorterConnection {
                 //  If the error is a JSON string, it's a config report
                 if (error.getPorter().startsWith("json{")) {
                     try {
-                        config = JsonUtils.fromJson(error.getPorter(), ReportedDataStreamingConfig.class);
+                        config = JsonUtils.fromJson(error.getPorter().substring(4), ReportedDataStreamingConfig.class);
                     } catch(IOException e) {
                         log.debug("Error text appeared to be JSON, but could not be decoded: " + error);
                     }
