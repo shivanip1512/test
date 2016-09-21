@@ -49,6 +49,7 @@
     margin-left: -7px;
 }
 </style>
+
     
     <div id="marker-info" class="well dn"></div>
     
@@ -56,9 +57,14 @@
     
     <div class="column-10-14 clearfix">
         <div class="column one">
-            <c:if test="${!isGateway}">
-                <tags:widget bean="meterInformationWidget" deviceId="${deviceId}" container="section"/>
-            </c:if>
+            <c:choose>
+                <c:when test="${isGateway}">
+                    <tags:widget bean="gatewayInformationWidget" deviceId="${deviceId}" container="section"/>
+                </c:when>
+                <c:otherwise>
+                    <tags:widget bean="meterInformationWidget" deviceId="${deviceId}" container="section"/>
+                </c:otherwise>
+            </c:choose>
         </div>
         <div class="column two nogutter">
         <tags:sectionContainer2 nameKey="location">
@@ -85,8 +91,14 @@
         </div>        
     </div>
     
+    <div id="gateway-templates" class="dn"><cti:toJson object="${text}" id="gateway-text"/></div>
+    
+    
     <cti:includeScript link="OPEN_LAYERS"/>
     <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
     <cti:includeScript link="/resources/js/pages/yukon.map.network.js"/>
+    <cti:includeScript link="/resources/js/widgets/yukon.widget.gateway.info.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.shared.js"/>
+    
 
 </cti:standardPage>

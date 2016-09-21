@@ -50,13 +50,7 @@
     </cm:dropdown>
 </div>
 
-<div id="gateway-edit-popup" data-dialog class="dn" data-title="<cti:msg2 key=".edit.title"/>"
-        data-url="${gateway.paoIdentifier.paoId}/edit"
-        data-id="${gateway.paoIdentifier.paoId}"
-        data-width="580" 
-        data-event="yukon:assets:gateway:save" 
-        data-load-event="yukon:assets:gateway:edit:load" 
-        data-ok-text="<cti:msg2 key="components.button.save.label"/>"></div>
+<div id="gateway-id" data-id="${gateway.paoIdentifier.paoId}" class="dn"></div>
     
 <div id="gateway-collect-data-popup" class="dn"></div>
 
@@ -80,57 +74,7 @@
 <div class="column-12-12 clearfix">
 
     <div class="column one">
-        <tags:sectionContainer2 nameKey="info" styleClass="stacked" id="gw-info">
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".name" valueClass="js-gw-name">${fn:escapeXml(gateway.name)}</tags:nameValue2>
-                <tags:nameValue2 nameKey=".serialNumber" valueClass="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</tags:nameValue2>
-                <tags:nameValue2 nameKey=".hardwareVersion" valueClass="js-gw-hw-version">${data.hardwareVersion}</tags:nameValue2>
-                <tags:nameValue2 nameKey=".softwareVersion" valueClass="js-gw-sw-version">${data.softwareVersion}</tags:nameValue2>
-                <tags:nameValue2 nameKey=".upperStackVersion" valueClass="js-gw-us-version">${data.upperStackVersion}</tags:nameValue2>
-                <tags:nameValue2 nameKey=".radioVersion" valueClass="js-gw-radio-version">${data.radioVersion }</tags:nameValue2>
-                <tags:nameValue2 nameKey=".releaseVersion" valueClass="js-gw-release-version">${data.releaseVersion}</tags:nameValue2>
-                <tags:nameValue2 nameKey=".versionConflicts">
-                    <c:if test="${empty data.versionConflicts}">
-                        <span class="empty-list js-gw-version-conflicts"><i:inline key="yukon.common.none"/></span>
-                    </c:if>
-                    <c:if test="${not empty data.versionConflicts}">
-                        <span class="error js-gw-version-conflicts">
-                            <c:forEach var="conflict" items="${data.versionConflicts}">
-                                <i:inline key=".conflictType.${conflict}"/>,&nbsp;
-                            </c:forEach>
-                        </span>
-                    </c:if>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".appMode">
-                    <c:set var="clazz" value="green"/>
-                    <c:if test="${gateway.appModeNonNormal}">
-                        <c:set var="clazz" value="error"/>
-                    </c:if>
-                    <span class="${clazz}" valueClass="js-gw-app-mode">
-                        <c:if test="${not empty data}"><i:inline key=".appMode.${data.mode}"/></c:if>
-                    </span>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".streamingCapacity" data-gateway="${gateway.paoIdentifier.paoId}">
-                    <c:set var="color" value="badge-success"/>
-                    <c:if test="${data.dataStreamingLoadingPercent > 100}">
-                        <c:set var="color" value="badge-error"/>
-                    </c:if>
-                    <c:set var="linkClasses" value=""/>
-                    <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
-                        <c:set var="linkClasses" value="cp js-streaming-capacity"/>
-                    </cti:checkRolesAndProperties>
-                    <span class="badge ${color} ${linkClasses}" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
-                </tags:nameValue2>
-            </tags:nameValueContainer2>
-        </tags:sectionContainer2>
-        
-        <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
-            <div class="buffered clearfix">
-                <c:set var="clazz" value="${empty data ? 'dn' : ''}"/>
-                <cti:button nameKey="edit" icon="icon-pencil" data-popup="#gateway-edit-popup" 
-                    classes="fr ${clazz} js-edit"/>
-            </div>
-        </cti:checkRolesAndProperties>
+        <tags:widget bean="gatewayInformationWidget" deviceId="${gateway.paoIdentifier.paoId}" container="section"/>
     </div>
     
     <div class="column two nogutter">
@@ -300,5 +244,6 @@
 <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>
 <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.shared.js"/>
 <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.details.js"/>
+<cti:includeScript link="/resources/js/widgets/yukon.widget.gateway.info.js"/>
 
 </cti:standardPage>

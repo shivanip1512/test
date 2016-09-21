@@ -24,16 +24,13 @@ import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
-import com.cannontech.common.rfn.dao.RfnGatewayFirmwareUpgradeDao;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.DataType;
-import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
-import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.NMConfigurationService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
@@ -70,7 +67,6 @@ public class GatewaySettingsController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private NMConfigurationService nmConfigurationService;
     @Autowired private PaoLocationDao paoLocationDao;
-    @Autowired private RfnGatewayFirmwareUpgradeDao firmwareUpgradeDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
@@ -94,7 +90,7 @@ public class GatewaySettingsController {
         }
         model.addAttribute("settings", settings);
         
-        return "gateways/settings.jsp";
+        return "../widget/gatewayInformationWidget/settings.jsp";
     }
     
     /** 
@@ -116,7 +112,7 @@ public class GatewaySettingsController {
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.CREATE);
-            return "gateways/settings.jsp";
+            return "../widget/gatewayInformationWidget/settings.jsp";
         }
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
@@ -144,7 +140,7 @@ public class GatewaySettingsController {
             String errorMsg = accessor.getMessage(baseKey + "error.comm");
             model.addAttribute("errorMsg", errorMsg);
             
-            return "gateways/settings.jsp";
+            return "../widget/gatewayInformationWidget/settings.jsp";
         } catch (GatewayUpdateException e) {
             
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -152,7 +148,7 @@ public class GatewaySettingsController {
             String errorMsg = accessor.getMessage(baseKey + "error." + e.getReason().name());
             model.addAttribute("errorMsg", errorMsg);
             
-            return "gateways/settings.jsp";
+            return "../widget/gatewayInformationWidget/settings.jsp";
         } catch (DeviceCreationException e) {
             
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -160,132 +156,9 @@ public class GatewaySettingsController {
             String errorMsg = accessor.getMessage(e.getMessageSourceResolvable());
             model.addAttribute("errorMsg", errorMsg);
             
-            return "gateways/settings.jsp";
+            return "../widget/gatewayInformationWidget/settings.jsp";
         }
 
-    }
-    
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
-    @RequestMapping("/gateways/{id}/edit")
-    public String editDialog(ModelMap model, @PathVariable int id, YukonUserContext userContext) {
-        
-        model.addAttribute("mode", PageEditMode.EDIT);
-
-        boolean updateServerCompatability = nmConfigurationService.isFirmwareUpdateSupported();
-        model.addAttribute("updateServerCompatability", updateServerCompatability);
-
-        try {
-            
-            RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(id);
-            GatewaySettings settings = rfnGatewayService.gatewayAsSettings(gateway);
-            model.addAttribute("settings", settings);
-            
-        } catch (NmCommunicationException e) {
-            MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            String errorMsg = accessor.getMessage(baseKey + "error.comm");
-            model.addAttribute("errorMsg", errorMsg);
-        }
-        
-        return "gateways/settings.jsp";
-    }
-
-    /** Update the gateway */
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
-    @RequestMapping(value="/gateways/{id}", method=RequestMethod.PUT)
-    public String update(ModelMap model,
-            YukonUserContext userContext,
-            HttpServletResponse resp,
-            FlashScope flash,
-            @PathVariable int id,
-            @ModelAttribute("settings") GatewaySettings settings,
-            BindingResult result) {
-        
-        MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        
-        validator.validate(settings, result);
-        
-        if (result.hasErrors()) {
-            resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            model.addAttribute("mode", PageEditMode.EDIT);
-            boolean updateServerCompatability = nmConfigurationService.isFirmwareUpdateSupported();
-            model.addAttribute("updateServerCompatability", updateServerCompatability);
-            return "gateways/settings.jsp";
-        }
-        
-        try {
-            
-            String updateServerUrl = null;
-            Authentication auth = new Authentication();
-            
-            RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(id);
-            
-            gateway.setName(settings.getName());
-            if (settings.getLatitude() != null) {
-                gateway.setLocation(new PaoLocation(gateway.getPaoIdentifier(), settings.getLatitude(),
-                    settings.getLongitude()));
-            }
-            
-            
-            if(nmConfigurationService.isFirmwareUpdateSupported()) {
-            
-            if(settings.isUseDefault()) {
-                updateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
-                auth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
-                auth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
-            } else {
-                updateServerUrl = settings.getUpdateServerUrl();
-                auth.setUsername(settings.getUpdateServerLogin().getUsername());
-                auth.setPassword(settings.getUpdateServerLogin().getPassword());
-            }
-            }
-            RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
-            RfnGatewayData data = builder.copyOf(gateway.getData())
-           .ipAddress(settings.getIpAddress())
-           .name(settings.getName())
-           .admin(settings.getAdmin())
-           .superAdmin(settings.getSuperAdmin())
-           .updateServerUrl(updateServerUrl)
-           .updateServerLogin(auth)
-           .build();
-            
-            gateway.setData(data);
-            
-            GatewayUpdateResult updateResult = rfnGatewayService.updateGateway(gateway, userContext.getYukonUser());
-            
-            if (updateResult == GatewayUpdateResult.SUCCESSFUL) {
-                log.info("Gateway updated: " + gateway);
-                gatewayEventLogService.updatedGateway(userContext.getYukonUser(), gateway.getName(), 
-                                                      gateway.getRfnIdentifier().getSensorSerialNumber(), 
-                                                      settings.getIpAddress(),
-                                                      settings.getAdmin().getUsername(), 
-                                                      settings.getSuperAdmin().getUsername());
-                
-                // Success
-                model.clear();
-                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "detail.update.successful", settings.getName()));
-                Map<String, Object> json = new HashMap<>();
-                json.put("success", true);
-
-                return JsonUtils.writeResponse(resp, json);
-
-            } else {
-                resp.setStatus(HttpStatus.BAD_REQUEST.value());
-                model.addAttribute("mode", PageEditMode.EDIT);
-                String errorMsg = accessor.getMessage(baseKey + "error." + updateResult.name());
-                model.addAttribute("errorMsg", errorMsg);
-                
-                return "gateways/settings.jsp";
-            }
-            
-        } catch (NmCommunicationException e) {
-            
-            resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            model.addAttribute("mode", PageEditMode.EDIT);
-            String errorMsg = accessor.getMessage(baseKey + "error.comm");
-            model.addAttribute("errorMsg", errorMsg);
-            
-            return "gateways/settings.jsp";
-        }
     }
     
     /** Set schedule popup. 

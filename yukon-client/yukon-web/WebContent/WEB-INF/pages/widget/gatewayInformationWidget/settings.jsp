@@ -20,7 +20,10 @@
         <c:set var="method" value="post"/>
     </c:when>
     <c:otherwise>
-        <cti:url var="url" value="/stars/gateways/${settings.id}"/>
+        <cti:url var="url" value="/widget/gatewayInformationWidget/edit">
+            <cti:param name="deviceId" value="${deviceId}"/>
+            <cti:param name="shortName" value="gatewayInformationWidget"/>
+        </cti:url>
         <c:set var="method" value="put"/>
     </c:otherwise>
 </c:choose>
@@ -167,3 +170,5 @@
 </form:form>
 
 </cti:msgScope>
+
+<cti:includeScript link="/resources/js/widgets/yukon.widget.gateway.info.js"/>

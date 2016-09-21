@@ -104,5 +104,7 @@
 ]]></entry>
 <entry key="yukon.web.widgetClasses.OverloadedGatewaysWidget.streamingDetail">View Data Streaming Summary</entry>
 
+<entry key="yukon.web.widgets.gatewayInformationWidget">Gateway Information</entry>
+
 
 </properties>

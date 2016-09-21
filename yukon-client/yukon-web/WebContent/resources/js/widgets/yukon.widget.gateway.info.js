@@ -1,0 +1,138 @@
+yukon.namespace('yukon.widget.gatewayInfo');
+
+/**
+ * Module for the gateway info widget.
+ * @module yukon.widget.gatewayInfo
+ * @requires JQUERY
+ * @requires yukon
+ */
+yukon.widget.gatewayInfo = (function () {
+    
+    'use strict';
+    
+    var
+    _initialized = false,
+    
+    mod = {
+        
+        /** Initialize this module. */
+        init: function () {
+            
+            if (_initialized) return;
+            
+            /** Edit popup was opened, adjust test connection buttons. */
+            $(document).on('yukon:assets:gateway:edit:load', function (ev) {
+                yukon.assets.gateway.shared.adjustTestConnectionButtons();
+            });
+            
+            /** Save button clicked on edit popup. */
+            $(document).on('yukon:assets:gateway:save', function (ev) {
+                
+                var popup = $('#gateway-edit-popup'),
+                    btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                    primary = btns.find('.js-primary-action'),
+                    secondary = btns.find('.js-secondary-action');
+                
+                yukon.ui.busy(primary);
+                secondary.prop('disabled', true);
+                
+                popup.find('.user-message').remove();
+                
+                $('#gateway-settings-form').ajaxSubmit({
+                    type: 'post',
+                    success: function (result, status, xhr, $form) {
+                        
+                        popup.dialog('close');
+                        window.location.href = window.location.href;
+                    },
+                    error: function (xhr, status, error, $form) {
+                        popup.html(xhr.responseText);
+                        yukon.ui.initContent(popup);
+                        yukon.assets.gateway.shared.adjustTestConnectionButtons();
+                    },
+                    complete: function () {
+                        yukon.ui.unbusy(primary);
+                        secondary.prop('disabled', false);
+                    }
+                });
+            });
+            
+            /** Test a connection for username and password. */
+            $(document).on('click', '.js-conn-test-btn', function (ev) {
+                
+                var btn = $(this),
+                    row = btn.closest('tr'),
+                    otherRow = row.is('.js-gateway-edit-admin')
+                        ? $('.js-gateway-edit-super-admin') : $('.js-gateway-edit-admin'),
+                    ip = $('#gateway-settings-form .js-gateway-edit-ip').val(),
+                    username = row.find('.js-gateway-edit-username').val(),
+                    password = row.find('.js-gateway-edit-password').val();
+                        
+               // Disable test buttons until test is over
+                yukon.ui.busy(btn);
+                otherRow.find('.js-conn-test-btn').prop('disabled', true);
+                $('.js-test-results').removeClass('success error').text('');
+                
+                $.ajax({
+                    url: yukon.url('/widget/gatewayInformationWidget/test-connection'),
+                    data: {
+                        ip: ip,
+                        username: username,
+                        password: password,
+                        id: $('#gateway-edit-popup').data('id')
+                    }
+                }).done(function (result) {
+                    if (result.success) {
+                        $('.js-test-results').addClass('success').text(_text['login.successful']);
+                    } else {
+                        if (result.message) {
+                            $('.js-test-results').addClass('error').text(result.message);
+                        } else {
+                            $('.js-test-results').addClass('error').text(_text['login.failed']);
+                        }
+                    }
+                }).always(function () {
+                    yukon.ui.unbusy(btn);
+                    otherRow.find('.js-conn-test-btn').prop('disabled', false);
+                });
+                
+            });
+            
+            
+ /*           *//** User input happened in create or edit popup, adjust 'test connection' buttons. *//*
+            $(document).on('input', '.js-gateway-edit-ip, .js-gateway-edit-username', function (ev) {
+                mod.adjustTestConnectionButtons();
+            });
+            
+            *//** User clicked the streaming capacity pill.  Redirect to Data Streaming Summary Page with gateway selected *//*
+            $(document).on('click', '.js-streaming-capacity', function (ev) {
+                var gatewayId = $(this).closest('tr').data('gateway');
+                window.location.href = yukon.url('/tools/dataStreaming/summary?gatewaysSelect=' + gatewayId);
+            });*/
+            
+            _initialized = true;
+        },
+        
+/*        adjustTestConnectionButtons: function () {
+            var ip = $('.js-gateway-edit-ip').val(),
+                usernames = $('.js-gateway-edit-username');
+            
+            if (ip) {
+                usernames.each(function (idx, item) {
+                    item = $(item);
+                    var disabled = !item.val().trim();
+                    item.siblings('.button').prop('disabled', disabled);
+                });
+            } else {
+                $('.js-gateway-edit-super-admin .button,' 
+                        + ' .js-gateway-edit-admin .button,' 
+                        + ' .js-gateway-edit-user .button').prop('disabled', true);
+            }
+        }*/
+    
+};
+    
+    return mod;
+})();
+
+$(function () { yukon.widget.gatewayInfo.init(); });
