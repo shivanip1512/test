@@ -58,7 +58,7 @@ RfnCommandResult RfnDataStreamingConfigurationCommand::decodeCommand(const CtiTi
 
     //  Generate the response as JSON for the Java client to consume
     
-    metricDescription << "{";
+    metricDescription << "json{";
     metricDescription << "\n\"streamingEnabled\" : " << (streamingEnabled ? "true" : "false");
 
     metricDescription << ",\n\"configuredMetrics\" : [";

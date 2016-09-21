@@ -49,7 +49,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-R"json({
+R"SQUID(json{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -71,7 +71,7 @@ R"json({
     "status" : "METER_OR_NODE_BUSY"
   }],
 "sequence" : 3735928559
-})json";
+})SQUID";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
     }
@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_globally_disable
         catch( const Cti::YukonErrorException& e )
         {
             const std::string desc_exp =
-R"json({
+R"SQUID(json{
 "streamingEnabled" : false,
 "configuredMetrics" : [
   {
@@ -142,7 +142,7 @@ R"json({
     "status" : "CHANNEL_NOT_SUPPORTED"
   }],
 "sequence" : 3735928559
-})json";
+})SQUID";
 
             BOOST_CHECK_EQUAL(e.error_description, desc_exp);
         }
@@ -187,7 +187,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_invalid_metric_i
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp = 
-R"json({
+R"SQUID(json{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -203,7 +203,7 @@ R"json({
     "status" : "INVALID_STATUS"
   }],
 "sequence" : 3735928559
-})json";
+})SQUID";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
     }
@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_enable)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-R"json({
+R"SQUID(json{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -269,7 +269,7 @@ R"json({
     "status" : "OK"
   }],
 "sequence" : 3735928559
-})json";
+})SQUID";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
     }
@@ -313,7 +313,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_disable)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-R"json({
+R"SQUID(json{
 "streamingEnabled" : false,
 "configuredMetrics" : [
   {
@@ -335,7 +335,7 @@ R"json({
     "status" : "OK"
   }],
 "sequence" : 3735928559
-})json";
+})SQUID";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
     }
@@ -378,7 +378,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_one)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-R"json({
+R"SQUID(json{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -388,7 +388,7 @@ R"json({
     "status" : "OK"
   }],
 "sequence" : 3735928559
-})json";
+})SQUID";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
     }
@@ -431,7 +431,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_disable_one)
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
 
         const std::string desc_exp =
-R"json({
+R"SQUID(json{
 "streamingEnabled" : true,
 "configuredMetrics" : [
   {
@@ -441,7 +441,7 @@ R"json({
     "status" : "OK"
   }],
 "sequence" : 3735928559
-})json";
+})SQUID";
 
         BOOST_CHECK_EQUAL(rcv.description, desc_exp);
     }

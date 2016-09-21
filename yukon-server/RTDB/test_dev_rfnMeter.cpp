@@ -645,7 +645,7 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_unassigned )
             const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand(decode_time, response);
 
             const std::string exp =
-                R"json({
+                R"SQUID(json{
 "streamingEnabled" : false,
 "configuredMetrics" : [
   {
@@ -667,7 +667,7 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_unassigned )
     "status" : "OK"
   }],
 "sequence" : 3735928559
-})json";
+})SQUID";
 
             BOOST_CHECK_EQUAL(rcv.description, exp);
         }

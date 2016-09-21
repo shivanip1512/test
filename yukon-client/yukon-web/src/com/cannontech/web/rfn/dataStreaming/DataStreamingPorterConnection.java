@@ -88,7 +88,7 @@ public class DataStreamingPorterConnection {
                 log.info("Recieved error for device="+ command.getDevice()+" error="+error);
                 ReportedDataStreamingConfig config = null;
                 //  If the error is a JSON string, it's a config report
-                if (error.getPorter().startsWith("{\n")) {
+                if (error.getPorter().startsWith("json{")) {
                     try {
                         config = JsonUtils.fromJson(error.getPorter(), ReportedDataStreamingConfig.class);
                     } catch(IOException e) {
