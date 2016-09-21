@@ -98,37 +98,8 @@ yukon.widget.gatewayInfo = (function () {
                 
             });
             
-            
- /*           *//** User input happened in create or edit popup, adjust 'test connection' buttons. *//*
-            $(document).on('input', '.js-gateway-edit-ip, .js-gateway-edit-username', function (ev) {
-                mod.adjustTestConnectionButtons();
-            });
-            
-            *//** User clicked the streaming capacity pill.  Redirect to Data Streaming Summary Page with gateway selected *//*
-            $(document).on('click', '.js-streaming-capacity', function (ev) {
-                var gatewayId = $(this).closest('tr').data('gateway');
-                window.location.href = yukon.url('/tools/dataStreaming/summary?gatewaysSelect=' + gatewayId);
-            });*/
-            
             _initialized = true;
         },
-        
-/*        adjustTestConnectionButtons: function () {
-            var ip = $('.js-gateway-edit-ip').val(),
-                usernames = $('.js-gateway-edit-username');
-            
-            if (ip) {
-                usernames.each(function (idx, item) {
-                    item = $(item);
-                    var disabled = !item.val().trim();
-                    item.siblings('.button').prop('disabled', disabled);
-                });
-            } else {
-                $('.js-gateway-edit-super-admin .button,' 
-                        + ' .js-gateway-edit-admin .button,' 
-                        + ' .js-gateway-edit-user .button').prop('disabled', true);
-            }
-        }*/
     
 };
     
