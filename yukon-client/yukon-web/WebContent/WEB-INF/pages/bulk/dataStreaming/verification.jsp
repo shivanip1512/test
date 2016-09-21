@@ -19,7 +19,11 @@
                 <cti:csrfToken/>
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
                 <form:hidden path="configuration.id" />
-                                
+                <c:forEach var="att" items="${configuration.attributes}" varStatus="status">
+                    <form:hidden path="configuration.attributes[${status.index}].attribute"/>
+                    <form:hidden path="configuration.attributes[${status.index}].attributeOn"/>
+                    <form:hidden path="configuration.attributes[${status.index}].interval"/>
+                </c:forEach>          
                 <c:forEach var="exception" items="${verificationInfo.exceptions}">
                     <div class="user-message error"><i:inline key="${exception}"/></div>
                 </c:forEach>
