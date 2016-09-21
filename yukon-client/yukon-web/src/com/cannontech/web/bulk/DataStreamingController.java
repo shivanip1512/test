@@ -196,7 +196,6 @@ public class DataStreamingController {
         int configId = verificationInfo.getConfiguration().getId();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         config.setAccessor(accessor);
-        System.out.println(config.getName());
         
         try {
             DataStreamingConfigResult result = dataStreamingService.assignDataStreamingConfig(config, deviceCollection, user);
