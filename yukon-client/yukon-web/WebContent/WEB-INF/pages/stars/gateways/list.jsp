@@ -96,7 +96,9 @@
         <tr>
             <th></th>
             <th><i:inline key=".name"/></th>
-            <th><i:inline key=".streamingCapacity"/></th>
+            <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                <th><i:inline key=".streamingCapacity"/></th>
+            </cti:checkRolesAndProperties>
             <th><i:inline key=".serialNumber"/></th>
             <th><i:inline key=".ipaddress"/></th>
             <c:if test="${enableNMGatewayVersion}">
@@ -120,17 +122,15 @@
                             <span class="state-box ${clazz}"></span>
                         </td>
                         <td class="js-gw-name"><a href="${detailUrl}">${fn:escapeXml(gateway.name)}</a></td>
-                        <td class="js-gw-capacity">
-                            <c:set var="color" value="badge-success"/>
-                            <c:if test="${data.dataStreamingLoadingPercent > 100}">
-                                <c:set var="color" value="badge-error"/>
-                            </c:if>
-                            <c:set var="linkClasses" value=""/>
-                            <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
-                                <c:set var="linkClasses" value="cp js-streaming-capacity"/>
-                            </cti:checkRolesAndProperties>
-                            <span class="badge ${color} ${linkClasses}" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
-                        </td>
+                        <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                            <td class="js-gw-capacity">
+                                <c:set var="color" value="badge-success"/>
+                                <c:if test="${data.dataStreamingLoadingPercent > 100}">
+                                    <c:set var="color" value="badge-error"/>
+                                </c:if>
+                                <span class="badge ${color} cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
+                            </td>
+                        </cti:checkRolesAndProperties>
                         <td class="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
                         <td class="js-gw-ip">${fn:escapeXml(gateway.data.ipAddress)}</td>
                         <c:if test="${enableNMGatewayVersion}">

@@ -20,11 +20,7 @@
                 <a href="${gatewayUrl}">${fn:escapeXml(gateway.name)}</a>
             </td>
             <td>
-                <c:set var="linkClasses" value=""/>
-                <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
-                    <c:set var="linkClasses" value="cp js-streaming-capacity"/>
-                </cti:checkRolesAndProperties>
-                <span class="badge badge-error ${linkClasses}" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${gateway.data.dataStreamingLoadingPercent / 100}"/></span>
+                <span class="badge badge-error cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${gateway.data.dataStreamingLoadingPercent / 100}"/></span>
             </td>
         </tr>
     </c:forEach>

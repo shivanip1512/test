@@ -41,10 +41,12 @@
                         <ct:widget bean="systemActionsMenuWidget" />
                     </cti:checkRolesAndProperties>
                     
-                    <c:if test="${showOverloadedGatewaysWidget}">
-                        <cti:msg2 key="yukon.web.widgets.overloadedGatewaysWidget.helpText" var="gatewayHelpText"/>
-                        <ct:widget bean="overloadedGatewaysWidget" helpText="${gatewayHelpText}"/>
-                    </c:if>
+                    <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                        <c:if test="${showOverloadedGatewaysWidget}">
+                            <cti:msg2 key="yukon.web.widgets.overloadedGatewaysWidget.helpText" var="gatewayHelpText"/>
+                            <ct:widget bean="overloadedGatewaysWidget" helpText="${gatewayHelpText}"/>
+                        </c:if>
+                    </cti:checkRolesAndProperties>
             </div>
         </div>
     </ct:widgetContainer>

@@ -49,17 +49,15 @@
                 <c:if test="${not empty gateway.data}"><i:inline key=".appMode.${gateway.data.mode}"/></c:if>
             </span>
         </tags:nameValue2>
-        <tags:nameValue2 nameKey=".streamingCapacity" data-gateway="${gateway.paoIdentifier.paoId}">
-            <c:set var="color" value="badge-success"/>
-            <c:if test="${gateway.data.dataStreamingLoadingPercent > 100}">
-                <c:set var="color" value="badge-error"/>
-            </c:if>
-            <c:set var="linkClasses" value=""/>
-            <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
-                <c:set var="linkClasses" value="cp js-streaming-capacity"/>
-            </cti:checkRolesAndProperties>
-            <span class="badge ${color} ${linkClasses}" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${gateway.data.dataStreamingLoadingPercent / 100}"/></span>
-        </tags:nameValue2>
+        <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+            <tags:nameValue2 nameKey=".streamingCapacity" data-gateway="${gateway.paoIdentifier.paoId}">
+                <c:set var="color" value="badge-success"/>
+                <c:if test="${gateway.data.dataStreamingLoadingPercent > 100}">
+                    <c:set var="color" value="badge-error"/>
+                </c:if>
+                <span class="badge ${color} cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${gateway.data.dataStreamingLoadingPercent / 100}"/></span>
+            </tags:nameValue2>
+        </cti:checkRolesAndProperties>
     </tags:nameValueContainer2>
     
     <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
@@ -73,4 +71,3 @@
 </cti:msgScope>
 
 <cti:includeScript link="/resources/js/widgets/yukon.widget.gateway.info.js"/>
-<cti:includeScript link="/resources/js/pages/yukon.assets.gateway.shared.js"/>
