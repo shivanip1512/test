@@ -37,7 +37,6 @@ private static DispatchClientConnection connect() throws java.io.IOException {
 	
 	reg.setAppName( CtiUtilities.getAppRegistration() );
 	reg.setAppIsUnique(0);	
-	reg.setAppKnownPort(0);	
 	reg.setAppExpirationDelay(5000);
 		
 	conn.setAutoReconnect(true);

@@ -53,7 +53,6 @@ public static void main(String[] args)
 	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
 	reg.setAppName( CtiUtilities.getAppRegistration() );
 	reg.setAppIsUnique(0);
-	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay( 300 );
 
 	conn.write( reg );

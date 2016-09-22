@@ -22,7 +22,6 @@ public static void main(String[] args) {
 	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
 	reg.setAppName("Van Gogh Test Client - Java");
 	reg.setAppIsUnique(0);
-	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay( 1000000 );
 	multiReg.getVector().addElement(reg);
 

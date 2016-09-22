@@ -46,7 +46,6 @@ public class RegistrationSerializer
                                         Registration msg) {
         msg.setAppExpirationDelay(entity.get_appExpirationDelay());
         msg.setAppIsUnique(entity.get_appIsUnique());
-        msg.setAppKnownPort(entity.get_appKnownPort());
         msg.setAppName(entity.get_appName());
     }
 
@@ -59,7 +58,6 @@ public class RegistrationSerializer
         // serialization
         entity.set_appId((int) msg.getRegID());
         entity.set_appIsUnique(msg.getAppIsUnique());
-        entity.set_appKnownPort(msg.getAppKnownPort());
         entity.set_appName(msg.getAppName());
     }
 

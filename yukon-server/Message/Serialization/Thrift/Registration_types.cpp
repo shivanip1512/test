@@ -10,8 +10,8 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
-const char* Registration::ascii_fingerprint = "C2204ADD0A0730ECBED9A40D93FF4569";
-const uint8_t Registration::binary_fingerprint[16] = {0xC2,0x20,0x4A,0xDD,0x0A,0x07,0x30,0xEC,0xBE,0xD9,0xA4,0x0D,0x93,0xFF,0x45,0x69};
+const char* Registration::ascii_fingerprint = "8B66031ACDC8DED3DC5A35ED21FC26AA";
+const uint8_t Registration::binary_fingerprint[16] = {0x8B,0x66,0x03,0x1A,0xCD,0xC8,0xDE,0xD3,0xDC,0x5A,0x35,0xED,0x21,0xFC,0x26,0xAA};
 
 uint32_t Registration::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -28,7 +28,6 @@ uint32_t Registration::read(::apache::thrift::protocol::TProtocol* iprot) {
   bool isset__appName = false;
   bool isset__appId = false;
   bool isset__appIsUnique = false;
-  bool isset__appKnownPort = false;
   bool isset__appExpirationDelay = false;
 
   while (true)
@@ -73,14 +72,6 @@ uint32_t Registration::read(::apache::thrift::protocol::TProtocol* iprot) {
         break;
       case 5:
         if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->_appKnownPort);
-          isset__appKnownPort = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 6:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
           xfer += iprot->readI32(this->_appExpirationDelay);
           isset__appExpirationDelay = true;
         } else {
@@ -103,8 +94,6 @@ uint32_t Registration::read(::apache::thrift::protocol::TProtocol* iprot) {
   if (!isset__appId)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__appIsUnique)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset__appKnownPort)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__appExpirationDelay)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -131,11 +120,7 @@ uint32_t Registration::write(::apache::thrift::protocol::TProtocol* oprot) const
   xfer += oprot->writeI32(this->_appIsUnique);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_appKnownPort", ::apache::thrift::protocol::T_I32, 5);
-  xfer += oprot->writeI32(this->_appKnownPort);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("_appExpirationDelay", ::apache::thrift::protocol::T_I32, 6);
+  xfer += oprot->writeFieldBegin("_appExpirationDelay", ::apache::thrift::protocol::T_I32, 5);
   xfer += oprot->writeI32(this->_appExpirationDelay);
   xfer += oprot->writeFieldEnd();
 
@@ -150,7 +135,6 @@ void swap(Registration &a, Registration &b) {
   swap(a._appName, b._appName);
   swap(a._appId, b._appId);
   swap(a._appIsUnique, b._appIsUnique);
-  swap(a._appKnownPort, b._appKnownPort);
   swap(a._appExpirationDelay, b._appExpirationDelay);
 }
 

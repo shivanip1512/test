@@ -8,6 +8,5 @@ struct Registration {
     2: required     string                          _appName;
     3: required     i32                             _appId;
     4: required     i32                             _appIsUnique;
-    5: required     i32                             _appKnownPort;
-    6: required     i32                             _appExpirationDelay;
+    5: required     i32                             _appExpirationDelay;
 }

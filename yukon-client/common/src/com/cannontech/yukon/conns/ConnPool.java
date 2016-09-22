@@ -79,7 +79,6 @@ public class ConnPool {
         // App name will be value of cti.app.name system property.
         reg.setAppName(BootstrapUtils.getApplicationName());
         reg.setAppIsUnique(0);
-        reg.setAppKnownPort(0);
         reg.setAppExpirationDelay(900); // 15 minutes should be OK
 
         connToDispatch.setRegistrationMsg(reg);

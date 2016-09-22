@@ -171,7 +171,6 @@ public class WPSCMain implements Runnable {
             Registration reg = new Registration();
             reg.setAppName(CtiUtilities.getAppRegistration());
             reg.setAppIsUnique(0);
-            reg.setAppKnownPort(0);
             reg.setAppExpirationDelay(1000000);
 
             PointRegistration pointReg = new PointRegistration();

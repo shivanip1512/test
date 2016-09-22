@@ -47,7 +47,6 @@ public static void main(String[] args) {
 	com.cannontech.message.dispatch.message.Registration reg = new com.cannontech.message.dispatch.message.Registration();
 	reg.setAppName("Point Change Source - Java" + (new java.util.Date()).getTime() );
 	reg.setAppIsUnique(0);
-	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay( 1000000 );
 
 	conn.write( reg );

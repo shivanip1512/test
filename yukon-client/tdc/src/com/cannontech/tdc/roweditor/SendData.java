@@ -44,7 +44,6 @@ private void buildRegistration()
 	Registration reg = new Registration();
 	reg.setAppName( BootstrapUtils.getApplicationName() );
 	reg.setAppIsUnique(0);
-	reg.setAppKnownPort(0);
 	reg.setAppExpirationDelay( 300 );  // 5 minutes
 	reg.setPriority( 15 );
 

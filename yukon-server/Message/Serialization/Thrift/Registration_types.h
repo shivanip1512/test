@@ -21,10 +21,10 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class Registration {
  public:
 
-  static const char* ascii_fingerprint; // = "C2204ADD0A0730ECBED9A40D93FF4569";
-  static const uint8_t binary_fingerprint[16]; // = {0xC2,0x20,0x4A,0xDD,0x0A,0x07,0x30,0xEC,0xBE,0xD9,0xA4,0x0D,0x93,0xFF,0x45,0x69};
+  static const char* ascii_fingerprint; // = "8B66031ACDC8DED3DC5A35ED21FC26AA";
+  static const uint8_t binary_fingerprint[16]; // = {0x8B,0x66,0x03,0x1A,0xCD,0xC8,0xDE,0xD3,0xDC,0x5A,0x35,0xED,0x21,0xFC,0x26,0xAA};
 
-  Registration() : _appName(), _appId(0), _appIsUnique(0), _appKnownPort(0), _appExpirationDelay(0) {
+  Registration() : _appName(), _appId(0), _appIsUnique(0), _appExpirationDelay(0) {
   }
 
   virtual ~Registration() throw() {}
@@ -33,7 +33,6 @@ class Registration {
   std::string _appName;
   int32_t _appId;
   int32_t _appIsUnique;
-  int32_t _appKnownPort;
   int32_t _appExpirationDelay;
 
   void __set__baseMessage(const  ::Cti::Messaging::Serialization::Thrift::Message& val) {
@@ -52,10 +51,6 @@ class Registration {
     _appIsUnique = val;
   }
 
-  void __set__appKnownPort(const int32_t val) {
-    _appKnownPort = val;
-  }
-
   void __set__appExpirationDelay(const int32_t val) {
     _appExpirationDelay = val;
   }
@@ -69,8 +64,6 @@ class Registration {
     if (!(_appId == rhs._appId))
       return false;
     if (!(_appIsUnique == rhs._appIsUnique))
-      return false;
-    if (!(_appKnownPort == rhs._appKnownPort))
       return false;
     if (!(_appExpirationDelay == rhs._appExpirationDelay))
       return false;

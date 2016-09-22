@@ -37,8 +37,7 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
   private static final org.apache.thrift.protocol.TField _APP_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("_appName", org.apache.thrift.protocol.TType.STRING, (short)2);
   private static final org.apache.thrift.protocol.TField _APP_ID_FIELD_DESC = new org.apache.thrift.protocol.TField("_appId", org.apache.thrift.protocol.TType.I32, (short)3);
   private static final org.apache.thrift.protocol.TField _APP_IS_UNIQUE_FIELD_DESC = new org.apache.thrift.protocol.TField("_appIsUnique", org.apache.thrift.protocol.TType.I32, (short)4);
-  private static final org.apache.thrift.protocol.TField _APP_KNOWN_PORT_FIELD_DESC = new org.apache.thrift.protocol.TField("_appKnownPort", org.apache.thrift.protocol.TType.I32, (short)5);
-  private static final org.apache.thrift.protocol.TField _APP_EXPIRATION_DELAY_FIELD_DESC = new org.apache.thrift.protocol.TField("_appExpirationDelay", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField _APP_EXPIRATION_DELAY_FIELD_DESC = new org.apache.thrift.protocol.TField("_appExpirationDelay", org.apache.thrift.protocol.TType.I32, (short)5);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -50,7 +49,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
   private String _appName; // required
   private int _appId; // required
   private int _appIsUnique; // required
-  private int _appKnownPort; // required
   private int _appExpirationDelay; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -59,8 +57,7 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
     _APP_NAME((short)2, "_appName"),
     _APP_ID((short)3, "_appId"),
     _APP_IS_UNIQUE((short)4, "_appIsUnique"),
-    _APP_KNOWN_PORT((short)5, "_appKnownPort"),
-    _APP_EXPIRATION_DELAY((short)6, "_appExpirationDelay");
+    _APP_EXPIRATION_DELAY((short)5, "_appExpirationDelay");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -83,9 +80,7 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
           return _APP_ID;
         case 4: // _APP_IS_UNIQUE
           return _APP_IS_UNIQUE;
-        case 5: // _APP_KNOWN_PORT
-          return _APP_KNOWN_PORT;
-        case 6: // _APP_EXPIRATION_DELAY
+        case 5: // _APP_EXPIRATION_DELAY
           return _APP_EXPIRATION_DELAY;
         default:
           return null;
@@ -129,8 +124,7 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
   // isset id assignments
   private static final int ___APPID_ISSET_ID = 0;
   private static final int ___APPISUNIQUE_ISSET_ID = 1;
-  private static final int ___APPKNOWNPORT_ISSET_ID = 2;
-  private static final int ___APPEXPIRATIONDELAY_ISSET_ID = 3;
+  private static final int ___APPEXPIRATIONDELAY_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -142,8 +136,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
     tmpMap.put(_Fields._APP_ID, new org.apache.thrift.meta_data.FieldMetaData("_appId", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields._APP_IS_UNIQUE, new org.apache.thrift.meta_data.FieldMetaData("_appIsUnique", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
-    tmpMap.put(_Fields._APP_KNOWN_PORT, new org.apache.thrift.meta_data.FieldMetaData("_appKnownPort", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields._APP_EXPIRATION_DELAY, new org.apache.thrift.meta_data.FieldMetaData("_appExpirationDelay", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
@@ -159,7 +151,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
     String _appName,
     int _appId,
     int _appIsUnique,
-    int _appKnownPort,
     int _appExpirationDelay)
   {
     this();
@@ -169,8 +160,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
     set_appIdIsSet(true);
     this._appIsUnique = _appIsUnique;
     set_appIsUniqueIsSet(true);
-    this._appKnownPort = _appKnownPort;
-    set_appKnownPortIsSet(true);
     this._appExpirationDelay = _appExpirationDelay;
     set_appExpirationDelayIsSet(true);
   }
@@ -188,7 +177,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
     }
     this._appId = other._appId;
     this._appIsUnique = other._appIsUnique;
-    this._appKnownPort = other._appKnownPort;
     this._appExpirationDelay = other._appExpirationDelay;
   }
 
@@ -204,8 +192,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
     this._appId = 0;
     set_appIsUniqueIsSet(false);
     this._appIsUnique = 0;
-    set_appKnownPortIsSet(false);
-    this._appKnownPort = 0;
     set_appExpirationDelayIsSet(false);
     this._appExpirationDelay = 0;
   }
@@ -300,28 +286,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, ___APPISUNIQUE_ISSET_ID, value);
   }
 
-  public int get_appKnownPort() {
-    return this._appKnownPort;
-  }
-
-  public void set_appKnownPort(int _appKnownPort) {
-    this._appKnownPort = _appKnownPort;
-    set_appKnownPortIsSet(true);
-  }
-
-  public void unset_appKnownPort() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, ___APPKNOWNPORT_ISSET_ID);
-  }
-
-  /** Returns true if field _appKnownPort is set (has been assigned a value) and false otherwise */
-  public boolean isSet_appKnownPort() {
-    return EncodingUtils.testBit(__isset_bitfield, ___APPKNOWNPORT_ISSET_ID);
-  }
-
-  public void set_appKnownPortIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, ___APPKNOWNPORT_ISSET_ID, value);
-  }
-
   public int get_appExpirationDelay() {
     return this._appExpirationDelay;
   }
@@ -378,14 +342,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
       }
       break;
 
-    case _APP_KNOWN_PORT:
-      if (value == null) {
-        unset_appKnownPort();
-      } else {
-        set_appKnownPort((Integer)value);
-      }
-      break;
-
     case _APP_EXPIRATION_DELAY:
       if (value == null) {
         unset_appExpirationDelay();
@@ -411,9 +367,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
     case _APP_IS_UNIQUE:
       return Integer.valueOf(get_appIsUnique());
 
-    case _APP_KNOWN_PORT:
-      return Integer.valueOf(get_appKnownPort());
-
     case _APP_EXPIRATION_DELAY:
       return Integer.valueOf(get_appExpirationDelay());
 
@@ -436,8 +389,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
       return isSet_appId();
     case _APP_IS_UNIQUE:
       return isSet_appIsUnique();
-    case _APP_KNOWN_PORT:
-      return isSet_appKnownPort();
     case _APP_EXPIRATION_DELAY:
       return isSet_appExpirationDelay();
     }
@@ -490,15 +441,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
       if (!(this_present__appIsUnique && that_present__appIsUnique))
         return false;
       if (this._appIsUnique != that._appIsUnique)
-        return false;
-    }
-
-    boolean this_present__appKnownPort = true;
-    boolean that_present__appKnownPort = true;
-    if (this_present__appKnownPort || that_present__appKnownPort) {
-      if (!(this_present__appKnownPort && that_present__appKnownPort))
-        return false;
-      if (this._appKnownPort != that._appKnownPort)
         return false;
     }
 
@@ -567,16 +509,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSet_appKnownPort()).compareTo(typedOther.isSet_appKnownPort());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSet_appKnownPort()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this._appKnownPort, typedOther._appKnownPort);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSet_appExpirationDelay()).compareTo(typedOther.isSet_appExpirationDelay());
     if (lastComparison != 0) {
       return lastComparison;
@@ -631,10 +563,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
     sb.append(this._appIsUnique);
     first = false;
     if (!first) sb.append(", ");
-    sb.append("_appKnownPort:");
-    sb.append(this._appKnownPort);
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("_appExpirationDelay:");
     sb.append(this._appExpirationDelay);
     first = false;
@@ -658,10 +586,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
 
     if (!isSet_appIsUnique()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field '_appIsUnique' is unset! Struct:" + toString());
-    }
-
-    if (!isSet_appKnownPort()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field '_appKnownPort' is unset! Struct:" + toString());
     }
 
     if (!isSet_appExpirationDelay()) {
@@ -743,15 +667,7 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // _APP_KNOWN_PORT
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct._appKnownPort = iprot.readI32();
-              struct.set_appKnownPortIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 6: // _APP_EXPIRATION_DELAY
+          case 5: // _APP_EXPIRATION_DELAY
             if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
               struct._appExpirationDelay = iprot.readI32();
               struct.set_appExpirationDelayIsSet(true);
@@ -788,9 +704,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
       oprot.writeFieldBegin(_APP_IS_UNIQUE_FIELD_DESC);
       oprot.writeI32(struct._appIsUnique);
       oprot.writeFieldEnd();
-      oprot.writeFieldBegin(_APP_KNOWN_PORT_FIELD_DESC);
-      oprot.writeI32(struct._appKnownPort);
-      oprot.writeFieldEnd();
       oprot.writeFieldBegin(_APP_EXPIRATION_DELAY_FIELD_DESC);
       oprot.writeI32(struct._appExpirationDelay);
       oprot.writeFieldEnd();
@@ -815,7 +728,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
       oprot.writeString(struct._appName);
       oprot.writeI32(struct._appId);
       oprot.writeI32(struct._appIsUnique);
-      oprot.writeI32(struct._appKnownPort);
       oprot.writeI32(struct._appExpirationDelay);
     }
 
@@ -831,8 +743,6 @@ public class Registration implements org.apache.thrift.TBase<Registration, Regis
       struct.set_appIdIsSet(true);
       struct._appIsUnique = iprot.readI32();
       struct.set_appIsUniqueIsSet(true);
-      struct._appKnownPort = iprot.readI32();
-      struct.set_appKnownPortIsSet(true);
       struct._appExpirationDelay = iprot.readI32();
       struct.set_appExpirationDelayIsSet(true);
     }

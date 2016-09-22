@@ -81,7 +81,6 @@ public class VGConnPounder {
             reg.setAppName("VGPounder " + Thread.currentThread().getId());
 
             reg.setAppIsUnique(0);
-            reg.setAppKnownPort(0);
             reg.setAppExpirationDelay(5000);
             PointRegistration pReg = new PointRegistration();
             pReg.setRegFlags(PointRegistration.REG_ALL_POINTS

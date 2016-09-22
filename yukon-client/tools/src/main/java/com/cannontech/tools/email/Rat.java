@@ -219,7 +219,6 @@ private boolean executeCheckDispatchConnection()
 					
 		reg.setAppName( CtiUtilities.getAppRegistration() );
 		reg.setAppIsUnique(1);  //this app IS unique
-		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 60 );  // 1 minutes
 		
 		com.cannontech.message.dispatch.DispatchClientConnection connection = 

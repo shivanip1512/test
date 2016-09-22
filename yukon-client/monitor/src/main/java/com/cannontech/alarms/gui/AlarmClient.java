@@ -38,7 +38,6 @@ public class AlarmClient extends com.cannontech.clientutils.ClientBase
 		Registration reg = new Registration();
 		reg.setAppName( CtiUtilities.getAppRegistration() );
 		reg.setAppIsUnique(0);
-		reg.setAppKnownPort(0);
 		reg.setAppExpirationDelay( 300 );  // 5 minutes
 
 		//we must do this for all displays now that alarms show on all displays!
