@@ -561,4 +561,8 @@ public class DataStreamingAttributeHelper {
     public Set<PaoType> getAllSupportedPaoTypes() {
         return typeToSupportedAttributes.keySet();
     }
+    
+    public Multimap<PaoType, BuiltInAttribute> getAllTypesAndAttributes(){
+        return typeToSupportedAttributes;
+    }
 }
