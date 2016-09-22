@@ -13,6 +13,8 @@
 
 #include "boost/algorithm/string/replace.hpp"
 
+#include <atomic>
+
 namespace Cti {
 namespace Logging {
 
@@ -105,6 +107,14 @@ Logger::~Logger()
 
 static const size_t MaxMessageSize = 1024 * 1024;  //  1 MB, which should be enough for all sane log entries
 
+struct minute_tz
+{
+    unsigned quarterHours;
+    char tzName[10];  //  Longest name in CtiTime::getTZ() is 'BRST-BRA', or 9 characters including null.
+};
+
+std::atomic<minute_tz> currentTz { minute_tz{ 1'000'000, { 0 } } };
+
 void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const char* file, const char* func, int line)
 {
     if( LogManager::inShutdown )
@@ -139,7 +149,24 @@ void Logger::formatAndForceLog(Level level, StreamBufferSink& logStream, const c
         methodName = itr->second.c_str();
     }
 
-    log4cxx::MDC::put("tz", CtiTime::now().getTZ());
+    auto tz = currentTz.load();
+    const unsigned quarterHours = std::time(nullptr) / 900 % 1'000'000;  //  around 3 years of quarter-hours before wraparound
+
+    //  Is this the same quarter of the hour as the last TZ check?
+    if( tz.quarterHours != quarterHours )
+    {
+        minute_tz newTz { quarterHours, {0} };
+
+        auto tzName = CtiTime::now().getTZ();
+
+        strcpy_s(newTz.tzName, tzName.c_str());
+
+        currentTz.compare_exchange_strong(tz, newTz);
+
+        tz = newTz;
+    }
+
+    log4cxx::MDC::put("tz", std::string(tz.tzName));
 
     const log4cxx::spi::LoggingEventPtr event =
             new log4cxx::spi::LoggingEvent(
