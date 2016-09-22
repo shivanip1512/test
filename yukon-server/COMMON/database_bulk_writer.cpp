@@ -155,11 +155,21 @@ std::set<long> DatabaseBulkWriter<ColumnCount>::writeRows(DatabaseConnection& co
 
         transaction.emplace(conn);
 
-        unsigned rowsWritten = 0, logLimit = ChunkSize;
+        unsigned rowsWritten = 0, logLimit = ChunkSize, lastChunkSize = 0;
+
+        DatabaseWriter inserter{ conn };
 
         for( auto chunk : Cti::Coroutines::chunked(rows, ChunkSize) )
         {
-            DatabaseWriter inserter{ conn, getInsertSql(chunk.size()) };
+            if( lastChunkSize != chunk.size() )
+            {
+                inserter.setCommandText(getInsertSql(chunk.size()));
+                lastChunkSize = chunk.size();
+            }
+            else
+            {
+                inserter.reset();
+            }
 
             for( auto& record : chunk ) 
             {

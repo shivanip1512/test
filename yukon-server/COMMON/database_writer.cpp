@@ -58,6 +58,18 @@ void DatabaseWriter::executeWithDatabaseException()
     }
 }
 
+void DatabaseWriter::reset()
+{
+    try
+    {
+        _command << SAPos(1);
+    }
+    catch(SAException &x)
+    {
+        DatabaseConnection::throwDatabaseException(_command.Connection(), x);
+    }
+}
+
 RowWriter &DatabaseWriter::operator<<(const SpecialValues operand)
 {
     _command << SANull();

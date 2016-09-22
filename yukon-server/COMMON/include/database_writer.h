@@ -24,6 +24,8 @@ public:
     bool execute();
     void executeWithDatabaseException();
 
+    void reset();  //  Reset the insert position so the command can be reused.
+
     RowWriter &operator<<(const SpecialValues operand);
     RowWriter &operator<<(const bool operand);
     RowWriter &operator<<(const short operand);
