@@ -38,6 +38,7 @@
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.gatewayLoading">Gateway Loading %</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.attributes">Attributes</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.interval">Interval</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.results.exportFileName">DataStreamingSummary</entry>
     
     <!-- DATA STREAMING DISCREPANCIES PAGE-->
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.pageName">Data Streaming Discrepancies</entry>

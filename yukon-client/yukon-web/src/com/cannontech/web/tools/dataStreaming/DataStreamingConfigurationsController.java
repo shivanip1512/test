@@ -1,5 +1,6 @@
 package com.cannontech.web.tools.dataStreaming;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.joda.time.Instant;
@@ -60,6 +62,7 @@ import com.cannontech.web.rfn.dataStreaming.model.SummarySearchResult;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.WebFileUtils;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -256,7 +259,7 @@ public class DataStreamingConfigurationsController {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.tools.dataStreaming.summary.filter.maxLessThanMinError"));
         } else {
             try {
-                results = getSearchResults(searchFilter, accessor, model);
+                results = getSearchResults(searchFilter, accessor);
             } catch (DataStreamingConfigException e) {
                 flash.setError(e.getMessageSourceResolvable());
             }
@@ -300,12 +303,49 @@ public class DataStreamingConfigurationsController {
         
     }
     
-    private List<SummarySearchResult> getSearchResults(SummarySearchCriteria criteria, MessageSourceAccessor accessor, ModelMap model) throws DataStreamingConfigException {
+    private List<SummarySearchResult> getSearchResults(SummarySearchCriteria criteria, MessageSourceAccessor accessor) throws DataStreamingConfigException {
         List<SummarySearchResult> results = dataStreamingService.search(criteria);
         for(SummarySearchResult result: results){
             result.getConfig().setAccessor(accessor);
         }
         return results;
+    }
+    
+    private void downloadSearchResults(SummarySearchCriteria criteria, HttpServletResponse response, MessageSourceAccessor accessor)
+            throws DataStreamingConfigException, IOException {
+        
+        List<SummarySearchResult> results = getSearchResults(criteria, accessor);
+        
+        List<String> columnNames = Lists.newArrayList();
+
+        columnNames.add(accessor.getMessage("yukon.web.modules.tools.dataStreaming.summary.results.deviceName"));
+        columnNames.add(accessor.getMessage("yukon.web.modules.tools.dataStreaming.summary.results.deviceType"));
+        columnNames.add(accessor.getMessage("yukon.web.modules.tools.dataStreaming.summary.results.serialNumber"));
+        columnNames.add(accessor.getMessage("yukon.web.modules.tools.dataStreaming.summary.results.gatewayName"));
+        columnNames.add(accessor.getMessage("yukon.web.modules.tools.dataStreaming.summary.results.gatewayLoading"));
+        columnNames.add(accessor.getMessage("yukon.web.modules.tools.dataStreaming.summary.results.attributes"));
+        columnNames.add(accessor.getMessage("yukon.web.modules.tools.dataStreaming.summary.results.interval"));
+        
+        List<List<String>> dataGrid = getGrid(results, accessor);
+        
+        String csvFileName = accessor.getMessage("yukon.web.modules.tools.dataStreaming.summary.results.exportFileName");
+        WebFileUtils.writeToCSV(response, columnNames, dataGrid, csvFileName + ".csv");
+    }
+    
+    private List<List<String>> getGrid(List<SummarySearchResult> results, MessageSourceAccessor accessor){
+        List<List<String>> lists = new ArrayList<>();
+        for(SummarySearchResult result: results){
+            List<String> row = new ArrayList<>();
+            row.add(result.getMeter().getName());
+            row.add(accessor.getMessage(result.getMeter().getPaoIdentifier().getPaoType().getFormatKey()));
+            row.add(result.getMeter().getRfnIdentifier().getSensorSerialNumber());
+            row.add(result.getGateway().getName());
+            row.add(String.valueOf(result.getGateway().getData().getDataStreamingLoadingPercent()));
+            row.add(result.getConfig().getCommaDelimitedAttributes());
+            row.add(String.valueOf(result.getConfig().getSelectedInterval()));
+            lists.add(row);
+        }
+        return lists;
     }
     
     @RequestMapping("discrepancies")
