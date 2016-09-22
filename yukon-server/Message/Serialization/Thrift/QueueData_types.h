@@ -22,8 +22,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class QueueData {
  public:
 
-  static const char* ascii_fingerprint; // = "E1B099B9CBD6C096D77302BA258A2D57";
-  static const uint8_t binary_fingerprint[16]; // = {0xE1,0xB0,0x99,0xB9,0xCB,0xD6,0xC0,0x96,0xD7,0x73,0x02,0xBA,0x25,0x8A,0x2D,0x57};
+  static const char* ascii_fingerprint; // = "70BAF1247359F8430FE9A0007C49E343";
+  static const uint8_t binary_fingerprint[16]; // = {0x70,0xBA,0xF1,0x24,0x73,0x59,0xF8,0x43,0x0F,0xE9,0xA0,0x00,0x7C,0x49,0xE3,0x43};
 
   QueueData() : _id(0), _queueCount(0), _rate(0), _requestId(0), _requestIdCount(0), _aTime(0), _userMessageId(0) {
   }

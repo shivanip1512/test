@@ -10,8 +10,8 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
-const char* MCUpdateSchedule::ascii_fingerprint = "B9FAC7CA596E398FF258712F4CBCB9B3";
-const uint8_t MCUpdateSchedule::binary_fingerprint[16] = {0xB9,0xFA,0xC7,0xCA,0x59,0x6E,0x39,0x8F,0xF2,0x58,0x71,0x2F,0x4C,0xBC,0xB9,0xB3};
+const char* MCUpdateSchedule::ascii_fingerprint = "DA8D51555DA527AACB238E53366D9687";
+const uint8_t MCUpdateSchedule::binary_fingerprint[16] = {0xDA,0x8D,0x51,0x55,0x5D,0xA5,0x27,0xAA,0xCB,0x23,0x8E,0x53,0x36,0x6D,0x96,0x87};
 
 uint32_t MCUpdateSchedule::read(::apache::thrift::protocol::TProtocol* iprot) {
 

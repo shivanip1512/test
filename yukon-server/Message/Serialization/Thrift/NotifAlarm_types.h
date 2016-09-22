@@ -22,8 +22,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class NotifAlarm {
  public:
 
-  static const char* ascii_fingerprint; // = "7581FA8360D6B3DB529BCDA736EBD292";
-  static const uint8_t binary_fingerprint[16]; // = {0x75,0x81,0xFA,0x83,0x60,0xD6,0xB3,0xDB,0x52,0x9B,0xCD,0xA7,0x36,0xEB,0xD2,0x92};
+  static const char* ascii_fingerprint; // = "3271EE90AB14A73F013B6B230554E226";
+  static const uint8_t binary_fingerprint[16]; // = {0x32,0x71,0xEE,0x90,0xAB,0x14,0xA7,0x3F,0x01,0x3B,0x6B,0x23,0x05,0x54,0xE2,0x26};
 
   NotifAlarm() : _categoryId(0), _pointId(0), _condition(0), _value(0), _alarmTimestamp(0), _acknowledged(0), _abnormal(0) {
   }

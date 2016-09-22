@@ -186,8 +186,8 @@ void swap(CCVoltageRegulatorItem &a, CCVoltageRegulatorItem &b) {
   swap(a._lastCommandedOperatingMode, b._lastCommandedOperatingMode);
 }
 
-const char* CCVoltageRegulator::ascii_fingerprint = "C1EF3CA1AB399EFA499138D224A62CBE";
-const uint8_t CCVoltageRegulator::binary_fingerprint[16] = {0xC1,0xEF,0x3C,0xA1,0xAB,0x39,0x9E,0xFA,0x49,0x91,0x38,0xD2,0x24,0xA6,0x2C,0xBE};
+const char* CCVoltageRegulator::ascii_fingerprint = "8EA7C2F999318C547258E15992316C3B";
+const uint8_t CCVoltageRegulator::binary_fingerprint[16] = {0x8E,0xA7,0xC2,0xF9,0x99,0x31,0x8C,0x54,0x72,0x58,0xE1,0x59,0x92,0x31,0x6C,0x3B};
 
 uint32_t CCVoltageRegulator::read(::apache::thrift::protocol::TProtocol* iprot) {
 

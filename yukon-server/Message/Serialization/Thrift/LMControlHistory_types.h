@@ -22,8 +22,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class LMControlHistory {
  public:
 
-  static const char* ascii_fingerprint; // = "D6444B752A09867B07664781ABA900FA";
-  static const uint8_t binary_fingerprint[16]; // = {0xD6,0x44,0x4B,0x75,0x2A,0x09,0x86,0x7B,0x07,0x66,0x47,0x81,0xAB,0xA9,0x00,0xFA};
+  static const char* ascii_fingerprint; // = "C89A23896D05209BC3AC57BEAD75047E";
+  static const uint8_t binary_fingerprint[16]; // = {0xC8,0x9A,0x23,0x89,0x6D,0x05,0x20,0x9B,0xC3,0xAC,0x57,0xBE,0xAD,0x75,0x04,0x7E};
 
   LMControlHistory() : _paoId(0), _pointId(0), _rawState(0), _startDateTime(0), _controlDuration(0), _reductionRatio(0), _controlType(), _activeRestore(), _reductionValue(0), _controlPriority(0), _associationKey(0) {
   }

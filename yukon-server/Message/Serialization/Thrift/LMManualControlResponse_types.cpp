@@ -218,8 +218,8 @@ void swap(LMConstraintViolation &a, LMConstraintViolation &b) {
   swap(a._datetimeParams, b._datetimeParams);
 }
 
-const char* LMManualControlResponse::ascii_fingerprint = "2A3E023AC8CC5CA71C606F06223082F6";
-const uint8_t LMManualControlResponse::binary_fingerprint[16] = {0x2A,0x3E,0x02,0x3A,0xC8,0xCC,0x5C,0xA7,0x1C,0x60,0x6F,0x06,0x22,0x30,0x82,0xF6};
+const char* LMManualControlResponse::ascii_fingerprint = "F425FDEBF3F494680FC8117D3BE7F6FF";
+const uint8_t LMManualControlResponse::binary_fingerprint[16] = {0xF4,0x25,0xFD,0xEB,0xF3,0xF4,0x94,0x68,0x0F,0xC8,0x11,0x7D,0x3B,0xE7,0xF6,0xFF};
 
 uint32_t LMManualControlResponse::read(::apache::thrift::protocol::TProtocol* iprot) {
 

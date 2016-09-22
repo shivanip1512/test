@@ -22,8 +22,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class NotifLMControl {
  public:
 
-  static const char* ascii_fingerprint; // = "45C547D2A9BD1CBDB5D71FB97BFEA5D9";
-  static const uint8_t binary_fingerprint[16]; // = {0x45,0xC5,0x47,0xD2,0xA9,0xBD,0x1C,0xBD,0xB5,0xD7,0x1F,0xB9,0x7B,0xFE,0xA5,0xD9};
+  static const char* ascii_fingerprint; // = "253D0364D98DF8B4DA7C1B4CD349BBEA";
+  static const uint8_t binary_fingerprint[16]; // = {0x25,0x3D,0x03,0x64,0xD9,0x8D,0xF8,0xB4,0xDA,0x7C,0x1B,0x4C,0xD3,0x49,0xBB,0xEA};
 
   NotifLMControl() : _notifType(0), _programId(0), _startTime(0), _stopTime(0) {
   }

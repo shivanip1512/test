@@ -22,8 +22,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class RequestCancel {
  public:
 
-  static const char* ascii_fingerprint; // = "C1B4411B1259E617F49574C97B32016A";
-  static const uint8_t binary_fingerprint[16]; // = {0xC1,0xB4,0x41,0x1B,0x12,0x59,0xE6,0x17,0xF4,0x95,0x74,0xC9,0x7B,0x32,0x01,0x6A};
+  static const char* ascii_fingerprint; // = "31749D67F4B09DBC64836C3E5D56DD4E";
+  static const uint8_t binary_fingerprint[16]; // = {0x31,0x74,0x9D,0x67,0xF4,0xB0,0x9D,0xBC,0x64,0x83,0x6C,0x3E,0x5D,0x56,0xDD,0x4E};
 
   RequestCancel() : _RequestId(0), _RequestIdCount(0), _Time(0), _UserMessageId(0) {
   }

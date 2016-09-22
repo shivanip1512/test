@@ -21,8 +21,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class NotifEmail {
  public:
 
-  static const char* ascii_fingerprint; // = "9628938E92DC76069D2A9977D3E3E9D1";
-  static const uint8_t binary_fingerprint[16]; // = {0x96,0x28,0x93,0x8E,0x92,0xDC,0x76,0x06,0x9D,0x2A,0x99,0x77,0xD3,0xE3,0xE9,0xD1};
+  static const char* ascii_fingerprint; // = "16DE07F42813B37775F8BF399424BA2C";
+  static const uint8_t binary_fingerprint[16]; // = {0x16,0xDE,0x07,0xF4,0x28,0x13,0xB3,0x77,0x75,0xF8,0xBF,0x39,0x94,0x24,0xBA,0x2C};
 
   NotifEmail() : _to(), _notifGroupId(0), _subject(), _body(), _toCc(), _toBcc() {
   }

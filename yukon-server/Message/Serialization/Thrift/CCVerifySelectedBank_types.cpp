@@ -10,8 +10,8 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
-const char* CCVerifySelectedBank::ascii_fingerprint = "3F6BDE92304BE3259EDCD5F547D6C839";
-const uint8_t CCVerifySelectedBank::binary_fingerprint[16] = {0x3F,0x6B,0xDE,0x92,0x30,0x4B,0xE3,0x25,0x9E,0xDC,0xD5,0xF5,0x47,0xD6,0xC8,0x39};
+const char* CCVerifySelectedBank::ascii_fingerprint = "6F993B99C686AEFF646EF5D3310105CC";
+const uint8_t CCVerifySelectedBank::binary_fingerprint[16] = {0x6F,0x99,0x3B,0x99,0xC6,0x86,0xAE,0xFF,0x64,0x6E,0xF5,0xD3,0x31,0x01,0x05,0xCC};
 
 uint32_t CCVerifySelectedBank::read(::apache::thrift::protocol::TProtocol* iprot) {
 

@@ -22,8 +22,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class LMManualControlRequest {
  public:
 
-  static const char* ascii_fingerprint; // = "67DC6019ED67746C4140FFA375E80620";
-  static const uint8_t binary_fingerprint[16]; // = {0x67,0xDC,0x60,0x19,0xED,0x67,0x74,0x6C,0x41,0x40,0xFF,0xA3,0x75,0xE8,0x06,0x20};
+  static const char* ascii_fingerprint; // = "196D2B69730CCB5D4A431D1231FE30FF";
+  static const uint8_t binary_fingerprint[16]; // = {0x19,0x6D,0x2B,0x69,0x73,0x0C,0xCB,0x5D,0x4A,0x43,0x1D,0x12,0x31,0xFE,0x30,0xFF};
 
   LMManualControlRequest() : _command(0), _paoId(0), _notifyTime(0), _startTime(0), _stopTime(0), _startGear(0), _startPriority(0), _additionalInfo(), _constraintCmd(0) {
   }

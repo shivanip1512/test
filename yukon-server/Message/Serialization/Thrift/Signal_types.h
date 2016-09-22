@@ -21,8 +21,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class Signal {
  public:
 
-  static const char* ascii_fingerprint; // = "6F6E54C63099F9C060E7EDAA57040E1D";
-  static const uint8_t binary_fingerprint[16]; // = {0x6F,0x6E,0x54,0xC6,0x30,0x99,0xF9,0xC0,0x60,0xE7,0xED,0xAA,0x57,0x04,0x0E,0x1D};
+  static const char* ascii_fingerprint; // = "8C73BB52E30207367A87022CFD52FA96";
+  static const uint8_t binary_fingerprint[16]; // = {0x8C,0x73,0xBB,0x52,0xE3,0x02,0x07,0x36,0x7A,0x87,0x02,0x2C,0xFD,0x52,0xFA,0x96};
 
   Signal() : _id(0), _logType(0), _signalCategory(0), _text(), _additionalInfo(), _tags(0), _condition(0), _signalMillis(0), _pointValue(0) {
   }

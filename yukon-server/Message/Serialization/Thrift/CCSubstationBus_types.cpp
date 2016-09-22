@@ -2466,8 +2466,8 @@ void swap(CCSubstationBusItem &a, CCSubstationBusItem &b) {
   swap(a._ccFeeders, b._ccFeeders);
 }
 
-const char* CCSubstationBus::ascii_fingerprint = "600F7031AE0D59102A83C54C5AF2CB7A";
-const uint8_t CCSubstationBus::binary_fingerprint[16] = {0x60,0x0F,0x70,0x31,0xAE,0x0D,0x59,0x10,0x2A,0x83,0xC5,0x4C,0x5A,0xF2,0xCB,0x7A};
+const char* CCSubstationBus::ascii_fingerprint = "10569DEB8E59F1F64C59B4597C203F12";
+const uint8_t CCSubstationBus::binary_fingerprint[16] = {0x10,0x56,0x9D,0xEB,0x8E,0x59,0xF1,0xF6,0x4C,0x59,0xB4,0x59,0x7C,0x20,0x3F,0x12};
 
 uint32_t CCSubstationBus::read(::apache::thrift::protocol::TProtocol* iprot) {
 

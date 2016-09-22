@@ -10,8 +10,8 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
-const char* CCChangeOpState::ascii_fingerprint = "615ECF08FC281FF080A895A1DE6B3F46";
-const uint8_t CCChangeOpState::binary_fingerprint[16] = {0x61,0x5E,0xCF,0x08,0xFC,0x28,0x1F,0xF0,0x80,0xA8,0x95,0xA1,0xDE,0x6B,0x3F,0x46};
+const char* CCChangeOpState::ascii_fingerprint = "89F48F00ED6E98D08FC44833E3BE295F";
+const uint8_t CCChangeOpState::binary_fingerprint[16] = {0x89,0xF4,0x8F,0x00,0xED,0x6E,0x98,0xD0,0x8F,0xC4,0x48,0x33,0xE3,0xBE,0x29,0x5F};
 
 uint32_t CCChangeOpState::read(::apache::thrift::protocol::TProtocol* iprot) {
 

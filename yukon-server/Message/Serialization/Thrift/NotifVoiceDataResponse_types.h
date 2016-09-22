@@ -21,8 +21,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class NotifVoiceDataResponse {
  public:
 
-  static const char* ascii_fingerprint; // = "7559E3B3A20719652303821AF204C89B";
-  static const uint8_t binary_fingerprint[16]; // = {0x75,0x59,0xE3,0xB3,0xA2,0x07,0x19,0x65,0x23,0x03,0x82,0x1A,0xF2,0x04,0xC8,0x9B};
+  static const char* ascii_fingerprint; // = "0EF691F67A3DC8DA9138353473E79516";
+  static const uint8_t binary_fingerprint[16]; // = {0x0E,0xF6,0x91,0xF6,0x7A,0x3D,0xC8,0xDA,0x91,0x38,0x35,0x34,0x73,0xE7,0x95,0x16};
 
   NotifVoiceDataResponse() : _callToken(), _xmlData(), _contactId(0) {
   }

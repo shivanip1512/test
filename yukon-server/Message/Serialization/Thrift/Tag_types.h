@@ -22,8 +22,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class Tag {
  public:
 
-  static const char* ascii_fingerprint; // = "FAF0055B52874C9F3CC62D9382FA9A4B";
-  static const uint8_t binary_fingerprint[16]; // = {0xFA,0xF0,0x05,0x5B,0x52,0x87,0x4C,0x9F,0x3C,0xC6,0x2D,0x93,0x82,0xFA,0x9A,0x4B};
+  static const char* ascii_fingerprint; // = "DF7CB07F9A8393F6FEF1AE4C3F37FADC";
+  static const uint8_t binary_fingerprint[16]; // = {0xDF,0x7C,0xB0,0x7F,0x9A,0x83,0x93,0xF6,0xFE,0xF1,0xAE,0x4C,0x3F,0x37,0xFA,0xDC};
 
   Tag() : _instanceId(0), _pointId(0), _tagId(0), _descriptionStr(), _action(0), _tagTime(0), _referenceStr(), _taggedForStr(), _clientMsgId(0) {
   }

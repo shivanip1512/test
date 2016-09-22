@@ -22,8 +22,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class LMEnergyExchangeControl {
  public:
 
-  static const char* ascii_fingerprint; // = "C807526B59AB0F5BFAAD030099F56BA6";
-  static const uint8_t binary_fingerprint[16]; // = {0xC8,0x07,0x52,0x6B,0x59,0xAB,0x0F,0x5B,0xFA,0xAD,0x03,0x00,0x99,0xF5,0x6B,0xA6};
+  static const char* ascii_fingerprint; // = "F2FED4BD5CCAC11779B20AEF73FC9568";
+  static const uint8_t binary_fingerprint[16]; // = {0xF2,0xFE,0xD4,0xBD,0x5C,0xCA,0xC1,0x17,0x79,0xB2,0x0A,0xEF,0x73,0xFC,0x95,0x68};
 
   LMEnergyExchangeControl() : _command(0), _paoId(0), _offerId(0), _offerDate(0), _notificationDatetime(0), _expirationDatetime(0), _additionalInfo() {
   }

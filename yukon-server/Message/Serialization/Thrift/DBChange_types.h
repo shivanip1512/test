@@ -21,8 +21,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class DBChange {
  public:
 
-  static const char* ascii_fingerprint; // = "EE16CE714C42928E2F24F5932BCB1AAA";
-  static const uint8_t binary_fingerprint[16]; // = {0xEE,0x16,0xCE,0x71,0x4C,0x42,0x92,0x8E,0x2F,0x24,0xF5,0x93,0x2B,0xCB,0x1A,0xAA};
+  static const char* ascii_fingerprint; // = "42A8D90C512A98FAA0DEABCF1CA16420";
+  static const uint8_t binary_fingerprint[16]; // = {0x42,0xA8,0xD9,0x0C,0x51,0x2A,0x98,0xFA,0xA0,0xDE,0xAB,0xCF,0x1C,0xA1,0x64,0x20};
 
   DBChange() : _id(0), _database(0), _category(), _objecttype(), _typeofchange(0) {
   }

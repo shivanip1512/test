@@ -21,8 +21,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class NotifEconomicEvent {
  public:
 
-  static const char* ascii_fingerprint; // = "94B981C6BD4AF99693772A06E6D5E32A";
-  static const uint8_t binary_fingerprint[16]; // = {0x94,0xB9,0x81,0xC6,0xBD,0x4A,0xF9,0x96,0x93,0x77,0x2A,0x06,0xE6,0xD5,0xE3,0x2A};
+  static const char* ascii_fingerprint; // = "685BD0E53E3D18DDC064BBD6CD91A983";
+  static const uint8_t binary_fingerprint[16]; // = {0x68,0x5B,0xD0,0xE5,0x3E,0x3D,0x18,0xDD,0xC0,0x64,0xBB,0xD6,0xCD,0x91,0xA9,0x83};
 
   NotifEconomicEvent() : _economicEventId(0), _revisionNumber(0), _action(0) {
   }

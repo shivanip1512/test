@@ -254,8 +254,8 @@ void swap(CCSubstationItem &a, CCSubstationItem &b) {
   swap(a._childVoltReductionFlag, b._childVoltReductionFlag);
 }
 
-const char* CCSubstations::ascii_fingerprint = "2745AA03BA92479CBB88D76C154B275A";
-const uint8_t CCSubstations::binary_fingerprint[16] = {0x27,0x45,0xAA,0x03,0xBA,0x92,0x47,0x9C,0xBB,0x88,0xD7,0x6C,0x15,0x4B,0x27,0x5A};
+const char* CCSubstations::ascii_fingerprint = "F14F5D40A5103D916E72BE30201B14C4";
+const uint8_t CCSubstations::binary_fingerprint[16] = {0xF1,0x4F,0x5D,0x40,0xA5,0x10,0x3D,0x91,0x6E,0x72,0xBE,0x30,0x20,0x1B,0x14,0xC4};
 
 uint32_t CCSubstations::read(::apache::thrift::protocol::TProtocol* iprot) {
 

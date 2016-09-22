@@ -106,8 +106,8 @@ void swap(CCState &a, CCState &b) {
   swap(a._backgroundColor, b._backgroundColor);
 }
 
-const char* CCCapBankStates::ascii_fingerprint = "27257ADE6DC4E947C3B7560F4E56C8B9";
-const uint8_t CCCapBankStates::binary_fingerprint[16] = {0x27,0x25,0x7A,0xDE,0x6D,0xC4,0xE9,0x47,0xC3,0xB7,0x56,0x0F,0x4E,0x56,0xC8,0xB9};
+const char* CCCapBankStates::ascii_fingerprint = "C8C88811B9BAC119B02B7CC733DCF5CE";
+const uint8_t CCCapBankStates::binary_fingerprint[16] = {0xC8,0xC8,0x88,0x11,0xB9,0xBA,0xC1,0x19,0xB0,0x2B,0x7C,0xC7,0x33,0xDC,0xF5,0xCE};
 
 uint32_t CCCapBankStates::read(::apache::thrift::protocol::TProtocol* iprot) {
 

@@ -10,8 +10,8 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
-const char* NotifEconomicEventDelete::ascii_fingerprint = "04592B2EC88A3241FE15FD3BFAF6C672";
-const uint8_t NotifEconomicEventDelete::binary_fingerprint[16] = {0x04,0x59,0x2B,0x2E,0xC8,0x8A,0x32,0x41,0xFE,0x15,0xFD,0x3B,0xFA,0xF6,0xC6,0x72};
+const char* NotifEconomicEventDelete::ascii_fingerprint = "16AA5E0A19A40A3A8D1575BFFD82B337";
+const uint8_t NotifEconomicEventDelete::binary_fingerprint[16] = {0x16,0xAA,0x5E,0x0A,0x19,0xA4,0x0A,0x3A,0x8D,0x15,0x75,0xBF,0xFD,0x82,0xB3,0x37};
 
 uint32_t NotifEconomicEventDelete::read(::apache::thrift::protocol::TProtocol* iprot) {
 

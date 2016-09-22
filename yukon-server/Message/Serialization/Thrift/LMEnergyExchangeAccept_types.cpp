@@ -10,8 +10,8 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
-const char* LMEnergyExchangeAccept::ascii_fingerprint = "218F01BE058FB4C54ADD96857D11B88B";
-const uint8_t LMEnergyExchangeAccept::binary_fingerprint[16] = {0x21,0x8F,0x01,0xBE,0x05,0x8F,0xB4,0xC5,0x4A,0xDD,0x96,0x85,0x7D,0x11,0xB8,0x8B};
+const char* LMEnergyExchangeAccept::ascii_fingerprint = "84592633E4F56D5C628D6E79667759F3";
+const uint8_t LMEnergyExchangeAccept::binary_fingerprint[16] = {0x84,0x59,0x26,0x33,0xE4,0xF5,0x6D,0x5C,0x62,0x8D,0x6E,0x79,0x66,0x77,0x59,0xF3};
 
 uint32_t LMEnergyExchangeAccept::read(::apache::thrift::protocol::TProtocol* iprot) {
 

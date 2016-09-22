@@ -22,8 +22,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class PointData {
  public:
 
-  static const char* ascii_fingerprint; // = "E1A7EA563D48FA0EED0F4E41F38C3879";
-  static const uint8_t binary_fingerprint[16]; // = {0xE1,0xA7,0xEA,0x56,0x3D,0x48,0xFA,0x0E,0xED,0x0F,0x4E,0x41,0xF3,0x8C,0x38,0x79};
+  static const char* ascii_fingerprint; // = "29312D7C66C3586FB8A84E89A27DE42F";
+  static const uint8_t binary_fingerprint[16]; // = {0x29,0x31,0x2D,0x7C,0x66,0xC3,0x58,0x6F,0xB8,0xA8,0x4E,0x89,0xA2,0x7D,0xE4,0x2F};
 
   PointData() : _id(0), _type(0), _quality(0), _tags(0), _value(0), _str(), _time(0), _millis(0) {
   }

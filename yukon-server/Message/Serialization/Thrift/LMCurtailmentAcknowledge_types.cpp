@@ -10,8 +10,8 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
-const char* LMCurtailmentAcknowledge::ascii_fingerprint = "F5C241C1373D02D6B7BF93818BB507C9";
-const uint8_t LMCurtailmentAcknowledge::binary_fingerprint[16] = {0xF5,0xC2,0x41,0xC1,0x37,0x3D,0x02,0xD6,0xB7,0xBF,0x93,0x81,0x8B,0xB5,0x07,0xC9};
+const char* LMCurtailmentAcknowledge::ascii_fingerprint = "7567C4BFDEB55B7812DF10071F84E215";
+const uint8_t LMCurtailmentAcknowledge::binary_fingerprint[16] = {0x75,0x67,0xC4,0xBF,0xDE,0xB5,0x5B,0x78,0x12,0xDF,0x10,0x07,0x1F,0x84,0xE2,0x15};
 
 uint32_t LMCurtailmentAcknowledge::read(::apache::thrift::protocol::TProtocol* iprot) {
 

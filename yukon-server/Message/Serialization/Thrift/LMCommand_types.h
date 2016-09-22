@@ -21,8 +21,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class LMCommand {
  public:
 
-  static const char* ascii_fingerprint; // = "DCFB0608A9A05187F5419DFB885FAFAE";
-  static const uint8_t binary_fingerprint[16]; // = {0xDC,0xFB,0x06,0x08,0xA9,0xA0,0x51,0x87,0xF5,0x41,0x9D,0xFB,0x88,0x5F,0xAF,0xAE};
+  static const char* ascii_fingerprint; // = "28C3B7B7507AE231E3ABC1D4903DC781";
+  static const uint8_t binary_fingerprint[16]; // = {0x28,0xC3,0xB7,0xB7,0x50,0x7A,0xE2,0x31,0xE3,0xAB,0xC1,0xD4,0x90,0x3D,0xC7,0x81};
 
   LMCommand() : _command(0), _paoId(0), _number(0), _value(0), _count(0), _auxId(0) {
   }

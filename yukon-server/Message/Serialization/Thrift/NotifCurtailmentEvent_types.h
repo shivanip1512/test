@@ -21,8 +21,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class NotifCurtailmentEvent {
  public:
 
-  static const char* ascii_fingerprint; // = "472B626CC76602629B37B874940D20D4";
-  static const uint8_t binary_fingerprint[16]; // = {0x47,0x2B,0x62,0x6C,0xC7,0x66,0x02,0x62,0x9B,0x37,0xB8,0x74,0x94,0x0D,0x20,0xD4};
+  static const char* ascii_fingerprint; // = "B3D2273D6CC64D984191CE4F8FAF30C8";
+  static const uint8_t binary_fingerprint[16]; // = {0xB3,0xD2,0x27,0x3D,0x6C,0xC6,0x4D,0x98,0x41,0x91,0xCE,0x4F,0x8F,0xAF,0x30,0xC8};
 
   NotifCurtailmentEvent() : _curtailmentEventId(0), _action(0) {
   }

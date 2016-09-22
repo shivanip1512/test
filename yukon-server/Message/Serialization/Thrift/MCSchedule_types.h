@@ -22,8 +22,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class MCSchedule {
  public:
 
-  static const char* ascii_fingerprint; // = "6810CC8FE957CB4E97436F2F745EBDEC";
-  static const uint8_t binary_fingerprint[16]; // = {0x68,0x10,0xCC,0x8F,0xE9,0x57,0xCB,0x4E,0x97,0x43,0x6F,0x2F,0x74,0x5E,0xBD,0xEC};
+  static const char* ascii_fingerprint; // = "6184BE721B451C681CCF157DE2B92712";
+  static const uint8_t binary_fingerprint[16]; // = {0x61,0x84,0xBE,0x72,0x1B,0x45,0x1C,0x68,0x1C,0xCF,0x15,0x7D,0xE2,0xB9,0x27,0x12};
 
   MCSchedule() : _scheduleId(0), _scheduleName(), _categoryName(), _scheduleType(), _holidayScheduleId(0), _commandFile(), _currentState(), _startPolicy(), _stopPolicy(), _lastRunTime(0), _lastRunStatus(), _startDay(0), _startMonth(0), _startYear(0), _startTime(), _stopTime(), _validWeekDays(), _duration(0), _manualStartTime(0), _manualStopTime(0), _targetPaoId(0), _startCommand(), _stopCommand(), _repeatInterval(0), _currentStartTime(0), _currentStopTime(0), _templateType(0) {
   }

@@ -10,8 +10,8 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
-const char* MCOverrideRequest::ascii_fingerprint = "5BF8899B42170C0C9A1D3A4B4D1AAE0A";
-const uint8_t MCOverrideRequest::binary_fingerprint[16] = {0x5B,0xF8,0x89,0x9B,0x42,0x17,0x0C,0x0C,0x9A,0x1D,0x3A,0x4B,0x4D,0x1A,0xAE,0x0A};
+const char* MCOverrideRequest::ascii_fingerprint = "4E92F4C6461678136A9CA5C309AA530F";
+const uint8_t MCOverrideRequest::binary_fingerprint[16] = {0x4E,0x92,0xF4,0xC6,0x46,0x16,0x78,0x13,0x6A,0x9C,0xA5,0xC3,0x09,0xAA,0x53,0x0F};
 
 uint32_t MCOverrideRequest::read(::apache::thrift::protocol::TProtocol* iprot) {
 

@@ -21,8 +21,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class ServerResponse {
  public:
 
-  static const char* ascii_fingerprint; // = "EC4DC8142F7CEC16E2272380F7F7F9DF";
-  static const uint8_t binary_fingerprint[16]; // = {0xEC,0x4D,0xC8,0x14,0x2F,0x7C,0xEC,0x16,0xE2,0x27,0x23,0x80,0xF7,0xF7,0xF9,0xDF};
+  static const char* ascii_fingerprint; // = "527453E6356B065AA879E1B0D72BD56A";
+  static const uint8_t binary_fingerprint[16]; // = {0x52,0x74,0x53,0xE6,0x35,0x6B,0x06,0x5A,0xA8,0x79,0xE1,0xB0,0xD7,0x2B,0xD5,0x6A};
 
   ServerResponse() : _id(0), _status(0), _message(), _hasPayload(0) {
   }

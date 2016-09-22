@@ -21,8 +21,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class CCObjectMove {
  public:
 
-  static const char* ascii_fingerprint; // = "FB3360CB613BBC42D2DDBC5F23D09D01";
-  static const uint8_t binary_fingerprint[16]; // = {0xFB,0x33,0x60,0xCB,0x61,0x3B,0xBC,0x42,0xD2,0xDD,0xBC,0x5F,0x23,0xD0,0x9D,0x01};
+  static const char* ascii_fingerprint; // = "748E37C06510A6AB15105F97F3ED706B";
+  static const uint8_t binary_fingerprint[16]; // = {0x74,0x8E,0x37,0xC0,0x65,0x10,0xA6,0xAB,0x15,0x10,0x5F,0x97,0xF3,0xED,0x70,0x6B};
 
   CCObjectMove() : _permanentFlag(0), _oldParentId(0), _objectId(0), _newParentId(0), _switchingOrder(0), _closeOrder(0), _tripOrder(0) {
   }

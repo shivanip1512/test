@@ -10,8 +10,8 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
-const char* NotifVoiceCompleted::ascii_fingerprint = "B081FAB9A796D2A8C57348B6C20A0464";
-const uint8_t NotifVoiceCompleted::binary_fingerprint[16] = {0xB0,0x81,0xFA,0xB9,0xA7,0x96,0xD2,0xA8,0xC5,0x73,0x48,0xB6,0xC2,0x0A,0x04,0x64};
+const char* NotifVoiceCompleted::ascii_fingerprint = "D7904BEA579FC405F90EBDF2185545D3";
+const uint8_t NotifVoiceCompleted::binary_fingerprint[16] = {0xD7,0x90,0x4B,0xEA,0x57,0x9F,0xC4,0x05,0xF9,0x0E,0xBD,0xF2,0x18,0x55,0x45,0xD3};
 
 uint32_t NotifVoiceCompleted::read(::apache::thrift::protocol::TProtocol* iprot) {
 

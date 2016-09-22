@@ -21,8 +21,8 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class LMCurtailmentAcknowledge {
  public:
 
-  static const char* ascii_fingerprint; // = "F5C241C1373D02D6B7BF93818BB507C9";
-  static const uint8_t binary_fingerprint[16]; // = {0xF5,0xC2,0x41,0xC1,0x37,0x3D,0x02,0xD6,0xB7,0xBF,0x93,0x81,0x8B,0xB5,0x07,0xC9};
+  static const char* ascii_fingerprint; // = "7567C4BFDEB55B7812DF10071F84E215";
+  static const uint8_t binary_fingerprint[16]; // = {0x75,0x67,0xC4,0xBF,0xDE,0xB5,0x5B,0x78,0x12,0xDF,0x10,0x07,0x1F,0x84,0xE2,0x15};
 
   LMCurtailmentAcknowledge() : _paoId(0), _curtailReferenceId(0), _acknowledgeStatus(), _ipAddressOfAckUser(), _userIdName(), _nameOfAckPerson(), _curtailmentNotes() {
   }

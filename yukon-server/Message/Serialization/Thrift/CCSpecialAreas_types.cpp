@@ -174,8 +174,8 @@ void swap(CCSpecial &a, CCSpecial &b) {
   swap(a._voltReductionControlValue, b._voltReductionControlValue);
 }
 
-const char* CCSpecialAreas::ascii_fingerprint = "7A5DE3572EBF5394916C261330085932";
-const uint8_t CCSpecialAreas::binary_fingerprint[16] = {0x7A,0x5D,0xE3,0x57,0x2E,0xBF,0x53,0x94,0x91,0x6C,0x26,0x13,0x30,0x08,0x59,0x32};
+const char* CCSpecialAreas::ascii_fingerprint = "C0EE2CCB6C59DE5C3722547A2D08F1DC";
+const uint8_t CCSpecialAreas::binary_fingerprint[16] = {0xC0,0xEE,0x2C,0xCB,0x6C,0x59,0xDE,0x5C,0x37,0x22,0x54,0x7A,0x2D,0x08,0xF1,0xDC};
 
 uint32_t CCSpecialAreas::read(::apache::thrift::protocol::TProtocol* iprot) {
 
