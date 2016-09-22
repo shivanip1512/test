@@ -125,14 +125,15 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             BindingResult result) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        
+        boolean updateServerCompatability = nmConfigurationService.isFirmwareUpdateSupported();
+        settings.setCheckUpdateServer(updateServerCompatability);
+
         validator.validate(settings, result);
         model.addAttribute("deviceId", deviceId);
         
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.EDIT);
-            boolean updateServerCompatability = nmConfigurationService.isFirmwareUpdateSupported();
             model.addAttribute("updateServerCompatability", updateServerCompatability);
             return "gatewayInformationWidget/settings.jsp";
         }

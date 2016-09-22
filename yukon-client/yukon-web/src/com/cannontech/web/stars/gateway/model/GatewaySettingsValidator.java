@@ -46,7 +46,9 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
         
         validateLocation(latitude, longitude, errors);
         
-        validateUpdateServer(settings, errors);
+        if (settings.isCheckUpdateServer()) {
+            validateUpdateServer(settings, errors);
+        }
     }
     
     public static void validateUpdateServer(GatewaySettings settings, Errors errors) {
