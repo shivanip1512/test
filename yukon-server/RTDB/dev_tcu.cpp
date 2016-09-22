@@ -505,11 +505,6 @@ CtiReturnMsg* CtiDeviceTCU::TCUDecodeStatus(const INMESS &InMessage)
                                      temp);
          if(pData != NULL)
          {
-            if(isScanFlagSet(ScanException))
-            {
-               pData->setExemptionStatus(TRUE);                 // May be short circuited!
-            }
-
             if(pPIL != NULL)
             {
                pPIL->PointData().push_back(pData);

@@ -2002,10 +2002,10 @@ string explainTags(const unsigned tags)
                     str += "TAG_POINT_MUST_ARCHIVE";
                     break;
                 }
-            case TAG_POINT_MAY_BE_EXEMPTED:
+            case TAG_POINT_RESERVED:
                 {
                     if(!str.empty()) str += " | ";
-                    str += "TAG_POINT_MAY_BE_EXEMPTED";
+                    str += "TAG_POINT_RESERVED";
                     break;
                 }
             case TAG_POINT_LOAD_PROFILE_DATA:

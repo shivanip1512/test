@@ -334,7 +334,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 
             BOOST_CHECK_EQUAL(pd->getId(), 2);
 
-            BOOST_CHECK_EQUAL(pd->getTags(), 0x4000);
+            BOOST_CHECK_EQUAL(pd->getTags(), 0);
         }
 
         {
@@ -358,7 +358,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 
             BOOST_CHECK_EQUAL(pd->getId(), 2001);
 
-            BOOST_CHECK_EQUAL(pd->getTags(), 0x4000);
+            BOOST_CHECK_EQUAL(pd->getTags(), 0);
         }
 
         auto string_list = dnp.getInboundStrings();

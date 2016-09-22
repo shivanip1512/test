@@ -14,11 +14,9 @@ public class PointData extends com.cannontech.message.util.Message implements Po
     private int type;
     private PointQuality pointQuality;
     private long tags;
-    private long limit;
     private double value;
     private java.lang.String str = "";
     private java.util.Date time = new java.util.Date();
-    private long forced;
 
     private long millis;
 
@@ -30,7 +28,7 @@ public class PointData extends com.cannontech.message.util.Message implements Po
 
   //private static final long TAG_POINT_FORCE_UPDATE         = 0x00001000;  // Dispatch will no matter what copy this into his RT memory
     private static final long TAG_POINT_MUST_ARCHIVE         = 0x00002000;  // This data will archive no matter how the point is set up
-  //private static final long TAG_POINT_MAY_BE_EXEMPTED      = 0x00004000;  // This data may be exempted from propagation if the value element has not changed
+  //private static final long TAG_POINT_UNUSED               = 0x00004000;  // Unused, formerly EXEMPTED
     private static final long TAG_POINT_LOAD_PROFILE_DATA    = 0x00008000;  // This data will archive to raw point history
 
     private static final long TAG_POINT_OLD_TIMESTAMP        = 0x00100000;  // The timestamp on this point is older than the most recent timestamp.
@@ -52,22 +50,14 @@ public class PointData extends com.cannontech.message.util.Message implements Po
         pointData.setType(pvqh.getType());
         pointData.setPointQuality(pvqh.getPointQuality());
         pointData.setValue(pvqh.getValue());
-        pointData.setTimeStamp(pvqh.getPointDataTimeStamp());
+        pointData.setTime(pvqh.getPointDataTimeStamp());
         
         return pointData;
-    }
-
-    public long getForced() {
-        return forced;
     }
 
     @Override
     public int getId() {
         return id;
-    }
-
-    public long getLimit() {
-        return limit;
     }
 
     /**
@@ -111,16 +101,8 @@ public class PointData extends com.cannontech.message.util.Message implements Po
         return value;
     }
 
-    public void setForced(long newForced) {
-        forced = newForced;
-    }
-
     public void setId(int newId) {
         id = newId;
-    }
-
-    public void setLimit(long newLimit) {
-        limit = newLimit;
     }
 
     public void setPointQuality(PointQuality pointQuality) {

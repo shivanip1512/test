@@ -433,7 +433,6 @@ struct TestCase<CtiPointDataMsg> : public TestCase<CtiMessage>
         GenerateRandom( (int&)(imsg._type), 0, (int)InvalidPointType - 1 ); // invalid point is excluded
         GenerateRandom( imsg._quality,      0, (int)EstimatedQuality );
         GenerateRandom( imsg._tags );
-        GenerateRandom( imsg._limit );
         GenerateRandom( imsg._value );
         GenerateRandom( imsg._time );
         GenerateRandom( imsg._millis, 0, 999 );
@@ -450,8 +449,7 @@ struct TestCase<CtiPointDataMsg> : public TestCase<CtiMessage>
         CompareMember( "_id",                   imsg._id,                 omsg._id );
         CompareMember( "_type",                 (int&)(imsg._type),       (int&)(omsg._type) );
         CompareMember( "_quality",              imsg._quality,            omsg._quality );
-        CompareMember( "_tags",                 imsg._tags,               omsg._tags ); // this also checks Exemption status
-        CompareMember( "_limit",                imsg._limit,              omsg._limit );
+        CompareMember( "_tags",                 imsg._tags,               omsg._tags );
         CompareMember( "_value",                imsg._value,              omsg._value );
         CompareMember( "_time",                 imsg._time,               omsg._time );
         CompareMember( "_millis",               imsg._millis,             omsg._millis );

@@ -44,7 +44,7 @@ public class MessageSerializer extends
     protected void
         populateThriftEntityFromMessage(ThriftMessageFactory msgFactory, Message msg,
                                         com.cannontech.messaging.serialization.thrift.generated.Message entity) {
-        entity.set_messagePriority(msg.getPriority());
+        entity.set_messagePriority((byte)msg.getPriority());
         entity.set_messageTime(ConverterHelper.dateToMillisec(msg.getTimeStamp()));
         entity.set_soe(msg.getSOE_Tag());
         entity.set_src(msg.getSource());

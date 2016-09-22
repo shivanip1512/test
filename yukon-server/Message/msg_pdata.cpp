@@ -25,16 +25,10 @@ CtiPointDataMsg::CtiPointDataMsg(long id,
    _str(valReport),
    _time(CtiTime()),
    _tags(tags),
-   _limit(0),
    _millis(0),
    CtiMessage(7)
 {
     _instanceCount++;
-
-    if(_type == StatusPointType)
-    {
-        setExemptionStatus(TRUE); // Status data must always default to exemptable!
-    }
 
     if(_isnan(_value) || !_finite(_value))
     {
@@ -64,7 +58,6 @@ CtiPointDataMsg& CtiPointDataMsg::operator=(const CtiPointDataMsg& aRef)
       _type             = aRef.getType();
       _quality          = aRef.getQuality();
       _tags             = aRef.getTags();
-      _limit            = aRef.getLimit();
       _value            = aRef.getValue();
       _str              = aRef.getString();
       _time             = aRef.getTime();
@@ -169,16 +162,6 @@ CtiPointDataMsg& CtiPointDataMsg::resetTags( const unsigned a_tags )
    return *this;
 }
 
-unsigned  CtiPointDataMsg::getLimit() const
-{
-   return _limit;
-}
-CtiPointDataMsg& CtiPointDataMsg::setLimit( const unsigned a_limit )
-{
-   _limit = a_limit;
-   return *this;
-}
-
 const CtiTime& CtiPointDataMsg::getTime() const
 {
    return _time;
@@ -230,12 +213,9 @@ std::string CtiPointDataMsg::toString() const
     itemList.add("Type")                    << getType();
     itemList.add("Quality")                 << getQuality();
     itemList.add("Tags")                    << CtiNumStr(getTags()).xhex().zpad(8);
-    itemList.add("Limit")                   << getLimit();
     itemList.add("Value")                   << getValue();
     itemList.add("Change Time")             << getTime() <<", "<< getMillis() <<"ms";
     itemList.add("Change Report")           << getString();
-    itemList.add("Is this data exemptable") << isExemptable();
-    //itemList.add("Exception Exempt")        <<(bool)_exceptionExempt;
 
     return (Inherited::toString() += itemList.toString());
 }
@@ -246,17 +226,6 @@ CtiMessage* CtiPointDataMsg::replicateMessage() const
    CtiPointDataMsg *ret = CTIDBG_new CtiPointDataMsg(*this);
 
    return( (CtiMessage*)ret );
-}
-
-unsigned  CtiPointDataMsg::isExemptable() const
-{
-   return (_tags & TAG_POINT_MAY_BE_EXEMPTED);
-}
-CtiPointDataMsg& CtiPointDataMsg::setExemptionStatus( const unsigned a_ex )
-{
-   //_tags = ( (a_ex == 0) ? (_tags & ~TAG_POINT_MUST_NOTIFY_CLIENTS) : ( _tags | TAG_POINT_MUST_NOTIFY_CLIENTS ) );
-   _tags = ( (a_ex == 0) ? (_tags & ~TAG_POINT_MAY_BE_EXEMPTED) : ( _tags | TAG_POINT_MAY_BE_EXEMPTED ) );
-   return *this;
 }
 
 bool CtiPointDataMsg::isValid()

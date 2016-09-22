@@ -76,7 +76,6 @@ public static void main(String[] args) {
 
 			//pData.setSig(signal);
 			pData.setType(1); //what is this ?
-			pData.setLimit(150);
 			//pData.setOffset( 10);
 			pData.setStr("Test Point Change");
 			pData.setValue( Math.random() * 100.0 );

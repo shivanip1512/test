@@ -130,7 +130,6 @@ public static void main(String[] args)
 
 			pData.setType(type[j]);
 
-			pData.setLimit(150);
 			pData.setStr("Test Point Change");
 
 			// We are unable to set a PointData Attributes

@@ -22,25 +22,23 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class PointData {
  public:
 
-  static const char* ascii_fingerprint; // = "73BE85E84219549295C92EE6F0703FEA";
-  static const uint8_t binary_fingerprint[16]; // = {0x73,0xBE,0x85,0xE8,0x42,0x19,0x54,0x92,0x95,0xC9,0x2E,0xE6,0xF0,0x70,0x3F,0xEA};
+  static const char* ascii_fingerprint; // = "E1A7EA563D48FA0EED0F4E41F38C3879";
+  static const uint8_t binary_fingerprint[16]; // = {0xE1,0xA7,0xEA,0x56,0x3D,0x48,0xFA,0x0E,0xED,0x0F,0x4E,0x41,0xF3,0x8C,0x38,0x79};
 
-  PointData() : _id(0), _type(0), _quality(0), _tags(0), _limit(0), _value(0), _exemptionStatus(0), _str(), _time(0), _millis(0) {
+  PointData() : _id(0), _type(0), _quality(0), _tags(0), _value(0), _str(), _time(0), _millis(0) {
   }
 
   virtual ~PointData() throw() {}
 
    ::Cti::Messaging::Serialization::Thrift::Message _baseMessage;
   int32_t _id;
-  int32_t _type;
-  int32_t _quality;
+  int8_t _type;
+  int8_t _quality;
   int32_t _tags;
-  int32_t _limit;
   double _value;
-  int32_t _exemptionStatus;
   std::string _str;
    ::Cti::Messaging::Serialization::Thrift::Timestamp _time;
-  int32_t _millis;
+  int16_t _millis;
 
   void __set__baseMessage(const  ::Cti::Messaging::Serialization::Thrift::Message& val) {
     _baseMessage = val;
@@ -50,11 +48,11 @@ class PointData {
     _id = val;
   }
 
-  void __set__type(const int32_t val) {
+  void __set__type(const int8_t val) {
     _type = val;
   }
 
-  void __set__quality(const int32_t val) {
+  void __set__quality(const int8_t val) {
     _quality = val;
   }
 
@@ -62,16 +60,8 @@ class PointData {
     _tags = val;
   }
 
-  void __set__limit(const int32_t val) {
-    _limit = val;
-  }
-
   void __set__value(const double val) {
     _value = val;
-  }
-
-  void __set__exemptionStatus(const int32_t val) {
-    _exemptionStatus = val;
   }
 
   void __set__str(const std::string& val) {
@@ -82,7 +72,7 @@ class PointData {
     _time = val;
   }
 
-  void __set__millis(const int32_t val) {
+  void __set__millis(const int16_t val) {
     _millis = val;
   }
 
@@ -98,11 +88,7 @@ class PointData {
       return false;
     if (!(_tags == rhs._tags))
       return false;
-    if (!(_limit == rhs._limit))
-      return false;
     if (!(_value == rhs._value))
-      return false;
-    if (!(_exemptionStatus == rhs._exemptionStatus))
       return false;
     if (!(_str == rhs._str))
       return false;

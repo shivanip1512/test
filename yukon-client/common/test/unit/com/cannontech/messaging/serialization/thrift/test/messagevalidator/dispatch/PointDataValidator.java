@@ -20,9 +20,7 @@ public class PointDataValidator extends AutoInitializedClassValidator<PointData>
         ctrlObj.setType(generator.generateEnumInt(PointType.class));
         ctrlObj.setPointQuality(generator.generateEnum(PointQuality.class));
         ctrlObj.setTags(generator.generateUIntAsLong());
-        ctrlObj.setLimit(generator.generateUIntAsLong());
         ctrlObj.setValue(generator.generateDouble());
-        ctrlObj.setForced(ctrlObj.getTags() & 0x00004000); // this field is masked in C++
         ctrlObj.setTime(generator.generateDate());
         ctrlObj.setMillis(generator.generateLong(0, 999));
         ctrlObj.setStr(generator.generateString());        

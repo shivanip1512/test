@@ -65,7 +65,7 @@ const unsigned TAG_POINT_DELAYED_UPDATE        = 0x00000800;  // Dispatch delay 
 
 const unsigned TAG_POINT_FORCE_UPDATE          = 0x00001000;  // Dispatch will no matter what copy this into his RT memory
 const unsigned TAG_POINT_MUST_ARCHIVE          = 0x00002000;  // This data will archive no matter how the point is set up
-const unsigned TAG_POINT_MAY_BE_EXEMPTED       = 0x00004000;  // This data may be exempted from propagation if the value element has not changed
+const unsigned TAG_POINT_RESERVED              = 0x00004000;  // Formerly TAG_POINT_MAY_BE_EXEMPTED, available for reuse
 const unsigned TAG_POINT_LOAD_PROFILE_DATA     = 0x00008000;  // This data will archive to raw point history
 
 const unsigned TAG_MANUAL                      = 0x00010000;  // Point was set manually by a client.. this affects quality.

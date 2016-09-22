@@ -459,9 +459,7 @@ IM_EX_MSG MessagePtr<Thrift::PointData>::type populateThrift( const ::CtiPointDa
     omsg->__set__type                   ( imsg.getType() );
     omsg->__set__quality                ( imsg.getQuality() );
     omsg->__set__tags                   ( imsg.getTags() );
-    omsg->__set__limit                  ( imsg.getLimit() );
     omsg->__set__value                  ( imsg.getValue() );
-    omsg->__set__exemptionStatus        ( imsg.isExemptable() );
     omsg->__set__str                    ( imsg.getString() );
     omsg->__set__time                   ( CtiTimeToMilliseconds( imsg.getTime() ));
     omsg->__set__millis                 ( imsg.getMillis() );
@@ -479,9 +477,7 @@ IM_EX_MSG MessagePtr<::CtiPointDataMsg>::type populateMessage( const Thrift::Poi
     omsg->setQuality                    ( imsg._quality );
     omsg->resetTags                     (); // reset tags before we set the new one
     omsg->setTags                       ( imsg._tags );
-    omsg->setLimit                      ( imsg._limit );
     omsg->setValue                      ( imsg._value );
-    omsg->setExemptionStatus            ( imsg._exemptionStatus );
     omsg->setString                     ( imsg._str );
     omsg->setTimeWithMillis             ( MillisecondsToCtiTime( imsg._time ), imsg._millis );
 

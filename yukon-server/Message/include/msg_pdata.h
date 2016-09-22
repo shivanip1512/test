@@ -18,7 +18,6 @@ protected:
    CtiPointType_t _type;
    unsigned       _quality;            // see pointdefs.h
    unsigned       _tags;               // see pointdefs.h
-   unsigned       _limit;              // set iff ExceedsHigh or Low.
    double         _value;
 
    CtiTime         _time;
@@ -70,13 +69,6 @@ public:
    unsigned  getTags() const;
    CtiPointDataMsg& setTags( const unsigned a_tags );
    CtiPointDataMsg& resetTags( const unsigned tag_mask = 0xffffffff );
-
-   unsigned  getLimit() const;
-   CtiPointDataMsg& setLimit( const unsigned a_limit );
-
-   /* A point data which isExemptable can be _not_ sent by dispatch if its value has not changed */
-   unsigned  isExemptable() const;
-   CtiPointDataMsg& setExemptionStatus( const unsigned a_ex = 1 );
 
    const CtiTime& getTime() const;
    CtiTime& getTime();

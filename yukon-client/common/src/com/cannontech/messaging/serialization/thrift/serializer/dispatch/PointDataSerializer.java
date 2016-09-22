@@ -46,9 +46,7 @@ public class PointDataSerializer
         populateMessageFromThriftEntity(ThriftMessageFactory msgFactory,
                                         com.cannontech.messaging.serialization.thrift.generated.PointData entity,
                                         PointData msg) {
-        msg.setForced(ConverterHelper.IntToUnsigned(entity.get_exemptionStatus()));
         msg.setId(entity.get_id());
-        msg.setLimit(ConverterHelper.IntToUnsigned(entity.get_limit()));
         msg.setMillis(ConverterHelper.IntToUnsigned(entity.get_millis()));
         msg.setPointQuality(PointQuality.getPointQuality(entity.get_quality()));
         msg.setStr(entity.get_str());
@@ -62,15 +60,13 @@ public class PointDataSerializer
     protected void
         populateThriftEntityFromMessage(ThriftMessageFactory msgFactory, PointData msg,
                                         com.cannontech.messaging.serialization.thrift.generated.PointData entity) {
-        entity.set_exemptionStatus(ConverterHelper.UnsignedToInt(msg.getForced()));
         entity.set_id(msg.getId());
-        entity.set_limit(ConverterHelper.UnsignedToInt(msg.getLimit()));
-        entity.set_millis(ConverterHelper.UnsignedToInt(msg.getMillis()));
-        entity.set_quality(msg.getPointQuality().getQuality());
+        entity.set_millis((short)ConverterHelper.UnsignedToInt(msg.getMillis()));
+        entity.set_quality((byte)msg.getPointQuality().getQuality());
         entity.set_str(msg.getStr());
         entity.set_tags(ConverterHelper.UnsignedToInt(msg.getTags()));
         entity.set_time(ConverterHelper.dateToMillisec(msg.getPointDataTimeStamp()));
-        entity.set_type(msg.getType());
+        entity.set_type((byte)msg.getType());
         entity.set_value(msg.getValue());
     }
 
