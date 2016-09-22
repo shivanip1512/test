@@ -9,9 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.pao.PaoUtils;
+import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.common.weather.GeographicCoordinate;
 import com.cannontech.common.weather.NoaaWeatherDataService;
 import com.cannontech.common.weather.WeatherDataService;
@@ -67,7 +69,7 @@ public class WeatherController {
     }
 
     @RequestMapping("/config/saveWeatherLocation")
-    public String saveWeatherLocation(ModelMap model, WeatherLocationBean weatherLocationBean, BindingResult bindingResult) {
+    public String saveWeatherLocation(ModelMap model, WeatherLocationBean weatherLocationBean, BindingResult bindingResult, Errors errors) {
 
         validateLatLon(weatherLocationBean.getLatitude(), weatherLocationBean.getLongitude(), bindingResult);
         if (bindingResult.hasErrors()) {
@@ -81,16 +83,18 @@ public class WeatherController {
 
         if (StringUtils.isBlank(weatherLocationBean.getName())) {
             bindingResult.rejectValue("name", baseKey + "errors.blankName");
-        } else if (!weatherDataService.isNameAvailableForWeatherLocation(weatherLocationBean.getName())){
-            bindingResult.rejectValue("name", baseKey + "errors.nameAlreadyUsed");
+        } else {
+            YukonValidationUtils.checkExceedsMaxLength(errors, "name", weatherLocationBean.getName(), 60);
+            if (!(PaoUtils.isValidPaoName(weatherLocationBean.getName()))) {
+                bindingResult.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
+            }
+            if (!weatherDataService.isNameAvailableForWeatherLocation(weatherLocationBean.getName())) {
+                bindingResult.rejectValue("name", baseKey + "errors.nameAlreadyUsed");
+            }
         }
         if (StringUtils.isBlank(weatherLocationBean.getStationId())) {
             bindingResult.rejectValue("stationId", baseKey + "errors.noStationId");
         }
-        if (!(PaoUtils.isValidPaoName(weatherLocationBean.getName()))) {
-            bindingResult.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
-        }
-
         if (bindingResult.hasErrors()) {
             int numStations = addWeatherStationsToModel(model, requestedCoordinate);
             if (numStations < numWeatherStationsToReturn) {

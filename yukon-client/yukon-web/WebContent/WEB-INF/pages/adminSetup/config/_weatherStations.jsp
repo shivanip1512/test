@@ -52,7 +52,7 @@
             </div>
             <h4><i:inline key=".name"/></h4>
             <div class="stacked">
-                <tags:input path="name" size="40"/>
+                <tags:input path="name" size="40" maxlength="60"/>
             </div>
             <div><i:inline key=".searchResultInfo"/></div>
             <h4><i:inline key=".weatherStations"/></h4>
