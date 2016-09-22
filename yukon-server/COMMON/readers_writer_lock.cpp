@@ -61,9 +61,13 @@ bool readers_writer_lock_t::acquireRead(unsigned long milliseconds)
     if( !current_thread_owns_reader() &&
         !current_thread_owns_writer() )
     {
-        if( !_lock.timed_lock_shared(boost::posix_time::milliseconds(milliseconds)) )
+        //  First try a quick check without invoking time
+        if( !_lock.try_lock_shared() )
         {
-            return false;
+            if( !_lock.try_lock_shared_for(std::chrono::milliseconds(milliseconds)) )
+            {
+                return false;
+            }
         }
     }
 
@@ -83,7 +87,7 @@ bool readers_writer_lock_t::acquireWrite(unsigned long milliseconds)
             terminate_program();
         }
 
-        if( !_lock.timed_lock(boost::posix_time::milliseconds(milliseconds)) )
+        if( !_lock.try_lock_for(std::chrono::milliseconds(milliseconds)) )
         {
             return false;
         }

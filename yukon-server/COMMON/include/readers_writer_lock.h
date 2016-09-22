@@ -4,7 +4,7 @@
 #include "critical_section.h"
 #include "guard.h"
 
-#include "boost/thread/shared_mutex.hpp"
+#include <shared_mutex>
 
 namespace Cti {
 
@@ -23,7 +23,7 @@ private:
         MaxThreadCount = 1024
     };
 
-    boost::shared_mutex _lock;
+    std::shared_timed_mutex _lock;
 
     //  We could extend this to a linked-list implementation if necessary,
     //    but we should probably rethink this whole class if we ever get to that scale.
