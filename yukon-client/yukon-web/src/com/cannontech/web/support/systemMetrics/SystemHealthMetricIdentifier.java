@@ -21,21 +21,21 @@ public enum SystemHealthMetricIdentifier implements DisplayableEnum {
     ;
     
     private static final Map<SystemHealthMetricIdentifier, String> queueBeans = ImmutableMap.of(
-        RF_DA, "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.da.rfn.RfDaArchiveRequest",
-        RF_GATEWAY_DATA_REQUEST, "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayDataRequest",
-        RF_GATEWAY_DATA, "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayData"
+        RF_DA, "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.da.rfn.RfDaArchiveRequest",
+        RF_GATEWAY_DATA_REQUEST, "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayDataRequest",
+        RF_GATEWAY_DATA, "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayData"
     );
     
     private static final Map<SystemHealthMetricIdentifier, List<String>> extendedQueueBeans = ImmutableMap.of(
         RFN_METER, Lists.newArrayList(
             "com.cannontech.yukon.ServiceManager:name=meterReadingArchiveRequestListener,type=MeterReadingArchiveRequestListener", 
-            "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest"),
+            "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest"),
         RFN_LCR, Lists.newArrayList(
             "com.cannontech.yukon.ServiceManager:name=lcrReadingArchiveRequestListener,type=LcrReadingArchiveRequestListener", 
-            "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest"),
+            "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest"),
         RF_GATEWAY_ARCHIVE, Lists.newArrayList(
             "com.cannontech.yukon.ServiceManager:name=gatewayArchiveRequestListener,type=GatewayArchiveRequestListener", 
-            "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayArchiveRequest")
+            "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayArchiveRequest")
     );
     
     public static String getJmsQueueBean(SystemHealthMetricIdentifier metric) {

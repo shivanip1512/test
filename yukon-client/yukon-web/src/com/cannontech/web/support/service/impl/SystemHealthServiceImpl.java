@@ -127,13 +127,13 @@ public class SystemHealthServiceImpl implements SystemHealthService {
             String queueBeanName = SystemHealthMetricIdentifier.getExtendedJmsQueueBeans(metric).get(1);
             ObjectName queueBean = ObjectName.getInstance(queueBeanName);
             
-            Integer archived = jmxQueryService.getTypedValue(serviceBean, "ArchivedReadings", 0, Integer.class);
-            Integer archiveRequestsProcessed = jmxQueryService.getTypedValue(serviceBean, "ProcessedArchiveRequest", 0, Integer.class);
+            Integer archived = jmxQueryService.getTypedValue(serviceBean, "ArchivedReadings", 0, Integer.class, "service");
+            Integer archiveRequestsProcessed = jmxQueryService.getTypedValue(serviceBean, "ProcessedArchiveRequest", 0, Integer.class, "service");
             
-            Long enqueuedCount = jmxQueryService.getTypedValue(queueBean, "EnqueueCount", 0L, Long.class);
-            Long dequeuedCount = jmxQueryService.getTypedValue(queueBean, "DequeueCount", 0L, Long.class);
-            Long queueSize = jmxQueryService.getTypedValue(queueBean, "QueueSize", 0L, Long.class);
-            Double averageEnqueueTime = jmxQueryService.getTypedValue(queueBean, "AverageEnqueueTime", 0.0, Double.class);
+            Long enqueuedCount = jmxQueryService.getTypedValue(queueBean, "EnqueueCount", 0L, Long.class, "queue");
+            Long dequeuedCount = jmxQueryService.getTypedValue(queueBean, "DequeueCount", 0L, Long.class, "queue");
+            Long queueSize = jmxQueryService.getTypedValue(queueBean, "QueueSize", 0L, Long.class, "queue");
+            Double averageEnqueueTime = jmxQueryService.getTypedValue(queueBean, "AverageEnqueueTime", 0.0, Double.class, "queue");
             
             MetricStatusWithMessages status = statusHelper.getStatus(metric);
             
@@ -168,10 +168,10 @@ public class SystemHealthServiceImpl implements SystemHealthService {
         try {
             String beanName = SystemHealthMetricIdentifier.getJmsQueueBean(metric);
             ObjectName bean = ObjectName.getInstance(beanName);
-            Long enqueueCount = jmxQueryService.getTypedValue(bean, "EnqueueCount", 0L, Long.class);
-            Long dequeueCount = jmxQueryService.getTypedValue(bean, "DequeueCount", 0L, Long.class);
-            Long queueSize = jmxQueryService.getTypedValue(bean, "QueueSize", 0L, Long.class);
-            Double averageEnqueueTime = jmxQueryService.getTypedValue(bean, "AverageEnqueueTime", 0.0, Double.class);
+            Long enqueueCount = jmxQueryService.getTypedValue(bean, "EnqueueCount", 0L, Long.class, "queue");
+            Long dequeueCount = jmxQueryService.getTypedValue(bean, "DequeueCount", 0L, Long.class, "queue");
+            Long queueSize = jmxQueryService.getTypedValue(bean, "QueueSize", 0L, Long.class, "queue");
+            Double averageEnqueueTime = jmxQueryService.getTypedValue(bean, "AverageEnqueueTime", 0.0, Double.class, "queue");
             
             MetricStatusWithMessages status = statusHelper.getStatus(metric);
             

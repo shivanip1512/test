@@ -114,14 +114,14 @@ public class NmIntegrationController {
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
     private static final String meterReadServiceBean = "com.cannontech.yukon.ServiceManager:name=meterReadingArchiveRequestListener,type=MeterReadingArchiveRequestListener";
-    private static final String meterReadQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
+    private static final String meterReadQueueBean = "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
     private static final String lcrReadServiceBean = "com.cannontech.yukon.ServiceManager:name=lcrReadingArchiveRequestListener,type=LcrReadingArchiveRequestListener";
-    private static final String lcrReadQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
+    private static final String lcrReadQueueBean = "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
     private static final String gatewayServiceBean = "com.cannontech.yukon.ServiceManager:name=gatewayArchiveRequestListener,type=GatewayArchiveRequestListener";
-    private static final String gatewayArchiveReqQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayArchiveRequest";
-    private static final String gatewayDataReqQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayDataRequest";
-    private static final String gatewayDataQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayData";
-    private static final String rfDaArchiveQueueBean = "org.apache.activemq:type=Broker,brokerName=ServiceManager,destinationType=Queue,destinationName=yukon.qr.obj.da.rfn.RfDaArchiveRequest";
+    private static final String gatewayArchiveReqQueueBean = "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayArchiveRequest";
+    private static final String gatewayDataReqQueueBean = "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayDataRequest";
+    private static final String gatewayDataQueueBean = "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.common.rfn.GatewayData";
+    private static final String rfDaArchiveQueueBean = "org.apache.activemq:type=Broker,brokerName=YukonMessageBroker,destinationType=Queue,destinationName=yukon.qr.obj.da.rfn.RfDaArchiveRequest";
     private static final DecimalFormat df = new DecimalFormat("##,###.## ms");
 
     @RequestMapping("viewBase")
@@ -160,20 +160,20 @@ public class NmIntegrationController {
             ObjectName service = ObjectName.getInstance(serviceBean);
                 data.put(queueIdentifier + "-archived", ImmutableMap.of(
                         "name", queueName + " Archived", 
-                        "value", jmxQueryService.getTypedValue(service, "ArchivedReadings", 0, Integer.class)));
+                        "value", jmxQueryService.getTypedValue(service, "ArchivedReadings", 0, Integer.class, "service")));
                 data.put(queueIdentifier + "-requests-processed", ImmutableMap.of(
                         "name", queueName + " Requests Processed", 
-                        "value", jmxQueryService.getTypedValue(service, "ProcessedArchiveRequest", 0, Integer.class)));
+                        "value", jmxQueryService.getTypedValue(service, "ProcessedArchiveRequest", 0, Integer.class, "service")));
             }
             
             ObjectName queue = ObjectName.getInstance(queueBean);
             data.put(queueIdentifier + "-enqueue-count", ImmutableMap.of(
                     "name", queueName + " Enqueue Count", 
-                    "value", jmxQueryService.getTypedValue(queue, "EnqueueCount", 0L, Long.class)));
+                    "value", jmxQueryService.getTypedValue(queue, "EnqueueCount", 0L, Long.class, "queue")));
             data.put(queueIdentifier + "-queue-size", ImmutableMap.of(
                     "name", queueName + " Queue Size", 
-                    "value", jmxQueryService.getTypedValue(queue, "QueueSize", 0L, Long.class)));
-            Double aet = jmxQueryService.getTypedValue(queue, "AverageEnqueueTime", 0.0, Double.class);
+                    "value", jmxQueryService.getTypedValue(queue, "QueueSize", 0L, Long.class, "queue")));
+            Double aet = jmxQueryService.getTypedValue(queue, "AverageEnqueueTime", 0.0, Double.class, "queue");
             data.put(queueIdentifier + "-average-enqueue-time", ImmutableMap.of(
                     "name", queueName + " Average Enqueue Time", 
                     "value", df.format(aet)));

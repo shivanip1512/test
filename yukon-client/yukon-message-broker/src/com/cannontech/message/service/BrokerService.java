@@ -51,7 +51,7 @@ public class BrokerService {
         
         
         Broker broker =
-                new Broker("Yukon Message Broker", serverListenConnection);
+                new Broker("YukonMessageBroker", serverListenConnection);
         broker.start();
     }
 }
