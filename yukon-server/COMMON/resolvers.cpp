@@ -313,6 +313,7 @@ static const std::map<std::string, DeviceTypes> device_lookups
     { "lm energy exchange", TYPE_LMPROGRAM_ENERGYEXCHANGE },
     { "lm sep program",     TYPE_LMPROGRAM_DIRECT },
     { "ecobee program",     TYPE_LMPROGRAM_DIRECT },
+    { "honeywell program",  TYPE_LMPROGRAM_DIRECT },
     { "digi sep group",     TYPE_LMGROUP_DIGI_SEP },
     { "ecobee group",       TYPE_LMGROUP_ECOBEE },
     { "honeywell group",    TYPE_LMGROUP_HONEYWELL },

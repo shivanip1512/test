@@ -170,6 +170,9 @@
     <ClCompile Include="lmgrouphoneywell.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="honeywellCycleGear.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\BeatThePeakControlInterface.h">
@@ -341,6 +344,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\test_lm_serialization.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\honeywellCycleGear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\honeywellControlInterface.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\lmgrouphoneywell.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -32,6 +32,7 @@
 #include "sepcyclegear.h"
 #include "septempoffsetgear.h"
 #include "ecobeeCycleGear.h"
+#include "honeywellCycleGear.h"
 #include "resolvers.h"
 #include "devicetypes.h"
 #include "dbaccess.h"
@@ -940,6 +941,10 @@ void CtiLMControlAreaStore::reset()
                     else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::EcobeeCycleMethod) )
                     {
                         newDirectGear = CTIDBG_new EcobeeCycleGear(rdr);
+                    }
+                    else if ( ciStringEqual(controlmethod, CtiLMProgramDirectGear::HoneywellCycleMethod) )
+                    {
+                        newDirectGear = CTIDBG_new HoneywellCycleGear(rdr);
                     }
                     else if (rdr["settings"].isNull())
                     {

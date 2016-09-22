@@ -2578,6 +2578,70 @@ void swap(LMGroupEcobee &a, LMGroupEcobee &b) {
   swap(a._baseMessage, b._baseMessage);
 }
 
+const char* LMGroupHoneywell::ascii_fingerprint = "87D2AAE9F82EF469E961C185946711F5";
+const uint8_t LMGroupHoneywell::binary_fingerprint[16] = {0x87,0xD2,0xAA,0xE9,0xF8,0x2E,0xF4,0x69,0xE9,0x61,0xC1,0x85,0x94,0x67,0x11,0xF5};
+
+uint32_t LMGroupHoneywell::read(::apache::thrift::protocol::TProtocol* iprot) {
+
+  uint32_t xfer = 0;
+  std::string fname;
+  ::apache::thrift::protocol::TType ftype;
+  int16_t fid;
+
+  xfer += iprot->readStructBegin(fname);
+
+  using ::apache::thrift::protocol::TProtocolException;
+
+  bool isset__baseMessage = false;
+
+  while (true)
+  {
+    xfer += iprot->readFieldBegin(fname, ftype, fid);
+    if (ftype == ::apache::thrift::protocol::T_STOP) {
+      break;
+    }
+    switch (fid)
+    {
+      case 1:
+        if (ftype == ::apache::thrift::protocol::T_STRUCT) {
+          xfer += this->_baseMessage.read(iprot);
+          isset__baseMessage = true;
+        } else {
+          xfer += iprot->skip(ftype);
+        }
+        break;
+      default:
+        xfer += iprot->skip(ftype);
+        break;
+    }
+    xfer += iprot->readFieldEnd();
+  }
+
+  xfer += iprot->readStructEnd();
+
+  if (!isset__baseMessage)
+    throw TProtocolException(TProtocolException::INVALID_DATA);
+  return xfer;
+}
+
+uint32_t LMGroupHoneywell::write(::apache::thrift::protocol::TProtocol* oprot) const {
+  uint32_t xfer = 0;
+  xfer += oprot->writeStructBegin("LMGroupHoneywell");
+
+  xfer += oprot->writeFieldBegin("_baseMessage", ::apache::thrift::protocol::T_STRUCT, 1);
+  xfer += this->_baseMessage.write(oprot);
+  xfer += oprot->writeFieldEnd();
+
+  xfer += oprot->writeFieldStop();
+  xfer += oprot->writeStructEnd();
+  return xfer;
+}
+
+void swap(LMGroupHoneywell &a, LMGroupHoneywell &b) {
+  using ::std::swap;
+  swap(a._baseMessage, b._baseMessage);
+}
+
 const char* LMGroupEmetcon::ascii_fingerprint = "87D2AAE9F82EF469E961C185946711F5";
 const uint8_t LMGroupEmetcon::binary_fingerprint[16] = {0x87,0xD2,0xAA,0xE9,0xF8,0x2E,0xF4,0x69,0xE9,0x61,0xC1,0x85,0x94,0x67,0x11,0xF5};
 

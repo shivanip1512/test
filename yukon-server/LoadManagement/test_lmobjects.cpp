@@ -11,6 +11,8 @@
 #include "lmgroupecobee.h"
 #include "ecobeeCycleGear.h"
 
+#include "lmgrouphoneywell.h"
+#include "honeywellCycleGear.h"
 
 extern CtiTime gInvalidCtiTime;
 

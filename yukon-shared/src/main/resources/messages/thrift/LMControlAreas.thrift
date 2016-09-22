@@ -170,6 +170,11 @@ struct LMGroupEcobee
     1: required     LMGroupBase                     _baseMessage;
 }
 
+struct LMGroupHoneywell
+{
+    1: required     LMGroupBase                     _baseMessage;
+}
+
 struct LMGroupEmetcon
 {
     1: required     LMGroupBase                     _baseMessage;

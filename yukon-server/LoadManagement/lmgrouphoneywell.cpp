@@ -37,14 +37,14 @@ bool LMGroupHoneywell::sendCycleControl(long dutyCycle,
 
     CtiTime now;
 
-    //ActiveMQConnectionManager::enqueueMessage(
-    //    OutboundQueue::HoneywellCyclingControl,
-    //    std::make_unique<LMHoneywellCyclingControlMessage>(
-    //        getPAOId(),
-    //        dutyCycle,
-    //        static_cast<int>(now.seconds()),
-    //        controlDurationSeconds,
-    //        rampInOutOption));
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::HoneywellCyclingControl,
+        std::make_unique<LMHoneywellCyclingControlMessage>(
+            getPAOId(),
+            dutyCycle,
+            static_cast<int>(now.seconds()),
+            controlDurationSeconds,
+            rampInOutOption));
 
     if (_LM_DEBUG & LM_DEBUG_STANDARD)
     {
@@ -76,11 +76,11 @@ bool LMGroupHoneywell::sendStopControl(bool stopImmediately /* unused */)
 
     CtiTime now;
 
-    //ActiveMQConnectionManager::enqueueMessage(
-    //    OutboundQueue::HoneywellRestore,
-    //    std::make_unique<LMHoneywellRestoreMessage>(
-    //        getPAOId(),
-    //        static_cast<int>(now.seconds())));
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::HoneywellRestore,
+        std::make_unique<LMHoneywellRestoreMessage>(
+            getPAOId(),
+            static_cast<int>(now.seconds())));
 
     if (_LM_DEBUG & LM_DEBUG_STANDARD)
     {
@@ -103,15 +103,14 @@ bool LMGroupHoneywell::sendShedControl(long controlMinutes)
 
     CtiTime now;
 
-    //ActiveMQConnectionManager::enqueueMessage(
-    //    OutboundQueue::HoneywellCyclingControl,
-    //    std::make_unique<LMHoneywellCyclingControlMessage>(
-    //        getPAOId(),
-    //        100,
-    //        static_cast<int>(now.seconds()),
-    //        controlMinutes * 60,
-    //        false,
-    //        false));
+    ActiveMQConnectionManager::enqueueMessage(
+        OutboundQueue::HoneywellCyclingControl,
+        std::make_unique<LMHoneywellCyclingControlMessage>(
+            getPAOId(),
+            100,
+            static_cast<int>(now.seconds()),
+            controlMinutes * 60,
+            false));
 
     if (_LM_DEBUG & LM_DEBUG_STANDARD)
     {

@@ -23,7 +23,7 @@ namespace Cti {
         private:
 
             int  _groupId;
-            char _rampingOption;
+            bool _rampingOption;
             char _dutyCycle;
             int  _startTime;
             int  _stopTime;
