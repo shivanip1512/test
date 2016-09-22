@@ -58,6 +58,8 @@ private:
 
     void incrementColumnIndex() override;
 
+    void setPrefetch();
+
 public:
     // inputs for variable binding
     RowReader &operator<<(const bool operand);
@@ -82,6 +84,8 @@ public:
         {
             *this << element;
         }
+        //  If we're feeding in a bunch of IDs, we'll probably be reading back a bunch of rows, so prefetch at least 10 at a time.
+        setPrefetch();
         return *this;
     }
 
@@ -92,6 +96,8 @@ public:
         {
             *this << element;
         }
+        //  If we're feeding in a bunch of IDs, we'll probably be reading back a bunch of rows, so prefetch at least 10 at a time.
+        setPrefetch();
         return *this;
     }
 

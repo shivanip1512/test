@@ -243,6 +243,10 @@ void DatabaseReader::incrementColumnIndex()
     ++_currentIndex;
 }
 
+void DatabaseReader::setPrefetch()
+{
+    _command.setOption("PreFetchRows") = "100";
+}
 
 RowReader &DatabaseReader::extractChars(char *destination, unsigned count)
 {
