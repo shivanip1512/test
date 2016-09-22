@@ -14,7 +14,6 @@ public class Message {
     private int priority;
     private int SOE_Tag;
     private String userName = CtiUtilities.getUserName();
-    private int token;
     private String source = CtiUtilities.DEFAULT_MSG_SOURCE;
     
     public Message() {
@@ -54,14 +53,6 @@ public class Message {
         this.userName = userName;
     }
     
-    public int getToken() {
-        return token;
-    }
-    
-    public void setToken(int token) {
-        this.token = token;
-    }
-    
     public String getSource() {
         return source;
     }
@@ -72,8 +63,8 @@ public class Message {
     
     @Override
     public String toString() {
-        return String.format("Message [timeStamp=%s, priority=%s, SOE_Tag=%s, userName=%s, token=%s, source=%s]", 
-                timeStamp, priority, SOE_Tag, userName, token, source);
+        return String.format("Message [timeStamp=%s, priority=%s, SOE_Tag=%s, userName=%s, source=%s]", 
+                timeStamp, priority, SOE_Tag, userName, source);
     }
     
 }

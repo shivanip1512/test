@@ -16,7 +16,6 @@ public class MessageValidator extends AutoInitializedClassValidator<Message> {
         ctrlObj.setPriority(generator.generateInt(0, 15));
         ctrlObj.setSOE_Tag(generator.generateInt());
         ctrlObj.setUserName(generator.generateString());
-        ctrlObj.setToken(generator.generateInt());
         ctrlObj.setSource(generator.generateString());
     }
 }

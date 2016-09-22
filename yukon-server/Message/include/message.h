@@ -31,7 +31,6 @@ protected:
     INT          MessagePriority;
     int          _soe;             // An ID to group events.. Default to zero if not used
     std::string  _usr;
-    int          _token;
     std::string  _src;
 
     Cti::ConnectionHandle _connectionHandle;

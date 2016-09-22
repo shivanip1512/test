@@ -26,8 +26,6 @@ std::string CtiMessage::toString() const
     itemList.add("Priority") << MessagePriority;
     itemList.add("SOE")      << _soe;
     itemList.add("User")     << _usr;
-    //itemList.add("Password") << _pwd;
-    itemList.add("Token")    << _token;
     itemList.add("Source")   << _src;
 
     return itemList.toString();
@@ -55,22 +53,10 @@ CtiMessage& CtiMessage::setUser(const string& usr)
    return *this;
 }
 
-int CtiMessage::getToken() const
-{
-   return _token;
-}
-CtiMessage& CtiMessage::setToken(const int& tok)
-{
-   _token = tok;
-   return *this;
-}
-
 CtiMessage::CtiMessage(int Pri) :
    MessagePriority(Pri & 0x0000000f),
    _soe(0),
    _usr(DEFAULT_SYSTEM_USER),
-   //_pwd(""),
-   _token(-1),
    _src("")
 {}
 
@@ -78,7 +64,6 @@ CtiMessage::CtiMessage(const CtiMessage& aRef) :
    MessagePriority(aRef.getMessagePriority()),
    _soe(0),
    _usr(DEFAULT_SYSTEM_USER),
-   _token(-1),
    _src("")
 {}
 
@@ -90,7 +75,6 @@ CtiMessage& CtiMessage::operator=(const CtiMessage& aRef)
       MessagePriority   = aRef.getMessagePriority();
       _soe              = aRef.getSOE();
       _usr              = aRef.getUser();
-      _token            = aRef.getToken();
       _src              = aRef.getSource();
       //  Note that _connectionHandle is NOT copied
    }

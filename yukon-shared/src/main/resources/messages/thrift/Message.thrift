@@ -8,8 +8,7 @@ struct Message {
     2: required     i32                             _messagePriority;
     3: required     i32                             _soe;
     4: required     string                          _usr;
-    5: required     i32                             _token;
-    6: required     string                          _src;
+    5: required     string                          _src;
 }
 
 struct GenericMessage {

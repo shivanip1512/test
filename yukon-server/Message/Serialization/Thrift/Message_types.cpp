@@ -10,8 +10,8 @@
 
 namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift {
 
-const char* Message::ascii_fingerprint = "8F34A2AE943957281399A0CEAFC79E43";
-const uint8_t Message::binary_fingerprint[16] = {0x8F,0x34,0xA2,0xAE,0x94,0x39,0x57,0x28,0x13,0x99,0xA0,0xCE,0xAF,0xC7,0x9E,0x43};
+const char* Message::ascii_fingerprint = "66C69D32ED5F3D9156468E32245468DF";
+const uint8_t Message::binary_fingerprint[16] = {0x66,0xC6,0x9D,0x32,0xED,0x5F,0x3D,0x91,0x56,0x46,0x8E,0x32,0x24,0x54,0x68,0xDF};
 
 uint32_t Message::read(::apache::thrift::protocol::TProtocol* iprot) {
 
@@ -28,7 +28,6 @@ uint32_t Message::read(::apache::thrift::protocol::TProtocol* iprot) {
   bool isset__messagePriority = false;
   bool isset__soe = false;
   bool isset__usr = false;
-  bool isset__token = false;
   bool isset__src = false;
 
   while (true)
@@ -72,14 +71,6 @@ uint32_t Message::read(::apache::thrift::protocol::TProtocol* iprot) {
         }
         break;
       case 5:
-        if (ftype == ::apache::thrift::protocol::T_I32) {
-          xfer += iprot->readI32(this->_token);
-          isset__token = true;
-        } else {
-          xfer += iprot->skip(ftype);
-        }
-        break;
-      case 6:
         if (ftype == ::apache::thrift::protocol::T_STRING) {
           xfer += iprot->readString(this->_src);
           isset__src = true;
@@ -103,8 +94,6 @@ uint32_t Message::read(::apache::thrift::protocol::TProtocol* iprot) {
   if (!isset__soe)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__usr)
-    throw TProtocolException(TProtocolException::INVALID_DATA);
-  if (!isset__token)
     throw TProtocolException(TProtocolException::INVALID_DATA);
   if (!isset__src)
     throw TProtocolException(TProtocolException::INVALID_DATA);
@@ -131,11 +120,7 @@ uint32_t Message::write(::apache::thrift::protocol::TProtocol* oprot) const {
   xfer += oprot->writeString(this->_usr);
   xfer += oprot->writeFieldEnd();
 
-  xfer += oprot->writeFieldBegin("_token", ::apache::thrift::protocol::T_I32, 5);
-  xfer += oprot->writeI32(this->_token);
-  xfer += oprot->writeFieldEnd();
-
-  xfer += oprot->writeFieldBegin("_src", ::apache::thrift::protocol::T_STRING, 6);
+  xfer += oprot->writeFieldBegin("_src", ::apache::thrift::protocol::T_STRING, 5);
   xfer += oprot->writeString(this->_src);
   xfer += oprot->writeFieldEnd();
 
@@ -150,7 +135,6 @@ void swap(Message &a, Message &b) {
   swap(a._messagePriority, b._messagePriority);
   swap(a._soe, b._soe);
   swap(a._usr, b._usr);
-  swap(a._token, b._token);
   swap(a._src, b._src);
 }
 

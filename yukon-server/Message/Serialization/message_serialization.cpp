@@ -58,7 +58,6 @@ IM_EX_MSG MessagePtr<Thrift::Message>::type populateThrift( const ::CtiMessage& 
     omsg->__set__messagePriority        ( imsg.getMessagePriority() );
     omsg->__set__soe                    ( imsg.getSOE() );
     omsg->__set__usr                    ( imsg.getUser() );
-    omsg->__set__token                  ( imsg.getToken() );
     omsg->__set__src                    ( imsg.getSource() );
 
     return omsg;
@@ -72,7 +71,6 @@ IM_EX_MSG MessagePtr<::CtiMessage>::type populateMessage( const Thrift::Message&
     omsg->setMessagePriority            ( imsg._messagePriority );
     omsg->setSOE                        ( imsg._soe );
     omsg->setUser                       ( imsg._usr );
-    omsg->setToken                      ( imsg._token );
     omsg->setSource                     ( imsg._src );
 
     return omsg;

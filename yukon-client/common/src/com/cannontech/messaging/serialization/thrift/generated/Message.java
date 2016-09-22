@@ -37,8 +37,7 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
   private static final org.apache.thrift.protocol.TField _MESSAGE_PRIORITY_FIELD_DESC = new org.apache.thrift.protocol.TField("_messagePriority", org.apache.thrift.protocol.TType.I32, (short)2);
   private static final org.apache.thrift.protocol.TField _SOE_FIELD_DESC = new org.apache.thrift.protocol.TField("_soe", org.apache.thrift.protocol.TType.I32, (short)3);
   private static final org.apache.thrift.protocol.TField _USR_FIELD_DESC = new org.apache.thrift.protocol.TField("_usr", org.apache.thrift.protocol.TType.STRING, (short)4);
-  private static final org.apache.thrift.protocol.TField _TOKEN_FIELD_DESC = new org.apache.thrift.protocol.TField("_token", org.apache.thrift.protocol.TType.I32, (short)5);
-  private static final org.apache.thrift.protocol.TField _SRC_FIELD_DESC = new org.apache.thrift.protocol.TField("_src", org.apache.thrift.protocol.TType.STRING, (short)6);
+  private static final org.apache.thrift.protocol.TField _SRC_FIELD_DESC = new org.apache.thrift.protocol.TField("_src", org.apache.thrift.protocol.TType.STRING, (short)5);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -50,7 +49,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
   private int _messagePriority; // required
   private int _soe; // required
   private String _usr; // required
-  private int _token; // required
   private String _src; // required
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
@@ -59,8 +57,7 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
     _MESSAGE_PRIORITY((short)2, "_messagePriority"),
     _SOE((short)3, "_soe"),
     _USR((short)4, "_usr"),
-    _TOKEN((short)5, "_token"),
-    _SRC((short)6, "_src");
+    _SRC((short)5, "_src");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -83,9 +80,7 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
           return _SOE;
         case 4: // _USR
           return _USR;
-        case 5: // _TOKEN
-          return _TOKEN;
-        case 6: // _SRC
+        case 5: // _SRC
           return _SRC;
         default:
           return null;
@@ -130,7 +125,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
   private static final int ___MESSAGETIME_ISSET_ID = 0;
   private static final int ___MESSAGEPRIORITY_ISSET_ID = 1;
   private static final int ___SOE_ISSET_ID = 2;
-  private static final int ___TOKEN_ISSET_ID = 3;
   private byte __isset_bitfield = 0;
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
@@ -143,8 +137,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields._USR, new org.apache.thrift.meta_data.FieldMetaData("_usr", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields._TOKEN, new org.apache.thrift.meta_data.FieldMetaData("_token", org.apache.thrift.TFieldRequirementType.REQUIRED, 
-        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
     tmpMap.put(_Fields._SRC, new org.apache.thrift.meta_data.FieldMetaData("_src", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
@@ -159,7 +151,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
     int _messagePriority,
     int _soe,
     String _usr,
-    int _token,
     String _src)
   {
     this();
@@ -170,8 +161,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
     this._soe = _soe;
     set_soeIsSet(true);
     this._usr = _usr;
-    this._token = _token;
-    set_tokenIsSet(true);
     this._src = _src;
   }
 
@@ -186,7 +175,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
     if (other.isSet_usr()) {
       this._usr = other._usr;
     }
-    this._token = other._token;
     if (other.isSet_src()) {
       this._src = other._src;
     }
@@ -205,8 +193,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
     set_soeIsSet(false);
     this._soe = 0;
     this._usr = null;
-    set_tokenIsSet(false);
-    this._token = 0;
     this._src = null;
   }
 
@@ -299,28 +285,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
     }
   }
 
-  public int get_token() {
-    return this._token;
-  }
-
-  public void set_token(int _token) {
-    this._token = _token;
-    set_tokenIsSet(true);
-  }
-
-  public void unset_token() {
-    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, ___TOKEN_ISSET_ID);
-  }
-
-  /** Returns true if field _token is set (has been assigned a value) and false otherwise */
-  public boolean isSet_token() {
-    return EncodingUtils.testBit(__isset_bitfield, ___TOKEN_ISSET_ID);
-  }
-
-  public void set_tokenIsSet(boolean value) {
-    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, ___TOKEN_ISSET_ID, value);
-  }
-
   public String get_src() {
     return this._src;
   }
@@ -378,14 +342,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
       }
       break;
 
-    case _TOKEN:
-      if (value == null) {
-        unset_token();
-      } else {
-        set_token((Integer)value);
-      }
-      break;
-
     case _SRC:
       if (value == null) {
         unset_src();
@@ -411,9 +367,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
     case _USR:
       return get_usr();
 
-    case _TOKEN:
-      return Integer.valueOf(get_token());
-
     case _SRC:
       return get_src();
 
@@ -436,8 +389,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
       return isSet_soe();
     case _USR:
       return isSet_usr();
-    case _TOKEN:
-      return isSet_token();
     case _SRC:
       return isSet_src();
     }
@@ -490,15 +441,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
       if (!(this_present__usr && that_present__usr))
         return false;
       if (!this._usr.equals(that._usr))
-        return false;
-    }
-
-    boolean this_present__token = true;
-    boolean that_present__token = true;
-    if (this_present__token || that_present__token) {
-      if (!(this_present__token && that_present__token))
-        return false;
-      if (this._token != that._token)
         return false;
     }
 
@@ -567,16 +509,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
         return lastComparison;
       }
     }
-    lastComparison = Boolean.valueOf(isSet_token()).compareTo(typedOther.isSet_token());
-    if (lastComparison != 0) {
-      return lastComparison;
-    }
-    if (isSet_token()) {
-      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this._token, typedOther._token);
-      if (lastComparison != 0) {
-        return lastComparison;
-      }
-    }
     lastComparison = Boolean.valueOf(isSet_src()).compareTo(typedOther.isSet_src());
     if (lastComparison != 0) {
       return lastComparison;
@@ -627,10 +559,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
     }
     first = false;
     if (!first) sb.append(", ");
-    sb.append("_token:");
-    sb.append(this._token);
-    first = false;
-    if (!first) sb.append(", ");
     sb.append("_src:");
     if (this._src == null) {
       sb.append("null");
@@ -658,10 +586,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
 
     if (!isSet_usr()) {
       throw new org.apache.thrift.protocol.TProtocolException("Required field '_usr' is unset! Struct:" + toString());
-    }
-
-    if (!isSet_token()) {
-      throw new org.apache.thrift.protocol.TProtocolException("Required field '_token' is unset! Struct:" + toString());
     }
 
     if (!isSet_src()) {
@@ -739,15 +663,7 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
-          case 5: // _TOKEN
-            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
-              struct._token = iprot.readI32();
-              struct.set_tokenIsSet(true);
-            } else { 
-              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
-            }
-            break;
-          case 6: // _SRC
+          case 5: // _SRC
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct._src = iprot.readString();
               struct.set_srcIsSet(true);
@@ -782,9 +698,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
         oprot.writeString(struct._usr);
         oprot.writeFieldEnd();
       }
-      oprot.writeFieldBegin(_TOKEN_FIELD_DESC);
-      oprot.writeI32(struct._token);
-      oprot.writeFieldEnd();
       if (struct._src != null) {
         oprot.writeFieldBegin(_SRC_FIELD_DESC);
         oprot.writeString(struct._src);
@@ -811,7 +724,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
       oprot.writeI32(struct._messagePriority);
       oprot.writeI32(struct._soe);
       oprot.writeString(struct._usr);
-      oprot.writeI32(struct._token);
       oprot.writeString(struct._src);
     }
 
@@ -826,8 +738,6 @@ public class Message implements org.apache.thrift.TBase<Message, Message._Fields
       struct.set_soeIsSet(true);
       struct._usr = iprot.readString();
       struct.set_usrIsSet(true);
-      struct._token = iprot.readI32();
-      struct.set_tokenIsSet(true);
       struct._src = iprot.readString();
       struct.set_srcIsSet(true);
     }

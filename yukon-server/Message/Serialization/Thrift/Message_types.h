@@ -21,10 +21,10 @@ namespace Cti { namespace Messaging { namespace Serialization { namespace Thrift
 class Message {
  public:
 
-  static const char* ascii_fingerprint; // = "8F34A2AE943957281399A0CEAFC79E43";
-  static const uint8_t binary_fingerprint[16]; // = {0x8F,0x34,0xA2,0xAE,0x94,0x39,0x57,0x28,0x13,0x99,0xA0,0xCE,0xAF,0xC7,0x9E,0x43};
+  static const char* ascii_fingerprint; // = "66C69D32ED5F3D9156468E32245468DF";
+  static const uint8_t binary_fingerprint[16]; // = {0x66,0xC6,0x9D,0x32,0xED,0x5F,0x3D,0x91,0x56,0x46,0x8E,0x32,0x24,0x54,0x68,0xDF};
 
-  Message() : _messageTime(0), _messagePriority(0), _soe(0), _usr(), _token(0), _src() {
+  Message() : _messageTime(0), _messagePriority(0), _soe(0), _usr(), _src() {
   }
 
   virtual ~Message() throw() {}
@@ -33,7 +33,6 @@ class Message {
   int32_t _messagePriority;
   int32_t _soe;
   std::string _usr;
-  int32_t _token;
   std::string _src;
 
   void __set__messageTime(const  ::Cti::Messaging::Serialization::Thrift::Timestamp val) {
@@ -52,10 +51,6 @@ class Message {
     _usr = val;
   }
 
-  void __set__token(const int32_t val) {
-    _token = val;
-  }
-
   void __set__src(const std::string& val) {
     _src = val;
   }
@@ -69,8 +64,6 @@ class Message {
     if (!(_soe == rhs._soe))
       return false;
     if (!(_usr == rhs._usr))
-      return false;
-    if (!(_token == rhs._token))
       return false;
     if (!(_src == rhs._src))
       return false;

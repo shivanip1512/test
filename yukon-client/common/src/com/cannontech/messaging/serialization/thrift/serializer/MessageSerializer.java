@@ -36,7 +36,6 @@ public class MessageSerializer extends
         msg.setSOE_Tag(thriftMessage.get_soe());
         msg.setSource(thriftMessage.get_src());
         msg.setTimeStamp(ConverterHelper.millisecToDate(thriftMessage.get_messageTime()));
-        msg.setToken(thriftMessage.get_token());
         msg.setUserName(thriftMessage.get_usr());
     }
 
@@ -48,7 +47,6 @@ public class MessageSerializer extends
         entity.set_messageTime(ConverterHelper.dateToMillisec(msg.getTimeStamp()));
         entity.set_soe(msg.getSOE_Tag());
         entity.set_src(msg.getSource());
-        entity.set_token(msg.getToken());
         entity.set_usr(msg.getUserName());
     }
 }

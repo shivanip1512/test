@@ -44,7 +44,6 @@ struct TestCase<CtiMessage> : public TestCaseBase<CtiMessage>
         GenerateRandom( imsg.MessagePriority, 0, 15 );
         GenerateRandom( imsg._soe );
         GenerateRandom( imsg._usr );
-        GenerateRandom( imsg._token );
         GenerateRandom( imsg._src );
     }
 
@@ -57,7 +56,6 @@ struct TestCase<CtiMessage> : public TestCaseBase<CtiMessage>
         CompareMember( "MessagePriority",       imsg.MessagePriority,       omsg.MessagePriority );
         CompareMember( "_soe",                  imsg._soe,                  omsg._soe );
         CompareMember( "_usr",                  imsg._usr,                  omsg._usr );
-        CompareMember( "_token",                imsg._token,                omsg._token );
         CompareMember( "_src",                  imsg._src,                  omsg._src );
     }
 };
