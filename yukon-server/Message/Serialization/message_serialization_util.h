@@ -136,14 +136,14 @@ inline Thrift::GenericMessage serializeGeneric( const MessageBase_t& imsg, const
 {
     Thrift::GenericMessage omsg;
 
-    std::string messageType;
     std::vector<unsigned char> obytes;
 
-    messageType = factory.serialize( imsg, obytes );
-
     // if an error occur, messageType field and payload will remain empty
-    omsg.__set__messageType ( messageType );
-    omsg.__set__payload     ( std::string( obytes.begin(), obytes.end() ));
+    omsg._messageType = factory.serialize( imsg, obytes );
+
+    auto obytes_ptr = reinterpret_cast<const char*>(obytes.data());
+
+    omsg._payload.assign( obytes_ptr, obytes.size() );
 
     return omsg;
 }

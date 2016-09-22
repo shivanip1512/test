@@ -194,17 +194,17 @@ IM_EX_MSG MessagePtr<Thrift::Multi>::type populateThrift( const ::CtiMultiMsg& i
 
     vector<Thrift::GenericMessage> bag;
 
-    for each( const ::CtiMessage* msg in imsg.getData() )
+    omsg->_bag.reserve(imsg.getData().size());
+
+    for( const auto msg : imsg.getData() )
     {
         Thrift::GenericMessage generic_msg = serializeGenericMessage( msg );
         if( !generic_msg._messageType.empty() )
         {
             // if serialization succeed, release generic into the bag
-            bag.push_back( generic_msg );
+            omsg->_bag.push_back( generic_msg );
         }
     }
-
-    omsg->__set__bag( bag );
 
     return omsg;
 }
