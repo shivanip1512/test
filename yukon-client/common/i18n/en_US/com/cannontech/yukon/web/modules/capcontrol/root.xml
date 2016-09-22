@@ -439,10 +439,10 @@
     <entry key="yukon.web.modules.capcontrol.area.substationsContainer.title">Substations</entry>
     <entry key="yukon.web.modules.capcontrol.area.edit.stations">Add/Remove Substations</entry>
     <entry key="yukon.web.modules.capcontrol.area.edit.stations.label">Add/Remove Substations</entry>
-    <entry key="yukon.web.modules.capcontrol.area.info.saved">Area info saved successfully.</entry>
+    <entry key="yukon.web.modules.capcontrol.area.info.saved">Area was saved successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.area.deleted.success">Area {0} Deleted successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.area.subs.updated">Substations updated successfully.</entry>
-    <entry key="yukon.web.modules.capcontrol.area.strat.updated">Strategy assignment updated successfully.</entry>   
+    <entry key="yukon.web.modules.capcontrol.area.strat.updated">Strategy assignment updated successfully.</entry>
     <entry key="yukon.web.modules.capcontrol.area.actions">Area Actions</entry>
     
     <!-- substation.jsp -->
@@ -1135,7 +1135,7 @@
     <entry key="yukon.web.modules.capcontrol.cbc.unsolicit2">Unsolicited Class 2</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.unsolicit3">Unsolicited Class 3</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.save.fail">Unable to Save CBC: {0}</entry>
-    <entry key="yukon.web.modules.capcontrol.cbc.info.saved">CBC info was successfully saved.</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.info.saved">CBC was successfully saved.</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.copy.success">Copy of CBC was successfully created.</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.copy.fail">Name not available</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.delete.success">Deleted CBC</entry>
