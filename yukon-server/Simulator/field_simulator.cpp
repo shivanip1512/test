@@ -24,9 +24,6 @@ PROJECT_ID("Field Simulator");
 bool gQuit = false;
 HANDLE gQuitEvent = NULL;
 
-using namespace std;
-using namespace boost;
-
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
 using Cti::Timing::Chrono;
@@ -37,7 +34,7 @@ namespace Simulator {
 int SimulatorMainFunction(int argc, char **argv);
 void loadGloabalSimulatorBehaviors(Logger &logger);
 bool confirmCcu710(int ccu_address, int portNumber, Logger &logger);
-bool getPorts(vector<int> &ports);
+bool getPorts(std::vector<int> &ports);
 void CcuPortMaintainer(int portNumber, int strategy);
 void CcuPort(int portNumber, int strategy);
 void startRequestHandler(StreamSocketConnection &mySocket, int strategy, int portNumber, Logger &logger);
@@ -51,7 +48,7 @@ int SimulatorMainFunction(int argc, char **argv)
         port_min = 0,
         port_max = 0;
 
-    vector<int> portList;
+    std::vector<int> portList;
 
     switch( argc )
     {
@@ -66,20 +63,20 @@ int SimulatorMainFunction(int argc, char **argv)
 
             if( port_min && port_max )
             {
-                cout << "Loading ports from master.cfg file: Port range [" << port_min << " - " << port_max << "]" << endl;
+                std::cout << "Loading ports from master.cfg file: Port range [" << port_min << " - " << port_max << "]" << std::endl;
                 break;
             }
             else if (getPorts(portList))
             {
-                cout << "Loaded " << portList.size() << " ports from the database." << endl;
+                std::cout << "Loaded " << portList.size() << " ports from the database." << std::endl;
                 break;
             }
             else
             {
-                cout << "Unable to retrieve port values.\n";
-                cout << "Command-line usage:  ccu_simulator.exe <min_port> [max_port] [strategy #]" << endl;
-                cout << "master.cfg file usage: SIMULATOR_INIT_PORT_MIN :[min_port]" << endl;
-                cout << "                       SIMULATOR_INIT_PORT_MAX :[max_port]" << endl;
+                std::cout << "Unable to retrieve port values.\n";
+                std::cout << "Command-line usage:  ccu_simulator.exe <min_port> [max_port] [strategy #]" << std::endl;
+                std::cout << "master.cfg file usage: SIMULATOR_INIT_PORT_MIN :[min_port]" << std::endl;
+                std::cout << "                       SIMULATOR_INIT_PORT_MAX :[max_port]" << std::endl;
                 exit(-1);
             }
         }
@@ -87,7 +84,7 @@ int SimulatorMainFunction(int argc, char **argv)
 
     if( port_max && port_min > port_max )
     {
-        cout << "Invalid port range [" << port_min << " - " << port_max << "]" << endl;
+        std::cout << "Invalid port range [" << port_min << " - " << port_max << "]" << std::endl;
 
         exit(-1);
     }
@@ -95,12 +92,12 @@ int SimulatorMainFunction(int argc, char **argv)
     //  We need to catch ctrl-c so we can stop
     if( !SetConsoleCtrlHandler(CtrlHandler,  TRUE) )
     {
-        cout << "Could not install control handler" << endl;
+        std::cout << "Could not install control handler" << std::endl;
 
         exit(-1);
     }
 
-    port_max = max(port_max, port_min);
+    port_max = std::max(port_max, port_min);
 
     SimulatorLogger logger(dout);
 
@@ -120,14 +117,14 @@ int SimulatorMainFunction(int argc, char **argv)
     // Load up the MCT behaviors here as well.
     Mct410Sim::initBehaviors(logger);
 
-    const wstring wideMemoryMapDirectory(
+    const std::wstring wideMemoryMapDirectory(
         DeviceMemoryManager::memoryMapDirectory.begin(),
         DeviceMemoryManager::memoryMapDirectory.end());
 
-    filesystem::path mctFilePath( wideMemoryMapDirectory );
+    boost::filesystem::path mctFilePath( wideMemoryMapDirectory );
 
     // Create the directory if necessary.
-    if( filesystem::create_directory( mctFilePath ) )
+    if( boost::filesystem::create_directory( mctFilePath ) )
     {
         logger.log("Directory " + DeviceMemoryManager::memoryMapDirectory + " has been created for simulator MCT memory maps.");
     }
@@ -136,20 +133,20 @@ int SimulatorMainFunction(int argc, char **argv)
         logger.log("Directory " + DeviceMemoryManager::memoryMapDirectory + " already exists.");
     }
 
-    thread_group threadGroup;
+    boost::thread_group threadGroup;
 
     if( portList.empty() )
     {
         for( ; port_min <= port_max; ++port_min )
         {
-            threadGroup.add_thread(new thread(bind(Cti::Simulator::CcuPortMaintainer, port_min, strategy)));
+            threadGroup.add_thread(new boost::thread(std::bind(Cti::Simulator::CcuPortMaintainer, port_min, strategy)));
         }
     }
     else
     {
         for each (int port in portList )
         {
-            threadGroup.add_thread(new thread(bind(Cti::Simulator::CcuPortMaintainer, port, strategy)));
+            threadGroup.add_thread(new boost::thread(std::bind(Cti::Simulator::CcuPortMaintainer, port, strategy)));
         }
     }
 
@@ -169,7 +166,7 @@ int SimulatorMainFunction(int argc, char **argv)
         e2eSimulator->stop();
     }
 
-    logger.log(string(CompileInfo.project) + " exiting");
+    logger.log(std::string(CompileInfo.project) + " exiting");
 
     return 0;
 }
@@ -190,11 +187,11 @@ void loadGloabalSimulatorBehaviors(Logger &logger)
 
 bool confirmCcu710(int ccu_address, int portNumber, Logger &logger)
 {
-    static const string Ccu710AType = "CCU-710A";
-    stringstream ss_addr, ss_port;
+    static const std::string Ccu710AType = "CCU-710A";
+    std::stringstream ss_addr, ss_port;
     ss_addr << ccu_address;
     ss_port << portNumber;
-    const string sql = "SELECT PAO.Type "
+    const std::string sql = "SELECT PAO.Type "
                        "FROM YukonPAObject PAO "
                          "JOIN DeviceIdlcRemote DIR ON PAO.PAObjectId = DIR.DeviceId "
                          "JOIN DeviceDirectCommSettings DDCS ON PAO.PAObjectID = DDCS.DEVICEID "
@@ -209,7 +206,7 @@ bool confirmCcu710(int ccu_address, int portNumber, Logger &logger)
 
     if( rdr() )
     {
-        string type;
+        std::string type;
         rdr["Type"] >> type;
         return (strcmp(type.c_str(), Ccu710AType.c_str()) == 0);
     }
@@ -221,9 +218,9 @@ bool confirmCcu710(int ccu_address, int portNumber, Logger &logger)
     }
 }
 
-bool getPorts(vector<int> &ports)
+bool getPorts(std::vector<int> &ports)
 {
-    static const string sql =
+    static const std::string sql =
         "SELECT"
             " Distinct P.SOCKETPORTNUMBER"
         " FROM"
@@ -257,7 +254,7 @@ void CcuPortMaintainer(int portNumber, int strategy)
 {
     while( !gQuit )
     {
-        thread portThread(bind(CcuPort, portNumber, strategy));
+        boost::thread portThread(std::bind(CcuPort, portNumber, strategy));
         portThread.join();
     }
 }
@@ -343,7 +340,7 @@ void startRequestHandler(StreamSocketConnection &mySocket, int strategy, int por
     }
     catch( const StreamConnectionException &ex )
     {
-        logger.log( string("Caught StreamConnectionException: ") + ex.what() );
+        logger.log( std::string("Caught StreamConnectionException: ") + ex.what() );
     }
     catch(...)
     {
@@ -394,13 +391,13 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
 
                     if( ccu_list.find(ccu_address) == ccu_list.end() )
                     {
-                        stringstream ss_address, ss_port;
+                        std::stringstream ss_address, ss_port;
                         ss_address << ccu_address;
                         ss_port    << portNumber;
                         // Device is either a 711 or 721, but isn't yet in the ccu_list.
                         // We need to find from the database (if possible) what type of device
                         // this is and create it, then add it to the map.
-                        const string sql_Ccu721 =   "SELECT DISTINCT Y.TYPE "
+                        const std::string sql_Ccu721 =   "SELECT DISTINCT Y.TYPE "
                                                     "FROM YukonPAObject Y, DEVICE V, DeviceAddress A, PORTTERMINALSERVER P, "
                                                         "DeviceDirectCommSettings D "
                                                     "WHERE A.DeviceID = V.DEVICEID AND V.DEVICEID = Y.PAObjectID AND "
@@ -408,7 +405,7 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                                                         "D.PORTID = P.PORTID AND Y.PAObjectID = D.DEVICEID AND "
                                                         "P.SOCKETPORTNUMBER = " + ss_port.str();
 
-                        const string sql_Ccu711 =   "SELECT DISTINCT Y.TYPE "
+                        const std::string sql_Ccu711 =   "SELECT DISTINCT Y.TYPE "
                                                     "FROM YukonPAObject Y, DEVICEIDLCREMOTE D, Device V, PORTTERMINALSERVER P, "
                                                         "DeviceDirectCommSettings S "
                                                     "WHERE D.DEVICEID = V.DEVICEID AND V.DEVICEID = Y.PAObjectID AND "
@@ -424,11 +421,11 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                         if( rdr() )
                         {
                             // The database query result wasn't empty, so the device SHOULD BE a 721. Check this.
-                            string str;
+                            std::string str;
                             rdr["TYPE"] >> str;
                             if( strcmp(str.c_str(), "CCU-721") == 0 )
                             {
-                                ccu_list.insert(make_pair(ccu_address, new Ccu721(ccu_address, strategy)));
+                                ccu_list.emplace(ccu_address, new Ccu721(ccu_address, strategy));
                             }
                         }
                         else
@@ -438,11 +435,11 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
 
                             if( rdr() )
                             {
-                                string str;
+                                std::string str;
                                 rdr["TYPE"] >> str;
                                 if( strcmp(str.c_str(), "CCU-711") == 0 )
                                 {
-                                    ccu_list.insert(make_pair(ccu_address, new Ccu711(ccu_address, strategy)));
+                                    ccu_list.emplace(ccu_address, new Ccu711(ccu_address, strategy));
                                 }
                             }
                             else
@@ -452,11 +449,11 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                                 // function.
                                 if( validRequest<Ccu721>(socket_interface) )
                                 {
-                                    ccu_list.insert(make_pair(ccu_address, new Ccu721(ccu_address, strategy)));
+                                    ccu_list.emplace(ccu_address, new Ccu721(ccu_address, strategy));
                                 }
                                 else
                                 {
-                                    ccu_list.insert(make_pair(ccu_address, new Ccu711(ccu_address, strategy)));
+                                    ccu_list.emplace(ccu_address, new Ccu711(ccu_address, strategy));
                                 }
                             }
                         }
@@ -482,7 +479,7 @@ void handleRequests(SocketComms &socket_interface, int strategy, int portNumber,
                     {
                         scope.log("New CCU address received", ccu_address);
 
-                        ccu_list.insert(make_pair(ccu_address, new Ccu710(ccu_address, strategy)));
+                        ccu_list.emplace(ccu_address, new Ccu710(ccu_address, strategy));
                     }
                 }
 
