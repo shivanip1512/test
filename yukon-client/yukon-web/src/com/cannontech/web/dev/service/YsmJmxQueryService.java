@@ -16,21 +16,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.web.support.service.impl.BeanTypeForJMXConnector;
 
 public class YsmJmxQueryService {
 
     private static final Logger log = YukonLogManager.getLogger(YsmJmxQueryService.class);
     /*
-     * JMX port for Broker : 1097
+     * JMX port for Message Broker : 1097
      * JMX port for Service Manager Broker : 1099
      */
-    private static final String mbService = "service:jmx:rmi:///jndi/rmi://localhost:1097/jmxrmi";
-    private static final String smService = "service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi";
+    private static final String messageBrokerService = "service:jmx:rmi:///jndi/rmi://localhost:1097/jmxrmi";
+    private static final String serviceManagerService = "service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi";
 
-    private JMXServiceURL mbServiceUrl;
-    private JMXConnector mbJmxConnector;
-    private JMXServiceURL smServiceUrl;
-    private JMXConnector smJmxConnector;
+    private JMXServiceURL messageBrokerServiceUrl;
+    private JMXConnector messageBrokerJmxConnector;
+    private JMXServiceURL serviceManagerServiceUrl;
+    private JMXConnector serviceManagerJmxConnector;
 
     private @Autowired ConfigurationSource config;
     
@@ -66,13 +67,13 @@ public class YsmJmxQueryService {
         }
     }
     
-    public <T> T getTypedValue(ObjectName name, String attribute, T defaultValue, Class<T> returnType, String beanType) throws Exception {
+    public <T> T getTypedValue(ObjectName name, String attribute, T defaultValue, Class<T> returnType, BeanTypeForJMXConnector beanType) throws Exception {
         
         Object returnObject = null;
-        if (beanType == "queue") {
-            returnObject = get(name, attribute, mbServiceUrl, mbJmxConnector);
-        } else if (beanType == "service") {
-            returnObject = get(name, attribute, smServiceUrl, smJmxConnector);
+        if (beanType == BeanTypeForJMXConnector.QUEUE) {
+            returnObject = get(name, attribute, messageBrokerServiceUrl, messageBrokerJmxConnector);
+        } else if (beanType == BeanTypeForJMXConnector.SERVICE) {
+            returnObject = get(name, attribute, serviceManagerServiceUrl, serviceManagerJmxConnector);
         }
         if (returnObject == null) {
             return defaultValue;
@@ -86,15 +87,15 @@ public class YsmJmxQueryService {
     public void init() {
         if (config.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE, false)) {
             try {
-                mbServiceUrl = new JMXServiceURL(mbService);
-                mbJmxConnector = JMXConnectorFactory.connect(mbServiceUrl, null);
+                messageBrokerServiceUrl = new JMXServiceURL(messageBrokerService);
+                messageBrokerJmxConnector = JMXConnectorFactory.connect(messageBrokerServiceUrl, null);
             } catch (IOException e) {
                 log.error("Could not init jmx connection for Yukon Message Broker.");
             }
 
             try {
-                smServiceUrl = new JMXServiceURL(smService);
-                smJmxConnector = JMXConnectorFactory.connect(smServiceUrl, null);
+                serviceManagerServiceUrl = new JMXServiceURL(serviceManagerService);
+                serviceManagerJmxConnector = JMXConnectorFactory.connect(serviceManagerServiceUrl, null);
             } catch (IOException e) {
                 log.error("Could not init jmx connection for Service Manager.");
             }

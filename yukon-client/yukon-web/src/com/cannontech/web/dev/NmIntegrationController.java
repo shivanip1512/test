@@ -87,6 +87,7 @@ import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.security.annotation.CheckCparm;
+import com.cannontech.web.support.service.impl.BeanTypeForJMXConnector;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -160,20 +161,20 @@ public class NmIntegrationController {
             ObjectName service = ObjectName.getInstance(serviceBean);
                 data.put(queueIdentifier + "-archived", ImmutableMap.of(
                         "name", queueName + " Archived", 
-                        "value", jmxQueryService.getTypedValue(service, "ArchivedReadings", 0, Integer.class, "service")));
+                        "value", jmxQueryService.getTypedValue(service, "ArchivedReadings", 0, Integer.class, BeanTypeForJMXConnector.SERVICE)));
                 data.put(queueIdentifier + "-requests-processed", ImmutableMap.of(
                         "name", queueName + " Requests Processed", 
-                        "value", jmxQueryService.getTypedValue(service, "ProcessedArchiveRequest", 0, Integer.class, "service")));
+                        "value", jmxQueryService.getTypedValue(service, "ProcessedArchiveRequest", 0, Integer.class, BeanTypeForJMXConnector.SERVICE)));
             }
             
             ObjectName queue = ObjectName.getInstance(queueBean);
             data.put(queueIdentifier + "-enqueue-count", ImmutableMap.of(
                     "name", queueName + " Enqueue Count", 
-                    "value", jmxQueryService.getTypedValue(queue, "EnqueueCount", 0L, Long.class, "queue")));
+                    "value", jmxQueryService.getTypedValue(queue, "EnqueueCount", 0L, Long.class, BeanTypeForJMXConnector.QUEUE)));
             data.put(queueIdentifier + "-queue-size", ImmutableMap.of(
                     "name", queueName + " Queue Size", 
-                    "value", jmxQueryService.getTypedValue(queue, "QueueSize", 0L, Long.class, "queue")));
-            Double aet = jmxQueryService.getTypedValue(queue, "AverageEnqueueTime", 0.0, Double.class, "queue");
+                    "value", jmxQueryService.getTypedValue(queue, "QueueSize", 0L, Long.class, BeanTypeForJMXConnector.QUEUE)));
+            Double aet = jmxQueryService.getTypedValue(queue, "AverageEnqueueTime", 0.0, Double.class, BeanTypeForJMXConnector.QUEUE);
             data.put(queueIdentifier + "-average-enqueue-time", ImmutableMap.of(
                     "name", queueName + " Average Enqueue Time", 
                     "value", df.format(aet)));
