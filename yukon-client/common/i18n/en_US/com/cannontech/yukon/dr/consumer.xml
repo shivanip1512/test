@@ -411,6 +411,7 @@
     <entry key="yukon.dr.consumer.enrollment.unenroll">Unenroll</entry>
     <entry key="yukon.dr.consumer.enrollment.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.enrollment.result.SUCCESS">&lt;i&gt;** Program enrollment updated successfully.&lt;/i&gt;</entry>
+    <entry key="yukon.dr.consumer.enrollment.result.FAILED">&lt;i&gt;** Program enrollment failed.&lt;/i&gt;</entry>
     <entry key="yukon.dr.consumer.enrollment.result.SUCCESS_HARDWARE_CONFIG">&lt;i&gt;** Program enrollment updated successfully.&lt;/i&gt;</entry>
     <entry key="yukon.dr.consumer.enrollment.iconKeyTitle">Icon Key</entry>
     <entry key="yukon.dr.consumer.enrollment.savingsIconDescription">Savings: More dollar signs means more savings!</entry>

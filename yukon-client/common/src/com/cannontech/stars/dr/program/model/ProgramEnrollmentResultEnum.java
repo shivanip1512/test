@@ -4,6 +4,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum ProgramEnrollmentResultEnum implements DisplayableEnum {
     SUCCESS,
+    FAILED,
     SUCCESS_HARDWARE_CONFIG;
 
     private static final String keyPrefix = "yukon.dr.consumer.enrollment.result.";

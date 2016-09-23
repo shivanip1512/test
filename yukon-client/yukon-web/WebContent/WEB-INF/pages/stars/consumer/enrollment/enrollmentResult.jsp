@@ -12,7 +12,14 @@
     <br>
     <br>
     <div align="center">
-        <div><cti:msg key="${enrollmentResult}"/></div>
+        <c:choose>
+            <c:when test="${!empty errorMessage}">
+                <div class="user-message error"><cti:msg key="${errorMessage}"/></div>
+            </c:when>
+            <c:otherwise>
+                <div><cti:msg key="${enrollmentResult}"/></div>
+            </c:otherwise>
+        </c:choose>
         <br>
         <cti:url var="okUrl" value="/stars/consumer/enrollment"/>
         <cti:msg key="yukon.dr.consumer.enrollmentResult.ok" var="ok"/>

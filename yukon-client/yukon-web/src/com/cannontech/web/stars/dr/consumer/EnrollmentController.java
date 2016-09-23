@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
@@ -13,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
@@ -26,6 +28,7 @@ import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentInventory;
 import com.cannontech.stars.dr.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
+import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
 import com.cannontech.stars.dr.enrollment.model.EnrollmentEventLoggingData;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
 import com.cannontech.stars.dr.optout.service.OptOutStatusService;
@@ -45,6 +48,7 @@ import com.google.common.collect.Sets;
 @Controller
 public class EnrollmentController extends AbstractConsumerController {
     
+    private final Logger log = YukonLogManager.getLogger(EnrollmentController.class);
     @Autowired private AccountEventLogService accountEventLogService;
     @Autowired private DisplayableEnrollmentDao displayableEnrollmentDao;
     @Autowired private EnrollmentDao enrollmentDao;
@@ -213,10 +217,14 @@ public class EnrollmentController extends AbstractConsumerController {
         
         programEnrollments.addAll(updatedEnrollments);
         programEnrollments.addAll(getConflictingEnrollments(model, accountId, assignedProgramId, userContext));
-        enrollmentHelperService.updateProgramEnrollments(programEnrollments, accountId, userContext);
-
-        model.addAttribute("enrollmentResult", ProgramEnrollmentResultEnum.SUCCESS);
-
+        try {
+            enrollmentHelperService.updateProgramEnrollments(programEnrollments, accountId, userContext);
+            model.addAttribute("enrollmentResult", ProgramEnrollmentResultEnum.SUCCESS);
+        } catch (EnrollmentException e) {
+            model.addAttribute("errorMessage", ProgramEnrollmentResultEnum.FAILED);
+            log.error(e.getMessage());
+        }
+        
         int userId = SessionUtil.getParentLoginUserId(session, userContext.getYukonUser().getUserID());
         EventUtils.logSTARSEvent(userId, EventUtils.EVENT_CATEGORY_ACCOUNT,
                                  YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED,
