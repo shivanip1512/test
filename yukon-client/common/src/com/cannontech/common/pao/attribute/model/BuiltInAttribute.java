@@ -365,6 +365,11 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     VOLTAGE_PHASE_B_OUT("Voltage Phase B Out", AttributeGroup.RFN_VOLTAGE_EVENT, false),
     VOLTAGE_PHASE_C_OUT("Voltage Phase C Out", AttributeGroup.RFN_VOLTAGE_EVENT, false),
     VOLTAGE_PHASE_ERROR("Voltage Phase Error", AttributeGroup.RFN_METERING_EVENT, false),
+    
+    //Gateway Statistics
+    CONNECTED_DEVICE_COUNT("Connected Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
+    STREAMING_DEVICE_COUNT("Streaming Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
+    DATA_STREAMING_LOAD("Data Streaming Load", AttributeGroup.GATEWAY_STATISTICS, false),
 
     FIRMWARE_VERSION("Firmware Version", AttributeGroup.OTHER),
     IGNORED_CONTROL_REASON("Ignored Control Reason", AttributeGroup.OTHER),

@@ -24,7 +24,9 @@ public enum AttributeGroup implements DisplayableEnum {
     RFN_METERING_EVENT,
     RFN_OTHER_EVENT,
     RFN_SOFTWARE_EVENT,
-    RFN_VOLTAGE_EVENT;
+    RFN_VOLTAGE_EVENT,
+    
+    GATEWAY_STATISTICS;
     
     private static final String groupPrefix = "yukon.common.attributeGroups.";
     

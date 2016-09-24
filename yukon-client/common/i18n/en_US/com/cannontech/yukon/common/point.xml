@@ -421,6 +421,10 @@
     <entry key="yukon.common.attribute.builtInAttribute.UDP_PORT">UDP Port</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LAST_CONTROL_REASON">Last Control Reason</entry>
     <entry key="yukon.common.attribute.builtInAttribute.IGNORED_CONTROL_REASON">Last Control Reason</entry>
+    
+    <entry key="yukon.common.attribute.builtInAttribute.CONNECTED_DEVICE_COUNT">Connected Device Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.STREAMING_DEVICE_COUNT">Streaming Device Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DATA_STREAMING_LOAD">Data Streaming Load</entry>
 
     <entry key="yukon.common.attribute.builtInAttribute.INDOOR_TEMPERATURE">Indoor Temperature</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OUTDOOR_TEMPERATURE">Outdoor Temperature</entry>
@@ -458,6 +462,6 @@
     
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_MANAGEMENT_CPU_UTILIZATION">Load Management CPU Utilization</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_MANAGEMENT_MEMORY_UTILIZATION">Load Management Memory Utilization</entry>
-    
+        
     <!-- BuiltInAttribute see note above about changing values -->
 </properties>

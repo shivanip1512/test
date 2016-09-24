@@ -20,6 +20,7 @@ public class GatewayDataStreamingInfo implements Serializable {
     private double maxCapacity;
     private double currentLoading;
     private double resultLoading; // Used for the device config response
+    private int primaryGatewayDeviceCount;
     
     public RfnIdentifier getGatewayRfnIdentifier() {
         return gatewayRfnIdentifier;
@@ -64,6 +65,14 @@ public class GatewayDataStreamingInfo implements Serializable {
     public double getDataStreamingLoadingPercent() {
         return (currentLoading / maxCapacity) * 100;
     }
+    
+    public int getPrimaryGatewayDeviceCount() {
+        return primaryGatewayDeviceCount;
+    }
+
+    public void setPrimaryGatewayDeviceCount(int primaryGatewayDeviceCount) {
+        this.primaryGatewayDeviceCount = primaryGatewayDeviceCount;
+    }
 
     @Override
     public int hashCode() {
@@ -76,6 +85,7 @@ public class GatewayDataStreamingInfo implements Serializable {
         result = prime * result + ((gatewayRfnIdentifier == null) ? 0 : gatewayRfnIdentifier.hashCode());
         temp = Double.doubleToLongBits(maxCapacity);
         result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + primaryGatewayDeviceCount;
         temp = Double.doubleToLongBits(resultLoading);
         result = prime * result + (int) (temp ^ (temp >>> 32));
         return result;
@@ -83,39 +93,31 @@ public class GatewayDataStreamingInfo implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         GatewayDataStreamingInfo other = (GatewayDataStreamingInfo) obj;
-        if (Double.doubleToLongBits(currentLoading) != Double.doubleToLongBits(other.currentLoading)) {
+        if (Double.doubleToLongBits(currentLoading) != Double.doubleToLongBits(other.currentLoading))
             return false;
-        }
         if (deviceRfnIdentifiers == null) {
-            if (other.deviceRfnIdentifiers != null) {
+            if (other.deviceRfnIdentifiers != null)
                 return false;
-            }
-        } else if (!deviceRfnIdentifiers.equals(other.deviceRfnIdentifiers)) {
+        } else if (!deviceRfnIdentifiers.equals(other.deviceRfnIdentifiers))
             return false;
-        }
         if (gatewayRfnIdentifier == null) {
-            if (other.gatewayRfnIdentifier != null) {
+            if (other.gatewayRfnIdentifier != null)
                 return false;
-            }
-        } else if (!gatewayRfnIdentifier.equals(other.gatewayRfnIdentifier)) {
+        } else if (!gatewayRfnIdentifier.equals(other.gatewayRfnIdentifier))
             return false;
-        }
-        if (Double.doubleToLongBits(maxCapacity) != Double.doubleToLongBits(other.maxCapacity)) {
+        if (Double.doubleToLongBits(maxCapacity) != Double.doubleToLongBits(other.maxCapacity))
             return false;
-        }
-        if (Double.doubleToLongBits(resultLoading) != Double.doubleToLongBits(other.resultLoading)) {
+        if (primaryGatewayDeviceCount != other.primaryGatewayDeviceCount)
             return false;
-        }
+        if (Double.doubleToLongBits(resultLoading) != Double.doubleToLongBits(other.resultLoading))
+            return false;
         return true;
     }
 
@@ -123,7 +125,6 @@ public class GatewayDataStreamingInfo implements Serializable {
     public String toString() {
         return "GatewayDataStreamingInfo [gatewayRfnIdentifier=" + gatewayRfnIdentifier + ", deviceRfnIdentifiers="
                + deviceRfnIdentifiers + ", maxCapacity=" + maxCapacity + ", currentLoading=" + currentLoading
-               + ", resultLoading=" + resultLoading + "]";
+               + ", resultLoading=" + resultLoading  + ", primaryGatewayDeviceCount=" + primaryGatewayDeviceCount +"]";
     }
-    
 }
