@@ -591,6 +591,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
         allGroupedBuilder.put(AttributeGroup.RFN_HARDWARE_EVENT, lookupByGroup.get(AttributeGroup.RFN_HARDWARE_EVENT));
         allGroupedBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT, lookupByGroup.get(AttributeGroup.RFN_SOFTWARE_EVENT));
+        
+        allGroupedBuilder.put(AttributeGroup.GATEWAY_STATISTICS, lookupByGroup.get(AttributeGroup.GATEWAY_STATISTICS));
 
         // The attribute group map that is created can be used in conjunction with
         // the selectNameValue tag and groupItems="true".
