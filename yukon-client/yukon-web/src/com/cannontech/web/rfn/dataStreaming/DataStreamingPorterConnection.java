@@ -102,7 +102,7 @@ public class DataStreamingPorterConnection {
             public void receivedLastResultString(CommandRequestDevice command, String value) {
                 SimpleDevice device = command.getDevice();
                 try {
-                    ReportedDataStreamingConfig config = JsonUtils.fromJson(value, ReportedDataStreamingConfig.class);
+                    ReportedDataStreamingConfig config = JsonUtils.fromJson(value.substring(4), ReportedDataStreamingConfig.class);
                     configCallback.receivedConfigReport(device, config);
                     log.debug("last result="+value);
                 } catch(IOException e) {
