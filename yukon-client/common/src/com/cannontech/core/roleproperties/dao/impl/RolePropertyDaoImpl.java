@@ -195,10 +195,10 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
     }
     
     public void clearUserCache(int userGroupId) {
-        if (!convertedValueCache.isEmpty() || userRoleCache.size() > 0) {
-            List<Integer> users = yukonUserDao.getUserIdsForUserGroup(userGroupId);
-            for (Integer userId : users) {
-                LiteYukonUser user = new LiteYukonUser(userId);
+        List<Integer> users = yukonUserDao.getUserIdsForUserGroup(userGroupId);
+        for (Integer userId : users) {
+            LiteYukonUser user = new LiteYukonUser(userId);
+            if (!convertedValueCache.isEmpty()) {
                 convertedValueCache.remove(new UserPropertyTuple(user, YukonRoleProperty.LOCKOUT_DURATION));
                 convertedValueCache.remove(new UserPropertyTuple(user, YukonRoleProperty.LOCKOUT_THRESHOLD));
                 convertedValueCache.remove(new UserPropertyTuple(user, YukonRoleProperty.MAXIMUM_PASSWORD_AGE));
@@ -206,7 +206,8 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
                 convertedValueCache.remove(new UserPropertyTuple(user, YukonRoleProperty.MINIMUM_PASSWORD_LENGTH));
                 convertedValueCache.remove(new UserPropertyTuple(user, YukonRoleProperty.PASSWORD_HISTORY));
                 convertedValueCache.remove(new UserPropertyTuple(user, YukonRoleProperty.POLICY_QUALITY_CHECK));
-
+            }
+            if (userRoleCache.size() > 0) {
                 userRoleCache.invalidate(userId);
             }
         }
