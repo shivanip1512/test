@@ -30,6 +30,10 @@ public class RolePropertyChangeHelper {
                      }
                      rolePropertyDaoImpl.clearCache();
                  }
+                 
+                 if (dbChange.getDatabase() == DBChangeMsg.CHANGE_USER_GROUP_DB) {
+                         rolePropertyDaoImpl.clearUserCache(dbChange.getId());
+                 }
             }
         });
         
