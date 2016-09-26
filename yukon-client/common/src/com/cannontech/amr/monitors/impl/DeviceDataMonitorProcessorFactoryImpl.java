@@ -91,13 +91,14 @@ public class DeviceDataMonitorProcessorFactoryImpl extends MonitorProcessorFacto
 
         /* Creating key using paoId and DeviceGroup as combination of both must be unique */
         ImmutablePair<Integer, DeviceGroup> cacheKey = new ImmutablePair<>(simpleDevice.getDeviceId(), groupToMonitor);
+        Boolean isDeviceInGroup = deviceInGroupCache.getIfPresent(cacheKey);
 
-        if (deviceInGroupCache.getIfPresent(cacheKey) == null) {
-            boolean deviceInGroup = deviceGroupService.isDeviceInGroup(groupToMonitor, simpleDevice);
-            deviceInGroupCache.put(cacheKey, deviceInGroup);
+        if (isDeviceInGroup == null) {
+            isDeviceInGroup = deviceGroupService.isDeviceInGroup(groupToMonitor, simpleDevice);
+            deviceInGroupCache.put(cacheKey, isDeviceInGroup);
         }
 
-        if (!deviceInGroupCache.getIfPresent(cacheKey)) {
+        if (!isDeviceInGroup) {
             // if this device isn't in the group we're monitoring
             LogHelper.debug(log, "device [%s] not in monitoring group [%s]", simpleDevice, groupToMonitor);
             return;
