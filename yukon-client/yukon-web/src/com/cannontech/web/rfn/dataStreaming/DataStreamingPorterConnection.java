@@ -90,7 +90,7 @@ public class DataStreamingPorterConnection {
                 //  If the error is a JSON string, it's a config report
                 if (error.getPorter().startsWith("json{")) {
                     try {
-                        config = JsonUtils.fromJson(error.getPorter().substring(4), ReportedDataStreamingConfig.class);
+                        config = extractReportedDataStreamingConfig(error.getPorter());
                     } catch(IOException e) {
                         log.debug("Error text appeared to be JSON, but could not be decoded: " + error);
                     }
@@ -102,7 +102,7 @@ public class DataStreamingPorterConnection {
             public void receivedLastResultString(CommandRequestDevice command, String value) {
                 SimpleDevice device = command.getDevice();
                 try {
-                    ReportedDataStreamingConfig config = JsonUtils.fromJson(value.substring(4), ReportedDataStreamingConfig.class);
+                    ReportedDataStreamingConfig config = extractReportedDataStreamingConfig(value);
                     configCallback.receivedConfigReport(device, config);
                     log.debug("last result="+value);
                 } catch(IOException e) {
@@ -116,6 +116,18 @@ public class DataStreamingPorterConnection {
                         new SpecificDeviceErrorDescription(errorDescription, error, detail);
                     configCallback.receivedConfigError(device, deviceError, null);
                 }
+            }
+
+            /**
+             * Extracts a JSON-encoded ReportedDataStreamingConfig from a Porter return string.
+             * Note that it is not raw JSON - it is prefixed with "json" which is followed by the JSON object.
+             * @param porterJson the Porter JSON string
+             * @return
+             * @throws IOException
+             */
+            private ReportedDataStreamingConfig extractReportedDataStreamingConfig(String porterJson)
+                    throws IOException {
+                return JsonUtils.fromJson(porterJson.substring(4), ReportedDataStreamingConfig.class);
             }
 
             @Override
