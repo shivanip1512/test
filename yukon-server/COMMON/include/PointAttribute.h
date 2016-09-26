@@ -536,6 +536,11 @@ public:
     static const Attribute  VoltagePhaseBOut;
     static const Attribute  VoltagePhaseCOut;
     static const Attribute  VoltagePhaseError;
+
+    static const Attribute  ConnectedDeviceCount;
+    static const Attribute  StreamingDeviceCount;
+    static const Attribute  DataStreamingLoad;
+
     static const Attribute  FirmwareVersion;
     static const Attribute  IgnoredControlReason;
     static const Attribute  IpAddress;

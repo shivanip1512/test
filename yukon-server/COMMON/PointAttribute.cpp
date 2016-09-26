@@ -493,6 +493,11 @@ const Attribute Attribute::VoltagePhaseAOut                                 = At
 const Attribute Attribute::VoltagePhaseBOut                                 = Attribute( "VOLTAGE_PHASE_B_OUT" );
 const Attribute Attribute::VoltagePhaseCOut                                 = Attribute( "VOLTAGE_PHASE_C_OUT" );
 const Attribute Attribute::VoltagePhaseError                                = Attribute( "VOLTAGE_PHASE_ERROR" );
+
+const Attribute Attribute::ConnectedDeviceCount                             = Attribute( "CONNECTED_DEVICE_COUNT" );
+const Attribute Attribute::StreamingDeviceCount                             = Attribute( "STREAMING_DEVICE_COUNT" );
+const Attribute Attribute::DataStreamingLoad                                = Attribute( "DATA_STREAMING_LOAD" );
+
 const Attribute Attribute::FirmwareVersion                                  = Attribute( "FIRMWARE_VERSION" );
 const Attribute Attribute::IgnoredControlReason                             = Attribute( "IGNORED_CONTROL_REASON" );
 const Attribute Attribute::IpAddress                                        = Attribute( "IP_ADDRESS" );
