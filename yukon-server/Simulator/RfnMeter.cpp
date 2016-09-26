@@ -44,10 +44,10 @@ const metrics streaming_sentinel = { 1, 2, 32, 33, 49, 50, 80, 100, 101, 102 };
 const metrics streaming_centron   = { 1, 2, 5, 113 };
 const metrics streaming_focus_kwh = { 1, 2, 5, 113 };
 
-// 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_410FD(PaoType.RFN410FD,  //Focus AXD-SD
-// 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_410FX(PaoType.RFN410FX,  //Focus AXR
-// 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_420FRD(PaoType.RFN420FRD,  //Focus AXR-SD
-// 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_420FX(PaoType.RFN420FX,  //Focus AXD
+// 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_410FD(PaoType.RFN410FD,  //FocusAXD-SD
+// 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_410FX(PaoType.RFN410FX,  //FocusAXR
+// 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_420FRD(PaoType.RFN420FRD,  //FocusAXR-SD
+// 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_420FX(PaoType.RFN420FX,  //FocusAXD
 const metrics streaming_focus_ax_400 = { 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 };
 
 // 1, 2, 5, 32, 33, 23, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FRXD_SD(PaoType.RFN520FRXD,  //FocusRXD-SD-500
@@ -78,15 +78,69 @@ const metrics streaming_s4_x = { 1, 2, 5, 6, 32, 33, 23, 49, 50, 43, 100, 101, 1
 
 const std::map<std::string, std::map<std::string, const metrics>> perType {
     { "ITRN", {
-        { "C1SX", streaming_centron },
-        { "C2SX", streaming_centron },
+        { "C1SX",    streaming_centron },
+        { "C2SX",    streaming_centron },
+        { "C2SX-SD", streaming_centron },
     }},
     { "LGYR", {
+        { "FocuskWh",        streaming_focus_kwh },
+
         { "FocusAXD",        streaming_focus_ax_400 },
+        { "FocusAXD-SD",     streaming_focus_ax_400 },
+        { "FocusAXR",        streaming_focus_ax_400 },
+        { "FocusAXR-SD",     streaming_focus_ax_400 },
+
         { "FocusAXD-500",    streaming_focus_ax_500 },
         { "FocusAXD-SD-500", streaming_focus_ax_500 }
-    }}
+    }},
+    { "EE", {
+        { "A3D", streaming_elster_a3dt },
+        { "A3T", streaming_elster_a3dt },
+
+        { "A3K", streaming_elster_a3kr },
+        { "A3R", streaming_elster_a3kr }
+    }},
+    { "SCH", {
+        { "SENTINEL-L0", streaming_sentinel },
+        { "SENTINEL-L1", streaming_sentinel },
+        { "SENTINEL-L2", streaming_sentinel },
+        { "SENTINEL-L3", streaming_sentinel },
+        { "SENTINEL-L4", streaming_sentinel }
+    }},
 };
+
+
+/* For the RFN_520 and RFN_530 meters below, there are cases where multiple manufacturer/model combinations
+* map to the same pao type, like the 'S4-AT' and 'S4-AR' model strings that both map to the PaoType 'RFN530S4EAT'.
+* This is intentional- multiple meter models are functionally the same in Yukon, this should not be changed. */
+/*
+RFN_510FL(PaoType.RFN510FL, "LGYR", "FocuskWh-500"),
+RFN_520FAXD(PaoType.RFN520FAX, "LGYR", "FocusAXD-500"),
+RFN_520FAXT(PaoType.RFN520FAX, "LGYR", "FocusAXT-500"),
+RFN_520FAXR(PaoType.RFN520FAX, "LGYR", "FocusAXR-500"),
+RFN_520FRXD(PaoType.RFN520FRX, "LGYR", "FocusRXD-500"),
+RFN_520FRXT(PaoType.RFN520FRX, "LGYR", "FocusRXT-500"),
+RFN_520FRXR(PaoType.RFN520FRX, "LGYR", "FocusRXR-500"),
+RFN_520FAXD_SD(PaoType.RFN520FAXD, "LGYR", "FocusAXD-SD-500"),
+RFN_520FAXT_SD(PaoType.RFN520FAXD, "LGYR", "FocusAXT-SD-500"),
+RFN_520FAXR_SD(PaoType.RFN520FAXD, "LGYR", "FocusAXR-SD-500"),
+RFN_520FRXD_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXD-SD-500"),
+RFN_520FRXT_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXT-SD-500"),
+RFN_520FRXR_SD(PaoType.RFN520FRXD, "LGYR", "FocusRXR-SD-500"),
+
+//this manufacturer value doesn't actually exist yet.
+RFN_530FAX(PaoType.RFN530FAX, "LGYR", "FocusAXT-530"),
+RFN_530FRX(PaoType.RFN530FRX, "LGYR", "FocusAXR-530"),
+
+RFN_530S4X(PaoType.RFN530S4X, "LGYR", "E650"),
+RFN_530S4AD(PaoType.RFN530S4EAD, "LGYR", "S4-AD"),
+RFN_530S4AT(PaoType.RFN530S4EAT, "LGYR", "S4-AT"),
+RFN_530S4AR(PaoType.RFN530S4EAT, "LGYR", "S4-AR"),
+RFN_530S4RD(PaoType.RFN530S4ERD, "LGYR", "S4-RD"),
+RFN_530S4RT(PaoType.RFN530S4ERT, "LGYR", "S4-RT"),
+RFN_530S4RR(PaoType.RFN530S4ERT, "LGYR", "S4-RR"),
+*/
+
 
 }
 
@@ -198,13 +252,16 @@ std::vector<unsigned char> makeDataStreamingResponse(const unsigned char respons
     response.push_back(contents.metrics.size());
     response.push_back(contents.enabled && ! disableHappen);
 
+    const auto channelErrorChance = gConfigParms.getValueAsDouble("SIMULATOR_RFN_DATA_STREAMING_CHANNEL_ERROR_CHANCE");
+    const auto channelErrorHappen = dist(rd);
+
     for( const auto channel : contents.metrics )
     {
         response.push_back(channel.metricId >> 8);
         response.push_back(channel.metricId);
         response.push_back(channel.enabled);
         response.push_back(channel.interval);
-        response.push_back(channel.error);
+        response.push_back(channelErrorHappen ? 5 : channel.error);  //  return a ChannelNotSupported error
     }
 
     //  Sequence number
