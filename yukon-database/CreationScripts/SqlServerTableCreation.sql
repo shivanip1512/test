@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/22/2016 4:48:27 AM                         */
+/* Created on:     9/27/2016 5:19:28 AM                         */
 /*==============================================================*/
 
 
@@ -9957,6 +9957,11 @@ INSERT INTO YukonListEntry VALUES (2024, 1005, 0, 'UtilityPRO G3', 1319);
 INSERT INTO YukonListEntry VALUES (2025, 1005, 0, 'ecobee Smart Si', 1329);
 INSERT INTO YukonListEntry VALUES (2026, 1005, 0, 'ecobee3', 1330);
 INSERT INTO YukonListEntry VALUES (2027, 1005, 0, 'ecobee Smart', 1331);
+
+INSERT INTO YukonListEntry VALUES (2030, 1005, 0, 'Honeywell Wi-Fi 9000', 1332);
+INSERT INTO YukonListEntry VALUES (2031, 1005, 0, 'Honeywell Wi-Fi VisionPRO 8000', 1333);
+INSERT INTO YukonListEntry VALUES (2032, 1005, 0, 'Honeywell Wi-Fi FocusPRO', 1334);
+INSERT INTO YukonListEntry VALUES (2033, 1005, 0, 'Honeywell Wi-Fi Thermostat', 1335);
 
 insert into yukonlistentry values (10101, 1067, 0, 'CustomerAccount', 0);
 insert into yukonlistentry values (10102, 1067, 0, 'Inventory', 0);
