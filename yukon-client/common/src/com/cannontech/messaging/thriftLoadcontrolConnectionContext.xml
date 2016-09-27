@@ -313,6 +313,7 @@
                 <ref bean="messaging.thrift.load.GroupEcobeeSerializer"/>
 				<ref bean="messaging.thrift.load.GroupEmetconSerializer"/>
 				<ref bean="messaging.thrift.load.GroupExpresscomSerializer"/>
+                <ref bean="messaging.thrift.load.GroupHoneywellSerializer"/>
 				<ref bean="messaging.thrift.load.GroupGolaySerializer"/>
 				<ref bean="messaging.thrift.load.GroupMCTSerializer"/>
 				<ref bean="messaging.thrift.load.GroupPointSerializer"/>
