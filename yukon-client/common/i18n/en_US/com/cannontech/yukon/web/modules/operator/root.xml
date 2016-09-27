@@ -73,17 +73,7 @@
     <entry key="yukon.web.modules.operator.gateways.detail.location.update.successful">Location updated Successfully.</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.schedule">Collection Schedule</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.schedule.update.successful">Collection schedule updated Successfully.</entry>
-    
-    <!-- Map Network -->
-    <entry key="yukon.web.modules.operator.mapNetwork.pageName">Map Network</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.pageDescription">Map Network</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.location.title">Location</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.neighbors">Neighbors</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.primary">Primary Route</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.parent">Parent Node</entry>
-        
-    
-    
+
     <!-- Gateway Common Words -->
     <entry key="yukon.web.modules.operator.gateways.cert">Certificate</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.more"> and {0} more...</entry>
