@@ -238,7 +238,7 @@ std::vector<unsigned char> makeDataStreamingResponse(const unsigned char respons
 
     std::vector<unsigned char> response { responseCode };
 
-    const auto mangleChance = gConfigParms.getValueAsDouble("SIMULATOR_RFN_DATA_STREAMING_CONFIG_MANGLE_CHANCE", 0.33);
+    const auto mangleChance = gConfigParms.getValueAsDouble("SIMULATOR_RFN_DATA_STREAMING_CONFIG_MANGLE_CHANCE");
     const auto mangleHappen = dist(rd);
 
     const auto& contents = 
