@@ -249,6 +249,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/operator/thermostat</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/workOrder</value>
                 <value>classpath:com/cannontech/yukon/web/modules/operator/inventory</value>
+                <value>classpath:com/cannontech/yukon/web/modules/operator/mapNetwork</value>
                 <value>classpath:com/cannontech/yukon/web/modules/visualDisplays/visualDisplays</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/tools/bulk</value>
