@@ -23,7 +23,7 @@ using metrics = std::initializer_list<unsigned short>;
 // 1, 2, 100, 101, 102 RFN_530S4AD(PaoType.RFN530S4EAD,  //S4-AD
 // 1, 2, 100, 101, 102 RFN_530S4AR(PaoType.RFN530S4EAT,  //S4-AR
 // 1, 2, 100, 101, 102 RFN_530S4AT(PaoType.RFN530S4EAT,  //S4-AT
-const metrics streaming_s4_a = { 1, 2, 100, 101, 102 };
+const metrics streaming_s4_a = { 1, 2, 3, 100, 101, 102 };
 
 // 1, 2, 23, 43, 100, 101, 102 RFN_530S4RD(PaoType.RFN530S4ERD,  //S4-RD
 // 1, 2, 23, 43, 100, 101, 102 RFN_530S4RR(PaoType.RFN530S4ERT,  //S4-RR
@@ -35,35 +35,35 @@ const metrics streaming_s4_r = { 1, 2, 23, 43, 100, 101, 102 };
 // 1, 2, 32, 33, 49, 50, 80, 100, 101, 102 RFN_430SL2(PaoType.RFN430SL2,  //Sentinel-L2
 // 1, 2, 32, 33, 49, 50, 80, 100, 101, 102 RFN_430SL3(PaoType.RFN430SL3,  //Sentinel-L3
 // 1, 2, 32, 33, 49, 50, 80, 100, 101, 102 RFN_430SL4(PaoType.RFN430SL4,  //Sentinel-L4
-const metrics streaming_sentinel = { 1, 2, 32, 33, 49, 50, 80, 100, 101, 102 };
+const metrics streaming_sentinel = { 1, 2, 32, 33, 49, 50, 80, 100, 101, 102, 200, 201, 202 };
 
 // 1, 2, 5, 113 RFN_410CL(PaoType.RFN410CL,   //C1SX
 // 1, 2, 5, 113 RFN_410FL(PaoType.RFN410FL,  //FocuskWh
 // 1, 2, 5, 113 RFN_420CL(PaoType.RFN420CL,   //C2SX
 // 1, 2, 5, 113 RFN_510FL(PaoType.RFN510FL,  //FocuskWh-500
-const metrics streaming_centron   = { 1, 2, 5, 113 };
-const metrics streaming_focus_kwh = { 1, 2, 5, 113 };
+const metrics streaming_centron   = { 1, 2, 5, 115 };
+const metrics streaming_focus_kwh = { 1, 2, 5, 115 };
 
 // 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_410FD(PaoType.RFN410FD,  //FocusAXD-SD
 // 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_410FX(PaoType.RFN410FX,  //FocusAXR
 // 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_420FRD(PaoType.RFN420FRD,  //FocusAXR-SD
 // 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_420FX(PaoType.RFN420FX,  //FocusAXD
-const metrics streaming_focus_ax_400 = { 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 };
+const metrics streaming_focus_ax_400 = { 1, 2, 5, 115, 100, 101, 102, 119, 120, 121 };
 
 // 1, 2, 5, 32, 33, 23, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FRXD_SD(PaoType.RFN520FRXD,  //FocusRXD-SD-500
 // 1, 2, 5, 32, 33, 23, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FRXR(PaoType.RFN520FRX,  //FocusRXR-500
 // 1, 2, 5, 32, 33, 23, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FRXR_SD(PaoType.RFN520FRXD,  //FocusRXR-SD-500
 // 1, 2, 5, 32, 33, 23, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FRXT(PaoType.RFN520FRX,  //FocusRXT-500
 // 1, 2, 5, 32, 33, 23, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FRXT_SD(PaoType.RFN520FRXD,  //FocusRXT-SD-500
-const metrics streaming_focus_rx = { 1, 2, 5, 32, 33, 23, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 };
+const metrics streaming_focus_rx = { 1, 2, 5, 32, 33, 23, 49, 50, 43, 115, 100, 101, 102, 119, 120, 121 };
 
 // 1, 2, 5, 32, 33, 49, 50, 43, 100, 101, 102 RFN_430A3D(PaoType.RFN430A3D,  //Elster A3D
 // 1, 2, 5, 32, 33, 49, 50, 43, 100, 101, 102 RFN_430A3T(PaoType.RFN430A3T,  //Elster A3T
-const metrics streaming_elster_a3dt = { 1, 2, 5, 32, 33, 49, 50, 43, 100, 101, 102 };
+const metrics streaming_elster_a3dt = { 1, 2, 5, 6, 32, 33, 49, 50, 43, 162, 163, 164, 100, 101, 102 };
 
 // 1, 2, 5, 32, 33, 49, 50, 43, 80/81?, 80, 100, 101, 102 RFN_430A3K(PaoType.RFN430A3K,  //Elster A3K
 // 1, 2, 5, 32, 33, 49, 50, 43, 80/81?, 80, 100, 101, 102 RFN_430A3R(PaoType.RFN430A3R,  //Elster A3R
-const metrics streaming_elster_a3kr = { 1, 2, 5, 32, 33, 49, 50, 43, 80, 81, 100, 101, 102 };
+const metrics streaming_elster_a3kr = { 1, 2, 5, 6, 32, 33, 49, 50, 43, 162, 163, 164, 80, 81, 100, 101, 102 };
 
 // 1, 2, 5, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FAXD(PaoType.RFN520FAX,  //Focus AXD-500
 // 1, 2, 5, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FAXD_SD(PaoType.RFN520FAXD,  //Focus AXD-SD-500
@@ -74,7 +74,7 @@ const metrics streaming_elster_a3kr = { 1, 2, 5, 32, 33, 49, 50, 43, 80, 81, 100
 const metrics streaming_focus_ax_500 = { 1, 2, 5, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 };
 
 // 1, 2, 5, 6, 32, 33, 23, 49, 50, 43, 100, 101, 102, 119, 120, 121 RFN_530S4X(PaoType.RFN530S4X,  //E650
-const metrics streaming_s4_x = { 1, 2, 5, 6, 32, 33, 23, 49, 50, 43, 100, 101, 102, 119, 120, 121 };
+const metrics streaming_s4_x = { 1, 2, 5, 6, 32, 33, 23, 24, 49, 50, 43, 44, 100, 101, 102, 119, 120, 121 };
 
 const std::map<std::string, std::map<std::string, const metrics>> perType {
     { "ITRN", {
