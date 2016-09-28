@@ -844,7 +844,7 @@ public class NmIntegrationController {
     }
     
     @RequestMapping("stopDataStreamingSimulator")
-    public String startDataStreamingSimulator(FlashScope flash) {
+    public String stopDataStreamingSimulator(FlashScope flash) {
         try {
             ModifyDataStreamingSimulatorRequest request = new ModifyDataStreamingSimulatorRequest();
             request.setStopSimulator(true);
