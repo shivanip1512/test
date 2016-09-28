@@ -6,8 +6,6 @@
 #include "lmgrouphoneywell.h"
 #include "LMHoneywellMessages.h"
 
-//Any commented out lines of code aside from the 'shed == ...' line are to make sure messages are not being sent yet!
-
 extern ULONG _LM_DEBUG;
 
 DEFINE_COLLECTABLE(LMGroupHoneywell, LMGROUPHONEYWELL_ID)

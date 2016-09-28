@@ -86,7 +86,7 @@ MessagePtr<Thrift::LMGroupDigiSEP>::type populateThrift( const ::LMGroupDigiSEP&
 {
     MessagePtr<Thrift::LMGroupDigiSEP>::type omsg( new Thrift::LMGroupDigiSEP );
 
-    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -99,7 +99,7 @@ MessagePtr<Thrift::LMGroupEcobee>::type populateThrift( const ::LMGroupEcobee& i
 {
     MessagePtr<Thrift::LMGroupEcobee>::type omsg( new Thrift::LMGroupEcobee );
 
-    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -112,7 +112,7 @@ MessagePtr<Thrift::LMGroupHoneywell>::type populateThrift(const ::LMGroupHoneywe
 {
     MessagePtr<Thrift::LMGroupHoneywell>::type omsg( new Thrift::LMGroupHoneywell );
 
-    omsg->__set__baseMessage                       ( *populateThrift(static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -125,7 +125,7 @@ MessagePtr<Thrift::LMGroupEmetcon>::type populateThrift( const ::CtiLMGroupEmetc
 {
     MessagePtr<Thrift::LMGroupEmetcon>::type omsg( new Thrift::LMGroupEmetcon );
 
-    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -138,7 +138,7 @@ MessagePtr<Thrift::LMGroupExpresscom>::type populateThrift( const ::CtiLMGroupEx
 {
     MessagePtr<Thrift::LMGroupExpresscom>::type omsg( new Thrift::LMGroupExpresscom );
 
-    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -151,7 +151,7 @@ MessagePtr<Thrift::LMGroupGolay>::type populateThrift( const ::CtiLMGroupGolay& 
 {
     MessagePtr<Thrift::LMGroupGolay>::type omsg( new Thrift::LMGroupGolay );
 
-    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -164,7 +164,7 @@ MessagePtr<Thrift::LMGroupMacro>::type populateThrift( const ::CtiLMGroupMacro& 
 {
     MessagePtr<Thrift::LMGroupMacro>::type omsg( new Thrift::LMGroupMacro );
 
-    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -177,7 +177,7 @@ MessagePtr<Thrift::LMGroupMCT>::type populateThrift( const ::CtiLMGroupMCT& imsg
 {
     MessagePtr<Thrift::LMGroupMCT>::type omsg( new Thrift::LMGroupMCT );
 
-    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupEmetcon&>(imsg) ));
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupEmetcon&>(imsg) ));
 
     return omsg;
 }
@@ -190,7 +190,7 @@ MessagePtr<Thrift::LMGroupPoint>::type populateThrift( const ::CtiLMGroupPoint& 
 {
     MessagePtr<Thrift::LMGroupPoint>::type omsg( new Thrift::LMGroupPoint );
 
-    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -203,8 +203,8 @@ MessagePtr<Thrift::LMGroupRipple>::type populateThrift( const ::CtiLMGroupRipple
 {
     MessagePtr<Thrift::LMGroupRipple>::type omsg( new Thrift::LMGroupRipple );
 
-    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
-    omsg->__set__shedTime                       ( imsg.getShedTime() );
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__shedTime    ( imsg.getShedTime() );
 
     return omsg;
 }
@@ -217,7 +217,7 @@ MessagePtr<Thrift::LMGroupSA105>::type populateThrift( const ::CtiLMGroupSA105& 
 {
     MessagePtr<Thrift::LMGroupSA105>::type omsg( new Thrift::LMGroupSA105 );
 
-    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -230,7 +230,7 @@ MessagePtr<Thrift::LMGroupSA205>::type populateThrift( const ::CtiLMGroupSA205& 
 {
     MessagePtr<Thrift::LMGroupSA205>::type omsg( new Thrift::LMGroupSA205 );
 
-    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -243,7 +243,7 @@ MessagePtr<Thrift::LMGroupSA305>::type populateThrift( const ::CtiLMGroupSA305& 
 {
     MessagePtr<Thrift::LMGroupSA305>::type omsg( new Thrift::LMGroupSA305 );
 
-    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -256,7 +256,7 @@ MessagePtr<Thrift::LMGroupSADigital>::type populateThrift( const ::CtiLMGroupSAD
 {
     MessagePtr<Thrift::LMGroupSADigital>::type omsg( new Thrift::LMGroupSADigital );
 
-    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }
@@ -269,7 +269,7 @@ MessagePtr<Thrift::LMGroupVersacom>::type populateThrift( const ::CtiLMGroupVers
 {
     MessagePtr<Thrift::LMGroupVersacom>::type omsg( new Thrift::LMGroupVersacom );
 
-    omsg->__set__baseMessage                    ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
+    omsg->__set__baseMessage ( *populateThrift( static_cast<const ::CtiLMGroupBase&>(imsg) ));
 
     return omsg;
 }

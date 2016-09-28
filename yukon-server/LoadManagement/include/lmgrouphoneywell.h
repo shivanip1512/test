@@ -26,8 +26,8 @@ public:
     bool doesStopRequireCommandAt(const CtiTime & currentTime) const override;
 
     bool sendCycleControl(long dutyCycle,
-                                  long controlDurationSeconds,
-                                  bool rampInOutOption) override;
+                          long controlDurationSeconds,
+                          bool rampInOutOption) override;
 
     //Unused
     CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const override;

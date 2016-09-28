@@ -460,7 +460,9 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         { "ecobee group",                   "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "ltc",                            "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
         { "go_regulator",                   "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
-        { "po_regulator",                   "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" }
+        { "po_regulator",                   "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
+        { "honeywell program",              "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" },
+        { "honeywell group",                "null pointer {0158EE7B-419F-EC43-9382-3496ED9E5F67}" }
     };
 
     std::vector<DeviceTypeRow> rowVec;

@@ -5,7 +5,7 @@
 
 
 class HoneywellCycleGear : public SmartGearBase,
-    public CtiLMProgramDirectGear
+                           public CtiLMProgramDirectGear
 {
 public:
 

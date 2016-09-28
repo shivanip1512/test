@@ -32,7 +32,7 @@ MessagePtr<Thrift::LMGroupDigiSEP>::type     populateThrift ( const ::LMGroupDig
 
 MessagePtr<Thrift::LMGroupEcobee>::type      populateThrift ( const ::LMGroupEcobee& imsg );
 
-MessagePtr<Thrift::LMGroupHoneywell>::type   populateThrift(const ::LMGroupHoneywell& imsg);
+MessagePtr<Thrift::LMGroupHoneywell>::type   populateThrift ( const ::LMGroupHoneywell& imsg );
 
 MessagePtr<Thrift::LMGroupEmetcon>::type     populateThrift ( const ::CtiLMGroupEmetcon& imsg );
 

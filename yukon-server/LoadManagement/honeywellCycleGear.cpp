@@ -61,5 +61,5 @@ bool HoneywellCycleGear::stopControl( CtiLMGroupPtr currentLMGroup )
 
 unsigned long HoneywellCycleGear::estimateOffTime( long controlSeconds )
 {
-    return controlSeconds * ( getMethodRate() / 100.0);
+    return controlSeconds * ( getMethodRate() / 100.0 );
 }
