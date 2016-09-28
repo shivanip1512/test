@@ -272,7 +272,7 @@ public class RfPerformanceController {
             }
             model.addAttribute("unknowns", unknowns);
             status = PerformanceVerificationMessageStatus.UNKNOWN;
-        } else if (type.equalsIgnoreCase("failed")) {
+        } else if (type.equalsIgnoreCase("missed")) {
             status = PerformanceVerificationMessageStatus.FAILURE;
             paos = rfPerformanceDao.getDevicesWithStatus(test, status, pagingParameters);
             totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
@@ -305,7 +305,7 @@ public class RfPerformanceController {
         model.addAttribute("title", accessor.getMessage(detailsKey + type + ".popup.title", eventTime));
         
         int totalCount;
-        if (type.equalsIgnoreCase("failed")) {
+        if (type.equalsIgnoreCase("missed")) {
             status = PerformanceVerificationMessageStatus.FAILURE;
             paos = rfPerformanceDao.getDevicesWithStatus(test, status, pagingParameters);
             totalCount = rfPerformanceDao.getNumberOfDevices(test, status);
@@ -379,7 +379,7 @@ public class RfPerformanceController {
                 paos.add(device.getPao().getPaoIdentifier());
             }
         } else {
-            if (type.equalsIgnoreCase("failed")) {
+            if (type.equalsIgnoreCase("missed")) {
                 paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.FAILURE);
             } else {
                 paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.SUCCESS);
@@ -420,7 +420,7 @@ public class RfPerformanceController {
         
         if (type.equalsIgnoreCase(UNREPORTED)) {
             paos = rfPerformanceDao.getAllDevicesWithUnknownStatus(test).getUnknownDevices();
-        } else if (type.equalsIgnoreCase("failed")) {
+        } else if (type.equalsIgnoreCase("missed")) {
             paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.FAILURE);
         } else {
             paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.SUCCESS);
@@ -445,7 +445,7 @@ public class RfPerformanceController {
         
         if (type.equalsIgnoreCase(UNREPORTED)) {
             paos = rfPerformanceDao.getAllDevicesWithUnknownStatus(test).getUnknownDevices();
-        } else if (type.equalsIgnoreCase("failed")) {
+        } else if (type.equalsIgnoreCase("missed")) {
             paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.FAILURE);
         } else {
             paos = rfPerformanceDao.getAllDevicesWithStatus(test, PerformanceVerificationMessageStatus.SUCCESS);
