@@ -9,4 +9,20 @@
     <entry key="yukon.web.modules.operator.mapNetwork.primary">Primary Route</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.parent">Parent Node</entry>
     
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.PF">Primary forward route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.PR">Primary reverse route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.BR">Battery Route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.GC">Route start GC</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.RU">Route remedial update</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.IR">Ignored route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.VR">Valid route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.routeFlagType.TO">Route timed out</entry>
+    
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.PF">Primary forward route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.PR">Primary reverse route</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.S2">Secondary neighbor for alternate gateway</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.F">Float neighbor</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.IN">Ignored neighbor</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.BN">Battery neighbor</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.neighborFlagType.S1">Secondary neighbor for serving gateway</entry>
 </properties>

@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.mapNetwork;
 
 import java.util.Arrays;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -13,9 +14,15 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.tools.mapping.model.Neighbor;
+import com.cannontech.web.tools.mapping.model.Parent;
+import com.cannontech.web.tools.mapping.model.RouteInfo;
+import com.cannontech.web.tools.mapping.service.NmNetworkTestService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 
 @RequestMapping("/mapNetwork/*")
@@ -24,6 +31,8 @@ public class MapNetworkController {
     
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private DeviceDao deviceDao;
+    @Autowired private NmNetworkTestService nmNetworkTestService;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @RequestMapping("home")
     public String home(ModelMap model, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
@@ -40,6 +49,12 @@ public class MapNetworkController {
         model.addAttribute("displayParentNodeLayer", device.getDeviceType().isWaterMeter());
         
         model.addAttribute("isGateway", PaoType.getRfGatewayTypes().contains(device.getDeviceType()));
+        
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        
+        List<Neighbor> neighbors = nmNetworkTestService.getNeighbors(deviceId, accessor);
+        Parent parent = nmNetworkTestService.getParent(deviceId);
+        List<RouteInfo> route = nmNetworkTestService.getRoute(deviceId, accessor);
         
         return "mapNetwork/home.jsp";
     }
