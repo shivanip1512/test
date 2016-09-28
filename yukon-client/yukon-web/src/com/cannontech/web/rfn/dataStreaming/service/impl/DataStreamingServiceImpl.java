@@ -97,7 +97,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Range;
-import com.google.common.collect.Ranges;
 import com.google.common.collect.Sets;
 
 public class DataStreamingServiceImpl implements DataStreamingService {
@@ -202,7 +201,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
         Double min = criteria.getMinLoadPercent() == null ? Double.MIN_VALUE : criteria.getMinLoadPercent();
         Double max = criteria.getMaxLoadPercent() == null ? Double.MAX_VALUE : criteria.getMaxLoadPercent();
-        Range<Double> range = Ranges.closed(min, max);
+        Range<Double> range = Range.closed(min, max);
         Iterator<RfnGateway> it = gateways.iterator();
         while (it.hasNext()) {
             RfnGateway gateway = it.next();
@@ -1350,11 +1349,11 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         public DataStreamingConfigCallbackImpl(DataStreamingConfigResult result, CommandRequestExecution execution,
                 List<SimpleDevice> deviceList, String correlationId) {
             this.result = result;
-            this.successGroup = result.getSuccessGroup();
-            this.failedGroup = result.getFailedGroup();
+            successGroup = result.getSuccessGroup();
+            failedGroup = result.getFailedGroup();
             this.execution = execution;
             this.deviceList = deviceList;
-            this.cancelGroup = result.getCanceledGroup();
+            cancelGroup = result.getCanceledGroup();
             this.correlationId = correlationId;
             deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE,
                 deviceList.stream().map(d -> d.getDeviceId()).collect(Collectors.toList()));
