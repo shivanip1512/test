@@ -274,5 +274,10 @@ std::string inputStrings[] = {
 "putvalue hexraw 0xbadf00d",
 "putconfig template \"sauce\"",
 "putconfig behavior rfnDataStreaming",
+"getvalue hourly read",
+"getvalue hourly read cancel",
+"getvalue hourly read channel 1",
+"getvalue hourly read channel 2 12/25/2014",
+"getvalue hourly read channel 3 12/25/2014 12/31/2014",
 };
 
