@@ -2,10 +2,11 @@ package com.cannontech.core.dao.impl;
 
 import java.sql.SQLException;
 import java.util.List;
-import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 
@@ -26,8 +27,9 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
-import com.google.common.base.Function;
-import com.google.common.collect.MapMaker;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 
 public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao {
 
@@ -94,9 +96,9 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
     }
 
     // Cache
-    private ConcurrentMap<Integer,YukonListEntry> yukonListEntries;
-    private ConcurrentMap<Integer,YukonSelectionList> yukonSelectionLists;
-    private ConcurrentMap<EnergyCompanyAndListName, YukonSelectionList> yukonSelectionListByName;
+    private LoadingCache<Integer,YukonListEntry> yukonListEntries;
+    private LoadingCache<Integer,YukonSelectionList> yukonSelectionLists;
+    private LoadingCache<EnergyCompanyAndListName, YukonSelectionList> yukonSelectionListByName;
 
     private YukonSelectionList NULL_LIST = new YukonSelectionList();
     private YukonListEntry NULL_ENTRY = new YukonListEntry();
@@ -106,51 +108,48 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
         createCacheObjects();
         createDatabaseChangeListeners();
     }
-
+    
     /**
      * Creates the cached maps that helps add performance for retrieving YukonSelectionLists
      * and YukonListEntries.
      */
     private void createCacheObjects() {
-        yukonListEntries =
-            new MapMaker().concurrencyLevel(1).makeComputingMap(new Function<Integer, YukonListEntry>() {
-                @Override
-                public YukonListEntry apply(Integer entryId) {
-                    YukonListEntry yukonListEntry = findYukonListEntryFromDb(entryId);
+        yukonListEntries = CacheBuilder.newBuilder().concurrencyLevel(1).build(new CacheLoader<Integer, YukonListEntry>() {
+            @Override
+            public YukonListEntry load(Integer entryId) throws Exception {
+                YukonListEntry yukonListEntry = findYukonListEntryFromDb(entryId);
 
-                    if (yukonListEntry == null) {
-                        return NULL_ENTRY;
-                    }
-                    return yukonListEntry;
+                if (yukonListEntry == null) {
+                    return NULL_ENTRY;
                 }
-            });
+                return yukonListEntry;
+            }
+        });
 
-        yukonSelectionLists =
-            new MapMaker().concurrencyLevel(1).makeComputingMap(new Function<Integer, YukonSelectionList>() {
-                @Override
-                public YukonSelectionList apply(Integer listId) {
-                    YukonSelectionList yukonSelectionList = findYukonSelectionListFromDb(listId);
+        yukonSelectionLists = CacheBuilder.newBuilder().concurrencyLevel(1).build(new CacheLoader<Integer, YukonSelectionList>() {
+            @Override
+            public YukonSelectionList load(Integer listId) {
+                YukonSelectionList yukonSelectionList = findYukonSelectionListFromDb(listId);
 
-                    if (yukonSelectionList == null) {
-                        return NULL_LIST;
-                    }
-                    return yukonSelectionList;
+                if (yukonSelectionList == null) {
+                    return NULL_LIST;
                 }
-            });
+                return yukonSelectionList;
+            }
+        });
 
-        yukonSelectionListByName =
-            new MapMaker().concurrencyLevel(1).makeComputingMap(new Function<EnergyCompanyAndListName, YukonSelectionList>() {
-                @Override
-                public YukonSelectionList apply(EnergyCompanyAndListName energyCompanyAndListName) {
+        yukonSelectionListByName = CacheBuilder.newBuilder().concurrencyLevel(1).build(new CacheLoader<EnergyCompanyAndListName, YukonSelectionList>() {
+            @Override
+            public YukonSelectionList load(EnergyCompanyAndListName energyCompanyAndListName) {
 
-                    try {
-                        return getSelectionListByEnergyCompanyIdAndListName(energyCompanyAndListName.energyCompanyId,
-                                                                            energyCompanyAndListName.listName);
-                    } catch (EmptyResultDataAccessException e) {
-                        return NULL_LIST;
-                    }
+                try {
+                    return getSelectionListByEnergyCompanyIdAndListName(energyCompanyAndListName.energyCompanyId,
+                                                                        energyCompanyAndListName.listName);
+                } catch (EmptyResultDataAccessException e) {
+                    return NULL_LIST;
                 }
-            });
+            }
+        });
     }
 
     /**
@@ -163,9 +162,9 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
                 @Override
                 public void eventReceived(DatabaseChangeEvent event) {
                     // Clearing cached items
-                    yukonSelectionListByName.clear();
-                    yukonSelectionLists.clear();
-                    yukonListEntries.clear();
+                    yukonSelectionListByName.invalidateAll();
+                    yukonSelectionLists.invalidateAll();
+                    yukonListEntries.invalidateAll();
                 }
             };
 
@@ -179,7 +178,14 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 
 	@Override
     public YukonListEntry getYukonListEntry(final int entryId) {
-		final YukonListEntry listEntry = yukonListEntries.get(entryId);
+		final YukonListEntry listEntry;
+		
+		try {
+		    listEntry = yukonListEntries.get(entryId);
+		} catch (ExecutionException e) {
+		    throw new IllegalStateException("Error finding YukonListEntry with an ID of " + entryId, e);
+		}
+		
 		if (listEntry == NULL_ENTRY) {
 		    throw new IllegalStateException("Unable to find YukonListEntry with an ID of " + entryId);
 		}
@@ -188,7 +194,13 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
 
     @Override
     public YukonSelectionList getYukonSelectionList(final int listId) {
-        final YukonSelectionList selectionList = yukonSelectionLists.get(listId);
+        final YukonSelectionList selectionList;
+        try {
+            selectionList = yukonSelectionLists.get(listId);
+        }catch (ExecutionException e) {
+            throw new IllegalStateException("Error finding YukonSelectionList with an ID of " + listId, e);
+        }
+        
         if (selectionList == NULL_LIST) {
             throw new IllegalStateException("Unable to find YukonSelectionList with an ID of " + listId );
         }
@@ -245,7 +257,14 @@ public final class YukonListDaoImpl implements YukonListEntryTypes, YukonListDao
                                                                              String listName) {
 
         EnergyCompanyAndListName cacheKey = new EnergyCompanyAndListName(energyCompanyId, listName);
-        YukonSelectionList selectionList = yukonSelectionListByName.get(cacheKey);
+        YukonSelectionList selectionList;
+        try {
+            selectionList = yukonSelectionListByName.get(cacheKey);
+        } catch (ExecutionException e) {
+            Log.debug("Error retrieving selection list by name.", e);
+            return null;
+        }
+        
 
         if (selectionList == NULL_LIST) {
             return null;

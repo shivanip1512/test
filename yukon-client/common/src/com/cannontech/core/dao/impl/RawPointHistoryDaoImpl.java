@@ -300,7 +300,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         
         Stopwatch stopwatch = null;
         if (log.isInfoEnabled()) {
-            stopwatch = new Stopwatch().start();
+            stopwatch = Stopwatch.createStarted();
         }
         
         SqlFragmentGeneratorFactory factory = new SqlFragmentGeneratorFactory() {
@@ -840,7 +840,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         
         Stopwatch stopwatch = null;
         if (log.isDebugEnabled()) {
-            stopwatch = new Stopwatch().start();
+            stopwatch = Stopwatch.createStarted();
         }
         
         SetMultimap<PaoPointIdentifier, PaoIdentifier> paoIdentifierLookup =
