@@ -180,7 +180,7 @@ public class DataStreamingAttributeHelper {
                    /*Va delivered current demand*/   //metric 49
                    /*Va received*/                   //metric 50
                    BuiltInAttribute.SUM_KVAH,        //metric 43
-                   /*VA Hour net*/					 //metric 44
+                   /*VA Hour net*/                   //metric 44
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -468,9 +468,9 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                   /*Watts*/						 //metric 200
-                   /*Var*/							 //metric 201
-                   /*VA*/							 //metric 202
+                   /*Watts*/                         //metric 200
+                   /*Var*/                           //metric 201
+                   /*VA*/                            //metric 202
                    ),
         //Sentinel-L1
         RFN_430SL1(PaoType.RFN430SL1,
@@ -484,9 +484,9 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                   /*Watts*/						 //metric 200
-                   /*Var*/							 //metric 201
-                   /*VA*/							 //metric 202
+                   /*Watts*/                         //metric 200
+                   /*Var*/                           //metric 201
+                   /*VA*/                            //metric 202
                    ),
         //Sentinel-L2
         RFN_430SL2(PaoType.RFN430SL2,
@@ -500,9 +500,9 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                   /*Watts*/						 //metric 200
-                   /*Var*/							 //metric 201
-                   /*VA*/							 //metric 202
+                   /*Watts*/                         //metric 200
+                   /*Var*/                           //metric 201
+                   /*VA*/                            //metric 202
                    ),
         //Sentinel-L3
         RFN_430SL3(PaoType.RFN430SL3,
@@ -516,9 +516,9 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                   /*Watts*/						 //metric 200
-                   /*Var*/							 //metric 201
-                   /*VA*/							 //metric 202
+                   /*Watts*/                         //metric 200
+                   /*Var*/                           //metric 201
+                   /*VA*/                            //metric 202
                    ),
         //Sentinel-L4
         RFN_430SL4(PaoType.RFN430SL4,
@@ -532,9 +532,9 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                   /*Watts*/						 //metric 200
-                   /*Var*/							 //metric 201
-                   /*VA*/							 //metric 202
+                   /*Watts*/                         //metric 200
+                   /*Var*/                           //metric 201
+                   /*VA*/                            //metric 202
                    )
         ;
         
