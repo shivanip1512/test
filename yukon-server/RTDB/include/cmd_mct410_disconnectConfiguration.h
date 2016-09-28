@@ -60,7 +60,7 @@ private:
     boost::optional<float> _returnedDisconnectDemandThreshold;
     boost::optional<DisconnectMode> _returnedDisconnectMode;
 
-    virtual void invokeResultHandler(ResultHandler &rh) const;
+    void invokeResultHandler(ResultHandler &rh) const override;
 
 protected:
 

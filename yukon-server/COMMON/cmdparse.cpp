@@ -416,7 +416,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
     //  getvalue hourly read
     //  getvalue hourly read 12/12/2007
     //  getvalue hourly read 12/12/2007 12/27/2007
-    static const boost::regex  re_hourly_read(("hourly read( channel ") + str_num + (")?( ") + str_daterange + (")?"));
+    static const boost::regex  re_hourly_read(("hourly read( cancel)?( channel ") + str_num + (")?( ") + str_daterange + (")?"));
 
     static const boost::regex  re_outage(("outage ") + str_num);
 
@@ -760,12 +760,18 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
             if( !(temp = matchRegex(CmdStr, re_hourly_read)).empty() )
             {
                 //  getvalue hourly read
+                //  getvalue hourly read cancel
                 //  getvalue hourly read channel n
                 //  getvalue hourly read 12/12/2007
                 //  getvalue hourly read 12/12/2007 12/27/2007
                 //  getvalue hourly read channel n 12/12/2007 12/27/2007
 
                 _cmd["hourly_read"] = true;
+
+                if( containsString(temp, " cancel") )
+                {
+                    _cmd["hourly_read_cancel"] = true;
+                }
 
                 if( !(temp = matchRegex(temp, re_daterange)).empty() )
                 {

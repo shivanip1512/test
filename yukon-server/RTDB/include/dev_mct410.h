@@ -18,7 +18,6 @@ class IM_EX_DEVDB Mct410Device :
     typedef std::map<int, DecodeMethod> DecodeMapping;
 
     static const DecodeMapping    _decodeMethods;
-    static       DecodeMapping    initDecodeLookup();
 
     static const CommandSet       _commandStore;
     static       CommandSet       initCommandStore();
@@ -51,6 +50,8 @@ class IM_EX_DEVDB Mct410Device :
 
     virtual unsigned getUsageReportDelay(const unsigned interval_length, const unsigned days) const;
 protected:
+
+    long _hourlyReadId;
 
     struct daily_read_info_t
     {

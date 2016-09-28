@@ -830,49 +830,43 @@ const Mct410Device::FunctionReadValueMappings *Mct410Device::getFunctionReadValu
     return &_functionReadValueMaps;
 }
 
+namespace EP = ::Cti::Protocols::EmetconProtocol;
 
-Mct410Device::DecodeMapping Mct410Device::initDecodeLookup()
-{
-    namespace EP = EmetconProtocol;
-
-    return boost::assign::map_list_of
-        (EP::GetConfig_Disconnect,              &Self::decodeGetConfigDisconnect)
-        (EP::GetConfig_Freeze,                  &Self::decodeGetConfigFreeze)
-        (EP::GetConfig_Intervals,               &Self::decodeGetConfigIntervals)
-        (EP::GetConfig_LoadProfileExistingPeak, &Self::decodeGetConfigLoadProfileExistingPeak)
-        (EP::GetConfig_LongLoadProfileStorage,  &Self::decodeGetConfigLongLoadProfileStorageDays)
-        (EP::GetConfig_MeterParameters,         &Self::decodeGetConfigMeterParameters)
-        (EP::GetConfig_Model,                   &Self::decodeGetConfigModel)
-        (EP::GetConfig_Multiplier,              &Self::decodeGetConfigMeterParameters)
-        (EP::GetConfig_PhaseDetect,             &Self::decodeGetConfigPhaseDetect)
-        (EP::GetConfig_PhaseDetectArchive,      &Self::decodeGetConfigPhaseDetect)
-        (EP::GetConfig_Thresholds,              &Self::decodeGetConfigThresholds)
-        (EP::GetConfig_UniqueAddress,           &Self::decodeGetConfigAddress)
-        (EP::GetConfig_WaterMeterReadInterval,  &Self::decodeGetConfigWaterMeterReadInterval)
+const Mct410Device::DecodeMapping Mct410Device::_decodeMethods {
+        {EP::GetConfig_DailyReadInterest,       &Self::decodeGetConfigDailyReadInterest},    
+        {EP::GetConfig_Disconnect,              &Self::decodeGetConfigDisconnect},
+        {EP::GetConfig_Freeze,                  &Self::decodeGetConfigFreeze},
+        {EP::GetConfig_Intervals,               &Self::decodeGetConfigIntervals},
+        {EP::GetConfig_LoadProfileExistingPeak, &Self::decodeGetConfigLoadProfileExistingPeak},
+        {EP::GetConfig_LongLoadProfileStorage,  &Self::decodeGetConfigLongLoadProfileStorageDays},
+        {EP::GetConfig_MeterParameters,         &Self::decodeGetConfigMeterParameters},
+        {EP::GetConfig_Model,                   &Self::decodeGetConfigModel},
+        {EP::GetConfig_Multiplier,              &Self::decodeGetConfigMeterParameters},
+        {EP::GetConfig_PhaseDetect,             &Self::decodeGetConfigPhaseDetect},
+        {EP::GetConfig_PhaseDetectArchive,      &Self::decodeGetConfigPhaseDetect},
+        {EP::GetConfig_Thresholds,              &Self::decodeGetConfigThresholds},
+        {EP::GetConfig_UniqueAddress,           &Self::decodeGetConfigAddress},
+        {EP::GetConfig_WaterMeterReadInterval,  &Self::decodeGetConfigWaterMeterReadInterval},
         // ---
-        (EP::GetStatus_Disconnect,              &Self::decodeGetStatusDisconnect)
-        (EP::GetStatus_Internal,                &Self::decodeGetStatusInternal)
-        (EP::GetStatus_LoadProfile,             &Self::decodeGetStatusLoadProfile)
+        {EP::GetStatus_Disconnect,              &Self::decodeGetStatusDisconnect},
+        {EP::GetStatus_Internal,                &Self::decodeGetStatusInternal},
+        {EP::GetStatus_LoadProfile,             &Self::decodeGetStatusLoadProfile},
         // ---
-        (EP::GetValue_DailyRead,                &Self::decodeGetValueDailyRead)
-        (EP::GetValue_Demand,                   &Self::decodeGetValueDemand)
-        (EP::GetValue_FrozenKWH,                &Self::decodeGetValueKWH)
-        (EP::GetValue_FrozenPeakDemand,         &Self::decodeGetValuePeakDemand)
-        (EP::GetValue_FrozenTOUkWh,             &Self::decodeGetValueTOUkWh)
-        (EP::GetValue_FrozenVoltage,            &Self::decodeGetValueVoltage)
-        (EP::GetValue_KWH,                      &Self::decodeGetValueKWH)
-        (EP::GetValue_LoadProfilePeakReport,    &Self::decodeGetValueLoadProfilePeakReport)
-        (EP::GetValue_Outage,                   &Self::decodeGetValueOutage)
-        (EP::GetValue_PeakDemand,               &Self::decodeGetValuePeakDemand)
-        (EP::GetValue_TOUkWh,                   &Self::decodeGetValueTOUkWh)
-        (EP::GetValue_Voltage,                  &Self::decodeGetValueVoltage)
+        {EP::GetValue_DailyRead,                &Self::decodeGetValueDailyRead},
+        {EP::GetValue_Demand,                   &Self::decodeGetValueDemand},
+        {EP::GetValue_FrozenKWH,                &Self::decodeGetValueKWH},
+        {EP::GetValue_FrozenPeakDemand,         &Self::decodeGetValuePeakDemand},
+        {EP::GetValue_FrozenTOUkWh,             &Self::decodeGetValueTOUkWh},
+        {EP::GetValue_FrozenVoltage,            &Self::decodeGetValueVoltage},
+        {EP::GetValue_KWH,                      &Self::decodeGetValueKWH},
+        {EP::GetValue_LoadProfilePeakReport,    &Self::decodeGetValueLoadProfilePeakReport},
+        {EP::GetValue_Outage,                   &Self::decodeGetValueOutage},
+        {EP::GetValue_PeakDemand,               &Self::decodeGetValuePeakDemand},
+        {EP::GetValue_TOUkWh,                   &Self::decodeGetValueTOUkWh},
+        {EP::GetValue_Voltage,                  &Self::decodeGetValueVoltage},
         // ---
-        (EP::Scan_Accum,                        &Self::decodeGetValueKWH)
-        (EP::Scan_Integrity,                    &Self::decodeGetValueDemand);
-}
-
-
-const Mct410Device::DecodeMapping Mct410Device::_decodeMethods = Mct410Device::initDecodeLookup();
+        {EP::Scan_Accum,                        &Self::decodeGetValueKWH},
+        {EP::Scan_Integrity,                    &Self::decodeGetValueDemand}};
 
 
 YukonError_t Mct410Device::ModelDecode(const INMESS &InMessage, const CtiTime TimeNow, CtiMessageList &vgList, CtiMessageList &retList, OutMessageList &outList)
@@ -884,14 +878,6 @@ YukonError_t Mct410Device::ModelDecode(const INMESS &InMessage, const CtiTime Ti
         const DecodeMethod decoder = itr->second;
 
         return (this->*decoder)(InMessage, TimeNow, vgList, retList, outList);
-    }
-
-    //  Special case, takes InMessage by const reference.
-    //    All decode methods will do this in the near future, then this can be moved above.
-    switch(InMessage.Sequence)
-    {
-        case EmetconProtocol::GetConfig_DailyReadInterest:
-            return decodeGetConfigDailyReadInterest(InMessage, TimeNow, vgList, retList, outList);
     }
 
     return Parent::ModelDecode(InMessage, TimeNow, vgList, retList, outList);
@@ -2132,6 +2118,33 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
             return ExecutionComplete;
         }
 
+        //  We've got the classMutex, so this pointer won't be modified by any other threads.
+        DlcCommand *hourlyReadCommand = findExecutingCommand(_hourlyReadId);
+
+        if( parse.isKeyValid("hourly_read_cancel") )
+        {
+            if( hourlyReadCommand )
+            {
+                hourlyReadCommand->cancel();
+            }
+
+            returnErrorMessage(
+                    ClientErrors::None, OutMessage, retList, 
+                    hourlyReadCommand 
+                        ? "Hourly read cancelled" 
+                        : "No active hourly read to cancel");
+
+            return ExecutionComplete;
+        }
+        else if( hourlyReadCommand )
+        {
+            returnErrorMessage(ClientErrors::CommandAlreadyInProgress, OutMessage, retList, "Hourly read already in progress");
+        }
+        else
+        {
+            _hourlyReadId = 0;
+        }
+
         //  read the SSPEC revision if we don't have it yet
         if( !hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) )
         {
@@ -2147,7 +2160,12 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
 
         //  this call might be able to move out to ExecuteRequest() at some point - maybe we just return
         //    a DlcCommand object that it can execute out there
-        found = !! tryExecuteCommand(*OutMessage, std::move(hourlyRead));
+        if( auto id = tryExecuteCommand(*OutMessage, std::move(hourlyRead)) )
+        {
+            _hourlyReadId = *id;
+
+            found = true;
+        }
 
         function = OutMessage->Sequence;
     }

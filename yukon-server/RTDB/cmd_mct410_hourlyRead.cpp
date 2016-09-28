@@ -356,6 +356,12 @@ DlcCommand::request_ptr Mct410HourlyReadCommand::error(const CtiTime now, const 
 }
 
 
+void Mct410HourlyReadCommand::cancel()
+{
+    _retries = 0;
+}
+
+
 CtiTime Mct410HourlyReadCommand::make_midday_time(const CtiTime request_midnight)
 {
     if( request_midnight.isDST() )

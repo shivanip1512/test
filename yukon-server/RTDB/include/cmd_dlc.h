@@ -128,6 +128,8 @@ struct IM_EX_DEVDB DlcCommand : public DeviceCommand
     virtual emetcon_request_ptr executeCommand(const CtiTime now) = 0;
     virtual request_ptr decodeCommand (const CtiTime now, const unsigned function, const boost::optional<Bytes> &payload, std::string &description, std::vector<point_data> &points) = 0;
     virtual request_ptr error         (const CtiTime now, const YukonError_t error_code, std::string &description) = 0;
+
+    virtual void cancel()  { }  //  no-op by default
 };
 
 }
