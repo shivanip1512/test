@@ -361,6 +361,10 @@
     <entry key="yukon.common.setting.ECOBEE_PASSWORD.description">Password to authenticate with the ecobee service.</entry>
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL">ecobee API URL</entry>
     <entry key="yukon.common.setting.ECOBEE_SERVER_URL.description">URL to connect to the ecobee service.</entry>
+    <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING">Honeywell Wifi Connection</entry>
+    <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING.description">Connection string for the Honeywell wifi service bus.</entry>
+    <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_QUEUE">Honeywell Wifi Queue</entry>
+    <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_QUEUE.description">Queue name for the Honeywell wifi service bus.</entry>
     <entry key="yukon.common.setting.SCHEDULED_REQUEST_MAX_RUN_HOURS">Scheduled Requests Timeout</entry>
     <entry key="yukon.common.setting.SCHEDULED_REQUEST_MAX_RUN_HOURS.description">The maximum number of hours a scheduled request may run before automatically being cancelled.</entry>
     

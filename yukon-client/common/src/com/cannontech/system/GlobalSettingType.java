@@ -1,9 +1,6 @@
 package com.cannontech.system;
 
-import static com.cannontech.core.roleproperties.InputTypeFactory.booleanType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.integerType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.userType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.*;
 
 import java.math.RoundingMode;
 import java.util.Set;
@@ -111,7 +108,9 @@ public enum GlobalSettingType implements DisplayableEnum {
     ECOBEE_USERNAME(GlobalSettingSubCategory.DR, stringType(), ""),
     ECOBEE_PASSWORD(GlobalSettingSubCategory.DR, stringType(), ""),
     ECOBEE_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://api.ecobee.com/1/"),
-
+    HONEYWELL_WIFI_SERVICE_BUS_QUEUE(GlobalSettingSubCategory.DR, stringType(), ""),
+    HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING(GlobalSettingSubCategory.DR, stringType(), ""),
+    
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
     GOOGLE_ANALYTICS_TRACKING_IDS(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),
@@ -189,8 +188,12 @@ public enum GlobalSettingType implements DisplayableEnum {
     }
 
     public boolean isSensitiveInformation() {
-        return this == ECOBEE_PASSWORD || this == ECOBEE_USERNAME 
-                || this == RFN_FIRMWARE_UPDATE_SERVER_USER || this == RFN_FIRMWARE_UPDATE_SERVER_PASSWORD;
+        return this == ECOBEE_PASSWORD || 
+               this == ECOBEE_USERNAME || 
+               this == RFN_FIRMWARE_UPDATE_SERVER_USER || 
+               this == RFN_FIRMWARE_UPDATE_SERVER_PASSWORD ||
+               this == HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING ||
+               this == HONEYWELL_WIFI_SERVICE_BUS_QUEUE;
     }
 
     public Object getDefaultValue() {
