@@ -33,22 +33,22 @@ public class DataStreamingAttributeHelper {
         RFN_410CL(PaoType.RFN410CL, 
                   BuiltInAttribute.DELIVERED_KWH,   //metric 1
                   BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                  BuiltInAttribute.DEMAND           //metric 5
-                  /*Average Voltage*/               //metric 113
+                  BuiltInAttribute.DEMAND,           //metric 5
+                  BuiltInAttribute.VOLTAGE          //metric 115
                   ),
         //C2SX
         RFN_420CL(PaoType.RFN420CL, 
                   BuiltInAttribute.DELIVERED_KWH,   //metric 1
                   BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                  BuiltInAttribute.DEMAND           //metric 5
-                  /*Average Voltage*/               //metric 113
+                  BuiltInAttribute.DEMAND,           //metric 5
+                  BuiltInAttribute.VOLTAGE          //metric 115
                   ),
         //Focus AXD
         RFN_420FX(PaoType.RFN420FX,
                   BuiltInAttribute.DELIVERED_KWH,   //metric 1
                   BuiltInAttribute.RECEIVED_KWH,    //metric 2
                   BuiltInAttribute.DEMAND,          //metric 5
-                  /*Average Voltage*/               //metric 113
+                  BuiltInAttribute.VOLTAGE,          //metric 115
                   BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                   BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                   BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -62,7 +62,7 @@ public class DataStreamingAttributeHelper {
                   BuiltInAttribute.DELIVERED_KWH,   //metric 1
                   BuiltInAttribute.RECEIVED_KWH,    //metric 2
                   BuiltInAttribute.DEMAND,          //metric 5
-                  /*Average Voltage*/               //metric 113
+                   BuiltInAttribute.VOLTAGE,        //metric 115
                   BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                   BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                   BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -75,7 +75,7 @@ public class DataStreamingAttributeHelper {
                   BuiltInAttribute.DELIVERED_KWH,   //metric 1
                   BuiltInAttribute.RECEIVED_KWH,    //metric 2
                   BuiltInAttribute.DEMAND,          //metric 5
-                  /*Average Voltage*/               //metric 113
+                  BuiltInAttribute.VOLTAGE,         //metric 115
                   BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                   BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                   BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -88,7 +88,7 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.DELIVERED_KWH,   //metric 1
                    BuiltInAttribute.RECEIVED_KWH,    //metric 2
                    BuiltInAttribute.DEMAND,          //metric 5
-                   /*Average Voltage*/               //metric 113
+                   BuiltInAttribute.VOLTAGE,         //metric 115
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -100,20 +100,21 @@ public class DataStreamingAttributeHelper {
         RFN_410FL(PaoType.RFN410FL,
                   BuiltInAttribute.DELIVERED_KWH,   //metric 1
                   BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                  BuiltInAttribute.DEMAND           //metric 5
-                  /*Average Voltage*/               //metric 113
+                  BuiltInAttribute.DEMAND,           //metric 5
+                  BuiltInAttribute.VOLTAGE         //metric 115
                   ),
         //FocuskWh-500
         RFN_510FL(PaoType.RFN510FL,
                   BuiltInAttribute.DELIVERED_KWH,   //metric 1
                   BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                  BuiltInAttribute.DEMAND           //metric 5
-                  /*Average Voltage*/               //metric 113
+                  BuiltInAttribute.DEMAND,           //metric 5
+                   BuiltInAttribute.VOLTAGE         //metric 115
                   ),
         //S4-AD
         RFN_530S4AD(PaoType.RFN530S4EAD,
                     BuiltInAttribute.DELIVERED_KWH,   //metric 1
                     BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                    BuiltInAttribute.SUM_KWH,		  //metric 3	
                     BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                     BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                     BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -122,6 +123,7 @@ public class DataStreamingAttributeHelper {
         RFN_530S4AT(PaoType.RFN530S4EAT,
                     BuiltInAttribute.DELIVERED_KWH,   //metric 1
                     BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                    BuiltInAttribute.SUM_KWH,		  //metric 3
                     BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                     BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                     BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -130,6 +132,7 @@ public class DataStreamingAttributeHelper {
         RFN_530S4AR(PaoType.RFN530S4EAT,
                     BuiltInAttribute.DELIVERED_KWH,   //metric 1
                     BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                    BuiltInAttribute.SUM_KWH,		  //metric 3
                     BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                     BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                     BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -173,9 +176,11 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.KVAR,            //metric 32
                    /*Var received current demand*/   //metric 33
                    BuiltInAttribute.SUM_KVARH,       //metric 23
+                   /*Var Hour Net*/				     //metric 24
                    /*Va delivered current demand*/   //metric 49
                    /*Va received*/                   //metric 50
                    BuiltInAttribute.SUM_KVAH,        //metric 43
+                   /*VA Hour net*/					 //metric 44
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -191,7 +196,7 @@ public class DataStreamingAttributeHelper {
                      /*Va delivered current demand*/   //metric 49
                      /*Va received*/                   //metric 50
                      BuiltInAttribute.SUM_KVAH,        //metric 43
-                     /*Average Voltage*/               //metric 113
+                     BuiltInAttribute.VOLTAGE,         //metric 115
                      BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                      BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                      BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -207,7 +212,7 @@ public class DataStreamingAttributeHelper {
                      /*Va delivered current demand*/   //metric 49
                      /*Va received*/                   //metric 50
                      BuiltInAttribute.SUM_KVAH,        //metric 43
-                     /*Average Voltage*/               //metric 113
+                     BuiltInAttribute.VOLTAGE,         //metric 115
                      BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                      BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                      BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -223,7 +228,7 @@ public class DataStreamingAttributeHelper {
                     /*Va delivered current demand*/   //metric 49
                     /*Va received*/                   //metric 50
                     BuiltInAttribute.SUM_KVAH,        //metric 43
-                    /*Average Voltage*/               //metric 113
+                    BuiltInAttribute.VOLTAGE,         //metric 115
                     BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                     BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                     BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -239,7 +244,7 @@ public class DataStreamingAttributeHelper {
                        /*Va delivered current demand*/   //metric 49
                        /*Va received*/                   //metric 50
                        BuiltInAttribute.SUM_KVAH,        //metric 43
-                       /*Average Voltage*/               //metric 113
+                       BuiltInAttribute.VOLTAGE,         //metric 115
                        BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                        BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                        BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -255,7 +260,7 @@ public class DataStreamingAttributeHelper {
                        /*Va delivered current demand*/   //metric 49
                        /*Va received*/                   //metric 50
                        BuiltInAttribute.SUM_KVAH,        //metric 43
-                       /*Average Voltage*/               //metric 113
+                       BuiltInAttribute.VOLTAGE,         //metric 115
                        BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                        BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                        BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -271,7 +276,7 @@ public class DataStreamingAttributeHelper {
                        /*Va delivered current demand*/   //metric 49
                        /*Va received*/                   //metric 50
                        BuiltInAttribute.SUM_KVAH,        //metric 43
-                       /*Average Voltage*/               //metric 113
+                       BuiltInAttribute.VOLTAGE,         //metric 115
                        BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                        BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                        BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -279,6 +284,7 @@ public class DataStreamingAttributeHelper {
                        /*Average Voltage Phase B*/       //metric 120
                        /*Average Voltage Phase C*/       //metric 121
                        ),
+        //TODO: Focus RXD-500??
         //FocusRXT-500
         RFN_520FRXT(PaoType.RFN520FRX,
                     BuiltInAttribute.DELIVERED_KWH,   //metric 1
@@ -290,7 +296,7 @@ public class DataStreamingAttributeHelper {
                     /*Va delivered current demand*/   //metric 49
                     /*Va received*/                   //metric 50
                     BuiltInAttribute.SUM_KVAH,        //metric 43
-                    /*Average Voltage*/               //metric 113
+                    BuiltInAttribute.VOLTAGE,         //metric 115
                     BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                     BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                     BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -309,7 +315,7 @@ public class DataStreamingAttributeHelper {
                    /*Va delivered current demand*/   //metric 49
                    /*Va received*/                   //metric 50
                    BuiltInAttribute.SUM_KVAH,        //metric 43
-                   /*Average Voltage*/               //metric 113
+                   BuiltInAttribute.VOLTAGE,         //metric 115
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -328,7 +334,7 @@ public class DataStreamingAttributeHelper {
                        /*Va delivered current demand*/   //metric 49
                        /*Va received*/                   //metric 50
                        BuiltInAttribute.SUM_KVAH,        //metric 43
-                       /*Average Voltage*/               //metric 113
+                       BuiltInAttribute.VOLTAGE,         //metric 115
                        BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                        BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                        BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -347,7 +353,7 @@ public class DataStreamingAttributeHelper {
                        /*Va delivered current demand*/   //metric 49
                        /*Va received*/                   //metric 50
                        BuiltInAttribute.SUM_KVAH,        //metric 43
-                       /*Average Voltage*/               //metric 113
+                       BuiltInAttribute.VOLTAGE,         //metric 115
                        BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                        BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                        BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -366,7 +372,7 @@ public class DataStreamingAttributeHelper {
                        /*Va delivered current demand*/   //metric 49
                        /*Va received*/                   //metric 50
                        BuiltInAttribute.SUM_KVAH,        //metric 43
-                       /*Average Voltage*/               //metric 113
+                       BuiltInAttribute.VOLTAGE,         //metric 115
                        BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                        BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                        BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -379,11 +385,15 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.DELIVERED_KWH,   //metric 1
                    BuiltInAttribute.RECEIVED_KWH,    //metric 2
                    BuiltInAttribute.DEMAND,          //metric 5
+                   /*Watts received, current demand*///metric 6 
                    BuiltInAttribute.KVAR,            //metric 32
                    /*Var received current demand*/   //metric 33
                    /*Va delivered current demand*/   //metric 49
                    /*Va received*/                   //metric 50
                    BuiltInAttribute.SUM_KVAH,        //metric 43
+                   BuiltInAttribute.POWER_FACTOR_PHASE_A, //metric 162
+                   BuiltInAttribute.POWER_FACTOR_PHASE_B, //metric 163
+                   BuiltInAttribute.POWER_FACTOR_PHASE_C, //metric 164
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -393,11 +403,15 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.DELIVERED_KWH,   //metric 1
                    BuiltInAttribute.RECEIVED_KWH,    //metric 2
                    BuiltInAttribute.DEMAND,          //metric 5
+                   /*Watts received, current demand*///metric 6 
                    BuiltInAttribute.KVAR,            //metric 32
                    /*Var received current demand*/   //metric 33
                    /*Va delivered current demand*/   //metric 49
                    /*Va received*/                   //metric 50
                    BuiltInAttribute.SUM_KVAH,        //metric 43
+                   BuiltInAttribute.POWER_FACTOR_PHASE_A, //metric 162
+                   BuiltInAttribute.POWER_FACTOR_PHASE_B, //metric 163
+                   BuiltInAttribute.POWER_FACTOR_PHASE_C, //metric 164
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -407,11 +421,15 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.DELIVERED_KWH,   //metric 1
                    BuiltInAttribute.RECEIVED_KWH,    //metric 2
                    BuiltInAttribute.DEMAND,          //metric 5
+                   /*Watts received, current demand*///metric 6 
                    BuiltInAttribute.KVAR,            //metric 32
                    /*Var received current demand*/   //metric 33
                    /*Va delivered current demand*/   //metric 49
                    /*Va received*/                   //metric 50
                    BuiltInAttribute.SUM_KVAH,        //metric 43
+                   BuiltInAttribute.POWER_FACTOR_PHASE_A, //metric 162
+                   BuiltInAttribute.POWER_FACTOR_PHASE_B, //metric 163
+                   BuiltInAttribute.POWER_FACTOR_PHASE_C, //metric 164
                    /*Power Factor Average PF*/       //metric 80/81?
                    /*Power Factor*/                  //metric 80
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
@@ -423,11 +441,15 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.DELIVERED_KWH,   //metric 1
                    BuiltInAttribute.RECEIVED_KWH,    //metric 2
                    BuiltInAttribute.DEMAND,          //metric 5
+                   /*Watts received, current demand*///metric 6 
                    BuiltInAttribute.KVAR,            //metric 32
                    /*Var received current demand*/   //metric 33
                    /*Va delivered current demand*/   //metric 49
                    /*Va received*/                   //metric 50
                    BuiltInAttribute.SUM_KVAH,        //metric 43
+                   BuiltInAttribute.POWER_FACTOR_PHASE_A, //metric 162
+                   BuiltInAttribute.POWER_FACTOR_PHASE_B, //metric 163
+                   BuiltInAttribute.POWER_FACTOR_PHASE_C, //metric 164
                    /*Power Factor Average PF*/       //metric 80/81?
                    /*Power Factor*/                  //metric 80
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
@@ -446,6 +468,9 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                   /*Watts*/						 //metric 200
+                   /*Var*/							 //metric 201
+                   /*VA*/							 //metric 202
                    ),
         //Sentinel-L1
         RFN_430SL1(PaoType.RFN430SL1,
@@ -459,6 +484,9 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                   /*Watts*/						 //metric 200
+                   /*Var*/							 //metric 201
+                   /*VA*/							 //metric 202
                    ),
         //Sentinel-L2
         RFN_430SL2(PaoType.RFN430SL2,
@@ -472,6 +500,9 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                   /*Watts*/						 //metric 200
+                   /*Var*/							 //metric 201
+                   /*VA*/							 //metric 202
                    ),
         //Sentinel-L3
         RFN_430SL3(PaoType.RFN430SL3,
@@ -485,6 +516,9 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                   /*Watts*/						 //metric 200
+                   /*Var*/							 //metric 201
+                   /*VA*/							 //metric 202
                    ),
         //Sentinel-L4
         RFN_430SL4(PaoType.RFN430SL4,
@@ -498,6 +532,9 @@ public class DataStreamingAttributeHelper {
                    BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                    BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                    BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                   /*Watts*/						 //metric 200
+                   /*Var*/							 //metric 201
+                   /*VA*/							 //metric 202
                    )
         ;
         
