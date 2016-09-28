@@ -62,11 +62,14 @@ yukon.assets.gateway.list = (function () {
                     row.find('.js-gw-ip').text(data.ip);
                     var capacity = row.find('.js-gw-capacity span');
                     var color = "badge-success";
-                    if (data.dataStreamingLoadingPercent > 100) {
+                    if (data.dataStreamingLoadingPercent > 100 ){
+                        color = "badge-warning";
+                    }
+                    if (data.dataStreamingLoadingPercent > 120) {
                         color = "badge-error";
                     }
                     capacity.text(data.dataStreamingLoadingPercent + "%");
-                    capacity.removeClass("badge-success badge-error");
+                    capacity.removeClass("badge-success badge-warning badge-error");
                     capacity.addClass(color);
                     row.find('.js-gw-rv-text').text(data.releaseVersion);
                     if(data.hasUpdateVersion) { 
