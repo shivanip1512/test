@@ -2,7 +2,6 @@ package com.cannontech.web.rfn.dataStreaming.service.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -332,7 +331,6 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         pointData.setId(point.getLiteID());
         pointData.setPointQuality(PointQuality.Normal);
         pointData.setValue(value);
-        pointData.setTime(new Date());
         pointData.setType(point.getPointType());
         pointData.setTagsPointMustArchive(true);
 
