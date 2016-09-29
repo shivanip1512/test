@@ -431,9 +431,17 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
                 case PulseAccumulatorPointType:
                 {
                     CTILOG_DEBUG( dout, logNow() << " sending AccumulatorPoint for " << dnpId.toString() << ", Value=" << fdrPoint.getValue() * dnpId.Multiplier );
-                    auto c = std::make_unique<Protocols::DnpSlave::output_counter>();
-                    c->value = fdrPoint.getValue() * dnpId.Multiplier;
-                    point = std::move( c );
+                    auto p = std::make_unique<Protocols::DnpSlave::output_accumulator>();
+                    p->value = fdrPoint.getValue() * dnpId.Multiplier;
+                    point = std::move( p );
+                    break;
+                }
+                case DemandAccumulatorPointType:
+                {
+                    CTILOG_DEBUG( dout, logNow() << " sending DemandAccumulatorPoint for " << dnpId.toString() << ", Value=" << fdrPoint.getValue() * dnpId.Multiplier );
+                    auto d = std::make_unique<Protocols::DnpSlave::output_demand_accumulator>();
+                    d->value = fdrPoint.getValue() * dnpId.Multiplier;
+                    point = std::move( d );
                     break;
                 }
                 default:
@@ -1258,15 +1266,16 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
 {
     DnpId dnpId;
 
-    static const std::string dnpMasterId              = "MasterId";
-    static const std::string dnpSlaveId               = "SlaveId";
-    static const std::string dnpPointType             = "POINTTYPE";
-    static const std::string dnpPointOffset           = "Offset";
-    static const std::string dnpPointStatusString     = "Status";
-    static const std::string dnpPointAnalogString     = "Analog";
-    static const std::string dnpPointCalcAnalogString = "CalcAnalog";
-    static const std::string dnpPointCounterString    = "PulseAccumulator";
-    static const std::string dnpPointMultiplier       = "Multiplier";
+    static const std::string dnpMasterId                     = "MasterId";
+    static const std::string dnpSlaveId                      = "SlaveId";
+    static const std::string dnpPointType                    = "POINTTYPE";
+    static const std::string dnpPointOffset                  = "Offset";
+    static const std::string dnpPointStatusString            = "Status";
+    static const std::string dnpPointAnalogString            = "Analog";
+    static const std::string dnpPointCalcAnalogString        = "CalcAnalog";
+    static const std::string dnpPointAccumulatorString       = "PulseAccumulator";
+    static const std::string dnpPointDemandAccumulatorString = "DemandAccumulator";
+    static const std::string dnpPointMultiplier              = "Multiplier";
 
     std::string masterId  = pointDestination.getTranslationValue(dnpMasterId);
     std::string slaveId   = pointDestination.getTranslationValue(dnpSlaveId);
@@ -1288,10 +1297,11 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
     using boost::algorithm::to_lower_copy;
 
     static const std::map<std::string, CtiPointType_t> PointTypeNames {
-        { to_lower_copy(dnpPointStatusString),       StatusPointType },
-        { to_lower_copy(dnpPointAnalogString),       AnalogPointType },
-        { to_lower_copy(dnpPointCalcAnalogString),   AnalogPointType },
-        { to_lower_copy(dnpPointCounterString),      PulseAccumulatorPointType }
+        { to_lower_copy(dnpPointStatusString),            StatusPointType },
+        { to_lower_copy(dnpPointAnalogString),            AnalogPointType },
+        { to_lower_copy(dnpPointCalcAnalogString),        AnalogPointType },
+        { to_lower_copy(dnpPointAccumulatorString),       PulseAccumulatorPointType },
+        { to_lower_copy(dnpPointDemandAccumulatorString), DemandAccumulatorPointType }
     };
 
     dnpId.PointType = mapFindOrDefault(PointTypeNames, to_lower_copy(pointType), InvalidPointType);

@@ -248,7 +248,8 @@ void DnpSlaveProtocol::setScanCommand( std::vector<std::unique_ptr<DnpSlave::out
     {
         std::map<unsigned, std::unique_ptr<const DNP::AnalogInput>> analogs;
         std::map<unsigned, std::unique_ptr<const DNP::BinaryInput>> digitals;
-        std::map<unsigned, std::unique_ptr<const DNP::Counter>>     counters;
+        std::map<unsigned, std::unique_ptr<const DNP::Counter>>     accumulators;
+        std::map<unsigned, std::unique_ptr<const DNP::Counter>>     demand_accumulators;
 
         void handle(const DnpSlave::output_analog &a) override
         {
@@ -266,13 +267,21 @@ void DnpSlaveProtocol::setScanCommand( std::vector<std::unique_ptr<DnpSlave::out
 
             digitals.emplace(d.offset, std::move(bin));
         }
-        void handle(const DnpSlave::output_counter &c) override
+        void handle(const DnpSlave::output_accumulator &c) override
         {
-            auto counterin = std::make_unique<Counter>(Counter::C_Binary32Bit);
-            counterin->setValue(c.value);
-            counterin->setOnlineFlag(c.online);
+            auto acc = std::make_unique<Counter>(Counter::C_Binary32Bit);
+            acc->setValue(c.value);
+            acc->setOnlineFlag(c.online);
 
-            counters.emplace(c.offset, std::move(counterin));
+            accumulators.emplace(c.offset, std::move(acc));
+        }
+        void handle(const DnpSlave::output_demand_accumulator &c) override
+        {
+            auto dacc = std::make_unique<Counter>(Counter::C_Binary32Bit);
+            dacc->setValue(c.value);
+            dacc->setOnlineFlag(c.online);
+
+            demand_accumulators.emplace(c.offset, std::move(dacc));
         }
     }
     ps;
@@ -284,9 +293,10 @@ void DnpSlaveProtocol::setScanCommand( std::vector<std::unique_ptr<DnpSlave::out
 
     std::vector<ObjectBlockPtr> dobs;
 
-    if( ! ps.analogs.empty() )     dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(ps.analogs)));
-    if( ! ps.digitals.empty() )    dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(ps.digitals)));
-    if( ! ps.counters.empty() )    dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(ps.counters)));
+    if( ! ps.analogs.empty() )              dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(ps.analogs)));
+    if( ! ps.digitals.empty() )             dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(ps.digitals)));
+    if( ! ps.accumulators.empty() )         dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(ps.accumulators)));
+    if( ! ps.demand_accumulators.empty() )  dobs.emplace_back(ObjectBlock::makeLongIndexedBlock(std::move(ps.demand_accumulators)));
 
     _application.setCommand(
             ApplicationLayer::ResponseResponse,

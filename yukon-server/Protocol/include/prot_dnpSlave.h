@@ -11,7 +11,8 @@ namespace DnpSlave {
     struct output_point;
     struct output_analog;
     struct output_digital;
-    struct output_counter;
+    struct output_accumulator;
+    struct output_demand_accumulator;
 
     struct analog_output_request;
     struct control_request;
@@ -66,13 +67,15 @@ namespace DnpSlave {
 
 struct OutputPointHandler
 {
-    using analog_handler  = std::function<void (const output_analog  &)>;
-    using counter_handler = std::function<void (const output_counter &)>;
-    using digital_handler = std::function<void (const output_digital &)>;
+    using analog_handler                = std::function<void (const output_analog  &)>;
+    using digital_handler               = std::function<void (const output_digital &)>;
+    using accumulator_handler           = std::function<void (const output_accumulator &)>;
+    using demand_accumulator_handler    = std::function<void (const output_demand_accumulator &)>;
 
     virtual void handle(const output_analog  &) = 0;
-    virtual void handle(const output_counter &) = 0;
     virtual void handle(const output_digital &) = 0;
+    virtual void handle(const output_accumulator &) = 0;
+    virtual void handle(const output_demand_accumulator &) = 0;
 };
 
 struct output_point
@@ -99,7 +102,14 @@ struct output_digital : output_point
     bool status;
 };
 
-struct output_counter : output_point
+struct output_accumulator : output_point
+{
+    void identify(OutputPointHandler &h) override { h.handle(*this); }
+
+    double value;
+};
+
+struct output_demand_accumulator : output_point
 {
     void identify(OutputPointHandler &h) override { h.handle(*this); }
 
