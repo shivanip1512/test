@@ -194,25 +194,6 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
         userRoleCache.invalidateAll();
     }
     
-    public void clearUserCache(int userGroupId) {
-        List<Integer> users = yukonUserDao.getUserIdsForUserGroup(userGroupId);
-        for (Integer userId : users) {
-            LiteYukonUser user = new LiteYukonUser(userId);
-            if (!convertedValueCache.isEmpty()) {
-                convertedValueCache.remove(new UserPropertyTuple(user, YukonRoleProperty.LOCKOUT_DURATION));
-                convertedValueCache.remove(new UserPropertyTuple(user, YukonRoleProperty.LOCKOUT_THRESHOLD));
-                convertedValueCache.remove(new UserPropertyTuple(user, YukonRoleProperty.MAXIMUM_PASSWORD_AGE));
-                convertedValueCache.remove(new UserPropertyTuple(user, YukonRoleProperty.MINIMUM_PASSWORD_AGE));
-                convertedValueCache.remove(new UserPropertyTuple(user, YukonRoleProperty.MINIMUM_PASSWORD_LENGTH));
-                convertedValueCache.remove(new UserPropertyTuple(user, YukonRoleProperty.PASSWORD_HISTORY));
-                convertedValueCache.remove(new UserPropertyTuple(user, YukonRoleProperty.POLICY_QUALITY_CHECK));
-            }
-            if (userRoleCache.size() > 0) {
-                userRoleCache.invalidate(userId);
-            }
-        }
-    }
-
     @Override
     public boolean checkCategory(YukonRoleCategory category, LiteYukonUser user) {
         Set<YukonRoleCategory> roleCategoriesForUser = getRoleCategoriesForUser(user);

@@ -23,16 +23,14 @@ public class RolePropertyChangeHelper {
 
             @Override
             public void dbChangeReceived(DBChangeMsg dbChange) {
-                 if (dbChange.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB && (dbChange.getDbChangeType() == DbChangeType.UPDATE || 
-                                                                                    dbChange.getDbChangeType() == DbChangeType.DELETE)) {
-                     if (log.isDebugEnabled()) {
+                if ((dbChange.getDatabase() == DBChangeMsg.CHANGE_YUKON_USER_DB || 
+                        dbChange.getDatabase() == DBChangeMsg.CHANGE_USER_GROUP_DB)
+                    && (dbChange.getDbChangeType() == DbChangeType.UPDATE || 
+                        dbChange.getDbChangeType() == DbChangeType.DELETE)) {
+                    if (log.isDebugEnabled()) {
                          log.debug("sending clearCache to RolePropertyDao because: " + dbChange);
                      }
                      rolePropertyDaoImpl.clearCache();
-                 }
-                 
-                 if (dbChange.getDatabase() == DBChangeMsg.CHANGE_USER_GROUP_DB) {
-                         rolePropertyDaoImpl.clearUserCache(dbChange.getId());
                  }
             }
         });
