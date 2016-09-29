@@ -12,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -50,13 +51,27 @@ public class MapNetworkController {
         
         model.addAttribute("isGateway", PaoType.getRfGatewayTypes().contains(device.getDeviceType()));
         
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        
-        List<Neighbor> neighbors = nmNetworkTestService.getNeighbors(deviceId, accessor);
-        Parent parent = nmNetworkTestService.getParent(deviceId);
-        List<RouteInfo> route = nmNetworkTestService.getRoute(deviceId, accessor);
-        
         return "mapNetwork/home.jsp";
+    }
+    
+    @RequestMapping("parentNode")
+    public @ResponseBody Parent parentNode(HttpServletRequest request) throws ServletException {
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+        return nmNetworkTestService.getParent(deviceId);
+    }
+    
+    @RequestMapping("neighbors")
+    public @ResponseBody List<Neighbor> neighbors(HttpServletRequest request, YukonUserContext userContext) throws ServletException {
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        return nmNetworkTestService.getNeighbors(deviceId, accessor);
+    }
+    
+    @RequestMapping("primaryRoute")
+    public @ResponseBody List<RouteInfo> primaryRoute(HttpServletRequest request, YukonUserContext userContext) throws ServletException {
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        return nmNetworkTestService.getRoute(deviceId, accessor);
     }
     
 }

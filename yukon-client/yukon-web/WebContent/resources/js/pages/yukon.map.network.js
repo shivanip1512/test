@@ -16,6 +16,9 @@ yukon.map.network = (function () {
     /** @type {ol.Map} - The openlayers map object. */
     _map = {},
     
+    _parentIcon,
+    _parentLine,
+    
     /** @type {string} - The default projection code of our map tiles. */
     _destProjection = 'EPSG:3857',
     
@@ -185,7 +188,7 @@ yukon.map.network = (function () {
                 });
                 
                 /** Gets the neighbor data from Network Manager **/
-                $(document).on('change', '.js-neighbor-data', function() {
+                $(document).on('click', '.js-neighbor-data', function() {
                     //TODO:  Add request to get neighbor data
                     var fc = yukon.fromJson('#geojson'),
                     feature = fc.features[0],
@@ -193,7 +196,7 @@ yukon.map.network = (function () {
                 });
                 
                 /** Gets the primary route from Network Manager **/
-                $(document).on('change', '.js-primary-route', function() {
+                $(document).on('click', '.js-primary-route', function() {
                     //TODO:  Add request to get primary route
                     var fc = yukon.fromJson('#geojson'),
                     feature = fc.features[0],
@@ -201,11 +204,83 @@ yukon.map.network = (function () {
                 });
                 
                 /** Gets the parent node from Network Manager **/
-                $(document).on('change', '.js-parent-node', function() {
-                    //TODO:  Add request to get parent node
-                    var fc = yukon.fromJson('#geojson'),
-                    feature = fc.features[0],
-                    paoId = feature.id;
+                $(document).on('click', '.js-parent-node', function() {
+                    var parentNodeRow = $(this).closest('.switch-btn'),
+                    wasChecked = parentNodeRow.find('.switch-btn-checkbox').prop('checked');
+                    
+                    if (!wasChecked) {
+                        var fc = yukon.fromJson('#geojson'),
+                        feature = fc.features[0],
+                        paoId = feature.id;
+                        $.getJSON('parentNode?' + $.param({ deviceId: paoId }))
+                        .done(function (parent) {
+                            var source = _map.getLayers().getArray()[_tiles.length].getSource(),
+                            feature = parent.location.features[0],
+                            src_projection = fc.crs.properties.name,
+                            pao = feature.properties.paoIdentifier,
+                            style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
+                            icon = new ol.Feature({ pao: pao });
+                            
+                            icon.setStyle(style);
+                        
+                            if (src_projection === _destProjection) {
+                                icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+                            } else {
+                                var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+                                icon.setGeometry(new ol.geom.Point(coord));
+                            }
+                            
+                            _parentIcon = icon;
+                            source.addFeature(icon);
+                            
+                            //draw line
+                            var points = [];
+                            points.push(icon.getGeometry().getCoordinates());
+
+                            var features = source.getFeatures();
+                            if (features != null && features.length > 0) {
+                                for (x in features) {
+                                   var properties = features[x].getProperties();
+                                   var id = properties.pao.paoId;
+                                   if (id == paoId) {
+                                       var coord = features[x].getGeometry().getCoordinates();
+                                       points.push(coord);
+                                       break;
+                                   }
+                                 }
+                               }
+                            
+                            var layerLines = new ol.layer.Vector({
+                                source: new ol.source.Vector({
+                                    features: [new ol.Feature({
+                                        geometry: new ol.geom.LineString(points),
+                                        name: 'Line'
+                                    })]
+                                }),
+                                style: new ol.style.Style({
+                                    fill: new ol.style.Fill({ color: '#00FF00', weight: 4 }),
+                                    stroke: new ol.style.Stroke({ color: '#00FF00', width: 2 })
+                                })
+                            });
+                            
+                            _parentLine = layerLines;
+                            _map.addLayer(layerLines);
+                            _map.getView().fitExtent(source.getExtent(), _map.getSize());
+                        });
+                    } else {
+                        //Remove parent and line
+                        var source = _map.getLayers().getArray()[_tiles.length].getSource();
+                        source.removeFeature(_parentIcon);
+                        _map.removeLayer(_parentLine);
+                        var features = source.getFeatures();
+                        if (features != null && features.length > 1) {
+                            _map.getView().fitExtent(source.getExtent(), _map.getSize());
+                        } else {
+                            _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
+                            _map.getView().setZoom(13);
+                        }
+                    }
+
                 });
             }
 
