@@ -35,7 +35,7 @@ public class MonitorPageIndexBuilder extends DbPageIndexBuilder {
         baseQuery = sql;
 
         sql = new SqlStatementBuilder();
-        sql.append(" FROM (");
+        sql.append("FROM (");
         sql.append("SELECT MonitorId as id,name AS monitorname,'DEVICEDATA' AS type FROM DeviceDataMonitor");
         sql.append(" UNION ALL");
         sql.append(" SELECT OutageMonitorId as id,OutageMonitorname AS monitorname,'OUTAGE' AS type FROM OutageMonitor");
