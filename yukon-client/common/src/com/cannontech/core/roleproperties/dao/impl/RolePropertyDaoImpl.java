@@ -25,7 +25,6 @@ import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.LeastRecentlyUsedCacheMap;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.BadPropertyTypeException;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.InputTypeFactory;
@@ -75,7 +74,6 @@ public class RolePropertyDaoImpl implements RolePropertyDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private ConfigurationSource configurationSource;
-    @Autowired private YukonUserDao yukonUserDao;
     
     private ImmutableMap<YukonRoleProperty, Object> defaultValueLookup;
     private LeastRecentlyUsedCacheMap<PropertyTuple, Object> convertedValueCache =
