@@ -99,7 +99,8 @@
 
 <entry key="yukon.web.widgets.overloadedGatewaysWidget">Gateway Streaming Capacity</entry>
 <entry key="yukon.web.widgets.overloadedGatewaysWidget.helpText"><![CDATA[
-        Lists gateways that are overloaded.
+        Listed are gateways that risk exceeding their capacity to transmit data. Yellow implies the excess is near enough
+        to have only some impact with message loss. Red implies there is a significant chance data will be lost.
         <br><br>Clicking on the gateway loading percentage will display a Data Streaming Summary for the selected gateway.
 ]]></entry>
 <entry key="yukon.web.widgetClasses.OverloadedGatewaysWidget.streamingDetail">View Data Streaming Summary</entry>

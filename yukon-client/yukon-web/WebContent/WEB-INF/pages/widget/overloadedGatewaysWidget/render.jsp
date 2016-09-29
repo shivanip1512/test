@@ -19,9 +19,16 @@
                 <cti:url var="gatewayUrl" value="/stars/gateways/${gateway.paoIdentifier.paoId}"/>
                 <a href="${gatewayUrl}">${fn:escapeXml(gateway.name)}</a>
             </td>
+            <c:if test="${gateway.data.dataStreamingLoadingPercent > 100 && gateway.data.dataStreamingLoadingPercent <= 120}">
+            <td>
+                <span class="badge badge-warning cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${gateway.data.dataStreamingLoadingPercent / 100}"/></span>
+            </td>
+            </c:if>
+            <c:if test="${gateway.data.dataStreamingLoadingPercent > 120 }">
             <td>
                 <span class="badge badge-error cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${gateway.data.dataStreamingLoadingPercent / 100}"/></span>
             </td>
+            </c:if>
         </tr>
     </c:forEach>
     
