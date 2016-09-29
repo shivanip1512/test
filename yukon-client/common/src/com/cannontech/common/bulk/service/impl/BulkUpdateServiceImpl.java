@@ -51,7 +51,7 @@ public class BulkUpdateServiceImpl extends BaseBulkService implements BulkUpdate
                 identifierColunHeader = headerColumnList.get(0);
                 BulkField<?, SimpleDevice> identifierBulkField = getBulkYukonDeviceFieldFactory().getBulkField(identifierColunHeader.getFieldName());
 
-                if (identifierBulkField.getIdentifierMapper() == null) {
+                if (identifierBulkField == null || identifierBulkField.getIdentifierMapper() == null) {
                     result.addError(new YukonMessageSourceResolvable("yukon.common.device.bulk.columnHeader.update.error.badIdentifier", identifierColunHeader.name()));
                 }
             }

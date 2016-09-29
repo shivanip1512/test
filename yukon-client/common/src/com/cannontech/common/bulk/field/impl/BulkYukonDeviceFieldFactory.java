@@ -38,7 +38,9 @@ public class BulkYukonDeviceFieldFactory implements BulkFieldFactory {
         final List<BulkField<?, SimpleDevice>> bulkFieldList = new ArrayList<BulkField<?, SimpleDevice>>();
         for (BulkFieldColumnHeader bulkFieldColumnHeader : columnHeaders) {
             BulkField<?, SimpleDevice> bulkField = this.getBulkField(bulkFieldColumnHeader.getFieldName());
-            bulkFieldList.add(bulkField);
+            if (bulkField != null) {
+                bulkFieldList.add(bulkField);
+            }
         }
         
         return bulkFieldList;
