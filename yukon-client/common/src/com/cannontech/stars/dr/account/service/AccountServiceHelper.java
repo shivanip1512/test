@@ -72,7 +72,7 @@ public class AccountServiceHelper {
 
             Object propertyValue = fromDtoAccessor.getPropertyValue(property);
             if (property.contains("siteInfo")) {
-                if (!StringUtils.isBlank(propertyValue.toString())) {
+                if (propertyValue != null && !StringUtils.isBlank(propertyValue.toString())) {
                     toDtoAccessor.setPropertyValue(property, propertyValue);
                 }
             } else {
