@@ -211,7 +211,6 @@ public class NmNetworkTestServiceImpl implements NmNetworkTestService {
     @Override
     public Parent getParent(int deviceId) {
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
-        FeatureCollection location = paoLocationService.getLocationsAsGeoJson(Lists.newArrayList(device));
         ParentData data = new ParentData();
         data.setNodeMacAddress("17:14:08:03:FA:A2");
         data.setNodeSN("123");
@@ -220,10 +219,12 @@ public class NmNetworkTestServiceImpl implements NmNetworkTestService {
         if(device.getRfnIdentifier().equals(waterMeter2)){
             data.setRfnIdentifier(waterMeter1);
             RfnDevice parentDevice = rfnDeviceDao.getDeviceForExactIdentifier(waterMeter1);
+            FeatureCollection location = paoLocationService.getLocationsAsGeoJson(Lists.newArrayList(parentDevice));
             parent = new Parent(parentDevice.getPaoIdentifier().getPaoId(), location, data);
         }else{
             data.setRfnIdentifier(waterMeter2);
             RfnDevice parentDevice = rfnDeviceDao.getDeviceForExactIdentifier(waterMeter2);
+            FeatureCollection location = paoLocationService.getLocationsAsGeoJson(Lists.newArrayList(parentDevice));
             parent = new Parent(parentDevice.getPaoIdentifier().getPaoId(), location, data);
         }
         return parent;
