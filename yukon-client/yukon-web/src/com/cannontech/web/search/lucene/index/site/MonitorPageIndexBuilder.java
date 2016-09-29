@@ -31,8 +31,12 @@ public class MonitorPageIndexBuilder extends DbPageIndexBuilder {
 
     static {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT id,monitorname,type FROM (");
-        sql.append(" SELECT MonitorId as id,name AS monitorname,'DEVICEDATA' AS type FROM DeviceDataMonitor");
+        sql.append("SELECT id, monitorname, type");
+        baseQuery = sql;
+
+        sql = new SqlStatementBuilder();
+        sql.append(" FROM (");
+        sql.append("SELECT MonitorId as id,name AS monitorname,'DEVICEDATA' AS type FROM DeviceDataMonitor");
         sql.append(" UNION ALL");
         sql.append(" SELECT OutageMonitorId as id,OutageMonitorname AS monitorname,'OUTAGE' AS type FROM OutageMonitor");
         sql.append(" UNION ALL");
@@ -43,10 +47,8 @@ public class MonitorPageIndexBuilder extends DbPageIndexBuilder {
         sql.append(" SELECT  MonitorId AS id,Name AS monitorname,'PORTERRESPONSE' AS type FROM PorterResponseMonitor");
         sql.append(" UNION ALL");
         sql.append(" SELECT ValidationMonitorId AS id,ValidationMonitorName AS monitorname,'VALIDATION' AS type FROM ValidationMonitor");
-        sql.append(" ) monitors");
-        baseQuery = sql;
+        sql.append(") monitors");
 
-        sql = new SqlStatementBuilder();
         queryTables = sql;
     }
 
