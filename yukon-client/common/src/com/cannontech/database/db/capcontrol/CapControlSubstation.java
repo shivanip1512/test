@@ -55,6 +55,9 @@ public class CapControlSubstation extends DBPersistent {
     }
 
     public void setVoltReductionPointId(Integer voltReductionPointId) {
+        if (voltReductionPointId == null) {
+            voltReductionPointId = 0; // default value
+        }
         this.voltReductionPointId = voltReductionPointId;
     }
     
