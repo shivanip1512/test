@@ -5,7 +5,7 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.google.common.base.Objects;
 
-@YukonPao(tableBacked=false, idColumnName = "deviceId", paoTypes = { PaoType.HONEYWELL_9000, PaoType.HONEYWELL_FOCUSPRO,
+@YukonPao(tableBacked = false, idColumnName = "deviceId", paoTypes = { PaoType.HONEYWELL_9000, PaoType.HONEYWELL_FOCUSPRO,
     PaoType.HONEYWELL_VISIONPRO_8000, PaoType.HONEYWELL_THERMOSTAT })
 public class CompleteHoneywellThermostat extends CompleteDevice {
     private String macAddress;
