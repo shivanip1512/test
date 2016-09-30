@@ -440,14 +440,15 @@ public class DataStreamingConfigurationsController {
     
     @RequestMapping(value="discrepancies/resendAll", method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
-    public String resendAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash) {
+    public String resendAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash,
+            PagingParameters paging) {
         List<Integer> deviceList = new ArrayList<>();
         String ids = request.getParameter("deviceIds");
         String [] deviceIds = ids.split(",");
         for (String deviceId : deviceIds) {
             deviceList.add(Integer.parseInt(deviceId));
         }
-        
+        deviceList = deviceList.subList(paging.getStartIndex(), paging.getStartIndex() + paging.getItemsPerPage());
         LiteYukonUser user = userContext.getYukonUser();
     
         DataStreamingConfigResult result = dataStreamingService.resend(deviceList, user);
@@ -457,14 +458,15 @@ public class DataStreamingConfigurationsController {
     
     @RequestMapping(value="discrepancies/acceptAll", method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
-    public String acceptAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash) {
+    public String acceptAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash,
+            PagingParameters paging) {
         List<Integer> deviceList = new ArrayList<>();
         String ids = request.getParameter("deviceIds");
         String [] deviceIds = ids.split(",");
         for (String deviceId : deviceIds) {
             deviceList.add(Integer.parseInt(deviceId));
         }
-        
+        deviceList = deviceList.subList(paging.getStartIndex(), paging.getStartIndex() + paging.getItemsPerPage());
         LiteYukonUser user = userContext.getYukonUser();
         
         dataStreamingService.accept(deviceList, user);
