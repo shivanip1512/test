@@ -53,10 +53,7 @@
             <tags:nameValue2 nameKey=".streamingCapacity" data-gateway="${gateway.paoIdentifier.paoId}">
                 <c:set var="color" value="badge-success"/>
                 <c:if test="${gateway.data.dataStreamingLoadingPercent > 100}">
-                    <c:set var="color" value="badge-warning"/>
-                </c:if>
-                <c:if test="${gateway.data.dataStreamingLoadingPercent > 120}">
-                    <c:set var="color" value="badge-error"/>
+                    <c:set var="color" value="badge-${gateway.data.dataStreamingLoadingPercent > 120 ? 'error':'warning'}"/>
                 </c:if>
                 <span class="badge ${color} cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${gateway.data.dataStreamingLoadingPercent / 100}"/></span>
             </tags:nameValue2>
