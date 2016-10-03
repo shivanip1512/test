@@ -51,7 +51,12 @@
 </style>
 
     
-    <div id="marker-info" class="well dn"></div>
+    <div id="marker-info" class="well dn">
+        <div id="device-info" class="dn"></div>
+        <div id="parent-info" class="dn">
+            <%@ include file="parentInfo.jsp" %>
+        </div>
+    </div>  
     
     <c:if test="${not empty geojson}"><cti:toJson id="geojson" object="${geojson}"/></c:if>
     

@@ -123,11 +123,30 @@ yukon.map.network = (function () {
                         var 
                         geometry = feature.getGeometry(),
                         coord = geometry.getCoordinates(),
-                        url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
-                        $('#marker-info').load(url, function() {
-                            $('#marker-info').show();
-                            _overlay.setPosition(coord);
-                        });
+                        properties = feature.getProperties(),
+                        parent = properties.parent;
+                        $('#parent-info').hide();
+                        $('#device-info').hide();
+
+                        if (parent != null) {
+                            var parentData = parent.data;
+                            $('.js-device').text(parent.device.name);
+                            $('.js-type').text(parent.device.paoIdentifier.paoType);
+                            $('.js-manufacturer').text(parentData.rfnIdentifier.sensorManufacturer);
+                            $('.js-model').text(parentData.rfnIdentifier.sensorModel);
+                            $('.js-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
+                            $('.js-node-sn').text(parentData.nodeSN);
+                            $('.js-mac-address').text(parentData.nodeMacAddress);
+                            $('#parent-info').show();
+                        } else {
+                            url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
+                            $('#device-info').load(url, function() {
+                                $('#device-info').show();
+                            });
+                        }
+                        $('#marker-info').show();
+                        _overlay.setPosition(coord);
+
                         //close any lingering delete dialogs to simplify handling
                         $('#confirm-delete').dialog('destroy');
                     } else {
@@ -209,64 +228,70 @@ yukon.map.network = (function () {
                     wasChecked = parentNodeRow.find('.switch-btn-checkbox').prop('checked');
                     
                     if (!wasChecked) {
-                        var fc = yukon.fromJson('#geojson'),
-                        feature = fc.features[0],
-                        paoId = feature.id;
-                        $.getJSON('parentNode?' + $.param({ deviceId: paoId }))
-                        .done(function (parent) {
-                            var source = _map.getLayers().getArray()[_tiles.length].getSource(),
-                            feature = parent.location.features[0],
-                            src_projection = fc.crs.properties.name,
-                            pao = feature.properties.paoIdentifier,
-                            style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
-                            icon = new ol.Feature({ pao: pao });
-                            
-                            icon.setStyle(style);
-                        
-                            if (src_projection === _destProjection) {
-                                icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-                            } else {
-                                var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
-                                icon.setGeometry(new ol.geom.Point(coord));
-                            }
-                            
-                            _parentIcon = icon;
-                            source.addFeature(icon);
-                            
-                            //draw line
-                            var points = [];
-                            points.push(icon.getGeometry().getCoordinates());
-
-                            var features = source.getFeatures();
-                            if (features != null && features.length > 0) {
-                                for (x in features) {
-                                   var properties = features[x].getProperties();
-                                   var id = properties.pao.paoId;
-                                   if (id == paoId) {
-                                       var coord = features[x].getGeometry().getCoordinates();
-                                       points.push(coord);
-                                       break;
-                                   }
-                                 }
-                               }
-                            
-                            var layerLines = new ol.layer.Vector({
-                                source: new ol.source.Vector({
-                                    features: [new ol.Feature({
-                                        geometry: new ol.geom.LineString(points),
-                                        name: 'Line'
-                                    })]
-                                }),
-                                style: new ol.style.Style({
-                                    fill: new ol.style.Fill({ color: '#00FF00', weight: 4 }),
-                                    stroke: new ol.style.Stroke({ color: '#00FF00', width: 2 })
-                                })
-                            });
-                            
-                            _parentLine = layerLines;
-                            _map.addLayer(layerLines);
+                        if (_parentIcon != null) {
+                            var source = _map.getLayers().getArray()[_tiles.length].getSource();
+                            source.addFeature(_parentIcon);
+                            _map.addLayer(_parentLine);
                             _map.getView().fitExtent(source.getExtent(), _map.getSize());
-                        });
+                        } else {
+                            var fc = yukon.fromJson('#geojson'),
+                            feature = fc.features[0],
+                            paoId = feature.id;
+                            $.getJSON('parentNode?' + $.param({ deviceId: paoId }))
+                            .done(function (parent) {
+                                var source = _map.getLayers().getArray()[_tiles.length].getSource(),
+                                feature = parent.location.features[0],
+                                src_projection = fc.crs.properties.name,
+                                style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
+                                icon = new ol.Feature({ parent: parent });
+                                
+                                icon.setStyle(style);
+                            
+                                if (src_projection === _destProjection) {
+                                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+                                } else {
+                                    var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+                                    icon.setGeometry(new ol.geom.Point(coord));
+                                }
+                                
+                                _parentIcon = icon;
+                                source.addFeature(icon);
+                                
+                                //draw line
+                                var points = [];
+                                points.push(icon.getGeometry().getCoordinates());
+    
+                                var features = source.getFeatures();
+                                if (features != null && features.length > 0) {
+                                    for (x in features) {
+                                       var properties = features[x].getProperties();
+                                       var id = properties.pao.paoId;
+                                       if (id == paoId) {
+                                           var coord = features[x].getGeometry().getCoordinates();
+                                           points.push(coord);
+                                           break;
+                                       }
+                                     }
+                                   }
+                                
+                                var layerLines = new ol.layer.Vector({
+                                    source: new ol.source.Vector({
+                                        features: [new ol.Feature({
+                                            geometry: new ol.geom.LineString(points),
+                                            name: 'Line'
+                                        })]
+                                    }),
+                                    style: new ol.style.Style({
+                                        fill: new ol.style.Fill({ color: '#00FF00', weight: 4 }),
+                                        stroke: new ol.style.Stroke({ color: '#00FF00', width: 2 })
+                                    })
+                                });
+                                
+                                _parentLine = layerLines;
+                                _map.addLayer(layerLines);
+                                _map.getView().fitExtent(source.getExtent(), _map.getSize());
+                            });
+                        }
                     } else {
                         //Remove parent and line
                         var source = _map.getLayers().getArray()[_tiles.length].getSource();
