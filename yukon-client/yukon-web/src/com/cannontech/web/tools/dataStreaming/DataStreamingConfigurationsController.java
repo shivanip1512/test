@@ -448,7 +448,8 @@ public class DataStreamingConfigurationsController {
         for (String deviceId : deviceIds) {
             deviceList.add(Integer.parseInt(deviceId));
         }
-        deviceList = deviceList.subList(paging.getStartIndex(), paging.getStartIndex() + paging.getItemsPerPage());
+        deviceList = deviceList.subList(paging.getStartIndex(),
+                Math.min(deviceList.size(), paging.getStartIndex() + paging.getItemsPerPage()));
         LiteYukonUser user = userContext.getYukonUser();
     
         DataStreamingConfigResult result = dataStreamingService.resend(deviceList, user);
@@ -466,7 +467,8 @@ public class DataStreamingConfigurationsController {
         for (String deviceId : deviceIds) {
             deviceList.add(Integer.parseInt(deviceId));
         }
-        deviceList = deviceList.subList(paging.getStartIndex(), paging.getStartIndex() + paging.getItemsPerPage());
+        deviceList = deviceList.subList(paging.getStartIndex(),
+                Math.min(deviceList.size(), paging.getStartIndex() + paging.getItemsPerPage()));
         LiteYukonUser user = userContext.getYukonUser();
         
         dataStreamingService.accept(deviceList, user);
