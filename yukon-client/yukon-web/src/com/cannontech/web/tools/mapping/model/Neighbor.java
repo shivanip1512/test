@@ -7,18 +7,19 @@ import org.geojson.FeatureCollection;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.network.NeighborData;
+import com.cannontech.common.rfn.model.RfnDevice;
 
 public class Neighbor {
     
     private static final String nameKey= "yukon.web.modules.operator.mapNetwork.neighborFlagType.";
 
-    private int deviceId;
+    private RfnDevice device;
     private FeatureCollection location;
     private NeighborData data;
     private String commaDelimitedNeighborFlags;
 
-    public Neighbor(int deviceId, FeatureCollection location, NeighborData data, MessageSourceAccessor accessor) {
-        this.deviceId = deviceId;
+    public Neighbor(RfnDevice device, FeatureCollection location, NeighborData data, MessageSourceAccessor accessor) {
+        this.device = device;
         this.location = location;
         this.data = data;
         List<String> flags = new ArrayList<>();
@@ -34,8 +35,8 @@ public class Neighbor {
         return data;
     }
 
-    public int getDeviceId() {
-        return deviceId;
+    public RfnDevice getDevice() {
+        return device;
     }
 
     public String getCommaDelimitedNeighborFlags() {

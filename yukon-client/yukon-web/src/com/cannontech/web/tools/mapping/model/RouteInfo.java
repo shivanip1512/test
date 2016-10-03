@@ -7,18 +7,19 @@ import org.geojson.FeatureCollection;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.message.network.RouteData;
+import com.cannontech.common.rfn.model.RfnDevice;
 
 public class RouteInfo {
 
     private static final String nameKey= "yukon.web.modules.operator.mapNetwork.routeFlagType.";
     
-    private int deviceId;
+    private RfnDevice device;
     private RouteData route;
     private FeatureCollection location;
     private String commaDelimitedRouteFlags;
 
-    public RouteInfo(int deviceId, RouteData route, FeatureCollection location, MessageSourceAccessor accessor) {
-        this.deviceId = deviceId;
+    public RouteInfo(RfnDevice device, RouteData route, FeatureCollection location, MessageSourceAccessor accessor) {
+        this.device = device;
         this.route = route;
         this.location = location;
         List<String> flags = new ArrayList<>();
@@ -26,8 +27,8 @@ public class RouteInfo {
         commaDelimitedRouteFlags = String.join(", ", flags);
     }
 
-    public int getDeviceId() {
-        return deviceId;
+    public RfnDevice getDevice() {
+        return device;
     }
 
     public RouteData getRoute() {

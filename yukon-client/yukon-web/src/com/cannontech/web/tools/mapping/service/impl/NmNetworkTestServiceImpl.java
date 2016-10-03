@@ -200,8 +200,7 @@ public class NmNetworkTestServiceImpl implements NmNetworkTestService {
         for (RfnIdentifier identifier : identifiers) {
             RfnDevice neighborDevice = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
             FeatureCollection location = paoLocationService.getLocationsAsGeoJson(Lists.newArrayList(neighborDevice));
-            Neighbor neighbor =
-                new Neighbor(neighborDevice.getPaoIdentifier().getPaoId(), location, meters.get(identifier), accessor);
+            Neighbor neighbor = new Neighbor(neighborDevice, location, meters.get(identifier), accessor);
             neighbors.add(neighbor);
         }
 
@@ -220,12 +219,12 @@ public class NmNetworkTestServiceImpl implements NmNetworkTestService {
             data.setRfnIdentifier(waterMeter1);
             RfnDevice parentDevice = rfnDeviceDao.getDeviceForExactIdentifier(waterMeter1);
             FeatureCollection location = paoLocationService.getLocationsAsGeoJson(Lists.newArrayList(parentDevice));
-            parent = new Parent(parentDevice.getPaoIdentifier().getPaoId(), location, data);
+            parent = new Parent(parentDevice, location, data);
         }else{
             data.setRfnIdentifier(waterMeter2);
             RfnDevice parentDevice = rfnDeviceDao.getDeviceForExactIdentifier(waterMeter2);
             FeatureCollection location = paoLocationService.getLocationsAsGeoJson(Lists.newArrayList(parentDevice));
-            parent = new Parent(parentDevice.getPaoIdentifier().getPaoId(), location, data);
+            parent = new Parent(parentDevice, location, data);
         }
         return parent;
     }
@@ -241,12 +240,12 @@ public class NmNetworkTestServiceImpl implements NmNetworkTestService {
         identifiers.remove(device.getRfnIdentifier());
         FeatureCollection location = paoLocationService.getLocationsAsGeoJson(Lists.newArrayList(device));
         RouteData data = this.routes.get(device.getRfnIdentifier());
-        routes.add(new RouteInfo(deviceId, data, location, accessor));
+        routes.add(new RouteInfo(device, data, location, accessor));
         for (RfnIdentifier identifier : identifiers) {
             device = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
             location = paoLocationService.getLocationsAsGeoJson(Lists.newArrayList(device));
             data = this.routes.get(device.getRfnIdentifier());
-            routes.add(new RouteInfo(device.getPaoIdentifier().getPaoId(), data, location, accessor));
+            routes.add(new RouteInfo(device, data, location, accessor));
         }
         
         return routes;

@@ -3,17 +3,18 @@ package com.cannontech.web.tools.mapping.model;
 import org.geojson.FeatureCollection;
 
 import com.cannontech.common.rfn.message.network.ParentData;
+import com.cannontech.common.rfn.model.RfnDevice;
 
 public class Parent {
 
-    private int deviceId;
+    private RfnDevice device;
     private FeatureCollection location;
     private ParentData data;
 
-    public Parent(int deviceId, FeatureCollection location, ParentData data) {
+    public Parent(RfnDevice device, FeatureCollection location, ParentData data) {
         this.location = location;
         this.data = data;
-        this.deviceId = deviceId;
+        this.device = device;
     }
 
     public ParentData getData() {
@@ -24,7 +25,7 @@ public class Parent {
         return location;
     }
 
-    public int getDeviceId() {
-        return deviceId;
+    public RfnDevice getDevice() {
+        return device;
     }
 }
