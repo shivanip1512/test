@@ -436,11 +436,31 @@
 	</classpathentry>
 	<classpathentry exported="true" kind="lib" path="/third-party/apache-log4j-extras-1.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-codec-1.10.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/commons-lang3-3.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/guava-18.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/httpclient-4.3.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/httpcore-4.3.3.jar"/>
+    <classpathentry exported="true" kind="lib" path="/third-party/commons-codec-1.10.jar">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
+        </attributes>
+    </classpathentry>
+    <classpathentry exported="true" kind="lib" path="/third-party/commons-lang3-3.4.jar" sourcepath="/third-party/linked-sources/commons-lang3-3.4-src.zip">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
+        </attributes>
+    </classpathentry>
+    <classpathentry exported="true" kind="lib" path="/third-party/guava-18.0.jar">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
+        </attributes>
+    </classpathentry>
+    <classpathentry exported="true" kind="lib" path="/third-party/httpclient-4.3.6.jar">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
+        </attributes>
+    </classpathentry>
+    <classpathentry exported="true" kind="lib" path="/third-party/httpcore-4.3.3.jar">
+        <attributes>
+            <attribute name="org.eclipse.jst.component.dependency" value="../"/>
+        </attributes>
+    </classpathentry>
 	<classpathentry kind="lib" path="/third-party/annotation-detector-3.0.4.jar"/>
 	<classpathentry kind="lib" path="/third-party/applicationinsights-core-1.0.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/applicationinsights-web-1.0.2.jar"/>
