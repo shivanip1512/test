@@ -92,7 +92,6 @@
                                             id="comm-port"
                                             path="cbcCommChannel"
                                             items="${availablePorts}"
-                                            disabled="true"
                                             itemValue="liteID" itemLabel="paoName"
                                             inputClass="with-option-hiding" />                                    
                                     </tags:nameValue2>
