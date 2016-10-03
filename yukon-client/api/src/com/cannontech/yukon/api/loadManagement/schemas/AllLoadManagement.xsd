@@ -19,6 +19,8 @@
     <xsd:include schemaLocation="ListScenarioProgramsResponse.xsd" />
     <xsd:include schemaLocation="ListAllScenarioProgramsRequest.xsd" />
     <xsd:include schemaLocation="ListAllScenarioProgramsResponse.xsd" />
+    <xsd:include schemaLocation="ListAllProgramsByStatusRequest.xsd" />
+    <xsd:include schemaLocation="ListAllProgramsByStatusResponse.xsd" />
     <xsd:include schemaLocation="OverrideHistoryByAccountNumberRequest.xsd" />
     <xsd:include schemaLocation="OverrideHistoryByAccountNumberResponse.xsd" />
     <xsd:include schemaLocation="OverrideHistoryByProgramNameRequest.xsd" />

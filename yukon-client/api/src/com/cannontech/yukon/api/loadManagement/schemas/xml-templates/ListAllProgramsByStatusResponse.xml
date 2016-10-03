@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<listAllProgramsByStatusResponse xmlns="http://yukon.cannontech.com/api"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://yukon.cannontech.com/api ../ListAllProgramsByStatusResponse.xsd"
+    version="1.0">
+
+    <programStatuses>
+
+        <programStatus>
+            <programName>
+                Residential LCR Cooling 50% Contract
+            </programName>
+            <currentStatus>Active</currentStatus>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
+            <gearName>50% Ramp</gearName>
+        </programStatus>
+
+        <programStatus>
+            <programName>
+                Residential LCR Cooling 75% Contract
+            </programName>
+            <currentStatus>Active</currentStatus>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
+            <gearName>75% Ramp</gearName>
+        </programStatus>
+
+        <programStatus>
+            <programName>
+                Residential LCR Cooling 100% Contract
+            </programName>
+            <currentStatus>Active</currentStatus>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
+            <gearName>100% Ramp</gearName>
+        </programStatus>
+
+        <programStatus>
+            <programName>
+                Commercial ExpressStat Cooling 50% Contract
+            </programName>
+            <currentStatus>Active</currentStatus>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
+            <gearName>50% Ramp</gearName>
+        </programStatus>
+
+        <programStatus>
+            <programName>
+                Commercial ExpressStat Cooling 75% Contract
+            </programName>
+            <currentStatus>Active</currentStatus>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
+            <gearName>75% Ramp</gearName>
+        </programStatus>
+
+        <programStatus>
+            <programName>
+                Commercial ExpressStat Cooling 100% Contract
+            </programName>
+            <currentStatus>Active</currentStatus>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
+            <gearName>100% Ramp</gearName>
+        </programStatus>
+
+        <programStatus>
+            <programName>
+                Residential ExpressStat Cooling 50% Contract
+            </programName>
+            <currentStatus>Active</currentStatus>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
+            <gearName>50% Ramp</gearName>
+        </programStatus>
+
+        <programStatus>
+            <programName>
+                Residential ExpressStat Cooling 75% Contract
+            </programName>
+            <currentStatus>Active</currentStatus>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
+            <gearName>75% Ramp</gearName>
+        </programStatus>
+
+        <programStatus>
+            <programName>
+                Residential ExpressStat Cooling 100% Contract
+            </programName>
+            <currentStatus>Inactive</currentStatus>
+            <startDateTime>2008-10-28T17:08:00Z</startDateTime>
+            <stopDateTime>2008-10-28T11:59:59Z</stopDateTime>
+            <gearName>100% Ramp</gearName>
+        </programStatus>
+
+    </programStatuses>
+
+</listAllProgramsByStatusResponse>

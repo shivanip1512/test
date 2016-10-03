@@ -1,6 +1,7 @@
 package com.cannontech.loadcontrol.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -26,6 +27,7 @@ import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStartingGear;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
+import com.cannontech.loadcontrol.service.data.ProgramStatusEnum;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -81,7 +83,41 @@ public class LoadControlServiceImpl implements LoadControlService {
         
        return programStatuses;
     }
-    
+
+    @Override
+    public List<ProgramStatus> getAllProgramStatus(LiteYukonUser user, Set<ProgramStatusEnum> programStatusEnums) {
+        List<ProgramStatus> programStatuses = new ArrayList<>();
+        // all LMProgramBase
+        Set<LMProgramBase> allProgramBase = loadControlClientConnection.getAllProgramsSet();
+
+        if (programStatusEnums.isEmpty()) {
+            // filter out unauthorized YukonPao
+            List<LMProgramBase> authorizedPrograms = paoAuthorizationService.filterAuthorized(user, allProgramBase, Permission.LM_VISIBLE);
+            authorizedPrograms.forEach(programBase -> {
+                programStatuses.add(new ProgramStatus(programBase));
+            });
+            return programStatuses;
+        }
+
+        Set<LMProgramBase> filteredProgramBaseSet = Sets.newHashSet();
+        programStatusEnums.forEach(statusEnum -> {
+            allProgramBase.stream().filter(statusEnum::checkProgramStatus).forEach(filteredProgramBaseSet::add);
+        });
+
+        if (filteredProgramBaseSet.isEmpty()) {
+            return Collections.emptyList();
+        }
+        // filter out unauthorized YukonPao
+        List<LMProgramBase> authorizedPrograms = paoAuthorizationService.filterAuthorized(user, filteredProgramBaseSet, Permission.LM_VISIBLE);
+
+        programStatusEnums.forEach(statusEnum -> {
+            authorizedPrograms.stream().filter(statusEnum::checkProgramStatus).map(
+                programBase -> new ProgramStatus(programBase)).forEach(programStatuses::add);
+        });
+
+        return programStatuses;
+    }
+
 	// GET ALL SCENARIO PROGRAMS
 	@Override
     public List<ScenarioProgramStartingGears> getAllScenarioProgramStartingGears(LiteYukonUser user) {
@@ -187,4 +223,5 @@ public class LoadControlServiceImpl implements LoadControlService {
     private boolean isLmPaoVisibleToUser(LiteYukonUser user, YukonPao pao) {
     	return paoAuthorizationService.isAuthorized(user, Permission.LM_VISIBLE, pao);
     }
+
 }

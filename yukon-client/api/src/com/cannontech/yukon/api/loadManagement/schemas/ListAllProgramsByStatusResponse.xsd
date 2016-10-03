@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" 
+            xmlns:yukon="http://yukon.cannontech.com/api" 
+            targetNamespace="http://yukon.cannontech.com/api"
+            elementFormDefault="qualified" version="1.0">
+            
+    <xsd:include schemaLocation="../../common/schemas/YukonMessage.xsd" />
+    <xsd:include schemaLocation="ProgramStatus.xsd"/>
+
+    <xsd:annotation>
+       <xsd:documentation xml:lang="en">
+           Request all programs that match 0 (all) to many programStatus types and return list of programStatuses, 
+           containing the programName, currentStatus, start/stop dateTimes and gear information.
+       </xsd:documentation>
+    </xsd:annotation>
+    
+    <xsd:complexType name="ListAllProgramsByStatusResponse">
+        <xsd:complexContent>
+            <xsd:extension base="yukon:YukonMessage">
+                <xsd:choice>
+                    <xsd:sequence>
+                        <xsd:element name="programStatuses">
+                            <xsd:complexType>
+                                <xsd:sequence>
+                                    <xsd:element name="programStatus" type="yukon:ProgramStatusDetail" minOccurs="0" maxOccurs="unbounded"/>
+                                </xsd:sequence>
+                            </xsd:complexType>
+                        </xsd:element>
+                    </xsd:sequence>
+                    <xsd:element name="failure" type="yukon:Failure"/>
+                </xsd:choice>
+            </xsd:extension>
+        </xsd:complexContent>
+    </xsd:complexType>
+
+    <xsd:element name="listAllProgramsByStatusResponse" type="yukon:ListAllProgramsByStatusResponse"/>
+
+</xsd:schema>

@@ -20,7 +20,25 @@
 			<xsd:element name="gearName" type="xsd:string"/>
 		</xsd:sequence>
 	</xsd:complexType>
-    
+
+    <xsd:complexType name="ProgramStatusDetail">
+        <xsd:sequence>
+            <xsd:element name="programName" type="xsd:string"/>
+            <xsd:element name="currentStatus" type="yukon:CurrentProgramStatus"/>
+            <xsd:element name="startDateTime" type="xsd:dateTime" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>startDateTime is optional.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="stopDateTime" type="xsd:dateTime" minOccurs="0">
+                <xsd:annotation>
+                    <xsd:documentation>stopDateTime is optional.</xsd:documentation>
+                </xsd:annotation>
+            </xsd:element>
+            <xsd:element name="gearName" type="xsd:string"/>
+        </xsd:sequence>
+    </xsd:complexType>
+
 	<xsd:simpleType name="CurrentProgramStatus">
 		<xsd:restriction base="xsd:string">
 			<xsd:enumeration value="Active"/>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<listAllProgramsByStatusRequest xmlns="http://yukon.cannontech.com/api"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://yukon.cannontech.com/api ../ListAllProgramsByStatusRequest.xsd"
+    version="1.0">
+    <programStatus>Active</programStatus>
+    <programStatus>Inactive</programStatus>
+    <programStatus>Scheduled</programStatus>
+</listAllProgramsByStatusRequest>

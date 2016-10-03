@@ -1,5 +1,7 @@
 package com.cannontech.yukon.api.utils;
 
+import java.util.List;
+
 import org.jdom2.Attribute;
 import org.jdom2.Element;
 import org.jdom2.Namespace;
@@ -65,6 +67,23 @@ public class LoadManagementTestUtils {
         // validate request
         TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
         
+        return requestElement;
+    }
+    
+    // CREATE PROGRAM BY STATUS
+    public static Element createProgramsByStatus(String serviceRequestName, List<String> programStatuses,
+            String version, Resource requestSchemaResource) {
+
+        Element requestElement = new Element(serviceRequestName, ns);
+        Attribute versionAttribute = new Attribute("version", version);
+        requestElement.setAttribute(versionAttribute);
+        for (String programStatus : programStatuses) {
+            Element tmpElement = XmlUtils.createStringElement("programStatus", ns, programStatus);
+            requestElement.addContent(tmpElement);
+        }
+        // validate request
+        TestUtils.validateAgainstSchema(requestElement, requestSchemaResource);
+
         return requestElement;
     }
     
