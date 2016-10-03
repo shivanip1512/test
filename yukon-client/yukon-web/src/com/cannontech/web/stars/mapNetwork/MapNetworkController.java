@@ -10,8 +10,8 @@ import org.geojson.FeatureCollection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.device.model.SimpleDevice;
@@ -36,10 +36,7 @@ public class MapNetworkController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @RequestMapping("home")
-    public String home(ModelMap model, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
-        
-        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
-        
+    public String home(ModelMap model, @RequestParam("deviceId") int deviceId, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         FeatureCollection geojson = paoLocationService.getLocationsAsGeoJson(Arrays.asList(device));
         
@@ -55,21 +52,18 @@ public class MapNetworkController {
     }
     
     @RequestMapping("parentNode")
-    public @ResponseBody Parent parentNode(HttpServletRequest request) throws ServletException {
-        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+    public @ResponseBody Parent parentNode(HttpServletRequest request, @RequestParam("deviceId") int deviceId) throws ServletException {
         return nmNetworkTestService.getParent(deviceId);
     }
     
     @RequestMapping("neighbors")
-    public @ResponseBody List<Neighbor> neighbors(HttpServletRequest request, YukonUserContext userContext) throws ServletException {
-        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+    public @ResponseBody List<Neighbor> neighbors(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         return nmNetworkTestService.getNeighbors(deviceId, accessor);
     }
     
     @RequestMapping("primaryRoute")
-    public @ResponseBody List<RouteInfo> primaryRoute(HttpServletRequest request, YukonUserContext userContext) throws ServletException {
-        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+    public @ResponseBody List<RouteInfo> primaryRoute(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         return nmNetworkTestService.getRoute(deviceId, accessor);
     }
