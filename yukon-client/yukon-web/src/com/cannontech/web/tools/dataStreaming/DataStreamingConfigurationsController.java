@@ -287,13 +287,13 @@ public class DataStreamingConfigurationsController {
         }
         
         itemList = itemList.subList(startIndex, endIndex);
-        searchResult.setBounds(startIndex, itemsPerPage, results.size());
+        searchResult.setBounds(startIndex, itemsPerPage, itemList.size());
         searchResult.setResultList(itemList);
         
         model.addAttribute("searchResults", searchResult);
         
         List<Integer> deviceIds = new ArrayList<>();
-        results.forEach(device -> deviceIds.add(device.getMeter().getPaoIdentifier().getPaoId()));
+        itemList.forEach(device -> deviceIds.add(device.getMeter().getPaoIdentifier().getPaoId()));
         DeviceCollection deviceCollection = dcProducer.createDeviceCollection(deviceIds, null);
         model.addAttribute("deviceCollection", deviceCollection);
         String deviceIdList = deviceIds.stream()
@@ -448,8 +448,7 @@ public class DataStreamingConfigurationsController {
         for (String deviceId : deviceIds) {
             deviceList.add(Integer.parseInt(deviceId));
         }
-        deviceList = deviceList.subList(paging.getStartIndex(),
-                Math.min(deviceList.size(), paging.getStartIndex() + paging.getItemsPerPage()));
+        deviceList = deviceList.subList(paging.getStartIndex(), Math.min(deviceList.size(), paging.getEndIndex() + 1));
         LiteYukonUser user = userContext.getYukonUser();
     
         DataStreamingConfigResult result = dataStreamingService.resend(deviceList, user);
@@ -467,8 +466,7 @@ public class DataStreamingConfigurationsController {
         for (String deviceId : deviceIds) {
             deviceList.add(Integer.parseInt(deviceId));
         }
-        deviceList = deviceList.subList(paging.getStartIndex(),
-                Math.min(deviceList.size(), paging.getStartIndex() + paging.getItemsPerPage()));
+        deviceList = deviceList.subList(paging.getStartIndex(), Math.min(deviceList.size(), paging.getEndIndex() + 1));
         LiteYukonUser user = userContext.getYukonUser();
         
         dataStreamingService.accept(deviceList, user);
