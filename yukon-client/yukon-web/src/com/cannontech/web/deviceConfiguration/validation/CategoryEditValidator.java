@@ -103,7 +103,9 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
                     final String path = "categoryInputs[" + field.getFieldName() + "]";
 
                     if (StringUtils.isBlank(value)) {
-                        errors.rejectValue(path, baseKey + ".emptyValue");
+                        if (!field.isEnum()) {
+                            errors.rejectValue(path, baseKey + ".emptyValue");
+                        }
                         continue;
                     }
 
