@@ -222,7 +222,8 @@ public class PaoTypeTest {
                             PaoType.SYSTEM,
                             PaoType.VIRTUAL_SYSTEM,
                             PaoType.RFN_GATEWAY,
-                            PaoType.GWY800);
+                            PaoType.GWY800,
+                            PaoType.RFN_RELAY);
     
     private static final ImmutableSet<PaoType> nonCbcTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -426,7 +427,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
-                        PaoType.HONEYWELL_VISIONPRO_8000);
+                        PaoType.HONEYWELL_VISIONPRO_8000,
+                        PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonMeterTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -551,7 +553,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
-                        PaoType.HONEYWELL_VISIONPRO_8000);
+                        PaoType.HONEYWELL_VISIONPRO_8000,
+                        PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonMctTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -736,7 +739,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
-                        PaoType.HONEYWELL_VISIONPRO_8000);
+                        PaoType.HONEYWELL_VISIONPRO_8000,
+                        PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonIedTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -932,7 +936,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
-                        PaoType.HONEYWELL_VISIONPRO_8000);
+                        PaoType.HONEYWELL_VISIONPRO_8000,
+                        PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonRtuTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -1144,7 +1149,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
-                        PaoType.HONEYWELL_VISIONPRO_8000);
+                        PaoType.HONEYWELL_VISIONPRO_8000,
+                        PaoType.RFN_RELAY);
 
     private static final ImmutableSet<PaoType> nonPortTypes =
         ImmutableSet.of(PaoType.CCU710A,
@@ -1349,7 +1355,8 @@ public class PaoTypeTest {
                         PaoType.HONEYWELL_9000,
                         PaoType.HONEYWELL_FOCUSPRO,
                         PaoType.HONEYWELL_THERMOSTAT,
-                        PaoType.HONEYWELL_VISIONPRO_8000);
+                        PaoType.HONEYWELL_VISIONPRO_8000,
+                        PaoType.RFN_RELAY);
     
     @Test
     public void testIsMeter() {
