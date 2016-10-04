@@ -9,7 +9,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.loadcontrol.service.data.ProgramStatusEnum;
+import com.cannontech.loadcontrol.service.data.ProgramStatusType;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 
 public interface LoadControlService {
@@ -88,11 +88,12 @@ public interface LoadControlService {
 
     /**
      * Returns a list of all ProgramStatus (programName, currentStatus, start/stop dateTimes and gear
-     * information.) if programStatusEnums (Active,Inactive, Scheduled) is empty otherwise it will return list of ProgramStatus that are
-     * belongs to programStatusEnums and the programs will be visible
+     * information.) if programStatusTypes (Active,Inactive, Scheduled) is empty otherwise it will return list of ProgramStatus that are
+     * belongs to programStatusTypes and the programs will be visible
      * to the user either because it is directly visible, or belongs to a control area that is visible.
-     * 
-     * @return list of ProgramStatus
+     * @param user
+     * @param programStatusTypes
+     * @return
      */
-    List<ProgramStatus> getAllProgramStatus(LiteYukonUser user,  Set<ProgramStatusEnum> programStatusEnums);
+    List<ProgramStatus> getAllProgramStatus(LiteYukonUser user,  Set<ProgramStatusType> programStatusTypes);
 }

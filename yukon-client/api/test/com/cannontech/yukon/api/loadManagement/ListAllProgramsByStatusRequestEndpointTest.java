@@ -19,7 +19,7 @@ import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.loadcontrol.service.data.ProgramStatusEnum;
+import com.cannontech.loadcontrol.service.data.ProgramStatusType;
 import com.cannontech.yukon.api.loadManagement.adapters.LoadControlServiceAdapter;
 import com.cannontech.yukon.api.loadManagement.endpoint.ListAllProgramsByStatusRequestEndpoint;
 import com.cannontech.yukon.api.loadManagement.mocks.MockProgramStatus;
@@ -51,7 +51,7 @@ public class ListAllProgramsByStatusRequestEndpointTest {
         private boolean returnEmptyList = true;
 
         @Override
-        public List<ProgramStatus> getAllProgramStatus(LiteYukonUser user, Set<ProgramStatusEnum> programStatusEnums) {
+        public List<ProgramStatus> getAllProgramStatus(LiteYukonUser user, Set<ProgramStatusType> programStatusTypes) {
 
             List<ProgramStatus> programStatuses = new ArrayList<ProgramStatus>();
             List<ProgramStatus> filteredProgramStatusSet = new ArrayList<>();
@@ -70,8 +70,8 @@ public class ListAllProgramsByStatusRequestEndpointTest {
                 return programStatuses;
             } else {
                 // Filter the result based on input programStatus (Active, Inactive, Scheduled)
-                programStatusEnums.forEach(statusEnum -> {
-                    programStatuses.stream().filter(statusEnum::checkProgramStatus).forEach(
+                programStatusTypes.forEach(programStatusType -> {
+                    programStatuses.stream().filter(programStatusType::checkProgramStatus).forEach(
                         filteredProgramStatusSet::add);
                 });
 

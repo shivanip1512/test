@@ -10,7 +10,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramControlHistory;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.loadcontrol.service.data.ProgramStatusEnum;
+import com.cannontech.loadcontrol.service.data.ProgramStatusType;
 import com.cannontech.loadcontrol.service.data.ScenarioProgramStartingGears;
 
 public class LoadControlServiceAdapter implements LoadControlService {
@@ -51,7 +51,7 @@ public class LoadControlServiceAdapter implements LoadControlService {
     }
 
     @Override
-    public List<ProgramStatus> getAllProgramStatus(LiteYukonUser user, Set<ProgramStatusEnum> programStatusEnums) {
+    public List<ProgramStatus> getAllProgramStatus(LiteYukonUser user, Set<ProgramStatusType> programStatusTypes) {
         throw new UnsupportedOperationException("Not Implemented");
     }
 }

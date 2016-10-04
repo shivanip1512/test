@@ -19,7 +19,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.service.LoadControlService;
 import com.cannontech.loadcontrol.service.data.ProgramStatus;
-import com.cannontech.loadcontrol.service.data.ProgramStatusEnum;
+import com.cannontech.loadcontrol.service.data.ProgramStatusType;
 import com.cannontech.message.util.BadServerResponseException;
 import com.cannontech.message.util.ConnectionException;
 import com.cannontech.yukon.api.util.XMLFailureGenerator;
@@ -45,18 +45,18 @@ public class ListAllProgramsByStatusRequestEndpoint {
 
         try {
             
-            Set<ProgramStatusEnum> programStatusEnums = requestTemplate.evaluateAsEnumSet("//y:programStatus", ProgramStatusEnum.class);
+            Set<ProgramStatusType> programStatusTypes = requestTemplate.evaluateAsEnumSet("//y:programStatus", ProgramStatusType.class);
             // Check authorization
             rolePropertyDao.verifyProperty(YukonRoleProperty.OPERATOR_CONSUMER_INFO_WS_LM_DATA_ACCESS, user);
 
-            List<ProgramStatus> allProgramStatus = loadControlService.getAllProgramStatus(user, programStatusEnums);
+            List<ProgramStatus> allProgramStatus = loadControlService.getAllProgramStatus(user, programStatusTypes);
            
                 for (ProgramStatus programStatus : allProgramStatus) {
 
                     Element programStatusElement = new Element("programStatus", ns);
                     programStatusElement.addContent(XmlUtils.createStringElement("programName", ns, programStatus.getProgramName()));
 
-                    programStatusElement.addContent(XmlUtils.createStringElement("currentStatus", ns, ProgramStatusEnum.getStatus(programStatus)));
+                    programStatusElement.addContent(XmlUtils.createStringElement("currentStatus", ns, ProgramStatusType.getStatus(programStatus)));
 
                     if (programStatus.getStartTime() != null) {
                         programStatusElement.addContent(XmlUtils.createDateElement("startDateTime", ns, programStatus.getStartTime()));

@@ -3,7 +3,7 @@ package com.cannontech.loadcontrol.service.data;
 import com.cannontech.loadcontrol.ProgramUtils;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 
-public enum ProgramStatusEnum {
+public enum ProgramStatusType {
 
     ACTIVE("Active") {
         @Override
@@ -39,10 +39,10 @@ public enum ProgramStatusEnum {
         }
     };
 
-    private final String programStatus;
+    private final String programStatusType;
 
-    private ProgramStatusEnum(String programStatus) {
-        this.programStatus = programStatus;
+    private ProgramStatusType(String programStatusType) {
+        this.programStatusType = programStatusType;
     }
 
     public abstract boolean checkProgramStatus(ProgramStatus programStatus);
@@ -53,11 +53,11 @@ public enum ProgramStatusEnum {
 
         String status = "";
         if (programStatus.isActive()) {
-            status = ACTIVE.programStatus;
+            status = ACTIVE.programStatusType;
         } else if (programStatus.isScheduled()) {
-            status = SCHEDULED.programStatus;
+            status = SCHEDULED.programStatusType;
         } else if (programStatus.isInactive()) {
-            status = INACTIVE.programStatus;
+            status = INACTIVE.programStatusType;
         }
         return status;
 
