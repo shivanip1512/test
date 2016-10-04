@@ -254,6 +254,10 @@ YukonError_t DatalinkLayer::decode( CtiXfer &xfer, YukonError_t status )
                         if( _packet.header.fmt.destination != _src ||
                             _packet.header.fmt.source      != _dst )
                         {
+                            CTILOG_WARN( dout, "DNP Protocol error, incorrect address received.  Expecting (" 
+                                << _src << ", " << _dst << "), received (" << _packet.header.fmt.destination << ", " 
+                                << _packet.header.fmt.source << ")" );
+
                             _io_state = State_IO_Failed;
 
                             return _errorCondition = ClientErrors::WrongAddress;
