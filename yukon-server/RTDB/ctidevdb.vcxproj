@@ -565,6 +565,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="dev_rfnResidential.cpp">
     </ClCompile>
+    <ClCompile Include="dev_rf_WaterMeter.cpp" />
     <ClCompile Include="dev_rtc.cpp">
     </ClCompile>
     <ClCompile Include="dev_rtm.cpp">
@@ -748,6 +749,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\dev_rfnCommercial.h" />
     <ClInclude Include="include\dev_rfnMeter.h" />
     <ClInclude Include="include\dev_rfnResidential.h" />
+    <ClInclude Include="include\dev_rf_WaterMeter.h" />
     <ClInclude Include="include\dev_rtc.h" />
     <ClInclude Include="include\dev_rtm.h" />
     <ClInclude Include="include\dev_schlum.h" />

@@ -195,7 +195,7 @@ public class MeterController {
         PaoType type = device.getDeviceType();
 
         // Redirecting water meters to WaterMeterController
-        if (type == PaoType.RFWMETER) {
+        if (type.isWaterMeter()) {
             return "redirect:" + paoDetailUrlHelper.getUrlForPaoDetailPage(device);
         }
 

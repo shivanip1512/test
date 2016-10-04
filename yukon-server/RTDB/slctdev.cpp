@@ -88,6 +88,7 @@
 #include "rte_xcu.h"
 #include "rte_versacom.h"
 #include "rte_expresscom.h"
+#include "dev_rf_WaterMeter.h"
 
 #include "devicetypes.h"
 #include "rtdb.h"
@@ -262,6 +263,9 @@ const DeviceLookup deviceFactory {
     { TYPE_RFN530S4ERT,  MakeDeviceFunc(makeDevice<Rfn530s4ertDevice>) },
     //  RF DA devices
     { TYPE_RFN1200,      MakeDeviceFunc(makeDevice<RfDaDevice>) },
+    //  RF water meters
+    { TYPE_RFW201,       MakeDeviceFunc(makeDevice<Rfw201Device>) },
+    { TYPE_RFW205,       MakeDeviceFunc(makeDevice<Rfw205Device>) },
     //  Electronic meters
     { TYPE_FULCRUM,      MakeDeviceFunc(makeDevice<CtiDeviceFulcrum>) },
     { TYPE_QUANTUM,      MakeDeviceFunc(makeDevice<CtiDeviceQuantum>) },

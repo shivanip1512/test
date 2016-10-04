@@ -103,6 +103,10 @@ enum DeviceTypes {
     //  RF DA devices
     TYPE_RFN1200,
 
+    // RF water meters
+    TYPE_RFW201,
+    TYPE_RFW205,
+
     // Substation device identifiers
     TYPE_CCU700,
     TYPE_CCU710,

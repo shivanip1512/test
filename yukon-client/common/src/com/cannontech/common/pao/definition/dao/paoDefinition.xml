@@ -10058,6 +10058,17 @@
         <displayName>RFW-Meter</displayName>
     </pao>
 
+    <pao id="RFWMETER_GEN2" abstract="true" inherits="RFN_WATER_BASE, RFN_POINT_CALCULATION_WATER">
+    </pao>
+
+    <pao id="RFW201" inherits="RFWMETER_GEN2">
+        <displayName>RFW-201</displayName>
+    </pao>
+
+    <pao id="RFW205" inherits="RFWMETER_GEN2">
+        <displayName>RFW-205</displayName>
+    </pao>
+
     <!--  identical to the RFN-420fL -->
     <pao id="RFN510FL"
             inherits="RFN_L3_FOCUS_420FL, FOCUS_AL_DISPLAY_CONFIGURATION, RFN_CONFIGURATION, RFN_FROZEN_PEAK_DEMAND_CENTRON_AND_FOCUS, RFN_VOLTAGE_CONFIG">

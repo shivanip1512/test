@@ -236,6 +236,10 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     //  --- RF DA nodes ---
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-1200"),    TYPE_RFN1200);
 
+    //  --- RF water meters ---
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfw-201"),     TYPE_RFW201);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfw-205"),     TYPE_RFW205);
+
     //  --- RTU devices ---
     BOOST_CHECK_EQUAL(resolveDeviceType("rtu-dart"),    TYPE_DARTRTU);
     BOOST_CHECK_EQUAL(resolveDeviceType("rtu-dnp"),     TYPE_DNPRTU);

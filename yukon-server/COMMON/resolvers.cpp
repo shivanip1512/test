@@ -285,6 +285,10 @@ static const std::map<std::string, DeviceTypes> device_lookups
     //  --- RF DA nodes ---
     { "rfn-1200",           TYPE_RFN1200 },
 
+    //  --- RF water meters ---
+    { "rfw-201",            TYPE_RFW201 },
+    { "rfw-205",            TYPE_RFW205 },
+
     //  --- RTU devices ---
     { "rtu-dart",           TYPE_DARTRTU },
     { "rtu-dnp",            TYPE_DNPRTU },
@@ -678,6 +682,8 @@ bool resolveIsDeviceTypeSingle(INT Type)
         TYPEMCT440_2132B,
         TYPEMCT440_2133B,
         TYPE_RFN1200,
+        TYPE_RFW201,
+        TYPE_RFW205,
         TYPE_RFN410FL,
         TYPE_RFN410FX,
         TYPE_RFN410FD,

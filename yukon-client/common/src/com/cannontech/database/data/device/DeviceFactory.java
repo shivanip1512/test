@@ -193,6 +193,8 @@ public final class DeviceFactory {
 //        case RFN440_2133T:
         case RFN440_2133TD:
         case RFWMETER:
+        case RFW201:
+        case RFW205:
         case RFN430SL0:
         case RFN430SL1:
         case RFN430SL2:

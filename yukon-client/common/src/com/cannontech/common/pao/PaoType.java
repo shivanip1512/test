@@ -264,6 +264,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     HONEYWELL_VISIONPRO_8000(DeviceTypes.HONEYWELL_VISIONPRO_8000, "Honeywell Wi-Fi VisionPRO 8000", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     HONEYWELL_FOCUSPRO(DeviceTypes.HONEYWELL_FOCUSPRO, "Honeywell Wi-Fi FocusPRO", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     HONEYWELL_THERMOSTAT(DeviceTypes.HONEYWELL_THERMOSTAT, "Honeywell Wi-Fi Thermostat", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
+
+    RFW201(DeviceTypes.RFW201, "RFW-201", PaoCategory.DEVICE, PaoClass.RFMESH),
+    RFW205(DeviceTypes.RFW205, "RFW-205", PaoCategory.DEVICE, PaoClass.RFMESH),
     ;
     
     private final int deviceTypeId;
@@ -301,6 +304,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> rfDaTypes;
     private final static ImmutableSet<PaoType> honeywellTypes;
     private final static ImmutableSet<PaoType> rfRelayTypes;
+    private final static ImmutableSet<PaoType> waterMeterTypes;
     
     public final static int INVALID = -1;
     
@@ -466,6 +470,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFN530S4ERD,
             RFN530S4ERT,
             RFWMETER,
+            RFW201,
+            RFW205,
             SENTINEL,
             SIXNET,
             TRANSDATA_MARKV,
@@ -510,6 +516,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFN530S4ERD,
             RFN530S4ERT,
             RFWMETER,
+            RFW201,
+            RFW205,
             RFN_1200,
             LCR6200_RFN,
             LCR6600_RFN,
@@ -653,6 +661,11 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         b.add(TNPP_TERMINAL);
         b.add(WCTP_TERMINAL);
         transmitterTypes = b.build();
+
+        waterMeterTypes = ImmutableSet.of(
+        	RFWMETER, 
+        	RFW201, 
+        	RFW205);
     }
     
     /**
@@ -809,7 +822,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     }
 
     public boolean isWaterMeter() {
-        return this == PaoType.RFWMETER;
+    	return waterMeterTypes.contains(this);
     }
     
     public boolean isLoadGroup() {
@@ -960,5 +973,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
 
     public static ImmutableSet<PaoType> getSubstationbustypes() {
         return substationBusTypes;
+    }
+
+    public static ImmutableSet<PaoType> getWaterMeterTypes() {
+        return waterMeterTypes;
     }
 }

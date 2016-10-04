@@ -253,8 +253,9 @@ public interface DeviceTypes extends TypeBase
     public final static int HONEYWELL_THERMOSTAT = DEVICE_OFFSET + 190;
     public final static int LM_GROUP_HONEYWELL = DEVICE_OFFSET + 191;
     public final static int LM_HONEYWELL_PROGRAM = DEVICE_OFFSET + 192;
-    
     public final static int RFN_RELAY = DEVICE_OFFSET + 193;
+    public final static int RFW201 = DEVICE_OFFSET + 194;
+    public final static int RFW205 = DEVICE_OFFSET + 195;
     
     //all the possible text representation of each device type.
     //If you want the string of any type, just access the zeroth element, example: STRING_CCU_710[0]
@@ -404,4 +405,6 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_HONEYWELL_FOCUSPRO = {"Honeywell Wi-Fi FocusPRO"};
     public static final String[] STRING_HONEYWELL_THERMOSTAT = {"Honeywell Wi-Fi Thermostat"};
     public static final String[] STRING_RFN_RELAY = {"RFN Relay"};
+    public static final String[] STRING_RFW201 = {"RFW-201", "RFW 201" };
+    public static final String[] STRING_RFW205 = {"RFW-205", "RFW 205" };
 }

@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(test_is_dnp_device_type)
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  60
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  70
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  80
-        (_)(X)(_)(_)(_) (_)(_)(_)(_)(_)  //  90
+        (_)(_)(_)(X)(_) (_)(_)(_)(_)(_)  //  90
         (_)(_)(_)(_)(_) (_)(_)(_)(_)(_)  //  100
         .repeat(90, _);
 
@@ -164,13 +164,15 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class Cti::Devices::RfnCommercialDevice")
         ("class Cti::Devices::RfnCommercialDevice")
         ("class Cti::Devices::RfDaDevice")
+        ("class Cti::Devices::RfWaterMeterDevice")
+        ("class Cti::Devices::RfWaterMeterDevice")
         ("class CtiDeviceCCU710")
         ("class CtiDeviceCCU710")
         ("class CtiDeviceCCU")
         ("class Cti::Devices::Ccu721Device")
+        //  90
         ("class CtiDeviceILEX")
         ("class CtiDeviceWelco")
-        //  90
         ("class CtiDeviceRemote")
         ("class Cti::Devices::DnpDevice")
         ("class Cti::Devices::DnpDevice")
@@ -179,9 +181,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceION")
         ("class CtiDeviceLCU")
         ("class CtiDeviceLCU")
-        ("class CtiDeviceLCU")
-        ("class CtiDeviceLCU")
         //  100
+        ("class CtiDeviceLCU")
+        ("class CtiDeviceLCU")
         ("class CtiDeviceTCU")
         ("class CtiDeviceTCU")
         ("class CtiDeviceMarkV")
@@ -190,9 +192,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceFulcrum")
         ("class CtiDeviceLandisGyrS4")
         ("class CtiDeviceVectron")
+        //  110
         ("class CtiDeviceAlphaA1")
         ("class CtiDeviceDR87")
-        //  110
         ("class CtiDeviceQuantum")
         ("class CtiDeviceKV2")
         ("class Cti::Devices::CtiDeviceSentinel")
@@ -201,9 +203,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceSixnet")
         ("class Cti::Devices::Ipc410ALDevice")
         ("class Cti::Devices::Ipc420ADDevice")
+        //  120
         ("class CtiDeviceLandisGyrS4")
         ("class Cti::Devices::CtiDeviceSentinel")
-        //  120
         ("class Cti::Devices::TapPagingTerminal")
         ("class CtiDeviceWctpTerminal")
         ("class Cti::Devices::RDSTransmitter")
@@ -212,9 +214,9 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceTnppPagingTerminal")
         ("class CtiDeviceRTC")
         ("class CtiDeviceRTM")
+        //  130
         ("class CtiDeviceSeriesV")
         ("class CtiDeviceLMI")
-        //  130
         ("class Cti::Devices::ModbusDevice")
         ("class CtiDeviceGridAdvisor")
         ("class CtiDeviceGridAdvisor")
@@ -223,25 +225,23 @@ BOOST_AUTO_TEST_CASE(test_createDeviceType)
         ("class CtiDeviceGroupRipple")
         ("class CtiDeviceGroupPoint")
         ("class CtiDeviceGroupExpresscom")
-        ("class CtiDeviceGroupRfnExpresscom")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         //  140
-        .repeat(2, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        ("class CtiDeviceGroupRfnExpresscom")
+        .repeat(3, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         ("class CtiDeviceGroupMCT")
         ("class CtiDeviceGroupGolay")
         ("class CtiDeviceGroupSADigital")
         ("class CtiDeviceGroupSA105")
         ("class CtiDeviceGroupSA205")
         ("class CtiDeviceGroupSA305")
-        ("class Cti::Devices::MctBroadcastDevice")
-        ("null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         //  150
-        .repeat(10, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        ("class Cti::Devices::MctBroadcastDevice")
+        .repeat(9, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         //  160
-        .repeat(2, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        .repeat(4, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
         ("class CtiDeviceMacro")
         ("class CtiDeviceSystem")
-        .repeat(9836, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
+        .repeat(9834, "null pointer {C5BECC2F-478B-FB06-55A5-1A91B7BABB1A}")
             ;
 
     std::vector<std::string> results;

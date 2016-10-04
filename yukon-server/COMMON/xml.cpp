@@ -570,6 +570,10 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
 
         ("RFN1200",                     TYPE_RFN1200)
 
+        //  --- RF water meters ---
+        ("RFW201",                      TYPE_RFW201)
+        ("RFW205",                      TYPE_RFW205)
+
         //  --- RTU devices ---
         ("RTU_DART",                    TYPE_DARTRTU)
         ("RTU_DNP",                     TYPE_DNPRTU)
