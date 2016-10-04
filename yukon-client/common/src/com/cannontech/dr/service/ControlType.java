@@ -8,6 +8,7 @@ public enum ControlType {
     DIGI("Digi Cycle"),
     ECOBEE("Ecobee Cycle"),
     TERMINATE("Control terminate"), //Used for restore
+    HONEYWELLWIFI("Honeywell WIFI Cycle"),
     ;
     
     private String stringValue;

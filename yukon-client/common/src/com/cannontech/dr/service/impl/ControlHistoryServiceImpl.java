@@ -42,6 +42,9 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
             controlHistoryMessage.setControlType(controlType.toString() + " " + cyclePercent + "%");
         } else if (controlType == ControlType.DIGI) {
             controlHistoryMessage.setControlType(controlType.toString() + " " + reductionRatio + "%");
+        } else if (controlType == ControlType.HONEYWELLWIFI) {
+            int cyclePercent = 100 - reductionRatio;
+            controlHistoryMessage.setControlType(controlType.toString() + " " + cyclePercent + "%");
         } else {
             controlHistoryMessage.setControlType(controlType.toString());
         }
@@ -74,6 +77,7 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
         controlHistoryMessage.setPointId(point.getLiteID());
         controlHistoryMessage.setStartTime(time.toDate());
         controlHistoryMessage.setControlPriority(0);
+        controlHistoryMessage.setControlType(controlType.toString());
         
         if (associationId == null) {
             controlHistoryMessage.setAssociationId(0);

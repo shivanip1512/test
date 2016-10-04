@@ -12,4 +12,17 @@
     <bean class="com.cannontech.dr.honeywellWifi.HoneywellDemandResponseEventProcessingStrategy"/>
     <bean class="com.cannontech.dr.honeywellWifi.HoneywellEquipmentStatusEventProcessingStrategy"/>
     
+    <context:annotation-config/>
+    
+    <bean id="honeywellMessageListener" class="com.cannontech.dr.honeywellWifi.HoneywellMessageListener"/>
+
+	<jms:listener-container connection-factory="connectionFactory"
+		destination-type="queue" concurrency="1" container-type="simple"
+		container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+		<jms:listener destination="yukon.notif.stream.dr.HoneywellCyclingControlMessage"
+			ref="honeywellMessageListener" method="handleLMHoneywellCyclingControlMessage" />
+		<jms:listener destination="yukon.notif.stream.dr.HoneywellRestoreMessage"
+			ref="honeywellMessageListener" method="handleLMHoneywellRestoreMessage" />
+	</jms:listener-container>
+  
 </beans>
