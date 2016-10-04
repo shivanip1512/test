@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     9/27/2016 4:49:41 AM                         */
+/* Created on:     10/4/2016 10:00:45 AM                        */
 /*==============================================================*/
 
 
@@ -2695,8 +2695,6 @@ create table DYNAMICPOINTDISPATCH  (
    VALUE                FLOAT                           not null,
    TAGS                 NUMBER                          not null,
    NEXTARCHIVE          DATE                            not null,
-   STALECOUNT           NUMBER                          not null,
-   LastAlarmLogID       NUMBER                          not null,
    millis               SMALLINT                        not null,
    constraint PK_DYNAMICPOINTDISPATCH primary key (POINTID)
 );
@@ -9987,6 +9985,7 @@ INSERT INTO YukonServices VALUES (17, 'DigiPollingService', 'classpath:com/canno
 INSERT INTO YukonServices VALUES (18, 'CymDISTMessageListener', 'classpath:com/cannontech/services/cymDISTService/cymDISTServiceContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 INSERT INTO YukonServices VALUES (20, 'OpcService','classpath:com/cannontech/services/opc/opcService.xml','ServiceManager', 'CONTEXT_FILE_TYPE');
 INSERT INTO YukonServices VALUES (21, 'EcobeeMessageListener', 'classpath:com/cannontech/services/ecobeeMessageListener/ecobeeMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
+INSERT INTO YukonServices VALUES (22, 'HoneywellWifiDataListener', 'classpath:com/cannontech/services/honeywellWifiListener/honeywellWifiMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */

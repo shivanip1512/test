@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     9/27/2016 5:19:28 AM                         */
+/* Created on:     10/4/2016 10:01:46 AM                        */
 /*==============================================================*/
 
 
@@ -10546,6 +10546,7 @@ INSERT INTO YukonServices VALUES (17, 'DigiPollingService', 'classpath:com/canno
 INSERT INTO YukonServices VALUES (18, 'CymDISTMessageListener', 'classpath:com/cannontech/services/cymDISTService/cymDISTServiceContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 INSERT INTO YukonServices VALUES (20, 'OpcService','classpath:com/cannontech/services/opc/opcService.xml','ServiceManager', 'CONTEXT_FILE_TYPE');
 INSERT INTO YukonServices VALUES (21, 'EcobeeMessageListener', 'classpath:com/cannontech/services/ecobeeMessageListener/ecobeeMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
+INSERT INTO YukonServices VALUES (22, 'HoneywellWifiDataListener', 'classpath:com/cannontech/services/honeywellWifiListener/honeywellWifiMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */

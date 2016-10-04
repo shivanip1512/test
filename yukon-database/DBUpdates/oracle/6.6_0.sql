@@ -668,6 +668,10 @@ INSERT INTO YukonListEntry VALUES (2032, 1005, 0, 'Honeywell Wi-Fi FocusPRO', 13
 INSERT INTO YukonListEntry VALUES (2033, 1005, 0, 'Honeywell Wi-Fi Thermostat', 1335);
 /* End YUK-15746 */
 
+/* Start YUK-15836 */
+INSERT INTO YukonServices VALUES (22, 'HoneywellWifiDataListener', 'classpath:com/cannontech/services/honeywellWifiListener/honeywellWifiMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
+/* End YUK-15836 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
