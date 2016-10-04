@@ -6,6 +6,7 @@ public enum PaoTypeIcon {
     WATER_METER("icon-water-meter"),
     GAS_METER("icon-gas-meter"),
     TRANSMITTER("icon-transmitter"),
+    RFN_RELAY("icon-rfn-relay"),
     ;
     
     private String icon;

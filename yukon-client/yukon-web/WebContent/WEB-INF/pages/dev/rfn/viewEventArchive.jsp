@@ -25,6 +25,7 @@
                 
                 <tags:nameValue name="Manufacturer">
                     <form:select path="manufacturer">
+                        <form:option value="EATON">EATON</form:option>
                         <form:option value="EE">EE</form:option>
                         <form:option value="Eka">Eka</form:option>
                         <form:option value="ELO">ELO</form:option>
@@ -60,6 +61,8 @@
                         <form:option value="FocusAXD-SD">FocusAXD-SD</form:option>
                         <form:option value="FocusAXR">FocusAXR</form:option>
                         <form:option value="FocusAXR-SD">FocusAXR-SD</form:option>
+                        <!-- RF Relay -->
+                        <form:option value="RFRelay">RFRelay</form:option>
                         <!-- SCH -->
                         <form:option value="SENTINEL-L0">SENTINEL-L0</form:option>
                         <form:option value="SENTINEL-L1">SENTINEL-L1</form:option>

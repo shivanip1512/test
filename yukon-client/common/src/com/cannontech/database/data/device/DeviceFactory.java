@@ -488,6 +488,9 @@ public final class DeviceFactory {
         case GWY800:
             returnDevice = new RfnGwy800();
             break;
+        case RFN_RELAY:
+            returnDevice = new RfnRelay();
+            break;
         default:
             CTILogger.error("PaoType " + paoType + " is undefined for DeviceFactory");
             throw new IllegalArgumentException("PaoType " + paoType + " is undefined for DeviceFactory");

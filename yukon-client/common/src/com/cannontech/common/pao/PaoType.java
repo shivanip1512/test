@@ -156,6 +156,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     RFN_GATEWAY(DeviceTypes.RFN_GATEWAY, "RF Gateway", PaoCategory.DEVICE, PaoClass.RFMESH),
     GWY800(DeviceTypes.GWY800, "GWY-800", PaoCategory.DEVICE, PaoClass.RFMESH),
     
+    RFN_RELAY(DeviceTypes.RFN_RELAY, "RFN Relay", PaoCategory.DEVICE, PaoClass.RFMESH),
+    
     ION_7700(DeviceTypes.ION_7700, "ION-7700", PaoCategory.DEVICE, PaoClass.RTU),
     ION_8300(DeviceTypes.ION_8300, "ION-8300", PaoCategory.DEVICE, PaoClass.RTU),
     ION_7330(DeviceTypes.ION_7330, "ION-7330", PaoCategory.DEVICE, PaoClass.RTU),
@@ -298,6 +300,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> substationBusTypes;
     private final static ImmutableSet<PaoType> rfDaTypes;
     private final static ImmutableSet<PaoType> honeywellTypes;
+    private final static ImmutableSet<PaoType> rfRelayTypes;
     
     public final static int INVALID = -1;
     
@@ -509,7 +512,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             RFWMETER,
             RFN_1200,
             LCR6200_RFN,
-            LCR6600_RFN);
+            LCR6600_RFN,
+            RFN_RELAY);
         
         rfMeterTypes = Sets.intersection(rfTypes, meterTypes).immutableCopy();
         
@@ -612,6 +616,9 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         rfGatewayTypes = ImmutableSet.of(
             RFN_GATEWAY,
             GWY800);
+        
+        rfRelayTypes = ImmutableSet.of(
+            RFN_RELAY);
         
         rfDaTypes = ImmutableSet.of(RFN_1200);
         
@@ -740,6 +747,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
 
     public boolean isRfn() {
         return paoClass == PaoClass.RFMESH;
+    }
+    
+    public boolean isRfRelay() {
+        return rfRelayTypes.contains(this);
     }
     
     public boolean isPlc() {
@@ -915,6 +926,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     public static ImmutableSet<PaoType> getRfGatewayTypes() {
         return rfGatewayTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getRfRelayTypes() {
+        return rfRelayTypes;
     }
     
     /**

@@ -3,6 +3,7 @@ package com.cannontech.development.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.service.PaoDefinitionService;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
@@ -26,6 +27,7 @@ public class DevAmr extends DevObject {
                 meterTypes.add(new DevPaoType(definition.getType()));
             }
         }
+        meterTypes.add(new DevPaoType(PaoType.RFN_RELAY));
     }
     
     public boolean isCreateRfnTemplates() {
@@ -78,6 +80,7 @@ public class DevAmr extends DevObject {
     public void setAddressRangeMax(Integer addressRangeMax) {
         this.addressRangeMax = addressRangeMax;
     }
+
     @Override
     public int getTotal() {
         int total = getNumObjectsToCreate();

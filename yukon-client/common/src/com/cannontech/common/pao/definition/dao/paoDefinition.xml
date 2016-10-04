@@ -4634,6 +4634,104 @@
         <displayName>GWY-800</displayName>
     </pao>
     
+    
+    <pao id="RFN_RELAY_BASE" inherits="OUTAGE_STATUS_BASE, SUPPORTS_OUTAGE_TAG" abstract="true">
+        <displayGroup>RFMESH</displayGroup>
+        <!-- Events -->
+        <points>
+            <point type="Analog" offset="22">
+                <init>true</init>
+                <name>Outage Count</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Counts" />
+                <decimalplaces value="0" />
+            </point>
+            <point type="Analog" offset="24">
+                <init>true</init>
+                <name>Outage Log</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Counts" />
+                <decimalplaces value="0" />
+            </point>
+            <point type="Analog" offset="23">
+                <init>true</init>
+                <name>Outage Restore Count</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Counts" />
+                <decimalplaces value="0" />
+            </point>
+            <point type="Analog" offset="20">
+                <init>true</init>
+                <name>Blink Count</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Counts" />
+                <decimalplaces value="0" />
+            </point>
+            <point type="Analog" offset="21">
+                <init>true</init>
+                <name>Blink Restore Count</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Counts" />
+                <decimalplaces value="0" />
+            </point>
+            
+            <point type="Status" offset="63">
+                <name>Bad Upgrade Security Param</name>
+                <archive>
+                    <type>ON_CHANGE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <stategroup value="Event Status" />
+            </point>
+            <point type="Status" offset="64">
+                <name>Failed Upgrade Signature Verification</name>
+                <archive>
+                    <type>ON_CHANGE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <stategroup value="Event Status" />
+            </point>
+         </points> 
+         
+         <attributes>
+            <attribute name="RFN_OUTAGE_COUNT">
+                <basicLookup point="Outage Count" />
+            </attribute>
+            <attribute name="OUTAGE_LOG">
+                <basicLookup point="Outage Log" />
+            </attribute>
+            <attribute name="RFN_OUTAGE_RESTORE_COUNT">
+                <basicLookup point="Outage Restore Count" />
+            </attribute>
+           <attribute name="RFN_BLINK_COUNT">
+                <basicLookup point="Blink Count" />
+            </attribute>
+            <attribute name="RFN_BLINK_RESTORE_COUNT">
+                <basicLookup point="Blink Restore Count" />
+            </attribute>
+            <attribute name="BAD_UPGRADE_SECURITY_PARAM">
+                <basicLookup point="Bad Upgrade Security Param" />
+            </attribute>
+            <attribute name="FAILED_UPGRADE_SIGNATURE_VERIF">
+                <basicLookup point="Failed Upgrade Signature Verification" />
+            </attribute>
+         </attributes>
+              
+         <tags>
+            <tag name="DB_EDITOR_INCOMPATIBLE" />
+            <tag name="RELAY_DETAIL_DISPLAYABLE" />
+            <tag name="DEVICE_ICON_TYPE">
+                <value>rfn_relay</value>
+            </tag>
+            
+         </tags>
+    </pao>    
+    
+    <pao id="RFN_RELAY" inherits="RFN_RELAY_BASE, RFN_EVENTS" creatable="false">
+        <!-- Creatable=false means it cannot be created in DBEditor, nor listed as a type in device configurations...to-date  -->
+        <displayName>RFN Relay</displayName>
+    </pao>
+    
     <!-- RF LCRs -->
     <pao id="RF_LCR" abstract="true">
         <displayGroup>RFMESH</displayGroup>

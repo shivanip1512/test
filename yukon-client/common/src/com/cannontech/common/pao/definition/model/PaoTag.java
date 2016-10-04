@@ -57,6 +57,7 @@ public enum PaoTag {
     ECOBEE_PROGRAM_ENROLLMENT("ecobee Program Enrollment"),
     HONEYWELL_PROGRAM_ENROLLMENT("Honeywell Program Enrollment"),
     ASSET_DETAIL_DISPLAYABLE("Asset Detail Displayable"),
+    RELAY_DETAIL_DISPLAYABLE("Relay Detail Displayable"),
     ;
 
     private final String description;
