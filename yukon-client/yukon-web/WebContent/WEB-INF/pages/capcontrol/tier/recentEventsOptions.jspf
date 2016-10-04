@@ -60,5 +60,16 @@ $(document).on('click', '#recentEventsView', function (event) {
 </tags:sectionContainer2>
 
 <div class="action-area">
-    <cti:button nameKey="recentEvents.view" id="recentEventsView" classes="js-blocker"/>
+    <cti:button nameKey="recentEvents.view" disabled="true" id="recentEventsView" classes="js-blocker"/>
 </div>
+
+<script type='text/javascript'>
+$(document).on('click', '.js-actions-recentEvents input:checkbox', function () {
+    var popup = $(this).closest('.js-actions-recentEvents');
+    if (popup.find('input:checkbox:checked').length == 0) {
+        popup.find('.action-area button').attr("disabled", "disabled");
+    } else {
+        popup.find('.action-area button').removeAttr("disabled");
+    }
+});
+</script>

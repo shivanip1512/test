@@ -43,7 +43,7 @@
         <cm:dropdownOption key=".analysis.label" id="analysisTrendsButton" icon="icon-chart-line" />
     </c:if>
 
-    <i:simplePopup titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
+    <i:simplePopup styleClass="js-actions-recentEvents" titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
         <%@ include file="../tier/recentEventsOptions.jspf" %>
     </i:simplePopup>
     <cm:dropdownOption key=".recentEvents.label" id="recentEventsButton" icon="icon-application-view-columns" />
