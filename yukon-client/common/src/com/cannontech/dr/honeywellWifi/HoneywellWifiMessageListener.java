@@ -22,8 +22,8 @@ import com.cannontech.dr.service.ControlType;
  * Listens for ActiveMQ messages from Load Management, parses them, and passes DR messages to the
  * HoneywellCommunicationService, which will send them to the Honeywell servers and the end devices.
  */
-public class HoneywellMessageListener {
-    private static final Logger log = YukonLogManager.getLogger(HoneywellMessageListener.class);
+public class HoneywellWifiMessageListener {
+    private static final Logger log = YukonLogManager.getLogger(HoneywellWifiMessageListener.class);
 
     @Autowired private ControlHistoryService controlHistoryService;
 
