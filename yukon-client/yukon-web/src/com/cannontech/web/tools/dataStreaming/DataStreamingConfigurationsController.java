@@ -287,13 +287,13 @@ public class DataStreamingConfigurationsController {
         }
         
         itemList = itemList.subList(startIndex, endIndex);
-        searchResult.setBounds(startIndex, itemsPerPage, itemList.size());
+        searchResult.setBounds(startIndex, itemsPerPage, results.size());
         searchResult.setResultList(itemList);
         
         model.addAttribute("searchResults", searchResult);
         
         List<Integer> deviceIds = new ArrayList<>();
-        itemList.forEach(device -> deviceIds.add(device.getMeter().getPaoIdentifier().getPaoId()));
+        results.forEach(device -> deviceIds.add(device.getMeter().getPaoIdentifier().getPaoId()));
         DeviceCollection deviceCollection = dcProducer.createDeviceCollection(deviceIds, null);
         model.addAttribute("deviceCollection", deviceCollection);
         String deviceIdList = deviceIds.stream()
@@ -395,7 +395,7 @@ public class DataStreamingConfigurationsController {
         model.addAttribute("discrepancies", searchResult);
         
         List<Integer> deviceIds = new ArrayList<>();
-        discrepancies.forEach(discrepancy -> deviceIds.add(discrepancy.getDeviceId()));
+        itemList.forEach(discrepancy -> deviceIds.add(discrepancy.getDeviceId()));
         String deviceIdList = deviceIds.stream()
                 .map(i -> i.toString())
                 .collect(Collectors.joining(","));
