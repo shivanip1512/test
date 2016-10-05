@@ -4,15 +4,18 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.Instant;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 
 import com.cannontech.dr.ecobee.message.partial.RuntimeReportRow;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
+import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -24,10 +27,50 @@ import com.fasterxml.jackson.databind.SerializerProvider;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 
-public interface EcobeeJsonSerializers {
+public interface JsonSerializers {
     public static final DateTimeFormatter COMBINED_DATE_TIME = 
             DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").withZoneUTC();
+    public static final DateTimeFormatter HONEYWELL_DATE_TIME = 
+            new DateTimeFormatterBuilder()
+                .append(DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC())
+                .appendLiteral("T")
+                .append(DateTimeFormat.forPattern("HH:mm:ss").withZoneUTC())
+                .toFormatter();
+    
+    class TO_HONEYWELL_MESSAGE_TYPE extends JsonSerializer<HoneywellWifiDataType> {
+        @Override
+        public void serialize(HoneywellWifiDataType type, JsonGenerator jsonGenerator, SerializerProvider notUsed)
+                throws IOException, JsonProcessingException {
+            jsonGenerator.writeString(type.getJsonString());
+        }
+    }
+    
+    class FROM_HONEYWELL_MESSAGE_TYPE extends JsonDeserializer<HoneywellWifiDataType> {
+        @Override
+        public HoneywellWifiDataType deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) 
+                throws IOException, JsonProcessingException {
+            Optional<HoneywellWifiDataType> optionalType = HoneywellWifiDataType.forJsonString(jsonParser.getValueAsString());
+            return optionalType.orElse(null);
+        }
+    }
+    
+    class TO_DATE_HONEYWELL extends JsonSerializer<Instant> {
+        @Override
+        public void serialize(Instant date, JsonGenerator jsonGenerator, SerializerProvider notUsed)
+                throws IOException, JsonProcessingException {
+            String dateString = HONEYWELL_DATE_TIME.print(date);
+            jsonGenerator.writeString(dateString);
+        }
+    }
 
+    class FROM_DATE_HONEYWELL extends JsonDeserializer<Instant> {
+        @Override
+        public Instant deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
+                throws IOException, JsonProcessingException {
+            return HONEYWELL_DATE_TIME.parseDateTime(paramJsonParser.getValueAsString()).toInstant();
+        }
+    }
+    
     class TO_DATE extends JsonSerializer<Instant> {
         private static final DateTimeFormatter ecobeeDateFormatter =
             DateTimeFormat.forPattern("yyyy-MM-dd").withZoneUTC();

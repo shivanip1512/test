@@ -2,7 +2,7 @@ package com.cannontech.dr.ecobee.message.partial;
 
 import org.joda.time.Instant;
 
-import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers;
+import com.cannontech.dr.ecobee.message.JsonSerializers;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -48,26 +48,26 @@ public class DutyCycleEvent {
         return type;
     }
 
-    @JsonSerialize(using=EcobeeJsonSerializers.TO_DATE.class)
-    @JsonDeserialize(using=EcobeeJsonSerializers.FROM_DATE.class)
+    @JsonSerialize(using=JsonSerializers.TO_DATE.class)
+    @JsonDeserialize(using=JsonSerializers.FROM_DATE.class)
     public Instant getStartDate() {
         return startDate;
     }
 
-    @JsonSerialize(using=EcobeeJsonSerializers.TO_TIME.class)
-    @JsonDeserialize(using=EcobeeJsonSerializers.FROM_TIME.class)
+    @JsonSerialize(using=JsonSerializers.TO_TIME.class)
+    @JsonDeserialize(using=JsonSerializers.FROM_TIME.class)
     public Instant getStartTime() {
         return startDate;
     }
 
-    @JsonSerialize(using=EcobeeJsonSerializers.TO_DATE.class)
-    @JsonDeserialize(using=EcobeeJsonSerializers.FROM_DATE.class)
+    @JsonSerialize(using=JsonSerializers.TO_DATE.class)
+    @JsonDeserialize(using=JsonSerializers.FROM_DATE.class)
     public Instant getEndDate() {
         return endDate;
     }
 
-    @JsonSerialize(using=EcobeeJsonSerializers.TO_TIME.class)
-    @JsonDeserialize(using=EcobeeJsonSerializers.FROM_TIME.class)
+    @JsonSerialize(using=JsonSerializers.TO_TIME.class)
+    @JsonDeserialize(using=JsonSerializers.FROM_TIME.class)
     public Instant getEndTime() {
         return endDate;
     }

@@ -6,10 +6,10 @@ import org.joda.time.DateTimeFieldType;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
-import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers.FROM_BASIC_CSV;
-import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers.FROM_DATE;
-import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers.TO_BASIC_CSV;
-import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers.TO_DATE;
+import com.cannontech.dr.ecobee.message.JsonSerializers.FROM_BASIC_CSV;
+import com.cannontech.dr.ecobee.message.JsonSerializers.FROM_DATE;
+import com.cannontech.dr.ecobee.message.JsonSerializers.TO_BASIC_CSV;
+import com.cannontech.dr.ecobee.message.JsonSerializers.TO_DATE;
 import com.cannontech.dr.ecobee.message.partial.Selection;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.fasterxml.jackson.annotation.JsonCreator;

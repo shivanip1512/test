@@ -12,5 +12,7 @@ public interface HoneywellWifiData {
      */
     BrokeredMessage getOriginalMessage();
     
+    void setOriginalMessage(BrokeredMessage message);
+    
     HoneywellWifiDataType getType();
 }

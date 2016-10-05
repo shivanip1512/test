@@ -3,10 +3,10 @@ package com.cannontech.dr.ecobee.message.partial;
 import java.util.Collection;
 import java.util.Collections;
 
-import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers.FROM_BASIC_CSV;
-import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers.FROM_SELECTION_TYPE;
-import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers.TO_BASIC_CSV;
-import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers.TO_SELECTION_TYPE;
+import com.cannontech.dr.ecobee.message.JsonSerializers.FROM_BASIC_CSV;
+import com.cannontech.dr.ecobee.message.JsonSerializers.FROM_SELECTION_TYPE;
+import com.cannontech.dr.ecobee.message.JsonSerializers.TO_BASIC_CSV;
+import com.cannontech.dr.ecobee.message.JsonSerializers.TO_SELECTION_TYPE;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

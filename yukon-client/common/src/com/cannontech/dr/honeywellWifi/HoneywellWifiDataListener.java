@@ -1,5 +1,6 @@
 package com.cannontech.dr.honeywellWifi;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,7 @@ import java.util.Scanner;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.microsoft.windowsazure.Configuration;
 import com.microsoft.windowsazure.exception.ServiceException;
 import com.microsoft.windowsazure.services.servicebus.ServiceBusConfiguration;
@@ -142,11 +145,12 @@ public class HoneywellWifiDataListener {
      * Builds a HoneywellWifiData message from an Azure BrokeredMessage.
      */
     private HoneywellWifiData buildHoneywellWifiData(BrokeredMessage message) {
+        String messageBody;
         try (Scanner scanner = new Scanner(message.getBody());
             //Scans the entire input in one token. See http://stackoverflow.com/a/5445161/299996
             Scanner entireInputScanner = scanner.useDelimiter("\\A")) {
             
-            String messageBody = entireInputScanner.next();
+            messageBody = entireInputScanner.next();
             log.trace("Message body: " + messageBody);
         }
         
@@ -156,10 +160,34 @@ public class HoneywellWifiDataListener {
             }
         }
         
-        //TODO determine the type of message
-        //TODO parse the json payload
-        //TODO populate the HoneywellWifiData object
-        return null;
+        ObjectMapper jsonParser = new ObjectMapper();
+        HoneywellWifiMessageWrapper messageWrapper = null;
+        try {
+            messageWrapper = jsonParser.readValue(messageBody, HoneywellWifiMessageWrapper.class);
+        } catch (IOException e) {
+            log.error("Unable to parse Honeywell Wifi Azure message wrapper.", e);
+            return null;
+        }
+        
+        HoneywellWifiData data = getMessageData(messageWrapper, message);
+        return data;
+    }
+    
+    /**
+     * Extracts the json payload string from the message wrapper and converts it into a POJO for processing.
+     */
+    private HoneywellWifiData getMessageData(HoneywellWifiMessageWrapper messageWrapper, BrokeredMessage originalMessage) {
+        ObjectMapper jsonParser = new ObjectMapper();
+        String jsonPayload = StringEscapeUtils.unescapeJava(messageWrapper.getJson());
+        try {
+            HoneywellWifiData data = jsonParser.readValue(jsonPayload, messageWrapper.getType().getMessageClass());
+            data.setOriginalMessage(originalMessage);
+            return data;
+        } catch (IOException e) {
+            log.error("Unable to parse json payload in message data", e);
+            log.debug("Payload: " + jsonPayload);
+            return null;
+        }
     }
     
     /**

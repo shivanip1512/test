@@ -4,12 +4,12 @@ import java.util.Comparator;
 
 import org.joda.time.LocalDateTime;
 
-import com.cannontech.dr.ecobee.message.EcobeeJsonSerializers;
+import com.cannontech.dr.ecobee.message.JsonSerializers;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
-@JsonDeserialize(using=EcobeeJsonSerializers.FROM_RUNTIME_REPORTS.class)
-@JsonSerialize(using=EcobeeJsonSerializers.TO_RUNTIME_REPORTS.class)
+@JsonDeserialize(using=JsonSerializers.FROM_RUNTIME_REPORTS.class)
+@JsonSerialize(using=JsonSerializers.TO_RUNTIME_REPORTS.class)
 public class RuntimeReportRow {
     private final LocalDateTime thermostatTime;
     private final String eventName;
