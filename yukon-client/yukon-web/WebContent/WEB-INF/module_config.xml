@@ -164,6 +164,10 @@
           <page name="billing" type="BASIC"/>
         </pages>
       </page>
+      <page name="relayDetail" type="DETAIL">
+        <link>/relay/home?deviceId=${deviceId}</link>
+        <labelArgument>${deviceName}</labelArgument>
+      </page>
     </pages>
   </module>
 
