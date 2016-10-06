@@ -110,7 +110,9 @@ public enum GlobalSettingType implements DisplayableEnum {
     ECOBEE_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://api.ecobee.com/1/"),
     HONEYWELL_WIFI_SERVICE_BUS_QUEUE(GlobalSettingSubCategory.DR, stringType(), ""),
     HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING(GlobalSettingSubCategory.DR, stringType(), ""),
-    
+    HONEYWELL_SERVER_URL(GlobalSettingSubCategory.DR, stringType(), "https://qtccna.honeywell.com/TrueHomeStage/"),
+    HONEYWELL_CLIENTID(GlobalSettingSubCategory.DR, stringType(), "0baa1512-b167-4571-9903-7d1e740b1bea"),
+    HONEYWELL_SECRET(GlobalSettingSubCategory.DR, stringType(), "9213c76c-8600-4644-b69f-f6367ca337db"),
     // Web Server
     GOOGLE_ANALYTICS_ENABLED(GlobalSettingSubCategory.WEB_SERVER, booleanType(), true),
     GOOGLE_ANALYTICS_TRACKING_IDS(GlobalSettingSubCategory.WEB_SERVER, stringType(), null),

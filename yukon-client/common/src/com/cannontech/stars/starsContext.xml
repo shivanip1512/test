@@ -271,6 +271,7 @@
     <bean class="com.cannontech.stars.dr.hardware.service.impl.ZigbeeCommandStrategy"/>
     <bean class="com.cannontech.stars.dr.hardware.service.impl.EcobeeCommandStrategy"/>
     <bean class="com.cannontech.stars.dr.hardware.service.impl.RfCommandStrategy"/>
+    <bean class="com.cannontech.stars.dr.hardware.service.impl.HoneywellCommandStrategy"/>
     <bean id="porterExpressComCommandBuilder" class="com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandBuilder"/>
    
     <!-- OPERATOR GENERAL -->

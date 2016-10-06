@@ -4,5 +4,6 @@ public enum HardwareStrategyType {
     PORTER,
     RF,
     ZIGBEE,
-    ECOBEE
+    ECOBEE,
+    HONEYWELL
 }

@@ -120,4 +120,26 @@
             factory-method="createInstance">
         <qualifier value="ecobee"/>
     </bean>
+    
+    <!-- Honeywell Wifi -->
+    <bean class="com.cannontech.dr.honeywell.service.impl.HoneywellCommunicationServiceImpl"/>
+
+    <bean id="honeywellRestProxyFactory" class="com.cannontech.dr.honeywell.service.impl.HoneywellRestProxyFactory">
+        <constructor-arg name="proxiedTemplate">
+            <bean class="org.springframework.web.client.RestTemplate">
+                <constructor-arg ref="proxyAwareSimpleClientHttpRequestFactory"/>
+                <property name="messageConverters">
+                    <list>
+                        <ref bean="jacksonHttpMessageConverter"/>
+                    </list>
+                </property>
+            </bean>
+        </constructor-arg>
+    </bean>
+
+    <bean class="com.cannontech.dr.honeywell.service.impl.HoneywellRestProxyFactory"
+            factory-bean="honeywellRestProxyFactory"
+            factory-method="createInstance">
+        <qualifier value="honeywell"/>
+    </bean>
 </beans>
