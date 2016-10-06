@@ -119,14 +119,19 @@ void ActiveMQConnectionManager::run()
         catch( ActiveMQ::ConnectionException &e )
         {
             releaseConnectionObjects();
-
-            CTILOG_EXCEPTION_ERROR(dout, e, "Unable to connect to the broker");
+            if (!isSet(SHUTDOWN))
+            {
+                CTILOG_EXCEPTION_ERROR(dout, e, "Unable to connect to the broker");
+            }
         }
         catch( cms::CMSException &e )
         {
             releaseConnectionObjects();
 
-            CTILOG_EXCEPTION_ERROR(dout, e);
+            if (!isSet(SHUTDOWN))
+            {
+                CTILOG_EXCEPTION_ERROR(dout, e);
+            }
         }
 
         sleep(1000);

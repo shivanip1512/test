@@ -231,6 +231,11 @@ void DispatchMsgHandlerThread()
             }
 
         }
+        catch (boost::thread_interrupted &)
+        {
+            CTILOG_INFO(dout, "DispatchMsgHandlerThread interrupted");
+            bServerClosing = TRUE;
+        }
         catch(...)
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);

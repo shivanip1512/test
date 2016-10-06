@@ -293,76 +293,74 @@ void PilServer::mainThread()
                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout);
             }
 
+            boost::this_thread::interruption_point();
+        }
+        catch (boost::thread_interrupted &)
+        {
+            CTILOG_INFO(dout, "PIL Server interrupted");
+            bServerClosing = TRUE;
+            bQuit = TRUE;
+
+            if (CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0))
+            {
+                systemDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_E2eRequestId, _rfnRequestId);
+            }
+
+            // Force the inherited Listener socket to close!
+            Inherited::shutdown();                   // Should cause the ConnThread_ to be closed!
+                                                     //
             try
             {
-                boost::this_thread::interruption_point();
+                // This forces the listener thread to exit on shutdown.
+                _listenerConnection.close();
             }
-            catch( boost::thread_interrupted & )
+            catch (...)
             {
-                bServerClosing = TRUE;
-                bQuit = TRUE;
-
-                if( CtiDeviceSPtr systemDevice = DeviceManager->getDeviceByID(0) )
-                {
-                    systemDevice->setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_E2eRequestId, _rfnRequestId);
-                }
-
-                // Force the inherited Listener socket to close!
-                Inherited::shutdown();                   // Should cause the ConnThread_ to be closed!
-                                                         //
-                try
-                {
-                    // This forces the listener thread to exit on shutdown.
-                    _listenerConnection.close();
-                }
-                catch(...)
-                {
-                    // Dont really care, we are shutting down.
-                }
-
-                if( ! _connThread.timed_join(boost::posix_time::seconds(10)) ) // Wait for the Conn thread to die.
-                {
-                    CTILOG_ERROR(dout, "PIL Server shutting down the ConnThread_: FAILED (will terminate)");
-                    TerminateThread(_connThread.native_handle(), EXIT_SUCCESS);
-                }
-
-                _resultThread.interrupt();
-
-                if( ! _resultThread.tryJoinFor(Chrono::seconds(10)) )      // Wait for the closure
-                {
-                    _resultThread.interrupt();  //  Try again
-
-                    CTILOG_WARN(dout, "PIL Server shutting down the ResultThread_: TIMEOUT");
-
-                    _resultThread.tryJoinOrTerminateFor(Chrono::seconds(1));
-                }
-
-                _nexusWriteThread.interrupt();
-
-                if( ! _nexusWriteThread.tryJoinFor(Chrono::seconds(10)) )
-                {
-                    _nexusWriteThread.interrupt();  //  Try again
-
-                    CTILOG_WARN(dout, "PIL Server shutting down the _nexusWriteThread: TIMEOUT");
-
-                    _nexusWriteThread.tryJoinOrTerminateFor(Chrono::seconds(1));
-                }
-
-                _nexusThread.interrupt();
-
-                if( ! _nexusThread.tryJoinFor(Chrono::seconds(10)) )       // Wait for the closure
-                {
-                    _nexusThread.interrupt();  //  Try again
-
-                    CTILOG_WARN(dout, "PIL Server shutting down the _nexusThread: TIMEOUT");
-
-                    _nexusThread.tryJoinOrTerminateFor(Chrono::seconds(1));
-                }
-
-                CTILOG_INFO(dout, "PIL Server shutdown complete");
+                // Dont really care, we are shutting down.
             }
+
+            if (!_connThread.timed_join(boost::posix_time::seconds(10))) // Wait for the Conn thread to die.
+            {
+                CTILOG_ERROR(dout, "PIL Server shutting down the ConnThread_: FAILED (will terminate)");
+                TerminateThread(_connThread.native_handle(), EXIT_SUCCESS);
+            }
+
+            _resultThread.interrupt();
+
+            if (!_resultThread.tryJoinFor(Chrono::seconds(10)))      // Wait for the closure
+            {
+                _resultThread.interrupt();  //  Try again
+
+                CTILOG_WARN(dout, "PIL Server shutting down the ResultThread_: TIMEOUT");
+
+                _resultThread.tryJoinOrTerminateFor(Chrono::seconds(1));
+            }
+
+            _nexusWriteThread.interrupt();
+
+            if (!_nexusWriteThread.tryJoinFor(Chrono::seconds(10)))
+            {
+                _nexusWriteThread.interrupt();  //  Try again
+
+                CTILOG_WARN(dout, "PIL Server shutting down the _nexusWriteThread: TIMEOUT");
+
+                _nexusWriteThread.tryJoinOrTerminateFor(Chrono::seconds(1));
+            }
+
+            _nexusThread.interrupt();
+
+            if (!_nexusThread.tryJoinFor(Chrono::seconds(10)))       // Wait for the closure
+            {
+                _nexusThread.interrupt();  //  Try again
+
+                CTILOG_WARN(dout, "PIL Server shutting down the _nexusThread: TIMEOUT");
+
+                _nexusThread.tryJoinOrTerminateFor(Chrono::seconds(1));
+            }
+
+            CTILOG_INFO(dout, "PIL Server shutdown complete");
         }
-        catch(...)
+        catch (...)
         {
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "PIL mainThread - FAILED (will attempt to recover)");
             Sleep(5000);
@@ -1351,9 +1349,12 @@ void PilServer::clientShutdown(CtiServer::ptr_type &CM)
 
 void PilServer::shutdown()
 {
+    CTILOG_INFO(dout, "PIL Shutdown");
     bServerClosing = TRUE;
     SetEvent(serverClosingEvent);
     _mainThread.interrupt();
+    CtiServer::shutdown();
+    CTILOG_INFO(dout, "PIL Shutdown complete");
 }
 
 
@@ -1417,9 +1418,6 @@ void PilServer::vgConnThread()
 
 
     } /* End of for */
-
-    VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15), CALLSITE);
-    VanGoghConnection.close();
 
     CTILOG_INFO(dout, "PIL vgConnThread - Terminating");
 }

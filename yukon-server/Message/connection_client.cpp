@@ -264,6 +264,11 @@ bool CtiClientConnection::establishConnection()
 
         return false;
     }
+    catch (boost::thread_interrupted &)
+    {
+        CTILOG_INFO(dout, who() << " - connection interrupted.");
+        return false;
+    }
     catch(...)
     {
         _valid = false;
