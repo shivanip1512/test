@@ -67,9 +67,6 @@ $(function() {
     
     <tags:sectionContainer title="Neighbor Data Settings">
         <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="Serial Number">
-                <tags:input path="neighborData.serialNumber"/>
-            </tags:nameValue>
             <tags:nameValue name="Address">
                 <tags:input path="neighborData.neighborAddress"/>
             </tags:nameValue>
@@ -106,9 +103,6 @@ $(function() {
     
     <tags:sectionContainer title="Primary Route Settings">
         <tags:nameValueContainer tableClass="natural-width">
-            <tags:nameValue name="Serial Number">
-                <tags:input path="routeData.serialNumber"/>
-            </tags:nameValue>
             <tags:nameValue name="Destination Address">
                 <tags:input path="routeData.destinationAddress"/>
             </tags:nameValue>
@@ -120,9 +114,6 @@ $(function() {
             </tags:nameValue>
             <tags:nameValue name="Hop Count">
                 <tags:input path="routeData.hopCount"/>
-            </tags:nameValue>
-            <tags:nameValue name="Route Timeout">
-                <tags:input path="routeData.routeTimeout"/>
             </tags:nameValue>
             <tags:nameValue name="Flags">
                 <c:forEach var="flag" items="${routeFlags}">
