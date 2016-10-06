@@ -93,9 +93,9 @@ yukon.device.selection = (function () {
                         errorContainer.hide();
                         successContainer.find('.device-count').text(result.deviceCount);
                         successContainer.find('.js-error-count').text(result.deviceErrorCount);
-                        if (result.deviceErrorCount > 0){
+                        if (result.deviceErrorCount > 0) {
                             document.getElementById("download").disabled = false;
-                        } else{
+                        } else {
                             document.getElementById("download").disabled = true;
                         }
                         successContainer.find(':input[name="group.name"]').val(result['group.name']);
