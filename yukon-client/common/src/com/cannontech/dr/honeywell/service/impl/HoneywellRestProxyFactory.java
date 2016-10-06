@@ -63,7 +63,7 @@ public class HoneywellRestProxyFactory {
     }
 
     /**
-     * Searches arguments for an HttpHeader. If one is found an ecobee authorization header will be added.
+     * Searches arguments for an HttpHeader. If one is found an honeywell authorization header will be added.
      */
     private void addAuthorizationToken(Object[] args) {
         for (int i = 0; i < args.length; i++) {

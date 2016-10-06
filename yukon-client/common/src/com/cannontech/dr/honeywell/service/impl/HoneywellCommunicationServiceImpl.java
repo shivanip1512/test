@@ -13,8 +13,7 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.dr.ecobee.EcobeeCommunicationException;
-import com.cannontech.dr.ecobee.dao.EcobeeQueryCountDao;
+import com.cannontech.dr.honeywell.HoneywellCommunicationException;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
@@ -24,7 +23,6 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
     private static final Logger log = YukonLogManager.getLogger(HoneywellCommunicationServiceImpl.class);
 
-    @Autowired private EcobeeQueryCountDao ecobeeQueryCountDao;
     @Autowired private @Qualifier("honeywell") RestOperations restTemplate;
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
@@ -46,7 +44,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             HttpEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, String.class);
         } catch (RestClientException ex) {
             log.debug("Add devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
-            throw new EcobeeCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
         }
 
     }
@@ -66,7 +64,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                 restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.PUT, requestEntity, String.class);
         } catch (RestClientException ex) {
             log.debug("Cancel DR event for devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
-            throw new EcobeeCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
         }
     }
 
@@ -85,7 +83,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                 restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.PUT, requestEntity, String.class);
         } catch (RestClientException ex) {
             log.debug("Removing devices from DR group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
-            throw new EcobeeCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
         }
     }
 
