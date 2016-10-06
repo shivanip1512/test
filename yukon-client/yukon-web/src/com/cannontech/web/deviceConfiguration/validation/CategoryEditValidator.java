@@ -102,10 +102,11 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
 
                     final String path = "categoryInputs[" + field.getFieldName() + "]";
 
-                    if (StringUtils.isBlank(value)) {
-                        if (!field.isEnum()) {
-                            errors.rejectValue(path, baseKey + ".emptyValue");
-                        }
+                    if (CategoryType.TOU.value().equals(categoryTemplate.getCategoryType())
+                        && !Boolean.valueOf(target.getCategoryInputs().get("enableTou"))) {
+                        // Do not validate the other fields in case enable TOU is false
+                    } else if (StringUtils.isBlank(value)) {
+                        errors.rejectValue(path, baseKey + ".emptyValue");
                         continue;
                     }
 
