@@ -195,9 +195,8 @@
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".errorCount" nameClass="js-upload-results dn" valueClass="js-upload-results dn">
                     <span class="js-error-count"></span>
-                      <a href="javascript:void(0)" class="wsnw"> 
-                       <cti:icon icon="icon-page-excel" classes="cp fn pull-icon-down js-error-devices-download" />
-                      </a>
+                      <cti:button id="download" type="submit" classes="cp fn pull-icon-down js-error-devices-download" 
+                            icon="icon-page-excel" renderMode="image" disabled="true" />
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>

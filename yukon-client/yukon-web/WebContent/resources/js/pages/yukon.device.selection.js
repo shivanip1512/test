@@ -53,6 +53,7 @@ yukon.device.selection = (function () {
         var fakeForm = container.find('[data-form]'),
             fileInput = fakeForm.find(':input[type="file"]'),
             fileType = container.find(':input[name="fileUpload.uploadType"]'),
+            dataFile = container.find(':input[name="fileUpload.dataFile"]'),
             progressBar = fakeForm.find('.progress'),
             options = {
                 url: yukon.url('/group/device-group'),
@@ -73,6 +74,12 @@ yukon.device.selection = (function () {
                         data.submit();
                         data = copy;
                     });
+                    
+                    dataFile .on('change', function () {
+                        copy = $.extend(true, {}, data);
+                        data.submit();
+                        data = copy;
+                    });
                 },
                 done: function (e, data) {
                     
@@ -86,6 +93,11 @@ yukon.device.selection = (function () {
                         errorContainer.hide();
                         successContainer.find('.device-count').text(result.deviceCount);
                         successContainer.find('.js-error-count').text(result.deviceErrorCount);
+                        if (result.deviceErrorCount > 0){
+                            document.getElementById("download").disabled = false;
+                        } else{
+                            document.getElementById("download").disabled = true;
+                        }
                         successContainer.find(':input[name="group.name"]').val(result['group.name']);
                         successContainer.find(':input[name="deviceErrors"]').val(result['deviceErrors']);
                         successContainer.find(':input[name="uploadFileName"]').val(result['group.description']);
@@ -315,7 +327,7 @@ yukon.device.selection = (function () {
                 downloadForm.attr('action', yukon.url('/group/downloadResult'));
                 downloadForm.attr('method', 'GET');
                 downloadForm.append($('.js-error-devices-input').clone());
-                downloadForm.submit();
+                downloadForm.appendTo("body").submit();
             });
         }
         
