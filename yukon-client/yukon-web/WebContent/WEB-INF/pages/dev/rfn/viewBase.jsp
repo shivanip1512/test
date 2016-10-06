@@ -108,6 +108,7 @@ $(function () { yukon.dev.rfn.init(); });
             <li><a href="gatewaySimulator"><i:inline key=".gatewaySimulator.label"/></a></li>
             <li><a href="viewRfnMeterSimulator"><i:inline key=".rfnMeterSimulator.label"/></a></li>
             <li><a href="viewDataStreamingSimulator"><i:inline key=".dataStreamingSimulator.label"/></a>
+            <li><a href="viewMappingSimulator"><i:inline key=".mappingSimulator.label"/></a>
             
         </ul>
         <div class="page-action-area stacked">
