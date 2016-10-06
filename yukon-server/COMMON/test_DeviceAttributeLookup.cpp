@@ -1,6 +1,7 @@
 #include <boost/test/unit_test.hpp>
 
 #include "DeviceAttributeLookup.h"
+#include "desolvers.h"
 
 BOOST_AUTO_TEST_SUITE( test_DeviceAttributeLookup )
 
@@ -10,7 +11,7 @@ BOOST_AUTO_TEST_CASE(test_unknownAttributes)
 
     for( const auto& deviceAttributes : unknowns )
     {
-        BOOST_ERROR( "Device type " + std::to_string(deviceAttributes.first) + " has unknown attribute " + deviceAttributes.second + 
+        BOOST_ERROR( "Device type " + desolveDeviceType(deviceAttributes.first) + " has unknown attribute " + deviceAttributes.second + 
                      " - attributes may have been added to BuiltInAttributes.java without being added to PointAttribute.cpp and PointAttribute.h" );
     }
 }

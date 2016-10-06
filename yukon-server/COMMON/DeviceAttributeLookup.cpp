@@ -20,7 +20,7 @@ void DeviceAttributeLookup::AddRelation( const DeviceTypes      deviceType,
 
 
 void DeviceAttributeLookup::AddUnknownAttribute( const DeviceTypes      deviceType,
-                                                  const std::string &    attributeName )
+                                                 const std::string &    attributeName )
 {
     _unknownAttributes.emplace( deviceType, attributeName );
 }
