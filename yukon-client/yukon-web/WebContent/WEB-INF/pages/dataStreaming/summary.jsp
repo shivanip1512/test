@@ -9,11 +9,11 @@
 
 <cti:standardPage module="tools" page="dataStreaming.summary">
 
-    <cti:url var="action" value="/tools/dataStreaming/summary" />
-    <form:form commandName="searchFilters" action="${action}" method="GET">
+    <cti:url var="action" value="/tools/dataStreaming/exportSearch" />
+    <form:form id="searchForm" commandName="searchFilters" action="${action}" method="GET">
         <cti:csrfToken />
 
-        <tags:sectionContainer2 nameKey="filterSection">
+        <tags:sectionContainer2 nameKey="filterSection" hideEnabled="true" hideInitially="false" id="searchSection">
 
             <div class="column-10-10 clearfix">
                 <div class="column one">
@@ -69,7 +69,7 @@
             </div>
 
             <div class="action-area">
-                <cti:button nameKey="search" classes="primary action" type="submit" />
+                <cti:button nameKey="export" classes="primary action" type="submit" />
                 <cti:button nameKey="showAll" classes="js-show-all"/>
             </div>
 

@@ -311,6 +311,20 @@ public class DataStreamingConfigurationsController {
         return results;
     }
     
+    @RequestMapping(value = "exportSearch")
+    public String exportSearchResults(SummarySearchCriteria criteria, HttpServletResponse response,
+            YukonUserContext userContext) {
+        try {
+            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+
+            downloadSearchResults(criteria, response, accessor);
+        } catch (IOException ioe) {
+
+        } catch (DataStreamingConfigException dsce) {
+
+        }
+        return "../dataStreaming/summaryResults.jsp";
+    }
     private void downloadSearchResults(SummarySearchCriteria criteria, HttpServletResponse response, MessageSourceAccessor accessor)
             throws DataStreamingConfigException, IOException {
         
@@ -339,8 +353,9 @@ public class DataStreamingConfigurationsController {
             row.add(result.getMeter().getName());
             row.add(accessor.getMessage(result.getMeter().getPaoIdentifier().getPaoType().getFormatKey()));
             row.add(result.getMeter().getRfnIdentifier().getSensorSerialNumber());
-            row.add(result.getGateway().getName());
-            row.add(String.valueOf(result.getGateway().getData().getDataStreamingLoadingPercent()));
+            row.add((result.getGateway() != null) ? result.getGateway().getName() : "N/A");
+            row.add(String.valueOf((result.getGateway() != null)
+                    ? result.getGateway().getData().getDataStreamingLoadingPercent() : "N/A"));
             row.add(result.getConfig().getCommaDelimitedAttributes());
             row.add(String.valueOf(result.getConfig().getSelectedInterval()));
             lists.add(row);
