@@ -32,8 +32,15 @@ public:
                              const CtiPointType_t   pointType,
                              const unsigned         pointOffset );
 
+    static void AddUnknownAttribute( const DeviceTypes      deviceType,
+                                     const std::string &    attributeName );
+
     static boost::optional<PointTypeOffset> Lookup( const DeviceTypes    deviceType,
                                                     const Attribute &    attribute );
+
+    using DeviceAttributeNameMap = std::multimap<DeviceTypes, std::string>;
+
+    static DeviceAttributeNameMap GetUnknownDeviceAttributes();
 
 private:
 
@@ -55,9 +62,10 @@ private:
         }
     };
 
-    typedef std::map<DeviceAttribute, PointTypeOffset>  DeviceAttributeToPointTypeOffsetMap;
+    using DeviceAttributeToPointTypeOffsetMap = std::map<DeviceAttribute, PointTypeOffset>;
 
     static DeviceAttributeToPointTypeOffsetMap  _lookup;
+    static DeviceAttributeNameMap _unknownAttributes;
 };
 
 }

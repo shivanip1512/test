@@ -25,6 +25,7 @@
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/range/algorithm/find_if.hpp>
 #include <boost/assign.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -240,29 +241,37 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
 ////////////////////////////
 ///
 
-        for ( XmlPaoInfoCollection::iterator b = flattened.begin(), e = flattened.end(); b != e; ++b )
+        for ( const auto& b : flattened )
         {
-            DeviceTypes devType = resolvePaoIdXmlType( b->first );
+            DeviceTypes devType = resolvePaoIdXmlType( b.first );
 
             // grab attributes and search for a matching point...
 
-            for each ( XmlPaoInfo::AttributeMap::value_type a in b->second.attributes )
+            for ( const auto& a : b.second.attributes )
             {
                 const std::string & attributeName   = a.first;
                 const std::string & pointName       = a.second;
 
                 // find point
 
-                std::vector<XmlPaoInfo::PointInfo>::iterator    searchItem;
-
-                for ( searchItem = b->second.pointInfo.begin();
-                      searchItem != b->second.pointInfo.end() && searchItem->name != pointName;
-                      ++searchItem )
-                    ;   // <-- empty loop body...  [ find_if() and a lambda would be awesome here... ]
-
-                if ( searchItem != b->second.pointInfo.end() )
+                auto pointItr = boost::range::find_if( 
+                        b.second.pointInfo, 
+                        [&pointName](const XmlPaoInfo::PointInfo& p) 
+                        { 
+                            return pointName == p.name; 
+                        });
+\
+                if ( pointItr != b.second.pointInfo.end() )
                 {
-                    DeviceAttributeLookup::AddRelation( devType, Attribute::Lookup( attributeName ), searchItem->type, searchItem->offset );
+                    try
+                    {
+                        const auto& attribute = Attribute::Lookup( attributeName );
+                        DeviceAttributeLookup::AddRelation( devType, attribute, pointItr->type, pointItr->offset );
+                    }
+                    catch( const AttributeNotFound& e )
+                    {
+                        DeviceAttributeLookup::AddUnknownAttribute( devType, attributeName );
+                    }
                 }
             }
         }

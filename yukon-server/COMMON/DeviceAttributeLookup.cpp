@@ -7,6 +7,7 @@ namespace Cti
 {
 
 DeviceAttributeLookup::DeviceAttributeToPointTypeOffsetMap  DeviceAttributeLookup::_lookup;
+DeviceAttributeLookup::DeviceAttributeNameMap DeviceAttributeLookup::_unknownAttributes;
 
 
 void DeviceAttributeLookup::AddRelation( const DeviceTypes      deviceType,
@@ -15,6 +16,13 @@ void DeviceAttributeLookup::AddRelation( const DeviceTypes      deviceType,
                                          const unsigned         pointOffset )
 {
     _lookup[ DeviceAttribute( deviceType, attribute ) ] = PointTypeOffset( pointType, pointOffset );
+}
+
+
+void DeviceAttributeLookup::AddUnknownAttribute( const DeviceTypes      deviceType,
+                                                  const std::string &    attributeName )
+{
+    _unknownAttributes.emplace( deviceType, attributeName );
 }
 
 
@@ -30,6 +38,12 @@ boost::optional<DeviceAttributeLookup::PointTypeOffset> DeviceAttributeLookup::L
 
     return boost::none;
 }
+
+auto DeviceAttributeLookup::GetUnknownDeviceAttributes() -> DeviceAttributeNameMap
+{
+    return _unknownAttributes;
+}
+
 
 }
 

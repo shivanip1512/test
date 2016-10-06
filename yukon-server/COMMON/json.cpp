@@ -40,9 +40,16 @@ void parseJsonFiles()
                 json::String attributeName = obj["attribute"];
                 json::Number metricId      = obj["metricId"];
 
-                const Attribute &attribute = Attribute::Lookup(attributeName.Value());
+                try
+                {
+                    const Attribute &attribute = Attribute::Lookup(attributeName.Value());
 
-                MetricIdLookup::AddMetricForAttribute(attribute, metricId.Value());
+                    MetricIdLookup::AddMetricForAttribute(attribute, metricId.Value());
+                }
+                catch (const AttributeNotFound& ex)
+                {
+                    MetricIdLookup::AddUnknownAttribute(attributeName.Value());
+                }
             }
             catch (const json::Exception& e)
             {

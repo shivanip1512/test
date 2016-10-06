@@ -9,10 +9,16 @@
 namespace Cti {
 
 MetricIdLookup::attribute_bimap MetricIdLookup::attributes;
+std::set<std::string> MetricIdLookup::unknownAttributes;
 
 void MetricIdLookup::AddMetricForAttribute(const Attribute &attrib, const MetricId metric)
 {
     attributes.insert(position(attrib, metric));
+}
+
+void MetricIdLookup::AddUnknownAttribute(const std::string& attributeName)
+{
+    unknownAttributes.insert(attributeName);
 }
 
 MetricIdLookup::MetricId MetricIdLookup::GetForAttribute(const Attribute &attrib)
@@ -37,6 +43,11 @@ Attribute MetricIdLookup::getAttribute(const MetricId metric)
     {
         throw AttributeMappingNotFound(metric);
     }
+}
+
+std::set<std::string> MetricIdLookup::getUnknownAttributes()
+{
+    return unknownAttributes;
 }
 
 MetricIdLookup::MetricIds MetricIdLookup::GetForAttributes(const std::set<Attribute> & attribs)

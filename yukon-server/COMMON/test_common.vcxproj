@@ -335,6 +335,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="boost_assert.cpp" />
+    <ClCompile Include="test_DeviceAttributeLookup.cpp" />
     <ClCompile Include="test_cmdparse.cpp">
     </ClCompile>
     <ClCompile Include="test_compiler_behaviors.cpp">
@@ -364,6 +365,7 @@
     </ClCompile>
     <ClCompile Include="test_main.cpp">
     </ClCompile>
+    <ClCompile Include="test_MetricIdLookup.cpp" />
     <ClCompile Include="test_multiset.cpp">
     </ClCompile>
     <ClCompile Include="test_numstr.cpp">

@@ -193,6 +193,7 @@
       <WarningLevel>Level1</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalOptions>/Zm200</AdditionalOptions>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>NDEBUG;BOOST_ALL_DYN_LINK;BOOST_ENABLE_ASSERT_HANDLER;CTIBASE;NOMINMAX;WIN32;_CONSOLE;_REENTRANT;_WINDOWS;_X86_=1;__DLL__;D_FILE_NAME=ctibase;%(PreprocessorDefinitions)</PreprocessorDefinitions>
