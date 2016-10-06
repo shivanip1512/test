@@ -20,17 +20,15 @@ yukon.da.capbank = (function () {
     var twoWayTypes = [];
 
     var updatePaoTypeFields = function () {
+        $('#comm-port').attr("disabled", true); 
         var paoTypeField = $('#pao-type');
         if(paoTypeField.is(":visible")) {
             var paoType = paoTypeField.val();
             var isTwoWay = twoWayTypes.indexOf(paoType) !== -1;
             if (isTwoWay) {
                $('#comm-port').removeAttr("disabled"); 
-            } else {
-                $('#comm-port').attr("disabled", true); 
-            }
+            } 
         }
-        
     };
     
     var setCustomCommunicationMedium = function () {
@@ -96,7 +94,11 @@ yukon.da.capbank = (function () {
             $(document).on('yukon:da:capbank:delete', function () {
                 $('#delete-capbank').submit();
             });
-            
+            $(document).on('yukon:da:capbank:save', function () {
+                alert();
+                updatePaoTypeFields();
+                $('#capbank-edit-form').submit();
+            });
             /** User clicked Custom Communication Medium */
             $(document).on('click', '.js-custom-medium', function () {
                 setCustomCommunicationMedium(true);

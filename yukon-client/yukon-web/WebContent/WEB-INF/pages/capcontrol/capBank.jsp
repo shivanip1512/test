@@ -91,6 +91,7 @@
                                         <tags:selectWithItems
                                             id="comm-port"
                                             path="cbcCommChannel"
+                                            disabled="true"
                                             items="${availablePorts}"
                                             itemValue="liteID" itemLabel="paoName"
                                             inputClass="with-option-hiding" />                                    
@@ -409,7 +410,7 @@
 
         <div class="page-action-area">
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <cti:button nameKey="save" type="submit" classes="primary action"/>
+                <cti:button nameKey="save" type="submit" classes="primary action" data-ok-event="yukon:da:capbank:save"/>
             </cti:displayForPageEditModes>
     
             <cti:displayForPageEditModes modes="EDIT">
