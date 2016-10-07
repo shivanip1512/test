@@ -39,6 +39,8 @@
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.attributes">Attributes</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.interval">Interval</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.exportFileName">DataStreamingSummary</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.results.errors.connectionError">Connection to server failed during download. Please try again.</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.summary.results.errors.configError">Communication error occurred with Network Manager. Please check if Network Manager is running.</entry>
     
     <!-- DATA STREAMING DISCREPANCIES PAGE-->
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.pageName">Data Streaming Discrepancies</entry>
@@ -61,9 +63,9 @@
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.removeConfirmation.title">Remove Data Streaming Configuration</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.removeConfirmation.message">This will remove the data streaming configuration for device {0}</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptAllConfirmation.title">Accept All Device Configurations</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptAllConfirmation.message">This will change the Yukon Configuration for all devices to match what each device has reported.</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptAllConfirmation.message">This will change the Yukon Configuration for this page of devices to match what each device has reported.</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resendAllConfirmation.title">Re-send All Yukon Configurations</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resendAllConfirmation.message">This will re-send the Yukon Configuration to each device.</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resendAllConfirmation.message">This will re-send the Yukon Configuration to this page of devices.</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptSuccess">The Yukon Configuration has been updated.</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptAllSuccess">All Yukon Configurations have been updated.</entry>
      

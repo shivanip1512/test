@@ -312,16 +312,16 @@ public class DataStreamingConfigurationsController {
     }
     
     @RequestMapping(value = "exportSearch")
-    public String exportSearchResults(SummarySearchCriteria criteria, HttpServletResponse response,
+    public String exportSearchResults(ModelMap model, SummarySearchCriteria criteria, HttpServletResponse response,
             YukonUserContext userContext) {
         try {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
             downloadSearchResults(criteria, response, accessor);
         } catch (IOException ioe) {
-
+            model.addAttribute("dataStreamingExportErrors", ".errors.connectionError");
         } catch (DataStreamingConfigException dsce) {
-
+            model.addAttribute("dataStreamingExportErrors", ".errors.configError");
         }
         return "../dataStreaming/summaryResults.jsp";
     }
