@@ -268,7 +268,7 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
                         const auto& attribute = Attribute::Lookup( attributeName );
                         DeviceAttributeLookup::AddRelation( devType, attribute, pointItr->type, pointItr->offset );
                     }
-                    catch( const AttributeNotFound& e )
+                    catch( const AttributeNotFound&)
                     {
                         DeviceAttributeLookup::AddUnknownAttribute( devType, attributeName );
                     }

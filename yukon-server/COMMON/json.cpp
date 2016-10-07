@@ -46,7 +46,7 @@ void parseJsonFiles()
 
                     MetricIdLookup::AddMetricForAttribute(attribute, metricId.Value());
                 }
-                catch (const AttributeNotFound& ex)
+                catch (const AttributeNotFound&)
                 {
                     MetricIdLookup::AddUnknownAttribute(attributeName.Value());
                 }
