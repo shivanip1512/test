@@ -42,6 +42,12 @@ bool WorkerThread::isRunning()
         return false;
     }
 
+    // Don't try joining ourself
+    if (_thread.get_id() == boost::this_thread::get_id())
+    {
+        return true;    //self is definitely running
+    }
+
     return ! tryJoinFor( Timing::Chrono::milliseconds(0) );
 }
 

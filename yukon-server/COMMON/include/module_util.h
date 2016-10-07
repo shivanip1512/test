@@ -3,6 +3,7 @@
 #include "dlldefs.h"
 #include "ctitime.h"
 #include "version.h"
+#include "streamBuffer.h"
 
 #include <windows.h>
 
@@ -46,14 +47,13 @@ struct CallSite
     const unsigned line;
 };
 
-//IM_EX_CTIBASE std::ostream &operator<<(std::ostream &o, const ::Cti::CallSite &cs);
-
-//IM_EX_CTIBASE StreamBufferSink &operator<<(StreamBufferSink  &o, const ::Cti::CallSite &cs);
-
 //  update __FUNCTION__ to __func__ in VS2015
 #define CALLSITE (::Cti::CallSite{__FUNCTION__, __FILE__, __LINE__})
 
 } // namespace Cti
+
+IM_EX_CTIBASE std::ostream& operator<< (std::ostream&, const Cti::CallSite&);
+IM_EX_CTIBASE Cti::StreamBufferSink& operator<< (Cti::StreamBufferSink &, const Cti::CallSite&);
 
 extern Cti::compileinfo_t CompileInfo;
 

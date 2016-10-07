@@ -168,15 +168,17 @@ IM_EX_CTIBASE LONG WINAPI MinidumpExceptionFilter( const Cti::compileinfo_t &inf
 }
 
 
-//std::ostream &operator<<(std::ostream &o, const ::Cti::CallSite &cs)
-//{
-//    return o << "( called from " << cs.func << ":" << cs.file << ":" << cs.line << " )";
-//}
-
-//StreamBufferSink &operator<<(StreamBufferSink  &o, const ::Cti::CallSite &cs)
-//{
-//    return o << "( called from " << cs.func << ":" << cs.file << ":" << cs.line << " )";
-//}
-
 
 } // namespace Cti
+
+IM_EX_CTIBASE std::ostream &operator<<(std::ostream &o, const Cti::CallSite &cs)
+{
+    return o << " (called from " << cs.func << ":" << cs.file << ":" << cs.line << ")";
+}
+
+IM_EX_CTIBASE Cti::StreamBufferSink &operator<<(Cti::StreamBufferSink  &o, const Cti::CallSite &cs)
+{
+    return o << " (called from " << cs.func << ":" << cs.file << ":" << cs.line << ")";
+}
+
+

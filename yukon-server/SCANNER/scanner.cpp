@@ -104,15 +104,17 @@ ULONG ScannerDebugLevel = 0;
 
 std::array<HANDLE, 2> hLockArray;
 
-void acquireMutex(int line)
+void acquireMutex(::Cti::CallSite caller)
 {
     const DWORD dwWait = WaitForMultipleObjects(2, hLockArray.data(), FALSE, INFINITE);
 
     switch(dwWait)
     {
     case WAIT_OBJECT_0: // Quit
+    case WAIT_ABANDONED_0: // Quit (sent on shutdown)
+    case WAIT_ABANDONED_0 + 1: // Quit (sent on shutdown)
         {
-            CTILOG_INFO(dout, "Quit Event Posted - on "<< line);
+            CTILOG_INFO(dout, "Quit Event Posted" << caller);
             ScannerQuit = TRUE;
             break;
         }
@@ -123,12 +125,12 @@ void acquireMutex(int line)
     case WAIT_FAILED:
         {
             const DWORD error = GetLastError();
-            CTILOG_ERROR(dout, "Wait failed with error code "<< error <<" / "<< Cti::getSystemErrorMessage(error) <<" - on "<< line);
+            CTILOG_ERROR(dout, "Wait failed with error code "<< error <<" /"<< Cti::getSystemErrorMessage(error) << caller);
             break;
         }
-    default: // we dont expect WAIT_TIMEOUT or WAIT_ABANDONED
+    default: // we dont expect WAIT_TIMEOUT
         {
-            CTILOG_ERROR(dout, "Unexpected wait result ("<< dwWait <<") - on "<< line);
+            CTILOG_ERROR(dout, "Unexpected wait result ("<< dwWait <<")"<< caller);
         }
     }
 
@@ -515,7 +517,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 
     list< OUTMESS* > outList;
 
-    acquireMutex(__LINE__);
+    acquireMutex(CALLSITE);
 
     /* Everything is ready so go into the scan loop */
     for(;!ScannerQuit;)
@@ -643,7 +645,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
             NextScan[NEXT_SCAN] = TimeNow + 1L;      // Try to keep this from being too tight.
         }
 
-        acquireMutex(__LINE__);
+        acquireMutex(CALLSITE);
 
         if( ! outList.empty() )
         {
@@ -704,7 +706,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
 /* The following thread handles results coming back from field devices */
 void ResultThread (void *Arg)
 {
-    acquireMutex(__LINE__);
+    acquireMutex(CALLSITE);
 
     ThreadStatusKeeper threadStatus("Scanner Result Thread");
 
@@ -774,7 +776,7 @@ void ResultThread (void *Arg)
             }
 
             // Wait on the request thread if necessary
-            acquireMutex(__LINE__);
+            acquireMutex(CALLSITE);
 
             while( !ScannerQuit && !pendingInQueue.empty() )
             {
