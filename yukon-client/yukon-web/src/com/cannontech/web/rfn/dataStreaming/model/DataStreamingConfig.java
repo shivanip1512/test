@@ -1,6 +1,8 @@
 package com.cannontech.web.rfn.dataStreaming.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -116,13 +118,12 @@ public class DataStreamingConfig implements Cloneable {
     public List<DataStreamingAttribute> getAttributes() {
         return attributes;
     }
-
-    public void setAttributes(List<DataStreamingAttribute> attributes) {
-        this.attributes = attributes;
-    }
     
     public void addAttribute(DataStreamingAttribute attribute) {
         attributes.add(attribute);
+        Comparator<DataStreamingAttribute> byAttribute = (DataStreamingAttribute o1,
+                DataStreamingAttribute o2) -> o1.getAttribute().name().compareTo(o2.getAttribute().name());
+        Collections.sort(attributes, byAttribute);
     }
     
     public void setAccessor(MessageSourceAccessor accessor) {
