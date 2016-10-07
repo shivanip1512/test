@@ -2,8 +2,8 @@ package com.cannontech.dr.honeywellWifi;
 
 import org.joda.time.Instant;
 
-import com.cannontech.dr.ecobee.message.JsonSerializers.FROM_DATE;
-import com.cannontech.dr.ecobee.message.JsonSerializers.TO_DATE;
+import com.cannontech.dr.JsonSerializers.FROM_DATE;
+import com.cannontech.dr.JsonSerializers.TO_DATE;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;

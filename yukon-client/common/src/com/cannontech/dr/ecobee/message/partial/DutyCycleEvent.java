@@ -2,7 +2,7 @@ package com.cannontech.dr.ecobee.message.partial;
 
 import org.joda.time.Instant;
 
-import com.cannontech.dr.ecobee.message.JsonSerializers;
+import com.cannontech.dr.JsonSerializers;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

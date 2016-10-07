@@ -1,4 +1,4 @@
-package com.cannontech.dr.ecobee.message;
+package com.cannontech.dr;
 
 import java.io.IOException;
 import java.util.ArrayList;

@@ -4,7 +4,7 @@ import java.util.Comparator;
 
 import org.joda.time.LocalDateTime;
 
-import com.cannontech.dr.ecobee.message.JsonSerializers;
+import com.cannontech.dr.JsonSerializers;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 

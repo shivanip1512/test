@@ -78,7 +78,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
     private static final String runtimeReportUrlPart = "runtimeReport?format=json";
     private static final List<String> deviceReadColumns = ImmutableList.of(
         // If the order is changed here or something is added or removed we need to update
-        // EcobeeJsonSerializers.RuntimeReportRow and RuntimeReport
+        // JsonSerializers.RuntimeReportRow and RuntimeReport
         "zoneCalendarEvent", //currently running event
         "zoneAveTemp", // indoor temp
         "outdoorTemp", // outdoor temp
@@ -298,7 +298,16 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
                     parameters.getEndTime(), parameters.isRampOut());
 
         HttpEntity<DutyCycleDrRequest> requestEntity = new HttpEntity<>(request, new HttpHeaders());
-
+        
+        if (log.isDebugEnabled()) {
+            try {
+                log.debug("Sending ecobee duty cycle DR:");
+                log.debug("Headers: " + requestEntity.getHeaders());
+                log.debug("Body: " + JsonUtils.toJson(request));
+            } catch (JsonProcessingException e) {
+                log.warn("Error parsing json in debug.", e);
+            }
+        }
         DrResponse response = queryEcobee(url, requestEntity, EcobeeQueryType.DEMAND_RESPONSE, DrResponse.class);
 
         return response.getDemandResponseRef();
