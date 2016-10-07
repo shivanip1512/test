@@ -264,6 +264,12 @@
         </configuration>
     </pao>
 
+    <pao id="RFN_WATER_CHANNEL_CONFIGURATION" abstract="true">
+        <configuration>
+            <category type="rfnWaterChannelConfiguration" />
+        </configuration>
+    </pao>
+
     <pao id="RFN_TEMPERATURE_ALARM_CONFIGURATION" abstract="true">
         <configuration>
             <category type="rfnTempAlarm" />
@@ -10058,7 +10064,7 @@
         <displayName>RFW-Meter</displayName>
     </pao>
 
-    <pao id="RFWMETER_GEN2" abstract="true" inherits="RFN_WATER_BASE, RFN_POINT_CALCULATION_WATER">
+    <pao id="RFWMETER_GEN2" abstract="true" inherits="RFN_WATER_BASE, RFN_POINT_CALCULATION_WATER, SUPPORTS_DEVICE_CONFIGURATION, RFN_WATER_CHANNEL_CONFIGURATION">
     </pao>
 
     <pao id="RFW201" inherits="RFWMETER_GEN2">

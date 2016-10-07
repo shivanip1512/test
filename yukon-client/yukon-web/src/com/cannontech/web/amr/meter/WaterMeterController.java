@@ -14,6 +14,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoClass;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.core.dao.DeviceDao;
@@ -58,7 +59,8 @@ public class WaterMeterController {
         CisDetailRolePropertyEnum cisDetail = globalSettingDao.getEnum(GlobalSettingType.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class);
         mav.addObject("cisInfoWidgetName", cisDetail.getWidgetName());
         
-        boolean isRfMesh = device.getDeviceType().getPaoClass() == PaoClass.RFMESH;
+        PaoType deviceType = device.getDeviceType();
+        boolean isRfMesh = deviceType.getPaoClass() == PaoClass.RFMESH;
         mav.addObject("showMapNetwork", isRfMesh);
         if (isRfMesh) {
             mav.addObject("isRFMesh", true);
@@ -67,6 +69,11 @@ public class WaterMeterController {
         
         if (paoDefinitionDao.isTagSupported(device.getDeviceType(), PaoTag.PORTER_COMMAND_REQUESTS)) {
             mav.addObject("porterCommandRequestsSupported", true);
+        }
+        
+        if (deviceType == PaoType.RFW201 || deviceType == PaoType.RFW205) {
+        	mav.addObject("deviceConfigSupported", true);
+        	mav.addObject("configurableDevice", true);
         }
         
         return mav;

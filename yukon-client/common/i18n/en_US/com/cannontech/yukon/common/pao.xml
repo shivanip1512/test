@@ -130,6 +130,9 @@
     <entry key="yukon.common.pao.RFN530S4ERT">RFN-530S4eRT</entry>
 
     <entry key="yukon.common.pao.RFWMETER">RFW-Meter</entry>
+    <entry key="yukon.common.pao.RFW201">RFW-201</entry>
+    <entry key="yukon.common.pao.RFW205">RFW-205</entry>
+
     <entry key="yukon.common.pao.LCR6200_RFN">LCR-6200 RFN</entry>
     <entry key="yukon.common.pao.LCR6600_RFN">LCR-6600 RFN</entry>
 

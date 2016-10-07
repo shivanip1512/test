@@ -99,6 +99,8 @@
             <xs:enumeration value="VoltageAveragingInterval"/>
             <xs:enumeration value="VoltageDataStreamingInterval"/>
             <xs:enumeration value="DnpTimeOffset"/>
+            <xs:enumeration value="WaterRecordingInterval"/>
+            <xs:enumeration value="WaterReportingInterval"/>
         </xs:restriction>
     </xs:simpleType>
 

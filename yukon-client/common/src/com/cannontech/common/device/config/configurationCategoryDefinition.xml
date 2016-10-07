@@ -226,6 +226,11 @@
         </indexed>
     </category>
 
+    <category type="rfnWaterChannelConfiguration">
+        <enum field="recordingIntervalMinutes" type="WaterRecordingInterval" default="15"/>
+        <enum field="reportingIntervalMinutes" type="WaterReportingInterval" default="2"/>
+    </category>
+
     <category type="addressing">
         <integer field="serviceProviderId" minValue="0" maxValue="254" default="0"/>
     </category>

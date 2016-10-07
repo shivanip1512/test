@@ -184,7 +184,7 @@ public class PerIntervalAndLoadProfileCalculator implements PointCalculator {
             }
         }
         
-        if (pao.getPaoType() == PaoType.RFWMETER && (nextPerIntervalValue < 0 || previousPerIntervalValue < 0)) {
+        if (pao.getPaoType().isWaterMeter() && (nextPerIntervalValue < 0 || previousPerIntervalValue < 0)) {
             log.info("Error in previous/next RFW meter reading values, Interval and profile data calculations being skipped for "
                 + timestamp + " RFW meter Id : " + pao.getPaoId() + " : " + pointData);
             return; // Do not process further

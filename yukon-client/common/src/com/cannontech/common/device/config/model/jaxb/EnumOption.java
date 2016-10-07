@@ -43,6 +43,8 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="VoltageAveragingInterval"/>
  *     &lt;enumeration value="VoltageDataStreamingInterval"/>
  *     &lt;enumeration value="DnpTimeOffset"/>
+ *     &lt;enumeration value="WaterRecordingInterval"/>
+ *     &lt;enumeration value="WaterReportingInterval"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -109,7 +111,11 @@ public enum EnumOption {
     @XmlEnumValue("VoltageDataStreamingInterval")
     VOLTAGE_DATA_STREAMING_INTERVAL("VoltageDataStreamingInterval"),
     @XmlEnumValue("DnpTimeOffset")
-    DNP_TIME_OFFSET("DnpTimeOffset");
+    DNP_TIME_OFFSET("DnpTimeOffset"),
+    @XmlEnumValue("WaterRecordingInterval")
+    WATER_RECORDING_INTERVAL("WaterRecordingInterval"),
+    @XmlEnumValue("WaterReportingInterval")
+    WATER_REPORTING_INTERVAL("WaterReportingInterval");
     private final String value;
 
     EnumOption(String v) {

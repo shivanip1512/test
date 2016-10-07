@@ -20,6 +20,7 @@
             <xs:enumeration value="mct470ProfileChannels"/>
             <xs:enumeration value="mct470ConfigurationByte"/>
             <xs:enumeration value="rfnChannelConfiguration"/>
+            <xs:enumeration value="rfnWaterChannelConfiguration"/>
             <xs:enumeration value="addressing"/>
             <xs:enumeration value="relays"/>
             <xs:enumeration value="mct470PrecannedTable"/>

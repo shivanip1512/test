@@ -55,6 +55,7 @@
                 <div id="trendWidget">
                    <tags:widget bean="waterCsrTrendWidget" tabularDataViewer="archivedDataReport" helpText="${whatsThis}"/>
                 </div>
+                <c:if test="${deviceConfigSupported}"><tags:widget bean="configWidget"/></c:if>
             </div>
         </div>
     </tags:widgetContainer>

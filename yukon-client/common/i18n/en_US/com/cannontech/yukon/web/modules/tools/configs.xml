@@ -361,6 +361,13 @@
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.error.midnightExceeded">Maximum of 80 Enabled channels</entry>
     <entry key="yukon.web.modules.tools.configs.category.rfnChannelConfiguration.disabledInterval.title">Interval not available for this channel.</entry>
 
+    <entry key="yukon.web.modules.tools.configs.category.rfnWaterChannelConfiguration.title">RFN Water Channel Configuration</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnWaterChannelConfiguration.definition">Settings for channel recording and reporting intervals</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnWaterChannelConfiguration.recordingIntervalMinutes">Recording Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnWaterChannelConfiguration.recordingIntervalMinutes.description">Interval to record data internally in the meter to be returned with Interval reporting.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnWaterChannelConfiguration.reportingIntervalMinutes">Reporting Interval</entry>
+    <entry key="yukon.web.modules.tools.configs.category.rfnWaterChannelConfiguration.reportingIntervalMinutes.description">Interval at which to report Interval data recorded in the meter.</entry>
+
     <entry key="yukon.web.modules.tools.configs.enum.read.INTERVAL">Interval</entry>
     <entry key="yukon.web.modules.tools.configs.enum.read.MIDNIGHT">Midnight</entry>
     <entry key="yukon.web.modules.tools.configs.enum.read.DISABLED">Disabled</entry>

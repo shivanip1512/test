@@ -30,6 +30,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="mct470ProfileChannels"/>
  *     &lt;enumeration value="mct470ConfigurationByte"/>
  *     &lt;enumeration value="rfnChannelConfiguration"/>
+ *     &lt;enumeration value="rfnWaterChannelConfiguration"/>
  *     &lt;enumeration value="addressing"/>
  *     &lt;enumeration value="relays"/>
  *     &lt;enumeration value="mct470PrecannedTable"/>
@@ -84,6 +85,8 @@ public enum CategoryType {
     MCT_470_CONFIGURATION_BYTE("mct470ConfigurationByte"),
     @XmlEnumValue("rfnChannelConfiguration")
     RFN_CHANNEL_CONFIGURATION("rfnChannelConfiguration"),
+    @XmlEnumValue("rfnWaterChannelConfiguration")
+    RFN_WATER_CHANNEL_CONFIGURATION("rfnWaterChannelConfiguration"),
     @XmlEnumValue("addressing")
     ADDRESSING("addressing"),
     @XmlEnumValue("relays")
