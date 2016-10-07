@@ -484,9 +484,14 @@ void CtiFDRClientServerConnection::threadFunctionGetDataFrom( void )
         // just let it fall through
     }
     // catch any thread death
-    catch ( ... )
+    catch( const std::exception& e )
     {
-        CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, logNow() <<"threadFunctionGetDataFrom is dead");
+        CTILOG_UNKNOWN_EXCEPTION_ERROR( dout, logNow() << "threadFunctionGetDataFrom caught exception: " << e.what());
+    }
+    // catch any thread death
+    catch( ... )
+    {
+        CTILOG_UNKNOWN_EXCEPTION_ERROR( dout, logNow() << "threadFunctionGetDataFrom is dead" );
     }
 
     failConnection();

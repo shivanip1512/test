@@ -108,6 +108,8 @@ void acquireMutex(::Cti::CallSite caller)
 {
     const DWORD dwWait = WaitForMultipleObjects(2, hLockArray.data(), FALSE, INFINITE);
 
+    // dwWait returns WAIT_OBJECT_0 if it's the first object signaled, 
+    // WAIT_OBJECT_0+1 if it's the second.  Same nomenclature for WAIT_ABANDONED
     switch(dwWait)
     {
     case WAIT_OBJECT_0: // Quit
