@@ -553,32 +553,12 @@ INSERT INTO DeviceTypeCommand VALUES (-1203, -197, 'RFN-530S4x', 5, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1204, -198, 'RFN-530S4x', 6, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-1205, -193, 'RFN-530S4eAD', 1, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1206, -194, 'RFN-530S4eAD', 2, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1207, -195, 'RFN-530S4eAD', 3, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1208, -196, 'RFN-530S4eAD', 4, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1209, -197, 'RFN-530S4eAD', 5, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1210, -198, 'RFN-530S4eAD', 6, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-1211, -193, 'RFN-530S4eAT', 1, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1212, -194, 'RFN-530S4eAT', 2, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1213, -195, 'RFN-530S4eAT', 3, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1214, -196, 'RFN-530S4eAT', 4, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1215, -197, 'RFN-530S4eAT', 5, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1216, -198, 'RFN-530S4eAT', 6, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-1217, -193, 'RFN-530S4eRD', 1, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1218, -194, 'RFN-530S4eRD', 2, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1219, -195, 'RFN-530S4eRD', 3, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1220, -196, 'RFN-530S4eRD', 4, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1221, -197, 'RFN-530S4eRD', 5, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1222, -198, 'RFN-530S4eRD', 6, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-1223, -193, 'RFN-530S4eRT', 1, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1224, -194, 'RFN-530S4eRT', 2, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1225, -195, 'RFN-530S4eRT', 3, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1226, -196, 'RFN-530S4eRT', 4, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1227, -197, 'RFN-530S4eRT', 5, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1228, -198, 'RFN-530S4eRT', 6, 'Y', -1);
 /* @error ignore-end */
 /* End YUK-15502 */
 
@@ -626,7 +606,7 @@ INSERT INTO DeviceTypeCommand VALUES (-1238, -214, 'RFN-420fL', 7, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1241, -214, 'RFN-420fX', 7, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1237, -214, 'RFN-420fD', 7, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1240, -214, 'RFN-420fRX', 7, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1239, -214, 'RFN-420fRD', 7, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-1239, -214, 'RFN-420fRD', 7, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1231, -214, 'RFN-410cL', 7, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1236, -214, 'RFN-420cL', 7, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1235, -214, 'RFN-420cD', 7, 'Y', -1);
@@ -656,8 +636,7 @@ INSERT INTO DeviceTypeCommand VALUES (-1266, -214, 'RFN-530S4eRT', 2, 'Y', -1);
 DELETE FROM DeviceTypeCommand WHERE DeviceCommandID IN (-1045, -1051, -1057, -1063, -1075, -1081, -1087, -1088, -1089,
     -1090, -1092, -1093, -1094, -1095, -1097, -1098, -1099, -1100, -1102, -1103, -1104, -1105, -1112, -1113, -1114,
     -1115, -1117, -1118, -1119, -1120, -1122, -1123, -1124, -1125, -1127, -1128, -1129, -1130, -1132, -1133, -1134,
-    -1135, -1206, -1207, -1208, -1209, -1210, -1212, -1213, -1214, -1215, -1216, -1218, -1219, -1220, -1221, -1222,
-    -1224, -1225, -1226, -1227, -1228 );
+    -1135);
 /* @error ignore-end */
 /* End YUK-15711 */
 
