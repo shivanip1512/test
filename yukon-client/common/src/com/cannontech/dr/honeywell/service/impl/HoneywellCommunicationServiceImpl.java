@@ -1,5 +1,7 @@
 package com.cannontech.dr.honeywell.service.impl;
 
+import java.util.List;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -18,6 +20,7 @@ import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.google.common.collect.Lists;
 
 public class HoneywellCommunicationServiceImpl implements HoneywellCommunicationService {
 
@@ -32,30 +35,35 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     private static final String removeDeviceFromDRGroupUrlPart = "api/drEventGroups/";
 
     @Override
-    public void addDevicesToGroup(int[] thermostatIds, int groupId) {
+    public void addDevicesToGroup(List<Integer> thermostatIds, int groupId) {
         log.debug("Adding honeywell device with thermostat Id " + thermostatIds);
 
         String url = getUrlBase() + createDREventGroupUrlPart + groupId + "/add";
-        MultiValueMap<String, Object> body = new LinkedMultiValueMap<String, Object>();
-        body.add("thermostatIds", thermostatIds);
 
-        HttpEntity<String> requestEntity = new HttpEntity<String>(new HttpHeaders());
-        try {
-            HttpEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, String.class);
-        } catch (RestClientException ex) {
-            log.debug("Add devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
-            throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
+        MultiValueMap<String, Object> body;
+        for (List<Integer> thermostatId : Lists.partition(thermostatIds, 2000)) {
+            body = new LinkedMultiValueMap<String, Object>();
+            body.add("thermostatIds", thermostatId.toArray());
+
+            HttpEntity<String> requestEntity = new HttpEntity<String>(new HttpHeaders());
+            try {
+                HttpEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, String.class);
+            } catch (RestClientException ex) {
+                log.debug("Add devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
+                throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
+            }
+
         }
 
     }
 
     @Override
-    public void cancelDREventForDevices(int[] deviceIds, int eventId, boolean immediateCancel) {
-        log.debug("Cancelling DR event for devices " + deviceIds);
+    public void cancelDREventForDevices(List<Integer> thermostatIds, int eventId, boolean immediateCancel) {
+        log.debug("Cancelling DR event for devices " + thermostatIds);
 
         String url = getUrlBase() + cancelDREventForDevicesUrlPart + eventId + "/" + immediateCancel;
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<String, Object>();
-        body.add("deviceIds", deviceIds);
+        body.add("deviceIds", thermostatIds.toArray());
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
 
         HttpEntity<String> requestEntity = new HttpEntity<String>(new HttpHeaders());
@@ -69,12 +77,12 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     }
 
     @Override
-    public void removeDeviceFromDRGroup(int[] thermostatIds, int groupId) {
+    public void removeDeviceFromDRGroup(List<Integer> thermostatIds, int groupId) {
         log.debug("Removing specified devices from demand-response group:" + thermostatIds);
 
-        String url = getUrlBase() + removeDeviceFromDRGroupUrlPart + removeDeviceFromDRGroupUrlPart + "/remove";
+        String url = getUrlBase() + removeDeviceFromDRGroupUrlPart + "/remove";
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<String, Object>();
-        body.add("deviceIds", thermostatIds);
+        body.add("deviceIds", thermostatIds.toArray());
         UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
 
         HttpEntity<String> requestEntity = new HttpEntity<String>(new HttpHeaders());
