@@ -16,20 +16,19 @@ yukon.tools.dataStreaming = (function () {
     mod = {    
 
         showHideConfigurations: function() {
-            var selectedAtt = $('#attributesSelect').val(),
-                selectedInt = $('#intervalSelect').val(),
-                selectedConfig = $('.js-selected-configuration').val();
-            if (selectedConfig == -1) {
+            var selectedAtt = ($('#attributesSelect').val()? $('#attributesSelect').val(): -1),
+                selectedInt = ($('#intervalSelect').val()? $('#intervalSelect').val(): -1),
+                selectedConfig = ($('.js-selected-configuration').val()? $('.js-selected-configuration').val(): -1);
+            
+            if (selectedConfig == -1 && !(selectedAtt == -1 && selectedInt == -1)) {
                 $('.js-selected-attInterval').prop('disabled', false);
-            } else {
-                $('.js-selected-attInterval').prop('disabled', true);
-            }
-            if (selectedAtt == -1 && selectedInt == -1) {
-                $('.js-selected-configuration').prop('disabled', false);
-
-            } else {
                 $('.js-selected-configuration').prop('disabled', true);
-
+            } else if (selectedAtt == -1 && selectedInt == -1 && !(selectedConfig == -1)) {
+                $('.js-selected-attInterval').prop('disabled', true);
+                $('.js-selected-configuration').prop('disabled', false);
+            } else {
+                $('.js-selected-attInterval').prop('disabled', false);
+                $('.js-selected-configuration').prop('disabled', false);
             }
         },
         
