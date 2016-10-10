@@ -231,7 +231,7 @@ public class HoneywellCycleGearPanel extends GenericGearPanel {
                 controlPercentSpinField.setAlignmentY(TOP_ALIGNMENT);
                 controlPercentSpinField.setMaximumSize(new Dimension(50, 20));
                 controlPercentSpinField.setMinimumSize(new Dimension(48, 20));
-                controlPercentSpinField.setDataProperties(new DataProperties(new JCIntegerValidator(null, 5, 100, null,
+                controlPercentSpinField.setDataProperties(new DataProperties(new JCIntegerValidator(null, 0, 100, null,
                     true, null, 1, "#,##0.###;-#,##0.###", false, false, false, null, 50), new MutableValueModel(
                     Integer.class, 0), new JCInvalidInfo(true, 2, new Color(0, 0, 0, 255),
                     new Color(255, 255, 255, 255))));
