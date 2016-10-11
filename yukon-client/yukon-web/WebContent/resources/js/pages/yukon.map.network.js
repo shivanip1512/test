@@ -19,6 +19,7 @@ yukon.map.network = (function () {
     _parentIcon,
     _parentLine,
     _neighborIcons = [],
+    _neighborLines = [],
     _primaryRouteIcons = [],
     
     /** @type {string} - The default projection code of our map tiles. */
@@ -252,6 +253,69 @@ yukon.map.network = (function () {
                                 
                                 _neighborIcons.push(icon);
                                 source.addFeature(icon);
+                                
+                                //draw line
+                                var points = [];
+                                points.push(icon.getGeometry().getCoordinates());
+    
+                                var features = source.getFeatures();
+                                if (features != null && features.length > 0) {
+                                    for (x in features) {
+                                       var properties = features[x].getProperties();
+                                       var id = properties.pao.paoId;
+                                       if (id == paoId) {
+                                           var coord = features[x].getGeometry().getCoordinates();
+                                           points.push(coord);
+                                           break;
+                                       }
+                                     }
+                                   }
+
+                                //Line Color depends on ETX Band 1 - #00FF00, 2 - #ADFF2F, 3 - #FFFF00, 4 - #FFA500, 5 and up - #FF0000
+                                var etxBand = neighbor.data.etxBand;
+                                var lineColor = '#FF0000';
+                                switch(etxBand) {
+                                case 1:
+                                    lineColor = '#00FF00';
+                                    break;
+                                case 2:
+                                    lineColor = '#ADFF2F';
+                                    break;
+                                case 3:
+                                    lineColor = '#FFFF00';
+                                    break;
+                                case 4:
+                                    lineColor = '#FFA500';
+                                    break;
+                                default:
+                                    lineColor = '#FF0000';    
+                                }
+                                
+                                //Line thickness depends on Number of Samples 0-50 - 1px, 51-500 - 2px, 500 and up - 3px
+                                var numberSamples = neighbor.data.numSamples;
+                                var lineThickness = 1;
+                                if (numberSamples > 50 && numberSamples <= 500) {
+                                    lineThickness = 2;
+                                } else if (numberSamples > 500) {
+                                    lineThickness = 3;
+                                }
+                                
+                                var layerLines = new ol.layer.Vector({
+                                    source: new ol.source.Vector({
+                                        features: [new ol.Feature({
+                                            geometry: new ol.geom.LineString(points),
+                                            name: 'Line'
+                                        })]
+                                    }),
+
+                                    style: new ol.style.Style({
+                                        fill: new ol.style.Fill({ color: lineColor, weight: lineThickness }),
+                                        stroke: new ol.style.Stroke({ color: lineColor, width: lineThickness })
+                                    })
+                                });
+                                
+                                _neighborLines.push(layerLines);
+                                _map.addLayer(layerLines);
                             }
                             _map.getView().fitExtent(source.getExtent(), _map.getSize());
                         });
@@ -260,13 +324,17 @@ yukon.map.network = (function () {
                             var neighbor = _neighborIcons[x];
                             var source = _map.getLayers().getArray()[_tiles.length].getSource();
                             source.removeFeature(neighbor);
-                            var features = source.getFeatures();
-                            if (features != null && features.length > 1) {
-                                _map.getView().fitExtent(source.getExtent(), _map.getSize());
-                            } else {
-                                _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
-                                _map.getView().setZoom(13);
-                            }
+                        }
+                        for (x in _neighborLines) {
+                            var neighborLine = _neighborLines[x];
+                            _map.removeLayer(neighborLine);
+                        }
+                        var features = source.getFeatures();
+                        if (features != null && features.length > 1) {
+                            _map.getView().fitExtent(source.getExtent(), _map.getSize());
+                        } else {
+                            _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
+                            _map.getView().setZoom(13);
                         }
                     }
                 });
@@ -380,8 +448,8 @@ yukon.map.network = (function () {
                                         })]
                                     }),
                                     style: new ol.style.Style({
-                                        fill: new ol.style.Fill({ color: '#00FF00', weight: 4 }),
-                                        stroke: new ol.style.Stroke({ color: '#00FF00', width: 2 })
+                                        fill: new ol.style.Fill({ color: '#FFFF00', weight: 4 }),
+                                        stroke: new ol.style.Stroke({ color: '#FFFF00', width: 2, lineDash: [10,10] })
                                     })
                                 });
                                 
