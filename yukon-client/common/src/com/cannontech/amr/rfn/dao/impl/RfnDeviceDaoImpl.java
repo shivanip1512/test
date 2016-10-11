@@ -15,6 +15,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
@@ -31,6 +32,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -230,6 +232,17 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         // Update the rfn address
         updateDevice(updatedDevice);
         return updatedDevice;
+    }
+    
+    @Override
+    public void updateDeviceName(RfnDevice device) {
+        // Update the device's name
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("UPDATE YukonPaobject")
+        .set("PaoName", device.getName());
+        sql.append("WHERE PaobjectId").eq(device.getPaoIdentifier().getPaoId());
+        
+        jdbcTemplate.update(sql);
     }
     
     @Override

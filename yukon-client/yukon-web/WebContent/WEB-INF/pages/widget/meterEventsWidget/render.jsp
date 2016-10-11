@@ -41,7 +41,7 @@
         <cti:url value="/amr/meterEventsReport/home" var="meterEventsReportUrl">
             <cti:param name="collectionType" value="idList"/>
             <cti:param name="idList.ids" value="${deviceId}"/>
-            <cti:param name="includeDisabledPaos" value="${meter.disabled}"/>
+            <cti:param name="includeDisabledPaos" value="${isDisabled}"/>
             <cti:param name="sort" value="DATE"/>
             <cti:param name="fromInstant" value="${fromInstant}"/>
             <cti:param name="descending" value="true"/>

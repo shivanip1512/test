@@ -8,6 +8,7 @@
     <entry key="yukon.web.modules.amr.relayDetail.pageTitle">{0}</entry>
     <entry key="yukon.web.modules.amr.relayDetail.mapNetwork">Map Network</entry>
     <entry key="yukon.web.modules.amr.relayDetail.otherActions.label">Other Actions...</entry>
+    <entry key="yukon.web.modules.amr.relayDetail.relayEvents">Relay Events</entry>
         
     
     <!-- relayInformationWidget/render.jsp -->
@@ -17,4 +18,15 @@
     <entry key="yukon.web.widgets.relayInformationWidget.serialNumber">Serial Number</entry>
     <entry key="yukon.web.widgets.relayInformationWidget.model">Model</entry>
     <entry key="yukon.web.widgets.relayInformationWidget.manufacturer">Manufacturer</entry>
+    
+    <entry key="yukon.web.widgets.relayInformationWidget.edit">Edit {0}</entry>
+    <entry key="yukon.web.widgets.relayInformationWidget.update.successful">Relay {0} updated successfully.</entry>
+    <entry key="yukon.web.widgets.relayInformationWidget.error.deviceName.required">Device name is required.</entry>
+    <entry key="yukon.web.widgets.relayInformationWidget.error.deviceName.unique">Device name must be unique.</entry>
+    <entry key="yukon.web.widgets.relayInformationWidget.error.serialNumber.required">Serial number is required.</entry>
+    <entry key="yukon.web.widgets.relayInformationWidget.error.manufacturer.required">Manufacturer is required.</entry>
+    <entry key="yukon.web.widgets.relayInformationWidget.error.model.required">Model is required.</entry>
+    <entry key="yukon.web.widgets.relayInformationWidget.error.rfn.address.duplicate">Duplicate serial number, manufacturer and model.</entry>
+    
+    
 </properties>

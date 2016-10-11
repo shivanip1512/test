@@ -34,6 +34,13 @@
             <div class="one column">
                 <tags:widget bean="relayInformationWidget"/>
                 
+                <tags:widget bean="rfnDeviceMetadataWidget"/>
+            </div>
+            <div class="column two nogutter">
+
+                <cti:msg2 var="eventsTitle" key=".relayDetail.relayEvents"/>
+                <tags:widget bean="meterEventsWidget" title="${eventsTitle}"/>
+                
                 <!-- Including deviceGroupWidget's resources here since this particular
                      widget is being added to the page via ajax  -->
                 <cti:includeScript link="JQUERY_TREE"/>

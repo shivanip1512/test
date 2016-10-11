@@ -47,6 +47,7 @@ public class MapNetworkController {
         model.addAttribute("displayParentNodeLayer", device.getDeviceType().isWaterMeter());
         
         model.addAttribute("isGateway", PaoType.getRfGatewayTypes().contains(device.getDeviceType()));
+        model.addAttribute("isRelay", PaoType.getRfRelayTypes().contains(device.getDeviceType()));
         
         return "mapNetwork/home.jsp";
     }

@@ -66,6 +66,9 @@
                 <c:when test="${isGateway}">
                     <tags:widget bean="gatewayInformationWidget" deviceId="${deviceId}" container="section"/>
                 </c:when>
+                <c:when test="${isRelay}">
+                    <tags:widget bean="relayInformationWidget" deviceId="${deviceId}" container="section"/>
+                </c:when>
                 <c:otherwise>
                     <tags:widget bean="meterInformationWidget" deviceId="${deviceId}" container="section"/>
                 </c:otherwise>

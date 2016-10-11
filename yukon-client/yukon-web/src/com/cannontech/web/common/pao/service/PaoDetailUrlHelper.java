@@ -41,6 +41,14 @@ public class PaoDetailUrlHelper {
             }
         });
         pageNameBuilder.put(PaoTag.WATER_METER_DETAIL_DISPLAYABLE, "meterDetail.water");
+        
+        urlBuilder.put(PaoTag.RELAY_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
+            @Override
+            public String apply(YukonPao pao) {
+                return "/amr/relay/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
+            }
+        });
+        pageNameBuilder.put(PaoTag.RELAY_DETAIL_DISPLAYABLE, "relayDetail");
 
         urlBuilder.put(PaoTag.LM_SCENARIO, new Function<YukonPao, String>() {
             @Override

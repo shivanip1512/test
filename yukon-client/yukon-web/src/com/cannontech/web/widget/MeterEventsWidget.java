@@ -20,8 +20,10 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -40,6 +42,7 @@ public class MeterEventsWidget extends AdvancedWidgetControllerBase {
     @Autowired private MeterDao meterDao;
     @Autowired private MeterEventLookupService meterEventLookupService;
     @Autowired private PaoPointValueService paoPointValueService;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     
     @Autowired
     public MeterEventsWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
@@ -65,27 +68,35 @@ public class MeterEventsWidget extends AdvancedWidgetControllerBase {
     }
 
     public void setupModel(int deviceId, ModelMap model, YukonUserContext userContext) {
-        YukonMeter meter = meterDao.getForId(deviceId);
-        List<MeterPointValue> meterPointValues = getMeterPointValues(meter, userContext);
+        RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+        boolean isDisabled = false;
+        if (device.getPaoIdentifier().getPaoType().isMeter()) {
+            YukonMeter meter = meterDao.getForId(deviceId);
+            isDisabled = meter.isDisabled();
+            model.addAttribute("meter", meter);
+        }
+        
+        model.addAttribute("isDisabled", isDisabled);
+
+        List<MeterPointValue> meterPointValues = getMeterPointValues(device, userContext, isDisabled);
         model.addAttribute("valueMap", meterPointValues);
         model.addAttribute("deviceId", deviceId);
         Instant now = new Instant();
         Instant defaultStartInstant = now.minus(Period.days(30).toDurationTo(now));
         model.addAttribute("defaultStartInstant", defaultStartInstant);
-        model.addAttribute("meter", meter);
     }
     
-    private List<MeterPointValue> getMeterPointValues(YukonMeter meter, YukonUserContext userContext) {
+    private List<MeterPointValue> getMeterPointValues(RfnDevice device, YukonUserContext userContext, boolean isDisabled) {
         Set<Attribute> availableEventAttributes =
-            meterEventLookupService.getAvailableEventAttributes(Collections.singletonList(meter));
+            meterEventLookupService.getAvailableEventAttributes(Collections.singletonList(device));
         availableEventAttributes = Sets.difference(availableEventAttributes, BuiltInAttribute.getRfnEventAnalogTypes());
         
         Range<Instant> range = Range.unbounded();
-        List<MeterPointValue> events = paoPointValueService.getMeterPointValues(Collections.singletonList(meter),
+        List<MeterPointValue> events = paoPointValueService.getMeterPointValues(Collections.singletonList(device),
                                                                                 availableEventAttributes,
                                                                                 range,
                                                                                 10,
-                                                                                meter.isDisabled(),
+                                                                                isDisabled,
                                                                                 null,
                                                                                 userContext);
 
