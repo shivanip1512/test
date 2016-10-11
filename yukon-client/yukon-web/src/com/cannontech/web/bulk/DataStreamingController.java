@@ -193,7 +193,6 @@ public class DataStreamingController {
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
         
         DataStreamingConfig config = verificationInfo.getConfiguration();
-        int configId = verificationInfo.getConfiguration().getId();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         config.setAccessor(accessor);
         
