@@ -15,7 +15,6 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallback;
-import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.device.commands.CommandCallback;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
@@ -31,6 +30,7 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.web.dev.dataStreaming.DataStreamingDevSettings;
+import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfigResult;
 
 /**
  * Abstraction of the Porter connection for data streaming purposes. This class handles the actual data streaming config

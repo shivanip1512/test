@@ -1,4 +1,4 @@
-package com.cannontech.common.bulk.callbackResult;
+package com.cannontech.web.rfn.dataStreaming.model;
 
 import java.util.Date;
 import java.util.List;
@@ -6,6 +6,9 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
+import com.cannontech.common.bulk.callbackResult.BackgroundProcessTypeEnum;
+import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallback;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.processor.ProcessorCallbackException;
@@ -28,6 +31,7 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
     private DeviceCollection canceledDeviceCollection;
     private DeviceCollection unsupportedDeviceCollection;
     private int configId;
+    private DataStreamingConfig config;
     
     private StoredDeviceGroup allDevicesGroup;
     private StoredDeviceGroup successGroup;
@@ -266,10 +270,6 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
     public int getConfigId() {
         return configId;
     }
-
-    public void setConfigId(int configId) {
-        this.configId = configId;
-    }
     
     public StoredDeviceGroup getAllDevicesGroup() {
         return allDevicesGroup;
@@ -289,5 +289,14 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
 
     public StoredDeviceGroup getUnsupportedGroup() {
         return unsupportedGroup;
+    }
+
+    public DataStreamingConfig getConfig() {
+        return config;
+    }
+
+    public void setConfig(DataStreamingConfig config) {
+        this.config = config;
+        this.configId = config.getId();
     }
 }

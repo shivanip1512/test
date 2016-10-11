@@ -1,7 +1,7 @@
 package com.cannontech.web.updater.dataStreaming;
 
-import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.util.ResolvableTemplate;
+import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfigResult;
 import com.cannontech.web.updater.ResultAccessor;
 
 public enum DataStreamingTypeEnum {

@@ -29,7 +29,6 @@ import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.callbackResult.DataStreamingConfigCallback;
-import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.config.ConfigurationSource;
@@ -80,6 +79,7 @@ import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingPorterConnection;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
+import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfigResult;
 import com.cannontech.web.rfn.dataStreaming.model.DeviceUnsupported;
 import com.cannontech.web.rfn.dataStreaming.model.DiscrepancyResult;
 import com.cannontech.web.rfn.dataStreaming.model.GatewayLoading;
@@ -816,6 +816,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     deviceBehaviorDao.saveBehaviorReport(report);
                 });
             }
+            
+            result.setConfig(config);
 
             sendConfiguration(user, deviceCollection, correlationId, result);
             return result;
@@ -886,7 +888,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             
             logService.acceptCompleted(result.getResultsId(), allDeviceIds.size(), configIdsToDeviceIds.size(),
                 devicesIdsToUnassign.size());
-
+            
             return result;
         } else {
             return createEmptyResult(deviceCollection, "Porter connection is invalid.");

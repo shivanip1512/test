@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.bulk.callbackResult.DataStreamingConfigResult;
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -36,6 +35,7 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
+import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfigResult;
 import com.cannontech.web.rfn.dataStreaming.model.VerificationInformation;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.web.security.annotation.CheckCparm;
@@ -199,7 +199,6 @@ public class DataStreamingController {
         
         try {
             DataStreamingConfigResult result = dataStreamingService.assignDataStreamingConfig(config, deviceCollection, user);
-            result.setConfigId(configId);
             model.addAttribute("resultsId", result.getResultsId());
             return "redirect:dataStreamingResults";
         } catch (DataStreamingConfigException e) {
@@ -225,7 +224,7 @@ public class DataStreamingController {
         model.addAttribute("result", streamingResult);
         int configId = streamingResult.getConfigId();
         if(configId > 0) {
-            DataStreamingConfig config = dataStreamingService.findDataStreamingConfiguration(configId);
+            DataStreamingConfig config = streamingResult.getConfig();
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             config.setAccessor(accessor);
             model.addAttribute("config", config);
