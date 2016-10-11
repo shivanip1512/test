@@ -312,16 +312,18 @@ public class DataStreamingConfigurationsController {
     }
     
     @RequestMapping(value = "exportSearch")
-    public String exportSearchResults(ModelMap model, SummarySearchCriteria criteria, HttpServletResponse response,
+    public String exportSearchResults(ModelMap model, FlashScope flash, SummarySearchCriteria criteria,
+            HttpServletResponse response,
             YukonUserContext userContext) {
         try {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
             downloadSearchResults(criteria, response, accessor);
         } catch (IOException ioe) {
-            model.addAttribute("dataStreamingExportErrors", ".errors.connectionError");
+            flash.setError(YukonMessageSourceResolvable.createSingleCodeWithArguments(
+                    "yukon.web.modules.tools.dataStreaming.summary.results.errors.connectionError", ioe));
         } catch (DataStreamingConfigException dsce) {
-            model.addAttribute("dataStreamingExportErrors", ".errors.configError");
+            flash.setError(dsce.getMessageSourceResolvable());
         }
         return "../dataStreaming/summaryResults.jsp";
     }

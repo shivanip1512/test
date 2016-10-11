@@ -8,9 +8,6 @@
 
 
 <cti:standardPage module="tools" page="dataStreaming.summary">
-    <c:if  test="${!empty dataStreamingExportErrors }">
-        <tags:alertBox>${dataStreamingExportErrors }</tags:alertBox>
-    </c:if>
     <cti:url var="action" value="/tools/dataStreaming/exportSearch" />
     <form:form id="searchForm" commandName="searchFilters" action="${action}" method="GET">
         <cti:csrfToken />

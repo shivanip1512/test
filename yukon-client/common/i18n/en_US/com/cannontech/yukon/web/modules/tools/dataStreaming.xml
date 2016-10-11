@@ -40,7 +40,6 @@
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.interval">Interval</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.exportFileName">DataStreamingSummary</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.summary.results.errors.connectionError">Connection to server failed during download. Please try again.</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.summary.results.errors.configError">Communication error occurred with Network Manager. Please check if Network Manager is running.</entry>
     
     <!-- DATA STREAMING DISCREPANCIES PAGE-->
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.pageName">Data Streaming Discrepancies</entry>
