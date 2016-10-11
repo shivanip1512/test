@@ -19,6 +19,7 @@ yukon.map.network = (function () {
     _parentIcon,
     _parentLine,
     _neighborIcons = [],
+    _primaryRouteIcons = [],
     
     /** @type {string} - The default projection code of our map tiles. */
     _destProjection = 'EPSG:3857',
@@ -127,6 +128,7 @@ yukon.map.network = (function () {
                         properties = feature.getProperties(),
                         parent = properties.parent;
                         neighbor = properties.neighbor;
+                        routeInfo = properties.routeInfo;
                         $('#parent-info').hide();
                         $('#device-info').hide();
 
@@ -142,6 +144,12 @@ yukon.map.network = (function () {
                             $('#parent-info').show();
                         } else if (neighbor != null) {
                             var paoId = neighbor.device.paoIdentifier.paoId;
+                            url = yukon.url('/tools/map/device/' + paoId + '/info');
+                            $('#device-info').load(url, function() {
+                                $('#device-info').show();
+                            });
+                        } else if (routeInfo != null) {
+                            var paoId = routeInfo.device.paoIdentifier.paoId;
                             url = yukon.url('/tools/map/device/' + paoId + '/info');
                             $('#device-info').load(url, function() {
                                 $('#device-info').show();
@@ -265,10 +273,51 @@ yukon.map.network = (function () {
                 
                 /** Gets the primary route from Network Manager **/
                 $(document).on('click', '.js-primary-route', function() {
-                    //TODO:  Add request to get primary route
-                    var fc = yukon.fromJson('#geojson'),
-                    feature = fc.features[0],
-                    paoId = feature.id;
+                    var primaryRouteRow = $(this).closest('.switch-btn'),
+                    wasChecked = primaryRouteRow.find('.switch-btn-checkbox').prop('checked');
+                    
+                    if (!wasChecked) {
+                        var fc = yukon.fromJson('#geojson'),
+                        feature = fc.features[0],
+                        paoId = feature.id;
+                        $.getJSON('primaryRoute?' + $.param({ deviceId: paoId }))
+                        .done(function (routeInfo) {
+                            var source = _map.getLayers().getArray()[_tiles.length].getSource();
+                            for (x in routeInfo) {
+                                var route = routeInfo[x],
+                                feature = route.location.features[0],
+                                src_projection = fc.crs.properties.name,
+                                style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
+                                icon = new ol.Feature({ routeInfo: route });
+                                
+                                icon.setStyle(style);
+                                
+                                if (src_projection === _destProjection) {
+                                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+                                } else {
+                                    var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+                                    icon.setGeometry(new ol.geom.Point(coord));
+                                }
+                                
+                                _primaryRouteIcons.push(icon);
+                                source.addFeature(icon);
+                            }
+                            _map.getView().fitExtent(source.getExtent(), _map.getSize());
+                        });
+                    } else {
+                        for (x in _primaryRouteIcons) {
+                            var route = _primaryRouteIcons[x];
+                            var source = _map.getLayers().getArray()[_tiles.length].getSource();
+                            source.removeFeature(route);
+                            var features = source.getFeatures();
+                            if (features != null && features.length > 1) {
+                                _map.getView().fitExtent(source.getExtent(), _map.getSize());
+                            } else {
+                                _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
+                                _map.getView().setZoom(13);
+                            }
+                        }
+                    }
                 });
                 
                 /** Gets the parent node from Network Manager **/

@@ -238,13 +238,13 @@ public class NmNetworkTestServiceImpl implements NmNetworkTestService {
         Set<RfnIdentifier> identifiers = new HashSet<>();
         identifiers.addAll(meters.keySet());
         identifiers.remove(device.getRfnIdentifier());
-        FeatureCollection location = paoLocationService.getLocationsAsGeoJson(Lists.newArrayList(device));
+/*        FeatureCollection location = paoLocationService.getLocationsAsGeoJson(Lists.newArrayList(device));
         RouteData data = this.routes.get(device.getRfnIdentifier());
-        routes.add(new RouteInfo(device, data, location, accessor));
+        routes.add(new RouteInfo(device, data, location, accessor));*/
         for (RfnIdentifier identifier : identifiers) {
             device = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
-            location = paoLocationService.getLocationsAsGeoJson(Lists.newArrayList(device));
-            data = this.routes.get(device.getRfnIdentifier());
+            FeatureCollection location = paoLocationService.getLocationsAsGeoJson(Lists.newArrayList(device));
+            RouteData data = this.routes.get(device.getRfnIdentifier());
             routes.add(new RouteInfo(device, data, location, accessor));
         }
         
