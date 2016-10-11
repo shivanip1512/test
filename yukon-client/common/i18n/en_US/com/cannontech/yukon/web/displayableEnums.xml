@@ -367,6 +367,12 @@
     <entry key="yukon.common.setting.HONEYWELL_WIFI_SERVICE_BUS_QUEUE.description">Queue name for the Honeywell wifi service bus.</entry>
     <entry key="yukon.common.setting.SCHEDULED_REQUEST_MAX_RUN_HOURS">Scheduled Requests Timeout</entry>
     <entry key="yukon.common.setting.SCHEDULED_REQUEST_MAX_RUN_HOURS.description">The maximum number of hours a scheduled request may run before automatically being cancelled.</entry>
+    <entry key="yukon.common.setting.HONEYWELL_SERVER_URL">honeywell API URL</entry>
+    <entry key="yukon.common.setting.HONEYWELL_SERVER_URL.description">URL to connect to honeywell service.</entry>
+    <entry key="yukon.common.setting.HONEYWELL_CLIENTID">honeywell clientId</entry>
+    <entry key="yukon.common.setting.HONEYWELL_CLIENTID.description">ClientId to get access token from honeywell service.</entry>
+    <entry key="yukon.common.setting.HONEYWELL_SECRET">honeywell secret</entry>
+    <entry key="yukon.common.setting.HONEYWELL_SECRET.description">Secret to get access token from honeywell service.</entry>
     
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE">Producer Window Size</entry>
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE.description">The size, in kilobytes, of messages that a producer can send before it is blocked to await a ProducerAck from the broker that frees enough memory to allow another message to be sent. (Requires restart to take effect.)</entry>
