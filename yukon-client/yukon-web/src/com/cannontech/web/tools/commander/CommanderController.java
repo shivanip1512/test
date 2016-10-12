@@ -463,8 +463,7 @@ public class CommanderController {
             if (type == CommandTarget.DEVICE || type == CommandTarget.LOAD_GROUP) {
                 
                 LiteYukonPAObject pao = cache.getAllPaosMap().get(recent.getPaoId());
-                if (pao == null)
-                 {
+                if (pao == null){
                     continue; // May have had an old id in the cookie
                 }
                 
@@ -472,8 +471,7 @@ public class CommanderController {
             } else {
                 
                 LiteYukonPAObject route = cache.getAllPaosMap().get(recent.getRouteId());
-                if (route == null)
-                 {
+                if (route == null){
                     continue; // May have had an old id in the cookie
                 }
                 
