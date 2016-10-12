@@ -1,6 +1,9 @@
 package com.cannontech.common.pao.dao.impl;
 
+import java.math.BigDecimal;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Set;
 
@@ -8,6 +11,7 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
@@ -24,6 +28,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class PaoLocationDaoImpl implements PaoLocationDao {
@@ -109,6 +114,28 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
     }
     
     @Override
+    public void delete(Origin origin) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE from PaoLocation WHERE origin").eq_k(origin);
+        
+        jdbcTemplate.update(sql);
+    }
+    
+    @Override
+    public List<PaoLocation> getLocations(Origin origin) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select pl.PAObjectId, Latitude, Longitude, Type, Origin, LastChangedDate");
+        sql.append("from PaoLocation pl");
+        sql.append("join YukonPAObject ypo on ypo.PAObjectId = pl.PAObjectId");
+        sql.append("where origin").eq_k(origin);
+        
+        return jdbcTemplate.query(sql, mapper);
+    }
+    
+    
+    @Override
     public void save(PaoLocation location) {
         // Insert the location or update if already exists.
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -132,5 +159,35 @@ public class PaoLocationDaoImpl implements PaoLocationDao {
             sql.append("where PAObjectId").eq(location.getPaoIdentifier().getPaoId());
             jdbcTemplate.update(sql);
         }
-    }    
+    }  
+    
+    @Override
+    public void save(List<PaoLocation> location) {
+     
+        List<List<PaoLocation>> locations = Lists.partition(location, ChunkingSqlTemplate.DEFAULT_SIZE);
+        locations.forEach(batch -> {
+            //assign devices
+            SqlStatementBuilder insertSql = new SqlStatementBuilder();
+            insertSql.append("INSERT INTO PaoLocation");
+            insertSql.append("(PAObjectId, Latitude, Longitude, LastChangedDate, Origin)");
+            insertSql.append("values");
+            insertSql.append("(?, ?, ?, ?, ?)");
+            
+            jdbcTemplate.batchUpdate(insertSql.toString(), new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    PaoLocation location = batch.get(i);
+                    ps.setInt(1, location.getPaoIdentifier().getPaoId());
+                    ps.setBigDecimal(2, new BigDecimal(location.getLatitude()));
+                    ps.setBigDecimal(3, new BigDecimal(location.getLongitude()));
+                    ps.setTimestamp(4, new Timestamp(location.getLastChangedDate().getMillis()));
+                    ps.setString(5, location.getOrigin().name());
+                }
+                @Override
+                public int getBatchSize() {
+                    return batch.size();
+                }
+            });
+        });
+    }
 }

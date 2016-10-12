@@ -8,6 +8,7 @@ public enum SimulatorType {
     DATA_STREAMING,
     GATEWAY, 
     RFN_LCR,
-    RFN_METER
+    RFN_METER,
+    RFN_NETWORK
     ;
 }

@@ -4,11 +4,13 @@ import java.beans.PropertyEditor;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.jms.ConnectionFactory;
@@ -21,7 +23,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.Instant;
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
@@ -48,7 +49,10 @@ import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestRes
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResult;
+import com.cannontech.common.rfn.message.network.NeighborData;
 import com.cannontech.common.rfn.message.network.NeighborFlagType;
+import com.cannontech.common.rfn.message.network.ParentData;
+import com.cannontech.common.rfn.message.network.RouteData;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
@@ -74,6 +78,8 @@ import com.cannontech.simulators.message.request.DataStreamingSimulatorStatusReq
 import com.cannontech.simulators.message.request.GatewaySimulatorStatusRequest;
 import com.cannontech.simulators.message.request.ModifyDataStreamingSimulatorRequest;
 import com.cannontech.simulators.message.request.ModifyGatewaySimulatorRequest;
+import com.cannontech.simulators.message.request.NmNetworkSimulatorRequest;
+import com.cannontech.simulators.message.request.NmNetworkSimulatorRequest.Action;
 import com.cannontech.simulators.message.request.RfnLcrAllDeviceSimulatorStartRequest;
 import com.cannontech.simulators.message.request.RfnLcrAllDeviceSimulatorStopRequest;
 import com.cannontech.simulators.message.request.RfnLcrSimulatorByRangeStartRequest;
@@ -82,8 +88,10 @@ import com.cannontech.simulators.message.request.RfnLcrSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStartRequest;
 import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.RfnMeterDataSimulatorStopRequest;
+import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.DataStreamingSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.GatewaySimulatorStatusResponse;
+import com.cannontech.simulators.message.response.NmNetworkSimulatorResponse;
 import com.cannontech.simulators.message.response.RfnLcrSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.RfnMeterDataSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
@@ -869,11 +877,58 @@ public class NmIntegrationController {
     
     @RequestMapping("viewMappingSimulator")
     public String viewMappingSimulator(ModelMap model, FlashScope flash, HttpServletRequest request) {
-        SimulatedNmMappingSettings settings = new SimulatedNmMappingSettings();
+        
+        NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(Action.GET_SETTINGS);
+        SimulatorResponseBase response = sendRequest(simRequest, null, null);  
+        
+        SimulatedNmMappingSettings settings = null;
+        if (response != null) {
+            settings = ((NmNetworkSimulatorResponse) response).getSettings();
+            model.addAttribute("simulatorRunning", true);
+        }
+        if (settings == null) {
+            settings = new SimulatedNmMappingSettings();
+            NeighborData neighborData = new NeighborData();
+            neighborData.setEtxBand((short) 3);
+            neighborData.setLastCommTime(new Date().getTime());
+            neighborData.setLinkPower("125 mWatt");
+            neighborData.setLinkRate("4x");
+            neighborData.setNeighborAddress("00:14:08:03:FA:A2");
+            neighborData.setNeighborDataTimestamp(new Date().getTime());
+            Set<NeighborFlagType> types = new HashSet<>();
+            types.add(NeighborFlagType.BN);
+            types.add(NeighborFlagType.IN);
+            neighborData.setNeighborFlags(types);
+            neighborData.setNeighborLinkCost((short) 3.3);
+            neighborData.setNextCommTime(new Date().getTime());
+            neighborData.setNumSamples(1);
+            neighborData.setSerialNumber("123");
+            settings.setNeighborData(neighborData);
+
+            RouteData routeData = new RouteData();
+            routeData.setDestinationAddress("00:14:08:03:FA:A2");
+            routeData.setHopCount(1);
+            routeData.setNextHopAddress("00:14:08:03:FA:A2");
+            routeData.setRouteColor(1);
+            routeData.setRouteDataTimestamp(new Date().getTime());
+            Set<RouteFlagType> routeTypes = new HashSet<>();
+            routeTypes.add(RouteFlagType.BR);
+            routeTypes.add(RouteFlagType.GC);
+            routeData.setRouteFlags(routeTypes);
+            routeData.setRouteTimeout(new Date().getTime());
+            routeData.setSerialNumber("101");
+            routeData.setTotalCost(2);
+            settings.setRouteData(routeData);
+
+            ParentData parentData = new ParentData();
+            parentData.setNodeMacAddress("17:14:08:03:FA:A2");
+            parentData.setNodeSN("123");
+            settings.setParentData(parentData);
+            model.addAttribute("simulatorRunning", false);
+        }
+
         setupMappingModel(model, settings, request);
         model.addAttribute("currentSettings", settings);
-        //TODO: Make call to service to see if simulator is already running
-        model.addAttribute("simulatorRunning", false);
         return "rfn/mappingSimulator.jsp";
     }
     
@@ -897,7 +952,7 @@ public class NmIntegrationController {
         if (currentSettings.getRouteData() != null) {
             currentSettings.getRouteData().setRouteDataTimestamp(dateTime);
             currentSettings.getRouteData().setRouteTimeout(dateTime);
-            currentSettings.getRouteData().setRouteFlags(new HashSet<>());;
+            currentSettings.getRouteData().setRouteFlags(new HashSet<>());
             for (RouteFlagType flag : RouteFlagType.values()) {
                 boolean flagSet= ServletRequestUtils.getBooleanParameter(request, "routeFlag_" + flag, false);
                 if (flagSet) {
@@ -909,37 +964,51 @@ public class NmIntegrationController {
     
     @RequestMapping(value="populateMappingDatabase", method = RequestMethod.POST)
     public String populateMappingDatabase(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
+        NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(currentSettings, Action.SETUP);
+        sendRequest(simRequest, new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.databasePopulated"), flash);
         setupMappingModel(model, currentSettings, request);
-        //TODO: Make call to service to populate database
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.databasePopulated"));
         return "rfn/mappingSimulator.jsp";
     }
     
     @RequestMapping(value="updateMappingSettings", method = RequestMethod.POST)
     public String updateMappingSettings(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
+        NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(currentSettings, Action.UPDATE_SETTINGS);
+        sendRequest(simRequest, new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.settingsUpdated"), flash);
         setupMappingModel(model, currentSettings, request);
-        //TODO: Make call to service to update settings
         model.addAttribute("simulatorRunning", true);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.settingsUpdated"));
         return "rfn/mappingSimulator.jsp";
     }
-    
+        
     @RequestMapping(value="startMappingSimulator", method = RequestMethod.POST)
     public String startMappingSimulator(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
+        NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(currentSettings, Action.START);
+        sendRequest(simRequest, new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.simulatorStart"), flash);       
         setupMappingModel(model, currentSettings, request);
-        //TODO: Make call to service to start simulator
         model.addAttribute("simulatorRunning", true);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.simulatorStart"));
         return "rfn/mappingSimulator.jsp";
     }
     
     @RequestMapping("stopMappingSimulator")
     public String stopMappingSimulator(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
+        NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(Action.STOP);
+        sendRequest(simRequest, new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.simulatorStop"), flash);       
         setupMappingModel(model, currentSettings, request);
-        //TODO: Make call to service to stop simulator
         model.addAttribute("simulatorRunning", false);
-        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.simulatorStart"));
         return "rfn/mappingSimulator.jsp";
+    }
+    
+    private SimulatorResponseBase sendRequest(SimulatorRequest request, YukonMessageSourceResolvable confirmation, FlashScope flash){
+        SimulatorResponseBase response = null;
+        try {
+            response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+            if (response.isSuccessful() && confirmation != null) {
+                flash.setConfirm(confirmation);
+            }
+        } catch (ExecutionException e) {
+            log.error("Error communicating with Yukon Simulators Service.", e);
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+        }
+        return response;
     }
     
     @InitBinder

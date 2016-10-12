@@ -1,10 +1,11 @@
 package com.cannontech.common.rfn.message.network;
 
+import java.io.Serializable;
 import java.util.Set;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
-public class NeighborData {
+public class NeighborData implements Serializable{
     private RfnIdentifier rfnIdentifier;
     private String serialNumber;
     private long neighborDataTimestamp;
@@ -135,55 +136,76 @@ public class NeighborData {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         NeighborData other = (NeighborData) obj;
-        if (etxBand != other.etxBand)
+        if (etxBand != other.etxBand) {
             return false;
-        if (lastCommTime != other.lastCommTime)
+        }
+        if (lastCommTime != other.lastCommTime) {
             return false;
+        }
         if (linkPower == null) {
-            if (other.linkPower != null)
+            if (other.linkPower != null) {
                 return false;
-        } else if (!linkPower.equals(other.linkPower))
+            }
+        } else if (!linkPower.equals(other.linkPower)) {
             return false;
+        }
         if (linkRate == null) {
-            if (other.linkRate != null)
+            if (other.linkRate != null) {
                 return false;
-        } else if (!linkRate.equals(other.linkRate))
+            }
+        } else if (!linkRate.equals(other.linkRate)) {
             return false;
+        }
         if (neighborAddress == null) {
-            if (other.neighborAddress != null)
+            if (other.neighborAddress != null) {
                 return false;
-        } else if (!neighborAddress.equals(other.neighborAddress))
+            }
+        } else if (!neighborAddress.equals(other.neighborAddress)) {
             return false;
-        if (neighborDataTimestamp != other.neighborDataTimestamp)
+        }
+        if (neighborDataTimestamp != other.neighborDataTimestamp) {
             return false;
+        }
         if (neighborFlags == null) {
-            if (other.neighborFlags != null)
+            if (other.neighborFlags != null) {
                 return false;
-        } else if (!neighborFlags.equals(other.neighborFlags))
+            }
+        } else if (!neighborFlags.equals(other.neighborFlags)) {
             return false;
-        if (Float.floatToIntBits(neighborLinkCost) != Float.floatToIntBits(other.neighborLinkCost))
+        }
+        if (Float.floatToIntBits(neighborLinkCost) != Float.floatToIntBits(other.neighborLinkCost)) {
             return false;
-        if (nextCommTime != other.nextCommTime)
+        }
+        if (nextCommTime != other.nextCommTime) {
             return false;
-        if (numSamples != other.numSamples)
+        }
+        if (numSamples != other.numSamples) {
             return false;
+        }
         if (rfnIdentifier == null) {
-            if (other.rfnIdentifier != null)
+            if (other.rfnIdentifier != null) {
                 return false;
-        } else if (!rfnIdentifier.equals(other.rfnIdentifier))
+            }
+        } else if (!rfnIdentifier.equals(other.rfnIdentifier)) {
             return false;
+        }
         if (serialNumber == null) {
-            if (other.serialNumber != null)
+            if (other.serialNumber != null) {
                 return false;
-        } else if (!serialNumber.equals(other.serialNumber))
+            }
+        } else if (!serialNumber.equals(other.serialNumber)) {
             return false;
+        }
         return true;
     }
 

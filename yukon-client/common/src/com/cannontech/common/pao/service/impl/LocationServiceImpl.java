@@ -1,9 +1,18 @@
 package com.cannontech.common.pao.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
+import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.model.DistanceUnit;
+import com.cannontech.common.pao.model.PaoDistance;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -16,6 +25,7 @@ public class LocationServiceImpl implements LocationService{
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private PaoLocationDao paoLocationDao;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
     
     @Override
     public void deleteLocation(int deviceId, LiteYukonUser user) {
@@ -25,5 +35,39 @@ public class LocationServiceImpl implements LocationService{
             paoLocationDao.delete(deviceId);
             endpointEventLogService.locationRemoved(pao.getPaoName(), user);
         }
+    }
+    
+    @Override
+    public List<PaoDistance> getNearbyLocations(PaoLocation location, double distance, DistanceUnit unit, List<PaoTag> tags) {
+        
+        List<PaoLocation> locations = paoLocationDao.getAllLocations();
+        return getNearbyLocations(locations, location, distance, unit, tags);
+        
+    }
+    
+    @Override
+    public List<PaoDistance> getNearbyLocations(List<PaoLocation> locations, PaoLocation location, double distance, DistanceUnit unit,  List<PaoTag> tags) {
+        
+        if (tags != null) {
+            for (PaoTag tag : tags) {
+                locations = paoDefinitionDao.filterPaosForTag(locations, tag);
+            }
+        }
+        
+        List<PaoDistance> nearby = new ArrayList<>();
+        for (PaoLocation current : locations) {
+            if (location.equals(current)) {
+                continue;
+            }
+            double distanceTo = location.distanceTo(current, unit);
+            if (distanceTo <= distance) {
+                LiteYukonPAObject pao = databaseCache.getAllPaosMap().get(current.getPaoIdentifier().getPaoId());
+                nearby.add(PaoDistance.of(pao, distanceTo, unit, current)); 
+            }
+        }
+        
+        Collections.sort(nearby, ON_DISTANCE);
+        
+        return nearby;
     }
 }

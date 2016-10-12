@@ -23,8 +23,10 @@ public class RouteInfo {
         this.route = route;
         this.location = location;
         List<String> flags = new ArrayList<>();
-        route.getRouteFlags().forEach(flag -> flags.add(accessor.getMessage(nameKey + flag.name())));
-        commaDelimitedRouteFlags = String.join(", ", flags);
+        if (route.getRouteFlags() != null && !route.getRouteFlags().isEmpty()) {
+            route.getRouteFlags().forEach(flag -> flags.add(accessor.getMessage(nameKey + flag.name())));
+            commaDelimitedRouteFlags = String.join(", ", flags);
+        }
     }
 
     public RfnDevice getDevice() {

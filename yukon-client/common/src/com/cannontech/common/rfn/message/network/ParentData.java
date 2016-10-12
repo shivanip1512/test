@@ -1,8 +1,10 @@
 package com.cannontech.common.rfn.message.network;
 
+import java.io.Serializable;
+
 import com.cannontech.common.rfn.message.RfnIdentifier;
 
-public class ParentData {
+public class ParentData implements Serializable{
 
     private RfnIdentifier rfnIdentifier;
     private String nodeSN;
@@ -44,28 +46,37 @@ public class ParentData {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         ParentData other = (ParentData) obj;
         if (nodeMacAddress == null) {
-            if (other.nodeMacAddress != null)
+            if (other.nodeMacAddress != null) {
                 return false;
-        } else if (!nodeMacAddress.equals(other.nodeMacAddress))
+            }
+        } else if (!nodeMacAddress.equals(other.nodeMacAddress)) {
             return false;
+        }
         if (nodeSN == null) {
-            if (other.nodeSN != null)
+            if (other.nodeSN != null) {
                 return false;
-        } else if (!nodeSN.equals(other.nodeSN))
+            }
+        } else if (!nodeSN.equals(other.nodeSN)) {
             return false;
+        }
         if (rfnIdentifier == null) {
-            if (other.rfnIdentifier != null)
+            if (other.rfnIdentifier != null) {
                 return false;
-        } else if (!rfnIdentifier.equals(other.rfnIdentifier))
+            }
+        } else if (!rfnIdentifier.equals(other.rfnIdentifier)) {
             return false;
+        }
         return true;
     }
 

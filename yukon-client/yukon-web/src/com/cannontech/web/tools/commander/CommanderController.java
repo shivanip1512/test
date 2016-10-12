@@ -41,6 +41,7 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.model.DistanceUnit;
 import com.cannontech.common.pao.model.PaoDistance;
 import com.cannontech.common.pao.model.PaoLocation;
+import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -66,7 +67,6 @@ import com.cannontech.web.tools.commander.model.CommandTarget;
 import com.cannontech.web.tools.commander.model.RecentTarget;
 import com.cannontech.web.tools.commander.model.ViewableTarget;
 import com.cannontech.web.tools.commander.service.CommanderService;
-import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.util.WebUtilityService;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -74,6 +74,7 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 
 @Controller
 @CheckRoleProperty(YukonRoleProperty.ENABLE_WEB_COMMANDER)
@@ -82,7 +83,7 @@ public class CommanderController {
     @Autowired private ServerDatabaseCache cache;
     @Autowired private PaoDao paoDao;
     @Autowired private PaoLocationDao paoLocationDao;
-    @Autowired private PaoLocationService paoLocationService;
+    @Autowired private LocationService locationService;
     @Autowired private CommandDao commandDao;
     @Autowired private CommanderService commanderService;
     @Autowired private CommanderEventLogService eventLogger;
@@ -268,7 +269,9 @@ public class CommanderController {
         List<CommandRequest> desired = new ArrayList<>();
         for (String id : requestIdsContainer.requestIds) {
             CommandRequest request = requests.get(Integer.parseInt(id));
-            if (request != null) desired.add(request);
+            if (request != null) {
+                desired.add(request);
+            }
         }
         
         return desired;
@@ -311,9 +314,9 @@ public class CommanderController {
         Map<String, Object> result = new HashMap<>();
 
         List<CommandRequest> commands = null;
-        List<String> authorizedCommand = new ArrayList<String>();
-        Map<Integer, String> unAuthorizedCommand = new HashMap<Integer, String>();
-        Map<String, Boolean> commandWithAuthorization = new HashMap<String, Boolean>();
+        List<String> authorizedCommand = new ArrayList<>();
+        Map<Integer, String> unAuthorizedCommand = new HashMap<>();
+        Map<String, Boolean> commandWithAuthorization = new HashMap<>();
 
         if (params.getPaoId() != null) {
             LiteYukonPAObject pao = cache.getAllPaosMap().get(params.getPaoId());
@@ -415,8 +418,8 @@ public class CommanderController {
             return null;
         }
         
-        List<PaoDistance> nearby = paoLocationService.getNearbyLocations(location, 5, DistanceUnit.MILES, 
-                PaoTag.COMMANDER_REQUESTS);
+        List<PaoDistance> nearby = locationService.getNearbyLocations(location, 5, DistanceUnit.MILES, 
+              Lists.newArrayList(PaoTag.COMMANDER_REQUESTS));
         if (nearby.size() > 10) { 
             nearby = nearby.subList(0, 10);
         }
@@ -439,7 +442,9 @@ public class CommanderController {
         List<LiteDeviceTypeCommand> all = commandDao.getAllDevTypeCommands(type); 
         List<LiteCommand> visible = new ArrayList<>();
         for (LiteDeviceTypeCommand command : all) {
-            if (command.isVisible()) visible.add(commandDao.getCommand(command.getCommandId()));
+            if (command.isVisible()) {
+                visible.add(commandDao.getCommand(command.getCommandId()));
+            }
         }
         
         return commandDao.filterCommandsForUser(visible, user);
@@ -458,13 +463,19 @@ public class CommanderController {
             if (type == CommandTarget.DEVICE || type == CommandTarget.LOAD_GROUP) {
                 
                 LiteYukonPAObject pao = cache.getAllPaosMap().get(recent.getPaoId());
-                if (pao == null) continue; // May have had an old id in the cookie
+                if (pao == null)
+                 {
+                    continue; // May have had an old id in the cookie
+                }
                 
                 viewable.setLabel(pao.getPaoName());
             } else {
                 
                 LiteYukonPAObject route = cache.getAllPaosMap().get(recent.getRouteId());
-                if (route == null) continue; // May have had an old id in the cookie
+                if (route == null)
+                 {
+                    continue; // May have had an old id in the cookie
+                }
                 
                 viewable.setLabel(recent.getSerialNumber() + " - " + route.getPaoName());
             }

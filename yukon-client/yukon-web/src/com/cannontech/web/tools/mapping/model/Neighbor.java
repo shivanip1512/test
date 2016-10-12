@@ -23,8 +23,10 @@ public class Neighbor {
         this.location = location;
         this.data = data;
         List<String> flags = new ArrayList<>();
-        data.getNeighborFlags().forEach(flag -> flags.add(accessor.getMessage(nameKey + flag.name())));
-        commaDelimitedNeighborFlags = String.join(", ", flags);
+        if (data.getNeighborFlags() != null && !data.getNeighborFlags().isEmpty()) {
+            data.getNeighborFlags().forEach(flag -> flags.add(accessor.getMessage(nameKey + flag.name())));
+            commaDelimitedNeighborFlags = String.join(", ", flags);
+        }
     }
 
     public FeatureCollection getLocation() {

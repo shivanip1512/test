@@ -7,5 +7,6 @@ public enum Origin {
     MULTISPEAK,
     BULK_IMPORT,
     NM_BULK_IMPORT,
-    NM_MANUAL
+    NM_MANUAL,
+    SIMULATOR
 }

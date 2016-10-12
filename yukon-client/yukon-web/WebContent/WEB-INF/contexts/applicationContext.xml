@@ -20,6 +20,8 @@
     
     <bean class="com.cannontech.web.tools.mapping.service.impl.NmNetworkTestServiceImpl"/>
     
+    <bean class="com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl"/>
+    
     <bean class="com.cannontech.web.common.resources.service.impl.CSSCompressionFilterServiceImpl">
         <qualifier value="cssCompressionFilterService"/>
     </bean>

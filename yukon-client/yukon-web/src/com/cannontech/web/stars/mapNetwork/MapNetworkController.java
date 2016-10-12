@@ -21,9 +21,10 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.tools.mapping.model.Neighbor;
+import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.model.Parent;
 import com.cannontech.web.tools.mapping.model.RouteInfo;
-import com.cannontech.web.tools.mapping.service.NmNetworkTestService;
+import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 
 @RequestMapping("/mapNetwork/*")
@@ -32,7 +33,7 @@ public class MapNetworkController {
     
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private DeviceDao deviceDao;
-    @Autowired private NmNetworkTestService nmNetworkTestService;
+    @Autowired private NmNetworkService nmNetworkService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @RequestMapping("home")
@@ -53,20 +54,39 @@ public class MapNetworkController {
     }
     
     @RequestMapping("parentNode")
-    public @ResponseBody Parent parentNode(HttpServletRequest request, @RequestParam("deviceId") int deviceId) throws ServletException {
-        return nmNetworkTestService.getParent(deviceId);
+    public @ResponseBody Parent parentNode(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        try {
+            return nmNetworkService.getParent(deviceId, accessor);
+        } catch (NmNetworkException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
     
     @RequestMapping("neighbors")
     public @ResponseBody List<Neighbor> neighbors(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        return nmNetworkTestService.getNeighbors(deviceId, accessor);
+        try {
+            return nmNetworkService.getNeighbors(deviceId, accessor);
+        } catch (NmNetworkException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
     
     @RequestMapping("primaryRoute")
     public @ResponseBody List<RouteInfo> primaryRoute(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        return nmNetworkTestService.getRoute(deviceId, accessor);
+        try {
+            return nmNetworkService.getRoute(deviceId, accessor);
+        } catch (NmNetworkException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+        return null;
     }
     
 }

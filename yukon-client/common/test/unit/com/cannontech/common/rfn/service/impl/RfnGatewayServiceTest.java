@@ -30,6 +30,7 @@ import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResponse;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
+import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -106,7 +107,7 @@ public class RfnGatewayServiceTest {
         LiteYukonPAObject gw2Pao = new LiteYukonPAObject(gateway2PaoId.getPaoId());
         gw2Pao.setPaoName(gateway2Name);
         
-        paos = new HashMap<Integer, LiteYukonPAObject>();
+        paos = new HashMap<>();
         paos.put(gatewayPaoId.getPaoId(), gwPao);
         paos.put(gateway2PaoId.getPaoId(), gw2Pao);
     }
@@ -129,7 +130,7 @@ public class RfnGatewayServiceTest {
     @Test
     public void test_getAllGateways() {
         // Setup gateway and gateway 2.0 RfnDevices.
-        List<RfnDevice> rfnDevices = new ArrayList<RfnDevice>();
+        List<RfnDevice> rfnDevices = new ArrayList<>();
         rfnDevices.add(createRfnDevice(gatewayName, gatewayPaoId, gatewayRfnId)); //Gateway
         rfnDevices.add(createRfnDevice(gateway2Name, gateway2PaoId, gateway2RfnId)); //Gateway 2.0
         
@@ -911,7 +912,7 @@ public class RfnGatewayServiceTest {
     private static class EmptyPaoLocationDao implements PaoLocationDao {
         @Override
         public Set<PaoLocation> getLocations(Iterable<? extends YukonPao> paos) {
-            return new HashSet<PaoLocation>();
+            return new HashSet<>();
         }
 
         @Override
@@ -932,7 +933,22 @@ public class RfnGatewayServiceTest {
         @Override
         public void delete(int paoId) {
             throw new UnsupportedOperationException();
-            
+
+        }
+
+        @Override
+        public void delete(Origin origin) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void save(List<PaoLocation> location) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public List<PaoLocation> getLocations(Origin origin) {
+            throw new UnsupportedOperationException();
         }
     }
 }

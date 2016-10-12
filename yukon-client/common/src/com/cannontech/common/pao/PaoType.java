@@ -901,6 +901,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return rfMeterTypes.contains(this);
     }
     
+    public boolean isRfGateway() {
+        return rfGatewayTypes.contains(this);
+    }
+
     public boolean hasMeterNumber() {
         return isMct() || isIed() || isRfMeter();
     }

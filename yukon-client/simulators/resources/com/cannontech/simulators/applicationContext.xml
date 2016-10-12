@@ -15,5 +15,5 @@
     <bean class="com.cannontech.simulators.handler.RfnLcrDataSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.RfnMeterDataSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.DataStreamingSimulatorMessageHandler"/>
-    
+    <bean class="com.cannontech.simulators.handler.NmNetworkSimulatorMessageHandler"/>
 </beans>
