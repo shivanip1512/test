@@ -273,6 +273,8 @@ void StatisticsManager::runWriterThreads(unsigned max_threads, ThreadStatusKeepe
 
     unsigned records_distributed_to_threads = 0;
 
+    boost::this_thread::disable_interruption;
+
     if( num_threads > 1 )
     {
         const unsigned chunk_size = total_records / num_threads;
