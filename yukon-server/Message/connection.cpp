@@ -268,7 +268,7 @@ void CtiConnection::receiveAllMessages()
 
         Cti::Timing::MillisecondTimer timer;
 
-        while( (elapsedMillis = timer.elapsed()) < timeoutMillis && isConnectionUsable())
+        while( (elapsedMillis = timer.elapsed()) < timeoutMillis )
         {
             // receive with a timeout set to the remaining millis
             const boost::scoped_ptr<cms::Message> msg( _consumer->receive( timeoutMillis - elapsedMillis ));
