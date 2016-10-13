@@ -161,6 +161,7 @@
 <entry key="yukon.web.menu.config.support.information.localization">Localization</entry>
 
 <entry key="yukon.web.menu.config.support.logs">Logs</entry>
+<entry key="yukon.web.menu.config.support.dataStreaming">Data Streaming Support</entry>
 
 <entry key="yukon.web.menu.config.support.database">Database</entry>
 <entry key="yukon.web.menu.config.support.database.info">Information</entry>
