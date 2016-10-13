@@ -698,3 +698,17 @@ begin
 	versionNumber = sV1 + "." + sV2 + "." + sV3;
 	return versionNumber;
 end;
+
+//--------------------------------------------------------------------------------------
+//Helper function to install MessageBroker Service (while upgrading from 6.5.* to 6.6.*)
+//--------------------------------------------------------------------------------------
+export prototype InstallMessageBroker();
+function InstallMessageBroker()
+string sProg, sCMD, svDir;
+begin
+
+	sProg = "cmd.exe";
+	sCMD = "/c java -jar " + TARGETDIR ^ "\\Client\\bin\\wrapper.jar" + " -i " + TARGETDIR ^ "\\Client\\bin\\yukonmessagebroker.conf";
+	svDir = TARGETDIR + "\\Runtime\\bin";
+	LaunchApplication(sProg, sCMD, svDir, SW_HIDE, 0, LAAW_OPTION_HIDDEN | LAAW_OPTION_WAIT);
+end;

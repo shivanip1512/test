@@ -409,6 +409,11 @@ begin
 	//reapply old settings to newly updated services
 	LoadServiceSettings();
 	
+	//adding MessageBroker service if it doesnot exist (while upgrading from 6.5.* to 6.6.*)
+	if (ServiceExistsService(SM_NAME) && !ServiceExistsService(BROKER_NAME)) then
+    InstallMessageBroker();
+    endif;
+	
 	//Remove Lucene indexes so they're rebuilt on startup
 	if(ExistsDir(TARGETDIR ^ "cache") = EXISTS) then
 		nResult = DeleteDir(TARGETDIR ^ "cache", ALLCONTENTS);
