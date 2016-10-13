@@ -94,9 +94,9 @@ yukon.device.selection = (function () {
                         successContainer.find('.device-count').text(result.deviceCount);
                         successContainer.find('.js-error-count').text(result.deviceErrorCount);
                         if (result.deviceErrorCount > 0) {
-                            $("#download").show();
+                            document.getElementById("download").disabled = false;
                         } else {
-                            $("#download").hide();
+                            document.getElementById("download").disabled = true;
                         }
                         successContainer.find(':input[name="group.name"]').val(result['group.name']);
                         successContainer.find(':input[name="deviceErrors"]').val(result['deviceErrors']);
@@ -327,7 +327,8 @@ yukon.device.selection = (function () {
                 downloadForm.attr('action', yukon.url('/group/downloadResult'));
                 downloadForm.attr('method', 'GET');
                 downloadForm.append($('.js-error-devices-input').clone());
-                downloadForm.submit();
+                downloadForm.appendTo("body").submit();
+                downloadForm.remove();
             });
         }
         
