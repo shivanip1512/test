@@ -71,7 +71,10 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PaoType.MCT440_2131B, PaoType.MCT440_2132B, PaoType.MCT440_2133B,
             PaoType.RFWMETER, PaoType.RFW201, PaoType.RFW205,
             PaoType.IPC410FL, PaoType.IPC420FD, PaoType.IPC430S4E, PaoType.IPC430SL,
-            PaoType.RFN430SL0, PaoType.RFN430SL1, PaoType.RFN430SL2, PaoType.RFN430SL3, PaoType.RFN430SL4
+            PaoType.RFN430SL0, PaoType.RFN430SL1, PaoType.RFN430SL2, PaoType.RFN430SL3, PaoType.RFN430SL4,
+            PaoType.RFN510FL, PaoType.RFN520FAX, PaoType.RFN520FRX, PaoType.RFN520FAXD, PaoType.RFN520FRXD,
+            PaoType.RFN530FAX, PaoType.RFN530FRX, 
+            PaoType.RFN530S4X, PaoType.RFN530S4EAD, PaoType.RFN530S4EAT, PaoType.RFN530S4ERD, PaoType.RFN530S4ERT
 		},
       	{   //2 - CapBankController
          PaoType.CAPBANKCONTROLLER, PaoType.CBC_FP_2800, PaoType.DNP_CBC_6510, PaoType.CBC_EXPRESSCOM,
