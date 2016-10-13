@@ -49,6 +49,7 @@ import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
 public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService {
@@ -295,11 +296,20 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         PaoLocation location = paoLocationDao.getLocation(device.getPaoIdentifier().getPaoId());
         List<PaoLocation> locations = paoLocationDao.getLocations(Origin.SIMULATOR);
         List<PaoDistance> distances = locationService.getNearbyLocations(locations, location, DISTANCE_IN_MILES,
-            DistanceUnit.MILES, null).stream().filter(
-                x -> x.getPao().getPaoType().isRfn() && !x.getPao().getPaoType().isRfGateway()).collect(
-                    Collectors.toList()).subList(0, max);
+            DistanceUnit.MILES, null);
+        log.debug("device="+device+" distances="+distances.size()+" max="+max);
+        List<List<PaoDistance>> parts = Lists.partition(distances, distances.size()/max);
+        log.debug("parts="+parts.size());
+        List<PaoDistance> randomDistances = new ArrayList<>();
+        for (int i = 0; i < max; i++) {
+            List<PaoDistance> part = parts.get(i);
+            log.debug("part size=" + part.size());
+            PaoDistance lastElement = part.stream().reduce((a, b) -> b).get();
+            randomDistances.add(lastElement);
+        }
         List<Integer> paoIds =
-            distances.stream().map(x -> x.getPaoIdentifier().getPaoId()).collect(Collectors.toList());
+            randomDistances.stream().map(x -> x.getPaoIdentifier().getPaoId()).collect(Collectors.toList());
+        log.debug("neighbors found=" + paoIds.size());
         List<RfnDevice> rfDevices = rfnDeviceDao.getDevicesByPaoIds(paoIds);
         return rfDevices;
     }
