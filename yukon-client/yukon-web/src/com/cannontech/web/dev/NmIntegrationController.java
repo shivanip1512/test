@@ -877,9 +877,11 @@ public class NmIntegrationController {
     
     @RequestMapping("viewMappingSimulator")
     public String viewMappingSimulator(ModelMap model, FlashScope flash, HttpServletRequest request) {
+        model.addAttribute("routeFlags", RouteFlagType.values());
+        model.addAttribute("neighborFlags", NeighborFlagType.values());
         
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(Action.GET_SETTINGS);
-        SimulatorResponseBase response = sendRequest(simRequest, null, null);  
+        SimulatorResponseBase response = sendRequest(simRequest, null, flash);  
         
         SimulatedNmMappingSettings settings = null;
         if (response != null) {
@@ -927,14 +929,11 @@ public class NmIntegrationController {
             model.addAttribute("simulatorRunning", false);
         }
 
-        setupMappingModel(model, settings, request);
         model.addAttribute("currentSettings", settings);
         return "rfn/mappingSimulator.jsp";
     }
     
-    private void setupMappingModel(ModelMap model, SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
-        model.addAttribute("routeFlags", RouteFlagType.values());
-        model.addAttribute("neighborFlags", NeighborFlagType.values());
+    private void retrieveFlagSettings(SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
         DateTime now = new DateTime();
         long dateTime = now.getMillis();
         if (currentSettings.getNeighborData() != null) {
@@ -964,37 +963,34 @@ public class NmIntegrationController {
     
     @RequestMapping(value="populateMappingDatabase", method = RequestMethod.POST)
     public String populateMappingDatabase(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
+        retrieveFlagSettings(currentSettings, request);
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(currentSettings, Action.SETUP);
         sendRequest(simRequest, new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.databasePopulated"), flash);
-        setupMappingModel(model, currentSettings, request);
-        return "rfn/mappingSimulator.jsp";
+        return "redirect:viewMappingSimulator";
     }
     
     @RequestMapping(value="updateMappingSettings", method = RequestMethod.POST)
     public String updateMappingSettings(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
+        retrieveFlagSettings(currentSettings, request);
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(currentSettings, Action.UPDATE_SETTINGS);
         sendRequest(simRequest, new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.settingsUpdated"), flash);
-        setupMappingModel(model, currentSettings, request);
         model.addAttribute("simulatorRunning", true);
-        return "rfn/mappingSimulator.jsp";
+        return "redirect:viewMappingSimulator";
     }
         
     @RequestMapping(value="startMappingSimulator", method = RequestMethod.POST)
     public String startMappingSimulator(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
+        retrieveFlagSettings(currentSettings, request);
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(currentSettings, Action.START);
         sendRequest(simRequest, new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.simulatorStart"), flash);       
-        setupMappingModel(model, currentSettings, request);
-        model.addAttribute("simulatorRunning", true);
-        return "rfn/mappingSimulator.jsp";
+        return "redirect:viewMappingSimulator";
     }
     
     @RequestMapping("stopMappingSimulator")
     public String stopMappingSimulator(ModelMap model, FlashScope flash, @ModelAttribute("currentSettings") SimulatedNmMappingSettings currentSettings, HttpServletRequest request) {
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(Action.STOP);
         sendRequest(simRequest, new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.mappingSimulator.simulatorStop"), flash);       
-        setupMappingModel(model, currentSettings, request);
-        model.addAttribute("simulatorRunning", false);
-        return "rfn/mappingSimulator.jsp";
+        return "redirect:viewMappingSimulator";
     }
     
     private SimulatorResponseBase sendRequest(SimulatorRequest request, YukonMessageSourceResolvable confirmation, FlashScope flash){

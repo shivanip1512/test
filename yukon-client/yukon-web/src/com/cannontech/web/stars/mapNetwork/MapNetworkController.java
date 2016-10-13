@@ -1,7 +1,9 @@
 package com.cannontech.web.stars.mapNetwork;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -54,39 +56,42 @@ public class MapNetworkController {
     }
     
     @RequestMapping("parentNode")
-    public @ResponseBody Parent parentNode(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
+    public @ResponseBody Map<String, Object> parentNode(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
+        Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            return nmNetworkService.getParent(deviceId, accessor);
+            Parent parent = nmNetworkService.getParent(deviceId, accessor);
+            json.put("parent",  parent);
         } catch (NmNetworkException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            json.put("errorMsg",  e.getLocalizedMessage());
         }
-        return null;
+        return json;
     }
     
     @RequestMapping("neighbors")
-    public @ResponseBody List<Neighbor> neighbors(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
+    public @ResponseBody Map<String, Object> neighbors(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
+        Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            return nmNetworkService.getNeighbors(deviceId, accessor);
+            List<Neighbor> neighbors =  nmNetworkService.getNeighbors(deviceId, accessor);
+            json.put("neighbors",  neighbors);
         } catch (NmNetworkException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            json.put("errorMsg",  e.getLocalizedMessage());
         }
-        return null;
+        return json;
     }
     
     @RequestMapping("primaryRoute")
-    public @ResponseBody List<RouteInfo> primaryRoute(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
+    public @ResponseBody Map<String, Object> primaryRoute(HttpServletRequest request, @RequestParam("deviceId") int deviceId, YukonUserContext userContext) throws ServletException {
+        Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            return nmNetworkService.getRoute(deviceId, accessor);
+            List<RouteInfo> route = nmNetworkService.getRoute(deviceId, accessor);
+            json.put("routeInfo",  route);
         } catch (NmNetworkException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            json.put("errorMsg",  e.getLocalizedMessage());
         }
-        return null;
+        return json;
     }
     
 }

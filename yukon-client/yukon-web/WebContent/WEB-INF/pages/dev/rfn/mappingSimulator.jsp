@@ -133,19 +133,19 @@ $(function() {
     </div>
     </div>
 
-        <cti:button id="populateDatabase" label="Populate Database"/>
+        <cti:button id="populateDatabase" busy="true" label="Populate Database"/>
     
         <c:if test="${simulatorRunning}">
-            <cti:button id="updateSettings" label="Update Settings"/>
+            <cti:button id="updateSettings" busy="true" label="Update Settings"/>
         </c:if>
         
     <c:if test="${not simulatorRunning}">
-        <cti:button label="Start Simulator" type="submit"/>
+        <cti:button label="Start Simulator" busy="true" type="submit"/>
     </c:if>
     
     </form:form>
     
     <c:if test="${simulatorRunning}">
-        <cti:button id="stopSimulator" label="Stop Simulator"/>
+        <cti:button id="stopSimulator" busy="true" label="Stop Simulator"/>
     </c:if>
 </cti:standardPage>

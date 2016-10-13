@@ -56,6 +56,9 @@
         <div id="parent-info" class="dn">
             <%@ include file="parentInfo.jsp" %>
         </div>
+        <div id="neighbor-info" class="dn">
+            <%@ include file="neighborInfo.jsp" %>
+        </div>
     </div>  
     
     <c:if test="${not empty geojson}"><cti:toJson id="geojson" object="${geojson}"/></c:if>
@@ -81,7 +84,7 @@
                 <div class="buffered">
                     <div class="button-group stacked">
                         <c:if test="${displayNeighborsLayer}">
-                            <tags:check name="neighbors" key=".neighbors" classes="js-neighbor-data" />
+                            <tags:check name="neighbors" key=".neighbors" classes="js-neighbor-data" />                            
                         </c:if>
                         <tags:check name="primary" key=".primary" classes="js-primary-route" />
                         <c:if test="${displayParentNodeLayer}">

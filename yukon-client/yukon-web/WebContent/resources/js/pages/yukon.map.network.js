@@ -90,6 +90,177 @@ yukon.map.network = (function () {
         _map.getView().setZoom(13);
     },
     
+    _loadParentData = function(parent) {
+        var fc = yukon.fromJson('#geojson'),
+        feature = fc.features[0],
+        paoId = feature.id;
+        source = _map.getLayers().getArray()[_tiles.length].getSource(),
+        feature = parent.location.features[0],
+        src_projection = fc.crs.properties.name,
+        style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
+        icon = new ol.Feature({ parent: parent });
+        
+        icon.setStyle(style);
+    
+        if (src_projection === _destProjection) {
+            icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+        } else {
+            var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+            icon.setGeometry(new ol.geom.Point(coord));
+        }
+        
+        _parentIcon = icon;
+        source.addFeature(icon);
+        
+        //draw line
+        var points = [];
+        points.push(icon.getGeometry().getCoordinates());
+
+        var features = source.getFeatures();
+        if (features != null && features.length > 0) {
+            for (x in features) {
+               var properties = features[x].getProperties();
+               var id = properties.pao.paoId;
+               if (id == paoId) {
+                   var coord = features[x].getGeometry().getCoordinates();
+                   points.push(coord);
+                   break;
+               }
+             }
+           }
+        
+        var layerLines = new ol.layer.Vector({
+            source: new ol.source.Vector({
+                features: [new ol.Feature({
+                    geometry: new ol.geom.LineString(points),
+                    name: 'Line'
+                })]
+            }),
+            style: new ol.style.Style({
+                fill: new ol.style.Fill({ color: '#FFFF00', weight: 4 }),
+                stroke: new ol.style.Stroke({ color: '#FFFF00', width: 2, lineDash: [10,10] })
+            })
+        });
+        
+        _parentLine = layerLines;
+        _map.addLayer(layerLines);
+        _map.getView().fitExtent(source.getExtent(), _map.getSize());
+    },
+    
+    _loadNeighborData = function(neighbors) {
+        var fc = yukon.fromJson('#geojson'),
+        feature = fc.features[0],
+        paoId = feature.id;
+        var source = _map.getLayers().getArray()[_tiles.length].getSource();
+        for (x in neighbors) {
+            var neighbor = neighbors[x],
+            feature = neighbor.location.features[0],
+            src_projection = fc.crs.properties.name,
+            style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
+            icon = new ol.Feature({ neighbor: neighbor });
+            
+            icon.setStyle(style);
+            
+            if (src_projection === _destProjection) {
+                icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+            } else {
+                var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+                icon.setGeometry(new ol.geom.Point(coord));
+            }
+            
+            _neighborIcons.push(icon);
+            source.addFeature(icon);
+            
+            //draw line
+            var points = [];
+            points.push(icon.getGeometry().getCoordinates());
+
+            var features = source.getFeatures();
+            if (features != null && features.length > 0) {
+                for (x in features) {
+                   var properties = features[x].getProperties();
+                   var id = properties.pao.paoId;
+                   if (id == paoId) {
+                       var coord = features[x].getGeometry().getCoordinates();
+                       points.push(coord);
+                       break;
+                   }
+                 }
+               }
+
+            //Line Color depends on ETX Band 1 - #00FF00(LIME), 2 - #ADFF2F(GREEN YELLOW), 3 - #FFFF00(YELLOW), 4 - #FFA500(ORANGE), 5 and up - #FF0000(RED)
+            var etxBand = neighbor.data.etxBand;
+            var lineColor = '#FF0000';
+            switch(etxBand) {
+            case 1:
+                lineColor = '#00FF00';
+                break;
+            case 2:
+                lineColor = '#ADFF2F';
+                break;
+            case 3:
+                lineColor = '#FFFF00';
+                break;
+            case 4:
+                lineColor = '#FFA500';
+                break;
+            default:
+                lineColor = '#FF0000';    
+            }
+            
+            //Line thickness depends on Number of Samples 0-50 - 1px, 51-500 - 2px, 500 and up - 3px
+            var numberSamples = neighbor.data.numSamples;
+            var lineThickness = 1;
+            if (numberSamples > 50 && numberSamples <= 500) {
+                lineThickness = 2;
+            } else if (numberSamples > 500) {
+                lineThickness = 3;
+            }
+            
+            var layerLines = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    features: [new ol.Feature({
+                        geometry: new ol.geom.LineString(points),
+                        name: 'Line'
+                    })]
+                }),
+
+                style: new ol.style.Style({
+                    fill: new ol.style.Fill({ color: lineColor, weight: lineThickness }),
+                    stroke: new ol.style.Stroke({ color: lineColor, width: lineThickness })
+                })
+            });
+            
+            _neighborLines.push(layerLines);
+            _map.addLayer(layerLines);
+        }
+        _map.getView().fitExtent(source.getExtent(), _map.getSize());
+    },
+    
+    _loadPrimaryRouteData = function(routeInfo) {
+        var source = _map.getLayers().getArray()[_tiles.length].getSource();
+        for (x in routeInfo) {
+            var route = routeInfo[x],
+            feature = route.location.features[0],
+            src_projection = fc.crs.properties.name,
+            style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
+            icon = new ol.Feature({ routeInfo: route });
+            
+            icon.setStyle(style);
+            
+            if (src_projection === _destProjection) {
+                icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
+            } else {
+                var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
+                icon.setGeometry(new ol.geom.Point(coord));
+            }
+            
+            _primaryRouteIcons.push(icon);
+            source.addFeature(icon);
+        }
+        _map.getView().fitExtent(source.getExtent(), _map.getSize());
+    },
+    
     mod = {
         
         /** Initialize this module. */
@@ -131,6 +302,7 @@ yukon.map.network = (function () {
                         neighbor = properties.neighbor;
                         routeInfo = properties.routeInfo;
                         $('#parent-info').hide();
+                        $('#neighbor-info').hide();
                         $('#device-info').hide();
 
                         if (parent != null) {
@@ -144,11 +316,21 @@ yukon.map.network = (function () {
                             $('.js-mac-address').text(parentData.nodeMacAddress);
                             $('#parent-info').show();
                         } else if (neighbor != null) {
-                            var paoId = neighbor.device.paoIdentifier.paoId;
-                            url = yukon.url('/tools/map/device/' + paoId + '/info');
-                            $('#device-info').load(url, function() {
-                                $('#device-info').show();
-                            });
+                            var neighborData = neighbor.data;
+                            $('.js-device').text(neighbor.device.name);
+                            $('.js-type').text(neighbor.device.paoIdentifier.paoType);
+                            $('.js-manufacturer').text(neighborData.rfnIdentifier.sensorManufacturer);
+                            $('.js-model').text(neighborData.rfnIdentifier.sensorModel);
+                            $('.js-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
+                            $('.js-neighbor-serialNumber').text(neighborData.serialNumber);
+                            $('.js-address').text(neighborData.neighborAddress);
+                            if (neighbor.commaDelimitedNeighborFlags != null) {
+                                $('.js-flags').text(neighbor.commaDelimitedNeighborFlags);
+                            }
+                            $('.js-link-cost').text(neighborData.neighborLinkCost);
+                            $('.js-num-samples').text(neighborData.numSamples);
+                            $('.js-etx-band').text(neighborData.etxBand);
+                            $('#neighbor-info').show();
                         } else if (routeInfo != null) {
                             var paoId = routeInfo.device.paoIdentifier.paoId;
                             url = yukon.url('/tools/map/device/' + paoId + '/info');
@@ -229,96 +411,31 @@ yukon.map.network = (function () {
                     wasChecked = neighborsRow.find('.switch-btn-checkbox').prop('checked');
                     
                     if (!wasChecked) {
-                        var fc = yukon.fromJson('#geojson'),
-                        feature = fc.features[0],
-                        paoId = feature.id;
-                        $.getJSON('neighbors?' + $.param({ deviceId: paoId }))
-                        .done(function (neighbors) {
+                        if (_neighborIcons.length > 0) {
                             var source = _map.getLayers().getArray()[_tiles.length].getSource();
-                            for (x in neighbors) {
-                                var neighbor = neighbors[x],
-                                feature = neighbor.location.features[0],
-                                src_projection = fc.crs.properties.name,
-                                style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
-                                icon = new ol.Feature({ neighbor: neighbor });
-                                
-                                icon.setStyle(style);
-                                
-                                if (src_projection === _destProjection) {
-                                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-                                } else {
-                                    var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
-                                    icon.setGeometry(new ol.geom.Point(coord));
-                                }
-                                
-                                _neighborIcons.push(icon);
-                                source.addFeature(icon);
-                                
-                                //draw line
-                                var points = [];
-                                points.push(icon.getGeometry().getCoordinates());
-    
-                                var features = source.getFeatures();
-                                if (features != null && features.length > 0) {
-                                    for (x in features) {
-                                       var properties = features[x].getProperties();
-                                       var id = properties.pao.paoId;
-                                       if (id == paoId) {
-                                           var coord = features[x].getGeometry().getCoordinates();
-                                           points.push(coord);
-                                           break;
-                                       }
-                                     }
-                                   }
-
-                                //Line Color depends on ETX Band 1 - #00FF00, 2 - #ADFF2F, 3 - #FFFF00, 4 - #FFA500, 5 and up - #FF0000
-                                var etxBand = neighbor.data.etxBand;
-                                var lineColor = '#FF0000';
-                                switch(etxBand) {
-                                case 1:
-                                    lineColor = '#00FF00';
-                                    break;
-                                case 2:
-                                    lineColor = '#ADFF2F';
-                                    break;
-                                case 3:
-                                    lineColor = '#FFFF00';
-                                    break;
-                                case 4:
-                                    lineColor = '#FFA500';
-                                    break;
-                                default:
-                                    lineColor = '#FF0000';    
-                                }
-                                
-                                //Line thickness depends on Number of Samples 0-50 - 1px, 51-500 - 2px, 500 and up - 3px
-                                var numberSamples = neighbor.data.numSamples;
-                                var lineThickness = 1;
-                                if (numberSamples > 50 && numberSamples <= 500) {
-                                    lineThickness = 2;
-                                } else if (numberSamples > 500) {
-                                    lineThickness = 3;
-                                }
-                                
-                                var layerLines = new ol.layer.Vector({
-                                    source: new ol.source.Vector({
-                                        features: [new ol.Feature({
-                                            geometry: new ol.geom.LineString(points),
-                                            name: 'Line'
-                                        })]
-                                    }),
-
-                                    style: new ol.style.Style({
-                                        fill: new ol.style.Fill({ color: lineColor, weight: lineThickness }),
-                                        stroke: new ol.style.Stroke({ color: lineColor, width: lineThickness })
-                                    })
-                                });
-                                
-                                _neighborLines.push(layerLines);
-                                _map.addLayer(layerLines);
+                            for (x in _neighborIcons) {
+                                var neighbor = _neighborIcons[x];
+                                source.addFeature(neighbor);
+                            }
+                            for (x in _neighborLines) {
+                                var neighborLine = _neighborLines[x];
+                                _map.addLayer(neighborLine);
                             }
                             _map.getView().fitExtent(source.getExtent(), _map.getSize());
-                        });
+                        } else {
+                            var fc = yukon.fromJson('#geojson'),
+                            feature = fc.features[0],
+                            paoId = feature.id;
+                            $.getJSON('neighbors?' + $.param({ deviceId: paoId }))
+                            .done(function (json) {
+                                if (json.neighbors) {
+                                    _loadNeighborData(json.neighbors);
+                                }
+                                if (json.errorMsg) {
+                                    yukon.ui.alertError(json.errorMsg);
+                                }
+                            });
+                        }
                     } else {
                         for (x in _neighborIcons) {
                             var neighbor = _neighborIcons[x];
@@ -349,28 +466,13 @@ yukon.map.network = (function () {
                         feature = fc.features[0],
                         paoId = feature.id;
                         $.getJSON('primaryRoute?' + $.param({ deviceId: paoId }))
-                        .done(function (routeInfo) {
-                            var source = _map.getLayers().getArray()[_tiles.length].getSource();
-                            for (x in routeInfo) {
-                                var route = routeInfo[x],
-                                feature = route.location.features[0],
-                                src_projection = fc.crs.properties.name,
-                                style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
-                                icon = new ol.Feature({ routeInfo: route });
-                                
-                                icon.setStyle(style);
-                                
-                                if (src_projection === _destProjection) {
-                                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-                                } else {
-                                    var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
-                                    icon.setGeometry(new ol.geom.Point(coord));
-                                }
-                                
-                                _primaryRouteIcons.push(icon);
-                                source.addFeature(icon);
+                        .done(function (json) {
+                            if (json.routeInfo) {
+                                _loadPrimaryRouteData(json.routeInfo);
                             }
-                            _map.getView().fitExtent(source.getExtent(), _map.getSize());
+                            if (json.errorMsg) {
+                                yukon.ui.alertError(json.errorMsg);
+                            }
                         });
                     } else {
                         for (x in _primaryRouteIcons) {
@@ -404,58 +506,13 @@ yukon.map.network = (function () {
                             feature = fc.features[0],
                             paoId = feature.id;
                             $.getJSON('parentNode?' + $.param({ deviceId: paoId }))
-                            .done(function (parent) {
-                                var source = _map.getLayers().getArray()[_tiles.length].getSource(),
-                                feature = parent.location.features[0],
-                                src_projection = fc.crs.properties.name,
-                                style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
-                                icon = new ol.Feature({ parent: parent });
-                                
-                                icon.setStyle(style);
-                            
-                                if (src_projection === _destProjection) {
-                                    icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
-                                } else {
-                                    var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
-                                    icon.setGeometry(new ol.geom.Point(coord));
+                            .done(function (json) {
+                                if (json.parent) {
+                                    _loadParentData(json.parent);
                                 }
-                                
-                                _parentIcon = icon;
-                                source.addFeature(icon);
-                                
-                                //draw line
-                                var points = [];
-                                points.push(icon.getGeometry().getCoordinates());
-    
-                                var features = source.getFeatures();
-                                if (features != null && features.length > 0) {
-                                    for (x in features) {
-                                       var properties = features[x].getProperties();
-                                       var id = properties.pao.paoId;
-                                       if (id == paoId) {
-                                           var coord = features[x].getGeometry().getCoordinates();
-                                           points.push(coord);
-                                           break;
-                                       }
-                                     }
-                                   }
-                                
-                                var layerLines = new ol.layer.Vector({
-                                    source: new ol.source.Vector({
-                                        features: [new ol.Feature({
-                                            geometry: new ol.geom.LineString(points),
-                                            name: 'Line'
-                                        })]
-                                    }),
-                                    style: new ol.style.Style({
-                                        fill: new ol.style.Fill({ color: '#FFFF00', weight: 4 }),
-                                        stroke: new ol.style.Stroke({ color: '#FFFF00', width: 2, lineDash: [10,10] })
-                                    })
-                                });
-                                
-                                _parentLine = layerLines;
-                                _map.addLayer(layerLines);
-                                _map.getView().fitExtent(source.getExtent(), _map.getSize());
+                                if (json.errorMsg) {
+                                    yukon.ui.alertError(json.errorMsg);
+                                }
                             });
                         }
                     } else {
