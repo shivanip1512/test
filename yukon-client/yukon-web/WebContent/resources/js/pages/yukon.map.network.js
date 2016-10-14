@@ -426,6 +426,7 @@ yukon.map.network = (function () {
                             var fc = yukon.fromJson('#geojson'),
                             feature = fc.features[0],
                             paoId = feature.id;
+                            yukon.ui.busy('.js-neighbor-data');
                             $.getJSON('neighbors?' + $.param({ deviceId: paoId }))
                             .done(function (json) {
                                 if (json.neighbors) {
@@ -434,6 +435,7 @@ yukon.map.network = (function () {
                                 if (json.errorMsg) {
                                     yukon.ui.alertError(json.errorMsg);
                                 }
+                                yukon.ui.unbusy('.js-neighbor-data');
                             });
                         }
                     } else {
@@ -465,6 +467,7 @@ yukon.map.network = (function () {
                         var fc = yukon.fromJson('#geojson'),
                         feature = fc.features[0],
                         paoId = feature.id;
+                        yukon.ui.busy('.js-primary-route');
                         $.getJSON('primaryRoute?' + $.param({ deviceId: paoId }))
                         .done(function (json) {
                             if (json.routeInfo) {
@@ -473,6 +476,7 @@ yukon.map.network = (function () {
                             if (json.errorMsg) {
                                 yukon.ui.alertError(json.errorMsg);
                             }
+                            yukon.ui.unbusy('.js-primary-route');
                         });
                     } else {
                         for (x in _primaryRouteIcons) {
@@ -505,6 +509,7 @@ yukon.map.network = (function () {
                             var fc = yukon.fromJson('#geojson'),
                             feature = fc.features[0],
                             paoId = feature.id;
+                            yukon.ui.busy('.js-parent-node');
                             $.getJSON('parentNode?' + $.param({ deviceId: paoId }))
                             .done(function (json) {
                                 if (json.parent) {
@@ -513,6 +518,7 @@ yukon.map.network = (function () {
                                 if (json.errorMsg) {
                                     yukon.ui.alertError(json.errorMsg);
                                 }
+                                yukon.ui.unbusy('.js-parent-node');
                             });
                         }
                     } else {

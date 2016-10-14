@@ -63,7 +63,7 @@ public class MapNetworkController {
             Parent parent = nmNetworkService.getParent(deviceId, accessor);
             json.put("parent",  parent);
         } catch (NmNetworkException e) {
-            json.put("errorMsg",  e.getLocalizedMessage());
+            json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
         }
         return json;
     }
@@ -76,7 +76,7 @@ public class MapNetworkController {
             List<Neighbor> neighbors =  nmNetworkService.getNeighbors(deviceId, accessor);
             json.put("neighbors",  neighbors);
         } catch (NmNetworkException e) {
-            json.put("errorMsg",  e.getLocalizedMessage());
+            json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
         }
         return json;
     }
@@ -89,7 +89,7 @@ public class MapNetworkController {
             List<RouteInfo> route = nmNetworkService.getRoute(deviceId, accessor);
             json.put("routeInfo",  route);
         } catch (NmNetworkException e) {
-            json.put("errorMsg",  e.getLocalizedMessage());
+            json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
         }
         return json;
     }
