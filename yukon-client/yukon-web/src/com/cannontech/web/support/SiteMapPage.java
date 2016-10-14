@@ -197,7 +197,7 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all),
     DEVICE_DEFINITIONS(SiteMapCategory.SUPPORT, "yukon.web.menu.config.support.information.deviceDef", "/common/deviceDefinition.xml",
             MatchStyle.all),
-    DATA_STREAMING_SUPPORT(SiteMapCategory.SUPPORT, "yukon.web.menu.config.support.dataStreaming",
+    DATA_STREAMING_SUPPORT(SiteMapCategory.SUPPORT, "yukon.web.modules.support.dataStreamingSupport.pageName",
             "/support/dataStreamingSupport", MatchStyle.all,
             MasterConfigBoolean.RF_DATA_STREAMING_ENABLED),
     DATABASE_MIGRATION(SiteMapCategory.SUPPORT, "yukon.web.modules.support.databaseMigration.pageName", "/support/database/migration/home",

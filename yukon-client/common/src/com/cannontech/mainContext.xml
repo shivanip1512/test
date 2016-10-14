@@ -264,6 +264,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/support/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/support/eventViewer</value>
                 <value>classpath:com/cannontech/yukon/web/modules/support/errorCodesViewer</value>
+                <value>classpath:com/cannontech/yukon/web/modules/support/dataSteramingSupport</value>
                 <value>classpath:com/cannontech/yukon/web/modules/deviceConfiguration/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/user/root</value>
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/common</value>

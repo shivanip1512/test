@@ -906,6 +906,7 @@
           </page>
           <page name="system" type="BASIC" />
           <page name="deviceDef" type="BASIC" />
+          <page name="dataStreamingSupport" type="BASIC"/>
           <page name="errorCodes" type="BASIC" />
           <page name="supportBundle" type="BASIC" />
           <page name="localization" type="BASIC" />
