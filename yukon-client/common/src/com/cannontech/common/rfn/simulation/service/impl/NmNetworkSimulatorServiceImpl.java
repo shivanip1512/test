@@ -220,7 +220,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         if (gateway != null) {
             RouteData gatewayData = new RouteData();
             gatewayData.setSerialNumber(gateway.getSensorSerialNumber());
-            gatewayData.setRfnIdentifier(gatewayData.getRfnIdentifier());
+            gatewayData.setRfnIdentifier(gateway);
             routeData.add(gatewayData);
         }
         RfnPrimaryRouteDataReply reply = new RfnPrimaryRouteDataReply();
