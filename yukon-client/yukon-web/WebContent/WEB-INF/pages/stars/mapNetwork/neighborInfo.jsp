@@ -9,10 +9,8 @@
 <tags:nameValueContainer2 tableClass="name-collapse">    
     <tags:nameValue2 nameKey=".device" valueClass="js-device"></tags:nameValue2>
     <tags:nameValue2 nameKey=".type" valueClass="js-type"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".nodeSN" valueClass="js-neighbor-serialNumber"></tags:nameValue2>
     <tags:nameValue2 nameKey=".serialNumber" valueClass="js-serial-number"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".manufacturer" valueClass="js-manufacturer"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".model" valueClass="js-model"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".serialNumber" valueClass="js-neighbor-serialNumber"></tags:nameValue2>
     <tags:nameValue2 nameKey=".macAddress" valueClass="js-address"></tags:nameValue2>
     <tags:nameValue2 nameKey=".etxBand" valueClass="js-etx-band"></tags:nameValue2>
     <tags:nameValue2 nameKey=".linkCost" valueClass="js-link-cost"></tags:nameValue2>

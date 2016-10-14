@@ -12,10 +12,10 @@
     <!-- Meta-data popup-->
     <entry key="yukon.web.modules.operator.mapNetwork.device">Device</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.type">Type</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.serialNumber">Serial Number</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.serialNumber">Sensor S/N</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.manufacturer">Manufacturer</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.model">Model</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.nodeSN">Node Serial Number</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.nodeSN">Node S/N</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.macAddress">MAC Address</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.flags">Flags</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.linkCost">Link Cost</entry>

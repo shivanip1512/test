@@ -16,6 +16,7 @@ yukon.map.network = (function () {
     /** @type {ol.Map} - The openlayers map object. */
     _map = {},
     
+    _devicePoints = [],
     _parentIcon,
     _parentLine,
     _neighborIcons = [],
@@ -76,13 +77,15 @@ yukon.map.network = (function () {
             icon = new ol.Feature({ pao: pao });
             
             icon.setStyle(style);
-        
+            
         if (src_projection === _destProjection) {
             icon.setGeometry(new ol.geom.Point(feature.geometry.coordinates));
         } else {
             var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
             icon.setGeometry(new ol.geom.Point(coord));
         }
+        
+        _devicePoints = icon.getGeometry().getCoordinates();
         
         source.addFeature(icon);
         
@@ -91,9 +94,7 @@ yukon.map.network = (function () {
     },
     
     _loadParentData = function(parent) {
-        var fc = yukon.fromJson('#geojson'),
-        feature = fc.features[0],
-        paoId = feature.id;
+        var fc = yukon.fromJson('#geojson');
         source = _map.getLayers().getArray()[_tiles.length].getSource(),
         feature = parent.location.features[0],
         src_projection = fc.crs.properties.name,
@@ -115,19 +116,7 @@ yukon.map.network = (function () {
         //draw line
         var points = [];
         points.push(icon.getGeometry().getCoordinates());
-
-        var features = source.getFeatures();
-        if (features != null && features.length > 0) {
-            for (x in features) {
-               var properties = features[x].getProperties();
-               var id = properties.pao.paoId;
-               if (id == paoId) {
-                   var coord = features[x].getGeometry().getCoordinates();
-                   points.push(coord);
-                   break;
-               }
-             }
-           }
+        points.push(_devicePoints);
         
         var layerLines = new ol.layer.Vector({
             source: new ol.source.Vector({
@@ -148,9 +137,7 @@ yukon.map.network = (function () {
     },
     
     _loadNeighborData = function(neighbors) {
-        var fc = yukon.fromJson('#geojson'),
-        feature = fc.features[0],
-        paoId = feature.id;
+        var fc = yukon.fromJson('#geojson');
         var source = _map.getLayers().getArray()[_tiles.length].getSource();
         for (x in neighbors) {
             var neighbor = neighbors[x],
@@ -174,19 +161,7 @@ yukon.map.network = (function () {
             //draw line
             var points = [];
             points.push(icon.getGeometry().getCoordinates());
-
-            var features = source.getFeatures();
-            if (features != null && features.length > 0) {
-                for (x in features) {
-                   var properties = features[x].getProperties();
-                   var id = properties.pao.paoId;
-                   if (id == paoId) {
-                       var coord = features[x].getGeometry().getCoordinates();
-                       points.push(coord);
-                       break;
-                   }
-                 }
-               }
+            points.push(_devicePoints);
 
             //Line Color depends on ETX Band 1 - #00FF00(LIME), 2 - #ADFF2F(GREEN YELLOW), 3 - #FFFF00(YELLOW), 4 - #FFA500(ORANGE), 5 and up - #FF0000(RED)
             var etxBand = neighbor.data.etxBand;
@@ -238,6 +213,7 @@ yukon.map.network = (function () {
     },
     
     _loadPrimaryRouteData = function(routeInfo) {
+        var fc = yukon.fromJson('#geojson');
         var source = _map.getLayers().getArray()[_tiles.length].getSource();
         for (x in routeInfo) {
             var route = routeInfo[x],
@@ -319,8 +295,6 @@ yukon.map.network = (function () {
                             var neighborData = neighbor.data;
                             $('.js-device').text(neighbor.device.name);
                             $('.js-type').text(neighbor.device.paoIdentifier.paoType);
-                            $('.js-manufacturer').text(neighborData.rfnIdentifier.sensorManufacturer);
-                            $('.js-model').text(neighborData.rfnIdentifier.sensorModel);
                             $('.js-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
                             $('.js-neighbor-serialNumber').text(neighborData.serialNumber);
                             $('.js-address').text(neighborData.neighborAddress);
