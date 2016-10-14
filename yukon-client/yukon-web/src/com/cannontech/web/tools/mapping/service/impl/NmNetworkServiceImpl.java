@@ -1,11 +1,11 @@
 package com.cannontech.web.tools.mapping.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -39,6 +39,7 @@ import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.web.tools.mapping.model.Neighbor;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.model.Parent;
@@ -56,9 +57,10 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     private static final String neighborRequest = "NM_NETWORK_NEIGHBOR_REQUEST";
 
     private static final String commsError =
-        "Unable to send request due to a communication error between Yukon and Network Manager";
-    private static final String nmError = "Recieved error from Network Manager";
-    private static final String noLocation = "No location in Yukon was found for this device.";
+        "Unable to send request due to a communication error between Yukon and Network Manager.";
+    private static final String nmError = "Recieved error from Network Manager.";
+    private static final String noRoute = "One or more devices within the route could not be located.";
+    private static final String noParent = "No location in Yukon was found for this parent device.";
 
     private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.network.data.request";
 
@@ -92,35 +94,37 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         log.debug("Sending get parent request to Network Manager: " + request);
 
+        RfnParentReply response;
         try {
             parentReplyTemplate.send(request, reply);
-            RfnParentReply response = reply.waitForCompletion();
-            log.debug("response: " + response);
-            if (response.getReplyType() == RfnParentReplyType.OK) {
-                ParentData data = response.getParentData();
-                RfnDevice parentDevice = rfnDeviceDao.getDeviceForExactIdentifier(data.getRfnIdentifier());
-                if (parentDevice == null) {
-                    rfnDeviceCreationService.create(data.getRfnIdentifier());
-                    log.info(data.getRfnIdentifier()+" is not found. Creating device.");
-                    throw new NmNetworkException(noLocation, "noLocation");
-                } else {
-                    FeatureCollection location =
-                        paoLocationService.getLocationsAsGeoJson(Lists.newArrayList(parentDevice));
-                    if (location == null) {
-                        throw new NmNetworkException(noLocation, "noLocation");
-                    }
-                    Parent parent = new Parent(device, location, data);
-                    return parent;
-                }
-            } else {
-                throw new NmNetworkException(nmError, response.getReplyType().name());
-            }
+            response = reply.waitForCompletion();
         } catch (ExecutionException e) {
-            e.printStackTrace();
             throw new NmNetworkException(commsError, e, "commsError");
         }
-    }
+        if (response.getReplyType() != RfnParentReplyType.OK) {
+            throw new NmNetworkException(nmError, response.getReplyType().name());
+        }
 
+        log.debug("response: " + response);
+
+        ParentData data = response.getParentData();
+        try {
+            RfnDevice parentDevice = rfnDeviceDao.getDeviceForExactIdentifier(data.getRfnIdentifier());
+            PaoLocation paoLocation = paoLocationDao.getLocation(parentDevice.getPaoIdentifier().getPaoId());
+            if (paoLocation == null) {
+                throw new NmNetworkException(noParent, "noParent");
+            }
+            FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
+            Parent parent = new Parent(device, location, data);
+            return parent;
+        } catch (NotFoundException e) {
+            // create new device if it doesn't exist
+            rfnDeviceCreationService.create(data.getRfnIdentifier());
+            log.info(data.getRfnIdentifier() + " is not found. Creating device.");
+            throw new NmNetworkException(noParent, "noParent");
+        }
+    }
+    
     @Override
     public List<RouteInfo> getRoute(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException {
 
@@ -132,48 +136,57 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         BlockingJmsReplyHandler<RfnPrimaryRouteDataReply> reply =
             new BlockingJmsReplyHandler<>(RfnPrimaryRouteDataReply.class);
-
+        RfnPrimaryRouteDataReply response;
         try {
             routeReplyTemplate.send(request, reply);
-            RfnPrimaryRouteDataReply response = reply.waitForCompletion();
-            log.debug("response: " + response);
-            if (response.getReplyType() == RfnPrimaryRouteDataReplyType.OK) {
-                Map<RfnIdentifier, RfnDevice> devices =
-                    response.getRouteData().stream().collect(Collectors.toMap(x -> x.getRfnIdentifier(),
-                        x -> rfnDeviceDao.getDeviceForExactIdentifier(x.getRfnIdentifier())));
-                Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
-                Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
-
-                List<RouteInfo> routes = new ArrayList<>();
-                boolean hasMissingLocation = false;
-                for (RouteData data : response.getRouteData()) {
-                    RfnDevice routeDevice = devices.get(data.getRfnIdentifier());
-                    if(routeDevice == null){
-                        rfnDeviceCreationService.create(data.getRfnIdentifier());
-                        log.info(data.getRfnIdentifier()+" is not found. Creating device.");
-                        hasMissingLocation = true;
-                    } else {
-                        PaoLocation paoLocation = locations.get(routeDevice.getPaoIdentifier());
-                        if (paoLocation != null && !hasMissingLocation) {
-                            FeatureCollection location =
-                                paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
-                            routes.add(new RouteInfo(device, data, location, accessor));
-                        }else{
-                            hasMissingLocation = true;
-                            log.info("Location is not found for "+ routeDevice);
-                        }
-                    }
-                }
-                if(hasMissingLocation){
-                    log.info("Location is missing for one of the devices that are part of the route for "+ device);
-                }
-                return routes;
-            } else {
-                throw new NmNetworkException(nmError, response.getReplyType().name());
-            }
+            response = reply.waitForCompletion();
         } catch (ExecutionException e) {
             throw new NmNetworkException(commsError, e, "commsError");
         }
+
+        log.debug("response: " + response);
+
+        if (response.getReplyType() != RfnPrimaryRouteDataReplyType.OK) {
+            throw new NmNetworkException(nmError, response.getReplyType().name());
+        }
+
+        Map<RfnIdentifier, RfnDevice> devices = new HashMap<>();
+        boolean hasMissingLocationOrDevice = false;
+        for (RouteData data : response.getRouteData()) {
+            if(data.getRfnIdentifier() == null){
+                hasMissingLocationOrDevice  = true;
+                log.error(data + " has no RfnIdentifier");
+                continue;
+            }
+            boolean isFound = findDevice(data.getRfnIdentifier(), devices);
+            if(!isFound){
+                hasMissingLocationOrDevice = true;  
+            }
+        }
+
+        if (hasMissingLocationOrDevice) {
+            // one of the devices doesn't exist in yukon or we got a response without valid rfnIdentifier
+            // since we will not be able to find location and route can't be generated, exception is thrown
+            throw new NmNetworkException(noRoute, "noRoute");
+        }
+
+        Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
+        Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
+
+        List<RouteInfo> routes = new ArrayList<>();
+        for (RouteData data : response.getRouteData()) {
+            RfnDevice routeDevice = devices.get(data.getRfnIdentifier());
+            PaoLocation paoLocation = locations.get(routeDevice.getPaoIdentifier());
+            if (paoLocation != null) {
+                FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
+                routes.add(new RouteInfo(device, data, location, accessor));
+            } else {
+                log.error("Location is not found for " + routeDevice);
+                // one of the devices has no location, can't display a route
+                throw new NmNetworkException(noRoute, "noRoute");
+            }
+        }
+        return routes;
     }
 
     @Override
@@ -186,40 +199,63 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         BlockingJmsReplyHandler<RfnNeighborDataReply> reply = new BlockingJmsReplyHandler<>(RfnNeighborDataReply.class);
 
+        RfnNeighborDataReply response;
         try {
             neighborReplyTemplate.send(request, reply);
-            RfnNeighborDataReply response = reply.waitForCompletion();
-            log.debug("response: " + response);
-            if (response.getReplyType() == RfnNeighborDataReplyType.OK) {
-                Map<RfnIdentifier, RfnDevice> devices =
-                    response.getNeighborData().stream().collect(Collectors.toMap(x -> x.getRfnIdentifier(),
-                        x -> rfnDeviceDao.getDeviceForExactIdentifier(x.getRfnIdentifier())));
-                Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
-                Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
-
-                List<Neighbor> neighbors = new ArrayList<>();
-                for (NeighborData data : response.getNeighborData()) {
-                    RfnDevice neighborDevice = devices.get(data.getRfnIdentifier());
-                    if (neighborDevice == null) {
-                        rfnDeviceCreationService.create(data.getRfnIdentifier());
-                        log.info(data.getRfnIdentifier()+" is not found. Creating device.");
-                    } else {
-                        PaoLocation paoLocation = locations.get(neighborDevice.getPaoIdentifier());
-                        if (paoLocation != null) {
-                            FeatureCollection location =
-                                paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
-                            neighbors.add(new Neighbor(neighborDevice, location, data, accessor));
-                        }else{
-                            log.info("Location is not found for "+ neighborDevice);
-                        }
-                    }
-                }
-                return neighbors;
-            } else {
-                throw new NmNetworkException(nmError, response.getReplyType().name());
-            }
+            response = reply.waitForCompletion();
         } catch (ExecutionException e) {
             throw new NmNetworkException(commsError, e, "commsError");
         }
+
+        if (response.getReplyType() != RfnNeighborDataReplyType.OK) {
+            throw new NmNetworkException(nmError, response.getReplyType().name());
+        }
+        log.debug("response: " + response);
+
+        Map<RfnIdentifier, RfnDevice> devices = new HashMap<>();
+        for (NeighborData data : response.getNeighborData()) {
+            findDevice(data.getRfnIdentifier(), devices);
+        }
+
+        Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
+        Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
+
+        List<Neighbor> neighbors = new ArrayList<>();
+        for (NeighborData data : response.getNeighborData()) {
+            RfnDevice neighborDevice = devices.get(data.getRfnIdentifier());
+            
+            if(neighborDevice == null){
+                continue;
+            }
+            PaoLocation paoLocation = locations.get(neighborDevice.getPaoIdentifier());
+            if (paoLocation != null) {
+                FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
+                neighbors.add(new Neighbor(device, location, data, accessor));
+            } else {
+                log.error("Location is not found for " + neighborDevice);
+            }
+        }
+        return neighbors;
+    }
+    
+    /**
+     * Attempts to lookup a device by identifier, return true if the device is found, creates a new device if it was not
+     * found. Populates device map with the device information;
+     */
+    private boolean findDevice(RfnIdentifier identifier, Map<RfnIdentifier, RfnDevice> devices) {
+        boolean isFound = false;
+        if (identifier != null) {
+            RfnDevice rfnDevice = null;
+            try {
+                rfnDevice = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
+                devices.put(identifier, rfnDevice);
+                isFound = true;
+            } catch (NotFoundException e) {
+                // create new device if it doesn't exist
+                rfnDeviceCreationService.create(identifier);
+                log.info(identifier + " is not found. Creating device.");
+            }
+        }
+        return isFound;
     }
 }

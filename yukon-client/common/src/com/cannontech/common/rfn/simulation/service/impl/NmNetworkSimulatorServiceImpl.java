@@ -262,6 +262,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             data.setDestinationAddress(settings.getRouteData().getDestinationAddress());
             data.setHopCount(settings.getRouteData().getHopCount());
             data.setRfnIdentifier(device.getRfnIdentifier());
+            data.setSerialNumber(device.getRfnIdentifier().getSensorSerialNumber());
             data.setNextHopAddress(settings.getRouteData().getNextHopAddress());
             data.setRouteColor(settings.getRouteData().getRouteColor());
             data.setRouteDataTimestamp(settings.getRouteData().getRouteDataTimestamp());
