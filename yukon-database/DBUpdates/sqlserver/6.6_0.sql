@@ -750,6 +750,20 @@ INSERT INTO YukonListEntry VALUES (2033, 1005, 0, 'Honeywell Wi-Fi Thermostat', 
 INSERT INTO YukonServices VALUES (22, 'HoneywellWifiDataListener', 'classpath:com/cannontech/services/honeywellWifiListener/honeywellWifiMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 /* End YUK-15836 */
 
+/* Start YUK-15859 */
+CREATE TABLE HoneywellWifiThermostat (
+   DeviceId             NUMERIC              NOT NULL,
+   MacAddress           VARCHAR(255)         NOT NULL,
+   CONSTRAINT PK_HONEYWELLWIFITHERMOSTAT PRIMARY KEY (DeviceId)
+);
+GO
+
+ALTER TABLE HoneywellWifiThermostat
+   ADD CONSTRAINT FK_HONEYWELLTHERMOSTAT_DEVICE FOREIGN KEY (DeviceId)
+      REFERENCES DEVICE (DEVICEID);
+GO
+/* End YUK-15859 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
