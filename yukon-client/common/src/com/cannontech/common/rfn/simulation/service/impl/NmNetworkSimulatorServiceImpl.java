@@ -325,13 +325,14 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         }
         List<PaoDistance> distance =
             locationService.getNearbyLocations(locations, location, DISTANCE_IN_MILES, DistanceUnit.MILES, null);
+        int deviceId;
         if (distance.isEmpty()) {
-            return null;
+            deviceId = locations.get(0).getPaoIdentifier().getPaoId();
         }else{
-            int deviceId = distance.get(0).getPaoIdentifier().getPaoId();
-            RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
-            return device.getRfnIdentifier();
+            deviceId = distance.get(0).getPaoIdentifier().getPaoId();
         }
+        RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
+        return device.getRfnIdentifier();
     }
     
     private int getRandomNumberInRange(int min, int max) {
