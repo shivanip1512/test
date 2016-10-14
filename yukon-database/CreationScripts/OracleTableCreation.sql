@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/10/2016 2:23:56 AM                        */
+/* Created on:     10/14/2016 7:07:39 AM                        */
 /*==============================================================*/
 
 
@@ -5547,6 +5547,15 @@ insert into HolidaySchedule values(-1, 'No Holiday');
 /*==============================================================*/
 create unique index Indx_HolSchName on HolidaySchedule (
    HolidayScheduleName ASC
+);
+
+/*==============================================================*/
+/* Table: HoneywellWifiThermostat                               */
+/*==============================================================*/
+create table HoneywellWifiThermostat  (
+   DeviceId             NUMBER                          not null,
+   MacAddress           VARCHAR2(255)                   not null,
+   constraint PK_HONEYWELLWIFITHERMOSTAT primary key (DeviceId)
 );
 
 /*==============================================================*/
@@ -11931,6 +11940,10 @@ alter table GroupPaoPermission
 alter table GroupPaoPermission
    add constraint FK_GroupPaoPerm_UserGroup foreign key (UserGroupId)
       references UserGroup (UserGroupId);
+
+alter table HoneywellWifiThermostat
+   add constraint FK_HONEYWELLTHERMOSTAT_DEVICE foreign key (DeviceId)
+      references DEVICE (DEVICEID);
 
 alter table ImportPendingComm
    add constraint FK_ImpPC_PAO foreign key (DeviceID)

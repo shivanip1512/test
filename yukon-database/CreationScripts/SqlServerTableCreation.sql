@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/10/2016 2:21:38 AM                        */
+/* Created on:     10/14/2016 7:06:45 AM                        */
 /*==============================================================*/
 
 
@@ -5841,6 +5841,16 @@ insert into HolidaySchedule values(-1, 'No Holiday');
 /*==============================================================*/
 create unique index Indx_HolSchName on HolidaySchedule (
 HolidayScheduleName ASC
+)
+go
+
+/*==============================================================*/
+/* Table: HoneywellWifiThermostat                               */
+/*==============================================================*/
+create table HoneywellWifiThermostat (
+   DeviceId             numeric              not null,
+   MacAddress           varchar(255)         not null,
+   constraint PK_HONEYWELLWIFITHERMOSTAT primary key (DeviceId)
 )
 go
 
@@ -12860,6 +12870,11 @@ go
 alter table GroupPaoPermission
    add constraint FK_GroupPaoPerm_UserGroup foreign key (UserGroupId)
       references UserGroup (UserGroupId)
+go
+
+alter table HoneywellWifiThermostat
+   add constraint FK_HONEYWELLTHERMOSTAT_DEVICE foreign key (DeviceId)
+      references DEVICE (DEVICEID)
 go
 
 alter table ImportPendingComm
