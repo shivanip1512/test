@@ -3,6 +3,7 @@ package com.cannontech.common.rfn.simulation.service.impl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -49,6 +50,7 @@ import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -221,12 +223,17 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             RouteData gatewayData = new RouteData();
             gatewayData.setSerialNumber(gateway.getSensorSerialNumber());
             gatewayData.setRfnIdentifier(gateway);
-            routeData.add(gatewayData);
+            if (!Strings.isNullOrEmpty(gatewayData.getRfnIdentifier().getSensorManufacturer())
+                && !Strings.isNullOrEmpty(gatewayData.getRfnIdentifier().getSensorModel())
+                && !Strings.isNullOrEmpty(gatewayData.getRfnIdentifier().getSensorSerialNumber())) {
+                routeData.add(gatewayData);
+            }
         }
         RfnPrimaryRouteDataReply reply = new RfnPrimaryRouteDataReply();
         reply.setReplyType(RfnPrimaryRouteDataReplyType.OK);
         reply.setRfnIdentifier(device.getRfnIdentifier());
         reply.setRouteData(routeData);
+        log.info("identifier="+ identifier+" routeData="+routeData);
  
         return reply;
     }
@@ -312,6 +319,15 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             randomDistances.stream().map(x -> x.getPaoIdentifier().getPaoId()).collect(Collectors.toList());
         log.debug("neighbors found=" + paoIds.size());
         List<RfnDevice> rfDevices = rfnDeviceDao.getDevicesByPaoIds(paoIds);
+        ListIterator<RfnDevice> it = rfDevices.listIterator();
+        while (it.hasNext()) {
+            RfnDevice d = it.next();
+            if (Strings.isNullOrEmpty(d.getRfnIdentifier().getSensorManufacturer())
+                || Strings.isNullOrEmpty(d.getRfnIdentifier().getSensorModel())
+                || Strings.isNullOrEmpty(d.getRfnIdentifier().getSensorSerialNumber())) {
+                it.remove();
+            }
+        }
         return rfDevices;
     }
     
