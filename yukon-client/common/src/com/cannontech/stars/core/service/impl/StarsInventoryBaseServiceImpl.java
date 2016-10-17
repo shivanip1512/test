@@ -291,7 +291,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 
                 if (inventoryIdentifier.getHardwareType().isHoneywell()) {
                     String macAddress = dto.getMacAddress();
-                    if (StringUtils.isBlank(macAddress) && !Validator.isMacAddress(macAddress)) {
+                    if (StringUtils.isBlank(macAddress) || !Validator.isMacAddress(macAddress)) {
                         throw new StarsInvalidArgumentException("Valid MAC Address is required");
                     }
                     YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);

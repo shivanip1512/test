@@ -316,7 +316,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             } else if (ht.isHoneywell()) {
                 try {
                     String macAddress = dto.getMacAddress();
-                    if (StringUtils.isBlank(macAddress) && !Validator.isMacAddress(macAddress)) {
+                    if (StringUtils.isBlank(macAddress) || !Validator.isMacAddress(macAddress)) {
                         throw new StarsInvalidArgumentException("Valid MAC Address is required");
                     }
                     honeywellBuilder.createDevice(lib.getInventoryID(), dto.getSerialNumber(), ht, macAddress);
