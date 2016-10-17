@@ -4,5 +4,7 @@ public enum BehaviorReportStatus {
     PENDING, 
     CONFIRMED,
     FAILED,
-    CANCELED;
+    CANCELED,
+    CONFIGURATION_ERROR
+    ;
 }

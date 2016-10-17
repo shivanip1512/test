@@ -4,11 +4,13 @@ import org.apache.commons.lang3.builder.StandardToStringStyle;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.rfn.dataStreaming.DataStreamingMetricStatus;
 
 public class DataStreamingAttribute {
     private BuiltInAttribute attribute;
     private Boolean attributeOn = Boolean.FALSE;
     private int interval;
+    private DataStreamingMetricStatus status;
     
     public Boolean getAttributeOn() {
         return attributeOn;
@@ -72,6 +74,14 @@ public class DataStreamingAttribute {
         return true;
     }
     
+    public DataStreamingMetricStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(DataStreamingMetricStatus status) {
+        this.status = status;
+    }
+    
     @Override
     public String toString() {
         StandardToStringStyle style = new StandardToStringStyle();
@@ -79,7 +89,7 @@ public class DataStreamingAttribute {
         style.setUseShortClassName(true);
         ToStringBuilder builder = new ToStringBuilder(this, style);
         builder.append("attribute", attribute);
+        builder.append("status", status);
         return builder.toString();
-    }
-    
+    }    
 }

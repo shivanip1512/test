@@ -54,6 +54,7 @@ import com.cannontech.common.events.loggers.DataStreamingEventLogService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
+import com.cannontech.common.rfn.dataStreaming.DataStreamingMetricStatus;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingAttribute;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -341,8 +342,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
                 // behavior
                 DataStreamingConfig expectedConfig = convertBehaviorToConfig(behavior);
+                log.debug("expectedConfig=" + expectedConfig);
                 // behavior report
                 DataStreamingConfig reportedConfig = convertBehaviorToConfig(report);
+                log.debug("reportedConfig=" + reportedConfig);
                 if (hasDiscrepancy(expectedConfig, reportedConfig)) {
                     DiscrepancyResult result = new DiscrepancyResult();
                     result.setActual(reportedConfig);
@@ -360,6 +363,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     }
                     results.add(result);
                 }
+                log.debug("\n");
             }
         }
 
@@ -1120,10 +1124,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                         BuiltInAttribute attributeValue =
                             behavior.getEnumValue(key + ATTRIBUTE_STRING, BuiltInAttribute.class);
                         intervalValue = behavior.getIntValue(key + INTERVAL_STRING);
+                        String status = behavior.getValue(key + STATUS_STRING);
                         DataStreamingAttribute dataStreamingAttribute = new DataStreamingAttribute();
                         dataStreamingAttribute.setAttribute(attributeValue);
                         dataStreamingAttribute.setInterval(intervalValue);
                         dataStreamingAttribute.setAttributeOn(Boolean.TRUE);
+                        if (!StringUtils.isEmpty(status)) {
+                            dataStreamingAttribute.setStatus(DataStreamingMetricStatus.valueOf(status));
+                        }
                         config.addAttribute(dataStreamingAttribute);
                     }
                 }
@@ -1404,10 +1412,17 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         public void receivedConfigError(SimpleDevice device, SpecificDeviceErrorDescription error, ReportedDataStreamingConfig config) {
             log.debug("Recieved a config error for device=" + device + " error=" + error.getDescription() + " config=" + config);
             deviceGroupMemberEditorDao.addDevices(failedGroup, device);
-            
+
             if (config != null) {
                 BehaviorReport report = buildBehaviorReport(config, device.getDeviceId(), BehaviorReportStatus.FAILED);
-
+                
+                DataStreamingConfig reportedConfig = convertBehaviorToConfig(report);
+                for (DataStreamingAttribute attribute : reportedConfig.getAttributes()) {
+                    if (attribute.getStatus() != DataStreamingMetricStatus.OK) {
+                        report.setStatus(BehaviorReportStatus.CONFIGURATION_ERROR);
+                        break;
+                    }
+                }
                 handleReportedDataStreamingConfig(device, config, report);
             } else {
                 deviceBehaviorDao.updateBehaviorReportStatus(TYPE, BehaviorReportStatus.FAILED,

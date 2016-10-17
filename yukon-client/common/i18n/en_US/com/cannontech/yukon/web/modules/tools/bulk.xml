@@ -358,6 +358,8 @@
     <!-- ******************************************************************************************************************** -->
     <!-- ******************************************************************************************************************** -->
     
+    <entry key="yukon.web.modules.tools.CONFIGURATION_ERROR">Configuration Error</entry>
+        
     <!-- configure.jsp -->
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.pageName">Configure Data Streaming</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.contextualPageName">Configure Data Streaming</entry>
