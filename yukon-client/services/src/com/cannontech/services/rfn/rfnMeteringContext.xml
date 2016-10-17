@@ -147,4 +147,13 @@
        
     <bean class="com.cannontech.services.calculated.CalculatedPointDataProducer"/>
 
+    <bean id="rfRelayArchiveRequestListener" class="com.cannontech.services.rfn.endpoint.RfRelayArchiveRequestListener"/>
+    <jms:listener-container
+            connection-factory="connectionFactory"
+            destination-type="queue"
+            concurrency="2"
+            container-type="simple"
+            container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="yukon.qr.obj.da.rfn.RfRelayArchiveRequest" ref="rfRelayArchiveRequestListener" method="handleArchiveRequest"/>
+    </jms:listener-container>
 </beans>

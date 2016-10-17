@@ -234,6 +234,7 @@
     <entry key="yukon.web.modules.dev.rfnTest.lcrReadArchiveRequest.label">LCR Read Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrArchiveRequest.label">LCR Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.lcrDataSimulator.label">LCR Data Simulator</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.relayArchiveRequest.label">Relay Archive Request</entry>
     <entry key="yukon.web.modules.dev.rfnTest.rfnMeterSimulator.label">RFN Meter Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataStreamingSimulator.label">Data Streaming Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.label">Mapping Simulator</entry>

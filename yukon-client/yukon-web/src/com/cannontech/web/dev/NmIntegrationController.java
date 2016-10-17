@@ -507,6 +507,11 @@ public class NmIntegrationController {
         return "rfn/viewLcrArchive.jsp";
     }
 
+    @RequestMapping("viewRelayArchiveRequest")
+    public String viewRelayArchiveRequest() {
+        return "rfn/viewRelayArchive.jsp";
+    }
+
     @RequestMapping("viewRfDaArchiveRequest")
     public String viewRfDaArchiveRequest() {
         return "rfn/viewRfDaArchive.jsp";
@@ -757,6 +762,12 @@ public class NmIntegrationController {
     public String sendLcrArchive(int serialFrom, int serialTo, String manufacturer, String model) {
         rfnEventTestingService.sendLcrArchiveRequest(serialFrom, serialTo, manufacturer, model);
         return "redirect:viewLcrArchiveRequest";
+    }
+    
+    @RequestMapping("sendRelayArchiveRequest")
+    public String sendRelayArchive(int serialFrom, int serialTo, String manufacturer, String model) {
+        rfnEventTestingService.sendRelayArchiveRequest(serialFrom, serialTo, manufacturer, model);
+        return "redirect:viewRelayArchiveRequest";
     }
 
     @RequestMapping("sendLocationArchiveRequest")

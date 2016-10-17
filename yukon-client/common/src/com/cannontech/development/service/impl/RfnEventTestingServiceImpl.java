@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.jms.ConnectionFactory;
 
@@ -39,6 +40,7 @@ import com.cannontech.amr.rfn.model.RfnInvalidValues;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
+import com.cannontech.common.rfn.message.archive.RfRelayArchiveRequest;
 import com.cannontech.common.rfn.message.location.LocationResponse;
 import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.da.rfn.message.archive.RfDaArchiveRequest;
@@ -61,6 +63,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         
     private static final String meterReadingArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
     private static final String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
+    private static final String relayReadingArchiveRequestQueueName = "yukon.qr.obj.da.rfn.RfRelayArchiveRequest";
     private static final String rfDaArchiveRequestQueueName = "yukon.qr.obj.da.rfn.RfDaArchiveRequest";
     private static final String eventArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.EventArchiveRequest";
     private static final String alarmArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.AlarmArchiveRequest";
@@ -292,6 +295,25 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         // Put request on queue
         sendArchiveRequest(lcrReadingArchiveRequestQueueName, archiveRequest);
     }
+    
+    @Override
+    public void sendRelayArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model) {
+
+        for (int i = serialFrom; i <= serialTo; i++) {
+        // Create archive request & fake identifier
+        RfRelayArchiveRequest archiveRequest = new RfRelayArchiveRequest();
+        RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(i), manufacturer, model);
+        
+        // Set all data
+        archiveRequest.setRfnIdentifier(rfnIdentifier);
+        archiveRequest.setNodeId(1234);
+        
+        // Put request on queue
+        sendArchiveRequest(relayReadingArchiveRequestQueueName, archiveRequest);
+        }
+        
+    }
+    
     
     @Override
     public void sendLocationResponse(int serialFrom, int serialTo, String manufacturer, String model, double latitude, double longitude) {

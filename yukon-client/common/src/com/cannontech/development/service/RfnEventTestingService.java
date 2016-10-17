@@ -17,6 +17,10 @@ public interface RfnEventTestingService {
     
     void sendRfDaArchiveRequest(int serial, String manufacturer, String model);
     void sendLcrArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model);
+    /**
+     * Sends out relay archive messages on the ActiveMQ queue.
+     */
+    void sendRelayArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model);
     public int sendLcrReadArchive(int serialFrom, int serialTo, int days, DRReport drReport) throws IOException;
     void calculationStressTest();
 
