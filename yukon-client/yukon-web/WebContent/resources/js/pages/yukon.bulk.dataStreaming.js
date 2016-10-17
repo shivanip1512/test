@@ -30,7 +30,7 @@ yukon.bulk.dataStreaming = (function () {
             if (id > 0) {
                 $('.js-selected-config').show();
             }
-            $('.js-config-table').hide();
+           
             $('#configTable_' + id).show();
         }
     };
