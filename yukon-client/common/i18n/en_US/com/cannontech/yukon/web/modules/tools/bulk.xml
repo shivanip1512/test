@@ -380,7 +380,7 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.noneSelected">Please either select an existing configuration or create a new configuration with at least one attribute on.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.configuration.name"><![CDATA[{0}{1,choice,0#|1# and 1 other|1< and {1} others} - {2,choice, 1#1 minute|1<{2} minutes}]]></entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.dataStreamingNotSupported">None of the devices you have selected support Data Streaming.</entry>
-    
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.deviceMatrix">All devices supported attributes</entry>
     
     <!-- REMOVE DATA STREAMING -->
     <!-- ******************************************************************************************************************** -->

@@ -14,7 +14,8 @@
                 <cti:csrfToken/>
                 
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                
+                <cti:url var="dataStreamSupport" value="/support/dataStreamingSupport" />
+                <a href="${dataStreamSupport }"}><i:inline key=".deviceMatrix"/></a>
                 <c:choose>
                     <c:when test="${dataStreamingNotSupported}">
                         <div class="user-message error"><i:inline key=".dataStreamingNotSupported"/></div>

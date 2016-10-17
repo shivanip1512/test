@@ -268,11 +268,6 @@
     <entry key="yukon.web.modules.support.deviceDef.info.tags.valueSupport.yes">Yes</entry>
     <entry key="yukon.web.modules.support.deviceDef.info.tags.valueSupport.no">No</entry>
     <entry key="yukon.web.modules.support.deviceDef.info.tags.values">Values</entry>
-    <!-- support/dataStreamingSupport.jsp -->
-    <entry key="yukon.web.modules.support.dataStreamingSupport.pageName">Data Streaming Device Attributes</entry>
-    <entry key="yukon.web.modules.support.dataStreamingSupport.pageDescription">Data Streaming Device Attributes</entry>
-    <entry key="yukon.web.modules.support.dataStreamingSupport.points">Points</entry>
-    <entry key="yukon.web.modules.support.dataStreamingSupport.devices">Devices</entry>
     
     <entry key="yukon.web.modules.support.indexes.pageName">Manage Indexes</entry>
     <entry key="yukon.web.modules.support.indexes.name">Name</entry>
