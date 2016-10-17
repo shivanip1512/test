@@ -47,6 +47,6 @@
     <entry key="yukon.web.modules.operator.mapNetwork.exception.FAILURE">Failed to retrieve information.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.commsError">A communication error occurred between Yukon and Network Manager.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.exception.noLocation">No location was found for the parent device.</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.exception.noRoute">One or more devices within the route could not be located.XXXX</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.exception.noRoute">One or more devices within the route could not be located.</entry>
 
 </properties>
