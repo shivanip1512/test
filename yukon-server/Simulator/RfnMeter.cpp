@@ -253,7 +253,7 @@ std::vector<unsigned char> makeDataStreamingResponse(const unsigned char respons
     response.push_back(contents.enabled && ! disableHappen);
 
     const auto channelErrorChance = gConfigParms.getValueAsDouble("SIMULATOR_RFN_DATA_STREAMING_CHANNEL_ERROR_CHANCE");
-    const auto channelErrorHappen = dist(rd);
+    const auto channelErrorHappen = dist(rd) < channelErrorChance;
 
     for( const auto channel : contents.metrics )
     {
