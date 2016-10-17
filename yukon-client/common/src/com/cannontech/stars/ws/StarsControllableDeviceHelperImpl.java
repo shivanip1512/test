@@ -55,6 +55,7 @@ import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsClientRequestException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
+import com.cannontech.util.Validator;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
@@ -315,8 +316,8 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             } else if (ht.isHoneywell()) {
                 try {
                     String macAddress = dto.getMacAddress();
-                    if (StringUtils.isBlank(macAddress)) {
-                        throw new StarsInvalidArgumentException("Mac Address is required");
+                    if (StringUtils.isBlank(macAddress) && !Validator.isMacAddress(macAddress)) {
+                        throw new StarsInvalidArgumentException("Valid MAC Address is required");
                     }
                     honeywellBuilder.createDevice(lib.getInventoryID(), dto.getSerialNumber(), ht, macAddress);
                 } catch (DeviceCreationException e) {

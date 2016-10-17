@@ -61,6 +61,7 @@ import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
 import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
+import com.cannontech.util.Validator;
 
 public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService {
     
@@ -289,11 +290,15 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                 }
 
                 if (inventoryIdentifier.getHardwareType().isHoneywell()) {
+                    String macAddress = dto.getMacAddress();
+                    if (StringUtils.isBlank(macAddress) && !Validator.isMacAddress(macAddress)) {
+                        throw new StarsInvalidArgumentException("Valid MAC Address is required");
+                    }
                     YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
                     String entryText = entry.getEntryText();
                     PaoType paoType = PaoType.getForDbString(entryText);
                     PaoIdentifier honeywellWifiIdentifier = new PaoIdentifier(liteInv.getDeviceID(), paoType);
-                    honeywellBuilder.updateDevice(lmHw.getInventoryID(), dto.getMacAddress(), liteInv.getDeviceID(), honeywellWifiIdentifier);
+                    honeywellBuilder.updateDevice(lmHw.getInventoryID(), macAddress, liteInv.getDeviceID(), honeywellWifiIdentifier);
                 }
             }
             // update install event
