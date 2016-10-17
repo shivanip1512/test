@@ -5,4 +5,5 @@ public enum RfnPrimaryRouteDataReplyType {
     NO_PARENT,
     INVALID_DEVICE,
     DB_ERROR,
+    FAILURE,
 }

@@ -14,11 +14,11 @@ public class RouteData implements Serializable {
     private long routeDataTimestamp;
     private String destinationAddress;
     private String nextHopAddress;
-    private int totalCost;
-    private int hopCount;
+    private short totalCost;
+    private short hopCount;
     private long routeTimeout;
     private Set<RouteFlagType> routeFlags;
-    private int routeColor;
+    private short routeColor;
 
     public RfnIdentifier getRfnIdentifier() {
         return rfnIdentifier;
@@ -64,7 +64,7 @@ public class RouteData implements Serializable {
         return totalCost;
     }
 
-    public void setTotalCost(int totalCost) {
+    public void setTotalCost(short totalCost) {
         this.totalCost = totalCost;
     }
 
@@ -72,7 +72,7 @@ public class RouteData implements Serializable {
         return hopCount;
     }
 
-    public void setHopCount(int hopCount) {
+    public void setHopCount(short hopCount) {
         this.hopCount = hopCount;
     }
 
@@ -96,7 +96,7 @@ public class RouteData implements Serializable {
         return routeColor;
     }
 
-    public void setRouteColor(int routeColor) {
+    public void setRouteColor(short routeColor) {
         this.routeColor = routeColor;
     }
 

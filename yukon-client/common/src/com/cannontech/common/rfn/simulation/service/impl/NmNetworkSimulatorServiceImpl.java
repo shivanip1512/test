@@ -164,6 +164,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         return deviceCount * MAX_RADIUS_IN_METERS / MAX_DEVICE_COUNT;
     }
     
+    /**
+     * Creates a random location within a radius
+     */
     private PaoLocation getLocation(PaoIdentifier paoIdentifier, double x0, double y0, int radius) {
         Random random = new Random();
 
@@ -187,7 +190,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         return location;
     }
     
-    /*
+    /**
      * This method is only used for water meters
      * Water node’s parent must always be an electric node. Electric nodes are devices such as – electric meters, LCRs,
      * DA devices (CBC?), RF relays. Water meters are attached to battery nodes that is because it is not always
@@ -212,6 +215,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         return reply;
     }
     
+    /**
+     * Creates a response with the route information.
+     */
     public RfnPrimaryRouteDataReply getRoute(RfnIdentifier identifier) {
         RfnDevice device= rfnDeviceDao.getDeviceForExactIdentifier(identifier);
         int max = getRandomNumberInRange(2, 8);
@@ -238,6 +244,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         return reply;
     }
     
+    /**
+     * Creates a response with the neighbor information.
+     */
     public RfnNeighborDataReply getNeighbors(RfnIdentifier identifier) {
         RfnDevice device= rfnDeviceDao.getDeviceForExactIdentifier(identifier);
         int max = getRandomNumberInRange(2, 10);
@@ -267,11 +276,11 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         for (RfnDevice device : neighbors) {
             RouteData data = new RouteData();
             data.setDestinationAddress(settings.getRouteData().getDestinationAddress());
-            data.setHopCount(settings.getRouteData().getHopCount());
+            data.setHopCount((short)settings.getRouteData().getHopCount());
             data.setRfnIdentifier(device.getRfnIdentifier());
             data.setSerialNumber(device.getRfnIdentifier().getSensorSerialNumber());
             data.setNextHopAddress(settings.getRouteData().getNextHopAddress());
-            data.setRouteColor(settings.getRouteData().getRouteColor());
+            data.setRouteColor((short)settings.getRouteData().getRouteColor());
             data.setRouteDataTimestamp(settings.getRouteData().getRouteDataTimestamp());
             data.setRouteFlags(settings.getRouteData().getRouteFlags());
             data.setRouteTimeout(settings.getRouteData().getRouteTimeout());

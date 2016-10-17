@@ -912,7 +912,7 @@ public class NmIntegrationController {
             types.add(NeighborFlagType.BN);
             types.add(NeighborFlagType.IN);
             neighborData.setNeighborFlags(types);
-            neighborData.setNeighborLinkCost((short) 3.3);
+            neighborData.setNeighborLinkCost((short) 3);
             neighborData.setNextCommTime(new Date().getTime());
             neighborData.setNumSamples(1);
             neighborData.setSerialNumber("123");
@@ -920,9 +920,9 @@ public class NmIntegrationController {
 
             RouteData routeData = new RouteData();
             routeData.setDestinationAddress("00:14:08:03:FA:A2");
-            routeData.setHopCount(1);
+            routeData.setHopCount((short)1);
             routeData.setNextHopAddress("00:14:08:03:FA:A2");
-            routeData.setRouteColor(1);
+            routeData.setRouteColor((short)1);
             routeData.setRouteDataTimestamp(new Date().getTime());
             Set<RouteFlagType> routeTypes = new HashSet<>();
             routeTypes.add(RouteFlagType.BR);
@@ -930,7 +930,7 @@ public class NmIntegrationController {
             routeData.setRouteFlags(routeTypes);
             routeData.setRouteTimeout(new Date().getTime());
             routeData.setSerialNumber("101");
-            routeData.setTotalCost(2);
+            routeData.setTotalCost((short)2);
             settings.setRouteData(routeData);
 
             ParentData parentData = new ParentData();

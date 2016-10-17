@@ -5,4 +5,5 @@ public enum RfnNeighborDataReplyType
     OK,
     INVALID_DEVICE,
     DB_ERROR,
+    FAILURE,
 }

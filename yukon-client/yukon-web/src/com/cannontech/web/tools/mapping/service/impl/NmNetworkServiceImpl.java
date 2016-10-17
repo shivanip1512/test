@@ -151,20 +151,17 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         }
 
         Map<RfnIdentifier, RfnDevice> devices = new HashMap<>();
-        boolean hasMissingLocationOrDevice = false;
+        boolean isFound = true;
         for (RouteData data : response.getRouteData()) {
-            if(data.getRfnIdentifier() == null){
-                hasMissingLocationOrDevice  = true;
+            if (data.getRfnIdentifier() == null) {
+                isFound = false;
                 log.error(data + " has no RfnIdentifier");
-                continue;
-            }
-            boolean isFound = findDevice(data.getRfnIdentifier(), devices);
-            if(!isFound){
-                hasMissingLocationOrDevice = true;  
+            } else if (!findDevice(data.getRfnIdentifier(), devices)) {
+                isFound = false;
             }
         }
 
-        if (hasMissingLocationOrDevice) {
+        if (!isFound) {
             // one of the devices doesn't exist in yukon or we got a response without valid rfnIdentifier
             // since we will not be able to find location and route can't be generated, exception is thrown
             throw new NmNetworkException(noRoute, "noRoute");
@@ -223,16 +220,15 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         List<Neighbor> neighbors = new ArrayList<>();
         for (NeighborData data : response.getNeighborData()) {
             RfnDevice neighborDevice = devices.get(data.getRfnIdentifier());
-            
-            if(neighborDevice == null){
-                continue;
-            }
-            PaoLocation paoLocation = locations.get(neighborDevice.getPaoIdentifier());
-            if (paoLocation != null) {
-                FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
-                neighbors.add(new Neighbor(device, location, data, accessor));
-            } else {
-                log.error("Location is not found for " + neighborDevice);
+            if (neighborDevice != null) {
+                PaoLocation paoLocation = locations.get(neighborDevice.getPaoIdentifier());
+                if (paoLocation != null) {
+                    FeatureCollection location =
+                        paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
+                    neighbors.add(new Neighbor(device, location, data, accessor));
+                } else {
+                    log.error("Location is not found for " + neighborDevice);
+                }
             }
         }
         return neighbors;
