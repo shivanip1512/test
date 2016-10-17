@@ -71,6 +71,25 @@ yukon.da.bus = (function () {
 
             });
             
+            /** User clicked volt reduction toggle button; show hide point picker. */
+            $(document).on('change', '.js-volt-reduct', function () {
+                var toggle = $(this),
+                    row = toggle.closest('tr'),
+                    picker,
+                    btn = row.find('.js-picker-btn'),
+                    active = row.find('.switch-btn-checkbox').prop('checked');
+                
+                btn.toggleClass('dn', !active);
+                picker = yukon.pickers[btn.data('pickerId')];
+
+                if (!active) {
+                    picker.clearEntireSelection();
+                } else {
+                    picker.clearSelected();
+                    picker.show();
+                }
+            });
+            
         }
     };
 

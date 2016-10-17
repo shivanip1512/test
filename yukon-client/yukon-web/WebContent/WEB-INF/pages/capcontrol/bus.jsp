@@ -81,7 +81,25 @@
                                     <a href="${editParent}">${parent.paoName}</a>
                             </c:if>
                         </tags:nameValue2>
-                    </tags:nameValueContainer2>
+                            <cti:displayForPageEditModes modes="CREATE">
+                                <tags:nameValue2 nameKey=".points.voltReduction">
+                                    <c:set var="active"
+                                        value="${not empty bus.capControlSubstationBus.voltReductionPointId && bus.capControlSubstationBus.voltReductionPointId != 0}" />
+                                    <tags:switchButton name="vrActive" checked="${active}" offClasses="M0"
+                                        classes="js-volt-reduct" />
+                                    <form:hidden id="volt-reduction-bus-point-input"
+                                        path="capControlSubstationBus.voltReductionPointId" />
+                                    <tags:pickerDialog
+                                        id="voltReductionPointPicker"
+                                        type="pointPicker"
+                                        linkType="selectionLabel"
+                                        selectionProperty="paoPoint"
+                                        destinationFieldId="volt-reduction-bus-point-input"
+                                        buttonStyleClass="js-picker-btn ${not active ? 'dn' : ''}"
+                                        allowEmptySelection="${true}" />
+                                </tags:nameValue2>
+                            </cti:displayForPageEditModes>
+                        </tags:nameValueContainer2>
                 </cti:tab>
                 <cti:displayForPageEditModes modes="EDIT,VIEW">
                     <%@ include file="strategyTab.jsp" %>
