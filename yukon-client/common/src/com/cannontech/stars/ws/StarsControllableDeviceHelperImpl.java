@@ -45,6 +45,7 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedExce
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceNotFoundOnAccountException;
 import com.cannontech.stars.dr.hardware.exception.StarsInvalidDeviceTypeException;
+import com.cannontech.stars.dr.honeywell.HoneywellBuilder;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
@@ -64,6 +65,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private EcobeeBuilder ecobeeBuilder;
+    @Autowired private HoneywellBuilder honeywellBuilder;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
     @Autowired private IDatabaseCache cache;
@@ -310,6 +312,16 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
                 } catch (DeviceCreationException e) {
                     throw new StarsClientRequestException("Failed to register ecobee device with ecobee server.", e);
                 }
+            } else if (ht.isHoneywell()) {
+                try {
+                    String macAddress = dto.getMacAddress();
+                    if (StringUtils.isBlank(macAddress)) {
+                        throw new StarsInvalidArgumentException("Mac Address is required");
+                    }
+                    honeywellBuilder.createDevice(lib.getInventoryID(), dto.getSerialNumber(), ht, macAddress);
+                } catch (DeviceCreationException e) {
+                    throw new StarsClientRequestException("Failed to register honeywell wifi device with honeywell server.", e);
+                }
             }
         }
         return lib;
@@ -372,7 +384,7 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
 
             LiteStarsEnergyCompany lsec = starsCache.getEnergyCompany(energyCompany);
             // call service to update device on the customer account
-            lib = starsInventoryBaseService.updateDeviceOnAccount(lib, lsec, ecOperator);
+            lib = starsInventoryBaseService.updateDeviceOnAccount(lib, lsec, ecOperator, dto);
         } else {
             // add device to account
             lib = internalAddDeviceToAccount(dto, energyCompany, ecOperator);

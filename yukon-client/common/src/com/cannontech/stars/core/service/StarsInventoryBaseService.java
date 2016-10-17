@@ -6,6 +6,7 @@ import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
+import com.cannontech.stars.ws.LmDeviceDto;
 
 public interface StarsInventoryBaseService {
 
@@ -34,10 +35,11 @@ public interface StarsInventoryBaseService {
      * @param liteInv
      * @param energyCompany
      * @param user
+     * @param dto
      * @return LiteInventoryBase
      */
     public LiteInventoryBase updateDeviceOnAccount(LiteInventoryBase liteInv,
-            LiteStarsEnergyCompany energyCompany, LiteYukonUser user);
+            LiteStarsEnergyCompany energyCompany, LiteYukonUser user, LmDeviceDto dto);
 
     /**
      * Removes a hardware device from the customer account. 

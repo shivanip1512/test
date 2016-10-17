@@ -14,6 +14,7 @@ public enum HardwareImportFields {
     APP_TYPE("d"),
     APP_KW(null),
     APP_RELAY_NUM("d"),
+    MAC_ADDRESS(null),
     OPTION_PARAMS(null);
     
     private String legendKey;

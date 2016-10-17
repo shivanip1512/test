@@ -15,6 +15,7 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.events.loggers.HardwareEventLogService;
 import com.cannontech.common.inventory.HardwareClass;
 import com.cannontech.common.inventory.InventoryIdentifier;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -51,12 +52,14 @@ import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedExce
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
+import com.cannontech.stars.dr.honeywell.HoneywellBuilder;
 import com.cannontech.stars.dr.selectionList.service.SelectionListService;
 import com.cannontech.stars.dr.thermostat.dao.AccountThermostatScheduleDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.StarsInvalidArgumentException;
+import com.cannontech.stars.ws.LmDeviceDto;
 import com.cannontech.thirdparty.digi.dao.GatewayDeviceDao;
 
 public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService {
@@ -68,6 +71,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Autowired private EnrollmentHelperService enrollmentService;
     @Autowired private GatewayDeviceDao gatewayDeviceDao;
     @Autowired private HardwareEventLogService hardwareEventLogService;
+    @Autowired private HoneywellBuilder honeywellBuilder;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private LMHardwareConfigurationDao lmHardwareConfigurationDao;
@@ -226,7 +230,7 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
     @Transactional
     public LiteInventoryBase updateDeviceOnAccount(LiteInventoryBase liteInv,
             LiteStarsEnergyCompany lsec, 
-            LiteYukonUser user) {
+            LiteYukonUser user, LmDeviceDto dto) {
 
         try {
             boolean lmHardware = InventoryUtils.isLMHardware(liteInv.getCategoryID());
@@ -282,6 +286,14 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
                         
                         starsTwoWayLcrYukonDeviceAssignmentService.assignNewDeviceToLcr(liteInv, lsec, yukonDeviceTypeId, null, null, false);
                     }
+                }
+
+                if (inventoryIdentifier.getHardwareType().isHoneywell()) {
+                    YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
+                    String entryText = entry.getEntryText();
+                    PaoType paoType = PaoType.getForDbString(entryText);
+                    PaoIdentifier honeywellWifiIdentifier = new PaoIdentifier(liteInv.getDeviceID(), paoType);
+                    honeywellBuilder.updateDevice(lmHw.getInventoryID(), dto.getMacAddress(), liteInv.getDeviceID(), honeywellWifiIdentifier);
                 }
             }
             // update install event

@@ -5,9 +5,9 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.google.common.base.Objects;
 
-@YukonPao(tableBacked = false, idColumnName = "deviceId", paoTypes = { PaoType.HONEYWELL_9000, PaoType.HONEYWELL_FOCUSPRO,
+@YukonPao(idColumnName = "deviceId", paoTypes = { PaoType.HONEYWELL_9000, PaoType.HONEYWELL_FOCUSPRO,
     PaoType.HONEYWELL_VISIONPRO_8000, PaoType.HONEYWELL_THERMOSTAT })
-public class CompleteHoneywellThermostat extends CompleteDevice {
+public class CompleteHoneywellWifiThermostat extends CompleteDevice {
     private String macAddress;
 
     @YukonPaoField
@@ -26,11 +26,11 @@ public class CompleteHoneywellThermostat extends CompleteDevice {
 
     @Override
     protected boolean localEquals(Object object) {
-        if (object instanceof CompleteHoneywellThermostat) {
+        if (object instanceof CompleteHoneywellWifiThermostat) {
             if (!super.localEquals(object)) {
                 return false;
             }
-            CompleteHoneywellThermostat that = (CompleteHoneywellThermostat) object;
+            CompleteHoneywellWifiThermostat that = (CompleteHoneywellWifiThermostat) object;
             return Objects.equal(macAddress, that.macAddress);
         }
         return false;
@@ -38,6 +38,6 @@ public class CompleteHoneywellThermostat extends CompleteDevice {
 
     @Override
     public String toString() {
-        return super.toString() + " CompleteHoneywellThermostat [ macAddress=" + macAddress + "]";
+        return super.toString() + " CompleteHoneywellWifiThermostat [ macAddress=" + macAddress + "]";
     }
 }

@@ -55,6 +55,7 @@ public class ControllableDevicesRequestEndPoint {
     static final String deviceTypeStr = "y:deviceType";
     static final String deviceLabelStr = "y:deviceLabel";
     static final String serviceCompanyNameStr = "y:serviceCompanyName";
+    static final String macAddressStr = "y:macAddress";
     static final String fieldInstallDateStr = "y:fieldInstallDate";
     static final String fieldRemoveDateStr = "y:fieldRemoveDate";
 
@@ -284,7 +285,7 @@ public class ControllableDevicesRequestEndPoint {
             device.setServiceCompanyName(template.evaluateAsString(serviceCompanyNameStr));
             device.setFieldInstallDate(template.evaluateAsDate(fieldInstallDateStr));
             device.setFieldRemoveDate(template.evaluateAsDate(fieldRemoveDateStr));
-
+            device.setMacAddress(template.evaluateAsString(macAddressStr));
             return device;
         }
     }

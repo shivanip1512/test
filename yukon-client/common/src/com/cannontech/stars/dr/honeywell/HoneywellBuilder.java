@@ -3,6 +3,7 @@ package com.cannontech.stars.dr.honeywell;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
@@ -14,13 +15,14 @@ import com.cannontech.common.inventory.HardwareType;
 import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.model.CompleteHoneywellThermostat;
+import com.cannontech.common.pao.model.CompleteHoneywellWifiThermostat;
 import com.cannontech.common.pao.service.PaoPersistenceService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import com.cannontech.util.Validator;
 
 public class HoneywellBuilder implements HardwareTypeExtensionProvider {
     private static final Logger log = YukonLogManager.getLogger(HoneywellBuilder.class);
@@ -38,15 +40,16 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
     
     @Override
     public void createDevice(Hardware hardware) {
-        createDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType());
+        createDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType(), hardware.getMacAddress());
     }
     
-    public void createDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
+    public void createDevice(int inventoryId, String serialNumber, HardwareType hardwareType, String macAddress) {
         try {
           //TODO: Code to register new device with honeywell service??
 
-            CompleteHoneywellThermostat honeywellPao = new CompleteHoneywellThermostat();
+            CompleteHoneywellWifiThermostat honeywellPao = new CompleteHoneywellWifiThermostat();
             honeywellPao.setPaoName(serialNumber);
+            honeywellPao.setMacAddress(macAddress);
             paoPersistenceService.createPaoWithDefaultPoints(honeywellPao, hardwareTypeToPaoType.get(hardwareType));
 
             // Update the Stars table with the device id
@@ -82,16 +85,18 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void updateDevice(Hardware hardware) {
-       //TODO:Need to decide on if we need a new table for storing mac address for Honeywell.
-       /* CompleteHoneywellThermostat honeywellThermostat = paoPersistenceService.retreivePao(hardware.getYukonPao(), CompleteHoneywellThermostat.class);
-        
-        if (hardware.getMacAddress() != null) {
-            honeywellThermostat.setMacAddress(hardware.getMacAddress());
+        updateDevice(hardware.getInventoryId(), hardware.getMacAddress(), hardware.getDeviceId(), hardware.getYukonPao());
+    }
+
+    public void updateDevice(int inventoryId, String macAddress, int deviceId, YukonPao pao) {
+        CompleteHoneywellWifiThermostat honeywellThermostat =
+            paoPersistenceService.retreivePao(pao, CompleteHoneywellWifiThermostat.class);
+
+        if (macAddress != null) {
+            honeywellThermostat.setMacAddress(macAddress);
         }
-        
         paoPersistenceService.updatePao(honeywellThermostat);
-        
-        inventoryBaseDao.updateInventoryBaseDeviceId(hardware.getInventoryId(), hardware.getDeviceId());*/
+        inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, deviceId);
     }
 
     @Override
@@ -106,6 +111,13 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void validateDevice(Hardware hardware, Errors errors) {
-        // Nothing extra to do
+
+        String macAddress = hardware.getMacAddress();
+        if (StringUtils.isBlank(macAddress)) {
+            errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required");
+        } else if (!Validator.isMacAddress(macAddress)) {
+            errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.format.eui48");
+        }
+
     }
 }

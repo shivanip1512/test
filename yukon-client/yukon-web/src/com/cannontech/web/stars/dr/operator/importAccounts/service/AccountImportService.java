@@ -1291,6 +1291,9 @@ public class AccountImportService {
         if (colIdx[result.COL_ADDR_GROUP] >= 0 && colIdx[result.COL_ADDR_GROUP] < columns.length) {
             fields[ImportFields.IDX_ADDR_GROUP] = columns[ colIdx[result.COL_ADDR_GROUP] ];
         }
+        if (colIdx[result.COL_MAC_ADDRESS] >= 0 && colIdx[result.COL_MAC_ADDRESS] < columns.length) {
+            fields[ImportFields.IDX_MAC_ADDRESS] = columns[colIdx[result.COL_MAC_ADDRESS]];
+        }
         if (colIdx[result.COL_OPTION_PARAMS] >= 0 && colIdx[result.COL_OPTION_PARAMS] < columns.length) {
             fields[ImportFields.IDX_OPTION_PARAMS] = columns[ colIdx[result.COL_OPTION_PARAMS] ];
         }

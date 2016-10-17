@@ -62,6 +62,7 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
         
         dto.setSerialNumber(hwFields[ImportFields.IDX_SERIAL_NO]);
         dto.setServiceCompanyName(hwFields[ImportFields.IDX_SERVICE_COMPANY]);
+        dto.setMacAddress(hwFields[ImportFields.IDX_MAC_ADDRESS]);
         
         return dto;
     }
@@ -130,6 +131,10 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
         
         if (!StringUtils.isEmpty(hwFields[ImportFields.IDX_SERVICE_COMPANY])) {
             dto.setServiceCompanyName(hwFields[ImportFields.IDX_SERVICE_COMPANY]);
+        }
+        
+        if (!StringUtils.isEmpty(hwFields[ImportFields.IDX_MAC_ADDRESS])) {
+            dto.setMacAddress(hwFields[ImportFields.IDX_MAC_ADDRESS]);
         }
     }
     

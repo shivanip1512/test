@@ -29,6 +29,7 @@
                                                 <xsd:sequence>
                                                     <xsd:element name="deviceLabel" type="xsd:string" minOccurs="0"/>
                                                     <xsd:element name="fieldInstallDate" type="xsd:dateTime" minOccurs="0"/>
+                                                    <xsd:element name="macAddress" type="xsd:string" minOccurs="0"/>
                                                     <xsd:element name="serviceCompanyName" type="xsd:string" minOccurs="0"/>
                                                 </xsd:sequence>
                                             </xsd:extension>
