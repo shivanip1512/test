@@ -1,5 +1,7 @@
 package com.cannontech.stars.dr.hardware.service.impl;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -14,6 +16,7 @@ import com.cannontech.dr.honeywell.HoneywellCommunicationException;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
@@ -28,7 +31,8 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
     private static final Logger log = YukonLogManager.getLogger(HoneywellCommandStrategy.class);
 
     @Autowired private HoneywellCommunicationService honeywellCommunicationService;
-
+    @Autowired private LMHardwareConfigurationDao lmHardwareConfigDao;
+    
     @Override
     public HardwareStrategyType getType() {
         return HardwareStrategyType.HONEYWELL;
@@ -42,20 +46,24 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
     @Override
     public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
         LiteLmHardwareBase device = command.getDevice();
-
+        ArrayList<Integer> deviceIds=new ArrayList<>();
+        deviceIds.add(device.getDeviceID());
         try {
+            int groupId;
             switch (command.getType()) {
             case IN_SERVICE:
                 break;
             case OUT_OF_SERVICE:
                 break;
             case TEMP_OUT_OF_SERVICE:
-                // TODO:Calls for honeywell
+                // TODO:Update code for eventId and test Calls for honeywell
+                // groupId = getGroupId(device.getInventoryID());
                 // moveDevice(deviceIds, groupId);
-                // honeywellCommunicationService.cancelDREventForDevices(deviceIds, 1, true);
+                // honeywellCommunicationService.cancelDREventForDevices(deviceIds, eventId, true);
                 break;
             case CANCEL_TEMP_OUT_OF_SERVICE:
-                // TODO: Calls for honeywell
+                // TODO: Test Calls for honeywell
+                // groupId = getGroupId(device.getInventoryID());
                 // moveDevice(deviceIds, groupId);
                 break;
             case CONFIG:
@@ -71,7 +79,12 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
         }
     }
 
-    private void moveDevice(int[] deviceIds, int groupId) {
+    /*private int getGroupId(int inventoryId) {
+        List<LMHardwareConfiguration> hardwareConfig = lmHardwareConfigDao.getForInventoryId(inventoryId);
+        return hardwareConfig.get(0).getAddressingGroupId();
+    }*/
+    
+    private void moveDevice(ArrayList<Integer> deviceIds, int groupId) {
         // Remove devices from DR Group
         // honeywellCommunicationService.removeDeviceFromDRGroup(deviceIds, groupId);
         // Add them to a different Group
