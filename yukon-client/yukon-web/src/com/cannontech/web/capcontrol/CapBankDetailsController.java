@@ -25,9 +25,12 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.CapControlDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.CachingPointFormattingService;
+import com.cannontech.database.data.capcontrol.CapControlSubstation;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
@@ -35,6 +38,11 @@ import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.capcontrol.streamable.SubStation;
+import com.cannontech.web.capcontrol.models.ViewableCapBank;
+import com.cannontech.web.capcontrol.models.ViewableFeeder;
+import com.cannontech.web.capcontrol.models.ViewableSubBus;
+import com.cannontech.web.capcontrol.service.SubstationService;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableMap;
 
 @Controller
@@ -48,6 +56,8 @@ public class CapBankDetailsController {
     @Autowired private CachingPointFormattingService cachingPointFormattingService;
     @Autowired private PaoDao paoDao;
     @Autowired private AttributeService attributeService;
+    @Autowired private SubstationService substationService;
+    @Autowired private IDatabaseCache dbCache;
 
     private static final Map<BuiltInAttribute,String> formatMappings = ImmutableMap.<BuiltInAttribute,String>builder()
         .put(BuiltInAttribute.FIRMWARE_VERSION, "{rawValue|firmwareVersion}")
@@ -61,43 +71,82 @@ public class CapBankDetailsController {
 
     @RequestMapping("capBankLocations")
     public String capBankLocations(ModelMap model, LiteYukonUser user, int value) {
-        
-        //Page data
+        boolean isSubstationOrphan = false;
+        List<CapBankDevice> deviceList = null;
+        List<ViewableCapBank> capBanks = null;
+        Map<Integer, LiteYukonPAObject> allLitePaos = null;
+
+        // Page data
         CapControlType type = capControlDao.getCapControlType(value);
         CapControlCache cache = filterCacheFactory.createUserAccessFilteredCache(user);
-    
-        List<CapBankDevice> deviceList = cache.getCapBanksByTypeAndId(type, value);
-        
+
         List<Integer> bankIds = new ArrayList<Integer>();
-        for (CapBankDevice bank : deviceList) {
-            bankIds.add(bank.getCcId());
+        try {
+            deviceList = cache.getCapBanksByTypeAndId(type, value);
+            if (deviceList != null) {
+                for (CapBankDevice bank : deviceList) {
+                    bankIds.add(bank.getCcId());
+                }
+            }
+        } catch (NotFoundException ne) {
+            // Check whether the substation is orphan
+            List<ViewableSubBus> subBuses = substationService.getBusesForSubstation(value);
+            List<ViewableFeeder> feeders = substationService.getFeedersForSubBuses(subBuses);
+            capBanks = substationService.getCapBanksForFeeders(feeders);
+
+            if (capBanks != null) {
+                isSubstationOrphan = true;
+                model.addAttribute("orphan", true);
+                for (ViewableCapBank bank : capBanks) {
+                    bankIds.add(bank.getCcId());
+                }
+            } else {
+                throw ne;
+            }
+
         }
+
         List<LiteCapBankAdditional> additionalList = capControlDao.getCapBankAdditional(bankIds);
 
-        //Build a map to keep this from being O(n^2)
-        Map<Integer,LiteCapBankAdditional> mapBankAdditionals = new HashMap<Integer,LiteCapBankAdditional>();
+        // Build a map to keep this from being O(n^2)
+        Map<Integer, LiteCapBankAdditional> mapBankAdditionals = new HashMap<Integer, LiteCapBankAdditional>();
         for (LiteCapBankAdditional capAdd : additionalList) {
-            mapBankAdditionals.put(capAdd.getDeviceId(),capAdd);
+            mapBankAdditionals.put(capAdd.getDeviceId(), capAdd);
         }
 
-        //Form a single list so there cannot be any ordering issues.
+        // Form a single list so there cannot be any ordering issues.
         List<BankLocation> bankLocationList = new ArrayList<BankLocation>();
-        for (CapBankDevice capBank : deviceList) {
-            LiteCapBankAdditional additionInfo = mapBankAdditionals.get(capBank.getCcId());
-            
-            if (additionInfo != null) {
-                BankLocation location = new BankLocation(capBank.getCcName(),
-                                                         additionInfo.getSerialNumber(),
-                                                         capBank.getCcArea(),
-                                                         additionInfo.getDrivingDirections());
-                bankLocationList.add(location);
-            } else {
-                log.warn("Cap Bank Additional info missing for bank id: " + capBank.getCcId());
+        if (deviceList != null && !deviceList.isEmpty()) {
+            for (CapBankDevice capBank : deviceList) {
+                LiteCapBankAdditional additionInfo = mapBankAdditionals.get(capBank.getCcId());
+
+                if (additionInfo != null) {
+                    BankLocation location =
+                        new BankLocation(capBank.getCcName(), additionInfo.getSerialNumber(), capBank.getCcArea(),
+                            additionInfo.getDrivingDirections());
+                    bankLocationList.add(location);
+                } else {
+                    log.warn("Cap Bank Additional info missing for bank id: " + capBank.getCcId());
+                }
+            }
+        } else {
+            allLitePaos = dbCache.getAllPaosMap();
+            for (ViewableCapBank capBank : capBanks) {
+                LiteCapBankAdditional additionInfo = mapBankAdditionals.get(capBank.getCcId());
+                LiteYukonPAObject pao = allLitePaos.get(capBank.getCcId());
+
+                if (additionInfo != null) {
+                    BankLocation location =
+                        new BankLocation(capBank.getCcName(), additionInfo.getSerialNumber(), pao.getPaoDescription(),
+                            additionInfo.getDrivingDirections());
+                    bankLocationList.add(location);
+                } else {
+                    log.warn("Cap Bank Additional info missing for bank id: " + capBank.getCcId());
+                }
             }
         }
-        
         SubStation substation;
-        StreamableCapObject area;
+        StreamableCapObject area = null;
         if (type == CapControlType.SUBBUS) {
             SubBus bus = cache.getSubBus(value);
             substation = cache.getSubstation(bus.getParentID());
@@ -107,18 +156,25 @@ public class CapBankDetailsController {
             SubBus bus = cache.getSubBus(feeder.getParentID());
             substation = cache.getSubstation(bus.getParentID());
             area = cache.getArea(substation.getParentID());
-        } else { //Station
-            //If this is not a station, a not found exception will be thrown from cache
+        } else if (isSubstationOrphan) {
+            CapControlSubstation capControlSubstation = substationService.get(value);
+            substation = new SubStation();
+            substation.setCcId(capControlSubstation.getCapControlPAOID());
+            substation.setCcName(capControlSubstation.getPAOName());
+        } else {// Station
+            // If this is not a station, a not found exception will be thrown from cache
             substation = cache.getSubstation(value);
             area = cache.getArea(substation.getParentID());
         }
-        
+
         model.addAttribute("capBankList", bankLocationList);
-        model.addAttribute("areaId", area.getCcId());
-        model.addAttribute("areaName", area.getCcName());
+        if (!isSubstationOrphan) {
+            model.addAttribute("areaId", area.getCcId());
+            model.addAttribute("areaName", area.getCcName());
+        }
         model.addAttribute("substationId", substation.getCcId());
         model.addAttribute("substationName", substation.getCcName());
-        
+
         return "capBankLocations.jsp";
     }
     

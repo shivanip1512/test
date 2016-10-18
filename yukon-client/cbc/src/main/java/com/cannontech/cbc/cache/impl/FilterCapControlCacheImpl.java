@@ -344,7 +344,7 @@ public class FilterCapControlCacheImpl implements CapControlCache {
     }
     
     @Override
-    public List<CapBankDevice> getCapBanksByTypeAndId(CapControlType type, int id) {
+    public List<CapBankDevice> getCapBanksByTypeAndId(CapControlType type, int id) throws NotFoundException {
         
         int areaId = getParentAreaId(id);
         StreamableCapObject area = cache.getStreamableArea(areaId);

@@ -3,7 +3,11 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
-<cti:standardPage module="capcontrol" page="capbankLocations">
+<c:set var="pageName" value="capbankLocations"/>
+<c:if test="${orphan}">
+    <c:set var="pageName" value="capbankLocations.orphan"/>
+</c:if>
+<cti:standardPage module="capcontrol" page="${pageName}">
 <%@ include file="/capcontrol/capcontrolHeader.jspf"%>
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>

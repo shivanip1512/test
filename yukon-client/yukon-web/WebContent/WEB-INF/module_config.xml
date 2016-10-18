@@ -797,6 +797,9 @@
               <page name="substation.orphan.EDIT" type="BASIC" hideFavorite="true">
                 <labelArgument>${substationName}</labelArgument>
               </page>
+              <page name="capbankLocations.orphan" type="BASIC">
+                  <labelArgument>${substationName}</labelArgument>
+              </page>
             </pages>
           </page>
           <page name="bus.orphan.CREATE" type="BASIC" />

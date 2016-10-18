@@ -623,6 +623,7 @@
 
     <!-- capBankLocations.jsp -->
     <entry key="yukon.web.modules.capcontrol.capbankLocations.pageName">Cap Bank Locations</entry>
+    <entry key="yukon.web.modules.capcontrol.capbankLocations.orphan.pageName">Cap Bank Locations</entry>
     <entry key="yukon.web.modules.capcontrol.capbankLocations.capbankName">Cap Bank Name</entry>
     <entry key="yukon.web.modules.capcontrol.capbankLocations.cbcSN">CBC Serial Number</entry>
     <entry key="yukon.web.modules.capcontrol.capbankLocations.address">Address</entry>
