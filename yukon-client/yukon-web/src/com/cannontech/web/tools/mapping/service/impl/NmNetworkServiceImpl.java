@@ -99,9 +99,11 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             parentReplyTemplate.send(request, reply);
             response = reply.waitForCompletion();
         } catch (ExecutionException e) {
+            log.error(commsError, e);
             throw new NmNetworkException(commsError, e, "commsError");
         }
         if (response.getReplyType() != RfnParentReplyType.OK) {
+            log.error(nmError + " (" + response.getReplyType() + ")");
             throw new NmNetworkException(nmError, response.getReplyType().name());
         }
 
@@ -112,6 +114,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             RfnDevice parentDevice = rfnDeviceDao.getDeviceForExactIdentifier(data.getRfnIdentifier());
             PaoLocation paoLocation = paoLocationDao.getLocation(parentDevice.getPaoIdentifier().getPaoId());
             if (paoLocation == null) {
+                log.error("No parent found for device=" + device);
                 throw new NmNetworkException(noParent, "noParent");
             }
             FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
@@ -121,6 +124,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             // create new device if it doesn't exist
             rfnDeviceCreationService.create(data.getRfnIdentifier());
             log.info(data.getRfnIdentifier() + " is not found. Creating device.");
+            log.error("No parent found for device=" + device);
             throw new NmNetworkException(noParent, "noParent");
         }
     }
@@ -141,12 +145,14 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             routeReplyTemplate.send(request, reply);
             response = reply.waitForCompletion();
         } catch (ExecutionException e) {
+            log.error(commsError, e);
             throw new NmNetworkException(commsError, e, "commsError");
         }
 
         log.debug("response: " + response);
 
         if (response.getReplyType() != RfnPrimaryRouteDataReplyType.OK) {
+            log.error(nmError + " (" + response.getReplyType() + ")");
             throw new NmNetworkException(nmError, response.getReplyType().name());
         }
 
@@ -164,6 +170,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         if (!isFound) {
             // one of the devices doesn't exist in yukon or we got a response without valid rfnIdentifier
             // since we will not be able to find location and route can't be generated, exception is thrown
+            log.error("No route found for device=" + device);
             throw new NmNetworkException(noRoute, "noRoute");
         }
 
@@ -201,10 +208,12 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             neighborReplyTemplate.send(request, reply);
             response = reply.waitForCompletion();
         } catch (ExecutionException e) {
+            log.error(commsError, e);
             throw new NmNetworkException(commsError, e, "commsError");
         }
 
         if (response.getReplyType() != RfnNeighborDataReplyType.OK) {
+            log.error(nmError + " (" + response.getReplyType() + ")");
             throw new NmNetworkException(nmError, response.getReplyType().name());
         }
         log.debug("response: " + response);

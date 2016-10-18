@@ -120,66 +120,48 @@ public class RouteData implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         RouteData other = (RouteData) obj;
         if (destinationAddress == null) {
-            if (other.destinationAddress != null) {
+            if (other.destinationAddress != null)
                 return false;
-            }
-        } else if (!destinationAddress.equals(other.destinationAddress)) {
+        } else if (!destinationAddress.equals(other.destinationAddress))
             return false;
-        }
-        if (hopCount != other.hopCount) {
+        if (hopCount != other.hopCount)
             return false;
-        }
         if (nextHopAddress == null) {
-            if (other.nextHopAddress != null) {
+            if (other.nextHopAddress != null)
                 return false;
-            }
-        } else if (!nextHopAddress.equals(other.nextHopAddress)) {
+        } else if (!nextHopAddress.equals(other.nextHopAddress))
             return false;
-        }
         if (rfnIdentifier == null) {
-            if (other.rfnIdentifier != null) {
+            if (other.rfnIdentifier != null)
                 return false;
-            }
-        } else if (!rfnIdentifier.equals(other.rfnIdentifier)) {
+        } else if (!rfnIdentifier.equals(other.rfnIdentifier))
             return false;
-        }
-        if (routeColor != other.routeColor) {
+        if (routeColor != other.routeColor)
             return false;
-        }
-        if (routeDataTimestamp != other.routeDataTimestamp) {
+        if (routeDataTimestamp != other.routeDataTimestamp)
             return false;
-        }
         if (routeFlags == null) {
-            if (other.routeFlags != null) {
+            if (other.routeFlags != null)
                 return false;
-            }
-        } else if (!routeFlags.equals(other.routeFlags)) {
+        } else if (!routeFlags.equals(other.routeFlags))
             return false;
-        }
-        if (routeTimeout != other.routeTimeout) {
+        if (routeTimeout != other.routeTimeout)
             return false;
-        }
         if (serialNumber == null) {
-            if (other.serialNumber != null) {
+            if (other.serialNumber != null)
                 return false;
-            }
-        } else if (!serialNumber.equals(other.serialNumber)) {
+        } else if (!serialNumber.equals(other.serialNumber))
             return false;
-        }
-        if (totalCost != other.totalCost) {
+        if (totalCost != other.totalCost)
             return false;
-        }
         return true;
     }
 
