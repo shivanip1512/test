@@ -10046,6 +10046,26 @@
                 <unitofmeasure value="Gallons" />
                 <decimalplaces value="3" />
             </point>
+        </points>
+        <attributes>
+            <attribute name="USAGE_WATER">
+                <basicLookup point="Water Usage" />
+            </attribute>
+        </attributes>
+        <tags>
+            <tag name="DEVICE_ICON_TYPE">
+                <value>water_meter</value>
+            </tag>
+            <tag name="WATER_METER_DETAIL_DISPLAYABLE" />
+        </tags>
+    </pao>
+
+    <pao id="RFWMETER" inherits="RFN_WATER_BASE, RFN_POINT_CALCULATION_WATER">
+        <displayName>RFW-Meter</displayName>
+    </pao>
+
+    <pao id="RFWMETER_GEN2" abstract="true" inherits="RFN_WATER_BASE, RFN_POINT_CALCULATION_WATER, SUPPORTS_DEVICE_CONFIGURATION, RFN_WATER_CHANNEL_CONFIGURATION">
+        <points>
             <point type="Status" offset="1">
                 <init>false</init>
                 <name>Low Battery Voltage</name>
@@ -10098,9 +10118,6 @@
             </point>
         </points>
         <attributes>
-            <attribute name="USAGE_WATER">
-                <basicLookup point="Water Usage" />
-            </attribute>
             <attribute name="LOW_BATTERY_VOLTAGE">
                 <basicLookup point="Low Battery Voltage" />
             </attribute>
@@ -10122,29 +10139,16 @@
             <attribute name="METER_READ_CHECKSUM_ERROR">
                 <basicLookup point="Meter Read - Checksum error" />
             </attribute>
-            <attribute name="METER_READ_TAMPER_CABLE_CUT">
-                <basicLookup point="Tamper - Cable Cut" />
-            </attribute>
             <attribute name="METER_READ_PARITY_ERROR">
                 <basicLookup point="Meter Read - Parity error" />
+            </attribute>
+            <attribute name="TAMPER_CABLE_CUT">
+                <basicLookup point="Tamper - Cable Cut" />
             </attribute>
             <attribute name="DEBUG_EVENT">
                 <basicLookup point="Debug Event" />
             </attribute>
         </attributes>
-        <tags>
-            <tag name="DEVICE_ICON_TYPE">
-                <value>water_meter</value>
-            </tag>
-            <tag name="WATER_METER_DETAIL_DISPLAYABLE" />
-        </tags>
-    </pao>
-
-    <pao id="RFWMETER" inherits="RFN_WATER_BASE, RFN_POINT_CALCULATION_WATER">
-        <displayName>RFW-Meter</displayName>
-    </pao>
-
-    <pao id="RFWMETER_GEN2" abstract="true" inherits="RFN_WATER_BASE, RFN_POINT_CALCULATION_WATER, SUPPORTS_DEVICE_CONFIGURATION, RFN_WATER_CHANNEL_CONFIGURATION">
     </pao>
 
     <pao id="RFW201" inherits="RFWMETER_GEN2">
