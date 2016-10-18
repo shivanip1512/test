@@ -198,6 +198,7 @@ public class BusController {
         validator.validate(bus, result);
 
         if (result.hasErrors()) {
+            redirectAttributes.addAttribute("parentId", request.getParameter("parentId"));
             return bindAndForward(bus, result, redirectAttributes);
         }
 

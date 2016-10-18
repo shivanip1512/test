@@ -185,6 +185,7 @@ public class FeederController {
         validator.validate(feeder, result);
 
         if (result.hasErrors()) {
+            redirectAttributes.addAttribute("parentId", request.getParameter("parentId"));
             return bindAndForward(feeder, result, redirectAttributes);
         }
 

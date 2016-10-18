@@ -116,6 +116,7 @@ public class CapBankController {
         capBankValidator.validate(capbank, result);
 
         if (result.hasErrors()) {
+            redirectAttributes.addAttribute("parentId", request.getParameter("parentId"));
             return bindAndForward(capbank, result, redirectAttributes);
         }
         int id = capbankService.save(capbank);

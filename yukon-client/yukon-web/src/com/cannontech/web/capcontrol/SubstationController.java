@@ -219,6 +219,7 @@ public class SubstationController {
         validator.validate(substation, result);
 
         if (result.hasErrors()) {
+            redirectAttributes.addAttribute("parentId", request.getParameter("parentId"));
             return bindAndForward(substation, result, redirectAttributes);
         }
         
