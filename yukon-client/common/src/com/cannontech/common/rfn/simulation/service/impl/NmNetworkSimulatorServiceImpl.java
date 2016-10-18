@@ -36,13 +36,10 @@ import com.cannontech.common.rfn.message.location.Origin;
 import com.cannontech.common.rfn.message.network.NeighborData;
 import com.cannontech.common.rfn.message.network.ParentData;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReply;
-import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataRequest;
 import com.cannontech.common.rfn.message.network.RfnParentReply;
-import com.cannontech.common.rfn.message.network.RfnParentReplyType;
 import com.cannontech.common.rfn.message.network.RfnParentRequest;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReply;
-import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
 import com.cannontech.common.rfn.message.network.RouteData;
 import com.cannontech.common.rfn.model.RfnDevice;
@@ -209,7 +206,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         }
         
         RfnParentReply reply = new RfnParentReply();
-        reply.setReplyType(RfnParentReplyType.OK);
+        reply.setReplyType(settings.getParentReplyType());
         reply.setParentData(getParentDataFromSettings(parent.getRfnIdentifier()));
         reply.setRfnIdentifier(parent.getRfnIdentifier());
         return reply;
@@ -236,7 +233,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             }
         }
         RfnPrimaryRouteDataReply reply = new RfnPrimaryRouteDataReply();
-        reply.setReplyType(RfnPrimaryRouteDataReplyType.OK);
+        reply.setReplyType(settings.getRouteReplyType());
         reply.setRfnIdentifier(device.getRfnIdentifier());
         reply.setRouteData(routeData);
         log.info("identifier="+ identifier+" routeData="+routeData);
@@ -255,7 +252,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         RfnNeighborDataReply reply = new RfnNeighborDataReply();
         Set<NeighborData> neighborData = getNeighborDataFromSettings(neighbors);
         
-        reply.setReplyType(RfnNeighborDataReplyType.OK);
+        reply.setReplyType(settings.getNeighborReplyType());
         reply.setRfnIdentifier(device.getRfnIdentifier());
         reply.setNeighborData(neighborData);
         log.info("identifier="+ identifier+" neighborData="+neighborData);
@@ -276,11 +273,11 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         for (RfnDevice device : neighbors) {
             RouteData data = new RouteData();
             data.setDestinationAddress(settings.getRouteData().getDestinationAddress());
-            data.setHopCount((short)settings.getRouteData().getHopCount());
+            data.setHopCount(settings.getRouteData().getHopCount());
             data.setRfnIdentifier(device.getRfnIdentifier());
             data.setSerialNumber(device.getRfnIdentifier().getSensorSerialNumber());
             data.setNextHopAddress(settings.getRouteData().getNextHopAddress());
-            data.setRouteColor((short)settings.getRouteData().getRouteColor());
+            data.setRouteColor(settings.getRouteData().getRouteColor());
             data.setRouteDataTimestamp(settings.getRouteData().getRouteDataTimestamp());
             data.setRouteFlags(settings.getRouteData().getRouteFlags());
             data.setRouteTimeout(settings.getRouteData().getRouteTimeout());
