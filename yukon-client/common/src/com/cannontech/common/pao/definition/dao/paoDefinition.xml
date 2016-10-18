@@ -10046,10 +10046,90 @@
                 <unitofmeasure value="Gallons" />
                 <decimalplaces value="3" />
             </point>
+            <point type="Status" offset="1">
+                <init>false</init>
+                <name>Low Battery Voltage</name>
+                <stategroup value="TrueFalse" />
+            </point>
+            <point type="Status" offset="2">
+                <init>false</init>
+                <name>Meter Read - No encoder found</name>
+                <stategroup value="TrueFalse" />
+            </point>
+            <point type="Status" offset="3">
+                <init>false</init>
+                <name>Meter Read - Parity error</name>
+                <stategroup value="TrueFalse" />
+            </point>
+            <point type="Status" offset="4">
+                <init>false</init>
+                <name>Meter Read - No EOF detected</name>
+                <stategroup value="TrueFalse" />
+            </point>
+            <point type="Status" offset="5">
+                <init>false</init>
+                <name>Meter Read - Protocol cannot be determined</name>
+                <stategroup value="TrueFalse" />
+            </point>
+            <point type="Status" offset="6">
+                <init>false</init>
+                <name>Meter Read - Field exceeded maximum digits</name>
+                <stategroup value="TrueFalse" />
+            </point>
+            <point type="Status" offset="7">
+                <init>false</init>
+                <name>Meter Read - Error reading serial number</name>
+                <stategroup value="TrueFalse" />
+            </point>
+            <point type="Status" offset="8">
+                <init>false</init>
+                <name>Meter Read - Checksum error</name>
+                <stategroup value="TrueFalse" />
+            </point>
+            <point type="Status" offset="9">
+                <init>false</init>
+                <name>Tamper - Cable Cut</name>
+                <stategroup value="TrueFalse" />
+            </point>
+            <point type="Status" offset="10">
+                <init>false</init>
+                <name>Debug Event</name>
+                <stategroup value="TrueFalse" />
+            </point>
         </points>
         <attributes>
             <attribute name="USAGE_WATER">
                 <basicLookup point="Water Usage" />
+            </attribute>
+            <attribute name="LOW_BATTERY_VOLTAGE">
+                <basicLookup point="Low Battery Voltage" />
+            </attribute>
+            <attribute name="METER_READ_NO_ENCODER_FOUND">
+                <basicLookup point="Meter Read - No encoder found" />
+            </attribute>
+            <attribute name="METER_READ_NO_EOF_DETECTED">
+                <basicLookup point="Meter Read - No EOF detected" />
+            </attribute>
+            <attribute name="METER_READ_PROTOCOL_CANNOT_BE_DETERMINED">
+                <basicLookup point="Meter Read - Protocol cannot be determined" />
+            </attribute>
+            <attribute name="METER_READ_FIELD_EXCEEDED_MAXIMUM_DIGITS">
+                <basicLookup point="Meter Read - Field exceeded maximum digits" />
+            </attribute>
+            <attribute name="METER_READ_ERROR_READING_SERIAL_NUMBER">
+                <basicLookup point="Meter Read - Error reading serial number" />
+            </attribute>
+            <attribute name="METER_READ_CHECKSUM_ERROR">
+                <basicLookup point="Meter Read - Checksum error" />
+            </attribute>
+            <attribute name="METER_READ_TAMPER_CABLE_CUT">
+                <basicLookup point="Tamper - Cable Cut" />
+            </attribute>
+            <attribute name="METER_READ_PARITY_ERROR">
+                <basicLookup point="Meter Read - Parity error" />
+            </attribute>
+            <attribute name="DEBUG_EVENT">
+                <basicLookup point="Debug Event" />
             </attribute>
         </attributes>
         <tags>

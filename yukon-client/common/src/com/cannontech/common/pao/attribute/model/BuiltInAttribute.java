@@ -366,6 +366,17 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     VOLTAGE_PHASE_C_OUT("Voltage Phase C Out", AttributeGroup.RFN_VOLTAGE_EVENT, false),
     VOLTAGE_PHASE_ERROR("Voltage Phase Error", AttributeGroup.RFN_METERING_EVENT, false),
     
+    METER_READ_NO_ENCODER_FOUND("Meter Read - No encoder found", AttributeGroup.RFN_METERING_EVENT, false),
+    METER_READ_PARITY_ERROR("Meter Read - Parity error", AttributeGroup.RFN_METERING_EVENT, false),
+    METER_READ_NO_EOF_DETECTED("Meter Read - No EOF detected", AttributeGroup.RFN_METERING_EVENT, false),
+    METER_READ_PROTOCOL_CANNOT_BE_DETERMINED("Meter Read - Protocol cannot be determined", AttributeGroup.RFN_METERING_EVENT, false),
+    METER_READ_FIELD_EXCEEDED_MAXIMUM_DIGITS("Meter Read - Field exceeded maximum digits", AttributeGroup.RFN_METERING_EVENT, false),
+    METER_READ_ERROR_READING_SERIAL_NUMBER("Meter Read - Error reading serial number", AttributeGroup.RFN_METERING_EVENT, false),
+    METER_READ_CHECKSUM_ERROR("Meter Read - Checksum error", AttributeGroup.RFN_METERING_EVENT, false),
+    METER_READ_TAMPER_CABLE_CUT("Tamper - Cable Cut", AttributeGroup.RFN_METERING_EVENT, false),
+    LOW_BATTERY_VOLTAGE("Low Battery Voltage", AttributeGroup.RFN_HARDWARE_EVENT, false),
+    DEBUG_EVENT("Debug Event", AttributeGroup.RFN_OTHER_EVENT, false),
+    
     //Gateway Statistics
     CONNECTED_DEVICE_COUNT("Connected Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
     STREAMING_DEVICE_COUNT("Streaming Device Count", AttributeGroup.GATEWAY_STATISTICS, false),

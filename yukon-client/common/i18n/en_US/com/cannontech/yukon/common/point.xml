@@ -462,6 +462,17 @@
     
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_MANAGEMENT_CPU_UTILIZATION">Load Management CPU Utilization</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_MANAGEMENT_MEMORY_UTILIZATION">Load Management Memory Utilization</entry>
-        
+    
+    <entry key="yukon.common.attribute.builtInAttribute.METER_READ_NO_ENCODER_FOUND">Meter Read - No encoder found</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.METER_READ_PARITY_ERROR">Meter Read - Parity error</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.METER_READ_NO_EOF_DETECTED">Meter Read - No EOF detected</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.METER_READ_PROTOCOL_CANNOT_BE_DETERMINED">Meter Read - Protocol cannot be determined</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.METER_READ_FIELD_EXCEEDED_MAXIMUM_DIGITS">Meter Read - Field exceeded maximum digits</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.METER_READ_ERROR_READING_SERIAL_NUMBER">Meter Read - Error reading serial number</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.METER_READ_CHECKSUM_ERROR">Meter Read - Checksum error</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.METER_READ_TAMPER_CABLE_CUT">Tamper - Cable Cut</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOW_BATTERY_VOLTAGE">Low Battery Voltage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DEBUG_EVENT">Debug Event</entry>
+    
     <!-- BuiltInAttribute see note above about changing values -->
 </properties>
