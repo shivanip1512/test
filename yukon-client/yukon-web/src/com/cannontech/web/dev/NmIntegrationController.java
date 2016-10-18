@@ -52,6 +52,9 @@ import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersion
 import com.cannontech.common.rfn.message.network.NeighborData;
 import com.cannontech.common.rfn.message.network.NeighborFlagType;
 import com.cannontech.common.rfn.message.network.ParentData;
+import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
+import com.cannontech.common.rfn.message.network.RfnParentReplyType;
+import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
 import com.cannontech.common.rfn.message.network.RouteData;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
@@ -890,6 +893,9 @@ public class NmIntegrationController {
     public String viewMappingSimulator(ModelMap model, FlashScope flash, HttpServletRequest request) {
         model.addAttribute("routeFlags", RouteFlagType.values());
         model.addAttribute("neighborFlags", NeighborFlagType.values());
+        model.addAttribute("parentReplys", RfnParentReplyType.values());
+        model.addAttribute("neighborReplys", RfnNeighborDataReplyType.values());
+        model.addAttribute("routeReplys", RfnPrimaryRouteDataReplyType.values());
         
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(Action.GET_SETTINGS);
         SimulatorResponseBase response = sendRequest(simRequest, null, flash);  

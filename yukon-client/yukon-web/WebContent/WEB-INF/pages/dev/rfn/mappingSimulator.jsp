@@ -62,6 +62,9 @@ $(function() {
             <tags:nameValue name="Node Mac Address">
                 <tags:input path="parentData.nodeMacAddress"/>
             </tags:nameValue>
+            <tags:nameValue name="Reply Type">
+                <tags:selectWithItems items="${parentReplys}" path="parentReplyType" />
+            </tags:nameValue>
         </tags:nameValueContainer>
     </tags:sectionContainer>
     
@@ -93,6 +96,9 @@ $(function() {
             </tags:nameValue>
             <tags:nameValue name="Link Power">
                 <tags:input path="neighborData.linkPower"/>
+            </tags:nameValue>
+            <tags:nameValue name="Reply Type">
+                <tags:selectWithItems items="${neighborReplys}" path="neighborReplyType" />
             </tags:nameValue>
         </tags:nameValueContainer>
     </tags:sectionContainer>
@@ -126,6 +132,9 @@ $(function() {
             </tags:nameValue>
             <tags:nameValue name="Route Color">
                 <tags:input path="routeData.routeColor"/>
+            </tags:nameValue>
+            <tags:nameValue name="Reply Type">
+                <tags:selectWithItems items="${routeReplys}" path="routeReplyType" />
             </tags:nameValue>
         </tags:nameValueContainer>
     </tags:sectionContainer>
