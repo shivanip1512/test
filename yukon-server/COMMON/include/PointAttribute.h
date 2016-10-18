@@ -537,6 +537,17 @@ public:
     static const Attribute  VoltagePhaseCOut;
     static const Attribute  VoltagePhaseError;
 
+    static const Attribute  NoEncoderFound;
+    static const Attribute  ParityError;
+    static const Attribute  NoEOFDetected;
+    static const Attribute  UndeterminedProtocol;
+    static const Attribute  FieldExceededMaximumDigits;
+    static const Attribute  SerialNumberReadError;
+    static const Attribute  ChecksumError;
+    static const Attribute  TamperCableCut;
+    static const Attribute  LowBatteryVoltage;
+    static const Attribute  DebugEvent;
+
     static const Attribute  ConnectedDeviceCount;
     static const Attribute  StreamingDeviceCount;
     static const Attribute  DataStreamingLoad;
@@ -553,32 +564,32 @@ public:
     static const Attribute  MaxLoadReduction;
     static const Attribute  AvailableLoadReduction;
 
-    static const Attribute PorterCpuUtilization;
-    static const Attribute DispatchCpuUtilization;
-    static const Attribute ScannerCpuUtilization;
-    static const Attribute CalcCpuUtilization;
-    static const Attribute CapcontrolCpuUtilization;
-    static const Attribute FdrCpuUtilization;
-    static const Attribute MacsCpuUtilization;
+    static const Attribute  PorterCpuUtilization;
+    static const Attribute  DispatchCpuUtilization;
+    static const Attribute  ScannerCpuUtilization;
+    static const Attribute  CalcCpuUtilization;
+    static const Attribute  CapcontrolCpuUtilization;
+    static const Attribute  FdrCpuUtilization;
+    static const Attribute  MacsCpuUtilization;
 
-    static const Attribute NotificationServerCpuUtilization;
-    static const Attribute ServiceManagerCpuUtilization;
-    static const Attribute WebServiceCpuUtilization;
+    static const Attribute  NotificationServerCpuUtilization;
+    static const Attribute  ServiceManagerCpuUtilization;
+    static const Attribute  WebServiceCpuUtilization;
 
-    static const Attribute PorterMemoryUtilization;
-    static const Attribute DispatchMemoryUtilization;
-    static const Attribute ScannerMemoryUtilization;
-    static const Attribute CalcMemoryUtilization;
-    static const Attribute CapcontrolMemoryUtilization;
-    static const Attribute FdrMemoryUtilization;
-    static const Attribute MacsMemoryUtilization;
+    static const Attribute  PorterMemoryUtilization;
+    static const Attribute  DispatchMemoryUtilization;
+    static const Attribute  ScannerMemoryUtilization;
+    static const Attribute  CalcMemoryUtilization;
+    static const Attribute  CapcontrolMemoryUtilization;
+    static const Attribute  FdrMemoryUtilization;
+    static const Attribute  MacsMemoryUtilization;
 
-    static const Attribute NotificationServerMemoryUtilization;
-    static const Attribute ServiceManagerMemoryUtilization;
-    static const Attribute WebServiceMemoryUtilization;
+    static const Attribute  NotificationServerMemoryUtilization;
+    static const Attribute  ServiceManagerMemoryUtilization;
+    static const Attribute  WebServiceMemoryUtilization;
 
-    static const Attribute LoadManagementCpuUtilization;
-    static const Attribute LoadManagementMemoryUtilization;
+    static const Attribute  LoadManagementCpuUtilization;
+    static const Attribute  LoadManagementMemoryUtilization;
 };
 
 

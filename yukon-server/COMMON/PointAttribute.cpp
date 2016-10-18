@@ -494,6 +494,17 @@ const Attribute Attribute::VoltagePhaseBOut                                 = At
 const Attribute Attribute::VoltagePhaseCOut                                 = Attribute( "VOLTAGE_PHASE_C_OUT" );
 const Attribute Attribute::VoltagePhaseError                                = Attribute( "VOLTAGE_PHASE_ERROR" );
 
+const Attribute Attribute::NoEncoderFound                                   = Attribute( "METER_READ_NO_ENCODER_FOUND" );
+const Attribute Attribute::ParityError                                      = Attribute( "METER_READ_PARITY_ERROR" );
+const Attribute Attribute::NoEOFDetected                                    = Attribute( "METER_READ_NO_EOF_DETECTED" );
+const Attribute Attribute::UndeterminedProtocol                             = Attribute( "METER_READ_PROTOCOL_CANNOT_BE_DETERMINED" );
+const Attribute Attribute::FieldExceededMaximumDigits                       = Attribute( "METER_READ_FIELD_EXCEEDED_MAXIMUM_DIGITS" );
+const Attribute Attribute::SerialNumberReadError                            = Attribute( "METER_READ_ERROR_READING_SERIAL_NUMBER" );
+const Attribute Attribute::ChecksumError                                    = Attribute( "METER_READ_CHECKSUM_ERROR" );
+const Attribute Attribute::TamperCableCut                                   = Attribute( "TAMPER_CABLE_CUT" );
+const Attribute Attribute::LowBatteryVoltage                                = Attribute( "LOW_BATTERY_VOLTAGE" );
+const Attribute Attribute::DebugEvent                                       = Attribute( "DEBUG_EVENT" );
+
 const Attribute Attribute::ConnectedDeviceCount                             = Attribute( "CONNECTED_DEVICE_COUNT" );
 const Attribute Attribute::StreamingDeviceCount                             = Attribute( "STREAMING_DEVICE_COUNT" );
 const Attribute Attribute::DataStreamingLoad                                = Attribute( "DATA_STREAMING_LOAD" );
