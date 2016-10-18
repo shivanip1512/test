@@ -247,6 +247,8 @@
     <bean id="controlHistorySummaryService" class="com.cannontech.stars.dr.controlHistory.service.impl.ControlHistorySummaryServiceImpl"/>
 
     <bean id="webConfigurationDao" class="com.cannontech.stars.webconfiguration.dao.impl.WebConfigurationDaoImpl"/>
+    
+    <bean id="honeywellDao" class="com.cannontech.stars.dr.hardware.dao.impl.HoneywellWifiThermostatDaoImpl"/>
 
     <bean id="workOrderBaseDao" class="com.cannontech.stars.dr.workOrder.dao.impl.WorkOrderBaseDaoImpl" />
     <bean id="workOrderService" class="com.cannontech.stars.dr.workOrder.service.impl.WorkOrderServiceImpl"/>

@@ -222,6 +222,8 @@ public class InventoryController {
             } else {
                 model.addAttribute("showFirmwareVersion", true);
             }
+        } else if (type.isHoneywell()) {
+            model.addAttribute("showMacAddress", true);
         }
         
         boolean showVoltage = !type.isZigbee() 
@@ -233,7 +235,8 @@ public class InventoryController {
         if (!clazz.isMeter() 
                 && !type.isZigbee() 
                 && !type.isRf() 
-                && !type.isEcobee()) {
+                && !type.isEcobee()
+                && !type.isHoneywell()) {
             model.addAttribute("showRoute", true);
         }
         
@@ -444,6 +447,8 @@ public class InventoryController {
             } else {
                 model.addAttribute("showFirmwareVersion", true);
             }
+        } else if (type.isHoneywell()) {
+            model.addAttribute("showMacAddress", true);
         }
         
         boolean showVoltage = !type.isZigbee() 
@@ -456,7 +461,8 @@ public class InventoryController {
                 && !type.isZigbee() 
                 && !type.isRf() 
                 && type != HardwareType.LCR_3102 
-                && !type.isEcobee()) {
+                && !type.isEcobee()
+                && !type.isHoneywell()) {
             model.addAttribute("showRoute", true);
         }
         

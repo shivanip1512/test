@@ -48,9 +48,10 @@ public class Hardware {
     /* ZigBee fields */
     private String installCode;
     private Integer gatewayId;
-    private String macAddress;
     private String firmwareVersion;
     private int commissionedId;
+    /* ZigBee/Honeywell fields */
+    private String macAddress;
     
     public int getAccountId() {
         return accountId;

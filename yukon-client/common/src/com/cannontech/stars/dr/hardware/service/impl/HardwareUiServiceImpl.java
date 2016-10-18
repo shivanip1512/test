@@ -58,6 +58,7 @@ import com.cannontech.stars.dr.displayable.model.DisplayableLmHardware;
 import com.cannontech.stars.dr.event.dao.LMCustomerEventBaseDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.builder.HardwareTypeExtensionService;
+import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
@@ -98,6 +99,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private EndpointEventLogService endpointEventLogService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private HoneywellWifiThermostatDao honeywellWifiThermostatDao;
 
     @Override
     public Hardware getHardware(int inventoryId) {
@@ -246,7 +248,9 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                     hardware.setTwoWayDeviceName(displayablePao.getName());
                 }
             }
-            
+            if (hardwareType.isHoneywell()) {
+                hardware.setMacAddress(honeywellWifiThermostatDao.getMacAddressByDeviceId(deviceId));
+            }
             hardwareTypeExtensionService.retrieveDevice(hardware);
             
         }
