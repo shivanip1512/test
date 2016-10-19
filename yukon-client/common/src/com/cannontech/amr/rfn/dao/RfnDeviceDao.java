@@ -83,9 +83,4 @@ public interface RfnDeviceDao {
      */
     RfnDevice updateGatewayType(RfnDevice device);
 
-    /**
-     * Updates the YukonPaObject.Name of the RfnDevice.
-     */
-    void updateDeviceName(RfnDevice device);
-
 }

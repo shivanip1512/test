@@ -28,12 +28,9 @@ public class RelayPaoTypeHandler implements PaoTypeHandler {
     
     private final static Set<PaoType> allTypes = PaoType.getRfRelayTypes();
     
-    // Any of these roles is sufficient to allow the user to see both electric and water meters.
     private final static Set<YukonRole> allowedRoles = ImmutableSet.of(
             YukonRole.METERING, 
-            YukonRole.APPLICATION_BILLING, 
-            YukonRole.SCHEDULER, 
-            YukonRole.DEVICE_ACTIONS);
+            YukonRole.DEVICE_MANAGEMENT);
     
     @Override
     public Set<PaoType> getTypesHandled() {

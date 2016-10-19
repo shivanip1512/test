@@ -28,6 +28,7 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
@@ -36,13 +37,13 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.widget.relayInfo.model.RfnRelay;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Widget used to display basic device information
@@ -53,9 +54,10 @@ public class RelayInformationWidget extends AdvancedWidgetControllerBase {
     
     private final static String baseKey = "yukon.web.widgets.relayInformationWidget.";
     
+    @Autowired private DeviceDao deviceDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private PaoDao paoDao;
-    @Autowired private ServerDatabaseCache cache;
+    @Autowired private IDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
     @Autowired
@@ -145,7 +147,7 @@ public class RelayInformationWidget extends AdvancedWidgetControllerBase {
         RfnDevice updatedDevice = new RfnDevice(relay.getName(), device.getPaoIdentifier(), rfnId);
         
         try {
-            rfnDeviceDao.updateDeviceName(updatedDevice);
+            deviceDao.changeName(updatedDevice, relay.getName());
             rfnDeviceDao.updateDevice(updatedDevice);
         } catch (NotFoundException e) {
             
