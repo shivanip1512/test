@@ -1,11 +1,16 @@
 package com.cannontech.common.rfn.dataStreaming;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+
+import org.springframework.ui.ModelMap;
 
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -601,5 +606,23 @@ public class DataStreamingAttributeHelper {
     
     public Multimap<PaoType, BuiltInAttribute> getAllTypesAndAttributes(){
         return typeToSupportedAttributes;
+    }
+
+    public void buildMatrixModel(ModelMap model) {
+        Multimap<PaoType, BuiltInAttribute> devicesMap = getAllTypesAndAttributes();
+        List<PaoType> deviceList = new ArrayList<>();
+        deviceList.addAll(getAllSupportedPaoTypes());
+        final Comparator<PaoType> paoComparator = (pt1, pt2) -> pt1.getDbString().compareTo(pt2.getDbString());
+        Collections.sort(deviceList, paoComparator);
+        List<BuiltInAttribute> biaList = new ArrayList<>();
+        biaList.addAll(getAllSupportedAttributes());
+        final Comparator<BuiltInAttribute> biaComparator = (bia1, bia2) -> bia1.getDescription()
+                .compareTo(bia2.getDescription());
+
+        Collections.sort(biaList, biaComparator);
+        model.addAttribute("devices", deviceList);
+        model.addAttribute("attributes", biaList);
+        model.addAttribute("dataStreamingDevices", devicesMap.asMap());
+
     }
 }

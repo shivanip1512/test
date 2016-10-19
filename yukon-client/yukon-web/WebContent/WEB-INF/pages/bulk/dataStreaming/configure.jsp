@@ -14,8 +14,7 @@
                 <cti:csrfToken/>
                 
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                <cti:url var="dataStreamSupport" value="/support/dataStreamingSupport" />
-                <a href="${dataStreamSupport }"}><i:inline key=".deviceMatrix"/></a>
+                <i:inline key=".bulk.dataStreaming.configure.deviceMatrix"/>: <cti:icon icon="icon-magnifier" id="deviceMatrixLnk" classes="fn cp"/>
                 <c:choose>
                     <c:when test="${dataStreamingNotSupported}">
                         <div class="user-message error"><i:inline key=".dataStreamingNotSupported"/></div>
@@ -66,7 +65,10 @@
             </form:form>
         </div>
     </tags:bulkActionContainer>
-    
+    <cti:msg2 var="matrixTitle" key=".bulk.dataStreaming.configure.deviceMatrix"/>
+    <tags:simplePopup title="${matrixTitle }" id="deviceMatrix" on="#deviceMatrixLnk" options="{width: 730}">
+         <%@ include file="../../support/dataStreaming/matrix.jsp" %>
+    </tags:simplePopup>
     <cti:includeScript link="/resources/js/pages/yukon.bulk.dataStreaming.js"/>
     
 </cti:standardPage>

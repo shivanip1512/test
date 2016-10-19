@@ -53,7 +53,8 @@ public class DataStreamingController {
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
-    
+    @Autowired
+    private DataStreamingAttributeHelper dsHelper;
     private static final List<Integer> intervals = ImmutableList.of(1, 3, 5, 15, 30);
     
     @RequestMapping("configure")
@@ -102,7 +103,7 @@ public class DataStreamingController {
         }
         model.addAttribute("configuration", newConfig);
         model.addAttribute("intervals", intervals);
-
+        dsHelper.buildMatrixModel(model);
         return "dataStreaming/configure.jsp";
     }
     
