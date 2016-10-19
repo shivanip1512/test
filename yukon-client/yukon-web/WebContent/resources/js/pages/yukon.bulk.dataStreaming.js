@@ -27,10 +27,12 @@ yukon.bulk.dataStreaming = (function () {
         newConfig = configTypeRow.find('.switch-btn-checkbox').prop('checked');
         if (!newConfig) {
             var id = $('.js-existing-configuration').find(":selected").val();
+            id = (id === undefined ? $('#configId').val() : id);
             if (id > 0) {
                 $('.js-selected-config').show();
             }
-           
+            $('.js-config-table').hide();
+            
             $('#configTable_' + id).show();
         }
     };

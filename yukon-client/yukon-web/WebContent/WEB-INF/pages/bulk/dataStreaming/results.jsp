@@ -141,7 +141,7 @@
     </cti:msgScope>
     
     <cti:includeScript link="/resources/js/pages/yukon.bulk.dataStreaming.js"/>
-    
+    <input type="hidden" id="configId" value="${config.id }"/>
     <div id="data-streaming-popup" data-width="400" data-title="<cti:msg2 key=".configuration"/>" class="dn">
         <%@ include file="/WEB-INF/pages/dataStreaming/configurationTable.jspf" %>
     </div>
