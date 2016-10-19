@@ -139,16 +139,17 @@ public class CapBankController {
         CapBank capbank = capbankService.getCapBank(id);
         
         try {
-            Integer parentId = ccCache.getParentFeederId(id);
+            Integer parentId = capbankDao.getParentFeederIdentifier(id).getPaoId();
             capbankService.delete(id);
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".delete.success", capbank.getName()));
 
             if (parentId != null && parentId > 0) {
                 return "redirect:/capcontrol/feeders/" + parentId;
             }
-        } catch (NotFoundException e ){
+        } catch (EmptyResultDataAccessException e) {
             capbankService.delete(id);
-            //do nothing and return to orphan page
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + ".delete.success", capbank.getName()));
+            // do nothing and return to orphan page
         }
         
         return "redirect:/capcontrol/search/searchResults?cbc_lastSearch=__cti_oBanks__";

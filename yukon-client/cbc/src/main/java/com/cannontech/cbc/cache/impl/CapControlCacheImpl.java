@@ -510,9 +510,6 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         SubBus bus = subbuses.get(subbusId);
         if (bus != null) {
             for (Feeder feeder : bus.getCcFeeders()) {
-                for (CapBankDevice cap : feeder.getCcCapBanks()) {
-                    handleDeletedCap(cap.getCcId());
-                }
                 handleDeletedFeeder(feeder.getCcId());
             }
         }
@@ -692,6 +689,10 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     private synchronized void handleDeletedFeeder(int feederId) {
+        Feeder feeder = feeders.get(feederId);
+        for (CapBankDevice cap : feeder.getCcCapBanks()) {
+            handleDeletedCap(cap.getCcId());
+        }
         removeFromCacheMap(feeders, feederId);
     }
     

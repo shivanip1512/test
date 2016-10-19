@@ -236,9 +236,10 @@ public class FeederController {
             if (parentId != null && parentId > 0) {
                 return "redirect:/capcontrol/buses/" + parentId;
             }
-        }catch( EmptyResultDataAccessException e ){
+        } catch (EmptyResultDataAccessException e) {
             feederService.delete(id);
-            //do nothing and return to orphan page
+            flash.setConfirm(new YukonMessageSourceResolvable(feederKey + ".delete.success", feeder.getName()));
+            // do nothing and return to orphan page
         }
         
         return "redirect:/capcontrol/search/searchResults?cbc_lastSearch=__cti_oFeeders__";
