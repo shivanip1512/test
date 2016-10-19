@@ -72,6 +72,24 @@
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.PENDING">Pending</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.FAILED">Failed</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.CANCELED">Canceled</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.CONFIGURATION_ERROR">Configuration Error</entry>
+    
+    <!--CONFIGURATION ERRORS-->
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.configurationErrors">Configuration Errors</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.attribute">Attribute</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.status">Status</entry>
+    
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.configError.INVALID_STATUS">Invalid Status</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.configError.OK">OK</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.configError.METER_ACCESS_ERROR">Meter access error</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.configError.METER_OR_NODE_BUSY">Meter or Node is busy</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.configError.METER_READ_TIMEOUT">Meter read timeout</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.configError.METER_PROTOCOL_ERROR">Meter protocol error</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.configError.CHANNEL_NOT_SUPPORTED">Channel is not supported</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.configError.UNKNOWN_ERROR">An unknown error has occurred</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.configError.CHANNEL_NOT_ENABLED">Channel is not enabled</entry>
+    
+    
     
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.viewDiscrepancy">View Discrepancy</entry>
 

@@ -78,7 +78,28 @@
                                         </c:otherwise>
                                     </c:choose>
                                 </td>
-                                <td class="wsnw"><i:inline key=".${discrepancy.status}" /></td>
+                                <td class="wsnw"><i:inline key=".${discrepancy.status}" />
+                                <c:if test="${discrepancy.status == 'CONFIGURATION_ERROR'}">
+                                    <cti:icon icon="icon-information" classes="fn cp" data-popup="#config-error-${discrepancy.deviceId}" data-popup-toggle=""/>
+                                    <cti:msg2 var="configErrorTitle" key=".configurationErrors" />
+                                    <div class="dn" id="config-error-${discrepancy.deviceId}" title="${configErrorTitle}">
+                                        <table class="compact-results-table">
+                                            <thead>
+                                                <tr>
+                                                    <th><i:inline key=".attribute"/></th>
+                                                    <th><i:inline key=".status"/></th>
+                                                </tr>
+                                            </thead>
+                                            <c:forEach var="actualAttribute" items="${discrepancy.actual.attributes}">
+                                                <tr>
+                                                    <td>${actualAttribute.attribute.description}</td>
+                                                    <td><i:inline key=".configError.${actualAttribute.status}"/></td>
+                                                </tr>
+                                            </c:forEach>
+                                        </table>
+                                    </div>
+                                 </c:if>
+                                </td>
                                 <c:set var="disabled" value="false" />
                                 <td class="wsnw dif">
                                     <cti:formatDate value="${discrepancy.lastCommunicated}" type="DATEHM_12" />&nbsp;&nbsp;
