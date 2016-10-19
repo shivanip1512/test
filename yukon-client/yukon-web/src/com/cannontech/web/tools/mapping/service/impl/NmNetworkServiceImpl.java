@@ -118,7 +118,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 throw new NmNetworkException(noParent, "noParent");
             }
             FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
-            Parent parent = new Parent(device, location, data);
+            Parent parent = new Parent(parentDevice, location, data);
             return parent;
         } catch (NotFoundException e) {
             // create new device if it doesn't exist
@@ -183,7 +183,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             PaoLocation paoLocation = locations.get(routeDevice.getPaoIdentifier());
             if (paoLocation != null) {
                 FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
-                routes.add(new RouteInfo(device, data, location, accessor));
+                routes.add(new RouteInfo(routeDevice, data, location, accessor));
             } else {
                 log.error("Location is not found for " + routeDevice);
                 // one of the devices has no location, can't display a route
@@ -234,7 +234,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 if (paoLocation != null) {
                     FeatureCollection location =
                         paoLocationService.getFeatureCollection(Lists.newArrayList(paoLocation));
-                    neighbors.add(new Neighbor(device, location, data, accessor));
+                    neighbors.add(new Neighbor(neighborDevice, location, data, accessor));
                 } else {
                     log.error("Location is not found for " + neighborDevice);
                 }
