@@ -570,6 +570,16 @@ public class AccountImportService {
                             continue;
                         }
 
+                        if (HardwareType.valueOf(deviceType.getYukonDefID()).isHoneywell()
+                            && hwFields[ImportFields.IDX_MAC_ADDRESS].trim().length() == 0) {
+                            result.custFileErrors++;
+                            String[] value = result.getCustLines().get(lineNoKey);
+                            value[1] = "[line: " + lineNo + " error: MAC Address cannot be empty for Honeywell Device]";
+                            result.getCustLines().put(lineNoKey, value);
+                            addToLog(lineNoKey, value, importLog);
+                            continue;
+                        }
+
                         String[] appFields = null;
                         if (hwColIdx[result.COL_APP_TYPE] != -1) {
                             appFields = prepareFields(ImportFields.NUM_APP_FIELDS);
@@ -803,6 +813,16 @@ public class AccountImportService {
                     }
 
                     if(isZigbeeDevice(deviceType, result, lineNoKey, hwFields,true)) {
+                        continue;
+                    }
+
+                    if (HardwareType.valueOf(deviceType.getYukonDefID()).isHoneywell()
+                        && hwFields[ImportFields.IDX_MAC_ADDRESS].trim().length() == 0) {
+                        result.hwFileErrors++;
+                        String[] value = result.getHwLines().get(lineNoKey);
+                        value[1] = "[line: " + lineNo + " error: MAC Address cannot be empty for Honeywell Device]";
+                        result.getHwLines().put(lineNoKey, value);
+                        addToLog(lineNoKey, value, importLog);
                         continue;
                     }
 

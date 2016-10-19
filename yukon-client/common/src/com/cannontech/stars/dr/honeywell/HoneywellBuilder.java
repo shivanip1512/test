@@ -91,10 +91,7 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
     public void updateDevice(int inventoryId, String macAddress, int deviceId, YukonPao pao) {
         CompleteHoneywellWifiThermostat honeywellThermostat =
             paoPersistenceService.retreivePao(pao, CompleteHoneywellWifiThermostat.class);
-
-        if (macAddress != null) {
-            honeywellThermostat.setMacAddress(macAddress);
-        }
+        honeywellThermostat.setMacAddress(macAddress);
         paoPersistenceService.updatePao(honeywellThermostat);
         inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, deviceId);
     }
