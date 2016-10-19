@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
 <!-- RF Devices: highest Analog OFFSET=348 @ 2016-08-12 -->
-<!-- RF Devices: highest Status OFFSET=79 @ 2014-04-30T -->
+<!-- RF Devices: highest Status OFFSET=89 @ 2014-04-30T -->
 
 <!--  Point Name naming convention: 
     [Net|Sum] [Delivered|Received] [Peak] [UOM] [Frozen] [Rate #|Phase X|Channel #]
