@@ -47,7 +47,6 @@ import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -226,9 +225,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             RouteData gatewayData = new RouteData();
             gatewayData.setSerialNumber(gateway.getSensorSerialNumber());
             gatewayData.setRfnIdentifier(gateway);
-            if (!Strings.isNullOrEmpty(gatewayData.getRfnIdentifier().getSensorManufacturer())
-                && !Strings.isNullOrEmpty(gatewayData.getRfnIdentifier().getSensorModel())
-                && !Strings.isNullOrEmpty(gatewayData.getRfnIdentifier().getSensorSerialNumber())) {
+            if (gatewayData.getRfnIdentifier().isNotBlank()) {
                 routeData.add(gatewayData);
             }
         }
@@ -328,9 +325,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         ListIterator<RfnDevice> it = rfDevices.listIterator();
         while (it.hasNext()) {
             RfnDevice d = it.next();
-            if (Strings.isNullOrEmpty(d.getRfnIdentifier().getSensorManufacturer())
-                || Strings.isNullOrEmpty(d.getRfnIdentifier().getSensorModel())
-                || Strings.isNullOrEmpty(d.getRfnIdentifier().getSensorSerialNumber())) {
+            if (!d.getRfnIdentifier().isNotBlank()) {
+                log.debug(d + " has a blank identifier "+d.getRfnIdentifier()+"- removing");
                 it.remove();
             }
         }
