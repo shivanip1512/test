@@ -13,8 +13,7 @@ import com.cannontech.web.security.annotation.CheckCparm;
 @CheckCparm(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED)
 public class DataStreamingSupportController {
 
-    @Autowired
-    private DataStreamingAttributeHelper dsHelper;
+    @Autowired private DataStreamingAttributeHelper dsHelper;
 
     @RequestMapping("/dataStreamingSupport")
     public String view(ModelMap model) {

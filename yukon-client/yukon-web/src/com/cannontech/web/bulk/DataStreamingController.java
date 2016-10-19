@@ -53,15 +53,14 @@ public class DataStreamingController {
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
-    @Autowired
-    private DataStreamingAttributeHelper dsHelper;
+    @Autowired private DataStreamingAttributeHelper dsHelper;
     private static final List<Integer> intervals = ImmutableList.of(1, 3, 5, 15, 30);
-    
+
     @RequestMapping("configure")
     public String configure(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.addAttribute("deviceCollection", deviceCollection);
-        
+
         //check if the selected devices support data streaming
         Set<PaoType> types = deviceCollection.getDeviceList().stream()
                 .map(device -> device.getDeviceType())
@@ -81,10 +80,10 @@ public class DataStreamingController {
             attribute.setAttribute(a);
             newConfig.addAttribute(attribute);
         });
-        
+
         List<DataStreamingConfig> supportedConfigs = new ArrayList<>();
         List<DataStreamingConfig> existingConfigs = dataStreamingService.getAllDataStreamingConfigurations();
-        
+
         //only display configs that have attributes that the selected devices support
         existingConfigs.forEach(config -> {
             config.setAccessor(accessor);
@@ -97,7 +96,7 @@ public class DataStreamingController {
             });
         });
         model.addAttribute("existingConfigs", supportedConfigs);
-        
+
         if (supportedConfigs.size() == 0) {
             newConfig.setNewConfiguration(true);
         }
@@ -106,15 +105,15 @@ public class DataStreamingController {
         dsHelper.buildMatrixModel(model);
         return "dataStreaming/configure.jsp";
     }
-    
+
     @RequestMapping(value="configure", method=RequestMethod.POST)
     public String configureSubmit(@ModelAttribute("configuration") DataStreamingConfig configuration, ModelMap model, HttpServletRequest request, YukonUserContext userContext) throws ServletException {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
-        
+
         DataStreamingConfig modelConfig = configuration;
         int configId = 0;
-        
+
         if (configuration.isNewConfiguration()) {
             modelConfig.getAttributes().forEach(attribute -> attribute.setInterval(configuration.getSelectedInterval()));
             configId = dataStreamingService.saveConfig(modelConfig);
@@ -124,17 +123,17 @@ public class DataStreamingController {
             modelConfig = dataStreamingService.findDataStreamingConfiguration(configId);
             modelConfig.setId(configId);
         }
-        
+
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         modelConfig.setAccessor(accessor);
-        
+
         model.addAttribute("configuration", modelConfig);
-        
+
         List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
 
         long attCount = modelConfig.getAttributes().stream().filter(attribute -> attribute.getAttributeOn()).count();
-                                                                 
+
         VerificationInformation verifyInfo = dataStreamingService.verifyConfiguration(configId, deviceIds);
         verifyInfo.setConfiguration(modelConfig);
         verifyInfo.getDeviceUnsupported().forEach(device -> {
@@ -145,30 +144,30 @@ public class DataStreamingController {
             device.setAccessor(accessor);
         });
         verifyInfo.getGatewayLoadingInfo().forEach(gateway -> gateway.setAccessor(accessor));
-        
+
         model.addAttribute("verificationInfo", verifyInfo);
 
         return "dataStreaming/verification.jsp";
     }
-    
+
     @RequestMapping("remove")
     public String remove(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
         model.addAttribute("deviceCollection", deviceCollection);
-                
+
         return "dataStreaming/remove.jsp";
     }
-    
+
     @RequestMapping(value="remove", method=RequestMethod.POST)
     public String removeSubmit(ModelMap model, HttpServletRequest request, YukonUserContext userContext,
-                               FlashScope flash) throws ServletException {
+            FlashScope flash) throws ServletException {
         LiteYukonUser user = userContext.getYukonUser();
 
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
-        
+
         List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
-        
+
         try {
             DataStreamingConfigResult result = dataStreamingService.unassignDataStreamingConfig(deviceCollection, user);
             model.addAttribute("resultsId", result.getResultsId());
@@ -179,24 +178,24 @@ public class DataStreamingController {
             return "dataStreaming/remove.jsp";
         }
     }
-    
+
     @RequestMapping(value="verification", method=RequestMethod.POST)
     public String verificationSubmit(@ModelAttribute("verificationInfo") VerificationInformation verificationInfo, 
-                                     ModelMap model, HttpServletRequest request, YukonUserContext userContext,
-                                     FlashScope flash) throws ServletException {
-        
+            ModelMap model, HttpServletRequest request, YukonUserContext userContext,
+            FlashScope flash) throws ServletException {
+
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
-        
+
         LiteYukonUser user = userContext.getYukonUser();
-        
+
         List<Integer> deviceIds = new ArrayList<>();
         deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
-        
+
         DataStreamingConfig config = verificationInfo.getConfiguration();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         config.setAccessor(accessor);
-        
+
         try {
             DataStreamingConfigResult result = dataStreamingService.assignDataStreamingConfig(config, deviceCollection, user);
             model.addAttribute("resultsId", result.getResultsId());
@@ -208,13 +207,13 @@ public class DataStreamingController {
             return "dataStreaming/verification.jsp";
         }
     }
-    
+
     @RequestMapping("dataStreamingResults")
     public String dataStreamingResults(HttpServletRequest request, ModelMap model, YukonUserContext userContext) throws ServletException {
         retrieveResults(request, model, userContext);
         return "dataStreaming/results.jsp";
     }
-    
+
     /**
      * Helper method for the results
      */
@@ -230,7 +229,7 @@ public class DataStreamingController {
             model.addAttribute("config", config);
         }
     }
-    
+
     @RequestMapping(value = "/cancel", method = RequestMethod.POST)
     public void cancel(HttpServletResponse resp, String key, YukonUserContext userContext) {
         dataStreamingService.cancel(key, userContext.getYukonUser());
