@@ -10037,7 +10037,6 @@
     <pao id="RFN_WATER_BASE" abstract="true">
         <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfw</changeGroup>
-
         <points>
             <point type="Analog" offset="1">
                 <init>true</init>
@@ -10053,10 +10052,10 @@
             </attribute>
         </attributes>
         <tags>
-            <tag name="DEVICE_ICON_TYPE">
-                <value>water_meter</value>
-            </tag>
-            <tag name="WATER_METER_DETAIL_DISPLAYABLE" />
+	        <tag name="DEVICE_ICON_TYPE">
+	            <value>water_meter</value>
+	        </tag>
+	        <tag name="WATER_METER_DETAIL_DISPLAYABLE" />
         </tags>
     </pao>
 
@@ -10065,55 +10064,43 @@
     </pao>
 
     <pao id="RFWMETER_GEN2" abstract="true" inherits="RFN_WATER_BASE, RFN_POINT_CALCULATION_WATER, SUPPORTS_DEVICE_CONFIGURATION, RFN_WATER_CHANNEL_CONFIGURATION">
+    <displayGroup>RFMESH</displayGroup>
+        <changeGroup>rfw</changeGroup>
         <points>
-            <point type="Status" offset="1">
-                <init>false</init>
+            <point type="Status" offset="81">
                 <name>Low Battery Voltage</name>
                 <stategroup value="TrueFalse" />
             </point>
-            <point type="Status" offset="2">
-                <init>false</init>
+            <point type="Status" offset="82">
                 <name>Meter Read - No encoder found</name>
                 <stategroup value="TrueFalse" />
             </point>
-            <point type="Status" offset="3">
-                <init>false</init>
+            <point type="Status" offset="83">
                 <name>Meter Read - Parity error</name>
                 <stategroup value="TrueFalse" />
             </point>
-            <point type="Status" offset="4">
-                <init>false</init>
+            <point type="Status" offset="84">
                 <name>Meter Read - No EOF detected</name>
                 <stategroup value="TrueFalse" />
             </point>
-            <point type="Status" offset="5">
-                <init>false</init>
+            <point type="Status" offset="85">
                 <name>Meter Read - Protocol cannot be determined</name>
                 <stategroup value="TrueFalse" />
             </point>
-            <point type="Status" offset="6">
-                <init>false</init>
+            <point type="Status" offset="86">
                 <name>Meter Read - Field exceeded maximum digits</name>
                 <stategroup value="TrueFalse" />
             </point>
-            <point type="Status" offset="7">
-                <init>false</init>
+            <point type="Status" offset="87">
                 <name>Meter Read - Error reading serial number</name>
                 <stategroup value="TrueFalse" />
             </point>
-            <point type="Status" offset="8">
-                <init>false</init>
+            <point type="Status" offset="88">
                 <name>Meter Read - Checksum error</name>
                 <stategroup value="TrueFalse" />
             </point>
-            <point type="Status" offset="9">
-                <init>false</init>
+            <point type="Status" offset="89">
                 <name>Tamper - Cable Cut</name>
-                <stategroup value="TrueFalse" />
-            </point>
-            <point type="Status" offset="10">
-                <init>false</init>
-                <name>Debug Event</name>
                 <stategroup value="TrueFalse" />
             </point>
         </points>
@@ -10145,10 +10132,13 @@
             <attribute name="TAMPER_CABLE_CUT">
                 <basicLookup point="Tamper - Cable Cut" />
             </attribute>
-            <attribute name="DEBUG_EVENT">
-                <basicLookup point="Debug Event" />
-            </attribute>
-        </attributes>
+            </attributes>
+        <tags>
+            <tag name="DEVICE_ICON_TYPE">
+                <value>water_meter</value>
+            </tag>
+            <tag name="WATER_METER_DETAIL_DISPLAYABLE" />
+        </tags>
     </pao>
 
     <pao id="RFW201" inherits="RFWMETER_GEN2">
