@@ -90,8 +90,8 @@
                                     <form:hidden id="volt-reduction-bus-point-input"
                                         path="capControlSubstationBus.voltReductionPointId" />
                                     <tags:pickerDialog
-                                        id="voltReductionPointPicker"
-                                        type="pointPicker"
+                                        id="busPointPicker"
+                                        type="voltReductionPointPicker"
                                         linkType="selectionLabel"
                                         selectionProperty="paoPoint"
                                         destinationFieldId="volt-reduction-bus-point-input"
@@ -161,8 +161,8 @@
                             <tags:nameValue2 nameKey=".points.voltReduction">
                                 <form:hidden id="volt-reduction-bus-point-input" path="capControlSubstationBus.voltReductionPointId"/>
                                 <tags:pickerDialog
-                                    id="voltReductionPointPicker"
-                                    type="pointPicker"
+                                    id="busPointPicker"
+                                    type="voltReductionPointPicker"
                                     linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="volt-reduction-bus-point-input"
