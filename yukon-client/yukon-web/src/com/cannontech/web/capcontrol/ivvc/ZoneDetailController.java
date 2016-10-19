@@ -452,6 +452,9 @@ public class ZoneDetailController {
             BigDecimal bdDelta = new BigDecimal(pointDelta.getDelta()).setScale(pointUnit.getDecimalPlaces(),
                                                                RoundingMode.HALF_DOWN);
             pointDelta.setDeltaRounded(bdDelta.doubleValue());
+            BigDecimal preOpValue = new BigDecimal(pointDelta.getPreOpValue()).setScale(pointUnit.getDecimalPlaces(),
+                RoundingMode.HALF_DOWN);
+            pointDelta.setPreOpValue(preOpValue.doubleValue());
         }
         
         model.addAttribute("pointDeltas", pointDeltas);
