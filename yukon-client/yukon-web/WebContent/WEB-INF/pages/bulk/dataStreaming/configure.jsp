@@ -66,7 +66,7 @@
         </div>
     </tags:bulkActionContainer>
     <cti:msg2 var="matrixTitle" key=".bulk.dataStreaming.configure.deviceMatrix"/>
-    <tags:simplePopup title="${matrixTitle }" id="deviceMatrix" on="#deviceMatrixLnk" options="{width: 730}">
+    <tags:simplePopup title="${matrixTitle }" id="deviceMatrix" on="#deviceMatrixLnk" options="{width: 940}">
          <%@ include file="../../support/dataStreaming/matrix.jsp" %>
     </tags:simplePopup>
     <cti:includeScript link="/resources/js/pages/yukon.bulk.dataStreaming.js"/>
