@@ -173,12 +173,18 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
              * 20:45:30 GMT).
              * 2.5 Canonized request URL.
              */
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(body);
-            String signatureData =
-                body != null ? httpMethod.toString() + "\n" + new Base64().encodeToString(hash) + "\n" + CONTENT_TYPE
-                    + "\n" + formattedDate + "\n" + cannonizedURL : httpMethod.toString() + "\n\n\n" + formattedDate
-                    + "\n" + cannonizedURL;
+
+            String signatureData = httpMethod.toString() + "\n";
+
+            if (body == null) {
+                signatureData += "\n";
+            } else {
+                MessageDigest digest = MessageDigest.getInstance("SHA-256");
+                byte[] hash = digest.digest(body);
+                signatureData += new Base64().encodeToString(hash) + "\n" + CONTENT_TYPE;
+            }
+
+            signatureData += "\n" + formattedDate + "\n" + cannonizedURL;
 
             // Step 3: take UTF8 encoded signature data string from Step 2 ,compute its hash value using SHA1
             // algorithm
