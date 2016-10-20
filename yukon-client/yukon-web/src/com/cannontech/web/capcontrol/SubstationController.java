@@ -86,7 +86,7 @@ public class SubstationController {
             model.addAttribute("parent", parent);
         }
 
-        return setUpModel(model, substation, user, flashScope);
+        return setUpModel(model, substation, user, flashScope, request);
     }
     
     @CheckRoleProperty(YukonRoleProperty.CBC_DATABASE_EDIT)
@@ -99,7 +99,7 @@ public class SubstationController {
         
         CapControlSubstation substation = substationService.get(substationId);
         model.addAttribute("mode", PageEditMode.EDIT);
-        return setUpModel(model, substation, user, flashScope);
+        return setUpModel(model, substation, user, flashScope, request);
         
     }
 
@@ -113,11 +113,11 @@ public class SubstationController {
        
         CapControlSubstation substation = substationService.get(substationId);
         model.addAttribute("mode", PageEditMode.VIEW);
-        return setUpModel(model, substation, user, flashScope);
+        return setUpModel(model, substation, user, flashScope, request);
         
     }
     
-    private String setUpModel(ModelMap model, CapControlSubstation substation, LiteYukonUser user, FlashScope flashScope) {
+    private String setUpModel(ModelMap model, CapControlSubstation substation, LiteYukonUser user, FlashScope flashScope, HttpServletRequest request) {
 
         Instant startPage = Instant.now();
         
@@ -184,10 +184,11 @@ public class SubstationController {
                             } else {
                                 parentAreaId = ccCache.getParentAreaId(bus.getCcId());
                             }
+                            String contextPath = request.getContextPath();
                             StreamableCapObject streamable = ccCache.getStreamableArea(parentAreaId);
                             
-                            String areaLinkHtml = "<a href='/yukon/capcontrol/areas/" + streamable.getCcId() + "'>" + streamable.getCcName() + "</a>";
-                            String subBusLinkHtml = "<a href='/yukon/capcontrol/buses/" + bus.getCcId() + "'>" + bus.getCcName() + "</a>";
+                            String areaLinkHtml = "<a href='" + contextPath + "/capcontrol/areas/" + streamable.getCcId() + "'>" + streamable.getCcName() + "</a>";
+                            String subBusLinkHtml = "<a href='" + contextPath + "/capcontrol/buses/" + bus.getCcId() + "'>" + bus.getCcName() + "</a>";
 
                             areaLinkHtml = "<strong>" + areaLinkHtml + "</strong>";
                             subBusLinkHtml = "<strong>" + subBusLinkHtml + "</strong>";
