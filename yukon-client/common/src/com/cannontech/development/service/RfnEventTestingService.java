@@ -2,7 +2,6 @@ package com.cannontech.development.service;
 
 import java.io.IOException;
 
-import com.cannontech.amr.rfn.message.read.RfnMeterReadingType;
 import com.cannontech.development.model.RfnTestEvent;
 import com.cannontech.development.model.RfnTestMeterReading;
 import com.cannontech.development.service.impl.DRReport;

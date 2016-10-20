@@ -300,16 +300,18 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
     public void sendRelayArchiveRequest(int serialFrom, int serialTo, String manufacturer, String model) {
 
         for (int i = serialFrom; i <= serialTo; i++) {
-        // Create archive request & fake identifier
-        RfRelayArchiveRequest archiveRequest = new RfRelayArchiveRequest();
-        RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(i), manufacturer, model);
-        
-        // Set all data
-        archiveRequest.setRfnIdentifier(rfnIdentifier);
-        archiveRequest.setNodeId(1234);
-        
-        // Put request on queue
-        sendArchiveRequest(relayReadingArchiveRequestQueueName, archiveRequest);
+            // Create archive request & fake identifier
+            RfRelayArchiveRequest archiveRequest = new RfRelayArchiveRequest();
+            RfnIdentifier rfnIdentifier = new RfnIdentifier(Integer.toString(i),
+                                                            manufacturer,
+                                                            model);
+
+            // Set all data
+            archiveRequest.setRfnIdentifier(rfnIdentifier);
+            archiveRequest.setNodeId(1234);
+
+            // Put request on queue
+            sendArchiveRequest(relayReadingArchiveRequestQueueName, archiveRequest);
         }
         
     }

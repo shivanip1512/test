@@ -97,7 +97,7 @@ public class RfRelayArchiveRequestListener extends ArchiveRequestListenerBase<Rf
     @Override
     @ManagedAttribute
     public int getWorkerCount() {
-        return 2;
+        return workers.size();
     }
 
     @ManagedAttribute
