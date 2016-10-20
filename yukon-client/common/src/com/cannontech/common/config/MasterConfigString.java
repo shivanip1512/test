@@ -55,6 +55,9 @@ public enum MasterConfigString {
     
     private static final Set<MasterConfigString> sensitiveData;
     
+    /**
+     * If you add to this list, update the MasterConfigCryptoUtilsTest as well.
+     */
     static {
         sensitiveData = new HashSet<MasterConfigString>();
         sensitiveData.add(CAP_CONTROL_AMFM_DB_USERNAME);
