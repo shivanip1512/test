@@ -268,7 +268,12 @@ yukon.map.network = (function () {
                 var _overlay = new ol.Overlay({ element: document.getElementById('marker-info'), positioning: 'bottom-center', stopEvent: false });
                 _map.addOverlay(_overlay);
                 _map.on('click', function(ev) {
-                    var feature = _map.forEachFeatureAtPixel(ev.pixel, function(feature, layer) { return feature; });
+                    var feature = _map.forEachFeatureAtPixel(ev.pixel, function(feature, layer) { 
+                        var featureProperties = feature.getProperties();
+                        if (featureProperties.name != 'Line') {
+                            return feature; 
+                        }
+                    });
                     if (feature) {
                         var 
                         geometry = feature.getGeometry(),
@@ -320,8 +325,6 @@ yukon.map.network = (function () {
                         $('#marker-info').show();
                         _overlay.setPosition(coord);
 
-                        //close any lingering delete dialogs to simplify handling
-                        $('#confirm-delete').dialog('destroy');
                     } else {
                         $('#marker-info').hide();
                     }
@@ -341,7 +344,12 @@ yukon.map.network = (function () {
                 /** Change mouse cursor when over marker.  There HAS to be a css way to do this! */
                 $(_map.getViewport()).on('mousemove', function(e) {
                     var pixel = _map.getEventPixel(e.originalEvent),
-                        hit = _map.forEachFeatureAtPixel(pixel, function(feature, layer) { return true; });
+                        hit = _map.forEachFeatureAtPixel(pixel, function(feature, layer) { 
+                            var featureProperties = feature.getProperties();
+                            if (featureProperties.name != 'Line') {
+                                return true; 
+                            }
+                        });
                     $('#' + _map.getTarget()).css('cursor', hit ? 'pointer' : 'default');
                 });
                 
