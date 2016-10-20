@@ -15,6 +15,7 @@ public enum DatabaseVendor {
     MS2008   ("Microsoft SQL Server", 10),
     MS2012   ("Microsoft SQL Server", 11), // Denali
     MS2014   ("Microsoft SQL Server", 12),
+    MS2016   ("Microsoft SQL Server", 13),
     ORACLE9I ("Oracle", 9),
     ORACLE10G("Oracle", 10),
     ORACLE11G("Oracle", 11),
@@ -24,7 +25,7 @@ public enum DatabaseVendor {
     private static Logger logger = YukonLogManager.getLogger(DatabaseVendor.class);
 
     private static Set<DatabaseVendor> oracleDatabases = ImmutableSet.of(ORACLE9I, ORACLE10G, ORACLE11G, ORACLE12C);
-    private static Set<DatabaseVendor> msDatabases = ImmutableSet.of(MS2000, MS2005, MS2008, MS2012, MS2014);
+    private static Set<DatabaseVendor> msDatabases = ImmutableSet.of(MS2000, MS2005, MS2008, MS2012, MS2014, MS2016);
 
     private final String vendorName;
     private final int databaseMajorVersion;
