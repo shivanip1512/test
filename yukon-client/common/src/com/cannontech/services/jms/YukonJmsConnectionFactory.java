@@ -1,6 +1,9 @@
 package com.cannontech.services.jms;
 
-import static com.cannontech.common.config.MasterConfigString.*;
+import static com.cannontech.common.config.MasterConfigString.JMS_CLIENT_BROKER_CONNECTION;
+import static com.cannontech.common.config.MasterConfigString.JMS_CLIENT_CONNECTION;
+import static com.cannontech.common.config.MasterConfigString.JMS_INTERNAL_MESSAGING_CONNECTION;
+import static com.cannontech.common.config.MasterConfigString.JMS_SERVER_BROKER_LISTEN_CONNECTION;
 
 import javax.jms.ConnectionFactory;
 
@@ -25,7 +28,6 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
 
     public enum ConnectionType {
         NORMAL,
-        REMOTE_SERVICES,
         INTERNAL_MESSAGING,
     }
     
@@ -57,18 +59,6 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
             = configurationSource.getString(JMS_SERVER_BROKER_LISTEN_CONNECTION, jmsHost);
 
         switch (connectionType) {
-            case REMOTE_SERVICES: {
-                String clientConnection = 
-                        configurationSource.getString(JMS_REMOTE_SERVICES_CONNECTION, serverListenConnection);
-                // Create a ConnectionFactory
-                ConnectionFactory factory = new ActiveMQConnectionFactory(clientConnection);
-
-                // if using Spring, create a CachingConnectionFactory
-                CachingConnectionFactory cachingFactory = new CachingConnectionFactory();
-                cachingFactory.setTargetConnectionFactory(factory);
-                log.info("created remote services connectionFactory at " + clientConnection);
-                return cachingFactory;
-            }
             case INTERNAL_MESSAGING: {
                 final String applicationName = BootstrapUtils.getApplicationName();
                
