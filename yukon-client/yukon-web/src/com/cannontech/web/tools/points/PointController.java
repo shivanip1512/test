@@ -1,6 +1,7 @@
 package com.cannontech.web.tools.points;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -137,12 +138,15 @@ public class PointController {
         if (modelPointBase instanceof PointModel) {
             pointModel = (PointModel) modelPointBase;
         }
-
+        
         model.addAttribute("pointModel", pointModel);
 
         LiteYukonPAObject parent = dbCache.getAllPaosMap().get(pointModel.getPointBase().getPoint().getPaoID());
         model.addAttribute("parentName", StringEscapeUtils.escapeXml10(parent.getPaoName()));
         model.addAttribute("parentLink", paoDetailUrlHelper.getUrlForPaoDetailPage(parent));
+        
+        FdrInterfaceType[] interfaceTypes = FdrInterfaceType.values();
+        Arrays.sort(interfaceTypes, FdrInterfaceType.alphabeticalComparator);
 
         PointBase base = pointModel.getPointBase();
 
@@ -159,7 +163,7 @@ public class PointController {
         model.addAttribute("scalarArchiveTypes", PointArchiveType.values());
         model.addAttribute("archiveIntervals", TimeIntervals.getArchiveIntervals());
         model.addAttribute("fdrTranslationNumbers", ImmutableList.of(0, 1, 2, 3, 4));
-        model.addAttribute("fdrInterfaceTypes", FdrInterfaceType.values());
+        model.addAttribute("fdrInterfaceTypes", interfaceTypes);
         model.addAttribute("fdrDirections", FdrDirection.values());
         model.addAttribute("statusControlTypes", StatusControlType.values());
         model.addAttribute("unitMeasures", unitMeasureDao.getLiteUnitMeasures());
