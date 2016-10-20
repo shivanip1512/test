@@ -91,10 +91,12 @@
                                                 </tr>
                                             </thead>
                                             <c:forEach var="actualAttribute" items="${discrepancy.actual.attributes}">
-                                                <tr>
-                                                    <td>${actualAttribute.attribute.description}</td>
-                                                    <td><i:inline key=".configError.${actualAttribute.status}"/></td>
-                                                </tr>
+                                                <c:if test="${actualAttribute.status != 'OK'}">
+                                                    <tr>
+                                                        <td>${actualAttribute.attribute.description}</td>
+                                                        <td><i:inline key=".configError.${actualAttribute.status}"/></td>
+                                                    </tr>
+                                                </c:if>
                                             </c:forEach>
                                         </table>
                                     </div>
