@@ -45,7 +45,7 @@ public class PaoDetailUrlHelper {
         urlBuilder.put(PaoTag.RELAY_DETAIL_DISPLAYABLE, new Function<YukonPao, String>() {
             @Override
             public String apply(YukonPao pao) {
-                return "/amr/relay/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
+                return "/stars/relay/home?deviceId=" + pao.getPaoIdentifier().getPaoId();
             }
         });
         pageNameBuilder.put(PaoTag.RELAY_DETAIL_DISPLAYABLE, "relayDetail");

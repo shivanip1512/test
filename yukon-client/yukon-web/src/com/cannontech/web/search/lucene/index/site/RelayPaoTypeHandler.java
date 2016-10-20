@@ -41,8 +41,8 @@ public class RelayPaoTypeHandler implements PaoTypeHandler {
     public void buildDocument(DocumentBuilder builder, YukonResultSet rs, PaoIdentifier paoIdentifier) throws SQLException {
         int paoId = paoIdentifier.getPaoId();
         
-        builder.module(SiteModule.AMI.getName());
-        String path = "/amr/relay/home?deviceId=" + paoId;
+        builder.module(SiteModule.OPERATOR.getName());
+        String path = "/stars/relay/home?deviceId=" + paoId;
         String pageName = "relayDetail";
         builder.pageName(pageName);
         builder.path(path);

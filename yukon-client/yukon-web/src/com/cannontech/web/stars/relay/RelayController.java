@@ -1,4 +1,4 @@
-package com.cannontech.web.amr.relay;
+package com.cannontech.web.stars.relay;
 
 import javax.servlet.http.HttpServletRequest;
 

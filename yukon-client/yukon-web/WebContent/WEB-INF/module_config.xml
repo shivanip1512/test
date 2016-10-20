@@ -164,10 +164,6 @@
           <page name="billing" type="BASIC"/>
         </pages>
       </page>
-      <page name="relayDetail" type="DETAIL">
-        <link>/relay/home?deviceId=${deviceId}</link>
-        <labelArgument>${deviceName}</labelArgument>
-      </page>
     </pages>
   </module>
 
@@ -1264,6 +1260,10 @@
                         <labelArgument>${gateway.name}</labelArgument>
                     </page>
                 </pages>
+            </page>
+            <page name="relayDetail" type="DETAIL">
+                <link>/stars/relay/home?deviceId=${deviceId}</link>
+                <labelArgument>${deviceName}</labelArgument>
             </page>
             <page name="home" type="LANDING" hideSearch="true">
                 <link>/stars/operator/home</link>
