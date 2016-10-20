@@ -70,6 +70,9 @@
 
     <!-- Porter Response Monitor Service -->
     <bean id="porterResponseMonitorService" class="com.cannontech.amr.porterResponseMonitor.service.impl.PorterResponseMonitorServiceImpl"/>
+    
+    <!-- Device Data Monitor Service -->
+    <bean id="deviceDataMonitorService" class="com.cannontech.amr.deviceDataMonitor.service.impl.DeviceDataMonitorServiceImpl"/>
 
     <bean id="rfnMeterReadService" class="com.cannontech.amr.rfn.service.RfnMeterReadService"/>
     <bean id="rfnMeterEventService" class="com.cannontech.amr.rfn.service.RfnMeterEventService"/>

@@ -14,7 +14,6 @@
 			<value>com/cannontech/multispeak/client/applicationContext.xml</value>
 			<value>com/cannontech/billing/billingContext.xml</value>
 			<value>com/cannontech/cbc/cbcContext.xml</value>
-            <value>com/cannontech/remoteServicesContext.xml</value>
             <value>com/cannontech/report/reportContext.xml</value>
             <value>com/cannontech/web/devDatabaseContext.xml</value>
             <value>com/cannontech/web/scheduledFileExport/scheduledFileExport.xml</value>
