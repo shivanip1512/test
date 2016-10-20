@@ -1384,7 +1384,7 @@ bool CtiPort::resetDeviceQueued(LONG id)
     return _devicesQueued.erase( id ) > 0;
 }
 
-void CtiPort::addDeviceQueuedWork(long deviceID, unsigned workCount)
+void CtiPort::addDeviceQueuedWork(long deviceID, int workCount)
 {
     device_queue_counts::iterator iter;
 
@@ -1464,7 +1464,10 @@ int CtiPort::getWorkCount(long requestID)
             CtiLockGuard<CtiCriticalSection> guard(_criticalSection);
             for each( device_queue_counts::value_type queue_count in _queuedWork )
             {
-                workCount += queue_count.second;
+                if (queue_count.second > 0)
+                {
+                    workCount += queue_count.second;
+                }
             }
         }
     }

@@ -204,7 +204,7 @@ public:
     bool getDeviceQueued() const;
     bool setDeviceQueued(LONG id);
     bool resetDeviceQueued(LONG id);
-    void addDeviceQueuedWork(long deviceID, unsigned workCount);
+    void addDeviceQueuedWork(long deviceID, int workCount);
     void setPortCommunicating(bool state = true, DWORD ticks = 0);
     void addPortTiming(DWORD ticks);
     int getWorkCount(long requestID = 0);
@@ -276,7 +276,7 @@ private:
     CtiTime                      _lastWrite;        //  used to determine if we should block the port share...
                                                     //  initialized to CtiTime::now() on startup
 
-    typedef std::map<long, unsigned> device_queue_counts;
+    typedef std::map<long, signed> device_queue_counts;
 
     std::set< LONG >                 _devicesQueued;
     std::set< LONG >                 _devicesPreloaded;

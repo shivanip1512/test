@@ -625,8 +625,8 @@ void applyPortWorkReport(const long unusedid, CtiPortSPtr ptPort, void *passedPt
         QueEntCnt = ptPort->getWorkCount();
         /* Print out the port queue information */
 
-        CTILOG_INFO(dout, "Port: "<< ptPort->getPortID() <<" / "<< ptPort->getName() <<" Port/Device Work Entries: "<< QueEntCnt);
     }
+    CTILOG_INFO(dout, "Port: " << ptPort->getPortID() << " / " << ptPort->getName() << " Port/Device Work Entries: " << QueEntCnt);
 }
 
 
