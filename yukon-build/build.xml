@@ -263,6 +263,10 @@
             <fileset dir="${install.bag}/Yukon Base/Client/bin" includes="*.exe,*.conf,*.dll"/>
         </copy>
         
+        <exec executable="svnversion" outputproperty="svnversion" />
+        <echo message="SVN Version: ${svnversion}"/>
+        <echo message="SVN Version: ${svnversion}" file="${install.bag}/version.txt"/>
+
         <!-- Location of the stand-alone build module -->
         <property name="isshield" location="C:\Program Files (x86)\InstallShield\2012Spring SAB\System\IsCmdBld.exe" />
         <!-- Location of the installer data file -->
