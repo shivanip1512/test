@@ -2,22 +2,23 @@ package com.cannontech.dr.honeywellWifi;
 
 import org.joda.time.Instant;
 
-import com.cannontech.dr.JsonSerializers.FROM_DATE;
-import com.cannontech.dr.JsonSerializers.TO_DATE;
+import com.cannontech.common.temperature.TemperatureUnit;
+import com.cannontech.dr.JsonSerializers.FROM_DATE_HONEYWELL;
+import com.cannontech.dr.JsonSerializers.FROM_TEMPERATURE_UNIT;
+import com.cannontech.dr.JsonSerializers.TO_DATE_HONEYWELL;
+import com.cannontech.dr.JsonSerializers.TO_TEMPERATURE_UNIT;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.microsoft.windowsazure.services.servicebus.models.BrokeredMessage;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class UiDataBasicEvent implements HoneywellWifiData {
-    private BrokeredMessage originalMessage;
+public class UiDataBasicEvent extends HoneywellWifiDataBase {
     private final Instant created;
     private final Double displayedTemp;
     private final Double heatSetpoint;
     private final Double coolSetpoint;
-    private final String displayedUnits;
+    private final TemperatureUnit displayedUnits;
     private final String statusHeat;
     private final Double heatLowerSetpointLimit;
     private final Double heatUpperSetpointLimit;
@@ -32,11 +33,14 @@ public class UiDataBasicEvent implements HoneywellWifiData {
     private final Integer deviceId;
     private final String macId;
     
-    public UiDataBasicEvent(@JsonDeserialize(using=FROM_DATE.class) @JsonProperty("created") Instant created, 
+    /**
+     * Honeywell Azure service bus data event. Contains general data about the settings and state of the device.
+     */
+    public UiDataBasicEvent(@JsonDeserialize(using=FROM_DATE_HONEYWELL.class) @JsonProperty("created") Instant created, 
                             @JsonProperty("displayedTemp") Double displayedTemp, 
                             @JsonProperty("heatSetpoint") Double heatSetpoint, 
                             @JsonProperty("coolSetpoint") Double coolSetpoint,
-                            @JsonProperty("displayedUnits") String displayedUnits, 
+                            @JsonDeserialize(using=FROM_TEMPERATURE_UNIT.class) @JsonProperty("displayedUnits") TemperatureUnit displayedUnits, 
                             @JsonProperty("statusHeat") String statusHeat, 
                             @JsonProperty("heatLowerSetpointLimit") Double heatLowerSetpointLimit,
                             @JsonProperty("heatUpperSetpointLimit") Double heatUpperSetpointLimit, 
@@ -72,21 +76,11 @@ public class UiDataBasicEvent implements HoneywellWifiData {
     }
 
     @Override
-    public BrokeredMessage getOriginalMessage() {
-        return originalMessage;
-    }
-    
-    @Override
-    public void setOriginalMessage(BrokeredMessage originalMessage) {
-        this.originalMessage = originalMessage;
-    }
-
-    @Override
     public HoneywellWifiDataType getType() {
         return HoneywellWifiDataType.UI_DATA_BASIC_EVENT;
     }
     
-    @JsonSerialize(using=TO_DATE.class)
+    @JsonSerialize(using=TO_DATE_HONEYWELL.class)
     public Instant getCreatedDate() {
         return created;
     }
@@ -102,8 +96,9 @@ public class UiDataBasicEvent implements HoneywellWifiData {
     public Double getCoolSetpoint() {
         return coolSetpoint;
     }
-
-    public String getDisplayedUnits() {
+    
+    @JsonSerialize(using=TO_TEMPERATURE_UNIT.class)
+    public TemperatureUnit getDisplayedUnits() {
         return displayedUnits;
     }
 
@@ -161,7 +156,7 @@ public class UiDataBasicEvent implements HoneywellWifiData {
 
     @Override
     public String toString() {
-        return "UiDataBasicEvent [originalMessage=" + originalMessage + ", createdDate=" + created
+        return "UiDataBasicEvent [createdDate=" + created
                + ", displayedTemp=" + displayedTemp + ", heatSetpoint=" + heatSetpoint + ", coolSetpoint="
                + coolSetpoint + ", displayedUnits=" + displayedUnits + ", statusHeat=" + statusHeat
                + ", heatLowerSetpointLimit=" + heatLowerSetpointLimit + ", heatUpperSetpointLimit="

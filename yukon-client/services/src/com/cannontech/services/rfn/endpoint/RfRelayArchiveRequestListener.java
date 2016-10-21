@@ -1,5 +1,6 @@
 package com.cannontech.services.rfn.endpoint;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -22,7 +23,7 @@ public class RfRelayArchiveRequestListener extends ArchiveRequestListenerBase<Rf
     private static final Logger log = YukonLogManager.getLogger(RfRelayArchiveRequestListener.class);
     private static final String archiveResponseQueueName = "yukon.qr.obj.da.rfn.RfRelayArchiveResponse";
 
-    private List<Worker> workers;
+    private List<Worker> workers = new ArrayList<>();
 
     private class Worker extends ConverterBase {
         public Worker(int workerNumber, int queueSize) {

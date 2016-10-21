@@ -9,7 +9,8 @@ import java.util.Optional;
 public enum HoneywellWifiDataType {
     UI_DATA_BASIC_EVENT("UIDataBasicEvent", UiDataBasicEvent.class),
     DEMAND_RESPONSE_EVENT("DemandResponseEvent", DemandResponseEvent.class),
-    EQUIPMENT_STATUS_EVENT("EquipmentStatusEvent", EquipmentStatusEvent.class);
+    EQUIPMENT_STATUS_EVENT("EquipmentStatusEvent", EquipmentStatusEvent.class),
+    UNKNOWN("", UnknownEvent.class);
     
     private String jsonString;
     private Class<? extends HoneywellWifiData> messageClass;

@@ -2,7 +2,7 @@ package com.cannontech.dr.honeywellWifi;
 
 import org.joda.time.Instant;
 
-import com.cannontech.dr.JsonSerializers.FROM_DATE_HONEYWELL;
+import com.cannontech.dr.JsonSerializers.FROM_DATE_HONEYWELL_WRAPPER;
 import com.cannontech.dr.JsonSerializers.FROM_HONEYWELL_MESSAGE_TYPE;
 import com.cannontech.dr.JsonSerializers.TO_DATE_HONEYWELL;
 import com.cannontech.dr.JsonSerializers.TO_HONEYWELL_MESSAGE_TYPE;
@@ -22,7 +22,7 @@ public class HoneywellWifiMessageWrapper {
     @JsonCreator
     public HoneywellWifiMessageWrapper(@JsonProperty("identifier") String identifier,
                                        @JsonDeserialize(using=FROM_HONEYWELL_MESSAGE_TYPE.class) @JsonProperty("type") HoneywellWifiDataType type,
-                                       @JsonDeserialize(using=FROM_DATE_HONEYWELL.class) @JsonProperty("date") Instant date,
+                                       @JsonDeserialize(using=FROM_DATE_HONEYWELL_WRAPPER.class) @JsonProperty("date") Instant date,
                                        @JsonProperty("json") String json) {
         this.identifier = identifier;
         this.type = type;

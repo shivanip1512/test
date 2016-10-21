@@ -2,25 +2,13 @@ package com.cannontech.dr.honeywellWifi;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.microsoft.windowsazure.services.servicebus.models.BrokeredMessage;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class EquipmentStatusEvent implements HoneywellWifiData {
-    private BrokeredMessage originalMessage;
+public class EquipmentStatusEvent extends HoneywellWifiDataBase {
     
     @JsonCreator
     public EquipmentStatusEvent() {
         //TODO add fields, getters, necessary serializers/deserializers
-    }
-    
-    @Override
-    public BrokeredMessage getOriginalMessage() {
-        return originalMessage;
-    }
-    
-    @Override
-    public void setOriginalMessage(BrokeredMessage originalMessage) {
-        this.originalMessage = originalMessage;
     }
     
     @Override

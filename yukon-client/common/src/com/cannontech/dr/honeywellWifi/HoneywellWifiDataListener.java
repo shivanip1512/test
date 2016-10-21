@@ -38,6 +38,7 @@ public class HoneywellWifiDataListener {
     // Global settings
     private static String queueName;
     private static String connectionString;
+    private static boolean deleteMessageOnProcessingFailure = false;
     
     // Static configuration data
     private Map<HoneywellWifiDataType, HoneywellWifiDataProcessingStrategy> dataTypeToProcessingStrategy = new HashMap<>();
@@ -74,8 +75,17 @@ public class HoneywellWifiDataListener {
                 try {
                     Optional<HoneywellWifiData> message = receiveMessage();
                     message.ifPresent(data -> {
-                        processMessage(data);
-                        removeMessageFromQueue(data);
+                        try {
+                            processMessage(data);
+                            removeMessageFromQueue(data);
+                        } catch (Exception e) {
+                            log.error("Error processing Honeywell wifi message of type: " + data.getType(), e);
+                            log.debug(data);
+                            if (deleteMessageOnProcessingFailure) {
+                                log.info("Deleting bad message.");
+                                removeMessageFromQueue(data);
+                            }
+                        }
                     });
                 } catch (Exception e) {
                     log.error("Unhandled exception in Honeywell wifi data listener.", e);
@@ -105,11 +115,20 @@ public class HoneywellWifiDataListener {
     private void initAzureService() {
         Configuration config = new Configuration();
         config = ServiceBusConfiguration.configureWithConnectionString(null, config, connectionString);
-        //TODO: These settings are only available in 1.0+. Is there another way to set these?
-//        config.setProperty(Configuration.PROPERTY_HTTP_PROXY_HOST, "proxy.etn.com");
-//        config.setProperty(Configuration.PROPERTY_HTTP_PROXY_PORT, 8080);
-//        config.setProperty("http.proxyHost", "proxy.etn.com");
-//        config.setProperty("http.proxyPort", 8080);
+
+        //TODO: proxy support
+//        Optional<YukonHttpProxy> oProxy = YukonHttpProxy.fromGlobalSetting(settingDao);
+//        if (oProxy.isPresent()) {
+//            YukonHttpProxy proxy = oProxy.get();
+            // Azure seems to ignore the system-wide proxy settings.
+//            System.setProperty("http.proxyHost", proxy.getHost());
+//            System.setProperty("http.proxyPort", proxy.getPortString());
+//            log.debug("Set system proxy: " + proxy.getHost() + ":" + proxy.getPortString());
+            // Are these settings available in service bus 0.95?
+//            config.setProperty(Configuration.PROPERTY_HTTP_PROXY_HOST, "proxy.etn.com"); //http.proxyHost
+//            config.setProperty(Configuration.PROPERTY_HTTP_PROXY_PORT, 8080); //http.proxyPort
+//        }
+        
         azureService = ServiceBusService.create(config);
     }
     
@@ -138,7 +157,7 @@ public class HoneywellWifiDataListener {
         
         log.debug("Handling message, id=" + message.getMessageId());
         HoneywellWifiData data = buildHoneywellWifiData(message);
-        return Optional.of(data);
+        return Optional.ofNullable(data);
     }
     
     /**
@@ -166,7 +185,10 @@ public class HoneywellWifiDataListener {
             messageWrapper = jsonParser.readValue(messageBody, HoneywellWifiMessageWrapper.class);
         } catch (IOException e) {
             log.error("Unable to parse Honeywell Wifi Azure message wrapper.", e);
-            return null;
+            log.debug("Message body: " + messageBody);
+            UnknownEvent unknown = new UnknownEvent();
+            unknown.setOriginalMessage(message);
+            return unknown;
         }
         
         HoneywellWifiData data = getMessageData(messageWrapper, message);
