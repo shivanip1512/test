@@ -283,7 +283,10 @@ void CtiConnection::receiveAllMessages()
     }
     catch( cms::CMSException& e )
     {
-        CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - Error while attempting to receive all messages");
+        if (isConnectionUsable())
+        {
+            CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - Error while attempting to receive all messages");
+        }
     }
 }
 
