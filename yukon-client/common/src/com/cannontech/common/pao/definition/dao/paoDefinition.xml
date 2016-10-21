@@ -10064,7 +10064,7 @@
     </pao>
 
     <pao id="RFWMETER_GEN2" abstract="true" inherits="RFN_WATER_BASE, RFN_POINT_CALCULATION_WATER, SUPPORTS_DEVICE_CONFIGURATION, RFN_WATER_CHANNEL_CONFIGURATION">
-    <displayGroup>RFMESH</displayGroup>
+        <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfw</changeGroup>
         <points>
             <point type="Status" offset="81">
@@ -10132,13 +10132,7 @@
             <attribute name="TAMPER_CABLE_CUT">
                 <basicLookup point="Tamper - Cable Cut" />
             </attribute>
-            </attributes>
-        <tags>
-            <tag name="DEVICE_ICON_TYPE">
-                <value>water_meter</value>
-            </tag>
-            <tag name="WATER_METER_DETAIL_DISPLAYABLE" />
-        </tags>
+        </attributes>
     </pao>
 
     <pao id="RFW201" inherits="RFWMETER_GEN2">
