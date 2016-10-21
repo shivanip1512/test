@@ -236,6 +236,7 @@
     <pao id="OUTAGE_STATUS_BASE" abstract="true">
         <points>
             <point type="Status" offset="1000">
+                <init>true</init>
                 <name>Outage Status</name>
                 <archive>
                     <type>ON_CHANGE</type>
