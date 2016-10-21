@@ -227,8 +227,8 @@
     </category>
 
     <category type="rfnWaterChannelConfiguration">
-        <enum field="recordingIntervalMinutes" type="WaterRecordingInterval" default="15"/>
-        <enum field="reportingIntervalMinutes" type="WaterReportingInterval" default="2"/>
+        <enum field="recordingIntervalSeconds" type="WaterRecordingInterval" default="15"/>
+        <enum field="reportingIntervalSeconds" type="WaterReportingInterval" default="2"/>
     </category>
 
     <category type="addressing">
