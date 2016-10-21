@@ -18,16 +18,17 @@ public final class WaterRecordingInterval implements DeviceConfigurationInputEnu
 
     @Autowired private DurationFormattingService durationService;
 
-    // 15m, 30m, 1h, 2h, 4h
-    private static final List<Integer> minuteIntervals = ImmutableList.of(15 * 60, 30 * 60, 60 * 60, 2 * 60 * 60, 4 * 60 * 60);
+    // 15m, 30m, 60m == 1h, 120m == 2h, 240m == 4h
+    private static final List<Integer> minuteIntervals = ImmutableList.of(15, 30, 60, 120, 240);
     
     @Override
     public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
         List<InputOption> recordingIntervals = new ArrayList<>();
 
         for (int interval : minuteIntervals) {
-            recordingIntervals.add( new InputOption( Integer.toString(interval), 
-                durationService.formatDuration(interval, TimeUnit.SECONDS, DurationFormat.DHMS_REDUCED, userContext)));
+        	int intervalAsSeconds = interval * 60;
+            recordingIntervals.add( new InputOption( Integer.toString(intervalAsSeconds), 
+                durationService.formatDuration(intervalAsSeconds, TimeUnit.SECONDS, DurationFormat.DHMS_REDUCED, userContext)));
         }
 
         return recordingIntervals;

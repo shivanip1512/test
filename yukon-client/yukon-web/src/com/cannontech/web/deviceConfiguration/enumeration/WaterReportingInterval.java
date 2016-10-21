@@ -18,16 +18,17 @@ public final class WaterReportingInterval implements DeviceConfigurationInputEnu
 
     @Autowired private DurationFormattingService durationService;
 
-    // 2h, 4h, 6h, 12h, 1d, 2d
-    private static final List<Integer> hourIntervals = ImmutableList.of(2 * 60 * 60, 4 * 60 * 60, 6 * 60 * 60, 12 * 60 * 60, 24 * 60 * 60, 2 * 24 * 60 * 60);
+    // 2h, 4h, 6h, 12h, 24h == 1d, 48h == 2d
+    private static final List<Integer> hourIntervals = ImmutableList.of(2, 4, 6, 12, 24, 48);
     
     @Override
     public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
         List<InputOption> reportingIntervals = new ArrayList<>();
 
         for (int interval : hourIntervals) {
-            reportingIntervals.add( new InputOption( Integer.toString(interval), 
-                durationService.formatDuration(interval, TimeUnit.SECONDS, DurationFormat.DHMS_REDUCED, userContext)));
+        	int intervalAsSeconds = interval * 60 * 60;
+            reportingIntervals.add( new InputOption( Integer.toString(intervalAsSeconds), 
+                durationService.formatDuration(intervalAsSeconds, TimeUnit.SECONDS, DurationFormat.DHMS_REDUCED, userContext)));
         }
 
         return reportingIntervals;
