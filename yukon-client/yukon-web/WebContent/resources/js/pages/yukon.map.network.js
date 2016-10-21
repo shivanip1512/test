@@ -282,9 +282,6 @@ yukon.map.network = (function () {
                         parent = properties.parent;
                         neighbor = properties.neighbor;
                         routeInfo = properties.routeInfo;
-                        $('#parent-info').hide();
-                        $('#neighbor-info').hide();
-                        $('#device-info').hide();
 
                         if (parent != null) {
                             var parentData = parent.data;
@@ -295,6 +292,8 @@ yukon.map.network = (function () {
                             $('.js-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
                             $('.js-node-sn').text(parentData.nodeSN);
                             $('.js-mac-address').text(parentData.nodeMacAddress);
+                            $('#neighbor-info').hide();
+                            $('#device-info').hide();
                             $('#parent-info').show();
                         } else if (neighbor != null) {
                             var neighborData = neighbor.data;
@@ -309,14 +308,20 @@ yukon.map.network = (function () {
                             $('.js-link-cost').text(neighborData.neighborLinkCost);
                             $('.js-num-samples').text(neighborData.numSamples);
                             $('.js-etx-band').text(neighborData.etxBand);
+                            $('#parent-info').hide();
+                            $('#device-info').hide();
                             $('#neighbor-info').show();
                         } else if (routeInfo != null) {
+                            $('#parent-info').hide();
+                            $('#neighbor-info').hide();
                             var paoId = routeInfo.device.paoIdentifier.paoId;
                             url = yukon.url('/tools/map/device/' + paoId + '/info');
                             $('#device-info').load(url, function() {
                                 $('#device-info').show();
                             });
                         } else {
+                            $('#parent-info').hide();
+                            $('#neighbor-info').hide();
                             url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
                             $('#device-info').load(url, function() {
                                 $('#device-info').show();

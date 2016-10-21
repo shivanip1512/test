@@ -8,18 +8,8 @@
 <cti:standardPage module="tools" page="map">
 
 <style>
-.map {
-    height: 100%;
-    min-height: 600px;
-    width: 100%;
-    border: 1px solid #bbb;
-    box-shadow: 0px 0px 5px #ddd;
-    outline: none;
-}
-
 .map .ol-viewport canvas {
-    vertical-align: middle;
-    min-height: 600px;
+     min-height: 600px; 
 }
 
 .ol-scale-line,.ol-mouse-position {
@@ -38,40 +28,6 @@
 
 #filter-form .chosen-results {
     max-height: 95px;
-}
-
-#marker-info {
-    background: #fff;
-    border: 1px solid #bbb;
-    border-radius: 2px;
-    padding: 4px;
-    position: relative;
-    box-shadow: 0px 0px 10px #888;
-}
-
-#marker-info:after,#marker-info:before {
-    top: 100%;
-    left: 50%;
-    border: solid transparent;
-    content: " ";
-    height: 0;
-    width: 0;
-    position: absolute;
-    pointer-events: none;
-}
-
-#marker-info:after {
-    border-color: rgba(252, 252, 252, 0);
-    border-top-color: #fff;
-    border-width: 6px;
-    margin-left: -6px;
-}
-
-#marker-info:before {
-    border-color: rgba(153, 153, 153, 0);
-    border-top-color: #bbb;
-    border-width: 7px;
-    margin-left: -7px;
 }
 </style>
 
