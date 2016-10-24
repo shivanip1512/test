@@ -513,7 +513,7 @@ BOOST_AUTO_TEST_CASE(test_dev_cbc8020_integrity_scan)
     Cti::Test::test_DeviceConfig &config = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
     config.insertValue(Cti::Config::DNPStrings::internalRetries,              "3");
-    config.insertValue(Cti::Config::DNPStrings::timeOffset,                   "LOCAL");
+    config.insertValue(Cti::Config::DNPStrings::timeOffset,                   "UTC");
     config.insertValue(Cti::Config::DNPStrings::enableDnpTimesyncs,           "true");
     config.insertValue(Cti::Config::DNPStrings::omitTimeRequest,              "false");
     config.insertValue(Cti::Config::DNPStrings::enableUnsolicitedClass1,      "true");
@@ -713,7 +713,7 @@ BOOST_AUTO_TEST_CASE(test_dev_cbc8020_integrity_scan)
 
     BOOST_CHECK_EQUAL(
             retMsg->ResultString(),
-            "Test DNP device / Device time: 03/24/2015 17:48:29.000"  //  Wrong time.  Hack to let the build complete.
+            "Test DNP device / Device time: 03/24/2015 12:48:29.000"  //  Wrong time.  Hack to let the build complete.
             "\nTest DNP device / "
             "\nTest DNP device / Point data report:"
             "\nAI:   132; AO:   372; DI:   122; DO:    44; Counters:     5; "
