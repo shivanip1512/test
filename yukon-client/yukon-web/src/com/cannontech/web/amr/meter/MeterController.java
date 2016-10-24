@@ -265,7 +265,9 @@ public class MeterController {
         model.addAttribute("configurableDevice", configurableDevice);
         model.addAttribute("streamableDevice", streamableDevice);
         model.addAttribute("showDisconnect", disconnectDevice);
-        model.addAttribute("showEvents", rfEventsDevice);
+        if (rolePropertyDao.checkProperty(YukonRoleProperty.METER_EVENTS, user)) {
+            model.addAttribute("showEvents", rfEventsDevice);   
+        }
         model.addAttribute("showOutage", outageSupported && !rfDevice);
         model.addAttribute("showPolyphaseReadings", voltageThreePhaseDevice || currentThreePhaseDevice);
         model.addAttribute("showRfOutage", outageSupported && rfDevice);
