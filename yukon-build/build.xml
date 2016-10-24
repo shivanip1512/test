@@ -405,8 +405,11 @@
     </target>
     
     <target name="symstore">
+        <exec failonerror="true" dir="yukon-build/srcsrv/" executable="cmd.exe">
+          <arg line='/c svnindex.cmd /debug /symbols=${basedir}\yukon-server /source=${basedir}\yukon-server'/>
+        </exec>   
         <exec failonerror="true" dir="yukon-build/symbolserver/" executable="cmd.exe">
-            <arg line='/c symstore add /r /f ${basedir}\yukon-server\*.* /s \\localhost\SYMBOLS /t "Yukon Server" /v "${yukon.build.details}"'/>
+            <arg line='/c symstore add /r /f ${basedir}\yukon-server\*.* /s \\swbuild.cooperpowereas.net\SYMBOLS /t "Yukon Server" /v "${yukon.build.details}"'/>
         </exec>   
     </target>
         
