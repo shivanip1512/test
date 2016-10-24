@@ -265,7 +265,7 @@
         
         <exec executable="svnversion" outputproperty="svnversion" />
         <echo message="SVN Version: ${svnversion}"/>
-        <echo message="SVN Version: ${svnversion}" file="${install.bag}/version.txt"/>
+        <echo message="SVN Version: ${svnversion}" file="${install.bag}/svnversion.txt"/>
 
         <!-- Location of the stand-alone build module -->
         <property name="isshield" location="C:\Program Files (x86)\InstallShield\2012Spring SAB\System\IsCmdBld.exe" />
