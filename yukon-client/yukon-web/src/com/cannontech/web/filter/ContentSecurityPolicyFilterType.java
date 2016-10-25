@@ -37,12 +37,12 @@ public enum ContentSecurityPolicyFilterType {
         + "http://www.google.com ; "),          // Recaptcha"),
     CHILD_SRC("child-src 'self' ; "),
     OBJECT_SRC("object-src 'self' "
-            + "https://www.google.com "         // Recaptcha
-            + "http://www.google.com ; "),      // Recaptcha
+        + "https://www.google.com "             // Recaptcha
+        + "http://www.google.com ; "),          // Recaptcha
     FONT_SRC("font-src 'self' ;"),
     FRAME_SRC("frame-src 'self' " 
-        + "https://www.google.com "         // Recaptcha
-        + "http://www.google.com ; "),      // Recaptcha
+        + "https://www.google.com "             // Recaptcha
+        + "http://www.google.com ; "),          // Recaptcha
     FRAME_ANCESTORS("frame-ancestors 'self' ;"),
     FORM_ACTION("form-action 'self' ;"),
     ;
