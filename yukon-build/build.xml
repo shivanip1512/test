@@ -406,8 +406,8 @@
     
     <target name="symstore">
         <!-- Push a command to retreive the matching source code from svn into the pdb -->
-        <exec failonerror="true" dir="yukon-build/srcsrv/" executable="cmd.exe">
-          <arg line='/c svnindex.cmd /debug /symbols=${basedir}\yukon-server /source=${basedir}\yukon-server'/>
+        <exec failonerror="true" dir="yukon-build/srcsrv/" executable="svnindex.cmd">
+          <arg line='/debug /symbols=${basedir}\yukon-server /source=${basedir}\yukon-server'/>
         </exec>   
 
         <!-- Now put these PDB files into the Symbol Store -->
