@@ -405,11 +405,15 @@
     </target>
     
     <target name="symstore">
+        <!-- Push a command to retreive the matching source code from svn into the pdb -->
         <exec failonerror="true" dir="yukon-build/srcsrv/" executable="cmd.exe">
           <arg line='/c svnindex.cmd /debug /symbols=${basedir}\yukon-server /source=${basedir}\yukon-server'/>
         </exec>   
-        <exec failonerror="true" dir="yukon-build/symbolserver/" executable="cmd.exe">
-            <arg line='/c symstore add /r /f ${basedir}\yukon-server\*.* /s \\swbuild.cooperpowereas.net\SYMBOLS /t "Yukon Server" /v "${yukon.build.details}"'/>
+
+        <!-- Now put these PDB files into the Symbol Store -->
+        <property name="symbol_server" value="\\swbuild.cooperpowereas.net\SYMBOLS" />
+        <exec failonerror="true" dir="yukon-build/symbolserver/" executable="symstore.exe">
+          <arg line='add /r /f ${basedir}\yukon-server\*.* /s ${symbol_server} /t "Yukon Server" /v "${yukon.build.details}"'/>
         </exec>   
     </target>
         
