@@ -713,7 +713,7 @@ BOOST_AUTO_TEST_CASE(test_dev_cbc8020_integrity_scan)
 
     BOOST_CHECK_EQUAL(
             retMsg->ResultString(),
-            "Test DNP device / Device time: 03/24/2015 12:48:29.000"  //  Wrong time.  Hack to let the build complete.
+            "Test DNP device / Device time: 03/24/2015 12:48:29.000"
             "\nTest DNP device / "
             "\nTest DNP device / Point data report:"
             "\nAI:   132; AO:   372; DI:   122; DO:    44; Counters:     5; "
