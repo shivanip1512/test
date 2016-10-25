@@ -10,33 +10,41 @@ public enum ContentSecurityPolicyFilterType {
         + "http://api.tiles.mapbox.com/ " 
         + "http://*.tiles.mapbox.com/ " 
         + "http://www.w3.org "
-        + "http://api.recaptcha.net " 
         + "http://www.google-analytics.com " 
-        + "https://www.google.com/recaptcha/; "),
+        + "https://api-secure.recaptcha.net "   // Recaptcha
+        + "https://www.google.com "             // Recaptcha
+        + "http://www.google.com ; "),          // Recaptcha
     SCRIPT_SRC("script-src 'self' 'unsafe-inline' 'unsafe-eval' "
-        + "http://www.google.com/js " 
         + "https://api.tiles.mapbox.com " 
         + "http://www.google-analytics.com " 
-        + "https://www.google.com/recaptcha/; "),
+        + "https://api-secure.recaptcha.net "   // Recaptcha
+        + "https://www.google.com "             // Recaptcha
+        + "http://www.google.com ; "),          // Recaptcha
     CONNECT_SRC("connect-src 'self' 'unsafe-inline' " 
         + "https://api.mapbox.com "
         + "https://*.tiles.mapbox.com " 
-        + "https://www.google.com/recaptcha/; "),
+        + "https://www.google.com/recaptcha/ ;"),
     IMG_SRC("img-src 'self' data: Access-Control-Allow-Origin: * " // Access-Control-Allow-Origin: * used for cross origin resource sharing for map images
-        + "https://www.google.com/recaptcha/ " 
         + "http://www.google-analytics.com "
-        + "http://api.recaptcha.net;"),
+        + "https://api-secure.recaptcha.net "   // Recaptcha
+        + "https://www.google.com "             // Recaptcha
+        + "http://www.google.com ; "),          // Recaptcha
     STYLE_SRC("style-src 'self' 'unsafe-inline' " 
         + "https://api.tiles.mapbox.com "
-        + "https://www.google.com/recaptcha; "),
-    MEDIA_SRC("media-src 'self';"),
-    CHILD_SRC("child-src 'self';"),
-    OBJECT_SRC("object-src 'self';"),
-    FONT_SRC("font-src 'self';"),
+        + "https://www.google.com/recaptcha ;"),
+    MEDIA_SRC("media-src 'self' "
+        + "https://www.google.com "             // Recaptcha
+        + "http://www.google.com ; "),          // Recaptcha"),
+    CHILD_SRC("child-src 'self' ; "),
+    OBJECT_SRC("object-src 'self' "
+            + "https://www.google.com "         // Recaptcha
+            + "http://www.google.com ; "),      // Recaptcha
+    FONT_SRC("font-src 'self' ;"),
     FRAME_SRC("frame-src 'self' " 
-        + "https://www.google.com/recaptcha"),
-    FRAME_ANCESTORS("'self'"),
-    FORM_ACTION("'self'"),
+        + "https://www.google.com "         // Recaptcha
+        + "http://www.google.com ; "),      // Recaptcha
+    FRAME_ANCESTORS("frame-ancestors 'self' ;"),
+    FORM_ACTION("form-action 'self' ;"),
     ;
 
     private final String value;
