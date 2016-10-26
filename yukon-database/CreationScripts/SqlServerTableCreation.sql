@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/14/2016 7:06:45 AM                        */
+/* Created on:     10/26/2016 2:06:46 AM                        */
 /*==============================================================*/
 
 
@@ -6541,6 +6541,20 @@ create table LMGroupExpressComAddress (
 go
 
 insert into LMGroupExpressComAddress values( 0, '(none)', 0, '(none)' );
+
+/*==============================================================*/
+/* Table: LMGroupHoneywellWiFi                                  */
+/*==============================================================*/
+create table LMGroupHoneywellWiFi (
+   DeviceID             numeric              not null,
+   GroupID              numeric              not null,
+   constraint PK_LMGROUPHONEYWELLWIFI primary key (DeviceID)
+)
+go
+
+alter table LMGroupHoneywellWiFi
+   add constraint AK_LMGROUPHONEYWELLWIFI unique (GroupID)
+go
 
 /*==============================================================*/
 /* Table: LMGroupMCT                                            */
@@ -13211,6 +13225,12 @@ go
 alter table LMGroupExpressCom
    add constraint FK_LGrEx_Rt foreign key (RouteID)
       references Route (RouteID)
+go
+
+alter table LMGroupHoneywellWiFi
+   add constraint FK_LMGROUPHONEYWELLWIFILMGROUP foreign key (DeviceID)
+      references LMGroup (DeviceID)
+         on delete cascade
 go
 
 alter table LMGroupMCT
