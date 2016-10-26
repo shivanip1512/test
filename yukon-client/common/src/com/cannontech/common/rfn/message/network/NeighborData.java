@@ -13,12 +13,12 @@ public class NeighborData implements Serializable {
     private String serialNumber;
     private long neighborDataTimestamp;
     private String neighborAddress;
-    private long lastCommTime;
-    private long nextCommTime;
+    private Long lastCommTime;
+    private Long nextCommTime;
     private Set<NeighborFlagType> neighborFlags;
-    private float neighborLinkCost;
-    private int numSamples;
-    private short etxBand;
+    private Float neighborLinkCost;
+    private Integer numSamples;
+    private Short etxBand;
     private String linkRate;
     private String linkPower;
 
@@ -54,19 +54,19 @@ public class NeighborData implements Serializable {
         this.neighborAddress = neighborAddress;
     }
 
-    public long getLastCommTime() {
+    public Long getLastCommTime() {
         return lastCommTime;
     }
 
-    public void setLastCommTime(long lastCommTime) {
+    public void setLastCommTime(Long lastCommTime) {
         this.lastCommTime = lastCommTime;
     }
 
-    public long getNextCommTime() {
+    public Long getNextCommTime() {
         return nextCommTime;
     }
 
-    public void setNextCommTime(long nextCommTime) {
+    public void setNextCommTime(Long nextCommTime) {
         this.nextCommTime = nextCommTime;
     }
 
@@ -78,27 +78,27 @@ public class NeighborData implements Serializable {
         this.neighborFlags = neighborFlags;
     }
 
-    public float getNeighborLinkCost() {
+    public Float getNeighborLinkCost() {
         return neighborLinkCost;
     }
 
-    public void setNeighborLinkCost(float neighborLinkCost) {
+    public void setNeighborLinkCost(Float neighborLinkCost) {
         this.neighborLinkCost = neighborLinkCost;
     }
 
-    public int getNumSamples() {
+    public Integer getNumSamples() {
         return numSamples;
     }
 
-    public void setNumSamples(int numSamples) {
+    public void setNumSamples(Integer numSamples) {
         this.numSamples = numSamples;
     }
 
-    public short getEtxBand() {
+    public Short getEtxBand() {
         return etxBand;
     }
 
-    public void setEtxBand(short etxBand) {
+    public void setEtxBand(Short etxBand) {
         this.etxBand = etxBand;
     }
 
@@ -122,16 +122,16 @@ public class NeighborData implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result = prime * result + etxBand;
-        result = prime * result + (int) (lastCommTime ^ (lastCommTime >>> 32));
+        result = prime * result + ((etxBand == null) ? 0 : etxBand.hashCode());
+        result = prime * result + ((lastCommTime == null) ? 0 : lastCommTime.hashCode());
         result = prime * result + ((linkPower == null) ? 0 : linkPower.hashCode());
         result = prime * result + ((linkRate == null) ? 0 : linkRate.hashCode());
         result = prime * result + ((neighborAddress == null) ? 0 : neighborAddress.hashCode());
         result = prime * result + (int) (neighborDataTimestamp ^ (neighborDataTimestamp >>> 32));
         result = prime * result + ((neighborFlags == null) ? 0 : neighborFlags.hashCode());
-        result = prime * result + Float.floatToIntBits(neighborLinkCost);
-        result = prime * result + (int) (nextCommTime ^ (nextCommTime >>> 32));
-        result = prime * result + numSamples;
+        result = prime * result + ((neighborLinkCost == null) ? 0 : neighborLinkCost.hashCode());
+        result = prime * result + ((nextCommTime == null) ? 0 : nextCommTime.hashCode());
+        result = prime * result + ((numSamples == null) ? 0 : numSamples.hashCode());
         result = prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
         result = prime * result + ((serialNumber == null) ? 0 : serialNumber.hashCode());
         return result;
@@ -146,9 +146,15 @@ public class NeighborData implements Serializable {
         if (getClass() != obj.getClass())
             return false;
         NeighborData other = (NeighborData) obj;
-        if (etxBand != other.etxBand)
+        if (etxBand == null) {
+            if (other.etxBand != null)
+                return false;
+        } else if (!etxBand.equals(other.etxBand))
             return false;
-        if (lastCommTime != other.lastCommTime)
+        if (lastCommTime == null) {
+            if (other.lastCommTime != null)
+                return false;
+        } else if (!lastCommTime.equals(other.lastCommTime))
             return false;
         if (linkPower == null) {
             if (other.linkPower != null)
@@ -172,11 +178,20 @@ public class NeighborData implements Serializable {
                 return false;
         } else if (!neighborFlags.equals(other.neighborFlags))
             return false;
-        if (Float.floatToIntBits(neighborLinkCost) != Float.floatToIntBits(other.neighborLinkCost))
+        if (neighborLinkCost == null) {
+            if (other.neighborLinkCost != null)
+                return false;
+        } else if (!neighborLinkCost.equals(other.neighborLinkCost))
             return false;
-        if (nextCommTime != other.nextCommTime)
+        if (nextCommTime == null) {
+            if (other.nextCommTime != null)
+                return false;
+        } else if (!nextCommTime.equals(other.nextCommTime))
             return false;
-        if (numSamples != other.numSamples)
+        if (numSamples == null) {
+            if (other.numSamples != null)
+                return false;
+        } else if (!numSamples.equals(other.numSamples))
             return false;
         if (rfnIdentifier == null) {
             if (other.rfnIdentifier != null)

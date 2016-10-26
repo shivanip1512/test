@@ -918,7 +918,7 @@ public class NmIntegrationController {
             types.add(NeighborFlagType.BN);
             types.add(NeighborFlagType.IN);
             neighborData.setNeighborFlags(types);
-            neighborData.setNeighborLinkCost((short) 3);
+            neighborData.setNeighborLinkCost(new Float(3));
             neighborData.setNextCommTime(new Date().getTime());
             neighborData.setNumSamples(1);
             neighborData.setSerialNumber("123");

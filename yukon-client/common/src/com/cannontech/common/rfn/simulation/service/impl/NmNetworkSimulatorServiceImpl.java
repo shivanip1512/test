@@ -1,6 +1,7 @@
 package com.cannontech.common.rfn.simulation.service.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
@@ -33,6 +34,11 @@ import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.location.Origin;
+import com.cannontech.common.rfn.message.metadata.CommStatusType;
+import com.cannontech.common.rfn.message.metadata.RfnMetadata;
+import com.cannontech.common.rfn.message.metadata.RfnMetadataReplyType;
+import com.cannontech.common.rfn.message.metadata.RfnMetadataRequest;
+import com.cannontech.common.rfn.message.metadata.RfnMetadataResponse;
 import com.cannontech.common.rfn.message.network.NeighborData;
 import com.cannontech.common.rfn.message.network.ParentData;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReply;
@@ -52,6 +58,7 @@ import com.google.common.collect.Maps;
 
 public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService {
     private static final String requestQueue = "com.eaton.eas.yukon.networkmanager.network.data.request";
+    private static final String metaDataRequestQueue = "yukon.qr.obj.common.rfn.MetadataRequest";
     private static final int incomingMessageWaitMillis = 1000;
     
     private final static Logger log = YukonLogManager.getLogger(NmNetworkSimulatorServiceImpl.class);
@@ -124,6 +131,25 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                             RfnPrimaryRouteDataRequest request =
                                 (RfnPrimaryRouteDataRequest) requestMessage.getObject();
                             RfnPrimaryRouteDataReply reply = getRoute(request.getRfnIdentifier());
+                            jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
+                        }
+                    }
+                    Object metaDataMessage = jmsTemplate.receive(metaDataRequestQueue);
+                    if (metaDataMessage != null) {
+                        ObjectMessage requestMessage = (ObjectMessage) metaDataMessage;
+                        if (requestMessage.getObject() instanceof RfnMetadataRequest) {
+                            RfnMetadataRequest request = (RfnMetadataRequest) requestMessage.getObject();
+                            RfnMetadataResponse reply = new RfnMetadataResponse();
+                            reply.setRfnIdentifier(request.getRfnIdentifier());
+                            reply.setReplyType(RfnMetadataReplyType.OK);
+                            Map<RfnMetadata, Object> metadata = new HashMap<>();
+                            boolean isReady = new Random().nextBoolean();
+                            if (isReady) {
+                                metadata.put(RfnMetadata.COMM_STATUS, CommStatusType.READY);
+                            } else {
+                                metadata.put(RfnMetadata.COMM_STATUS, CommStatusType.NOT_READY);
+                            }
+                            reply.setMetadata(metadata);
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), reply);
                         }
                     }
@@ -218,7 +244,12 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
         RfnDevice device= rfnDeviceDao.getDeviceForExactIdentifier(identifier);
         int max = getRandomNumberInRange(2, 8);
         List<RfnDevice> neighbors = getNeighbors(device, max);
-        List<RouteData> routeData = getRouteDataFromSettings(neighbors);
+        List<RouteData> routeData = new ArrayList<>();
+        //add original device
+        routeData.addAll(getRouteDataFromSettings(Lists.newArrayList(device)));
+        //add neighbors
+        routeData.addAll(getRouteDataFromSettings(neighbors));
+        //add gateway
         RfnIdentifier gateway = getNearbyGateway(paoLocationDao.getLocation(device.getPaoIdentifier().getPaoId()));
         //The last RouteData object in the List<RouteData> routeData will be have all null fields except for - rfnIdentifier, and serialNumber (gateway)
         if (gateway != null) {

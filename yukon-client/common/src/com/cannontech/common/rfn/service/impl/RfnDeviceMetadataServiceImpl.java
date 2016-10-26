@@ -1,6 +1,7 @@
 package com.cannontech.common.rfn.service.impl;
 
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -12,9 +13,12 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
+import com.cannontech.common.rfn.message.metadata.RfnMetadataReplyType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataRequest;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataResponse;
+import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
 import com.cannontech.common.rfn.service.DataCallback;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
 import com.cannontech.common.util.jms.JmsReplyHandler;
@@ -23,6 +27,10 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class RfnDeviceMetadataServiceImpl implements RfnDeviceMetadataService {
 
+    private static final String commsError =
+        "Unable to send request due to a communication error between Yukon and Network Manager.";
+    private static final String nmError = "Recieved error from Network Manager.";
+        
     private static final Logger log = YukonLogManager.getLogger(RfnDeviceMetadataServiceImpl.class);
 
     private RequestReplyTemplateImpl<RfnMetadataResponse> qrTemplate;
@@ -88,11 +96,29 @@ public class RfnDeviceMetadataServiceImpl implements RfnDeviceMetadataService {
         qrTemplate.send(new RfnMetadataRequest(device.getRfnIdentifier()), handler);
     }
     
+    public Map<RfnMetadata, Object> getMetadata(RfnDevice device) throws NmCommunicationException {
+        RfnMetadataResponse response;
+        BlockingJmsReplyHandler<RfnMetadataResponse> reply = new BlockingJmsReplyHandler<>(RfnMetadataResponse.class);
+        try {
+            qrTemplate.send(new RfnMetadataRequest(device.getRfnIdentifier()), reply);
+            response = reply.waitForCompletion();
+            if (response.getReplyType() == RfnMetadataReplyType.OK) {
+                return response.getMetadata();
+            } else {
+                log.error(nmError + " (" + response.getReplyType() + ")");
+                throw new NmCommunicationException(nmError + " (" + response.getReplyType() + ")");
+            }
+        } catch (ExecutionException e) {
+            log.error(commsError, e);
+            throw new NmCommunicationException(commsError, e);
+        }
+    }
+    
+  
     @PostConstruct
     public void initialize() {
-        qrTemplate = new RequestReplyTemplateImpl<RfnMetadataResponse>(
-                "RFN_METADATA", configurationSource, connectionFactory,
-                "yukon.qr.obj.common.rfn.MetadataRequest", false);
+        qrTemplate = new RequestReplyTemplateImpl<>("RFN_METADATA", configurationSource, connectionFactory,
+            "yukon.qr.obj.common.rfn.MetadataRequest", false);
     }
     
 }

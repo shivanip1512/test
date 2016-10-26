@@ -11,14 +11,14 @@ public class RouteData implements Serializable {
 
     private RfnIdentifier rfnIdentifier;
     private String serialNumber;
-    private long routeDataTimestamp;
+    private Long routeDataTimestamp;
     private String destinationAddress;
     private String nextHopAddress;
-    private short totalCost;
-    private short hopCount;
-    private long routeTimeout;
+    private Short totalCost;
+    private Short hopCount;
+    private Long routeTimeout;
     private Set<RouteFlagType> routeFlags;
-    private short routeColor;
+    private Short routeColor;
 
     public RfnIdentifier getRfnIdentifier() {
         return rfnIdentifier;
@@ -36,11 +36,11 @@ public class RouteData implements Serializable {
         this.serialNumber = serialNumber;
     }
 
-    public long getRouteDataTimestamp() {
+    public Long getRouteDataTimestamp() {
         return routeDataTimestamp;
     }
 
-    public void setRouteDataTimestamp(long routeDataTimestamp) {
+    public void setRouteDataTimestamp(Long routeDataTimestamp) {
         this.routeDataTimestamp = routeDataTimestamp;
     }
 
@@ -60,27 +60,27 @@ public class RouteData implements Serializable {
         this.nextHopAddress = nextHopAddress;
     }
 
-    public short getTotalCost() {
+    public Short getTotalCost() {
         return totalCost;
     }
 
-    public void setTotalCost(short totalCost) {
+    public void setTotalCost(Short totalCost) {
         this.totalCost = totalCost;
     }
 
-    public short getHopCount() {
+    public Short getHopCount() {
         return hopCount;
     }
 
-    public void setHopCount(short hopCount) {
+    public void setHopCount(Short hopCount) {
         this.hopCount = hopCount;
     }
 
-    public long getRouteTimeout() {
+    public Long getRouteTimeout() {
         return routeTimeout;
     }
 
-    public void setRouteTimeout(long routeTimeout) {
+    public void setRouteTimeout(Long routeTimeout) {
         this.routeTimeout = routeTimeout;
     }
 
@@ -92,11 +92,11 @@ public class RouteData implements Serializable {
         this.routeFlags = routeFlags;
     }
 
-    public short getRouteColor() {
+    public Short getRouteColor() {
         return routeColor;
     }
 
-    public void setRouteColor(short routeColor) {
+    public void setRouteColor(Short routeColor) {
         this.routeColor = routeColor;
     }
 
@@ -104,17 +104,16 @@ public class RouteData implements Serializable {
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result =
-            prime * result + ((destinationAddress == null) ? 0 : destinationAddress.hashCode());
-        result = prime * result + hopCount;
+        result = prime * result + ((destinationAddress == null) ? 0 : destinationAddress.hashCode());
+        result = prime * result + ((hopCount == null) ? 0 : hopCount.hashCode());
         result = prime * result + ((nextHopAddress == null) ? 0 : nextHopAddress.hashCode());
         result = prime * result + ((rfnIdentifier == null) ? 0 : rfnIdentifier.hashCode());
-        result = prime * result + routeColor;
-        result = prime * result + (int) (routeDataTimestamp ^ (routeDataTimestamp >>> 32));
+        result = prime * result + ((routeColor == null) ? 0 : routeColor.hashCode());
+        result = prime * result + ((routeDataTimestamp == null) ? 0 : routeDataTimestamp.hashCode());
         result = prime * result + ((routeFlags == null) ? 0 : routeFlags.hashCode());
-        result = prime * result + (int) (routeTimeout ^ (routeTimeout >>> 32));
+        result = prime * result + ((routeTimeout == null) ? 0 : routeTimeout.hashCode());
         result = prime * result + ((serialNumber == null) ? 0 : serialNumber.hashCode());
-        result = prime * result + totalCost;
+        result = prime * result + ((totalCost == null) ? 0 : totalCost.hashCode());
         return result;
     }
 
@@ -132,7 +131,10 @@ public class RouteData implements Serializable {
                 return false;
         } else if (!destinationAddress.equals(other.destinationAddress))
             return false;
-        if (hopCount != other.hopCount)
+        if (hopCount == null) {
+            if (other.hopCount != null)
+                return false;
+        } else if (!hopCount.equals(other.hopCount))
             return false;
         if (nextHopAddress == null) {
             if (other.nextHopAddress != null)
@@ -144,23 +146,35 @@ public class RouteData implements Serializable {
                 return false;
         } else if (!rfnIdentifier.equals(other.rfnIdentifier))
             return false;
-        if (routeColor != other.routeColor)
+        if (routeColor == null) {
+            if (other.routeColor != null)
+                return false;
+        } else if (!routeColor.equals(other.routeColor))
             return false;
-        if (routeDataTimestamp != other.routeDataTimestamp)
+        if (routeDataTimestamp == null) {
+            if (other.routeDataTimestamp != null)
+                return false;
+        } else if (!routeDataTimestamp.equals(other.routeDataTimestamp))
             return false;
         if (routeFlags == null) {
             if (other.routeFlags != null)
                 return false;
         } else if (!routeFlags.equals(other.routeFlags))
             return false;
-        if (routeTimeout != other.routeTimeout)
+        if (routeTimeout == null) {
+            if (other.routeTimeout != null)
+                return false;
+        } else if (!routeTimeout.equals(other.routeTimeout))
             return false;
         if (serialNumber == null) {
             if (other.serialNumber != null)
                 return false;
         } else if (!serialNumber.equals(other.serialNumber))
             return false;
-        if (totalCost != other.totalCost)
+        if (totalCost == null) {
+            if (other.totalCost != null)
+                return false;
+        } else if (!totalCost.equals(other.totalCost))
             return false;
         return true;
     }
