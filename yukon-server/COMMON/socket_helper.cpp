@@ -383,29 +383,54 @@ bool SocketAddress::isSet() const
 }
 
 // Return true if socket addresses have similar family, port and IP address
-bool SocketAddress::compare(const SocketAddress& ref)
+bool SocketAddress::compare(const SocketAddress& ref) const
 {
-    // make sure length is not 0 and is similar
-    if (!_addrlen || _addrlen != ref._addrlen)
-    {
-        return false;
-    }
-
-    // only compare addresses of similar families
-    if (_addr.sa.sa_family != ref._addr.sa.sa_family)
-    {
-        return false;
-    }
-
     switch (_addr.sa.sa_family)
     {
     case AF_INET:
         {
+            if (ref._addr.sa.sa_family == AF_INET6)
+            {
+                if (IN6_IS_ADDR_V4MAPPED(&ref._addr.sa_in6.sin6_addr))
+                {
+                    CTILOG_DEBUG(dout, "ref is IN6_IS_ADDR_V4MAPPED");
+                    if (_addr.sa_in.sin_addr.S_un.S_un_b.s_b1 == ref._addr.sa_in6.sin6_addr.u.Byte[12] &&
+                        _addr.sa_in.sin_addr.S_un.S_un_b.s_b2 == ref._addr.sa_in6.sin6_addr.u.Byte[13] &&
+                        _addr.sa_in.sin_addr.S_un.S_un_b.s_b3 == ref._addr.sa_in6.sin6_addr.u.Byte[14] &&
+                        _addr.sa_in.sin_addr.S_un.S_un_b.s_b4 == ref._addr.sa_in6.sin6_addr.u.Byte[15])
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
             return _addr.sa_in.sin_port == ref._addr.sa_in.sin_port &&
                 memcmp(&_addr.sa_in.sin_addr, &ref._addr.sa_in.sin_addr, sizeof(IN_ADDR)) == 0;
         }
     case AF_INET6:
         {
+            if (ref._addr.sa.sa_family == AF_INET)
+            {
+                if (IN6_IS_ADDR_V4MAPPED(&_addr.sa_in6.sin6_addr))
+                {
+                    CTILOG_DEBUG(dout, "this is IN6_IS_ADDR_V4MAPPED");
+                    if (ref._addr.sa_in.sin_addr.S_un.S_un_b.s_b1 == _addr.sa_in6.sin6_addr.u.Byte[12] &&
+                        ref._addr.sa_in.sin_addr.S_un.S_un_b.s_b2 == _addr.sa_in6.sin6_addr.u.Byte[13] &&
+                        ref._addr.sa_in.sin_addr.S_un.S_un_b.s_b3 == _addr.sa_in6.sin6_addr.u.Byte[14] &&
+                        ref._addr.sa_in.sin_addr.S_un.S_un_b.s_b4 == _addr.sa_in6.sin6_addr.u.Byte[15])
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    return false;
+                }
+            }
+
             return _addr.sa_in6.sin6_port == ref._addr.sa_in6.sin6_port &&
                 memcmp(&_addr.sa_in6.sin6_addr, &ref._addr.sa_in6.sin6_addr, sizeof(IN6_ADDR)) == 0;
         }
@@ -414,7 +439,7 @@ bool SocketAddress::compare(const SocketAddress& ref)
     return false;
 }
 
-bool SocketAddress::operator==(const SocketAddress& ref)
+bool SocketAddress::operator==(const SocketAddress& ref) const
 {
     return compare(ref);
 }
@@ -840,3 +865,9 @@ bool ServerSockets::areSocketsValid() const
 }
 
 }
+
+IM_EX_CTIBASE std::ostream& operator<< (std::ostream& o, const Cti::SocketAddress& sa)
+{
+    return o << sa.getIpAddress();
+}
+

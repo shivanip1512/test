@@ -2,7 +2,7 @@
 
 set _ERRORLEVEL=0
 
-for /f %%a in ('dir /b bin\test_*.exe') do call :docall bin\%%a %%1
+for /f %%a in ('dir /b bin-debug\test_*.exe') do call :docall bin-debug\%%a %%1
 exit
 
 :docall

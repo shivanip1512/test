@@ -68,6 +68,8 @@ void WorkerThread::start()
     // make sure the thread is not running
     assert( ! isRunning() );
 
+    CTILOG_INFO(dout, "Creating thread : " << _function._name);
+
     // create and start the thread (boost:thread uses boost::bind implicitly)
     _thread = boost::thread( &WorkerThread::executeWrapper, this );
 

@@ -181,7 +181,7 @@ void CtiFDRClientConnection::threadFunctionSendDataTo( void )
                             {
                                 Cti::StreamBuffer outLog;
 
-                                outLog << "\nSending message to " << getAddr() << ":" << std::hex << std::setfill('0');
+                                outLog << "\nSending message to " << getAddr() << " on socket " << getConnection() << ":" << std::hex << std::setfill('0');
 
                                 for (int i = 0; i < getParent()->getMessageSize(buffer); i++)
                                 {

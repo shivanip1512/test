@@ -167,9 +167,9 @@ public:
     bool isSet() const;
 
     // Return true if socket addresses have similar family, port and IP address
-    bool compare(const SocketAddress& ref);
+    bool compare(const SocketAddress& ref) const;
 
-    bool operator==(const SocketAddress& ref);
+    bool operator==(const SocketAddress& ref) const;
 };
 
 //-----------------------------------------------------------------------------
@@ -302,3 +302,6 @@ public:
 };
 
 }
+
+IM_EX_CTIBASE std::ostream& operator<< (std::ostream&, const Cti::SocketAddress&);
+

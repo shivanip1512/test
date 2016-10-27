@@ -1098,7 +1098,7 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
             std::unique_ptr<CtiFDRServerConnection> connection = std::make_unique<CtiFDRServerConnection>( tmpConnection, returnAddr );
 
             string connAddrStr = connection->getAddr().toString();
-            CTILOG_INFO(dout, "Server connection processed for client at "<< connAddrStr);
+            CTILOG_INFO(dout, "Server connection processed for client at "<< connAddrStr << " on socket " << tmpConnection);
 
             {
                 CtiLockGuard<CtiMutex> guard(iConnectionListMux);

@@ -456,7 +456,7 @@ void CtiFDRSocketLayer::threadFunctionConnectionStatus( void )
     {
         if (iParent->getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
         {
-            CTILOG_DEBUG(dout, "Initializing Thread for "<< getName());
+            CTILOG_DEBUG(dout, "Initializing Connection Status Thread for "<< getName());
         }
 
         iSemaphore = CreateEvent ((LPSECURITY_ATTRIBUTES)NULL,TRUE,false,NULL);
