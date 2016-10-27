@@ -13,7 +13,7 @@ import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
  */
 public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable {
     
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 1L;
     
     private RfnIdentifier rfnIdentifier;
     
