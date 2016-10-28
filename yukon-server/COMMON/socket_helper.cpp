@@ -368,6 +368,12 @@ u_short SocketAddress::getPort() const
     return ntohs(_addr.sa_in.sin_port);
 }
 
+// set the 16-bit port number from network byte order
+void SocketAddress::setPort(short port)
+{
+    _addr.sa_in.sin_port=htons(port);
+}
+
 SocketAddress& SocketAddress::operator=(const SocketAddress& ref)
 {
     _addrlen = ref._addrlen;
@@ -397,7 +403,8 @@ bool SocketAddress::compare(const SocketAddress& ref) const
                     if (_addr.sa_in.sin_addr.S_un.S_un_b.s_b1 == ref._addr.sa_in6.sin6_addr.u.Byte[12] &&
                         _addr.sa_in.sin_addr.S_un.S_un_b.s_b2 == ref._addr.sa_in6.sin6_addr.u.Byte[13] &&
                         _addr.sa_in.sin_addr.S_un.S_un_b.s_b3 == ref._addr.sa_in6.sin6_addr.u.Byte[14] &&
-                        _addr.sa_in.sin_addr.S_un.S_un_b.s_b4 == ref._addr.sa_in6.sin6_addr.u.Byte[15])
+                        _addr.sa_in.sin_addr.S_un.S_un_b.s_b4 == ref._addr.sa_in6.sin6_addr.u.Byte[15] &&
+                        _addr.sa_in.sin_port == ref._addr.sa_in6.sin6_port )
                     {
                         return true;
                     }
@@ -420,7 +427,8 @@ bool SocketAddress::compare(const SocketAddress& ref) const
                     if (ref._addr.sa_in.sin_addr.S_un.S_un_b.s_b1 == _addr.sa_in6.sin6_addr.u.Byte[12] &&
                         ref._addr.sa_in.sin_addr.S_un.S_un_b.s_b2 == _addr.sa_in6.sin6_addr.u.Byte[13] &&
                         ref._addr.sa_in.sin_addr.S_un.S_un_b.s_b3 == _addr.sa_in6.sin6_addr.u.Byte[14] &&
-                        ref._addr.sa_in.sin_addr.S_un.S_un_b.s_b4 == _addr.sa_in6.sin6_addr.u.Byte[15])
+                        ref._addr.sa_in.sin_addr.S_un.S_un_b.s_b4 == _addr.sa_in6.sin6_addr.u.Byte[15] &&
+                        ref._addr.sa_in.sin_port == _addr.sa_in6.sin6_port )
                     {
                         return true;
                     }

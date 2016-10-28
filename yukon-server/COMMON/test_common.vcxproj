@@ -380,6 +380,7 @@
     </ClCompile>
     <ClCompile Include="test_resolvers.cpp">
     </ClCompile>
+    <ClCompile Include="test_socket_helper.cpp" />
     <ClCompile Include="test_std_helper.cpp">
     </ClCompile>
     <ClCompile Include="test_string_formatter.cpp">

@@ -47,12 +47,14 @@ bool isPointIdEqual(CtiFDRManager::ptr_type &aPoint, void *arg)
 
 bool isTranslationNameEqual(CtiFDRManager::ptr_type &aPoint, void *arg)
 {
-    string name = *((string*)arg);  // Wha tis the ID of the pointI care for!
+    string name = *((string*)arg);  // What is the ID of the point I care for!
 
     for (int x=0; x < aPoint->getDestinationList().size(); x++)
     {
-        if (ciStringEqual(aPoint->getDestinationList()[x].getTranslation(),name))
+        if (ciStringEqual(aPoint->getDestinationList()[x].getTranslation(), name))
+        {
             return true;
+        }
     }
     return false;
 }
@@ -1364,7 +1366,7 @@ bool CtiFDRInterface::findPointIdInList(long aPointId,
 /************************************************************************
 * Function Name: CtiFDRInterface::findTranslationNameInList()
 *
-* Description: Finds a specific translation name in the list and returns a pointer to  it
+* Description: Finds a specific translation name in the list and returns a pointer to it
 *
 *************************************************************************
 */

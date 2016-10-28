@@ -161,6 +161,8 @@ public:
     // get the 16-bit port number from network byte order
     u_short getPort() const;
 
+    void setPort(short port);
+
     SocketAddress& operator=(const SocketAddress& ref);
 
     // Return true if value has content

@@ -994,6 +994,9 @@ bool  CtiFDR_Inet::findAndInitializeClients( void )
 
                     std::string desc = clientName + string ("'s client link has been established at ") + AddrStr;
                     logEvent (desc,"", true);
+
+                    CTILOG_INFO(dout, "Adding server connection " << layer->getOutBoundConnection()->getAddr());
+
                     iConnectionList.push_back (layer.release());
                 }
             }
@@ -1106,7 +1109,9 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
                 //-----------------------------------------------------
                 // check our list for a possible client
                 //-----------------------------------------------------
-                const int connectionIndex = findClientInList (connection->getAddr());
+                Cti::SocketAddress peerAddr=connection->getAddr();
+                peerAddr.setPort(getConnectPortNumber());
+                const int connectionIndex = findClientInList (peerAddr);
 
                 // if it returns -1, the client wasn't found
                 if (connectionIndex == -1)
@@ -1118,6 +1123,10 @@ void CtiFDR_Inet::threadFunctionServerConnection( void )
                     {
                         if (!layer->run())
                         {
+                            if (layer->getOutBoundConnection() && layer->getOutBoundConnection()->getAddr().isSet())
+                            {
+                                CTILOG_INFO(dout, "Adding server connection " << layer->getOutBoundConnection()->getAddr());
+                            }
                             iConnectionList.push_back (layer.release());
                         }
                         else
