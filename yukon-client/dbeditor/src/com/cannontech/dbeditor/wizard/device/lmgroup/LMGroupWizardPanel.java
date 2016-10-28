@@ -6,6 +6,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.common.wizard.WizardPanel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.database.db.device.lm.LMGroupHoneywell;
 
 
 public class LMGroupWizardPanel extends WizardPanel {
@@ -162,7 +163,13 @@ public class LMGroupWizardPanel extends WizardPanel {
             getGroupMacroLoadGroupsPanel().setFirstFocus();
             return getGroupMacroLoadGroupsPanel();
         } else if (currentInputPanel == getSwitchTypePanel()) {
-            getLMGroupBasePanel().setSwitchType(getSwitchTypePanel().getTypeOfSwitchSelected());
+            PaoType paoType = getSwitchTypePanel().getTypeOfSwitchSelected();
+            if (paoType == PaoType.LM_GROUP_HONEYWELL) {
+                if (LMGroupHoneywell.isMaximumGroupLimitExceeded(PaoType.LM_GROUP_HONEYWELL)) {
+                    throw new Error("(Exceeded maximum limit of HONEYWELL GROUP (10000).)");
+                }
+            }
+            getLMGroupBasePanel().setSwitchType(paoType);
             getLMGroupBasePanel().setFirstFocus();
             return getLMGroupBasePanel();
         }
