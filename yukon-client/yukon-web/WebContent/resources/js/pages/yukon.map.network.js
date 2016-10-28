@@ -126,8 +126,8 @@ yukon.map.network = (function () {
                 })]
             }),
             style: new ol.style.Style({
-                fill: new ol.style.Fill({ color: '#FFFF00', weight: 4 }),
-                stroke: new ol.style.Stroke({ color: '#FFFF00', width: 2, lineDash: [10,10] })
+                fill: new ol.style.Fill({ color: '#808080', weight: 4 }),
+                stroke: new ol.style.Stroke({ color: '#808080', width: 2, lineDash: [10,10] })
             })
         });
         
@@ -287,11 +287,13 @@ yukon.map.network = (function () {
                             var parentData = parent.data;
                             $('.js-device').text(parent.device.name);
                             $('.js-type').text(parent.device.paoIdentifier.paoType);
+                            $('.js-status').text(parent.statusDisplay);
                             $('.js-manufacturer').text(parentData.rfnIdentifier.sensorManufacturer);
                             $('.js-model').text(parentData.rfnIdentifier.sensorModel);
                             $('.js-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
                             $('.js-node-sn').text(parentData.nodeSN);
                             $('.js-mac-address').text(parentData.nodeMacAddress);
+                            $('.js-distance').text(parent.distanceDisplay);
                             $('#neighbor-info').hide();
                             $('#device-info').hide();
                             $('#parent-info').show();
@@ -299,6 +301,7 @@ yukon.map.network = (function () {
                             var neighborData = neighbor.data;
                             $('.js-device').text(neighbor.device.name);
                             $('.js-type').text(neighbor.device.paoIdentifier.paoType);
+                            $('.js-status').text(neighbor.statusDisplay);
                             $('.js-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
                             $('.js-neighbor-serialNumber').text(neighborData.serialNumber);
                             $('.js-address').text(neighborData.neighborAddress);
@@ -308,6 +311,7 @@ yukon.map.network = (function () {
                             $('.js-link-cost').text(neighborData.neighborLinkCost);
                             $('.js-num-samples').text(neighborData.numSamples);
                             $('.js-etx-band').text(neighborData.etxBand);
+                            $('.js-distance').text(neighbor.distanceDisplay);
                             $('#parent-info').hide();
                             $('#device-info').hide();
                             $('#neighbor-info').show();

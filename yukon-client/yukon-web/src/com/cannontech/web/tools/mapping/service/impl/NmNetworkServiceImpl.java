@@ -129,7 +129,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 throw new NmNetworkException(noParent, "noParent");
             }
             FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(parentLocation));
-            Parent parent = new Parent(parentDevice, location, data);
+            Parent parent = new Parent(parentDevice, location, data, accessor);
             addCommStatus(parent, accessor);
             addDistance(parent, deviceLocation, parentLocation);
             log.debug(parent);
@@ -264,13 +264,13 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 if (neighborLocation != null) {
                     FeatureCollection location =
                         paoLocationService.getFeatureCollection(Lists.newArrayList(neighborLocation));
-                    neighbors.add(new Neighbor(neighborDevice, location, data, accessor));
                     Neighbor neighbor = new Neighbor(neighborDevice, location, data, accessor);
                     addCommStatus(neighbor, accessor);
                     // distance is from device to each neighbor
                     addDistance(neighbor, deviceLocation, neighborLocation);
                     log.debug(neighbor);
                     log.debug("-----" + deviceLocation + "-" + neighborLocation);
+                    neighbors.add(neighbor);
                 } else {
                     log.error("Location is not found for " + neighborDevice);
                 }

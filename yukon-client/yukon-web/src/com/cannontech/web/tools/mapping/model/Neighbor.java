@@ -19,7 +19,7 @@ public class Neighbor extends MappingInfo{
     private String commaDelimitedNeighborFlags;
 
     public Neighbor(RfnDevice device, FeatureCollection location, NeighborData data, MessageSourceAccessor accessor) {
-        super(device, location);
+        super(device, location, accessor);
         this.data = data;
         List<String> flags = new ArrayList<>();
         if (data.getNeighborFlags() != null && !data.getNeighborFlags().isEmpty()) {

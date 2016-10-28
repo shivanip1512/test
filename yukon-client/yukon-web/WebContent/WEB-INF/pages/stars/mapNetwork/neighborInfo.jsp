@@ -9,6 +9,7 @@
 <tags:nameValueContainer2 tableClass="name-collapse">    
     <tags:nameValue2 nameKey=".device" valueClass="js-device"></tags:nameValue2>
     <tags:nameValue2 nameKey=".type" valueClass="js-type"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".status" valueClass="js-status"></tags:nameValue2>
     <tags:nameValue2 nameKey=".nodeSN" valueClass="js-neighbor-serialNumber"></tags:nameValue2>
     <tags:nameValue2 nameKey=".serialNumber" valueClass="js-serial-number"></tags:nameValue2>
     <tags:nameValue2 nameKey=".macAddress" valueClass="js-address"></tags:nameValue2>
@@ -16,4 +17,5 @@
     <tags:nameValue2 nameKey=".linkCost" valueClass="js-link-cost"></tags:nameValue2>
     <tags:nameValue2 nameKey=".numSamples" valueClass="js-num-samples"></tags:nameValue2>
     <tags:nameValue2 nameKey=".flags" valueClass="js-flags"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".distance" valueClass="js-distance"></tags:nameValue2>
 </tags:nameValueContainer2>

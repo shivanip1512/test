@@ -19,7 +19,7 @@ public class RouteInfo extends MappingInfo {
     private String commaDelimitedRouteFlags;
 
     public RouteInfo(RfnDevice device, RouteData route, FeatureCollection location, MessageSourceAccessor accessor) {
-        super(device, location);
+        super(device, location, accessor);
         this.route = route;
         List<String> flags = new ArrayList<>();
         if (route.getRouteFlags() != null && !route.getRouteFlags().isEmpty()) {
