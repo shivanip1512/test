@@ -5,7 +5,11 @@ import java.util.Map;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
-
+/**
+ * This service ask NM for the information about device.
+ * RfnMetadata contains all device information.
+ *
+ */
 public interface RfnDeviceMetadataService {
 
     /**

@@ -144,6 +144,9 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
                             reply.setReplyType(RfnMetadataReplyType.OK);
                             Map<RfnMetadata, Object> metadata = new HashMap<>();
                             boolean isReady = new Random().nextBoolean();
+                            // simulating only a single piece of data
+                            // TODO
+                            // add other metadata properties
                             if (isReady) {
                                 metadata.put(RfnMetadata.COMM_STATUS, CommStatusType.READY);
                             } else {
