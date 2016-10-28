@@ -207,7 +207,6 @@ public class MeterController {
         boolean highBillUser = rolePropertyDao.checkProperty(YukonRoleProperty.HIGH_BILL_COMPLAINT, user);
         boolean locateRouteUser = rolePropertyDao.checkProperty(YukonRoleProperty.LOCATE_ROUTE, user);
         boolean moveUser = rolePropertyDao.checkProperty(YukonRoleProperty.MOVE_IN_MOVE_OUT, user);
-        boolean meterEventsUser = rolePropertyDao.checkProperty(YukonRoleProperty.METER_EVENTS, user); 
         /** Device Category */
         boolean mct4xxDevice = DeviceTypesFuncs.isMCT4XX(type);
         boolean rfDevice = type.isRfn();
@@ -265,7 +264,7 @@ public class MeterController {
         model.addAttribute("configurableDevice", configurableDevice);
         model.addAttribute("streamableDevice", streamableDevice);
         model.addAttribute("showDisconnect", disconnectDevice);
-        model.addAttribute("showEvents", rfEventsDevice && meterEventsUser);  
+        model.addAttribute("showEvents", rfEventsDevice);  
         model.addAttribute("showOutage", outageSupported && !rfDevice);
         model.addAttribute("showPolyphaseReadings", voltageThreePhaseDevice || currentThreePhaseDevice);
         model.addAttribute("showRfOutage", outageSupported && rfDevice);

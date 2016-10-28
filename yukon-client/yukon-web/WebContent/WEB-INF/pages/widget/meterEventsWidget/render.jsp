@@ -47,7 +47,9 @@
             <cti:param name="descending" value="true"/>
         </cti:url>
         <c:if test="${not empty valueMap}">
-            <a href="${meterEventsReportUrl}" class="showAll fl"><i:inline key=".allEvents"/></a>
+            <cti:checkRolesAndProperties value="METER_EVENTS">
+                <a href="${meterEventsReportUrl}" class="showAll fl"><i:inline key=".allEvents"/></a>
+            </cti:checkRolesAndProperties>
            </c:if>
         <tags:widgetActionUpdate method="render" nameKey="refresh" container="${widgetParameters.widgetId}_events" icon="icon-arrow-refresh"/>
     </div>
