@@ -7,10 +7,10 @@ import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStream
 
 /**
  * Describes data streaming related information for a device including:
- * 1. its current data streaming load;
- * 2. its current data streaming configuration;
+ * 1. its current data streaming configuration setting;
+ * 2. its current data streaming load calculated from its setting.
  * 3. its primary Gateway.
- * 4. its primary Gateway's data streaming related information; 
+ * 4. its primary Gateway's data streaming information; 
  */
 public class DeviceDataStreamingInfo implements Serializable {
     private static final long serialVersionUID = 1L;

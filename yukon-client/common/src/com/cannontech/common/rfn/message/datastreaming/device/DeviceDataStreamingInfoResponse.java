@@ -13,8 +13,8 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
  */
 public class DeviceDataStreamingInfoResponse implements Serializable {
     private static final long serialVersionUID = 1L;
-    
-    // null DeviceDataStreamingInfo value indicates an invalid device.
+
+    // null DeviceDataStreamingInfo value indicates invalid device.
     private Map<RfnIdentifier, DeviceDataStreamingInfo> deviceDataStreamingInfos;
 
     public Map<RfnIdentifier, DeviceDataStreamingInfo> getDeviceDataStreamingInfos() {

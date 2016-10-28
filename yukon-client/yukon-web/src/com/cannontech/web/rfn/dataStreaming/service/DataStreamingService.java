@@ -82,7 +82,7 @@ public interface DataStreamingService {
      * 
      * @param deviceIds - to re-send config to
      */
-    DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user);
+    DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException;
 
     /**
      * Returns map of configurations to device collection that contains all assigned devices.

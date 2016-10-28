@@ -372,5 +372,8 @@
       <sequence name="BehaviorReport">
         <table name="BehaviorReport" identitycolumn="BehaviorReportId" initsequence="true"/>
       </sequence>
+      <sequence name="DataStreaming">
+        <table name="DataStreaming" identitycolumn="requestSeqNumber"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

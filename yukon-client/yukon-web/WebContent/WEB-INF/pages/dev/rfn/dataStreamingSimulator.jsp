@@ -23,6 +23,7 @@
             <h3>Config Response</h3>
             <input type="checkbox" name="isOverloadGatewaysOnConfig"/> Overload Gateways<br>
             <input type="checkbox" name="isNetworkManagerFailOnConfig"/> Network Manager Fail<br>
+            <input type="checkbox" name="isAcceptedWithError"/> Accepted With Error (Overloaded Gateways). Only for "re-send".<br>
             <input type="checkbox" name="isDeviceErrorOnConfig">
             Device Error 
             <select name="deviceErrorOnConfig">
@@ -92,6 +93,16 @@
             </c:otherwise>
         </c:choose>
         <input type="checkbox" name="isNetworkManagerFailOnConfig" disabled="disabled" ${checked}/> Network Manager Fail<br>
+        
+        <c:choose>
+            <c:when test="${settings.acceptedWithError}">
+                <c:set var="checked" value="checked"/>
+            </c:when>
+            <c:otherwise>
+                <c:set var="checked" value=""/>
+            </c:otherwise>
+        </c:choose>
+          <input type="checkbox" name="isAcceptedWithError" disabled="disabled" ${checked}/> Accepted With Error (Overloaded Gateways). Only for "re-send".<br>
         
         <c:choose>
             <c:when test="${not empty settings.deviceErrorOnConfig}">

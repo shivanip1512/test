@@ -177,16 +177,25 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
                                new ArrayList<>(request.getDevices().keySet()),
                                settings.isOverloadGatewaysOnVerification(),
                                settings.isNetworkManagerFailOnVerification(),
-                               settings.getDeviceErrorOnVerification());
+                               settings.getDeviceErrorOnVerification(), 
+                               false);
         case UPDATE:
             return getResponse(request.getRequestType(),
                                new ArrayList<>(request.getDevices().keySet()),
                                settings.isOverloadGatewaysOnConfig(),
                                settings.isNetworkManagerFailOnConfig(),
-                               settings.getDeviceErrorOnConfig());
+                               settings.getDeviceErrorOnConfig(), 
+                               false);
+        case UPDATE_WITH_FORCE:
+            return getResponse(request.getRequestType(),
+                               new ArrayList<>(request.getDevices().keySet()),
+                               settings.isOverloadGatewaysOnConfig(),
+                               settings.isNetworkManagerFailOnConfig(),
+                               settings.getDeviceErrorOnConfig(),
+                               settings.isAcceptedWithError());
         case CONFIRM:
             return getResponse(request.getRequestType(), new ArrayList<>(request.getDevices().keySet()), false, false, 
-                               null);
+                               null, false);
         default:
             throw new IllegalArgumentException("Unsupported request type: " + request.getRequestType());
         }
@@ -196,7 +205,8 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
                                                           List<RfnIdentifier> devices,
                                                           boolean isOverloadGateways,
                                                           boolean isNetworkManagerFail,
-                                                          DeviceDataStreamingConfigError deviceError) {
+                                                          DeviceDataStreamingConfigError deviceError,
+                                                          boolean isAcceptedWithError) {
         
         List<RfnGateway> gateways = new ArrayList<>(gatewayService.getAllGateways());
         
@@ -246,8 +256,9 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         } else {
             response.setErrorConfigedDevices(new HashMap<>());
         }
-        
-        if (isNetworkManagerFail) {
+        if (isAcceptedWithError) {
+            response.setResponseType(DeviceDataStreamingConfigResponseType.ACCEPTED_WITH_ERROR);
+        } else if (isNetworkManagerFail) {
             response.setResponseType(DeviceDataStreamingConfigResponseType.NETWORK_MANAGER_SERVER_FAILURE);
         } else if (isOverloadGateways || deviceError != null) {
             response.setResponseType(DeviceDataStreamingConfigResponseType.CONFIG_ERROR);

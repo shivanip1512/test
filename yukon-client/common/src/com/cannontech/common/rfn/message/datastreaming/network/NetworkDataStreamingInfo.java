@@ -34,6 +34,11 @@ public class NetworkDataStreamingInfo implements Serializable {
         // since only one report per device is supported, if the max metrics per report is 8,
         // up to (8 * 1 = 8) metrics can be enabled for a device.
 
+    public Double getMaxCapacity()
+    {
+        return 300.0;
+    }
+    
     public short getUnitReportingInterval() {
         return unitReportingInterval;
     }

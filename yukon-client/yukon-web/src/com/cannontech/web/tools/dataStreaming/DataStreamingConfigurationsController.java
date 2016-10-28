@@ -427,10 +427,17 @@ public class DataStreamingConfigurationsController {
             FlashScope flash) {
         LiteYukonUser user = userContext.getYukonUser();
 
-        DataStreamingConfigResult result = dataStreamingService.resend(Arrays.asList(deviceId), user);
-        model.addAttribute("resultsId", result.getResultsId());
+        DataStreamingConfigResult result;
+        try {
+            result = dataStreamingService.resend(Arrays.asList(deviceId), user);
+            if(result.acceptedWithError()){
+                flash.setWarning(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError"));
+            }
+            model.addAttribute("resultsId", result.getResultsId());
+        } catch (DataStreamingConfigException e) {
+            flash.setError(e.getMessageSourceResolvable());
+        }
         return "redirect:/bulk/dataStreaming/dataStreamingResults";
-
     }
     
     @RequestMapping("discrepancies/{deviceId}/accept")
@@ -468,8 +475,16 @@ public class DataStreamingConfigurationsController {
         deviceList = deviceList.subList(paging.getStartIndex(), Math.min(deviceList.size(), paging.getEndIndex() + 1));
         LiteYukonUser user = userContext.getYukonUser();
     
-        DataStreamingConfigResult result = dataStreamingService.resend(deviceList, user);
-        model.addAttribute("resultsId", result.getResultsId());
+        DataStreamingConfigResult result;
+        try {
+            result = dataStreamingService.resend(deviceList, user);
+            if(result.acceptedWithError()){
+                flash.setWarning(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError"));
+            }
+            model.addAttribute("resultsId", result.getResultsId());
+        } catch (DataStreamingConfigException e) {
+            flash.setError(e.getMessageSourceResolvable());
+        }
         return "redirect:/bulk/dataStreaming/dataStreamingResults";
     }
     

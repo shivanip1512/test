@@ -42,6 +42,8 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
     private DataStreamingConfigCallback configCallback;
     private CommandCompletionCallback<CommandRequestDevice> commandCompletionCallback;
     private CommandRequestExecution execution;
+    // On UPDATE_WITH_FORCE NM can return  ACCEPTED_WITH_ERROR
+    private boolean acceptedWithError;
     
     public DataStreamingConfigResult(TemporaryDeviceGroupService tempDeviceGroupService,
             DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
@@ -298,5 +300,13 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
     public void setConfig(DataStreamingConfig config) {
         this.config = config;
         this.configId = config.getId();
+    }
+
+    public boolean acceptedWithError() {
+        return acceptedWithError;
+    }
+
+    public void setAcceptedWithError(boolean acceptedWithError) {
+        this.acceptedWithError = acceptedWithError;
     }
 }

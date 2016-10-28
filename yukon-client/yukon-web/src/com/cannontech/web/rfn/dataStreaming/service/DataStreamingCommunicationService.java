@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequest;
+import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequestType;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
 import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfo;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -32,14 +33,14 @@ public interface DataStreamingCommunicationService {
      * request should be sent first to minimize the risk of rejection.
      */
     DeviceDataStreamingConfigRequest buildConfigRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds,
-                                                        String correlationId);
+            DeviceDataStreamingConfigRequestType type, int requestSeqNumber);
     
     /**
      * Build a data streaming sync request intended to notify Network Manager of the device's response to data streaming
      * configuration.
      */
     DeviceDataStreamingConfigRequest buildSyncRequest(ReportedDataStreamingConfig reportedConfig, int deviceId,
-                                                      String correlationId);
+            int requestSeqNumber);
     
     /**
      * Sends a verification, config or sync request to Network Manager. For a verification request, a successful response

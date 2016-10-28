@@ -89,23 +89,21 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         
         DeviceDataStreamingConfigRequest request = buildRequest(configToDeviceIds, 
                                                                 DeviceDataStreamingConfigRequestType.ASSESS,
-                                                                null);
+                                                                0);
         return request;
     }
     
     @Override
     public DeviceDataStreamingConfigRequest buildConfigRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds,
-                                                               String correlationId) {
-        
-        DeviceDataStreamingConfigRequest request = buildRequest(configToDeviceIds, 
-                                                                DeviceDataStreamingConfigRequestType.UPDATE,
-                                                                correlationId);
+            DeviceDataStreamingConfigRequestType type, int requestSeqNumber) {
+
+        DeviceDataStreamingConfigRequest request = buildRequest(configToDeviceIds, type, requestSeqNumber);
         return request;
     }
     
     @Override
     public DeviceDataStreamingConfigRequest buildSyncRequest(ReportedDataStreamingConfig reportedConfig, int deviceId,
-                                                             String correlationId) {
+                                                             int requestSeqNumber) {
         
         DeviceDataStreamingConfig config = new DeviceDataStreamingConfig();
         config.setDataStreamingOn(reportedConfig.isStreamingEnabled());
@@ -134,7 +132,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         request.setDevices(devices);
         
         request.setRequestExpiration(DateTimeConstants.MINUTES_PER_DAY);
-        request.setRequestId(correlationId);
+        request.setRequestSeqNumber(requestSeqNumber);
         request.setRequestType(DeviceDataStreamingConfigRequestType.CONFIRM);
         
         return request;
@@ -199,7 +197,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
      */
     private DeviceDataStreamingConfigRequest buildRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds, 
                                                           DeviceDataStreamingConfigRequestType requestType,
-                                                          String correlationId) {
+                                                          int requestSeqNumber) {
         
         log.debug("Building " + requestType + " data streaming config request");
         
@@ -232,11 +230,12 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         request.setConfigs(configs);
         request.setDevices(deviceToConfigIdMap);
         request.setRequestType(requestType);
-        if (requestType == DeviceDataStreamingConfigRequestType.UPDATE) {
+        if (requestType == DeviceDataStreamingConfigRequestType.UPDATE
+            || requestType == DeviceDataStreamingConfigRequestType.UPDATE_WITH_FORCE) {
             request.setRequestExpiration(DateTimeConstants.MINUTES_PER_DAY);
-            request.setRequestId(correlationId);
+            request.setRequestSeqNumber(requestSeqNumber);
         }
-        
+
         return request;
     }
     
@@ -290,7 +289,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
                             datas.add(generatePointData(info.getDeviceRfnIdentifiers().size(), streamingDeviceCountPoint));
 
                             LitePoint connectedDeviceCountPoint =findPoint(gateway, BuiltInAttribute.CONNECTED_DEVICE_COUNT);
-                            datas.add(generatePointData(info.getPrimaryGatewayDeviceCount(), connectedDeviceCountPoint));
+                            datas.add(generatePointData(info.getDeviceRfnIdentifiers().size(), connectedDeviceCountPoint));
                         }
                         if (!datas.isEmpty()) {
                             dataSource.putValues(datas);

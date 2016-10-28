@@ -106,6 +106,8 @@ public class DeviceDataStreamingConfig implements Serializable {
                                  // Metrics are initially set false (disabled).
         private Short interval;  // reporting interval in minutes
         
+        private Short status;
+        
         public Boolean getEnabled() {
             return enabled;
         }
@@ -122,47 +124,70 @@ public class DeviceDataStreamingConfig implements Serializable {
             this.interval = interval;
         }
 
+        public Short getStatus()
+        {
+            return status;
+        }
+
+        public void setStatus(Short status)
+        {
+            this.status = status;
+        }
+
         @Override
-        public int hashCode() {
+        public int hashCode()
+        {
             final int prime = 31;
             int result = 1;
-            result = prime * result + ((enabled == null) ? 0 : enabled.hashCode());
-            result = prime * result + ((interval == null) ? 0 : interval.hashCode());
+            result =
+                prime * result + ((enabled == null) ? 0 : enabled.hashCode());
+            result =
+                prime * result + ((interval == null) ? 0 : interval.hashCode());
+            result =
+                prime * result + ((status == null) ? 0 : status.hashCode());
             return result;
         }
 
         @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
+        public boolean equals(Object obj)
+        {
+            if (this == obj)
                 return true;
-            }
-            if (obj == null) {
+            if (obj == null)
                 return false;
-            }
-            if (getClass() != obj.getClass()) {
+            if (getClass() != obj.getClass())
                 return false;
-            }
             MetricConfig other = (MetricConfig) obj;
             if (enabled == null) {
-                if (other.enabled != null) {
+                if (other.enabled != null)
                     return false;
-                }
-            } else if (!enabled.equals(other.enabled)) {
+            } else if (!enabled.equals(other.enabled))
                 return false;
-            }
             if (interval == null) {
-                if (other.interval != null) {
+                if (other.interval != null)
                     return false;
-                }
-            } else if (!interval.equals(other.interval)) {
+            } else if (!interval.equals(other.interval))
                 return false;
-            }
+            if (status == null) {
+                if (other.status != null)
+                    return false;
+            } else if (!status.equals(other.status))
+                return false;
             return true;
         }
 
         @Override
-        public String toString() {
-            return "MetricConfig [enabled=" + enabled + ", interval=" + interval + "]";
+        public String toString()
+        {
+            StringBuilder builder = new StringBuilder();
+            builder.append("MetricConfig [enabled=");
+            builder.append(enabled);
+            builder.append(", interval=");
+            builder.append(interval);
+            builder.append(", status=");
+            builder.append(status);
+            builder.append("]");
+            return builder.toString();
         }
     }
 }

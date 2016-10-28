@@ -18,7 +18,7 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private DeviceDataStreamingConfigRequestType requestType;
-    private String requestId; // an unique randomly-generated Id to correlate CONFIRM to UPDATE.
+    private long requestSeqNumber; // a continuously incrementing number that is persisted through restart.
     private int requestExpiration;  // pending time in minutes for UPDATE; <= 0 indicates pending until confirm.
 
     private DeviceDataStreamingConfig[] configs;
@@ -32,12 +32,14 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
         this.requestType = requestType;
     }
     
-    public String getRequestId() {
-        return requestId;
+    public long getRequestSeqNumber()
+    {
+        return requestSeqNumber;
     }
-    
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
+
+    public void setRequestSeqNumber(long requestSeqNumber)
+    {
+        this.requestSeqNumber = requestSeqNumber;
     }
     
     public int getRequestExpiration() {
@@ -65,60 +67,65 @@ public class DeviceDataStreamingConfigRequest implements Serializable {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = 1;
         result = prime * result + Arrays.hashCode(configs);
         result = prime * result + ((devices == null) ? 0 : devices.hashCode());
         result = prime * result + requestExpiration;
-        result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
-        result = prime * result + ((requestType == null) ? 0 : requestType.hashCode());
+        result =
+            prime * result
+                + (int) (requestSeqNumber ^ (requestSeqNumber >>> 32));
+        result =
+            prime * result
+                + ((requestType == null) ? 0 : requestType.hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
-        DeviceDataStreamingConfigRequest other = (DeviceDataStreamingConfigRequest) obj;
-        if (!Arrays.equals(configs, other.configs)) {
+        DeviceDataStreamingConfigRequest other =
+            (DeviceDataStreamingConfigRequest) obj;
+        if (!Arrays.equals(configs, other.configs))
             return false;
-        }
         if (devices == null) {
-            if (other.devices != null) {
+            if (other.devices != null)
                 return false;
-            }
-        } else if (!devices.equals(other.devices)) {
+        } else if (!devices.equals(other.devices))
             return false;
-        }
-        if (requestExpiration != other.requestExpiration) {
+        if (requestExpiration != other.requestExpiration)
             return false;
-        }
-        if (requestId == null) {
-            if (other.requestId != null) {
-                return false;
-            }
-        } else if (!requestId.equals(other.requestId)) {
+        if (requestSeqNumber != other.requestSeqNumber)
             return false;
-        }
-        if (requestType != other.requestType) {
+        if (requestType != other.requestType)
             return false;
-        }
         return true;
     }
 
     @Override
-    public String toString() {
-        return "DeviceDataStreamingConfigRequest [requestType=" + requestType + ", requestId=" + requestId
-               + ", requestExpiration=" + requestExpiration + ", configs=" + Arrays.toString(configs) + ", devices="
-               + devices + "]";
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("DeviceDataStreamingConfigRequest [requestType=");
+        builder.append(requestType);
+        builder.append(", requestSeqNumber=");
+        builder.append(requestSeqNumber);
+        builder.append(", requestExpiration=");
+        builder.append(requestExpiration);
+        builder.append(", configs=");
+        builder.append(Arrays.toString(configs));
+        builder.append(", devices=");
+        builder.append(devices);
+        builder.append("]");
+        return builder.toString();
     }
 
 }

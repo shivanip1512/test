@@ -848,6 +848,7 @@ public class NmIntegrationController {
                                               Boolean isOverloadGatewaysOnConfig,
                                               Boolean isNetworkManagerFailOnConfig,
                                               Boolean isDeviceErrorOnConfig,
+                                              Boolean isAcceptedWithError,
                                               DeviceDataStreamingConfigError deviceErrorOnConfig,
                                               FlashScope flash) {
         try {
@@ -858,6 +859,7 @@ public class NmIntegrationController {
             settings.setOverloadGatewaysOnConfig(isOverloadGatewaysOnConfig != null ? isOverloadGatewaysOnConfig : false);
             settings.setNetworkManagerFailOnConfig(isNetworkManagerFailOnConfig != null ? isNetworkManagerFailOnConfig : false);
             settings.setDeviceErrorOnConfig(isDeviceErrorOnConfig != null ? deviceErrorOnConfig : null);
+            settings.setAcceptedWithError(isAcceptedWithError != null ? isAcceptedWithError : null);
             
             ModifyDataStreamingSimulatorRequest request = new ModifyDataStreamingSimulatorRequest();
             request.setSettings(settings);

@@ -15,14 +15,17 @@ import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStream
  */
 public class DeviceDataStreamingConfigResponse implements Serializable {
     private static final long serialVersionUID = 1L;
- 
-    private String requestId;
+
+    private long requestSeqNumber;
     private DeviceDataStreamingConfigResponseType responseType;
     private String responseMessage;
-    private Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways; // Map<Gateway, GatewayDataStreamingInfo> is provided in both ACCEPTED and REJECTED cases
-    
-    private Map<RfnIdentifier, ConfigError> errorConfigedDevices; // Map<Device, configError> only used when responseType is REJECTED
 
+    //      Map<gatewayRfnIdentifier, gatewayDataStreamingInfo> is provided in both ACCEPTED and REJECTED cases
+    private Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways;
+
+    //      Map<deviceRfnIdentifier, configError> only used when responseType is REJECTED
+    private Map<RfnIdentifier, ConfigError> errorConfigedDevices;
+    
     public DeviceDataStreamingConfigResponseType getResponseType() {
         return responseType;
     }
@@ -31,12 +34,14 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
         this.responseType = responseType;
     }
 
-    public String getRequestId() {
-        return requestId;
+    public long getRequestSeqNumber()
+    {
+        return requestSeqNumber;
     }
 
-    public void setRequestId(String requestId) {
-        this.requestId = requestId;
+    public void setRequestSeqNumber(long requestSeqNumber)
+    {
+        this.requestSeqNumber = requestSeqNumber;
     }
 
     public String getResponseMessage() {
@@ -64,68 +69,80 @@ public class DeviceDataStreamingConfigResponse implements Serializable {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = 1;
-        result = prime * result + ((affectedGateways == null) ? 0 : affectedGateways.hashCode());
-        result = prime * result + ((errorConfigedDevices == null) ? 0 : errorConfigedDevices.hashCode());
-        result = prime * result + ((requestId == null) ? 0 : requestId.hashCode());
-        result = prime * result + ((responseMessage == null) ? 0 : responseMessage.hashCode());
-        result = prime * result + ((responseType == null) ? 0 : responseType.hashCode());
+        result =
+            prime
+                * result
+                + ((affectedGateways == null) ? 0 : affectedGateways.hashCode());
+        result =
+            prime
+                * result
+                + ((errorConfigedDevices == null) ? 0 : errorConfigedDevices
+                    .hashCode());
+        result =
+            prime * result
+                + (int) (requestSeqNumber ^ (requestSeqNumber >>> 32));
+        result =
+            prime * result
+                + ((responseMessage == null) ? 0 : responseMessage.hashCode());
+        result =
+            prime * result
+                + ((responseType == null) ? 0 : responseType.hashCode());
         return result;
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
-        DeviceDataStreamingConfigResponse other = (DeviceDataStreamingConfigResponse) obj;
+        DeviceDataStreamingConfigResponse other =
+            (DeviceDataStreamingConfigResponse) obj;
         if (affectedGateways == null) {
-            if (other.affectedGateways != null) {
+            if (other.affectedGateways != null)
                 return false;
-            }
-        } else if (!affectedGateways.equals(other.affectedGateways)) {
+        } else if (!affectedGateways.equals(other.affectedGateways))
             return false;
-        }
         if (errorConfigedDevices == null) {
-            if (other.errorConfigedDevices != null) {
+            if (other.errorConfigedDevices != null)
                 return false;
-            }
-        } else if (!errorConfigedDevices.equals(other.errorConfigedDevices)) {
+        } else if (!errorConfigedDevices.equals(other.errorConfigedDevices))
             return false;
-        }
-        if (requestId == null) {
-            if (other.requestId != null) {
-                return false;
-            }
-        } else if (!requestId.equals(other.requestId)) {
+        if (requestSeqNumber != other.requestSeqNumber)
             return false;
-        }
         if (responseMessage == null) {
-            if (other.responseMessage != null) {
+            if (other.responseMessage != null)
                 return false;
-            }
-        } else if (!responseMessage.equals(other.responseMessage)) {
+        } else if (!responseMessage.equals(other.responseMessage))
             return false;
-        }
-        if (responseType != other.responseType) {
+        if (responseType != other.responseType)
             return false;
-        }
         return true;
     }
 
     @Override
-    public String toString() {
-        return "DeviceDataStreamingConfigResponse [requestId=" + requestId + ", responseType=" + responseType
-               + ", responseMessage=" + responseMessage + ", affectedGateways=" + affectedGateways
-               + ", errorConfigedDevices=" + errorConfigedDevices + "]";
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("DeviceDataStreamingConfigResponse [requestSeqNumber=");
+        builder.append(requestSeqNumber);
+        builder.append(", responseType=");
+        builder.append(responseType);
+        builder.append(", responseMessage=");
+        builder.append(responseMessage);
+        builder.append(", affectedGateways=");
+        builder.append(affectedGateways);
+        builder.append(", errorConfigedDevices=");
+        builder.append(errorConfigedDevices);
+        builder.append("]");
+        return builder.toString();
     }
 
     public static class ConfigError implements Serializable {

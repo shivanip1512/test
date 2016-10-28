@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -76,6 +75,7 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingPorterConnection;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
@@ -130,6 +130,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Autowired private PointDao pointDao;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DataStreamingEventLogService logService;
+    @Autowired private NextValueHelper nextValueHelper;
     
     boolean ignoreTimeCheck;
 
@@ -481,10 +482,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return verificationInfo;
     }
 
-    private void processConfigResponse(DeviceDataStreamingConfigResponse response) throws DataStreamingConfigException {
+    private DeviceDataStreamingConfigResponseType processConfigResponse(DeviceDataStreamingConfigResponse response) throws DataStreamingConfigException {
         switch (response.getResponseType()) {
         case ACCEPTED:
             // NM accepted the configuration. It can now be sent to the devices.
+            break;
+        case ACCEPTED_WITH_ERROR:
+            log.error("Data streaming config response - gateways oversubscribed. Recieved ACCEPTED_WITH_ERROR from NM");
+            // NM accepted the configuration. Data streaming config response - gateways oversubscribed.
             break;
         case CONFIG_ERROR:
             boolean gatewaysOverloaded = false;
@@ -516,7 +521,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             }
             break;
         case INVALID_REQUEST_TYPE:
-        case INVALID_REQUEST_ID:
+        case INVALID_REQUEST_SEQUENCE_NUMBER:
         case NO_CONFIGS:
         case NO_DEVICES:
             // The request contained unacceptable data
@@ -540,6 +545,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             log.error(unknownError + response.getResponseMessage());
             throw new DataStreamingConfigException(unknownError, "unknownError");
         }
+        return response.getResponseType();
     }
 
     /**
@@ -662,7 +668,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     @Override
-    public DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user) {
+    public DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException {
 
         log.info("Re-sending configuration for devices=" + deviceIds);
         
@@ -672,8 +678,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         
         DeviceCollection deviceCollection = createDeviceCollectionForIds(deviceIds);
         if (isValidPorterConnection()) {
-            String correlationId = UUID.randomUUID().toString();
-
+            
             Map<Integer, BehaviorReport> deviceIdToBehaviorReport =
                 deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, deviceIds);
 
@@ -687,7 +692,19 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 }
                 deviceBehaviorDao.saveBehaviorReport(report);
             });
-            sendConfiguration(user, deviceCollection, correlationId, result);
+       
+            Multimap<DataStreamingConfig, Integer> configToDeviceIds = HashMultimap.create();
+            for (int deviceId : deviceIdToBehaviorReport.keySet()) {
+                DataStreamingConfig config = convertBehaviorToConfig(deviceIdToBehaviorReport.get(deviceId));
+                configToDeviceIds.put(config, deviceId);
+            }
+            int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
+            DeviceDataStreamingConfigResponseType type = sendNmConfiguration(configToDeviceIds, requestSeqNumber,
+                DeviceDataStreamingConfigRequestType.UPDATE_WITH_FORCE);
+            if (type == DeviceDataStreamingConfigResponseType.ACCEPTED_WITH_ERROR) {
+                result.setAcceptedWithError(true);
+            }
+            sendConfiguration(user, deviceCollection, requestSeqNumber, result);
             return result;
         } else {
             return createEmptyResult(deviceCollection, "Porter connection is invalid.");
@@ -734,12 +751,12 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 return result;
             }
             
-            String correlationId = UUID.randomUUID().toString();
+            int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
 
             // only unassign devices that have behavior assigned
             deviceIds.remove(devicesIdsWithoutBehaviors);
 
-            sendNmConfigurationRemove(deviceIds, correlationId);
+            sendNmConfigurationRemove(deviceIds, requestSeqNumber);
             Map<Integer, BehaviorReport> reports =
                 deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, deviceIds);
             deviceIds.forEach(id -> {
@@ -753,7 +770,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 deviceBehaviorDao.saveBehaviorReport(report);
             });
             deviceBehaviorDao.unassignBehavior(TYPE, deviceIds);
-            sendConfiguration(user, deviceCollection, correlationId, result);
+            sendConfiguration(user, deviceCollection, requestSeqNumber, result);
             // mark devices as "success"
             addDevicesToGroup(devicesIdsWithoutBehaviors, result.getSuccessGroup());
             return result;
@@ -807,11 +824,11 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
             List<Integer> deviceIds =
                 getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
-            String correlationId = UUID.randomUUID().toString();
+            int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
 
             log.info("Assigning data streaming config " + config + " devices=" + deviceIds);
 
-            sendNmConfiguration(config, deviceIds, correlationId);
+            sendNmConfiguration(config, deviceIds, requestSeqNumber);
 
             if (!deviceIds.isEmpty()) {
                 deviceBehaviorDao.assignBehavior(config.getId(), TYPE, deviceIds, true);
@@ -823,7 +840,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             
             result.setConfig(config);
 
-            sendConfiguration(user, deviceCollection, correlationId, result);
+            sendConfiguration(user, deviceCollection, requestSeqNumber, result);
             return result;
         } else {
             return createEmptyResult(deviceCollection, "Porter connection is invalid.");
@@ -931,23 +948,23 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         porterConn.cancel(result, user);
     }
 
-    private void sendNmConfiguration(Multimap<DataStreamingConfig, Integer> configToDeviceIds, String correlationId)
-            throws DataStreamingConfigException {
-        // If only called from the discrepancies page, we can assume that all devices support data streaming. If called
+    private DeviceDataStreamingConfigResponseType sendNmConfiguration(Multimap<DataStreamingConfig, Integer> configToDeviceIds, int requestSeqNumber,
+            DeviceDataStreamingConfigRequestType type) throws DataStreamingConfigException {
+        // If only called on "re-send", we can assume that all devices support data streaming. If called
         // from
         // elsewhere, we may need to check.
 
         // Build config message for NM
         DeviceDataStreamingConfigRequest configRequest =
-            dataStreamingCommService.buildConfigRequest(configToDeviceIds, correlationId);
+            dataStreamingCommService.buildConfigRequest(configToDeviceIds, type, requestSeqNumber);
 
         // Send message (Block for response message)
         DeviceDataStreamingConfigResponse response = dataStreamingCommService.sendConfigRequest(configRequest);
 
-        processConfigResponse(response);
+        return processConfigResponse(response);
     }
 
-    private void sendNmConfiguration(DataStreamingConfig config, List<Integer> deviceIds, String correlationId)
+    private void sendNmConfiguration(DataStreamingConfig config, List<Integer> deviceIds, int requestSeqNumber)
             throws DataStreamingConfigException {
         // Remove devices from the list that don't support data streaming
         removeDataStreamingUnsupportedDevices(deviceIds);
@@ -956,10 +973,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         // (Some devices may only support some of the configured attributes)
         Multimap<DataStreamingConfig, Integer> configToDeviceIds = splitConfigForDevices(config, deviceIds, null);
 
-        sendNmConfiguration(configToDeviceIds, correlationId);
+        sendNmConfiguration(configToDeviceIds, requestSeqNumber, DeviceDataStreamingConfigRequestType.UPDATE);
     }
 
-    private void sendNmConfigurationRemove(List<Integer> deviceIds, String correlationId)
+    private void sendNmConfigurationRemove(List<Integer> deviceIds, int requestSeqNumber)
             throws DataStreamingConfigException {
         // Remove devices from the list that don't support data streaming
         removeDataStreamingUnsupportedDevices(deviceIds);
@@ -978,7 +995,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         configRequest.setRequestExpiration(DateTimeConstants.MINUTES_PER_DAY);
         configRequest.setConfigs(new DeviceDataStreamingConfig[] { config });
         configRequest.setDevices(deviceToConfigId);
-        configRequest.setRequestId(correlationId);
+        configRequest.setRequestSeqNumber(requestSeqNumber);
 
         // Send verification message (Block for response message)
         DeviceDataStreamingConfigResponse response = dataStreamingCommService.sendConfigRequest(configRequest);
@@ -987,7 +1004,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     private void sendConfiguration(LiteYukonUser user, DeviceCollection deviceCollection,
-            String correlationId, DataStreamingConfigResult result) {
+            int requestSeqNumber, DataStreamingConfigResult result) {
         log.info("Attempting to send configuration command to " + deviceCollection.getDeviceCount() + " devices.");
 
         CommandRequestExecution execution = commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
@@ -997,7 +1014,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         List<SimpleDevice> allDevices = deviceCollection.getDeviceList();
         deviceGroupMemberEditorDao.addDevices(result.getAllDevicesGroup(), allDevices);
         DataStreamingConfigCallback callback =
-            new DataStreamingConfigCallbackImpl(result, execution, deviceCollection.getDeviceList(), correlationId);
+            new DataStreamingConfigCallbackImpl(result, execution, deviceCollection.getDeviceList(), requestSeqNumber);
 
         result.setConfigCallback(callback);
         List<SimpleDevice> unsupportedDevices = new ArrayList<>();
@@ -1225,13 +1242,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         public void processVerificationResponse(DeviceDataStreamingConfigResponse response) {
             switch (response.getResponseType()) {
             case ACCEPTED:
+            case ACCEPTED_WITH_ERROR:
                 setGatewayLoading(response);
                 break;
             case CONFIG_ERROR:
                 handleRejectedResponse(response);
                 break;
             case INVALID_REQUEST_TYPE:
-            case INVALID_REQUEST_ID:
+            case INVALID_REQUEST_SEQUENCE_NUMBER:
             case NO_CONFIGS:
             case NO_DEVICES:
                 handleBadRequestResponse(response);
@@ -1347,7 +1365,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
      * Callback to handle data streaming config responses.
      */
     public class DataStreamingConfigCallbackImpl implements DataStreamingConfigCallback {
-        private String correlationId;
+        private int requestSeqNumber;
         private DataStreamingConfigResult result;
         private StoredDeviceGroup successGroup;
         private StoredDeviceGroup failedGroup;
@@ -1357,14 +1375,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         Map<Integer, Behavior> deviceIdToBehavior; 
 
         public DataStreamingConfigCallbackImpl(DataStreamingConfigResult result, CommandRequestExecution execution,
-                List<SimpleDevice> deviceList, String correlationId) {
+                List<SimpleDevice> deviceList, int requestSeqNumber) {
             this.result = result;
             successGroup = result.getSuccessGroup();
             failedGroup = result.getFailedGroup();
             this.execution = execution;
             this.deviceList = deviceList;
             cancelGroup = result.getCanceledGroup();
-            this.correlationId = correlationId;
+            this.requestSeqNumber = requestSeqNumber;
             deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE,
                 deviceList.stream().map(d -> d.getDeviceId()).collect(Collectors.toList()));
         }
@@ -1400,7 +1418,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
             // Send sync to NM
             DeviceDataStreamingConfigRequest request =
-                dataStreamingCommService.buildSyncRequest(config, device.getDeviceId(), correlationId);
+                dataStreamingCommService.buildSyncRequest(config, device.getDeviceId(), requestSeqNumber);
             try {
                 dataStreamingCommService.sendConfigRequest(request);
             } catch (DataStreamingConfigException e) {

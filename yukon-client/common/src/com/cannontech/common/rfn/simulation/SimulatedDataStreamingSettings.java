@@ -17,6 +17,7 @@ public class SimulatedDataStreamingSettings implements Serializable {
     private boolean overloadGatewaysOnConfig;
     private DeviceDataStreamingConfigError deviceErrorOnConfig;
     private boolean networkManagerFailOnConfig;
+    private boolean acceptedWithError;
     
     //VERIFICATION
     
@@ -68,6 +69,14 @@ public class SimulatedDataStreamingSettings implements Serializable {
     
     public void setNetworkManagerFailOnConfig(boolean networkManagerFailOnConfig) {
         this.networkManagerFailOnConfig = networkManagerFailOnConfig;
+    }
+
+    public boolean isAcceptedWithError() {
+        return acceptedWithError;
+    }
+
+    public void setAcceptedWithError(boolean acceptedWithError) {
+        this.acceptedWithError = acceptedWithError;
     }
     
     //TODO
