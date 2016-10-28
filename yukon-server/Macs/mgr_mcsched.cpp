@@ -1,13 +1,16 @@
 #include "precompiled.h"
 
-#include <algorithm>
-
 #include "mgr_mcsched.h"
 #include "dbaccess.h"
 #include "utility.h"
 #include "database_connection.h"
 #include "database_reader.h"
-using namespace std;
+#include "millisecond_timer.h"
+#include "debug_timer.h"
+
+#include <algorithm>
+
+using std::string;
 
 
 bool CtiMCScheduleManager::refreshAllSchedules()
@@ -18,7 +21,7 @@ bool CtiMCScheduleManager::refreshAllSchedules()
     // and copy it to the real one when we know that it was successful
     // so we can continue to function when the database is not cooperating
     // and so we don't block more time critical threads needlessly
-    map<long, CtiMCSchedule* > temp_map;
+    std::map<long, CtiMCSchedule* > temp_map;
     try
     {
         if( !retrieveSimpleSchedules( temp_map ) )
@@ -73,11 +76,40 @@ bool CtiMCScheduleManager::refreshAllSchedules()
   intended use of the dirty flag?
  ----------------------------------------------------------------------------*/
 
-bool CtiMCScheduleManager::updateAllSchedules()
+void CtiMCScheduleManager::updateAllSchedules()
 {
-    bool ret_val = true;
+    CTILOCKGUARD2(CtiMutex, guard, getMux(), 1'000);
 
-    CtiLockGuard<CtiMutex> guard( getMux() );
+    Cti::Timing::MillisecondTimer timer;
+
+    auto warnMinutes = 1.0;
+
+    while( ! guard.isAcquired() )
+    {
+        const auto minutes = timer.elapsed() / 60'000.0;
+
+        if( minutes >= warnMinutes )
+        {
+            CTILOG_WARN(dout, "Unable to acquire ScheduleManager mux after " 
+                << std::showpoint << std::setprecision(3) << minutes << " minutes.  Will retry.");
+
+            if( warnMinutes < 60 )
+            {
+                warnMinutes *= 1.618;
+            }
+            else
+            {
+                warnMinutes = 60;
+            }
+        }
+
+        guard.tryAcquire(5'000);
+    }
+
+    if( timer.elapsed() > 1000 )
+    {
+        CTILOG_DEBUG(dout, "Acquired ScheduleManager mux after "  << std::setprecision(3) << timer.elapsed() / 1000.0 << " seconds.");
+    }
 
     CtiMCScheduleManager::MapIterator itr = getMap().begin();
     CtiMCSchedule* sched;
@@ -116,7 +148,7 @@ bool CtiMCScheduleManager::updateAllSchedules()
     }
 
     // Delete any schedules from the database as necessary
-    for( set< CtiMCSchedule* >::iterator iter = _schedules_to_delete.begin();
+    for( auto iter = _schedules_to_delete.begin();
        iter != _schedules_to_delete.end();
        iter++ )
     {
@@ -129,8 +161,6 @@ bool CtiMCScheduleManager::updateAllSchedules()
     }
 
     _schedules_to_delete.clear();
-
-    return ret_val;
 }
 
 /*
@@ -240,7 +270,7 @@ bool CtiMCScheduleManager::deleteSchedule(long sched_id)
         if( key_p != 0 )
         {
 
-            pair< set< CtiMCSchedule* >::iterator, bool > result = _schedules_to_delete.insert( to_delete );
+            auto result = _schedules_to_delete.insert( to_delete );
 
             if( result.second )
             {

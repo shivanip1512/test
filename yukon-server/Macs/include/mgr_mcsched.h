@@ -11,17 +11,17 @@ class CtiMCScheduleManager : public CtiRTDB< CtiMCSchedule >
 public:
 
     // refreshAll, updateAll operate on the database
-    // retrieves all scheduls from the database
-    virtual bool refreshAllSchedules();
+    // retrieves all schedules from the database
+    bool refreshAllSchedules();
 
     // update all schedules in the database
-    virtual bool updateAllSchedules();
+    void updateAllSchedules();
 
     // add,update,delete below operate on
     // schedules in memory
-    virtual CtiMCSchedule* addSchedule(const CtiMCSchedule& sched);
-    virtual bool updateSchedule(const CtiMCSchedule& sched);
-    virtual bool deleteSchedule(long sched_id);
+    CtiMCSchedule* addSchedule(const CtiMCSchedule& sched);
+    bool updateSchedule(const CtiMCSchedule& sched);
+    bool deleteSchedule(long sched_id);
 
     CtiMCSchedule* findSchedule(long id);
     long getID(const std::string& name);
