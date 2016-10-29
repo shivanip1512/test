@@ -859,7 +859,7 @@ public class NmIntegrationController {
             settings.setOverloadGatewaysOnConfig(isOverloadGatewaysOnConfig != null ? isOverloadGatewaysOnConfig : false);
             settings.setNetworkManagerFailOnConfig(isNetworkManagerFailOnConfig != null ? isNetworkManagerFailOnConfig : false);
             settings.setDeviceErrorOnConfig(isDeviceErrorOnConfig != null ? deviceErrorOnConfig : null);
-            settings.setAcceptedWithError(isAcceptedWithError != null ? isAcceptedWithError : null);
+            settings.setAcceptedWithError(isAcceptedWithError != null ? isAcceptedWithError : false);
             
             ModifyDataStreamingSimulatorRequest request = new ModifyDataStreamingSimulatorRequest();
             request.setSettings(settings);

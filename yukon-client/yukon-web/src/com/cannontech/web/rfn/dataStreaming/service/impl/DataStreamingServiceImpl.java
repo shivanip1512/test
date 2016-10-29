@@ -490,6 +490,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         case ACCEPTED_WITH_ERROR:
             log.error("Data streaming config response - gateways oversubscribed. Recieved ACCEPTED_WITH_ERROR from NM");
             // NM accepted the configuration. Data streaming config response - gateways oversubscribed.
+            checkForDeviceErrors(response);
             break;
         case CONFIG_ERROR:
             boolean gatewaysOverloaded = false;
@@ -506,19 +507,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 log.debug("Data streaming config response - gateways oversubscribed.");
                 throw new DataStreamingConfigException("Gateways oversubscribed", "gatewaysOversubscribed");
             }
-
-            for (Entry<RfnIdentifier, ConfigError> errorDeviceEntry : response.getErrorConfigedDevices().entrySet()) {
-                DeviceDataStreamingConfigError errorType = errorDeviceEntry.getValue().getErrorType();
-                // Ignore Gateway overloaded errors, those are covered above
-                if (errorType != DeviceDataStreamingConfigError.GATEWAY_OVERLOADED) {
-                    RfnDevice deviceName = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
-                    log.debug(
-                        "Data streaming verification response - device error: " + deviceName + ", " + errorType.name());
-                    String deviceError = "Device error for " + deviceName + ": " + errorType;
-                    String i18nKey = "device." + errorType.name();
-                    throw new DataStreamingConfigException(deviceError, i18nKey, deviceName);
-                }
-            }
+            checkForDeviceErrors(response);
             break;
         case INVALID_REQUEST_TYPE:
         case INVALID_REQUEST_SEQUENCE_NUMBER:
@@ -546,6 +535,21 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             throw new DataStreamingConfigException(unknownError, "unknownError");
         }
         return response.getResponseType();
+    }
+    
+    private void checkForDeviceErrors(DeviceDataStreamingConfigResponse response) throws DataStreamingConfigException{
+        for (Entry<RfnIdentifier, ConfigError> errorDeviceEntry : response.getErrorConfigedDevices().entrySet()) {
+            DeviceDataStreamingConfigError errorType = errorDeviceEntry.getValue().getErrorType();
+            // Ignore Gateway overloaded errors, those are covered above
+            if (errorType != DeviceDataStreamingConfigError.GATEWAY_OVERLOADED) {
+                RfnDevice deviceName = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
+                log.debug(
+                    "Data streaming verification response - device error: " + deviceName + ", " + errorType.name());
+                String deviceError = "Device error for " + deviceName + ": " + errorType;
+                String i18nKey = "device." + errorType.name();
+                throw new DataStreamingConfigException(deviceError, i18nKey, deviceName);
+            }
+        }
     }
 
     /**
