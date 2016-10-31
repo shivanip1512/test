@@ -17,6 +17,9 @@
         <div id="neighbor-info" class="dn">
             <%@ include file="neighborInfo.jsp" %>
         </div>
+        <div id="route-info" class="dn">
+            <%@ include file="routeInfo.jsp" %>
+        </div>
     </div>  
     
     <c:if test="${not empty geojson}"><cti:toJson id="geojson" object="${geojson}"/></c:if>

@@ -22,6 +22,8 @@ yukon.map.network = (function () {
     _neighborIcons = [],
     _neighborLines = [],
     _primaryRouteIcons = [],
+    _primaryRouteLines = [],
+    _primaryRoutePreviousPoints,
     
     /** @type {string} - The default projection code of our map tiles. */
     _destProjection = 'EPSG:3857',
@@ -233,8 +235,45 @@ yukon.map.network = (function () {
             
             _primaryRouteIcons.push(icon);
             source.addFeature(icon);
+            
+            //draw line
+            var points = [];
+            points.push(icon.getGeometry().getCoordinates());
+            if (_primaryRoutePreviousPoints != null) {
+                points.push(_primaryRoutePreviousPoints);
+            } else {
+                points.push(_devicePoints);
+            }
+            _primaryRoutePreviousPoints = icon.getGeometry().getCoordinates();
+            
+            var layerLines = new ol.layer.Vector({
+                source: new ol.source.Vector({
+                    features: [new ol.Feature({
+                        geometry: new ol.geom.LineString(points),
+                        name: 'Line'
+                    })]
+                }),
+                style: new ol.style.Style({
+                    fill: new ol.style.Fill({ color: '#1e66cc', weight: 4 }),
+                    stroke: new ol.style.Stroke({ color: '#1e66cc', width: 2 })
+                })
+            });
+            
+            _primaryRouteLines.push(layerLines);
+            _map.addLayer(layerLines);
         }
         _map.getView().fitExtent(source.getExtent(), _map.getSize());
+    },
+    
+    _updateZoom = function() {
+        var source = _map.getLayers().getArray()[_tiles.length].getSource();
+        var features = source.getFeatures();
+        if (features != null && features.length > 1) {
+            _map.getView().fitExtent(source.getExtent(), _map.getSize());
+        } else {
+            _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
+            _map.getView().setZoom(13);
+        }
     },
     
     mod = {
@@ -296,6 +335,7 @@ yukon.map.network = (function () {
                             $('.js-distance').text(parent.distanceDisplay);
                             $('#neighbor-info').hide();
                             $('#device-info').hide();
+                            $('#route-info').hide();
                             $('#parent-info').show();
                         } else if (neighbor != null) {
                             var neighborData = neighbor.data;
@@ -314,18 +354,28 @@ yukon.map.network = (function () {
                             $('.js-distance').text(neighbor.distanceDisplay);
                             $('#parent-info').hide();
                             $('#device-info').hide();
+                            $('#route-info').hide();
                             $('#neighbor-info').show();
                         } else if (routeInfo != null) {
+                            $('.js-device').text(routeInfo.device.name);
+                            $('.js-type').text(routeInfo.device.paoIdentifier.paoType);
+                            $('.js-status').text(routeInfo.statusDisplay);
+                            $('.js-node-sn').text(routeInfo.route.serialNumber);
+                            $('.js-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
+                            $('.js-destination-address').text(routeInfo.route.destinationAddress);
+                            $('.js-next-hop-address').text(routeInfo.route.nextHopAddress);
+                            $('.js-total-cost').text(routeInfo.route.totalCost);
+                            $('.js-hop-count').text(routeInfo.route.hopCount);
+                            $('.js-route-flag').text(routeInfo.commaDelimitedRouteFlags);
+                            $('.js-distance').text(routeInfo.distanceDisplay);
                             $('#parent-info').hide();
                             $('#neighbor-info').hide();
-                            var paoId = routeInfo.device.paoIdentifier.paoId;
-                            url = yukon.url('/tools/map/device/' + paoId + '/info');
-                            $('#device-info').load(url, function() {
-                                $('#device-info').show();
-                            });
+                            $('#device-info').hide();
+                            $('#route-info').show();
                         } else {
                             $('#parent-info').hide();
                             $('#neighbor-info').hide();
+                            $('#route-info').hide();
                             url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
                             $('#device-info').load(url, function() {
                                 $('#device-info').show();
@@ -439,13 +489,7 @@ yukon.map.network = (function () {
                             var neighborLine = _neighborLines[x];
                             _map.removeLayer(neighborLine);
                         }
-                        var features = source.getFeatures();
-                        if (features != null && features.length > 1) {
-                            _map.getView().fitExtent(source.getExtent(), _map.getSize());
-                        } else {
-                            _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
-                            _map.getView().setZoom(13);
-                        }
+                        _updateZoom();
                     }
                 });
                 
@@ -455,33 +499,44 @@ yukon.map.network = (function () {
                     wasChecked = primaryRouteRow.find('.switch-btn-checkbox').prop('checked');
                     
                     if (!wasChecked) {
-                        var fc = yukon.fromJson('#geojson'),
-                        feature = fc.features[0],
-                        paoId = feature.id;
-                        yukon.ui.busy('.js-primary-route');
-                        $.getJSON('primaryRoute?' + $.param({ deviceId: paoId }))
-                        .done(function (json) {
-                            if (json.routeInfo) {
-                                _loadPrimaryRouteData(json.routeInfo);
+                        if (_primaryRouteIcons.length > 0) {
+                            var source = _map.getLayers().getArray()[_tiles.length].getSource();
+                            for (x in _primaryRouteIcons) {
+                                var route = _primaryRouteIcons[x];
+                                source.addFeature(route);
                             }
-                            if (json.errorMsg) {
-                                yukon.ui.alertError(json.errorMsg);
+                            for (x in _primaryRouteLines) {
+                                var routeLine = _primaryRouteLines[x];
+                                _map.addLayer(routeLine);
                             }
-                            yukon.ui.unbusy('.js-primary-route');
-                        });
+                            _map.getView().fitExtent(source.getExtent(), _map.getSize());
+                        } else {
+                            var fc = yukon.fromJson('#geojson'),
+                            feature = fc.features[0],
+                            paoId = feature.id;
+                            yukon.ui.busy('.js-primary-route');
+                            $.getJSON('primaryRoute?' + $.param({ deviceId: paoId }))
+                            .done(function (json) {
+                                if (json.routeInfo) {
+                                    _loadPrimaryRouteData(json.routeInfo);
+                                }
+                                if (json.errorMsg) {
+                                    yukon.ui.alertError(json.errorMsg);
+                                }
+                                yukon.ui.unbusy('.js-primary-route');
+                            });
+                        }
                     } else {
                         for (x in _primaryRouteIcons) {
                             var route = _primaryRouteIcons[x];
                             var source = _map.getLayers().getArray()[_tiles.length].getSource();
                             source.removeFeature(route);
-                            var features = source.getFeatures();
-                            if (features != null && features.length > 1) {
-                                _map.getView().fitExtent(source.getExtent(), _map.getSize());
-                            } else {
-                                _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
-                                _map.getView().setZoom(13);
-                            }
                         }
+                        for (x in _primaryRouteLines) {
+                            var primaryRouteLine = _primaryRouteLines[x];
+                            _map.removeLayer(primaryRouteLine);
+                        }
+                        _updateZoom();
                     }
                 });
                 
@@ -517,13 +572,7 @@ yukon.map.network = (function () {
                         var source = _map.getLayers().getArray()[_tiles.length].getSource();
                         source.removeFeature(_parentIcon);
                         _map.removeLayer(_parentLine);
-                        var features = source.getFeatures();
-                        if (features != null && features.length > 1) {
-                            _map.getView().fitExtent(source.getExtent(), _map.getSize());
-                        } else {
-                            _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
-                            _map.getView().setZoom(13);
-                        }
+                        _updateZoom();
                     }
 
                 });
