@@ -362,12 +362,21 @@ yukon.map.network = (function () {
                             $('.js-status').text(routeInfo.statusDisplay);
                             $('.js-node-sn').text(routeInfo.route.serialNumber);
                             $('.js-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
-                            $('.js-destination-address').text(routeInfo.route.destinationAddress);
-                            $('.js-next-hop-address').text(routeInfo.route.nextHopAddress);
-                            $('.js-total-cost').text(routeInfo.route.totalCost);
-                            $('.js-hop-count').text(routeInfo.route.hopCount);
-                            $('.js-route-flag').text(routeInfo.commaDelimitedRouteFlags);
-                            $('.js-distance').text(routeInfo.distanceDisplay);
+                            //check if it's the last in the route then don't display the rest
+                            var lastItem = _primaryRouteIcons[_primaryRouteIcons.length - 1];
+                            var lastProperties = lastItem.getProperties();
+                            var lastRoute = lastProperties.routeInfo;
+                            if (lastRoute.device.name != routeInfo.device.name) {
+                                $('.js-route-display').show();
+                                $('.js-destination-address').text(routeInfo.route.destinationAddress);
+                                $('.js-next-hop-address').text(routeInfo.route.nextHopAddress);
+                                $('.js-total-cost').text(routeInfo.route.totalCost);
+                                $('.js-hop-count').text(routeInfo.route.hopCount);
+                                $('.js-route-flag').text(routeInfo.commaDelimitedRouteFlags);
+                                $('.js-distance').text(routeInfo.distanceDisplay);
+                            } else {
+                                $('.js-route-display').hide();
+                            }
                             $('#parent-info').hide();
                             $('#neighbor-info').hide();
                             $('#device-info').hide();
@@ -378,6 +387,9 @@ yukon.map.network = (function () {
                             $('#route-info').hide();
                             url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
                             $('#device-info').load(url, function() {
+                                var deviceStatus = $('.js-device-status').val();
+                                $('.js-status').text(deviceStatus);
+                                $('.js-status-display').show();
                                 $('#device-info').show();
                             });
                         }

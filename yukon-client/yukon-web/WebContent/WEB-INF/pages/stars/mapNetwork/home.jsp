@@ -22,6 +22,8 @@
         </div>
     </div>  
     
+    <input type="hidden" class="js-device-status" value="${deviceStatus}"/>
+    
     <c:if test="${not empty geojson}"><cti:toJson id="geojson" object="${geojson}"/></c:if>
     
     <div class="column-10-14 clearfix">
