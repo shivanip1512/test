@@ -78,9 +78,6 @@ Class-Path: ./
  servlet-api.jar 
  bcpkix-jdk15on-149.jar 
  bcprov-jdk15on-149.jar 
- jackson-databind-2.7.3.jar 
- jackson-core-2.7.3.jar 
- jackson-annotations-2.7.3.jar 
  libthrift-0.9.0.jar 
  yukon-shared.jar 
  annotation-detector-3.0.4.jar 
@@ -104,9 +101,10 @@ Class-Path: ./
  guava-18.0.jar 
  httpclient-4.3.6.jar 
  httpcore-4.3.3.jar 
- jackson-annotations-2.6.0.jar 
- jackson-core-2.6.0.jar 
- jackson-databind-2.6.0.jar 
+ jackson-annotations-2.7.3.jar 
+ jackson-core-2.7.3.jar 
+ jackson-core-asl-1.9.2.jar 
+ jackson-databind-2.7.3.jar 
  jackson-jaxrs-1.9.2.jar 
  jackson-mapper-asl-1.9.2.jar 
  jackson-xc-1.9.2.jar 
