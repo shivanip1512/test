@@ -795,6 +795,13 @@ UPDATE YukonRoleProperty		SET KeyName = 'Optional Protocols'				WHERE RoleProper
 UPDATE YukonRoleProperty		SET KeyName = 'Program Member Management'		WHERE RolePropertyID = -10011
 GO
 /* End YUK-14794 */
+
+/* Start YUK-15906 */
+ALTER TABLE HoneywellWifiThermostat	
+ADD UserID NUMERIC;
+GO
+/* End YUK-14794 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

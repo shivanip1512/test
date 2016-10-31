@@ -5555,6 +5555,7 @@ create unique index Indx_HolSchName on HolidaySchedule (
 create table HoneywellWifiThermostat  (
    DeviceId             NUMBER                          not null,
    MacAddress           VARCHAR2(255)                   not null,
+   UserId               NUMBER                          not null,
    constraint PK_HONEYWELLWIFITHERMOSTAT primary key (DeviceId)
 );
 

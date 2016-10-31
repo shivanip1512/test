@@ -5850,6 +5850,7 @@ go
 create table HoneywellWifiThermostat (
    DeviceId             numeric              not null,
    MacAddress           varchar(255)         not null,
+   UserId               numeric              not null,
    constraint PK_HONEYWELLWIFITHERMOSTAT primary key (DeviceId)
 )
 go
