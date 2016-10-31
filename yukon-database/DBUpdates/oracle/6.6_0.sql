@@ -689,7 +689,7 @@ UPDATE YukonRoleProperty		SET KeyName = 'Program Member Management'		WHERE RoleP
 
 /* Start YUK-15906 */
 ALTER TABLE HoneywellWifiThermostat
-ADD UserID NUMBER;
+ADD UserId NUMBER;
 /* End YUK-14794 */
 
 /**************************************************************/

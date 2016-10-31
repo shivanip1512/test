@@ -798,7 +798,7 @@ GO
 
 /* Start YUK-15906 */
 ALTER TABLE HoneywellWifiThermostat	
-ADD UserID NUMERIC;
+ADD UserId NUMERIC;
 GO
 /* End YUK-14794 */
 
