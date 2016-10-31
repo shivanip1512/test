@@ -9,9 +9,9 @@ using std::endl;
 
 DEFINE_COLLECTABLE( CtiCCSubstationBusMsg, CTICCSUBSTATIONBUS_MSG_ID )
 
-CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, unsigned long bitMask) : Inherited(), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
+CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, unsigned long bitMask) : Inherited(), _substationBuses(NULL), _msgInfoBitMask(bitMask)
 {
-    _ccSubstationBuses = new CtiCCSubstationBus_vec;
+    _substationBuses = new CtiCCSubstationBus_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
         CTILOG_DEBUG(dout, "CtiCCSubstationBusMsg has "<< buses.size()<<" entries.");
@@ -38,27 +38,27 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, unsi
     }
     for( const auto bus : buses )
     {
-        _ccSubstationBuses->push_back(bus->replicate());
+        _substationBuses->push_back(bus->replicate());
     }
 }
 
-CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_set& buses, unsigned long bitMask) : Inherited(), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
+CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_set& buses, unsigned long bitMask) : Inherited(), _substationBuses(NULL), _msgInfoBitMask(bitMask)
 {
-    _ccSubstationBuses = new CtiCCSubstationBus_vec;
+    _substationBuses = new CtiCCSubstationBus_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
         CTILOG_DEBUG(dout, "CtiCCSubstationBusMsg has "<< buses.size()<<" entries.");
     }
     for( const auto bus : buses )
     {
-        _ccSubstationBuses->push_back(bus->replicate());
+        _substationBuses->push_back(bus->replicate());
     }
 }
 
-CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus* substationBus) : Inherited(), _ccSubstationBuses(NULL), _msgInfoBitMask(0)
+CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus* substationBus) : Inherited(), _substationBuses(NULL), _msgInfoBitMask(0)
 {
-    _ccSubstationBuses = new CtiCCSubstationBus_vec;
-    _ccSubstationBuses->push_back(substationBus->replicate());
+    _substationBuses = new CtiCCSubstationBus_vec;
+    _substationBuses->push_back(substationBus->replicate());
 }
 
 
@@ -67,20 +67,20 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(const CtiCCSubstationBusMsg& right)
     Inherited::operator=(right);
 
     _msgInfoBitMask = right.getMsgInfoBitMask();
-    _ccSubstationBuses = new CtiCCSubstationBus_vec;
+    _substationBuses = new CtiCCSubstationBus_vec;
     for( const auto bus : *right.getCCSubstationBuses() )
     {
-        _ccSubstationBuses->push_back(bus->replicate());
+        _substationBuses->push_back(bus->replicate());
     }
 }
 
 CtiCCSubstationBusMsg::~CtiCCSubstationBusMsg()
 {
-    if( _ccSubstationBuses != NULL )
+    if( _substationBuses != NULL )
     {
-        delete_container(*_ccSubstationBuses);
+        delete_container(*_substationBuses);
 
-        delete _ccSubstationBuses;
+        delete _substationBuses;
     }
 }
 

@@ -706,9 +706,9 @@ struct TestCase<CtiCCSubstationBusMsg> : public TestCase<CapControlMessage>
 
         for( int item_nbr=0; item_nbr < maxSubstationBuses; item_nbr++ )
         {
-            imsg._ccSubstationBuses->push_back( new CtiCCSubstationBus( TestStrategyManager::getNewInstance() ));
+            imsg._substationBuses->push_back( new CtiCCSubstationBus( TestStrategyManager::getNewInstance() ));
             TestCaseItem<CtiCCSubstationBus> tc_item;
-            tc_item.Populate( imsg._ccSubstationBuses->back() );
+            tc_item.Populate( imsg._substationBuses->back() );
         }
     }
 };

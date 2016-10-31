@@ -21,7 +21,7 @@ class CtiCCSubstationBusMsg : public CapControlMessage
         virtual ~CtiCCSubstationBusMsg();
 
         unsigned long getMsgInfoBitMask() const { return _msgInfoBitMask; };
-        CtiCCSubstationBus_vec* getCCSubstationBuses() const { return _ccSubstationBuses; }
+        CtiCCSubstationBus_vec* getCCSubstationBuses() const { return _substationBuses; }
         virtual CtiMessage* replicateMessage() const;
 
         CtiCCSubstationBusMsg& operator=(const CtiCCSubstationBusMsg& right) = delete;
@@ -34,10 +34,10 @@ class CtiCCSubstationBusMsg : public CapControlMessage
 
     private:
         CtiCCSubstationBusMsg() : CapControlMessage(),
-                                  _ccSubstationBuses(NULL),
+                                  _substationBuses(NULL),
                                   _msgInfoBitMask(0){};
 
         unsigned long _msgInfoBitMask;
-        CtiCCSubstationBus_vec* _ccSubstationBuses;
+        CtiCCSubstationBus_vec* _substationBuses;
 };
 
