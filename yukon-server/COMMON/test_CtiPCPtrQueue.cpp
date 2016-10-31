@@ -65,8 +65,8 @@ BOOST_AUTO_TEST_CASE(test_writeread)
         //For the purposes of this test, the stop time is not so important.
         //The stop time is set a way out because we wont want busy system false positives.
         BOOST_CHECK_EQUAL(garbage == NULL, true);
-        BOOST_CHECK( milliseconds > 0 );
-        BOOST_CHECK( milliseconds < 4000 );
+        BOOST_CHECK_GT( milliseconds, 0 );
+        BOOST_CHECK_LT( milliseconds, 4000 );
     }
 
     {
@@ -74,8 +74,8 @@ BOOST_AUTO_TEST_CASE(test_writeread)
         q->read(garbage, 100);
         const DWORD milliseconds = timer.elapsed();
 
-        BOOST_CHECK( milliseconds > 75 );
-        BOOST_CHECK( milliseconds < 300 );
+        BOOST_CHECK_GT( milliseconds, 75 );
+        BOOST_CHECK_LT( milliseconds, 300 );
     }
 
     //Test reading off a closed empty queue
