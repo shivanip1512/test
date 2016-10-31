@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     10/26/2016 2:06:46 AM                        */
+/* Created on:     10/31/2016 1:53:07 PM                        */
 /*==============================================================*/
 
 
@@ -9444,7 +9444,6 @@ go
 
 /* START the System Administrator role Group */
 /* Database Editor */
-insert into YukonGroupRole values(-1000,-2,-100,-10000,' ');
 insert into YukonGroupRole values(-1002,-2,-100,-10002,' ');
 insert into YukonGroupRole values(-1004,-2,-100,-10004,' ');
 insert into YukonGroupRole values(-1005,-2,-100,-10005,' ');
@@ -10148,14 +10147,13 @@ create table YukonRoleProperty (
 go
 
 /* Database Editor Role */
-INSERT INTO YukonRoleProperty VALUES(-10000,-100,'point_id_edit','false','Controls whether point ids can be edited');
-INSERT INTO YukonRoleProperty VALUES(-10002,-100,'dbeditor_lm','true','Controls whether the Loadmanagement menu item in the View menu is displayed');
-INSERT INTO YukonRoleProperty VALUES(-10004,-100,'dbeditor_system','true','Controls whether the System menu item in the View menu is displayed');
-INSERT INTO YukonRoleProperty VALUES(-10005,-100,'utility_id_range','1-254','<description>');
-INSERT INTO YukonRoleProperty VALUES(-10007,-100,'dbeditor_trans_exclusion','false','Allows the editor panel for the mutual exclusion of transmissions to be shown');
-INSERT INTO YukonRoleProperty VALUES(-10008,-100,'permit_login_edit','true','Closes off all access to logins and login groups for non-administrators in the dbeditor');
-INSERT INTO YukonRoleProperty VALUES(-10010,-100,'z_optional_product_dev','00000000','This feature is for development purposes only');
-INSERT INTO YukonRoleProperty VALUES(-10011,-100,'allow_member_programs','false','Allows member management of LM Direct Programs through the DBEditor');
+INSERT INTO YukonRoleProperty VALUES(-10002,-100,'Load Management View Enabled','true','Controls whether the Loadmanagement menu item in the View menu is displayed');
+INSERT INTO YukonRoleProperty VALUES(-10004,-100,'System View Enabled','true','Controls whether the System menu item in the View menu is displayed');
+INSERT INTO YukonRoleProperty VALUES(-10005,-100,'Versacom Utility Range','1-254','<description>');
+INSERT INTO YukonRoleProperty VALUES(-10007,-100,'Transmission Exclusion Enabled','false','Allows the editor panel for the mutual exclusion of transmissions to be shown');
+INSERT INTO YukonRoleProperty VALUES(-10008,-100,'Manage Users','true','Closes off all access to logins and login groups for non-administrators in the dbeditor');
+INSERT INTO YukonRoleProperty VALUES(-10010,-100,'Optional Protocols','00000000','This feature is for development purposes only');
+INSERT INTO YukonRoleProperty VALUES(-10011,-100,'Program Member Management','false','Allows member management of LM Direct Programs through the DBEditor');
 
 /* TDC Role */
 INSERT INTO YukonRoleProperty VALUES(-10101,-101,'macs_edit','00000CCC','The following settings are valid: CREATE_SCHEDULE(0x0000000C), ENABLE_SCHEDULE(0x000000C0), ABLE_TO_START_SCHEDULE(0x00000C00)');

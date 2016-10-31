@@ -783,6 +783,18 @@ ALTER TABLE LMGroupHoneywellWiFi
 GO
 /* End YUK-15908 */
 
+/* Start YUK-14794 */
+DELETE FROM YukonGroupRole		WHERE RolePropertyID = -10000
+DELETE FROM YukonRoleProperty	WHERE RolePropertyID = -10000
+UPDATE YukonRoleProperty		SET KeyName = 'Load Management View Enabled'	WHERE RolePropertyID = -10002
+UPDATE YukonRoleProperty		SET KeyName = 'System View Enabled'				WHERE RolePropertyID = -10004
+UPDATE YukonRoleProperty		SET KeyName = 'Versacom Utility Range'			WHERE RolePropertyID = -10005
+UPDATE YukonRoleProperty		SET KeyName = 'Transmission Exclusion Enabled'	WHERE RolePropertyID = -10007
+UPDATE YukonRoleProperty		SET KeyName = 'Manage Users'					WHERE RolePropertyID = -10008
+UPDATE YukonRoleProperty		SET KeyName = 'Optional Protocols'				WHERE RolePropertyID = -10010
+UPDATE YukonRoleProperty		SET KeyName = 'Program Member Management'		WHERE RolePropertyID = -10011
+GO
+/* End YUK-14794 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
