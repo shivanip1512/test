@@ -312,6 +312,7 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
             data.setRouteDataTimestamp(settings.getRouteData().getRouteDataTimestamp());
             data.setRouteFlags(settings.getRouteData().getRouteFlags());
             data.setRouteTimeout(settings.getRouteData().getRouteTimeout());
+            data.setTotalCost(settings.getRouteData().getTotalCost());
             routeData.add(data);
         }
         return routeData;
