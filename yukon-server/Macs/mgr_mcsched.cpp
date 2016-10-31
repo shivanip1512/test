@@ -99,7 +99,7 @@ void CtiMCScheduleManager::updateAllSchedules()
             }
             else
             {
-                warnMinutes = 60;
+                warnMinutes += 60;
             }
         }
 
