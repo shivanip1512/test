@@ -732,7 +732,7 @@ int CtiFDR_Inet::findClientInList(const Cti::SocketAddress& aAddr)
 
     for ( CtiFDRSocketLayer * conn : iConnectionList )
     {
-        if( conn->getOutBoundConnection() && conn->getOutBoundConnection()->getAddr().getIpAddress() == aAddr.getIpAddress() )
+        if( conn->getOutBoundConnection() && conn->getOutBoundConnection()->getAddr() == aAddr )
         {
             return index;
         }
