@@ -1115,7 +1115,7 @@ BOOST_AUTO_TEST_CASE( test_ccFeeder_replication )
     CtiCCCapBankPtr         bank4   = create_object<CtiCCCapBank>(104, "Bank4");
 
     initialize_area( store, area );
-    initialize_station( store, station, area );
+    initialize_station( store, station, area, Cti::Test::use_in_unit_tests_only{} );
     initialize_bus( store, bus, station );
     initialize_feeder( store, feeder, bus, 1 );
     initialize_bank( bank1, 0, 3 );

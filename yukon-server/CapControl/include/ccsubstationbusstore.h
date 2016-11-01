@@ -429,7 +429,7 @@ public:
     //For unit tests only
 protected:
     void addAreaToPaoMap(CtiCCAreaPtr area);
-    void addSubstationToPaoMap(CtiCCSubstationPtr station);
+    void addSubstationToPaoMap(CtiCCSubstationPtr station, Cti::Test::use_in_unit_tests_only&);
     void addSubBusToPaoMap(CtiCCSubstationBusPtr bus);
     void addSubBusToAltBusMap(CtiCCSubstationBusPtr bus);
     void addFeederToPaoMap(CtiCCFeederPtr feeder);

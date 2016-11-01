@@ -443,7 +443,7 @@ void CtiCCSubstationBusStore::addAreaToPaoMap(CtiCCAreaPtr area)
 {
     _paobject_area_map[area->getPaoId()] = area;
 }
-void CtiCCSubstationBusStore::addSubstationToPaoMap(CtiCCSubstationPtr station)
+void CtiCCSubstationBusStore::addSubstationToPaoMap(CtiCCSubstationPtr station, Cti::Test::use_in_unit_tests_only&)
 {
     _paobject_substation_map[station->getPaoId()] = station;
 }

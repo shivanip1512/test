@@ -4,6 +4,7 @@
 #include "ccunittestutil.h"
 #include "msg_pcreturn.h"
 
+#include "boost_test_helpers.h"
 #include "capcontrol_test_helpers.h"
 
 using namespace Cti::Test::CapControl;
@@ -52,7 +53,7 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
     CtiCCCapBank        *bank       = create_object<CtiCCCapBank>        (5, "test cap bank");
 
     initialize_area   (store, area);
-    initialize_station(store, substation, area);
+    initialize_station(store, substation, area, Cti::Test::use_in_unit_tests_only{});
     initialize_bus    (store, bus, substation);
     initialize_feeder (store, feeder, bus, 1);
     initialize_capbank(store, bank, feeder, 1);

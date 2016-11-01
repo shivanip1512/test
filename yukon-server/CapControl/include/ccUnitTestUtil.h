@@ -136,12 +136,12 @@ void initialize_area(Test_CtiCCSubstationBusStore* store, CtiCCAreaPtr area)
     area->setDisableFlag(false);
 }
 
-void initialize_station(Test_CtiCCSubstationBusStore* store, CtiCCSubstationPtr station, CtiCCAreaPtr parentArea)
+void initialize_station(Test_CtiCCSubstationBusStore* store, CtiCCSubstationPtr station, CtiCCAreaPtr parentArea, Cti::Test::use_in_unit_tests_only& limiter)
 {
     station->setSaEnabledFlag(false);
     station->setParentId(parentArea->getPaoId());
     parentArea->getSubstationIds().push_back(station->getPaoId());
-    store->addSubstationToPaoMap(station);
+    store->addSubstationToPaoMap(station, limiter);
     station->setDisableFlag(false);
 }
 

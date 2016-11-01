@@ -22,6 +22,8 @@ extern unsigned long _MAX_KVAR;
 extern unsigned long _SEND_TRIES;
 extern unsigned long _RATE_OF_CHANGE_DEPTH;
 
+Cti::Test::use_in_unit_tests_only limiter;
+
 BOOST_AUTO_TEST_SUITE( test_ccsubstationbus )
 
 class StrategyUnitTestLoader : public StrategyLoader
@@ -118,7 +120,7 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     station->setSaEnabledFlag(false);
     store->addAreaToPaoMap(area);
     area->getSubstationIds().push_back(station->getPaoId());
-    store->addSubstationToPaoMap(station);
+    store->addSubstationToPaoMap(station, limiter);
     station->getCCSubIds().push_back(bus->getPaoId());
     store->addSubBusToPaoMap(bus);
 
@@ -170,7 +172,7 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
 
 
     initialize_area(store, area);
-    initialize_station(store, station, area);
+    initialize_station(store, station, area, limiter);
     initialize_bus(store, bus1, station);
     initialize_bus(store, bus2, station);
 
@@ -260,7 +262,7 @@ BOOST_AUTO_TEST_CASE(test_parallel_bus)
     CtiCapController::setInstance(controller);
 
     initialize_area(store, area);
-    initialize_station(store, station, area);
+    initialize_station(store, station, area, limiter);
     initialize_bus(store, bus1, station);
     initialize_bus(store, bus2, station);
 
@@ -372,7 +374,7 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     CtiCCCapBank *cap11c = create_object<CtiCCCapBank>(16, "capBank11c");
 
     initialize_area(store, area);
-    initialize_station(store, station, area);
+    initialize_station(store, station, area, limiter);
     initialize_bus(store, bus1, station);
 
     initialize_feeder(store, feed11, bus1, 1);
@@ -753,7 +755,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_replication )
     CtiCCFeederPtr          feed13  = create_object<CtiCCFeeder>( 13, "Feeder13" );
 
     initialize_area( store, area );
-    initialize_station( store, station, area );
+    initialize_station( store, station, area, limiter );
     initialize_bus( store, bus1, station );
     initialize_feeder( store, feed11, bus1, 1 );
     initialize_feeder( store, feed12, bus1, 2 );
