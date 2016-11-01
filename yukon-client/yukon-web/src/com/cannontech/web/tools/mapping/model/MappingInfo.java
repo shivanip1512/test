@@ -82,7 +82,4 @@ public abstract class MappingInfo {
         return distanceDisplay;
     }
 
-    public void setAccessor(MessageSourceAccessor accessor) {
-        this.accessor = accessor;
-    }
 }
