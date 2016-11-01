@@ -530,7 +530,6 @@ void CtiCapController::controlLoop()
                     CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
                     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1970, true);
-                    CtiCCSubstation_vec& ccSubstations = *store->getCCSubstations(secondsFrom1970);
                     CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(secondsFrom1970);
 
 

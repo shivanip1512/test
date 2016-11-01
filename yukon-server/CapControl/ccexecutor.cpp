@@ -229,7 +229,7 @@ void CtiCCCommandExecutor::EnableSubstation()
         delete multi;
     }
 
-    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(store->getCCSubstations()))->execute();
 }
 
 void CtiCCCommandExecutor::DisableSubstation()
@@ -273,7 +273,7 @@ void CtiCCCommandExecutor::DisableSubstation()
     {
         CtiCCExecutorFactory::createExecutor((CtiMessage*)temp[i])->execute();
     }
-    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(store->getCCSubstations()))->execute();
 }
 
 /*---------------------------------------------------------------------------
@@ -1510,7 +1510,7 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
 
     CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
     CtiCCSpArea_vec& ccSpAreas = *store->getCCSpecialAreas(CtiTime().seconds());
-    CtiCCSubstation_vec& ccStations = *store->getCCSubstations(CtiTime().seconds());
+    const auto& ccStations = store->getCCSubstations();
 
     //Find the object type
     Cti::CapControl::CapControlType type = store->determineTypeById(paoId);
@@ -3949,7 +3949,7 @@ void CtiCCCommandExecutor::ConfirmSubstation()
         if (confirmMulti->getCount() > 0)
         {
             CtiCCExecutorFactory::createExecutor(confirmMulti)->execute();
-            CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())))->execute();
+            CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(store->getCCSubstations()))->execute();
         }
 
         CtiCapController::submitEventLogEntries(ccEvents);
@@ -4832,7 +4832,7 @@ void CtiCCCommandExecutor::SendAllData()
     CtiCCExecutorFactory::createExecutor(new CtiCCGeoAreasMsg(*store->getCCGeoAreas(CtiTime().seconds())))->execute();
     CtiCCExecutorFactory::createExecutor(new CtiCCCapBankStatesMsg(*store->getCCCapBankStates(CtiTime().seconds())))->execute();
     CtiCCExecutorFactory::createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())))->execute();
-    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*(store->getCCSubstations(CtiTime().seconds())), CtiCCSubstationsMsg::AllSubsSent))->execute();
+    CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg((store->getCCSubstations()), CtiCCSubstationsMsg::AllSubsSent))->execute();
 
     // Send all Voltage Regulators
     VoltageRegulatorMessage * message = store->getVoltageRegulatorManager()->getVoltageRegulatorMessage(true);
@@ -5209,7 +5209,7 @@ void CtiCCCommandExecutor::ResetAllSystemOpCounts()
     ccEvents.push_back(EventLogEntry(0, SYS_PID_CAPCONTROL, 0, 0, 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
 
     CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
-    CtiCCSubstation_vec& ccStations = *store->getCCSubstations(CtiTime().seconds());
+    const CtiCCSubstation_vec& ccStations = store->getCCSubstations();
     CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
 
     for (int i = 0; i <ccAreas.size(); i++ )

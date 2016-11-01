@@ -15,7 +15,7 @@ const unsigned long CtiCCSubstationsMsg::SubModified = 0x00000008;
 
 DEFINE_COLLECTABLE( CtiCCSubstationsMsg, CTICCSUBSTATION_MSG_ID )
 
-CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, unsigned long bitMask) : Inherited(), _substations(NULL), _msgInfoBitMask(bitMask)
+CtiCCSubstationsMsg::CtiCCSubstationsMsg(const CtiCCSubstation_vec& ccSubstations, unsigned long bitMask) : Inherited(), _substations(NULL), _msgInfoBitMask(bitMask)
 {
     _substations = new CtiCCSubstation_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )

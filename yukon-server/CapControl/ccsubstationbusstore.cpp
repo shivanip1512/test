@@ -81,7 +81,6 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() :
 {
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
-    _ccSubstations = new CtiCCSubstation_vec;
     _ccCapBankStates = new CtiCCState_vec;
     _ccGeoAreas = new CtiCCArea_vec;
     _ccSpecialAreas = new CtiCCSpArea_vec;
@@ -254,19 +253,9 @@ CtiCCSpArea_vec* CtiCCSubstationBusStore::getCCSpecialAreas(unsigned long second
 
     Returns a CtiCCSubstation_vec of CtiCCSubstations
 ---------------------------------------------------------------------------*/
-CtiCCSubstation_vec* CtiCCSubstationBusStore::getCCSubstations(unsigned long secondsFrom1901, bool checkReload)
+const CtiCCSubstation_vec& CtiCCSubstationBusStore::getCCSubstations()
 {
     CtiLockGuard<CtiCriticalSection>  guard(getMux());
-
-    if (!checkReload)
-    {
-        return _ccSubstations;
-    }
-
-    if( !_isvalid && secondsFrom1901 >= _lastdbreloadtime.seconds()+30 )
-    {//is not valid and has been at 0.5 minutes from last db reload, so we don't do this a bunch of times in a row on multiple updates
-        reset();
-    }
 
     return _ccSubstations;
 }
@@ -1004,7 +993,7 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
             {
                 currentSpecial->dumpDynamicData( conn, currentDateTime );
             }
-            for ( CtiCCSubstationPtr currentCCSubstation : *_ccSubstations )
+            for ( CtiCCSubstationPtr currentCCSubstation : _ccSubstations )
             {
                 currentCCSubstation->dumpDynamicData( conn, currentDateTime );
             }
@@ -1092,8 +1081,8 @@ bool CtiCCSubstationBusStore::deleteCapControlMaps()
         }
         delete_container( *_ccSubstationBuses );
         _ccSubstationBuses->clear();
-        delete_container( *_ccSubstations );
-        _ccSubstations->clear();
+        delete_container( _ccSubstations );
+        _ccSubstations.clear();
         delete_container( *_ccCapBankStates );
         _ccCapBankStates->clear();
         delete_container(*_ccGeoAreas);
@@ -1198,7 +1187,7 @@ void CtiCCSubstationBusStore::reset()
 
             reloadSubstationFromDatabase(0, &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map,
                                          &_pointid_station_map,
-                                         &_substation_area_map, &_substation_specialarea_map, _ccSubstations);
+                                         &_substation_area_map, &_substation_specialarea_map, &_ccSubstations);
 
 
             /***********************************************************
@@ -2140,9 +2129,8 @@ void CtiCCSubstationBusStore::shutdown()
     delete_container(*_ccSubstationBuses);
     _ccSubstationBuses->clear();
     delete _ccSubstationBuses;
-    delete_container(*_ccSubstations);
-    _ccSubstations->clear();
-    delete _ccSubstations;
+    delete_container(_ccSubstations);
+    _ccSubstations.clear();
     delete_container(*_ccCapBankStates);
     _ccCapBankStates->clear();
     delete _ccCapBankStates;
@@ -4185,7 +4173,7 @@ try
             reloadSubstationFromDatabase( substationID, &_paobject_substation_map,
                                           &_paobject_area_map, &_paobject_specialarea_map,
                                           &_pointid_station_map, &_substation_area_map,
-                                          &_substation_specialarea_map, _ccSubstations );
+                                          &_substation_specialarea_map, &_ccSubstations );
         }
 
         reloadOperationStatsFromDatabase( areaId, &_paobject_capbank_map, &_paobject_feeder_map,
@@ -6989,8 +6977,8 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
             _paobject_substation_map.erase(substationToDelete->getPaoId());
             _substation_area_map.erase(substationToDelete->getPaoId());
             _substation_specialarea_map.erase(substationToDelete->getPaoId());
-            _ccSubstations->erase( std::remove( _ccSubstations->begin(), _ccSubstations->end(), substationToDelete ),
-                                   _ccSubstations->end() );
+            _ccSubstations.erase( std::remove( _ccSubstations.begin(), _ccSubstations.end(), substationToDelete ),
+                                   _ccSubstations.end() );
 
             delete substationToDelete;
 
@@ -7622,7 +7610,7 @@ void CtiCCSubstationBusStore::handleSubstationDBChange(long reloadId, BYTE reloa
         reloadSubstationFromDatabase(reloadId, &_paobject_substation_map,
                            &_paobject_area_map, &_paobject_specialarea_map,
                                      &_pointid_station_map, &_substation_area_map,
-                           &_substation_specialarea_map, _ccSubstations);
+                           &_substation_specialarea_map, &_ccSubstations);
 
         CtiCCSubstationPtr station = findSubstationByPAObjectID(reloadId);
         if (station != NULL)
@@ -7931,7 +7919,7 @@ void CtiCCSubstationBusStore::createAndSendClientMessages( unsigned long &msgBit
 
     if (msgSubsBitMask & CtiCCSubstationsMsg::AllSubsSent)
     {
-        CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(*_ccSubstations, msgSubsBitMask))->execute();
+        CtiCCExecutorFactory::createExecutor(new CtiCCSubstationsMsg(_ccSubstations, msgSubsBitMask))->execute();
     }
     else if (modifiedStationIdsSet.size() > 0 )
     {
@@ -8748,7 +8736,7 @@ void CtiCCSubstationBusStore::resetAllOperationStats()
 
     boost::for_each( *_ccGeoAreas, initOpStats );
     boost::for_each( *_ccSpecialAreas, initOpStats );
-    boost::for_each( *_ccSubstations, initOpStats );
+    boost::for_each( _ccSubstations, initOpStats );
 
     for ( auto currentSubstationBus : *_ccSubstationBuses )
     {
@@ -8779,7 +8767,7 @@ void CtiCCSubstationBusStore::resetAllConfirmationStats()
 
     boost::for_each( *_ccGeoAreas, initConfStats );
     boost::for_each( *_ccSpecialAreas, initConfStats );
-    boost::for_each( *_ccSubstations, initConfStats );
+    boost::for_each( _ccSubstations, initConfStats );
 
     for ( auto currentSubstationBus : *_ccSubstationBuses )
     {
@@ -8860,7 +8848,7 @@ void CtiCCSubstationBusStore::reCalculateAllStats( )
             setOperationSuccessPercents( *currentSubstationBus, subBusUserDefOp, subBusDailyOp, subBusWeeklyOp, subBusMonthlyOp);
         }
 
-        for ( auto currentStation : *_ccSubstations )
+        for ( auto currentStation : _ccSubstations )
         {
             CCStatsObject subUserDef, subDaily, subWeekly, subMonthly,
                           subUserDefOp, subDailyOp, subWeeklyOp, subMonthlyOp;
@@ -9362,7 +9350,7 @@ void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& point
 
     try
     {
-        for ( CtiCCSubstationPtr currentStation : *_ccSubstations )
+        for ( CtiCCSubstationPtr currentStation : _ccSubstations )
         {
             currentStation->getOperationStats().createPointDataMsgs(pointChanges);
             currentStation->getConfirmationStats().createPointDataMsgs(pointChanges);

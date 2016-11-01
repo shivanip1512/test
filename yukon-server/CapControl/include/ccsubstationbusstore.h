@@ -153,7 +153,7 @@ public:
     } CtiCapControlMapType;
 
     CtiCCSubstationBus_vec* getCCSubstationBuses(unsigned long secondsFrom1901, bool checkReload = false);
-    CtiCCSubstation_vec* getCCSubstations(unsigned long secondsFrom1901, bool checkReload = false);
+    const CtiCCSubstation_vec& getCCSubstations();
     CtiCCState_vec* getCCCapBankStates(unsigned long secondsFrom1901);
     CtiCCArea_vec* getCCGeoAreas(unsigned long secondsFrom1901, bool checkReload = false);
     CtiCCSpArea_vec* getCCSpecialAreas(unsigned long secondsFrom1901, bool checkReload = false);
@@ -493,7 +493,7 @@ private:
 
     CtiCCSubstationBus_vec  *_ccSubstationBuses;
     CtiCCState_vec  *_ccCapBankStates;
-    CtiCCSubstation_vec *_ccSubstations;
+    CtiCCSubstation_vec _ccSubstations;
     CtiCCArea_vec *_ccGeoAreas;
     CtiCCSpArea_vec *_ccSpecialAreas;
 

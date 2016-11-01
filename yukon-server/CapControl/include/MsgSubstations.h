@@ -12,7 +12,7 @@ class CtiCCSubstationsMsg : public CapControlMessage
         typedef CapControlMessage Inherited;
     public:
 
-        CtiCCSubstationsMsg(CtiCCSubstation_vec& substationList, unsigned long bitMask = 0);
+        CtiCCSubstationsMsg(const CtiCCSubstation_vec& substationList, unsigned long bitMask = 0);
         CtiCCSubstationsMsg(CtiCCSubstation_set& substationList, unsigned long bitMask = 0);
         CtiCCSubstationsMsg(const CtiCCSubstationsMsg& ccSubstations);
 
