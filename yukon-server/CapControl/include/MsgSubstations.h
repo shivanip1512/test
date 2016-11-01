@@ -20,7 +20,7 @@ class CtiCCSubstationsMsg : public CapControlMessage
 
         unsigned long getMsgInfoBitMask() const { return _msgInfoBitMask; };
 
-        CtiCCSubstation_vec* getCCSubstations() const     { return _ccSubstations; }
+        CtiCCSubstation_vec* getCCSubstations() const     { return _substations; }
 
         virtual CtiMessage* replicateMessage() const;
 
@@ -34,8 +34,8 @@ class CtiCCSubstationsMsg : public CapControlMessage
 
 
     private:
-        CtiCCSubstationsMsg() : Inherited(), _ccSubstations(NULL), _msgInfoBitMask(0){};
+        CtiCCSubstationsMsg() : Inherited(), _substations(NULL), _msgInfoBitMask(0){};
 
         unsigned long _msgInfoBitMask;
-        CtiCCSubstation_vec* _ccSubstations;
+        CtiCCSubstation_vec* _substations;
 };

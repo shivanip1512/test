@@ -763,9 +763,9 @@ struct TestCase<CtiCCSubstationsMsg> : public TestCase<CapControlMessage>
 
         for( int item_nbr=0; item_nbr < maxSubstations; item_nbr++ )
         {
-            imsg._ccSubstations->push_back( new CtiCCSubstation );
+            imsg._substations->push_back( new CtiCCSubstation );
             TestCaseItem<CtiCCSubstation> tc_item;
-            tc_item.Populate( imsg._ccSubstations->back() );
+            tc_item.Populate( imsg._substations->back() );
         }
     }
 };

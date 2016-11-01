@@ -15,9 +15,9 @@ const unsigned long CtiCCSubstationsMsg::SubModified = 0x00000008;
 
 DEFINE_COLLECTABLE( CtiCCSubstationsMsg, CTICCSUBSTATION_MSG_ID )
 
-CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, unsigned long bitMask) : Inherited(), _ccSubstations(NULL), _msgInfoBitMask(bitMask)
+CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, unsigned long bitMask) : Inherited(), _substations(NULL), _msgInfoBitMask(bitMask)
 {
-    _ccSubstations = new CtiCCSubstation_vec;
+    _substations = new CtiCCSubstation_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
         CTILOG_DEBUG(dout, "CtiCCSubstationsMsg has "<< ccSubstations.size()<<" entries.");
@@ -44,20 +44,20 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, uns
 
     for( const auto station : ccSubstations )
     {
-        _ccSubstations->push_back(station->replicate());
+        _substations->push_back(station->replicate());
     }
 }
 
-CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_set& ccSubstations, unsigned long bitMask) : Inherited(), _ccSubstations(NULL), _msgInfoBitMask(bitMask)
+CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_set& ccSubstations, unsigned long bitMask) : Inherited(), _substations(NULL), _msgInfoBitMask(bitMask)
 {
-    _ccSubstations = new CtiCCSubstation_vec;
+    _substations = new CtiCCSubstation_vec;
     if( _CC_DEBUG & CC_DEBUG_PERFORMANCE )
     {
         CTILOG_DEBUG(dout, "CtiCCSubstationsMsg has "<< ccSubstations.size()<<" entries.");
     }
     for( const auto station : ccSubstations )
     {
-        _ccSubstations->push_back(station->replicate());
+        _substations->push_back(station->replicate());
     }
 }
 
@@ -66,20 +66,20 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(const CtiCCSubstationsMsg& right)
 {
     Inherited::operator=(right);
     _msgInfoBitMask = right.getMsgInfoBitMask();
-    _ccSubstations = new CtiCCSubstation_vec;
+    _substations = new CtiCCSubstation_vec;
     for( const auto sub : *right.getCCSubstations() )
     {
-        _ccSubstations->push_back(sub->replicate());
+        _substations->push_back(sub->replicate());
     }
 }
 
 CtiCCSubstationsMsg::~CtiCCSubstationsMsg()
 {
-    if( _ccSubstations != NULL )
+    if( _substations != NULL )
     {
-        delete_container(*_ccSubstations);
+        delete_container(*_substations);
 
-        delete _ccSubstations;
+        delete _substations;
     }
 }
 
