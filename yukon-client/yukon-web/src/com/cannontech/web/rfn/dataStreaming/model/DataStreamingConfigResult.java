@@ -44,6 +44,8 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
     private CommandRequestExecution execution;
     // On UPDATE_WITH_FORCE NM can return  ACCEPTED_WITH_ERROR
     private boolean acceptedWithError;
+    // number devices that failed before the resent attempt
+    private int acceptedWithErrorFailedDeviceCount;
     
     public DataStreamingConfigResult(TemporaryDeviceGroupService tempDeviceGroupService,
             DeviceGroupCollectionHelper deviceGroupCollectionHelper) {
@@ -308,5 +310,13 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
 
     public void setAcceptedWithError(boolean acceptedWithError) {
         this.acceptedWithError = acceptedWithError;
+    }
+
+    public int getAcceptedWithErrorFailedDeviceCount() {
+        return acceptedWithErrorFailedDeviceCount;
+    }
+
+    public void setAcceptedWithErrorFailedDeviceCount(int acceptedWithErrorFailedDeviceCount) {
+        this.acceptedWithErrorFailedDeviceCount= acceptedWithErrorFailedDeviceCount;
     }
 }

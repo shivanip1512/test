@@ -433,8 +433,9 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NULL_ENABLED">There was an error in the messaging format (null enabled value).</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NULL_INTERVAL">There was an error in the messaging format (null interval value).</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.NULL_SEQUENCE_NUMBER">There was an error in the messaging format (null sequence number).</entry>
-    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.OTHER_ERROR">Device "{0}" had an unknown error in Network Manager.</entry>    
-    
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.device.OTHER_ERROR">Device "{0}" had an unknown error in Network Manager.</entry>  
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.verification.exception.failed">{0} devices failed Network Manager verification and will not be configured. Check Yukon logs for details.</entry>
+       
     <!-- results.jsp -->
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.pageName">Data Streaming Results</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.results.contextualPageName">Data Streaming Results</entry>

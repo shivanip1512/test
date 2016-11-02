@@ -431,11 +431,13 @@ public class DataStreamingConfigurationsController {
         try {
             result = dataStreamingService.resend(Arrays.asList(deviceId), user);
             if(result.acceptedWithError()){
-                flash.setWarning(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError"));
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError"));
+                return "../dataStreaming/discrepancies.jsp";
             }
             model.addAttribute("resultsId", result.getResultsId());
         } catch (DataStreamingConfigException e) {
             flash.setError(e.getMessageSourceResolvable());
+            return "../dataStreaming/discrepancies.jsp";
         }
         return "redirect:/bulk/dataStreaming/dataStreamingResults";
     }
@@ -478,13 +480,20 @@ public class DataStreamingConfigurationsController {
         DataStreamingConfigResult result;
         try {
             result = dataStreamingService.resend(deviceList, user);
-            if(result.acceptedWithError()){
-                flash.setWarning(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError"));
-            }
-            model.addAttribute("resultsId", result.getResultsId());
         } catch (DataStreamingConfigException e) {
             flash.setError(e.getMessageSourceResolvable());
+            return "../dataStreaming/discrepancies.jsp";
         }
+        if (result.acceptedWithError()) {
+            if (result.getAcceptedWithErrorFailedDeviceCount() == 0) {
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError"));
+            } else {
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError.resending",
+                    result.getAcceptedWithErrorFailedDeviceCount(), result.getTotalItems()));
+            }
+            return "../dataStreaming/discrepancies.jsp";
+        }
+        model.addAttribute("resultsId", result.getResultsId());
         return "redirect:/bulk/dataStreaming/dataStreamingResults";
     }
     

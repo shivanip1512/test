@@ -23,7 +23,7 @@
             <h3>Config Response</h3>
             <input type="checkbox" name="isOverloadGatewaysOnConfig"/> Overload Gateways<br>
             <input type="checkbox" name="isNetworkManagerFailOnConfig"/> Network Manager Fail<br>
-            <input type="checkbox" name="isAcceptedWithError"/> Accepted With Error (Overloaded Gateways). Only for "re-send".<br>
+            <input type="checkbox" name="isAcceptedWithError"/> Accepted With Error (Overloaded Gateways). Only for "re-send". The first 5 devices will always return no device errors. The remaining devices will always return a random error.<br>
             <input type="checkbox" name="isDeviceErrorOnConfig">
             Device Error 
             <select name="deviceErrorOnConfig">

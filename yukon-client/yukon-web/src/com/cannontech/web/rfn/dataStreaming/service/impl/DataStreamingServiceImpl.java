@@ -482,15 +482,16 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return verificationInfo;
     }
 
-    private DeviceDataStreamingConfigResponseType processConfigResponse(DeviceDataStreamingConfigResponse response) throws DataStreamingConfigException {
+    private ConfigResponseResult processConfigResponse(DeviceDataStreamingConfigResponse response) throws DataStreamingConfigException {
+        ConfigResponseResult result = new ConfigResponseResult();
+        result.type = response.getResponseType();
+        log.debug("Data streaming config response-"+response.getResponseType());
         switch (response.getResponseType()) {
         case ACCEPTED:
             // NM accepted the configuration. It can now be sent to the devices.
             break;
         case ACCEPTED_WITH_ERROR:
-            log.error("Data streaming config response - gateways oversubscribed. Recieved ACCEPTED_WITH_ERROR from NM");
-            // NM accepted the configuration. Data streaming config response - gateways oversubscribed.
-            checkForDeviceErrors(response);
+            checkForDeviceErrors(response, result);
             break;
         case CONFIG_ERROR:
             boolean gatewaysOverloaded = false;
@@ -507,7 +508,12 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 log.debug("Data streaming config response - gateways oversubscribed.");
                 throw new DataStreamingConfigException("Gateways oversubscribed", "gatewaysOversubscribed");
             }
-            checkForDeviceErrors(response);
+            checkForDeviceErrors(response, result);
+            if(result.hasDeviceErrors){
+                String error = result.deviceIds.size()
+                    + " devices failed Network Manager verification and will not be configured. Check Yukon logs for details";
+                throw new DataStreamingConfigException(error, "failed", result.deviceIds.size());
+            }
             break;
         case INVALID_REQUEST_TYPE:
         case INVALID_REQUEST_SEQUENCE_NUMBER:
@@ -534,20 +540,25 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             log.error(unknownError + response.getResponseMessage());
             throw new DataStreamingConfigException(unknownError, "unknownError");
         }
-        return response.getResponseType();
+        return result;
     }
     
-    private void checkForDeviceErrors(DeviceDataStreamingConfigResponse response) throws DataStreamingConfigException{
+    class ConfigResponseResult{
+        DeviceDataStreamingConfigResponseType type;
+        List<Integer> deviceIds = new ArrayList<>();
+        boolean hasDeviceErrors = false;
+    }
+    
+    private void checkForDeviceErrors(DeviceDataStreamingConfigResponse response, ConfigResponseResult result)
+            throws DataStreamingConfigException {
         for (Entry<RfnIdentifier, ConfigError> errorDeviceEntry : response.getErrorConfigedDevices().entrySet()) {
             DeviceDataStreamingConfigError errorType = errorDeviceEntry.getValue().getErrorType();
             // Ignore Gateway overloaded errors, those are covered above
             if (errorType != DeviceDataStreamingConfigError.GATEWAY_OVERLOADED) {
-                RfnDevice deviceName = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
-                log.debug(
-                    "Data streaming verification response - device error: " + deviceName + ", " + errorType.name());
-                String deviceError = "Device error for " + deviceName + ": " + errorType;
-                String i18nKey = "device." + errorType.name();
-                throw new DataStreamingConfigException(deviceError, i18nKey, deviceName);
+                RfnDevice device = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
+                log.error(" Data streaming verification response - device error: " + device + ", " + errorType.name());
+                result.deviceIds.add(device.getPaoIdentifier().getPaoId());
+                result.hasDeviceErrors = true;
             }
         }
     }
@@ -673,46 +684,81 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
     @Override
     public DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException {
+        DataStreamingConfigResult result = createUncompletedResult();
+        return resend(deviceIds, result, user);
+    }
+    
+    public DataStreamingConfigResult resend(List<Integer> deviceIds, DataStreamingConfigResult result,
+            LiteYukonUser user) throws DataStreamingConfigException {
 
         log.info("Re-sending configuration for devices=" + deviceIds);
-        
-        DataStreamingConfigResult result = createUncompletedResult();
-        
-        logService.resendAttempted(user, result.getResultsId(), deviceIds.size());
-        
-        DeviceCollection deviceCollection = createDeviceCollectionForIds(deviceIds);
-        if (isValidPorterConnection()) {
-            
-            Map<Integer, BehaviorReport> deviceIdToBehaviorReport =
-                deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, deviceIds);
 
-            deviceIds.forEach(id -> {
-                BehaviorReport report = deviceIdToBehaviorReport.get(id);
-                if (report == null) {
-                    report = buildPendingReport(id);
-                } else {
-                    report.setStatus(BehaviorReportStatus.PENDING);
-                    report.setTimestamp(new Instant());
-                }
-                deviceBehaviorDao.saveBehaviorReport(report);
-            });
-       
+        logService.resendAttempted(user, result.getResultsId(), deviceIds.size());
+
+        if (isValidPorterConnection()) {
+            Map<Integer, BehaviorReport> deviceIdToBehaviorReport = initPendingReports(deviceIds);
             Multimap<DataStreamingConfig, Integer> configToDeviceIds = HashMultimap.create();
             for (int deviceId : deviceIdToBehaviorReport.keySet()) {
                 DataStreamingConfig config = convertBehaviorToConfig(deviceIdToBehaviorReport.get(deviceId));
                 configToDeviceIds.put(config, deviceId);
             }
             int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
-            DeviceDataStreamingConfigResponseType type = sendNmConfiguration(configToDeviceIds, requestSeqNumber,
+            ConfigResponseResult configResponseResult = sendNmConfiguration(configToDeviceIds, requestSeqNumber,
                 DeviceDataStreamingConfigRequestType.UPDATE_WITH_FORCE);
-            if (type == DeviceDataStreamingConfigResponseType.ACCEPTED_WITH_ERROR) {
+
+            if (configResponseResult.hasDeviceErrors) {
+                List<Integer> devicesToResend = new ArrayList<>();
+                devicesToResend.addAll(deviceIds);
+                devicesToResend.removeAll(configResponseResult.deviceIds);
+
+                if (devicesToResend.isEmpty()) {
+                    String error =
+                        deviceIds.size() + " devices failed Network Manager verification and will not be configured.";
+                    log.error(error);
+                    throw new DataStreamingConfigException(error, "failed", deviceIds.size() + "");
+                } else {
+                    log.info(configResponseResult.deviceIds.size()
+                        + " devices failed Network Manager verification and will not be configured. Attempting to resend configuration to "
+                        + devicesToResend.size() + " devices.");
+                    result.complete();
+                    result = createUncompletedResult();
+                    result.setAcceptedWithErrorFailedDeviceCount(configResponseResult.deviceIds.size());
+                    return resend(devicesToResend, result, user);
+                }
+            }
+            if (configResponseResult.type == DeviceDataStreamingConfigResponseType.ACCEPTED_WITH_ERROR) {
                 result.setAcceptedWithError(true);
             }
+            saveBehaviorReports(deviceIdToBehaviorReport);
+            DeviceCollection deviceCollection = createDeviceCollectionForIds(deviceIds);
             sendConfiguration(user, deviceCollection, requestSeqNumber, result);
             return result;
         } else {
-            return createEmptyResult(deviceCollection, "Porter connection is invalid.");
+            return createEmptyResult(createDeviceCollectionForIds(deviceIds), "Porter connection is invalid.");
         }
+    }
+
+    private Map<Integer, BehaviorReport> initPendingReports(List<Integer> deviceIds) {
+        Map<Integer, BehaviorReport> deviceIdToBehaviorReport =
+            deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, deviceIds);
+
+        deviceIds.forEach(id -> {
+            BehaviorReport report = deviceIdToBehaviorReport.get(id);
+            if (report == null) {
+                report = buildPendingReport(id);
+            } else {
+                report.setStatus(BehaviorReportStatus.PENDING);
+                report.setTimestamp(new Instant());
+            }
+        });
+        return deviceIdToBehaviorReport;
+    }
+
+    private void saveBehaviorReports(Map<Integer, BehaviorReport> deviceIdToBehaviorReport) {
+        deviceIdToBehaviorReport.keySet().forEach(id -> {
+            BehaviorReport report = deviceIdToBehaviorReport.get(id);
+            deviceBehaviorDao.saveBehaviorReport(report);
+        });
     }
 
     @Override
@@ -952,7 +998,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         porterConn.cancel(result, user);
     }
 
-    private DeviceDataStreamingConfigResponseType sendNmConfiguration(Multimap<DataStreamingConfig, Integer> configToDeviceIds, int requestSeqNumber,
+    private ConfigResponseResult sendNmConfiguration(Multimap<DataStreamingConfig, Integer> configToDeviceIds, int requestSeqNumber,
             DeviceDataStreamingConfigRequestType type) throws DataStreamingConfigException {
         // If only called on "re-send", we can assume that all devices support data streaming. If called
         // from

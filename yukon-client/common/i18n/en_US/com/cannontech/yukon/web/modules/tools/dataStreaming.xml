@@ -67,7 +67,8 @@
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.resendAllConfirmation.message">This will re-send the Yukon Configuration to this page of devices.</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptSuccess">The Yukon Configuration has been updated.</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptAllSuccess">Current page of Yukon Configurations have been updated.</entry>
-    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptedWithError">This operation may increase gateway data streaming load beyond the recommended amount.</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptedWithError">This operation may have increased gateway data streaming load beyond the recommended amount.</entry>
+    <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.acceptedWithError.resending">{0} devices failed Network Manager verification and will not be configured.  Attempting to re-send configuration to {1} devices. This operation may have increased gateway data streaming load beyond the recommended amount.</entry> 
      
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.CONFIRMED">Confirmed Discrepancy</entry>
     <entry key="yukon.web.modules.tools.dataStreaming.discrepancies.PENDING">Pending</entry>
