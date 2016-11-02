@@ -249,18 +249,20 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         response.setRequestSeqNumber(requestSeqNumber);
         response.setAffectedGateways(affectedGateways);
         response.setResponseMessage("Simulated Response!");
+        response.setErrorConfigedDevices(new HashMap<>());
+
         
         if (deviceError != null) {
-            Map<RfnIdentifier, ConfigError> errorMap = new HashMap<>();
-            ConfigError error = new ConfigError();
-            error.setErrorType(deviceError);
-            error.setErrorMessage(deviceError.toString());
-            error.setOverSubscribedGatewayRfnIdentifier(devices.get(0)); //TODO variable by error type?
-            errorMap.put(devices.get(0), error);
-            response.setErrorConfigedDevices(errorMap);
-        } else {
-            response.setErrorConfigedDevices(new HashMap<>());
-        }
+            for (RfnIdentifier device : devices) {
+                ConfigError error = new ConfigError();
+                error.setErrorType(deviceError);
+                error.setErrorMessage(deviceError.toString());
+                if (isOverloadGateways) {
+                    error.setOverSubscribedGatewayRfnIdentifier(device);
+                }
+                response.getErrorConfigedDevices().put(device, error);
+            }
+        } 
         if (isAcceptedWithError) {
             response.setResponseType(DeviceDataStreamingConfigResponseType.ACCEPTED_WITH_ERROR);
             List<DeviceDataStreamingConfigError> configErrors =
