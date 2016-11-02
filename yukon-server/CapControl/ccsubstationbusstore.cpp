@@ -3577,6 +3577,14 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
     }
 }
 
+namespace {
+
+std::set<long> loadSubstationIntoMap(const long substationId, PaoIdToSubstationMap* paobject_substation_map, const PaoIdToSpecialAreaMap& paobject_specialarea_map);
+void loadSubstationPoints(const long substationId, const PaoIdToSubstationMap* paobject_substation_map, std::multimap<long, CapControlPao*>& pointid_to_pao, const std::set<long>& modifiedPaoIDs, PointIdToSubstationMultiMap *pointid_station_map);
+void loadSubstationAreaAssignments(const long substationId, const PaoIdToSubstationMap* paobject_substation_map, const PaoIdToAreaMap* paobject_area_map, ChildToParentMap* substation_area_map, const PaoIdToSpecialAreaMap* paobject_specialarea_map, ChildToParentMultiMap* substation_specialarea_map, CtiCCSubstation_vec* ccSubstations);
+std::vector<long> loadSubstationSubBuses(const long substationId);
+
+}
 
 /*---------------------------------------------------------------------------
     reloadSubstationFromDatabase
@@ -3602,268 +3610,22 @@ try
             deleteSubstation( substationId );
         }
 
-        std::set<long>  modifiedPaoIDs;
+        const auto modifiedPaoIDs = loadSubstationIntoMap(substationId, paobject_substation_map, *paobject_specialarea_map);
 
-        {
-            static const std::string sql =
-                "SELECT "
-                    "Y.PAObjectID, "
-                    "Y.Category, "
-                    "Y.PAOClass, "
-                    "Y.PAOName, "
-                    "Y.Type, "
-                    "Y.Description, "
-                    "Y.DisableFlag, "
-                    "S.VoltReductionPointId, "
-                    "D.AdditionalFlags, "
-                    "D.SAEnabledID "
-                "FROM "
-                    "YukonPAObject Y "
-                        "JOIN CAPCONTROLSUBSTATION S "
-                            "ON Y.PAObjectID = S.SubstationID "
-                        "LEFT OUTER JOIN DYNAMICCCSUBSTATION D "
-                            "ON S.SubstationID = D.SubStationID";
+        loadSubstationPoints(substationId, paobject_substation_map, _pointID_to_pao, modifiedPaoIDs, pointid_station_map);
 
-            static const std::string sqlID = sql +
-                " WHERE Y.PAObjectID = ?";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader     rdr( connection );
-
-            if ( substationId > 0 )
-            {
-                rdr.setCommandText( sqlID );
-                rdr << substationId;
-            }
-            else
-            {
-                rdr.setCommandText( sql );
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO( dout, rdr.asString() );
-            }
-
-            while ( rdr() )
-            {
-                CtiCCSubstationPtr currentCCSubstation = CtiCCSubstationPtr( new CtiCCSubstation( rdr ) );
-
-                paobject_substation_map->emplace( currentCCSubstation->getPaoId(), currentCCSubstation );
-
-                if ( ! findSpecialAreaByPAObjectID( currentCCSubstation->getSaEnabledId() ) )
-                {
-                    currentCCSubstation->setSaEnabledId( 0 );
-                }
-
-                modifiedPaoIDs.insert( currentCCSubstation->getPaoId() );
-            }
-        }
-
-        {
-            static const std::string sql = 
-                "SELECT "
-                    "P.POINTID, "
-                    "P.POINTTYPE, "
-                    "P.PAObjectID, "
-                    "P.POINTOFFSET "
-                "FROM "
-                    "POINT P "
-                        "JOIN CAPCONTROLSUBSTATION S "
-                            "ON P.PAObjectID = S.SubstationID";
-
-            static const std::string sqlID = sql +
-                " WHERE P.PAObjectID = ?";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader     rdr( connection );
-
-            if ( substationId > 0 )
-            {
-                rdr.setCommandText( sqlID );
-                rdr << substationId;
-            }
-            else
-            {
-                rdr.setCommandText( sql );
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO( dout, rdr.asString() );
-            }
-
-            while ( rdr() )
-            {
-                long substationID;
-
-                rdr["PAObjectID"] >> substationID;
-
-                if ( auto substation = Cti::mapFind( *paobject_substation_map, substationID ) )
-                {
-                    (*substation)->assignPoint( rdr );
-                }
-            }
-        }
-
-        for ( const long paoID : modifiedPaoIDs )
-        {
-            if ( auto substation = Cti::mapFind( *paobject_substation_map, paoID ) )
-            {
-                for ( const long pointID : *(*substation)->getPointIds() )
-                {
-                    pointid_station_map->emplace( pointID, *substation );
-
-                    _pointID_to_pao.emplace( pointID, *substation );
-                }
-            }
-        }
-
-        {
-            static const std::string sql = 
-                "SELECT "
-                    "SubstationID, "
-                    "A.AreaID, "
-                    "S.AreaID AS SpecialAreaID "
-                "FROM "
-                    "CAPCONTROLSUBSTATION "
-                        "LEFT OUTER JOIN CCSUBAREAASSIGNMENT A "
-                            "ON SubstationID = A.SubstationBusID "
-                        "LEFT OUTER JOIN CCSUBSPECIALAREAASSIGNMENT S "
-                            "ON SubstationID = S.SubstationBusID";
-
-            static const std::string sqlID = sql +
-                " WHERE SubstationID = ?";
-
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader     rdr( connection );
-
-            if ( substationId > 0 )
-            {
-                rdr.setCommandText( sqlID );
-                rdr << substationId;
-            }
-            else
-            {
-                rdr.setCommandText( sql );
-            }
-
-            rdr.execute();
-
-            if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-            {
-                CTILOG_INFO( dout, rdr.asString() );
-            }
-
-            while ( rdr() ) 
-            {
-                long substationID;
-
-                rdr["SubstationID"] >> substationID;
-
-                if ( auto substationSearch = Cti::mapFind( *paobject_substation_map, substationID ) )
-                {
-                    CtiCCSubstationPtr substation = *substationSearch;
-
-                    if ( ! rdr["AreaID"].isNull() ) 
-                    {
-                        long areaID;
-
-                        rdr["AreaID"] >> areaID;
-
-                        if ( auto area = Cti::mapFind( *paobject_area_map, areaID ) )
-                        {
-                            substation->setParentId( areaID );
-
-                            (*area)->addSubstationId( substationID );
-
-                            substation_area_map->emplace( substationID, areaID );
-                        }
-                    }
-
-                    if ( ! rdr["SpecialAreaID"].isNull() ) 
-                    {
-                        long specialAreaID;
-
-                        rdr["SpecialAreaID"] >> specialAreaID;
-
-                        if ( auto specialArea = Cti::mapFind( *paobject_specialarea_map, specialAreaID ) )
-                        {
-                            if ( substation->getParentId() <= 0 )
-                            {
-                                substation->setParentId( specialAreaID );
-                            }
-
-                            (*specialArea)->addSubstationId( substationID );
-
-                            substation_specialarea_map->emplace( substationID, specialAreaID );
-
-                            if ( substation->getSaEnabledId() == 0 )
-                            {
-                                substation->setSaEnabledId( specialAreaID );
-                            }
-
-                            if ( ! (*specialArea)->getDisableFlag() )
-                            {
-                                substation->setSaEnabledId( specialAreaID );
-                                substation->setSaEnabledFlag( true );
-                            }
-                        }
-                    }
-
-                    if ( substation->getParentId() > 0 )
-                    {
-                        ccSubstations->push_back( substation );
-                    }
-                }
-            }
-        }
+        loadSubstationAreaAssignments(substationId, paobject_substation_map, paobject_area_map, substation_area_map, paobject_specialarea_map, substation_specialarea_map, ccSubstations);
 
         if ( substationId > 0 ) // else, when reloading all, then the reload of feeders will be called after subBusReload and take care of it.
         {
-            std::vector<long>   reloadBusIDs;
-
-            {
-                static const std::string sql = 
-                    "SELECT "
-                        "SubStationBusID "
-                    "FROM "
-                        "CCSUBSTATIONSUBBUSLIST "
-                    "WHERE "
-                        "SubStationID = ?";
-
-                Cti::Database::DatabaseConnection connection;
-                Cti::Database::DatabaseReader     rdr( connection, sql );
-
-                rdr << substationId;
-
-                rdr.execute();
-
-                if ( _CC_DEBUG & CC_DEBUG_DATABASE )
-                {
-                    CTILOG_INFO( dout, rdr.asString() );
-                }
-
-                while ( rdr() )
-                {
-                    long currentSubBusId;
-
-                    rdr["SubStationBusID"] >> currentSubBusId;
-
-                    reloadBusIDs.push_back( currentSubBusId );
-                }
-            }
+            const auto reloadBusIDs = loadSubstationSubBuses(substationId);
 
             for ( const long currentSubBusId : reloadBusIDs )
             {
                 reloadSubBusFromDatabase( currentSubBusId, &_paobject_subbus_map,
-                                          &_paobject_substation_map, &_pointid_subbus_map,
-                                          &_altsub_sub_idmap, &_subbus_substation_map,
-                                          _ccSubstationBuses );
+                    &_paobject_substation_map, &_pointid_subbus_map,
+                    &_altsub_sub_idmap, &_subbus_substation_map,
+                    _ccSubstationBuses );
             }
 
             reloadOperationStatsFromDatabase( substationId, &_paobject_capbank_map,
@@ -3876,6 +3638,277 @@ try
 catch ( ... )
 {
     CTILOG_UNKNOWN_EXCEPTION_ERROR( dout );
+}
+
+namespace {
+
+std::set<long> loadSubstationIntoMap(const long substationId, PaoIdToSubstationMap* paobject_substation_map, const PaoIdToSpecialAreaMap& paobject_specialarea_map)
+{
+    static const std::string sql =
+        "SELECT "
+        "Y.PAObjectID, "
+        "Y.Category, "
+        "Y.PAOClass, "
+        "Y.PAOName, "
+        "Y.Type, "
+        "Y.Description, "
+        "Y.DisableFlag, "
+        "S.VoltReductionPointId, "
+        "D.AdditionalFlags, "
+        "D.SAEnabledID "
+        "FROM "
+        "YukonPAObject Y "
+        "JOIN CAPCONTROLSUBSTATION S "
+        "ON Y.PAObjectID = S.SubstationID "
+        "LEFT OUTER JOIN DYNAMICCCSUBSTATION D "
+        "ON S.SubstationID = D.SubStationID";
+
+    static const std::string sqlID = sql +
+        " WHERE Y.PAObjectID = ?";
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader     rdr( connection );
+
+    if ( substationId > 0 )
+    {
+        rdr.setCommandText( sqlID );
+        rdr << substationId;
+    }
+    else
+    {
+        rdr.setCommandText( sql );
+    }
+
+    rdr.execute();
+
+    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+    {
+        CTILOG_INFO( dout, rdr.asString() );
+    }
+
+    std::set<long> modifiedPaoIDs;
+
+    while ( rdr() )
+    {
+        CtiCCSubstationPtr currentCCSubstation = CtiCCSubstationPtr( new CtiCCSubstation( rdr ) );
+
+        paobject_substation_map->emplace( currentCCSubstation->getPaoId(), currentCCSubstation );
+
+        if ( ! paobject_specialarea_map.count( currentCCSubstation->getSaEnabledId() ) )
+        {
+            currentCCSubstation->setSaEnabledId( 0 );
+        }
+
+        modifiedPaoIDs.insert( currentCCSubstation->getPaoId() );
+    }
+
+    return modifiedPaoIDs;
+}
+
+
+void loadSubstationPoints(const long substationId, const PaoIdToSubstationMap* paobject_substation_map, std::multimap<long, CapControlPao*>& pointid_to_pao, const std::set<long>& modifiedPaoIDs, PointIdToSubstationMultiMap *pointid_station_map)
+{
+    {
+        static const std::string sql = 
+            "SELECT "
+            "P.POINTID, "
+            "P.POINTTYPE, "
+            "P.PAObjectID, "
+            "P.POINTOFFSET "
+            "FROM "
+            "POINT P "
+            "JOIN CAPCONTROLSUBSTATION S "
+            "ON P.PAObjectID = S.SubstationID";
+
+        static const std::string sqlID = sql +
+            " WHERE P.PAObjectID = ?";
+
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader     rdr( connection );
+
+        if ( substationId > 0 )
+        {
+            rdr.setCommandText( sqlID );
+            rdr << substationId;
+        }
+        else
+        {
+            rdr.setCommandText( sql );
+        }
+
+        rdr.execute();
+
+        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+        {
+            CTILOG_INFO( dout, rdr.asString() );
+        }
+
+        while ( rdr() )
+        {
+            long substationID;
+
+            rdr["PAObjectID"] >> substationID;
+
+            if ( auto substation = Cti::mapFind( *paobject_substation_map, substationID ) )
+            {
+                (*substation)->assignPoint( rdr );
+            }
+        }
+    }
+
+    for ( const long paoID : modifiedPaoIDs )
+    {
+        if ( auto substation = Cti::mapFind( *paobject_substation_map, paoID ) )
+        {
+            for ( const long pointID : *(*substation)->getPointIds() )
+            {
+                pointid_station_map->emplace( pointID, *substation );
+
+                pointid_to_pao.emplace( pointID, *substation );
+            }
+        }
+    }
+}
+
+void loadSubstationAreaAssignments(const long substationId, const PaoIdToSubstationMap* paobject_substation_map, const PaoIdToAreaMap* paobject_area_map, ChildToParentMap* substation_area_map, const PaoIdToSpecialAreaMap* paobject_specialarea_map, ChildToParentMultiMap* substation_specialarea_map, CtiCCSubstation_vec* ccSubstations)
+{
+    static const std::string sql = 
+        "SELECT "
+        "SubstationID, "
+        "A.AreaID, "
+        "S.AreaID AS SpecialAreaID "
+        "FROM "
+        "CAPCONTROLSUBSTATION "
+        "LEFT OUTER JOIN CCSUBAREAASSIGNMENT A "
+        "ON SubstationID = A.SubstationBusID "
+        "LEFT OUTER JOIN CCSUBSPECIALAREAASSIGNMENT S "
+        "ON SubstationID = S.SubstationBusID";
+
+    static const std::string sqlID = sql +
+        " WHERE SubstationID = ?";
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader     rdr( connection );
+
+    if ( substationId > 0 )
+    {
+        rdr.setCommandText( sqlID );
+        rdr << substationId;
+    }
+    else
+    {
+        rdr.setCommandText( sql );
+    }
+
+    rdr.execute();
+
+    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+    {
+        CTILOG_INFO( dout, rdr.asString() );
+    }
+
+    while ( rdr() ) 
+    {
+        long substationID;
+
+        rdr["SubstationID"] >> substationID;
+
+        if ( auto substationSearch = Cti::mapFind( *paobject_substation_map, substationID ) )
+        {
+            CtiCCSubstationPtr substation = *substationSearch;
+
+            if ( ! rdr["AreaID"].isNull() ) 
+            {
+                long areaID;
+
+                rdr["AreaID"] >> areaID;
+
+                if ( auto area = Cti::mapFind( *paobject_area_map, areaID ) )
+                {
+                    substation->setParentId( areaID );
+
+                    (*area)->addSubstationId( substationID );
+
+                    substation_area_map->emplace( substationID, areaID );
+                }
+            }
+
+            if ( ! rdr["SpecialAreaID"].isNull() ) 
+            {
+                long specialAreaID;
+
+                rdr["SpecialAreaID"] >> specialAreaID;
+
+                if ( auto specialArea = Cti::mapFind( *paobject_specialarea_map, specialAreaID ) )
+                {
+                    if ( substation->getParentId() <= 0 )
+                    {
+                        substation->setParentId( specialAreaID );
+                    }
+
+                    (*specialArea)->addSubstationId( substationID );
+
+                    substation_specialarea_map->emplace( substationID, specialAreaID );
+
+                    if ( substation->getSaEnabledId() == 0 )
+                    {
+                        substation->setSaEnabledId( specialAreaID );
+                    }
+
+                    if ( ! (*specialArea)->getDisableFlag() )
+                    {
+                        substation->setSaEnabledId( specialAreaID );
+                        substation->setSaEnabledFlag( true );
+                    }
+                }
+            }
+
+            if ( substation->getParentId() > 0 )
+            {
+                ccSubstations->push_back( substation );
+            }
+        }
+    }
+}
+
+std::vector<long> loadSubstationSubBuses(const long substationId)
+{
+    std::vector<long>   reloadBusIDs;
+
+    {
+        static const std::string sql = 
+            "SELECT "
+            "SubStationBusID "
+            "FROM "
+            "CCSUBSTATIONSUBBUSLIST "
+            "WHERE "
+            "SubStationID = ?";
+
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader     rdr( connection, sql );
+
+        rdr << substationId;
+
+        rdr.execute();
+
+        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+        {
+            CTILOG_INFO( dout, rdr.asString() );
+        }
+
+        while ( rdr() )
+        {
+            long currentSubBusId;
+
+            rdr["SubStationBusID"] >> currentSubBusId;
+
+            reloadBusIDs.push_back( currentSubBusId );
+        }
+    }
+
+    return reloadBusIDs;
+}
+
 }
 
 /*---------------------------------------------------------------------------
