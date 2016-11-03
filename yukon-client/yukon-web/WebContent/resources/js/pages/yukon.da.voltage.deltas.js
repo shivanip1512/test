@@ -47,6 +47,9 @@ yukon.da.voltageDeltas = (function () {
                     $('.js-view-delta').show();
 
                     $('.js-static-delta').removeClass('changed');
+                    $('#delta-form-buttons').find('button').prop('disabled', true);
+                    $("#delta-form")[0].reset();
+
                 });
 
                 $(document).on('click','#delta-submit', function() {
