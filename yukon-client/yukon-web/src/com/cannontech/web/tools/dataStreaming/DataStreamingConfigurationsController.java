@@ -467,14 +467,15 @@ public class DataStreamingConfigurationsController {
     @RequestMapping(value="discrepancies/resendAll", method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String resendAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash,
-            PagingParameters paging) {
+            PagingParameters paging, SortingParameters sorting) {
         List<Integer> deviceList = new ArrayList<>();
         String ids = request.getParameter("deviceIds");
         String [] deviceIds = ids.split(",");
         for (String deviceId : deviceIds) {
             deviceList.add(Integer.parseInt(deviceId));
         }
-        deviceList = deviceList.subList(paging.getStartIndex(), Math.min(deviceList.size(), paging.getEndIndex() + 1));
+        String redirectUrl = "redirect:/tools/dataStreaming/discrepancies?page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage() + "&sort=" + sorting.getSort() + "&dir=" + sorting.getDirection();
+
         LiteYukonUser user = userContext.getYukonUser();
     
         DataStreamingConfigResult result;
@@ -482,7 +483,7 @@ public class DataStreamingConfigurationsController {
             result = dataStreamingService.resend(deviceList, user);
         } catch (DataStreamingConfigException e) {
             flash.setError(e.getMessageSourceResolvable());
-            return "../dataStreaming/discrepancies.jsp";
+            return redirectUrl;
         }
         if (result.acceptedWithError()) {
             if (result.getAcceptedWithErrorFailedDeviceCount() == 0) {
@@ -491,7 +492,7 @@ public class DataStreamingConfigurationsController {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError.resending",
                     result.getAcceptedWithErrorFailedDeviceCount(), result.getTotalItems()));
             }
-            return "../dataStreaming/discrepancies.jsp";
+            return redirectUrl;
         }
         model.addAttribute("resultsId", result.getResultsId());
         return "redirect:/bulk/dataStreaming/dataStreamingResults";
@@ -499,15 +500,13 @@ public class DataStreamingConfigurationsController {
     
     @RequestMapping(value="discrepancies/acceptAll", method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
-    public String acceptAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash,
-            PagingParameters paging) {
+    public String acceptAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash) {
         List<Integer> deviceList = new ArrayList<>();
         String ids = request.getParameter("deviceIds");
         String [] deviceIds = ids.split(",");
         for (String deviceId : deviceIds) {
             deviceList.add(Integer.parseInt(deviceId));
         }
-        deviceList = deviceList.subList(paging.getStartIndex(), Math.min(deviceList.size(), paging.getEndIndex() + 1));
         LiteYukonUser user = userContext.getYukonUser();
         
         dataStreamingService.accept(deviceList, user);
