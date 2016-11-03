@@ -102,5 +102,6 @@ private:
 };
 
 typedef CtiCCSubstation* CtiCCSubstationPtr;
+typedef std::unique_ptr<CtiCCSubstation> CtiCCSubstationUnqPtr;
 typedef std::vector<CtiCCSubstationPtr> CtiCCSubstation_vec;
 typedef std::set<CtiCCSubstationPtr> CtiCCSubstation_set;

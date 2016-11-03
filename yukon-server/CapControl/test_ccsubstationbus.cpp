@@ -120,7 +120,7 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     station->setSaEnabledFlag(false);
     store->addAreaToPaoMap(area);
     area->getSubstationIds().push_back(station->getPaoId());
-    store->addSubstationToPaoMap(station, limiter);
+    store->addSubstationToPaoMap(CtiCCSubstationUnqPtr{station}, limiter);
     station->getCCSubIds().push_back(bus->getPaoId());
     store->addSubBusToPaoMap(bus);
 
@@ -136,7 +136,6 @@ BOOST_AUTO_TEST_CASE(test_cannot_control_bank_text)
     BOOST_CHECK_EQUAL(ccEvents.size(), 2);
     store->deleteInstance();
 
-    delete station;
     delete area;
     delete bus;
 }
@@ -172,7 +171,7 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
 
 
     initialize_area(store, area);
-    initialize_station(store, station, area, limiter);
+    initialize_station(store, CtiCCSubstationUnqPtr{station}, area, limiter);
     initialize_bus(store, bus1, station);
     initialize_bus(store, bus2, station);
 
@@ -220,7 +219,6 @@ BOOST_AUTO_TEST_CASE(test_temp_move_feeder)
 
     store->deleteInstance();
 
-    delete station;
     delete area;
 }
 
@@ -262,7 +260,7 @@ BOOST_AUTO_TEST_CASE(test_parallel_bus)
     CtiCapController::setInstance(controller);
 
     initialize_area(store, area);
-    initialize_station(store, station, area, limiter);
+    initialize_station(store, CtiCCSubstationUnqPtr{station}, area, limiter);
     initialize_bus(store, bus1, station);
     initialize_bus(store, bus2, station);
 
@@ -334,7 +332,6 @@ BOOST_AUTO_TEST_CASE(test_parallel_bus)
 
     store->deleteInstance();
 
-    delete station;
     delete area;
 }
 
@@ -374,7 +371,7 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
     CtiCCCapBank *cap11c = create_object<CtiCCCapBank>(16, "capBank11c");
 
     initialize_area(store, area);
-    initialize_station(store, station, area, limiter);
+    initialize_station(store, CtiCCSubstationUnqPtr{station}, area, limiter);
     initialize_bus(store, bus1, station);
 
     initialize_feeder(store, feed11, bus1, 1);
@@ -479,7 +476,6 @@ BOOST_AUTO_TEST_CASE(test_analyze_feeder_for_verification)
 
     store->deleteInstance();
 
-    delete station;
     delete area;
 }
 
@@ -755,7 +751,7 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_replication )
     CtiCCFeederPtr          feed13  = create_object<CtiCCFeeder>( 13, "Feeder13" );
 
     initialize_area( store, area );
-    initialize_station( store, station, area, limiter );
+    initialize_station( store, CtiCCSubstationUnqPtr{station}, area, limiter );
     initialize_bus( store, bus1, station );
     initialize_feeder( store, feed11, bus1, 1 );
     initialize_feeder( store, feed12, bus1, 2 );
@@ -792,7 +788,6 @@ BOOST_AUTO_TEST_CASE( test_ccSubstationBus_replication )
 
     store->deleteInstance();
 
-    delete station;
     delete area;
 }
 

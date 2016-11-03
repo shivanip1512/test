@@ -53,7 +53,7 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
     CtiCCCapBank        *bank       = create_object<CtiCCCapBank>        (5, "test cap bank");
 
     initialize_area   (store, area);
-    initialize_station(store, substation, area, Cti::Test::use_in_unit_tests_only{});
+    initialize_station(store, CtiCCSubstationUnqPtr{substation}, area, Cti::Test::use_in_unit_tests_only{});
     initialize_bus    (store, bus, substation);
     initialize_feeder (store, feeder, bus, 1);
     initialize_capbank(store, bank, feeder, 1);
@@ -261,7 +261,6 @@ BOOST_AUTO_TEST_CASE( test_porterReturnMsg_oneway_device )
         }
     }
 
-    delete substation;
     delete area;
 }
 

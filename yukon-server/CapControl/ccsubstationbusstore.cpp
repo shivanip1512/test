@@ -370,7 +370,7 @@ CtiCCSpecialPtr CtiCCSubstationBusStore::findSpecialAreaByPAObjectID(long paobje
 }
 CtiCCSubstationPtr CtiCCSubstationBusStore::findSubstationByPAObjectID(long paobject_id)
 {
-    return Cti::mapFindOrDefault( _paobject_substation_map, paobject_id, nullptr );
+    return Cti::mapFindPtr( _paobject_substation_map, paobject_id );
 }
 CtiCCSubstationBusPtr CtiCCSubstationBusStore::findSubBusByPAObjectID(long paobject_id)
 {
@@ -432,9 +432,9 @@ void CtiCCSubstationBusStore::addAreaToPaoMap(CtiCCAreaPtr area)
 {
     _paobject_area_map[area->getPaoId()] = area;
 }
-void CtiCCSubstationBusStore::addSubstationToPaoMap(CtiCCSubstationPtr station, Cti::Test::use_in_unit_tests_only&)
+void CtiCCSubstationBusStore::addSubstationToPaoMap(CtiCCSubstationUnqPtr&& station, Cti::Test::use_in_unit_tests_only&)
 {
-    _paobject_substation_map[station->getPaoId()] = station;
+    _paobject_substation_map.emplace(station->getPaoId(), std::move(station));
 }
 void CtiCCSubstationBusStore::addSubBusToPaoMap(CtiCCSubstationBusPtr bus)
 {
@@ -1081,7 +1081,6 @@ bool CtiCCSubstationBusStore::deleteCapControlMaps()
         }
         delete_container( *_ccSubstationBuses );
         _ccSubstationBuses->clear();
-        delete_container( _ccSubstations );
         _ccSubstations.clear();
         delete_container( *_ccCapBankStates );
         _ccCapBankStates->clear();
@@ -2129,7 +2128,6 @@ void CtiCCSubstationBusStore::shutdown()
     delete_container(*_ccSubstationBuses);
     _ccSubstationBuses->clear();
     delete _ccSubstationBuses;
-    delete_container(_ccSubstations);
     _ccSubstations.clear();
     delete_container(*_ccCapBankStates);
     _ccCapBankStates->clear();
@@ -2141,6 +2139,7 @@ void CtiCCSubstationBusStore::shutdown()
     _ccSpecialAreas->clear();
     delete _ccSpecialAreas;
 
+    _paobject_substation_map.clear();
 }
 
 /*---------------------------------------------------------------------------
@@ -3751,22 +3750,22 @@ void loadSubstationPoints(const long substationId, const PaoIdToSubstationMap* p
 
             rdr["PAObjectID"] >> substationID;
 
-            if ( auto substation = Cti::mapFind( *paobject_substation_map, substationID ) )
+            if ( auto substation = Cti::mapFindPtr( *paobject_substation_map, substationID ) )
             {
-                (*substation)->assignPoint( rdr );
+                substation->assignPoint( rdr );
             }
         }
     }
 
     for ( const long paoID : modifiedPaoIDs )
     {
-        if ( auto substation = Cti::mapFind( *paobject_substation_map, paoID ) )
+        if ( auto substation = Cti::mapFindPtr( *paobject_substation_map, paoID ) )
         {
-            for ( const long pointID : *(*substation)->getPointIds() )
+            for ( const long pointID : *substation->getPointIds() )
             {
-                pointid_station_map->emplace( pointID, *substation );
+                pointid_station_map->emplace( pointID, substation );
 
-                pointid_to_pao.emplace( pointID, *substation );
+                pointid_to_pao.emplace( pointID, substation );
             }
         }
     }
@@ -3808,10 +3807,8 @@ void loadSubstationAreaAssignments(const long substationId, const PaoIdToSubstat
     {
         const long substationID = rdr["SubstationBusID"].as<long>();
 
-        if ( auto substationSearch = Cti::mapFind( *paobject_substation_map, substationID ) )
+        if ( auto substation = Cti::mapFindPtr( *paobject_substation_map, substationID ) )
         {
-            CtiCCSubstationPtr substation = *substationSearch;
-
             const long areaID = rdr["AreaID"].as<long>();
 
             if ( auto area = Cti::mapFind( *paobject_area_map, areaID ) )
@@ -3864,10 +3861,8 @@ void loadSubstationSpecialAreaAssignments(const long substationId, const PaoIdTo
     {
         const long substationID = rdr["SubstationBusID"].as<long>();
 
-        if ( auto substationSearch = Cti::mapFind( *paobject_substation_map, substationID ) )
+        if ( auto substation = Cti::mapFindPtr( *paobject_substation_map, substationID ) )
         {
-            CtiCCSubstationPtr substation = *substationSearch;
-
             long specialAreaID = rdr["AreaID"].as<long>();
 
             if ( auto specialArea = Cti::mapFind( *paobject_specialarea_map, specialAreaID ) )
@@ -4678,14 +4673,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId,
                 {
                     currentCCSubstationBus->setParentId(currentSubstationId);
                     currentCCSubstationBus->setDisplayOrder(displayOrder);
-                    CtiCCSubstationPtr currentCCSubstation = NULL;
-
-                    if (subBusId > 0)
-                        currentCCSubstation = findSubstationByPAObjectID(currentSubstationId);
-                    else
-                    {
-                        currentCCSubstation = findInMap(currentSubstationId, paobject_substation_map);
-                    }
+                    
+                    const auto currentCCSubstation = Cti::mapFindPtr(*paobject_substation_map, currentSubstationId);
 
                     if (currentCCSubstation != NULL)
                     {
@@ -7035,13 +7024,12 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
 
             std::string substationName = substationToDelete->getPaoName();
 
-            _paobject_substation_map.erase(substationToDelete->getPaoId());
             _substation_area_map.erase(substationToDelete->getPaoId());
             _substation_specialarea_map.erase(substationToDelete->getPaoId());
             _ccSubstations.erase( std::remove( _ccSubstations.begin(), _ccSubstations.end(), substationToDelete ),
                                    _ccSubstations.end() );
 
-            delete substationToDelete;
+            _paobject_substation_map.erase(substationToDelete->getPaoId());
 
             if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {

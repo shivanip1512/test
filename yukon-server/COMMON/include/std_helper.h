@@ -12,7 +12,7 @@
 namespace Cti {
 
 template <class Map>
-boost::optional<typename Map::mapped_type> mapFind( Map &m, const typename Map::key_type &key )
+boost::optional<typename Map::mapped_type> mapFind( const Map &m, const typename Map::key_type &key )
 {
     Map::const_iterator itr = m.find(key);
 
@@ -22,6 +22,32 @@ boost::optional<typename Map::mapped_type> mapFind( Map &m, const typename Map::
     }
 
     return itr->second;
+}
+
+template <class Map, class PtrType=std::enable_if<std::is_pointer<Map::mapped_type>::value, Map::mapped_type>::type>
+PtrType mapFindPtr( const Map &m, const typename Map::key_type &key )
+{
+    Map::const_iterator itr = m.find(key);
+
+    if( itr == m.end() )
+    {
+        return nullptr;
+    }
+
+    return itr->second;
+}
+
+template <class Key, class Value>
+Value* mapFindPtr( const std::map<Key, std::unique_ptr<Value>>& m, const Key& key )
+{
+    auto itr = m.find(key);
+
+    if( itr == m.end() )
+    {
+        return nullptr;
+    }
+
+    return itr->second.get();
 }
 
 template <class Map>

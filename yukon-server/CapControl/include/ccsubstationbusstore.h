@@ -108,8 +108,8 @@ typedef std::multimap< long, CtiCCSpecialPtr > PointIdToSpecialAreaMultiMap;
 typedef std::map     < long, CtiCCAreaPtr > PaoIdToAreaMap;
 typedef std::multimap< long, CtiCCAreaPtr > PointIdToAreaMultiMap;
 
-typedef std::map     < long, CtiCCSubstationPtr > PaoIdToSubstationMap;
-typedef std::multimap< long, CtiCCSubstationPtr > PointIdToSubstationMultiMap;
+typedef std::map     < long, CtiCCSubstationUnqPtr > PaoIdToSubstationMap;  //  the owning container
+typedef std::multimap< long, CtiCCSubstationPtr > PointIdToSubstationMultiMap;  //  these pointers are just non-owning references
 
 typedef std::map     < long, CtiCCSubstationBusPtr > PaoIdToSubBusMap;
 typedef std::multimap< long, CtiCCSubstationBusPtr > PointIdToSubBusMultiMap;
@@ -429,7 +429,7 @@ public:
     //For unit tests only
 protected:
     void addAreaToPaoMap(CtiCCAreaPtr area);
-    void addSubstationToPaoMap(CtiCCSubstationPtr station, Cti::Test::use_in_unit_tests_only&);
+    void addSubstationToPaoMap(CtiCCSubstationUnqPtr&& station, Cti::Test::use_in_unit_tests_only&);
     void addSubBusToPaoMap(CtiCCSubstationBusPtr bus);
     void addSubBusToAltBusMap(CtiCCSubstationBusPtr bus);
     void addFeederToPaoMap(CtiCCFeederPtr feeder);
