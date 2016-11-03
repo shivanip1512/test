@@ -79,29 +79,9 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	}
 	else if (currentInputPanel == getPointTypePanel())
 	{
-		boolean editPointID = false;
-		try
-		{
-			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
-					 YukonRoleProperty.POINT_ID_EDIT));
-		}
-		catch (java.util.MissingResourceException e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-
-		if (editPointID)
-		{
-			getPointIDSettingsPanel().setValueCore( null, getInitialPAOId() );
-            getPointIDSettingsPanel().setFirstFocus();
-			return getPointIDSettingsPanel();
-		}
-		else
-		{
-			getPointSettingsPanel().setValueCore( null, getInitialPAOId() );
-            getPointSettingsPanel().setFirstFocus();
-			return getPointSettingsPanel();
-		}
+		getPointSettingsPanel().setValueCore( null, getInitialPAOId() );
+        getPointSettingsPanel().setFirstFocus();
+		return getPointSettingsPanel();
 	}
 	else if ((currentInputPanel == getPointSettingsPanel()) || (currentInputPanel == getPointIDSettingsPanel()))
 	{
@@ -138,25 +118,9 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 	}
 	else if (currentInputPanel == getPointAnalogSettingsPanel())
 	{
-		boolean editPointID = false;
-		try
-		{
-			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
-					 YukonRoleProperty.POINT_ID_EDIT));
-		}
-		catch (java.util.MissingResourceException e )
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-
-		if (editPointID)
-			getPointPhysicalSettingsPanel().reinitialize(
-				getPointIDSettingsPanel().getPointDeviceID(),
-				getPointTypePanel().getPointType());
-		else
-			getPointPhysicalSettingsPanel().reinitialize(
-				getPointSettingsPanel().getPointDeviceID(),
-				getPointTypePanel().getPointType());
+		getPointPhysicalSettingsPanel().reinitialize(
+			getPointSettingsPanel().getPointDeviceID(),
+			getPointTypePanel().getPointType());
         getPointPhysicalSettingsPanel().setFirstFocus();
 		return getPointPhysicalSettingsPanel();
 	}
@@ -165,24 +129,9 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 		//set the correct accumlator point type
 		getPointTypePanel().setPointType(getPointAccumulatorSettingsPanel().getAccumulatorPointType());
 
-		boolean editPointID = false;
-		try
-		{
-			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
-					 YukonRoleProperty.POINT_ID_EDIT));
-		}
-		catch (java.util.MissingResourceException e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		if (editPointID)
-			getPointPhysicalSettingsPanel().reinitialize(
-				getPointIDSettingsPanel().getPointDeviceID(),
-				getPointTypePanel().getPointType() );
-		else
-			getPointPhysicalSettingsPanel().reinitialize(
-				getPointSettingsPanel().getPointDeviceID(),
-				getPointTypePanel().getPointType() );
+		getPointPhysicalSettingsPanel().reinitialize(
+			getPointSettingsPanel().getPointDeviceID(),
+			getPointTypePanel().getPointType() );
 		getPointPhysicalSettingsPanel().setFirstFocus();
 		return getPointPhysicalSettingsPanel();
 	}
@@ -196,24 +145,9 @@ protected com.cannontech.common.gui.util.DataInputPanel getNextInputPanel(
 			return getPointCalcBaseSettingsPanel();
 		}
 				
-		boolean editPointID = false;
-		try
-		{
-			editPointID = Boolean.parseBoolean(ClientSession.getInstance().getRolePropertyValue(
-					 YukonRoleProperty.POINT_ID_EDIT));
-		}
-		catch (java.util.MissingResourceException e)
-		{
-			com.cannontech.clientutils.CTILogger.error( e.getMessage(), e );
-		}
-		if (editPointID)
-			getPointStatusPhysicalSettingsPanel().reinitialize(
-				getPointIDSettingsPanel().getPointDeviceID(),
-				getPointTypePanel().getPointType());
-		else
-			getPointStatusPhysicalSettingsPanel().reinitialize(
-				getPointSettingsPanel().getPointDeviceID(),
-				getPointTypePanel().getPointType());
+		getPointStatusPhysicalSettingsPanel().reinitialize(
+			getPointSettingsPanel().getPointDeviceID(),
+			getPointTypePanel().getPointType());
         getPointStatusPhysicalSettingsPanel().setFirstFocus();
 		return getPointStatusPhysicalSettingsPanel();
 	}
