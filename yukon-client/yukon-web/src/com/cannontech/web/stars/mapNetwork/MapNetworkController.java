@@ -71,11 +71,17 @@ public class MapNetworkController {
             RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(deviceId);
             Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);        
             Object commStatus = metadata.get(RfnMetadata.COMM_STATUS);
-            CommStatusType status = CommStatusType.valueOf(commStatus.toString());
-            String statusString = accessor.getMessage(nameKey + "status." + status);
-            model.addAttribute("deviceStatus", statusString);
+            if (commStatus != null) {
+                CommStatusType status = CommStatusType.valueOf(commStatus.toString());
+                String statusString = accessor.getMessage(nameKey + "status." + status);
+                model.addAttribute("deviceStatus", statusString);
+            } else {
+                // ignore, status will be set to "UNKNOWN"
+                log.error("NM didn't return communication status for " + deviceId);
+            }
         } catch (NmCommunicationException e) {
-            log.warn("caught exception getting metadata", e);
+            // ignore, status will be set to "UNKNOWN"
+            log.error("Failed to get meta-data for " + deviceId, e);
         }
 
         return "mapNetwork/home.jsp";
