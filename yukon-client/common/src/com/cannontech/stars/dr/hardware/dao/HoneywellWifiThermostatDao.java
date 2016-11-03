@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.hardware.dao;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.dr.honeywellWifi.model.HoneywellWifiThermostat;
 
 /**
  * Dao for retrieving data from HoneywellWifiThermostat table
@@ -9,9 +10,9 @@ import com.cannontech.core.dao.NotFoundException;
 public interface HoneywellWifiThermostatDao {
 
     /**
-     * Gets a macAddress based on the given deviceId.
+     * Gets a HoneywellWifiThermostat(userId and macAddress) based on the given deviceId.
      */
-    String getMacAddressByDeviceId(int deviceId);
+    HoneywellWifiThermostat getHoneywellWifiThermostat(int deviceId);
     
     /**
      * @param The MAC ID, formatted with colons and capital letters (XX:XX:XX:XX:XX:XX).

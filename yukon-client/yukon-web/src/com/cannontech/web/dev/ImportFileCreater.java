@@ -13,7 +13,7 @@ public class ImportFileCreater {
 
         writeCsvLine(writer, "ACCOUNT_NO", "HW_Action", "Device_Type", "Serial_No", "Install_Date", "Remove_Date",
             "Service_Company", "Program_Name", "Addr_Group", "App_Type", "App_kW", "App_Relay_Num", "MAC_Address",
-            "Option_Params");
+            "UserId", "Option_Params");
 
         int serialNumberOffset = 0;
         for (int i = 0; i < numAccounts; i++) {
@@ -46,7 +46,7 @@ public class ImportFileCreater {
     private static void newHwLine(Writer writer, int accNum, String deviceType, int serialNum, String programName,
             String loadGroup, String appCat) throws IOException {
         writeCsvLine(writer, Integer.toString(accNum), "INSERT", deviceType, Integer.toString(serialNum), "6/21/2010",
-            "", "", programName, loadGroup, appCat, "", "1", "", "");
+            "", "", programName, loadGroup, appCat, "", "1", "", "", "");
     }
 
     private static void newCustLine(Writer writer, int accNum, String userGroup, RandomAccountInfoGenerator randomInfo)

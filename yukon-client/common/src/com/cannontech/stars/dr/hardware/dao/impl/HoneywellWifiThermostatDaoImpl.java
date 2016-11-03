@@ -1,5 +1,7 @@
 package com.cannontech.stars.dr.hardware.dao.impl;
 
+import java.sql.SQLException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
@@ -8,22 +10,37 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
+import com.cannontech.dr.honeywellWifi.model.HoneywellWifiThermostat;
 import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 
 public class HoneywellWifiThermostatDaoImpl implements HoneywellWifiThermostatDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    private static final YukonRowMapper<HoneywellWifiThermostat> honeywellWifiThermostatRowMapper =
+        new YukonRowMapper<HoneywellWifiThermostat>() {
+            @Override
+            public HoneywellWifiThermostat mapRow(YukonResultSet rs) throws SQLException {
+                HoneywellWifiThermostat honeywellWifiThermostat = new HoneywellWifiThermostat();
+                honeywellWifiThermostat.setMacAddress(rs.getString("MacAddress"));
+                honeywellWifiThermostat.setUserId(rs.getInt("UserId"));
+
+                return honeywellWifiThermostat;
+            }
+        };
 
     @Override
-    public String getMacAddressByDeviceId(int deviceId) {
+    public HoneywellWifiThermostat getHoneywellWifiThermostat(int deviceId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
-        sql.append("SELECT MacAddress");
+        sql.append("SELECT MacAddress, UserId");
         sql.append("FROM HoneywellWifiThermostat ");
         sql.append("WHERE DeviceId").eq(deviceId);
-
-        return jdbcTemplate.queryForString(sql);
+        HoneywellWifiThermostat honeywellWifiThermostat =
+            jdbcTemplate.queryForObject(sql, honeywellWifiThermostatRowMapper);
+        return honeywellWifiThermostat;
     }
-    
+
     @Override
     public PaoIdentifier getPaoIdentifierByMacId(String macId) throws NotFoundException {
         

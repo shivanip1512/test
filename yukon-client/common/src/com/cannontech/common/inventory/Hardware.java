@@ -53,6 +53,9 @@ public class Hardware {
     /* ZigBee/Honeywell fields */
     private String macAddress;
     
+    /* Honeywell field */
+    private Integer userId;
+    
     public int getAccountId() {
         return accountId;
     }
@@ -333,4 +336,13 @@ public class Hardware {
     public int getDestinationEndPointId() {
         return destinationEndPointId;
     }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
 }

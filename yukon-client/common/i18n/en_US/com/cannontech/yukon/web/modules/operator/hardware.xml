@@ -130,6 +130,7 @@
     <entry key="yukon.web.modules.operator.hardware.pointValue">Value</entry>
     <entry key="yukon.web.modules.operator.hardware.readNow.label">Read</entry>
     <entry key="yukon.web.modules.operator.hardware.readNowSuccess">Read initiated successfully</entry>
+    <entry key="yukon.web.modules.operator.hardware.userId">User Id</entry>
     
     <entry key="yukon.web.modules.operator.hardware.serialNumber.notFoundAdd">The serial number {0} was not found in the inventory. Would you like to add it now?</entry>
     <entry key="yukon.web.modules.operator.hardware.serialNumber.foundOnAnotherAccount">The device is currently assigned to another account.</entry>
@@ -204,6 +205,7 @@
     <entry key="yukon.web.modules.operator.hardware.error.required.installCode">An Install Code is required.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.required.firmwareVersion">A Firmware Version is required.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.required.macAddress">A MAC Address is required.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.required.userId">A User ID is required.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.format.installCode">Invalid Install Code format. Expected XX:XX:XX:XX:XX:XX:XX:XX</entry>
     <entry key="yukon.web.modules.operator.hardware.error.format.eui48.macAddress">Invalid MAC Address format. Expected XX:XX:XX:XX:XX:XX</entry>
     <entry key="yukon.web.modules.operator.hardware.error.format.eui64.macAddress">Invalid MAC Address format. Expected XX:XX:XX:XX:XX:XX:XX:XX</entry>

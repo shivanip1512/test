@@ -36,6 +36,7 @@ import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.honeywellWifi.model.HoneywellWifiThermostat;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -249,7 +250,10 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 }
             }
             if (hardwareType.isHoneywell()) {
-                hardware.setMacAddress(honeywellWifiThermostatDao.getMacAddressByDeviceId(deviceId));
+                HoneywellWifiThermostat honeywellWifiThermostat =
+                    honeywellWifiThermostatDao.getHoneywellWifiThermostat(deviceId);
+                hardware.setMacAddress(honeywellWifiThermostat.getMacAddress());
+                hardware.setUserId(honeywellWifiThermostat.getUserId());
             }
             hardwareTypeExtensionService.retrieveDevice(hardware);
             

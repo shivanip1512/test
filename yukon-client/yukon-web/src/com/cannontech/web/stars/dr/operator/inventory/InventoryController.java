@@ -224,6 +224,7 @@ public class InventoryController {
             }
         } else if (type.isHoneywell()) {
             model.addAttribute("showMacAddress", true);
+            model.addAttribute("showUserId", true);
         }
 
         boolean showVoltage = !type.isZigbee() 
@@ -451,6 +452,7 @@ public class InventoryController {
             }
         } else if (type.isHoneywell()) {
             model.addAttribute("showMacAddress", true);
+            model.addAttribute("showUserId", true);
         }
 
         boolean showVoltage = !type.isZigbee() 

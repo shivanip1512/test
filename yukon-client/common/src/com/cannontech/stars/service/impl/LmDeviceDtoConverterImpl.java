@@ -63,6 +63,7 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
         dto.setSerialNumber(hwFields[ImportFields.IDX_SERIAL_NO]);
         dto.setServiceCompanyName(hwFields[ImportFields.IDX_SERVICE_COMPANY]);
         dto.setMacAddress(hwFields[ImportFields.IDX_MAC_ADDRESS]);
+        dto.setUserId(Integer.valueOf((hwFields[ImportFields.IDX_USER_ID])));
         
         return dto;
     }

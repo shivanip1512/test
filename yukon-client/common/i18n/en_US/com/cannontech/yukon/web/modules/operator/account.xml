@@ -209,6 +209,7 @@
     <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.APP_KW">Energy usage of the appliance in kW. Enter in decimal format.</entry>
     <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.APP_RELAY_NUM">Relay number of the load control device to be used for program assignment. The typical value is 1, but it depends on the device configuration. The relay must be assigned a value to allow configuration commands to be sent out correctly. Maximum number of characters is 1.</entry>
     <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.MAC_ADDRESS">MAC Address is mandatory for Honeywell Wi-Fi. It is optional for others.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.USER_ID">User Id is mandatory for Honeywell Wi-Fi. It is optional for others.</entry>
     <entry key="yukon.web.modules.operator.accountImport.hardwareField.description.OPTION_PARAMS">Optional parameter for special import functions.</entry>
     
     <entry key="yukon.web.modules.operator.accountImport.hardwareFieldLegend.a.label">a.</entry> 

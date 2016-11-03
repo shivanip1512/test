@@ -291,14 +291,18 @@ public class StarsInventoryBaseServiceImpl implements StarsInventoryBaseService 
 
                 if (inventoryIdentifier.getHardwareType().isHoneywell()) {
                     String macAddress = dto.getMacAddress();
+                    Integer userId = dto.getUserId();
                     if (StringUtils.isBlank(macAddress) || !Validator.isMacAddress(macAddress)) {
                         throw new StarsInvalidArgumentException("Valid MAC Address is required");
+                    } else if (userId == null) {
+                        throw new StarsInvalidArgumentException("Valid User Id is required");
                     }
                     YukonListEntry entry = yukonListDao.getYukonListEntry(hardwareTypeID);
                     String entryText = entry.getEntryText();
                     PaoType paoType = PaoType.getForDbString(entryText);
                     PaoIdentifier honeywellWifiIdentifier = new PaoIdentifier(liteInv.getDeviceID(), paoType);
-                    honeywellBuilder.updateDevice(lmHw.getInventoryID(), macAddress, liteInv.getDeviceID(), honeywellWifiIdentifier);
+                    honeywellBuilder.updateDevice(lmHw.getInventoryID(), macAddress, liteInv.getDeviceID(),
+                        dto.getUserId(), honeywellWifiIdentifier);
                 }
             }
             // update install event

@@ -9,6 +9,7 @@ import com.google.common.base.Objects;
     PaoType.HONEYWELL_VISIONPRO_8000, PaoType.HONEYWELL_THERMOSTAT })
 public class CompleteHoneywellWifiThermostat extends CompleteDevice {
     private String macAddress;
+    private Integer userId;
 
     @YukonPaoField
     public String getMacAddress() {
@@ -19,9 +20,18 @@ public class CompleteHoneywellWifiThermostat extends CompleteDevice {
         this.macAddress = macAddress;
     }
 
+    @YukonPaoField
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
     @Override
     public int hashCode() {
-        return Objects.hashCode(super.hashCode(), macAddress);
+        return Objects.hashCode(super.hashCode(), macAddress, userId);
     }
 
     @Override
@@ -31,13 +41,14 @@ public class CompleteHoneywellWifiThermostat extends CompleteDevice {
                 return false;
             }
             CompleteHoneywellWifiThermostat that = (CompleteHoneywellWifiThermostat) object;
-            return Objects.equal(macAddress, that.macAddress);
+            return Objects.equal(macAddress, that.macAddress) && Objects.equal(userId, that.userId);
         }
         return false;
     }
 
     @Override
     public String toString() {
-        return super.toString() + " CompleteHoneywellWifiThermostat [ macAddress=" + macAddress + "]";
+        return super.toString() + " CompleteHoneywellWifiThermostat [ macAddress=" + macAddress + ", userId=" + userId
+            + "]";
     }
 }
