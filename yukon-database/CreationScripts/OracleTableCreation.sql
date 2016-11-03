@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     10/31/2016 1:48:46 PM                        */
+/* Created on:     11/3/2016 12:25:56 AM                        */
 /*==============================================================*/
 
 
@@ -6197,13 +6197,13 @@ insert into LMGroupExpressComAddress values( 0, '(none)', 0, '(none)' );
 /* Table: LMGroupHoneywellWiFi                                  */
 /*==============================================================*/
 create table LMGroupHoneywellWiFi  (
-   DeviceID             NUMBER                          not null,
-   GroupID              NUMBER                          not null,
-   constraint PK_LMGROUPHONEYWELLWIFI primary key (DeviceID)
+   DeviceId             NUMBER                          not null,
+   HoneywellGroupId     NUMBER                          not null,
+   constraint PK_LMGroupHoneywellWiFi primary key (DeviceId)
 );
 
 alter table LMGroupHoneywellWiFi
-   add constraint AK_LMGROUPHONEYWELLWIFI unique (GroupID);
+   add constraint AK_LMGroupHoneywellWiFi unique (HoneywellGroupId);
 
 /*==============================================================*/
 /* Table: LMGroupMCT                                            */
@@ -12229,7 +12229,7 @@ alter table LMGroupExpressCom
       references Route (RouteID);
 
 alter table LMGroupHoneywellWiFi
-   add constraint FK_LMGROUPHONEYWELLWIFILMGROUP foreign key (DeviceID)
+   add constraint FK_LMGroupHoneywellWiFiLMGroup foreign key (DeviceId)
       references LMGroup (DeviceID)
       on delete cascade;
 
