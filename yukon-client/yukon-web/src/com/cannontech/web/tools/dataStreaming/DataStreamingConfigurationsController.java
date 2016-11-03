@@ -424,20 +424,21 @@ public class DataStreamingConfigurationsController {
     @RequestMapping("discrepancies/{deviceId}/resend")
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String resendDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext,
-            FlashScope flash) {
+            FlashScope flash, PagingParameters paging, SortingParameters sorting) {
         LiteYukonUser user = userContext.getYukonUser();
+        String redirectUrl = "redirect:/tools/dataStreaming/discrepancies?page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage() + "&sort=" + sorting.getSort() + "&dir=" + sorting.getDirection();
 
         DataStreamingConfigResult result;
         try {
             result = dataStreamingService.resend(Arrays.asList(deviceId), user);
             if(result.acceptedWithError()){
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError"));
-                return "../dataStreaming/discrepancies.jsp";
+                return redirectUrl;
             }
             model.addAttribute("resultsId", result.getResultsId());
         } catch (DataStreamingConfigException e) {
             flash.setError(e.getMessageSourceResolvable());
-            return "../dataStreaming/discrepancies.jsp";
+            return redirectUrl;
         }
         return "redirect:/bulk/dataStreaming/dataStreamingResults";
     }

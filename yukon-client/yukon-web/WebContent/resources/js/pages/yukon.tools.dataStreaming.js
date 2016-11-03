@@ -141,8 +141,18 @@ yukon.tools.dataStreaming = (function () {
             
             $(document).on('yukon:tools:dataStreaming:resend', function (ev) {
                 var container = $(ev.target),
-                deviceId = container.data('deviceId');
-                window.location.href = yukon.url('/tools/dataStreaming/discrepancies/' + deviceId + '/resend');
+                deviceId = container.data('deviceId'),
+                sorting = $('.sortable.desc, .sortable.asc'),
+                paging = $('.paging-area'),
+                params = {};
+                
+                if (sorting.length > 0) {
+                    params.sort = sorting.data('sort'),
+                    params.dir = sorting.is('.desc') ? 'desc' : 'asc';
+                }
+                params.itemsPerPage = paging.length > 0 ? paging.data('pageSize') : 10;
+                params.page = paging.length > 0 ? paging.data('currentPage') : 1;
+                window.location.href = yukon.url('/tools/dataStreaming/discrepancies/' + deviceId + '/resend?' + $.param(params));
             });
             
             $(document).on('yukon:tools:dataStreaming:accept', function (ev) {
