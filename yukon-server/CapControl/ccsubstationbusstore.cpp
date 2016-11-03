@@ -3581,7 +3581,8 @@ namespace {
 
 std::set<long> loadSubstationIntoMap(const long substationId, PaoIdToSubstationMap* paobject_substation_map, const PaoIdToSpecialAreaMap& paobject_specialarea_map);
 void loadSubstationPoints(const long substationId, const PaoIdToSubstationMap* paobject_substation_map, std::multimap<long, CapControlPao*>& pointid_to_pao, const std::set<long>& modifiedPaoIDs, PointIdToSubstationMultiMap *pointid_station_map);
-void loadSubstationAreaAssignments(const long substationId, const PaoIdToSubstationMap* paobject_substation_map, const PaoIdToAreaMap* paobject_area_map, ChildToParentMap* substation_area_map, const PaoIdToSpecialAreaMap* paobject_specialarea_map, ChildToParentMultiMap* substation_specialarea_map, CtiCCSubstation_vec* ccSubstations);
+void loadSubstationAreaAssignments(const long substationId, const PaoIdToSubstationMap* paobject_substation_map, const PaoIdToAreaMap* paobject_area_map, ChildToParentMap* substation_area_map, CtiCCSubstation_vec* ccSubstations);
+void loadSubstationSpecialAreaAssignments(const long substationId, const PaoIdToSubstationMap* paobject_substation_map, const PaoIdToSpecialAreaMap* paobject_specialarea_map, ChildToParentMultiMap* substation_specialarea_map, CtiCCSubstation_vec* ccSubstations);
 std::vector<long> loadSubstationSubBuses(const long substationId);
 
 }
@@ -3614,7 +3615,8 @@ try
 
         loadSubstationPoints(substationId, paobject_substation_map, _pointID_to_pao, modifiedPaoIDs, pointid_station_map);
 
-        loadSubstationAreaAssignments(substationId, paobject_substation_map, paobject_area_map, substation_area_map, paobject_specialarea_map, substation_specialarea_map, ccSubstations);
+        loadSubstationAreaAssignments(substationId, paobject_substation_map, paobject_area_map, substation_area_map, ccSubstations);
+        loadSubstationSpecialAreaAssignments(substationId, paobject_substation_map, paobject_specialarea_map, substation_specialarea_map, ccSubstations);
 
         if ( substationId > 0 ) // else, when reloading all, then the reload of feeders will be called after subBusReload and take care of it.
         {
@@ -3646,22 +3648,22 @@ std::set<long> loadSubstationIntoMap(const long substationId, PaoIdToSubstationM
 {
     static const std::string sql =
         "SELECT "
-        "Y.PAObjectID, "
-        "Y.Category, "
-        "Y.PAOClass, "
-        "Y.PAOName, "
-        "Y.Type, "
-        "Y.Description, "
-        "Y.DisableFlag, "
-        "S.VoltReductionPointId, "
-        "D.AdditionalFlags, "
-        "D.SAEnabledID "
+            "Y.PAObjectID, "
+            "Y.Category, "
+            "Y.PAOClass, "
+            "Y.PAOName, "
+            "Y.Type, "
+            "Y.Description, "
+            "Y.DisableFlag, "
+            "S.VoltReductionPointId, "
+            "D.AdditionalFlags, "
+            "D.SAEnabledID "
         "FROM "
-        "YukonPAObject Y "
-        "JOIN CAPCONTROLSUBSTATION S "
-        "ON Y.PAObjectID = S.SubstationID "
-        "LEFT OUTER JOIN DYNAMICCCSUBSTATION D "
-        "ON S.SubstationID = D.SubStationID";
+            "YukonPAObject Y "
+                "JOIN CAPCONTROLSUBSTATION S "
+                    "ON Y.PAObjectID = S.SubstationID "
+                "LEFT OUTER JOIN DYNAMICCCSUBSTATION D "
+                    "ON S.SubstationID = D.SubStationID";
 
     static const std::string sqlID = sql +
         " WHERE Y.PAObjectID = ?";
@@ -3711,14 +3713,14 @@ void loadSubstationPoints(const long substationId, const PaoIdToSubstationMap* p
     {
         static const std::string sql = 
             "SELECT "
-            "P.POINTID, "
-            "P.POINTTYPE, "
-            "P.PAObjectID, "
-            "P.POINTOFFSET "
+                "P.POINTID, "
+                "P.POINTTYPE, "
+                "P.PAObjectID, "
+                "P.POINTOFFSET "
             "FROM "
-            "POINT P "
-            "JOIN CAPCONTROLSUBSTATION S "
-            "ON P.PAObjectID = S.SubstationID";
+                "POINT P "
+                    "JOIN CAPCONTROLSUBSTATION S "
+                        "ON P.PAObjectID = S.SubstationID";
 
         static const std::string sqlID = sql +
             " WHERE P.PAObjectID = ?";
@@ -3770,22 +3772,17 @@ void loadSubstationPoints(const long substationId, const PaoIdToSubstationMap* p
     }
 }
 
-void loadSubstationAreaAssignments(const long substationId, const PaoIdToSubstationMap* paobject_substation_map, const PaoIdToAreaMap* paobject_area_map, ChildToParentMap* substation_area_map, const PaoIdToSpecialAreaMap* paobject_specialarea_map, ChildToParentMultiMap* substation_specialarea_map, CtiCCSubstation_vec* ccSubstations)
+void loadSubstationAreaAssignments(const long substationId, const PaoIdToSubstationMap* paobject_substation_map, const PaoIdToAreaMap* paobject_area_map, ChildToParentMap* substation_area_map, CtiCCSubstation_vec* ccSubstations)
 {
     static const std::string sql = 
         "SELECT "
-        "SubstationID, "
-        "A.AreaID, "
-        "S.AreaID AS SpecialAreaID "
+            "SubstationBusID, "  //  actually SubstationID, which is horrible and confusing
+            "AreaID "
         "FROM "
-        "CAPCONTROLSUBSTATION "
-        "LEFT OUTER JOIN CCSUBAREAASSIGNMENT A "
-        "ON SubstationID = A.SubstationBusID "
-        "LEFT OUTER JOIN CCSUBSPECIALAREAASSIGNMENT S "
-        "ON SubstationID = S.SubstationBusID";
+            "CCSUBAREAASSIGNMENT";
 
     static const std::string sqlID = sql +
-        " WHERE SubstationID = ?";
+        " WHERE SubstationBusID = ?";
 
     Cti::Database::DatabaseConnection connection;
     Cti::Database::DatabaseReader     rdr( connection );
@@ -3809,63 +3806,98 @@ void loadSubstationAreaAssignments(const long substationId, const PaoIdToSubstat
 
     while ( rdr() ) 
     {
-        long substationID;
-
-        rdr["SubstationID"] >> substationID;
+        const long substationID = rdr["SubstationBusID"].as<long>();
 
         if ( auto substationSearch = Cti::mapFind( *paobject_substation_map, substationID ) )
         {
             CtiCCSubstationPtr substation = *substationSearch;
 
-            if ( ! rdr["AreaID"].isNull() ) 
+            const long areaID = rdr["AreaID"].as<long>();
+
+            if ( auto area = Cti::mapFind( *paobject_area_map, areaID ) )
             {
-                long areaID;
+                substation->setParentId( areaID );
 
-                rdr["AreaID"] >> areaID;
+                (*area)->addSubstationId( substationID );
 
-                if ( auto area = Cti::mapFind( *paobject_area_map, areaID ) )
-                {
-                    substation->setParentId( areaID );
-
-                    (*area)->addSubstationId( substationID );
-
-                    substation_area_map->emplace( substationID, areaID );
-                }
-            }
-
-            if ( ! rdr["SpecialAreaID"].isNull() ) 
-            {
-                long specialAreaID;
-
-                rdr["SpecialAreaID"] >> specialAreaID;
-
-                if ( auto specialArea = Cti::mapFind( *paobject_specialarea_map, specialAreaID ) )
-                {
-                    if ( substation->getParentId() <= 0 )
-                    {
-                        substation->setParentId( specialAreaID );
-                    }
-
-                    (*specialArea)->addSubstationId( substationID );
-
-                    substation_specialarea_map->emplace( substationID, specialAreaID );
-
-                    if ( substation->getSaEnabledId() == 0 )
-                    {
-                        substation->setSaEnabledId( specialAreaID );
-                    }
-
-                    if ( ! (*specialArea)->getDisableFlag() )
-                    {
-                        substation->setSaEnabledId( specialAreaID );
-                        substation->setSaEnabledFlag( true );
-                    }
-                }
-            }
-
-            if ( substation->getParentId() > 0 )
-            {
                 ccSubstations->push_back( substation );
+
+                substation_area_map->emplace( substationID, areaID );
+            }
+        }
+    }
+}
+
+void loadSubstationSpecialAreaAssignments(const long substationId, const PaoIdToSubstationMap* paobject_substation_map, const PaoIdToSpecialAreaMap* paobject_specialarea_map, ChildToParentMultiMap* substation_specialarea_map, CtiCCSubstation_vec* ccSubstations)
+{
+    static const std::string sql = 
+        "SELECT "
+            "SubstationBusID, "  //  actually SubstationID, which is horrible and confusing
+            "AreaID "
+        "FROM "
+            "CCSUBSPECIALAREAASSIGNMENT";
+
+    static const std::string sqlID = sql +
+        " WHERE SubstationBusID = ?";
+
+    Cti::Database::DatabaseConnection connection;
+    Cti::Database::DatabaseReader     rdr( connection );
+
+    if ( substationId > 0 )
+    {
+        rdr.setCommandText( sqlID );
+        rdr << substationId;
+    }
+    else
+    {
+        rdr.setCommandText( sql );
+    }
+
+    rdr.execute();
+
+    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+    {
+        CTILOG_INFO( dout, rdr.asString() );
+    }
+
+    while ( rdr() ) 
+    {
+        const long substationID = rdr["SubstationBusID"].as<long>();
+
+        if ( auto substationSearch = Cti::mapFind( *paobject_substation_map, substationID ) )
+        {
+            CtiCCSubstationPtr substation = *substationSearch;
+
+            long specialAreaID = rdr["AreaID"].as<long>();
+
+            if ( auto specialArea = Cti::mapFind( *paobject_specialarea_map, specialAreaID ) )
+            {
+                //  If the substation doesn't have an assigned special area ID yet, 
+                //    set the first one as its special area.
+                if ( substation->getSaEnabledId() == 0 )
+                {
+                    substation->setSaEnabledId( specialAreaID );
+                }
+                //  However, if we encounter an active special area,
+                //    override any other special area ID with the 
+                //    current and mark it as enabled.
+                if ( ! (*specialArea)->getDisableFlag() )
+                {
+                    substation->setSaEnabledId( specialAreaID );
+                    substation->setSaEnabledFlag( true );
+                }
+                //  If the substation doesn't have a parent yet, mark this special area as 
+                //    its parent and add it to the ccSubstations messaging vector.
+                if ( substation->getParentId() <= 0 )
+                {
+                    substation->setParentId( specialAreaID );
+
+                    ccSubstations->push_back( substation );
+                }
+
+                (*specialArea)->addSubstationId( substationID );
+
+                substation_specialarea_map->emplace( substationID, specialAreaID );
             }
         }
     }
@@ -3878,11 +3910,11 @@ std::vector<long> loadSubstationSubBuses(const long substationId)
     {
         static const std::string sql = 
             "SELECT "
-            "SubStationBusID "
+                "SubStationBusID "
             "FROM "
-            "CCSUBSTATIONSUBBUSLIST "
+                "CCSUBSTATIONSUBBUSLIST "
             "WHERE "
-            "SubStationID = ?";
+                "SubStationID = ?";
 
         Cti::Database::DatabaseConnection connection;
         Cti::Database::DatabaseReader     rdr( connection, sql );
@@ -3898,11 +3930,7 @@ std::vector<long> loadSubstationSubBuses(const long substationId)
 
         while ( rdr() )
         {
-            long currentSubBusId;
-
-            rdr["SubStationBusID"] >> currentSubBusId;
-
-            reloadBusIDs.push_back( currentSubBusId );
+            reloadBusIDs.push_back( rdr["SubStationBusID"].as<long>() );
         }
     }
 
