@@ -13754,19 +13754,19 @@
                 <name>Real Time Clock Battery Failure</name>
                 <stategroup value="TrueFalse" />
             </point>
-            <point type="Status" offset="10012">
+            <point type="Status" offset="0">
                 <name>SCADA Override Clear</name>
                 <controlType value="NORMAL" />
                 <controlOffset value="12" />
-                <stategroup value="YesNo" />
+                <stategroup value="NoYes" />
             </point>
-            <point type="Status" offset="10040">
+            <point type="Status" offset="93">
                 <name>Ignore SCADA Override Time of Day</name>
                 <controlType value="LATCH" />
                 <controlOffset value="40" />
                 <stategroup value="YesNo" />
             </point>
-            <point type="Status" offset="10049">
+            <point type="Status" offset="0">
                 <name>Enable SCADA Override</name>
                 <controlType value="NORMAL" />
                 <controlOffset value="49" />
