@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.capcontrol.BankLocation;
 import com.cannontech.capcontrol.CBCPointGroup;
 import com.cannontech.capcontrol.LiteCapBankAdditional;
+import com.cannontech.capcontrol.dao.SubstationDao;
+import com.cannontech.capcontrol.model.LiteCapControlObject;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.clientutils.YukonLogManager;
@@ -28,7 +30,6 @@ import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.CachingPointFormattingService;
-import com.cannontech.database.data.capcontrol.CapControlSubstation;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -57,6 +58,7 @@ public class CapBankDetailsController {
     @Autowired private PaoDao paoDao;
     @Autowired private AttributeService attributeService;
     @Autowired private SubstationService substationService;
+    @Autowired private SubstationDao substationDao;
     @Autowired private IDatabaseCache dbCache;
 
     private static final Map<BuiltInAttribute,String> formatMappings = ImmutableMap.<BuiltInAttribute,String>builder()
@@ -75,6 +77,7 @@ public class CapBankDetailsController {
         List<CapBankDevice> deviceList = null;
         List<ViewableCapBank> capBanks = null;
         Map<Integer, LiteYukonPAObject> allLitePaos = null;
+        SubStation substation = null;
 
         // Page data
         CapControlType type = capControlDao.getCapControlType(value);
@@ -88,22 +91,32 @@ public class CapBankDetailsController {
                     bankIds.add(bank.getCcId());
                 }
             }
-        } catch (NotFoundException ne) {
-            // Check whether the substation is orphan
-            List<ViewableSubBus> subBuses = substationService.getBusesForSubstation(value);
-            List<ViewableFeeder> feeders = substationService.getFeedersForSubBuses(subBuses);
-            capBanks = substationService.getCapBanksForFeeders(feeders);
-
-            if (capBanks != null) {
-                isSubstationOrphan = true;
-                model.addAttribute("orphan", true);
-                for (ViewableCapBank bank : capBanks) {
-                    bankIds.add(bank.getCcId());
+        } catch (NotFoundException nfe) {
+            if (type == CapControlType.SUBSTATION) {
+                // Check whether the substation is orphan
+                List<LiteCapControlObject> ccObjects = substationDao.getOrphans();
+                for (LiteCapControlObject ccSubstation : ccObjects) {
+                    if (ccSubstation.getId().intValue() == value) {
+                        isSubstationOrphan = true;
+                        substation = new SubStation();
+                        substation.setCcId(ccSubstation.getId());
+                        substation.setCcName(ccSubstation.getName());
+                        List<ViewableSubBus> subBuses = substationService.getBusesForSubstation(value);
+                        List<ViewableFeeder> feeders = substationService.getFeedersForSubBuses(subBuses);
+                        capBanks = substationService.getCapBanksForFeeders(feeders);
+                        break;
+                    }
                 }
-            } else {
-                throw ne;
-            }
 
+                if (capBanks != null) {
+                    model.addAttribute("orphan", isSubstationOrphan);
+                    for (ViewableCapBank bank : capBanks) {
+                        bankIds.add(bank.getCcId());
+                    }
+                } else {
+                    throw nfe;
+                }
+            }
         }
 
         List<LiteCapBankAdditional> additionalList = capControlDao.getCapBankAdditional(bankIds);
@@ -145,7 +158,6 @@ public class CapBankDetailsController {
                 }
             }
         }
-        SubStation substation;
         StreamableCapObject area = null;
         if (type == CapControlType.SUBBUS) {
             SubBus bus = cache.getSubBus(value);
@@ -156,12 +168,7 @@ public class CapBankDetailsController {
             SubBus bus = cache.getSubBus(feeder.getParentID());
             substation = cache.getSubstation(bus.getParentID());
             area = cache.getArea(substation.getParentID());
-        } else if (isSubstationOrphan) {
-            CapControlSubstation capControlSubstation = substationService.get(value);
-            substation = new SubStation();
-            substation.setCcId(capControlSubstation.getCapControlPAOID());
-            substation.setCcName(capControlSubstation.getPAOName());
-        } else {// Station
+        } else if (!isSubstationOrphan) {// Station
             // If this is not a station, a not found exception will be thrown from cache
             substation = cache.getSubstation(value);
             area = cache.getArea(substation.getParentID());
