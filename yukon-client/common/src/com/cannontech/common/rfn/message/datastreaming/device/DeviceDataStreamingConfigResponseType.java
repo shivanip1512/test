@@ -16,7 +16,7 @@ public enum DeviceDataStreamingConfigResponseType {
                                      // the current sequence number is less than the last sequence number received.
     NO_DEVICES, // i.e., the devices field is null or empty.
     NO_CONFIGS, // i.e., the configs field is null or empty.
-    INVALID_CONFIG, // e.x, all values are nulls, some metricID is null, etc.
+    INVALID_CONFIG, // found invalid-configured (wrong input parameters) device.
     
     NETWORK_MANAGER_SERVER_FAILURE,
     NETWORK_MANAGER_DATABASE_FAILURE,

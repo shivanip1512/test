@@ -13,9 +13,9 @@ public class DeviceDataStreamingConfig implements Serializable {
     private Boolean dataStreamingOn; // Turns on or off data streaming for the whole device.
                                      // Changing this value doesn't change individual metric configuration.
                                      // Devices are initially set false (i.e., dataStreamingoff).
-    private Map<Integer, MetricConfig>  metrics; // Map<metricId, metricConfig>
-                                                 // Describes the list of metrics being updated for configuration
-                                                 // or a full list of metrics for synchronization.
+    private Map<Integer, MetricConfig> metrics; // Map<metricId, metricConfig>
+                                                // Describes the list of metrics being updated for configuration
+                                                // or a full list of metrics for synchronization.
     private Long sequenceNumber; // This value is generated only by device (i.e., only used for synchronization);
                                  // Sets null for configuration.
     

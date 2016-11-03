@@ -13,82 +13,89 @@ public class NetworkDataStreamingInfo implements Serializable {
     private static final long serialVersionUID = 1L;
 
     private short unitReportingInterval; // to calculate the basic unit of DS capacity.  (e.x., 30 minutes)
-    
     private short minReportingInterval;  // Define the minimum reporting interval. (e.x.,  1 minute)
     private short maxReportingInterval;  // Define the maximum reporting interval. (e.x., 30 minute)
     
-    private int maxNumberOfReportingIntervals;
+    private short maxNumberOfReportingIntervals;
         // Define the max number of reporting intervals you can configure for a device.
         // For the initial phase, only one reporting interval is supported.
        
-    private int maxNumberOfMetricsPerReport;
+    private short maxNumberOfMetricsPerReport;
         // Define the max number of DS metrics fitted in a report.
         // Note load is calculated by reports.
         // For example, if max metrics is set to 8 and you already enabled one DS metric,
         // the current firmware implementation supports you to add 7 more metrics without inputting additional load.
     
-    private int maxNumberOfReportsPerDevice;
+    private short maxNumberOfReportsPerDevice;
         // Define the max number of reports a device can send at a reporting time.
         // Thus the max metrics you can enable for a device equals to
         // the max metrics per report times max reports per device. For the initial phase,
         // since only one report per device is supported, if the max metrics per report is 8,
         // up to (8 * 1 = 8) metrics can be enabled for a device.
 
-    public Double getMaxCapacity()
+    public short getUnitReportingInterval()
     {
-        return 300.0;
-    }
-    
-    public short getUnitReportingInterval() {
         return unitReportingInterval;
     }
 
-    public void setUnitReportingInterval(short unitReportingInterval) {
+    public void setUnitReportingInterval(short unitReportingInterval)
+    {
         this.unitReportingInterval = unitReportingInterval;
     }
 
-    public short getMinReportingInterval() {
+    public short getMinReportingInterval()
+    {
         return minReportingInterval;
     }
 
-    public void setMinReportingInterval(short minReportingInterval) {
+    public void setMinReportingInterval(short minReportingInterval)
+    {
         this.minReportingInterval = minReportingInterval;
     }
 
-    public short getMaxReportingInterval() {
+    public short getMaxReportingInterval()
+    {
         return maxReportingInterval;
     }
 
-    public void setMaxReportingInterval(short maxReportingInterval) {
+    public void setMaxReportingInterval(short maxReportingInterval)
+    {
         this.maxReportingInterval = maxReportingInterval;
     }
 
-    public int getMaxNumberOfReportingIntervals() {
+    public short getMaxNumberOfReportingIntervals()
+    {
         return maxNumberOfReportingIntervals;
     }
 
-    public void setMaxNumberOfReportingIntervals(int maxNumberOfReportingIntervals) {
+    public void setMaxNumberOfReportingIntervals(short maxNumberOfReportingIntervals)
+    {
         this.maxNumberOfReportingIntervals = maxNumberOfReportingIntervals;
     }
 
-    public int getMaxNumberOfMetricsPerReport() {
+    public short getMaxNumberOfMetricsPerReport()
+    {
         return maxNumberOfMetricsPerReport;
     }
 
-    public void setMaxNumberOfMetricsPerReport(int maxNumberOfMetricsPerReport) {
+    public void setMaxNumberOfMetricsPerReport(short maxNumberOfMetricsPerReport)
+    {
         this.maxNumberOfMetricsPerReport = maxNumberOfMetricsPerReport;
     }
 
-    public int getMaxNumberOfReportsPerDevice() {
+    public short getMaxNumberOfReportsPerDevice()
+    {
         return maxNumberOfReportsPerDevice;
     }
 
-    public void setMaxNumberOfReportsPerDevice(int maxNumberOfReportsPerDevice) {
+    public void setMaxNumberOfReportsPerDevice(short maxNumberOfReportsPerDevice)
+    {
         this.maxNumberOfReportsPerDevice = maxNumberOfReportsPerDevice;
     }
 
     @Override
-    public int hashCode() {
+    public int hashCode()
+    {
         final int prime = 31;
         int result = 1;
         result = prime * result + maxNumberOfMetricsPerReport;
@@ -101,44 +108,47 @@ public class NetworkDataStreamingInfo implements Serializable {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
+    public boolean equals(Object obj)
+    {
+        if (this == obj)
             return true;
-        }
-        if (obj == null) {
+        if (obj == null)
             return false;
-        }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
         NetworkDataStreamingInfo other = (NetworkDataStreamingInfo) obj;
-        if (maxNumberOfMetricsPerReport != other.maxNumberOfMetricsPerReport) {
+        if (maxNumberOfMetricsPerReport != other.maxNumberOfMetricsPerReport)
             return false;
-        }
-        if (maxNumberOfReportingIntervals != other.maxNumberOfReportingIntervals) {
+        if (maxNumberOfReportingIntervals != other.maxNumberOfReportingIntervals)
             return false;
-        }
-        if (maxNumberOfReportsPerDevice != other.maxNumberOfReportsPerDevice) {
+        if (maxNumberOfReportsPerDevice != other.maxNumberOfReportsPerDevice)
             return false;
-        }
-        if (maxReportingInterval != other.maxReportingInterval) {
+        if (maxReportingInterval != other.maxReportingInterval)
             return false;
-        }
-        if (minReportingInterval != other.minReportingInterval) {
+        if (minReportingInterval != other.minReportingInterval)
             return false;
-        }
-        if (unitReportingInterval != other.unitReportingInterval) {
+        if (unitReportingInterval != other.unitReportingInterval)
             return false;
-        }
         return true;
     }
 
     @Override
-    public String toString() {
-        return "NetworkDataStreamingInfo [unitReportingInterval=" + unitReportingInterval + ", minReportingInterval="
-               + minReportingInterval + ", maxReportingInterval=" + maxReportingInterval
-               + ", maxNumberOfReportingIntervals=" + maxNumberOfReportingIntervals + ", maxNumberOfMetricsPerReport="
-               + maxNumberOfMetricsPerReport + ", maxNumberOfReportsPerDevice=" + maxNumberOfReportsPerDevice + "]";
+    public String toString()
+    {
+        StringBuilder builder = new StringBuilder();
+        builder.append("NetworkDataStreamingInfo [unitReportingInterval=");
+        builder.append(unitReportingInterval);
+        builder.append(", minReportingInterval=");
+        builder.append(minReportingInterval);
+        builder.append(", maxReportingInterval=");
+        builder.append(maxReportingInterval);
+        builder.append(", maxNumberOfReportingIntervals=");
+        builder.append(maxNumberOfReportingIntervals);
+        builder.append(", maxNumberOfMetricsPerReport=");
+        builder.append(maxNumberOfMetricsPerReport);
+        builder.append(", maxNumberOfReportsPerDevice=");
+        builder.append(maxNumberOfReportsPerDevice);
+        builder.append("]");
+        return builder.toString();
     }
-    
 }
