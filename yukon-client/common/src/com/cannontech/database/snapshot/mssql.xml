@@ -41363,9 +41363,9 @@
             <i__deleteRule>1</i__deleteRule>
           </com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
           <com.cariboulake.db.schemacompare.business.domain.db.ForeignKeyConstraint>
-            <i__foreignKeyName>FK_LMGROUPHONEYWELLWIFILMGROUP</i__foreignKeyName>
+            <i__foreignKeyName>FK_LMGroupHoneywellWiFiLMGroup</i__foreignKeyName>
             <i__keySequence>1</i__keySequence>
-            <i__columnName>DeviceID</i__columnName>
+            <i__columnName>DeviceId</i__columnName>
             <i__foreignColumnName>DeviceID</i__foreignColumnName>
             <i__foreignTableName>LMGroup</i__foreignTableName>
             <i__updateRule>0</i__updateRule>
@@ -44228,7 +44228,7 @@
         <columnList>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>DeviceID</i__columnName>
+            <i__columnName>DeviceId</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>numeric</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -44244,7 +44244,7 @@
           </com.cariboulake.db.schemacompare.business.domain.db.Column>
           <com.cariboulake.db.schemacompare.business.domain.db.Column>
             <i__table reference="../../.."/>
-            <i__columnName>GroupID</i__columnName>
+            <i__columnName>HoneywellGroupId</i__columnName>
             <i__columnNameDiffers>false</i__columnNameDiffers>
             <i__typeName>numeric</i__typeName>
             <i__typeNameDiffers>false</i__typeNameDiffers>
@@ -44263,31 +44263,31 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
-            <string>PK_LMGROUPHONEYWELLWIFI</string>
+            <string>PK_LMGroupHoneywellWiFi</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>LMGroupHoneywellWiFi</i__tableName>
                   <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>DeviceID</i__columnName>
+                  <i__columnName>DeviceId</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>PK_LMGROUPHONEYWELLWIFI</indexName>
+              <indexName>PK_LMGroupHoneywellWiFi</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
           <entry>
-            <string>AK_LMGROUPHONEYWELLWIFI</string>
+            <string>AK_LMGroupHoneywellWiFi</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
                 <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
                   <i__tableName>LMGroupHoneywellWiFi</i__tableName>
                   <i__ordinalPosition>1</i__ordinalPosition>
-                  <i__columnName>GroupID</i__columnName>
+                  <i__columnName>HoneywellGroupId</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
-              <indexName>AK_LMGROUPHONEYWELLWIFI</indexName>
+              <indexName>AK_LMGroupHoneywellWiFi</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
           </entry>
         </i__indexes>
