@@ -12924,7 +12924,7 @@
                 <name>Daily Operations</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="Analog" offset="3">
                 <init>true</init>
@@ -12977,7 +12977,7 @@
                 <name>Daily Operations</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
             <point type="Analog" offset="3">
                 <init>true</init>
@@ -14170,7 +14170,7 @@
                 <name>OPERATION</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
-                <decimalplaces value="3" />
+                <decimalplaces value="0" />
             </point>
         </points>
     </pao>
