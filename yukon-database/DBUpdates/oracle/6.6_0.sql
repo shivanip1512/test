@@ -661,16 +661,16 @@ ALTER TABLE HoneywellWifiThermostat
 
 /* Start YUK-15908 */
 CREATE TABLE LMGroupHoneywellWiFi  (
-   DeviceID             NUMBER                          NOT NULL,
-   GroupID              NUMBER                          NOT NULL,
-   CONSTRAINT PK_LMGROUPHONEYWELLWIFI PRIMARY KEY (DeviceID)
+   DeviceId             NUMBER                          NOT NULL,
+   HoneywellGroupId     NUMBER                          NOT NULL,
+   CONSTRAINT PK_LMGroupHoneywellWiFi PRIMARY KEY (DeviceId)
 );
 
 ALTER TABLE LMGroupHoneywellWiFi
-   ADD CONSTRAINT AK_LMGROUPHONEYWELLWIFI UNIQUE (GroupID);
+   ADD CONSTRAINT AK_LMGroupHoneywellWiFi UNIQUE (HoneywellGroupId);
    
 ALTER TABLE LMGroupHoneywellWiFi
-   ADD CONSTRAINT FK_LMGROUPHONEYWELLWIFILMGROUP FOREIGN KEY (DeviceID)
+   ADD CONSTRAINT FK_LMGroupHoneywellWiFiLMGroup FOREIGN KEY (DeviceId)
       REFERENCES LMGroup (DeviceID)
       ON DELETE CASCADE;
 /* End YUK-15908 */

@@ -766,18 +766,18 @@ GO
 
 /* Start YUK-15908 */
 CREATE TABLE LMGroupHoneywellWiFi  (
-   DeviceID             NUMERIC                          NOT NULL,
-   GroupID              NUMERIC                          NOT NULL,
-   CONSTRAINT PK_LMGROUPHONEYWELLWIFI PRIMARY KEY (DeviceID)
+   DeviceId             NUMERIC              NOT NULL,
+   HoneywellGroupId     NUMERIC              NOT NULL,
+   CONSTRAINT PK_LMGroupHoneywellWiFi PRIMARY KEY (DeviceId)
 );
 GO
 
 ALTER TABLE LMGroupHoneywellWiFi
-   ADD CONSTRAINT AK_LMGROUPHONEYWELLWIFI UNIQUE (GroupID);
+   ADD CONSTRAINT AK_LMGroupHoneywellWiFi UNIQUE (HoneywellGroupId);
 GO
 
 ALTER TABLE LMGroupHoneywellWiFi
-   ADD CONSTRAINT FK_LMGROUPHONEYWELLWIFILMGROUP FOREIGN KEY (DeviceID)
+   ADD CONSTRAINT FK_LMGroupHoneywellWiFiLMGroup FOREIGN KEY (DeviceId)
       REFERENCES LMGroup (DeviceID)
       ON DELETE CASCADE;
 GO
