@@ -1450,7 +1450,7 @@ void CtiCapController::registerForPoints( const RegistrationMethod m )
         }
         for ( const auto & mapEntry : store->getPAOStationMap() )
         {
-            CtiCCSubstationUnqPtr& currentStation = mapEntry.second;
+            const CtiCCSubstationUnqPtr& currentStation = mapEntry.second;
 
             currentStation->getPointRegistrationIds( registrationIds );
         }
