@@ -426,7 +426,7 @@ public class DataStreamingConfigurationsController {
     public String resendDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext,
             FlashScope flash, PagingParameters paging, SortingParameters sorting) {
         LiteYukonUser user = userContext.getYukonUser();
-        String redirectUrl = "redirect:/tools/dataStreaming/discrepancies?page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage() + "&sort=" + sorting.getSort() + "&dir=" + sorting.getDirection();
+        String redirectUrl = "redirect:/tools/dataStreaming/discrepancies" + getSortingPagingParameters(sorting, paging);
 
         DataStreamingConfigResult result;
         try {
@@ -474,7 +474,7 @@ public class DataStreamingConfigurationsController {
         for (String deviceId : deviceIds) {
             deviceList.add(Integer.parseInt(deviceId));
         }
-        String redirectUrl = "redirect:/tools/dataStreaming/discrepancies?page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage() + "&sort=" + sorting.getSort() + "&dir=" + sorting.getDirection();
+        String redirectUrl = "redirect:/tools/dataStreaming/discrepancies" + getSortingPagingParameters(sorting, paging);
 
         LiteYukonUser user = userContext.getYukonUser();
     
@@ -499,7 +499,7 @@ public class DataStreamingConfigurationsController {
     
     @RequestMapping(value="discrepancies/acceptAll", method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
-    public String acceptAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash) {
+    public String acceptAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash, PagingParameters paging, SortingParameters sorting) {
         List<Integer> deviceList = new ArrayList<>();
         String ids = request.getParameter("deviceIds");
         String [] deviceIds = ids.split(",");
@@ -510,8 +510,11 @@ public class DataStreamingConfigurationsController {
         
         dataStreamingService.accept(deviceList, user);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptAllSuccess"));
-        return "redirect:/tools/dataStreaming/discrepancies";
-      
+        return "redirect:/tools/dataStreaming/discrepancies" + getSortingPagingParameters(sorting, paging);
+    }
+    
+    private String getSortingPagingParameters(SortingParameters sorting, PagingParameters paging) {
+        return "?page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage() + "&sort=" + sorting.getSort() + "&dir=" + sorting.getDirection();
     }
     
     public enum DiscrepancySortBy implements DisplayableEnum {
