@@ -433,7 +433,6 @@ public class DataStreamingConfigurationsController {
             result = dataStreamingService.resend(Arrays.asList(deviceId), user);
             if(result.acceptedWithError()){
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError"));
-                return redirectUrl;
             }
             model.addAttribute("resultsId", result.getResultsId());
         } catch (DataStreamingConfigException e) {
@@ -493,7 +492,6 @@ public class DataStreamingConfigurationsController {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError.resending",
                     result.getAcceptedWithErrorFailedDeviceCount(), result.getTotalItems()));
             }
-            return redirectUrl;
         }
         model.addAttribute("resultsId", result.getResultsId());
         return "redirect:/bulk/dataStreaming/dataStreamingResults";
