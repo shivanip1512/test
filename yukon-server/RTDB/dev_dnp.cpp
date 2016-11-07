@@ -181,7 +181,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                 if ( ! point )
                 {
                     std::string errorMessage = "The specified point is not on device " + getName();
-                    returnErrorMessage(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
+                    insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
 
                     return ClientErrors::PointLookupFailed;
                 }
@@ -447,7 +447,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
                     if ( ! point )
                     {
                         std::string errorMessage = "The specified point is not on device " + getName();
-                        returnErrorMessage(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
+                        insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
 
                         return ClientErrors::PointLookupFailed;
                     }
@@ -464,7 +464,7 @@ YukonError_t DnpDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
 
                             std::string temp = "Control is inhibited for the specified analog point on device " + getName();
 
-                            returnErrorMessage(ClientErrors::ControlInhibitedOnPoint, OutMessage, retList, temp);
+                            insertReturnMsg(ClientErrors::ControlInhibitedOnPoint, OutMessage, retList, temp);
 
                             return ClientErrors::ControlInhibitedOnPoint;
                         }

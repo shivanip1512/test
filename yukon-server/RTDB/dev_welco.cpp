@@ -1601,7 +1601,7 @@ YukonError_t CtiDeviceWelco::executeControl(CtiRequestMsg *pReq, CtiCommandParse
             if ( ! point )
             {
                 std::string errorMessage = "The specified point is not on device " + getName();
-                returnErrorMessage(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
+                insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
 
                 return ClientErrors::PointLookupFailed;
             }

@@ -395,7 +395,7 @@ YukonError_t Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
     if( (parse.getFlags() &  CMD_FLAG_GV_KWH) &&
         (parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET)) )
     {
-        returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+        insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                            "Bad kwh command specification: rate parameter not supported");
 
         nRet = ExecutionComplete;
@@ -471,7 +471,7 @@ YukonError_t Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 
         if( outagenum < OUTAGE_NBR_MIN || outagenum > OUTAGE_NBR_MAX )
         {
-            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+            insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                "Bad outage specification - Acceptable values: " + CtiNumStr(OUTAGE_NBR_MIN) + " - " + CtiNumStr(OUTAGE_NBR_MAX));
 
             nRet = ExecutionComplete;
@@ -517,7 +517,7 @@ YukonError_t Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
                 temp += printDate(_daily_read_info.request.begin);
             }
 
-            returnErrorMessage(ClientErrors::CommandAlreadyInProgress, OutMessage, retList, temp);
+            insertReturnMsg(ClientErrors::CommandAlreadyInProgress, OutMessage, retList, temp);
 
             nRet = ExecutionComplete;
         }
@@ -540,21 +540,21 @@ YukonError_t Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
 
             if( channel < 1 || channel > 3 )
             {
-                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid channel for daily read request; must be 1-3 (" + CtiNumStr(channel) + ")");
 
                 nRet = ExecutionComplete;
             }
             else if( date_begin > Yesterday )  //  must begin on or before yesterday
             {
-                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid date for daily read request; must be before today (" + parse.getsValue("daily_read_date_begin") + ")");
 
                 nRet = ExecutionComplete;
             }
             else if( parse.isKeyValid("daily_read_detail") )
             {
-                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                    "Bad daily read detail not supported - Acceptable format: getvalue daily read mm/dd/yyyy");
 
                 nRet = ExecutionComplete;
@@ -562,21 +562,21 @@ YukonError_t Mct440_213xBDevice::executeGetValue(CtiRequestMsg     *pReq,
             else if( parse.isKeyValid("daily_read_date_end") ||
                      parse.isKeyValid("daily_reads") )
             {
-                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                    "Bad multi-day read not supported - Acceptable format: getvalue daily read mm/dd/yyyy");
 
                 nRet = ExecutionComplete;
             }
             else if( channel != 1 )
             {
-                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid channel for recent daily read request; only valid for channel 1 (" + CtiNumStr(channel)  + ")");
 
                 nRet = ExecutionComplete;
             }
             else if( date_begin < Today - 8 )  //  must be no more than 8 days ago
             {
-                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid date for recent daily read request; must be less than 8 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
 
                 nRet = ExecutionComplete;
@@ -1450,7 +1450,7 @@ YukonError_t Mct440_213xBDevice::executeGetConfig(CtiRequestMsg     *pReq,
             }
             else
             {
-                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                    "invalid schedule number " + CtiNumStr(schedulenum));
 
                 nRet = ExecutionComplete;
@@ -1813,7 +1813,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq
 
         if( parse.isKeyValid("tou_default") )
         {
-            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+            insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                "TOU default rate \"" + parse.getsValue("tou_default") + "\" specified is invalid for device \"" + getName() + "\"");
 
              return ExecutionComplete;
@@ -1821,7 +1821,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq
 
         if( daytable.length() != 4 || daytable.find_first_not_of("1234") != string::npos )
         {
-            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+            insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                "day table \"" + daytable + "\" specified is invalid for device \"" + getName() + "\"");
 
             return ExecutionComplete;
@@ -1954,7 +1954,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigTOUDays(CtiRequestMsg     *pReq
             {
                 if( offset == 0 )
                 {
-                    returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                    insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                        "Invalid rate change time for device \"" + getName() + "\"; first rate change time for schedule (" + CtiNumStr(rc.schedule) + ") is not midnight");
 
                     return ExecutionComplete;
@@ -2167,7 +2167,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigPhaseLossThreshold(CtiRequestMs
     }
     else
     {
-        returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+        insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                            "Invalid phase loss thresholds for device \"" + getName() + "\" - Acceptable values: phase loss percent range: 0 - 100 ; phase loss max duration: 18:12:15 - ");
 
         return ExecutionComplete;
@@ -2209,7 +2209,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pR
     }
     else
     {
-        returnErrorMessage(ClientErrors::MissingParameter, OutMessage, retList,
+        insertReturnMsg(ClientErrors::MissingParameter, OutMessage, retList,
                            "parameter \"alarm_mask_meter\" is not specified for device \"" + getName() + "\"");
 
         return ExecutionComplete;
@@ -2231,7 +2231,7 @@ YukonError_t Mct440_213xBDevice::executePutConfigAlarmMask(CtiRequestMsg     *pR
     }
     else
     {
-        returnErrorMessage(ClientErrors::MissingParameter, OutMessage, retList,
+        insertReturnMsg(ClientErrors::MissingParameter, OutMessage, retList,
                            "parameter \"config_byte\" is not specified for device \"" + getName() + "\"");
 
         return ExecutionComplete;

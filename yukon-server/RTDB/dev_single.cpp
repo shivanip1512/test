@@ -2135,7 +2135,7 @@ string CtiDeviceSingle::valueReport( const string &pointname, const point_info &
     return report;
 }
 
-void CtiDeviceSingle::returnErrorMessage( int retval, OUTMESS *&om, CtiMessageList &retList, const string &error ) const
+void CtiDeviceSingle::insertReturnMsg( int retval, OUTMESS *&om, CtiMessageList &retList, const string &error ) const
 {
     retList.push_back(
         new CtiReturnMsg(

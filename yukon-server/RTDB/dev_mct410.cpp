@@ -1023,7 +1023,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = false;
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+            insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                "Invalid address \"" + CtiNumStr(uadd) + "\", not sending");
         }
         else
@@ -1062,7 +1062,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = false;
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+            insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                "Invalid display configuration \"" + display + "\"");
         }
 
@@ -1078,7 +1078,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                 found = false;
                 nRet  = ExecutionComplete;
 
-                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid test duration \"" + CtiNumStr(test) + "\"");
             }
 
@@ -1104,7 +1104,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                         found = false;
                         nRet  = ExecutionComplete;
 
-                        returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                        insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                            "Invalid transformer ratio (" + CtiNumStr(transformer_ratio) + ")");
                     }
                 }
@@ -1184,7 +1184,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = false;
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+            insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                "Invalid disconnect parameters (" + CtiNumStr(demand_threshold) + ", " + CtiNumStr(connect_delay) + ")");
         }
         else
@@ -1213,7 +1213,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                 found = false;
                 nRet  = ExecutionComplete;
 
-                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid disconnect cycle parameters (" + CtiNumStr(disconnect_minutes) + ", " + CtiNumStr(connect_minutes) + ")");
             }
             else
@@ -1236,7 +1236,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = false;
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+            insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                "Invalid outage threshold (" + CtiNumStr(threshold) + "), not sending");
         }
         else
@@ -1260,7 +1260,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = false;
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+            insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                "Invalid day of scheduled freeze (" + CtiNumStr(freeze_day) + "), not sending");
         }
         else
@@ -1306,7 +1306,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = false;
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(ClientErrors::MissingParameter, OutMessage, retList,
+            insertReturnMsg(ClientErrors::MissingParameter, OutMessage, retList,
                                "Invalid request: Config Byte needs to be specified");
         }
 
@@ -1335,7 +1335,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             }
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(ClientErrors::MissingConfig, OutMessage, retList,
+            insertReturnMsg(ClientErrors::MissingConfig, OutMessage, retList,
                                "Invalid request: Config Byte has been requested.  Reissue autoreconnect command.");
         }
         else
@@ -1388,7 +1388,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                     found = false;
                     nRet  = ExecutionComplete;
 
-                    returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                    insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                        "Invalid interval length (" + CtiNumStr(duration) + " minutes), not sending");
                 }
             }
@@ -1426,7 +1426,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             found = false;
             nRet  = ExecutionComplete;
 
-            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+            insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                "Missing channel in load profile allocation, not sending");
         }
     }
@@ -1458,7 +1458,7 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
                 }
                 nRet  = ExecutionComplete;
 
-                returnErrorMessage(ClientErrors::MissingConfig, OutMessage, retList,
+                insertReturnMsg(ClientErrors::MissingConfig, OutMessage, retList,
                                    "Invalid request: Options Byte not retrieved yet, attempting to read automatically.  Reissue channel 2 configuration command.");
             }
             else
@@ -2071,7 +2071,7 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         if ( parse.getsValue("lp_command") == "peak" && parse.getiValue("lp_channel") == 4 )
         {
             nRet = ClientErrors::BadParameter;
-            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList, "Channel 4 Load Profile Peak Report is Unavailable.");
+            insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList, "Channel 4 Load Profile Peak Report is Unavailable.");
         }
         else
         {
@@ -2112,7 +2112,7 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) &&
             !isSupported(Feature_HourlyKwh) )
         {
-            returnErrorMessage(ClientErrors::InvalidSSPEC, OutMessage, retList,
+            insertReturnMsg(ClientErrors::InvalidSSPEC, OutMessage, retList,
                                "Hourly read requires SSPEC rev 4.0 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1));
 
             return ExecutionComplete;
@@ -2128,7 +2128,7 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                 hourlyReadCommand->cancel();
             }
 
-            returnErrorMessage(
+            insertReturnMsg(
                     ClientErrors::None, OutMessage, retList, 
                     hourlyReadCommand 
                         ? "Hourly read cancelled" 
@@ -2138,7 +2138,9 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
         }
         else if( hourlyReadCommand )
         {
-            returnErrorMessage(ClientErrors::CommandAlreadyInProgress, OutMessage, retList, "Hourly read already in progress");
+            insertReturnMsg(ClientErrors::CommandAlreadyInProgress, OutMessage, retList, "Hourly read already in progress, send \"getvalue hourly read cancel\" to cancel");
+
+            return ExecutionComplete;
         }
         else
         {
@@ -2215,7 +2217,7 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
             }
 
             nRet  = ExecutionComplete;
-            returnErrorMessage(ClientErrors::CommandAlreadyInProgress, OutMessage, retList, temp);
+            insertReturnMsg(ClientErrors::CommandAlreadyInProgress, OutMessage, retList, temp);
         }
         else
         {
@@ -2234,19 +2236,19 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                 && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < SspecRev_DailyRead )
             {
                 nRet  = ExecutionComplete;
-                returnErrorMessage(ClientErrors::InvalidSSPEC, OutMessage, retList,
+                insertReturnMsg(ClientErrors::InvalidSSPEC, OutMessage, retList,
                                    "Daily read requires SSPEC rev 2.1 or higher; MCT reports " + CtiNumStr(getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) / 10.0, 1));
             }
             else if( channel < 1 || channel > 3 )
             {
                 nRet  = ExecutionComplete;
-                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid channel for daily read request; must be 1-3 (" + CtiNumStr(channel) + ")");
             }
             else if( date_begin > Yesterday )  //  must begin on or before yesterday
             {
                 nRet  = ExecutionComplete;
-                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid date for daily read request; must be before today (" + parse.getsValue("daily_read_date_begin") + ")");
             }
             else if( parse.isKeyValid("daily_read_detail") )
@@ -2260,7 +2262,7 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                 if( date_begin < Today - 92 )  //  must be no more than 92 days ago
                 {
                     nRet  = ExecutionComplete;
-                    returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                    insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                        "Date out of range for daily read detail request; must be less than 3 months ago (" + parse.getsValue("daily_read_date_begin") + ")");
                 }
                 else if( channel == 1 )
@@ -2306,19 +2308,19 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
                 if( date_begin < Today - 92 )
                 {
                     nRet  = ExecutionComplete;
-                    returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                    insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                        "Invalid begin date for multi-day daily read request, must be less than 92 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
                 }
                 else if( date_end < date_begin )
                 {
                     nRet  = ExecutionComplete;
-                    returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                    insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                        "Invalid end date for multi-day daily read request; must be after begin date (" + parse.getsValue("daily_read_date_begin") + ", " + parse.getsValue("daily_read_date_end") + ")");
                 }
                 else if( date_end > Today )    //  must end on or before today
                 {
                     nRet  = ExecutionComplete;
-                    returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                    insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                        "Invalid end date for multi-day daily read request; must be on or before today (" + parse.getsValue("daily_read_date_end") + ")");
                 }
                 else
@@ -2348,13 +2350,13 @@ YukonError_t Mct410Device::executeGetValue( CtiRequestMsg              *pReq,
             else if( channel != 1 )
             {
                 nRet  = ExecutionComplete;
-                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid channel for recent daily read request; only valid for channel 1 (" + CtiNumStr(channel)  + ")");
             }
             else if( date_begin < Today - 8 )  //  must be no more than 8 days ago
             {
                 nRet  = ExecutionComplete;
-                returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList,
+                insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList,
                                    "Invalid date for recent daily read request; must be less than 8 days ago (" + parse.getsValue("daily_read_date_begin") + ")");
             }
             else

@@ -1609,7 +1609,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
                 "Channel " + CtiNumStr(request_channel) + " LP Interval returned " + CtiNumStr(interval_len) + ".\n"
                 "Retrieve the correct LP Interval and attempt the request again.";
 
-            returnErrorMessage(ClientErrors::NeedsChannelConfig, OutMessage, retList, temp);
+            insertReturnMsg(ClientErrors::NeedsChannelConfig, OutMessage, retList, temp);
 
             nRet = ExecutionComplete;
         }
@@ -1620,7 +1620,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
 
             string temp = "Bad start time \"" + parse.getsValue("llp interest date") + " " + parse.getsValue("llp interest time") + "\"";
 
-            returnErrorMessage(ClientErrors::InvalidDate, OutMessage, retList, temp);
+            insertReturnMsg(ClientErrors::InvalidDate, OutMessage, retList, temp);
 
             nRet = ExecutionComplete;
         }
@@ -1629,7 +1629,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
             //  reset, we're not executing any more
             _llpRequest.request_id.compare_exchange_strong(existing_id, 0);
 
-            returnErrorMessage(ClientErrors::BadParameter, OutMessage, retList, "Bad channel \"" + CtiNumStr(request_channel) + "\"");
+            insertReturnMsg(ClientErrors::BadParameter, OutMessage, retList, "Bad channel \"" + CtiNumStr(request_channel) + "\"");
 
             nRet = ExecutionComplete;
         }
@@ -1689,7 +1689,7 @@ YukonError_t Mct4xxDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParse
             error << getName() << " / Load profile peak report status: \n";
             error << "Bad date specified: " << parse.getsValue("llp peak interest date");
 
-            returnErrorMessage(ClientErrors::NeedsChannelConfig, OutMessage, retList, error.str());
+            insertReturnMsg(ClientErrors::NeedsChannelConfig, OutMessage, retList, error.str());
 
             _llpPeakInterest.tryEndRequest(requestId);
 

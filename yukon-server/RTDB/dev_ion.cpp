@@ -179,7 +179,7 @@ YukonError_t CtiDeviceION::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser
                 if ( ! point )
                 {
                     std::string errorMessage = "The specified point is not on device " + getName();
-                    returnErrorMessage(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
+                    insertReturnMsg(ClientErrors::PointLookupFailed, OutMessage, retList, errorMessage);
 
                     return ClientErrors::PointLookupFailed;
                 }

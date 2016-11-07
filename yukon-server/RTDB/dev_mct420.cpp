@@ -359,7 +359,7 @@ YukonError_t Mct420Device::executePutConfig( CtiRequestMsg     *pReq,
         {
             if( parse.isKeyValid("lcd display digits") )
             {
-                returnErrorMessage(ClientErrors::InvalidSSPEC, OutMessage, retList,
+                insertReturnMsg(ClientErrors::InvalidSSPEC, OutMessage, retList,
                                    "LCD display digits not supported for this device's SSPEC");
 
                 return ExecutionComplete;

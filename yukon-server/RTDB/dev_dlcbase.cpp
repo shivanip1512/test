@@ -140,7 +140,7 @@ YukonError_t DlcBaseDevice::ExecuteRequest( CtiRequestMsg     *pReq,
     }
     catch( DlcCommand::CommandException &e )
     {
-        returnErrorMessage(e.error_code, OutMessage, retList, e.error_description);
+        insertReturnMsg(e.error_code, OutMessage, retList, e.error_description);
 
         nRet = ExecutionComplete;
     }
