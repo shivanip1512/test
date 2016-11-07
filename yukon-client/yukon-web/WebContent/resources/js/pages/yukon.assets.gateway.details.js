@@ -67,7 +67,7 @@ yukon.assets.gateway.details = (function () {
         
         icon.setStyle(new ol.style.Style({ 
             image: new ol.style.Icon({ 
-                src: yukon.url('/WebConfig/yukon/Icons/marker-transmitter.png'), 
+                src: yukon.url('/WebConfig/yukon/Icons/marker-transmitter-grey.png'), 
                 anchor: [0.5, 1.0] 
             }) 
         }));

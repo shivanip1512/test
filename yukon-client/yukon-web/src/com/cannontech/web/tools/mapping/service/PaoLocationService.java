@@ -13,6 +13,7 @@ public interface PaoLocationService {
         METER_GAS,
         TRANSMITTER,
         RELAY,
+        LCR,
         GENERIC_GREY,
         GENERIC_RED,
     }

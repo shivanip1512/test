@@ -45,6 +45,12 @@ public class PaoLocationServiceImpl implements PaoLocationService {
         for (PaoType type : PaoType.getWaterMeterTypes()) {
             icons.put(type, Icon.METER_WATER);
         }
+        for (PaoType type : PaoType.getRfRelayTypes()) {
+            icons.put(type,  Icon.RELAY);
+        }
+        for (PaoType type : PaoType.getRfLcrTypes()) {
+            icons.put(type,  Icon.LCR);
+        }
         icons.put(PaoType.RFN_GATEWAY, Icon.TRANSMITTER);
         icons.put(PaoType.GWY800, Icon.TRANSMITTER);
         
@@ -76,7 +82,7 @@ public class PaoLocationServiceImpl implements PaoLocationService {
             // Set feature properties.
             feature.getProperties().put(FeatureProperty.PAO_IDENTIFIER.getKeyName(), pao);
             Icon icon = icons.get(pao.getPaoType());
-            feature.getProperties().put(FeatureProperty.ICON.getKeyName(), icon != null ? icon : Icon.GENERIC_RED);
+            feature.getProperties().put(FeatureProperty.ICON.getKeyName(), icon != null ? icon : Icon.GENERIC_GREY);
             features.add(feature);
         }
         

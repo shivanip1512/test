@@ -16,6 +16,13 @@ yukon.map.network = (function () {
     /** @type {ol.Map} - The openlayers map object. */
     _map = {},
     
+    //Line Color depends on ETX Band 1 - #006622(GREEN), 2 - #669900(LIGHT GREEN), 3 - #CCA300(YELLOW), 4 - #FF6600(ORANGE), 5 and up - #FF0000(RED)
+    _neighborColors = ['#006622', '#669900', '#CCA300', '#FF6600', '#FF0000'],    
+    //grey
+    _parentColor = "#808080",
+    //dark blue
+    _routeColor = "#1E66CC",
+    
     _devicePoints = [],
     _parentIcon,
     _parentLine,
@@ -30,12 +37,12 @@ yukon.map.network = (function () {
     
     /** @type {Object.<string, {ol.style.Style}>} - A cache of styles to avoid creating lots of objects using lots of memory. */
     _styles = { 
-        'METER_ELECTRIC': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-meter-elec.png'), anchor: [0.5, 1.0] }) }),
-        'METER_WATER': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-meter-water.png'), anchor: [0.5, 1.0] }) }),
-        'METER_GAS': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-meter-gas.png'), anchor: [0.5, 1.0] }) }),
-        'TRANSMITTER': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-transmitter.png'), anchor: [0.5, 1.0] }) }),
+        'METER_ELECTRIC': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-meter-elec-grey.png'), anchor: [0.5, 1.0] }) }),
+        'METER_WATER': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-meter-water-grey.png'), anchor: [0.5, 1.0] }) }),
+        'METER_GAS': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-meter-gas-grey.png'), anchor: [0.5, 1.0] }) }),
+        'TRANSMITTER': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-transmitter-grey.png'), anchor: [0.5, 1.0] }) }),
+        'RELAY': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-relay-grey.png'), anchor: [0.5, 1.0] }) }),
         'GENERIC_GREY': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker-generic.png'), anchor: [0.5, 1.0] }) }),
-        'GENERIC_RED': new ol.style.Style({ image: new ol.style.Icon({ src: yukon.url('/WebConfig/yukon/Icons/marker.png'), anchor: [0.5, 1.0] }) })
     },
     
     /** @type {Array.<{ol.Layer.Tile|ol.layer.Group}>} - Array of tile layers for our map. */
@@ -75,7 +82,7 @@ yukon.map.network = (function () {
             feature = fc.features[0],
             src_projection = fc.crs.properties.name,
             pao = feature.properties.paoIdentifier,
-            style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
+            style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'];
             icon = new ol.Feature({ pao: pao });
             
             icon.setStyle(style);
@@ -100,7 +107,7 @@ yukon.map.network = (function () {
         source = _map.getLayers().getArray()[_tiles.length].getSource(),
         feature = parent.location.features[0],
         src_projection = fc.crs.properties.name,
-        style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
+        style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'];
         icon = new ol.Feature({ parent: parent });
         
         icon.setStyle(style);
@@ -128,8 +135,8 @@ yukon.map.network = (function () {
                 })]
             }),
             style: new ol.style.Style({
-                fill: new ol.style.Fill({ color: '#808080', weight: 4 }),
-                stroke: new ol.style.Stroke({ color: '#808080', width: 2, lineDash: [10,10] })
+                fill: new ol.style.Fill({ color: _parentColor, weight: 4 }),
+                stroke: new ol.style.Stroke({ color: _parentColor, width: 2, lineDash: [10,10] })
             })
         });
         
@@ -145,7 +152,7 @@ yukon.map.network = (function () {
             var neighbor = neighbors[x],
             feature = neighbor.location.features[0],
             src_projection = fc.crs.properties.name,
-            style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
+            style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'];
             icon = new ol.Feature({ neighbor: neighbor });
             
             icon.setStyle(style);
@@ -165,26 +172,26 @@ yukon.map.network = (function () {
             points.push(icon.getGeometry().getCoordinates());
             points.push(_devicePoints);
 
-            //Line Color depends on ETX Band 1 - #00FF00(LIME), 2 - #ADFF2F(GREEN YELLOW), 3 - #FFFF00(YELLOW), 4 - #FFA500(ORANGE), 5 and up - #FF0000(RED)
+            //Line Color is based on ETX Band - see colors above
             var etxBand = neighbor.data.etxBand;
-            var lineColor = '#FF0000';
+            var lineColor = _neighborColors[4];
             switch(etxBand) {
             case 1:
-                lineColor = '#00FF00';
+                lineColor = _neighborColors[0];
                 break;
             case 2:
-                lineColor = '#ADFF2F';
+                lineColor = _neighborColors[1];
                 break;
             case 3:
-                lineColor = '#FFFF00';
+                lineColor = _neighborColors[2];
                 break;
             case 4:
-                lineColor = '#FFA500';
+                lineColor = _neighborColors[3];
                 break;
             default:
-                lineColor = '#FF0000';    
+                lineColor = _neighborColors[4];
             }
-            
+
             //Line thickness depends on Number of Samples 0-50 - 1px, 51-500 - 2px, 500 and up - 3px
             var numberSamples = neighbor.data.numSamples;
             var lineThickness = 1;
@@ -221,7 +228,7 @@ yukon.map.network = (function () {
             var route = routeInfo[x],
             feature = route.location.features[0],
             src_projection = fc.crs.properties.name,
-            style = _styles[feature.properties.icon] || _styles['GENERIC_RED'];
+            style = _styles[feature.properties.icon] || _styles['GENERIC_GREY'];
             icon = new ol.Feature({ routeInfo: route });
             
             icon.setStyle(style);
@@ -254,8 +261,8 @@ yukon.map.network = (function () {
                     })]
                 }),
                 style: new ol.style.Style({
-                    fill: new ol.style.Fill({ color: '#1e66cc', weight: 4 }),
-                    stroke: new ol.style.Stroke({ color: '#1e66cc', width: 2 })
+                    fill: new ol.style.Fill({ color: _routeColor, weight: 4 }),
+                    stroke: new ol.style.Stroke({ color: _routeColor, width: 2 })
                 })
             });
             
@@ -274,6 +281,16 @@ yukon.map.network = (function () {
             _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
             _map.getView().setZoom(13);
         }
+    },
+    
+    _displayNeighborsLegend = function() {
+        var borderDetails = "2px solid ";
+        $('.js-etx-1').css({backgroundColor: _neighborColors[0], borderTop: borderDetails + _neighborColors[0]});
+        $('.js-etx-2').css({backgroundColor: _neighborColors[1], borderTop: borderDetails + _neighborColors[1]});
+        $('.js-etx-3').css({backgroundColor: _neighborColors[2], borderTop: borderDetails + _neighborColors[2]});
+        $('.js-etx-4').css({backgroundColor: _neighborColors[3], borderTop: borderDetails + _neighborColors[3]});
+        $('.js-etx-5').css({backgroundColor: _neighborColors[4], borderTop: borderDetails + _neighborColors[4]});
+        $('.js-legend-neighbors').show();
     },
     
     mod = {
@@ -464,6 +481,7 @@ yukon.map.network = (function () {
                     wasChecked = neighborsRow.find('.switch-btn-checkbox').prop('checked');
                     
                     if (!wasChecked) {
+                        _displayNeighborsLegend();
                         if (_neighborIcons.length > 0) {
                             var source = _map.getLayers().getArray()[_tiles.length].getSource();
                             for (x in _neighborIcons) {
@@ -492,6 +510,7 @@ yukon.map.network = (function () {
                             });
                         }
                     } else {
+                        $('.js-legend-neighbors').hide();
                         for (x in _neighborIcons) {
                             var neighbor = _neighborIcons[x];
                             var source = _map.getLayers().getArray()[_tiles.length].getSource();

@@ -10,10 +10,8 @@
     <tags:nameValue2 nameKey=".device" valueClass="js-device"></tags:nameValue2>
     <tags:nameValue2 nameKey=".type" valueClass="js-type"></tags:nameValue2>
     <tags:nameValue2 nameKey=".status" valueClass="js-status"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".serialNumber" valueClass="js-serial-number"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".manufacturer" valueClass="js-manufacturer"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".model" valueClass="js-model"></tags:nameValue2>
     <tags:nameValue2 nameKey=".nodeSN" valueClass="js-node-sn"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".serialNumber" valueClass="js-serial-number"></tags:nameValue2>
     <tags:nameValue2 nameKey=".macAddress" valueClass="js-mac-address"></tags:nameValue2>
     <tags:nameValue2 nameKey=".distance" valueClass="js-distance"></tags:nameValue2>
 </tags:nameValueContainer2>
