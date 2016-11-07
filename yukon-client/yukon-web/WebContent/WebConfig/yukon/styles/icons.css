@@ -1323,6 +1323,7 @@ License: http://creativecommons.org/licenses/by/3.0/
 .icon-arrow-down-orange-animated { background-image: url(../Icons/arrow_down_orange_anim.gif); }
 .icon-arrow-up-green-animated { background-image: url(../Icons/arrow_up_green_anim.gif); }
 .icon-arrow-up-orange-animated { background-image: url(../Icons/arrow_up_orange_anim.gif); }
+.icon-rfn-relay { background-image: url(../Icons/relay.png); }
 .icon-spinner { background-image: url(../Icons/spinner.gif); }
 .icon-spinner-white { background-image: url(../Icons/spinner-white.gif); }
 .icon-loading-bars { background-image: url(../../../resources/images/icons/loading.bars.gif); }
@@ -1331,6 +1332,7 @@ License: http://creativecommons.org/licenses/by/3.0/
     background-image: url(../Icons/plus-minus.png);
     opacity: 0.5; 
 }
+
 
 
 /* jquery ui icons */
