@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.dao.PaoLocationDao;
@@ -335,8 +336,12 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 isFound = true;
             } catch (NotFoundException e) {
                 // create new device if it doesn't exist
-                rfnDeviceCreationService.create(identifier);
-                log.info(identifier + " is not found. Creating device.");
+                try {
+                    rfnDeviceCreationService.create(identifier);
+                    log.info(identifier + " is not found. Creating device.");
+                } catch (DeviceCreationException e1) {
+                    log.error("Drvice creation failed for " + identifier, e1);
+                }
             }
         }
         return isFound;
