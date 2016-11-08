@@ -13758,6 +13758,8 @@
                 <name>SCADA Override Clear</name>
                 <controlType value="NORMAL" />
                 <controlOffset value="12" />
+                <stateZeroControl value="PULSE" />
+                <stateOneControl value="PULSE" />                
                 <stategroup value="YesNo" />
             </point>
             <point type="Status" offset="10040">
@@ -13770,6 +13772,8 @@
                 <name>Enable SCADA Override</name>
                 <controlType value="NORMAL" />
                 <controlOffset value="49" />
+                <stateZeroControl value="PULSE" />
+                <stateOneControl value="PULSE" />   
                 <stategroup value="YesNo" />
             </point>
             <!-- ANALOG POINTS -->

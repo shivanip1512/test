@@ -6,6 +6,7 @@ public enum ControlStateType implements DatabaseRepresentationSource {
     NONE("none"),
     OPEN("control open"),
     CLOSE("control close"),
+    PULSE("control pulse"),
     DISABLE_OVUV_702X("putvalue analog 1 0"), // used for auto volt control point
     ENABLE_OVUV_702X("putvalue analog 1 1"),  // ditto
     ;

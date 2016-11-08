@@ -16,6 +16,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
  *     &lt;enumeration value="OPEN"/>
  *     &lt;enumeration value="CLOSE"/>
+ *     &lt;enumeration value="PULSE"/>
  *     &lt;enumeration value="DISABLE_OVUV_702X"/>
  *     &lt;enumeration value="ENABLE_OVUV_702X"/>
  *   &lt;/restriction>
@@ -29,6 +30,7 @@ public enum ControlStateType {
 
     OPEN("OPEN"),
     CLOSE("CLOSE"),
+    PULSE("PULSE"),
     @XmlEnumValue("DISABLE_OVUV_702X")
     DISABLE_OVUV_702_X("DISABLE_OVUV_702X"),
     @XmlEnumValue("ENABLE_OVUV_702X")
