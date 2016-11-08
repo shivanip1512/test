@@ -97,6 +97,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 
@@ -328,7 +329,18 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         deviceIds.addAll(deviceIdToBehavior.keySet());
         deviceIds.addAll(deviceIdToReport.keySet());
 
-        Multimap<Integer, Integer> devicePointIds = pointDao.getPaoPointMultimap(deviceIds);
+        Multimap<Integer, Integer> deviceIdToPointId = pointDao.getPaoPointMultimap(deviceIds);
+        Multimap<Integer, Integer> pointIdToDeviceId = Multimaps.invertFrom(deviceIdToPointId,  ArrayListMultimap.create());
+        
+        // Gets point values from cache, if the points values are not available in cache, asks dispatch for the point
+        // data
+        Set<? extends PointValueQualityHolder> pointValues =
+            asyncDynamicDataSource.getPointValues(Sets.newHashSet(deviceIdToPointId .values()));
+        Multimap<Integer, PointValueQualityHolder> deviceIdsToPointValues = ArrayListMultimap.create();
+        for(PointValueQualityHolder holder: pointValues){
+            int deviceId = pointIdToDeviceId.get(holder.getId()).iterator().next();
+            deviceIdsToPointValues.put(deviceId, holder);
+        }
 
         for (int deviceId : deviceIds) {
             /*
@@ -352,7 +364,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     result.setActual(reportedConfig);
                     result.setExpected(expectedConfig);
                     result.setStatus(report.getStatus());
-                    result.setLastCommunicated(getLastCommunicatedTime(deviceId, devicePointIds));
+                    result.setLastCommunicated(getLastCommunicatedTime(deviceId, deviceIdsToPointValues));
                     result.setPaoName(serverDatabaseCache.getAllPaosMap().get(deviceId).getPaoName());
                     result.setDeviceId(deviceId);
                     if(!ignoreTimeCheck){
@@ -374,12 +386,9 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     /**
      * Finds last communicated time by looking at all the points for the device and getting the latest time.
      */
-    private Instant getLastCommunicatedTime(Integer deviceId, Multimap<Integer, Integer> devicePointIds) {
-        Collection<Integer> points = devicePointIds.get(deviceId);
-        // Gets point values from cache, if the points values are not available in cache, asks dispatch for the point
-        // data
-        Set<? extends PointValueQualityHolder> pointValues =
-            asyncDynamicDataSource.getPointValues(Sets.newHashSet(points));
+    private Instant getLastCommunicatedTime(Integer deviceId, Multimap<Integer, PointValueQualityHolder> deviceIdsToPointValues) {
+
+        Collection<PointValueQualityHolder> pointValues =deviceIdsToPointValues.get(deviceId);
         if (!pointValues.isEmpty()) {
             Date maxDate = pointValues.stream().map(u -> u.getPointDataTimeStamp()).max(Date::compareTo).get();
             return new Instant(maxDate);
