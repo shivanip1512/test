@@ -288,10 +288,10 @@
     <entry key="yukon.common.setting.STARS_PRELOAD_DATA.description">Controls whether the STARS application should preload data into the cache.</entry>
     <entry key="yukon.common.setting.MAIL_FROM_ADDRESS">Mail From Address</entry>
     <entry key="yukon.common.setting.MAIL_FROM_ADDRESS.description">Name of the FROM email address the mail server will use</entry>
-    <entry key="yukon.common.setting.JMS_BROKER_HOST">Service Manager Host</entry>
-    <entry key="yukon.common.setting.JMS_BROKER_HOST.description">Name or IP address of Yukon Service Manager. Requires Web Server, Service Manager, and any running Yukon Applications to restart for changes to take effect.</entry>
-    <entry key="yukon.common.setting.JMS_BROKER_PORT">Service Manager Messaging Port</entry>
-    <entry key="yukon.common.setting.JMS_BROKER_PORT.description">TCP Port for Yukon Service Manager Messaging. Defaults to 61616 if left blank. Requires Web Server, Service Manager, and any running Yukon Applications to restart for changes to take effect.</entry>
+    <entry key="yukon.common.setting.JMS_BROKER_HOST">Message Broker Host</entry>
+    <entry key="yukon.common.setting.JMS_BROKER_HOST.description">Name or IP address of Yukon Message Broker Service. Requires Message Broker, Web Server, Service Manager, and any running Yukon Applications to restart for changes to take effect.</entry>
+    <entry key="yukon.common.setting.JMS_BROKER_PORT">Message Broker Port</entry>
+    <entry key="yukon.common.setting.JMS_BROKER_PORT.description">TCP Port of Yukon Message Broker Service. Defaults to 61616 if left blank. Requires Message Broker, Web Server, Service Manager, and any running Yukon Applications to restart for changes to take effect.</entry>
     <entry key="yukon.common.setting.SMTP_HOST">SMTP Host</entry>
     <entry key="yukon.common.setting.SMTP_HOST.description">Name or IP address of the mail server</entry>
     <entry key="yukon.common.setting.SMTP_PORT">SMTP Port</entry>
