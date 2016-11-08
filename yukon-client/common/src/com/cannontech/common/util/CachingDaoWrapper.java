@@ -31,6 +31,10 @@ public class CachingDaoWrapper<T extends Identifiable> implements IdentifiableOb
             public T getIfPresent(Object id) {
                 return items.get(id);
             }
+            @Override
+            public void put(Integer key, T value) {
+                items.put(key, value);
+            }
         };
         
         for (T item : initialItems) {

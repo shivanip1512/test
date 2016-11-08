@@ -119,7 +119,7 @@ import com.cannontech.yukon.IDatabaseCache;
 
 //TODO JAVA 8 - Replace Filters and Functions with lambdas
 @Controller
-@CheckRoleProperty(YukonRoleProperty.CURTAILMENT_ROLE_EXISTS)
+@CheckRoleProperty(YukonRoleProperty.CURTAILMENT_IS_OPERATOR)
 public class CcHomeController {
     private static Logger log = YukonLogManager.getLogger(CcHomeController.class);
     private static String eventHeadingBase = "yukon.web.modules.commercialcurtailment.ccurtSetup.ccurtEvent_heading_";

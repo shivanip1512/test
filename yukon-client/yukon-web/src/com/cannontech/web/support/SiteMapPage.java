@@ -45,7 +45,7 @@ public enum SiteMapPage implements DisplayableEnum {
     DR_REPORTS(SiteMapCategory.DR, "yukon.web.menu.config.reporting.reports.management", "/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT",
             MatchStyle.all, YukonRoleProperty.LOAD_MANAGEMENT_REPORTS_GROUP),
     CI_CURTAILMENT(SiteMapCategory.DR, "yukon.web.menu.dr.ci", "/dr/cc/home",
-            MatchStyle.all, YukonRole.CI_CURTAILMENT),
+            MatchStyle.all, YukonRoleProperty.CURTAILMENT_IS_OPERATOR),
     ODDS_FOR_CONTROL(SiteMapCategory.DR, "yukon.web.oddsForControl", "/operator/Consumer/Odds.jsp",
             MatchStyle.all, YukonRole.ODDS_FOR_CONTROL),
     ACTIVE_CONTROL_AREAS(SiteMapCategory.DR, "yukon.web.modules.dr.home.activeControlAreasQuickSearch", "/dr/controlArea/list?state=active",

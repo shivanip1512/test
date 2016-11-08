@@ -48,7 +48,7 @@
     <permissions>
         <or>
             <role name="DEMAND_RESPONSE" />
-            <role name="CI_CURTAILMENT" />
+            <roleProperty name="CURTAILMENT_IS_OPERATOR" />
         </or>
     </permissions>
     <link>/dr/home</link>
@@ -91,7 +91,7 @@
       </option>
       <option name="ci">
         <permissions>
-          <role name="CI_CURTAILMENT" />
+          <roleProperty name="CURTAILMENT_IS_OPERATOR" />
         </permissions>
         <link>/dr/cc/home</link>
       </option>
@@ -146,6 +146,7 @@
       <or>
         <role name="CONSUMER_INFO" />
         <role name="INVENTORY" />
+        <role name="DEVICE_MANAGEMENT"/> <!--  may need to change this to 4 separate role properties. Saw at Bowling Green, clicking assests gave no access error because they don't have any LCRs/DR/STARS --> 
       </or>
     </permissions>
     <link>/stars/operator/inventory/home</link>

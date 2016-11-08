@@ -41,7 +41,7 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                 }
 
                 if (canAddRole(group, YukonRole.CI_CURTAILMENT)) {
-                    setRoleProperty(group, YukonRoleProperty.CURTAILMENT_ROLE_EXISTS, true);
+                    setRoleProperty(group, YukonRoleProperty.CURTAILMENT_IS_OPERATOR, true);
                     results.put(YukonRole.CI_CURTAILMENT, true);
                 } else {
                     results.put(YukonRole.CI_CURTAILMENT, false);
