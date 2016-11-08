@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/3/2016 12:24:43 AM                        */
+/* Created on:     11/8/2016 1:37:54 PM                         */
 /*==============================================================*/
 
 
@@ -8521,6 +8521,8 @@ create table State (
 )
 go
 
+INSERT INTO State VALUES(-27, 0, 'Yes', 1, 6, 0);
+INSERT INTO State VALUES(-27, 1, 'No', 0, 6, 0);
 INSERT INTO State VALUES(-26, 0, 'Time of Day', 0, 6, 0);
 INSERT INTO State VALUES(-26, 1, 'Countdown Timer', 1, 6, 0);
 INSERT INTO State VALUES(-25, 0, 'No', 0, 6, 0);
@@ -8697,6 +8699,7 @@ create table StateGroup (
 )
 go
 
+INSERT INTO StateGroup VALUES(-27, 'NoYes', 'Status');
 INSERT INTO StateGroup VALUES(-26, 'SCADA Override Type', 'Status');
 INSERT INTO StateGroup VALUES(-25, 'YesNo', 'Status');
 INSERT INTO StateGroup VALUES(-24, 'SCADA TripClose', 'Status');

@@ -784,15 +784,15 @@ GO
 /* End YUK-15908 */
 
 /* Start YUK-14794 */
-DELETE FROM YukonGroupRole		WHERE RolePropertyID = -10000
-DELETE FROM YukonRoleProperty	WHERE RolePropertyID = -10000
-UPDATE YukonRoleProperty		SET KeyName = 'Load Management View Enabled'	WHERE RolePropertyID = -10002
-UPDATE YukonRoleProperty		SET KeyName = 'System View Enabled'				WHERE RolePropertyID = -10004
-UPDATE YukonRoleProperty		SET KeyName = 'Versacom Utility Range'			WHERE RolePropertyID = -10005
-UPDATE YukonRoleProperty		SET KeyName = 'Transmission Exclusion Enabled'	WHERE RolePropertyID = -10007
-UPDATE YukonRoleProperty		SET KeyName = 'Manage Users'					WHERE RolePropertyID = -10008
-UPDATE YukonRoleProperty		SET KeyName = 'Optional Protocols'				WHERE RolePropertyID = -10010
-UPDATE YukonRoleProperty		SET KeyName = 'Program Member Management'		WHERE RolePropertyID = -10011
+DELETE FROM YukonGroupRole      WHERE RolePropertyID = -10000;
+DELETE FROM YukonRoleProperty   WHERE RolePropertyID = -10000;
+UPDATE YukonRoleProperty        SET KeyName = 'Load Management View Enabled'    WHERE RolePropertyID = -10002;
+UPDATE YukonRoleProperty        SET KeyName = 'System View Enabled'             WHERE RolePropertyID = -10004;
+UPDATE YukonRoleProperty        SET KeyName = 'Versacom Utility Range'          WHERE RolePropertyID = -10005;
+UPDATE YukonRoleProperty        SET KeyName = 'Transmission Exclusion Enabled'  WHERE RolePropertyID = -10007;
+UPDATE YukonRoleProperty        SET KeyName = 'Manage Users'                    WHERE RolePropertyID = -10008;
+UPDATE YukonRoleProperty        SET KeyName = 'Optional Protocols'              WHERE RolePropertyID = -10010;
+UPDATE YukonRoleProperty        SET KeyName = 'Program Member Management'       WHERE RolePropertyID = -10011;
 GO
 /* End YUK-14794 */
 
@@ -801,6 +801,15 @@ ALTER TABLE HoneywellWifiThermostat
 ADD UserId NUMERIC;
 GO
 /* End YUK-14794 */
+
+/* Start YUK-15957 */
+INSERT INTO StateGroup VALUES (-27, 'NoYes', 'Status');
+GO
+
+INSERT INTO State VALUES (-27, 0, 'Yes', 1, 6, 0);
+INSERT INTO State VALUES (-27, 1, 'No', 0, 6, 0);
+GO
+/* End YUK-15957 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
