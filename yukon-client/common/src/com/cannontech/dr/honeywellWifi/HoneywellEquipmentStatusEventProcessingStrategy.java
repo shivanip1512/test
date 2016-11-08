@@ -14,8 +14,24 @@ public class HoneywellEquipmentStatusEventProcessingStrategy implements Honeywel
 
     @Override
     public void processData(HoneywellWifiData data) {
-        log.info("Processing equipment status message"); //TODO change to debug
-        //TODO
+        log.debug("Processing equipment status message:" + data);
+        if(!(data instanceof EquipmentStatusEvent)) {
+            throw new IllegalArgumentException("Invalid data object passed to processor: " + data.getType());
+        }
+        
+        EquipmentStatusEvent dataEvent = (EquipmentStatusEvent) data;
+        
+        // Ignore fanStatus messages (which have null equipmentStatus)
+        if (dataEvent.getEquipmentStatus() == null) {
+            return;
+        } else {
+            //TODO process the message
+            //dataEvent.getEquipmentStatus();
+            //dataEvent.getPreviousEquipmentStatus();
+            //dataEvent.getMacId();
+            //dataEvent.getMessageWrapper().getDate();
+        }
+        
     }
 
 }

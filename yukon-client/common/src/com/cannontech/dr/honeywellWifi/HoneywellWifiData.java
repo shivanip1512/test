@@ -14,5 +14,12 @@ public interface HoneywellWifiData {
     
     void setOriginalMessage(BrokeredMessage message);
     
+    /**
+     * @return The "wrapper" metadata that came with the message.
+     */
+    HoneywellWifiMessageWrapper getMessageWrapper();
+    
+    void setMessageWrapper(HoneywellWifiMessageWrapper wrapper);
+    
     HoneywellWifiDataType getType();
 }

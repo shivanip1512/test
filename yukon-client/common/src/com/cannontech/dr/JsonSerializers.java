@@ -16,6 +16,7 @@ import org.joda.time.format.ISODateTimeFormat;
 import com.cannontech.common.temperature.TemperatureUnit;
 import com.cannontech.dr.ecobee.message.partial.RuntimeReportRow;
 import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
+import com.cannontech.dr.honeywellWifi.EquipmentStatus;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -102,6 +103,22 @@ public interface JsonSerializers {
         public Instant deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
                 throws IOException, JsonProcessingException {
             return HONEYWELL_WRAPPER_DATE_TIME.parseDateTime(paramJsonParser.getValueAsString()).toInstant();
+        }
+    }
+    
+    class FROM_EQUIPMENT_STATUS extends JsonDeserializer<EquipmentStatus> {
+        @Override
+        public EquipmentStatus deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
+                throws IOException, JsonProcessingException {
+            return EquipmentStatus.of(paramJsonParser.getValueAsString());
+        }
+    }
+    
+    class TO_EQUIPMENT_STATUS extends JsonSerializer<EquipmentStatus> {
+        @Override
+        public void serialize(EquipmentStatus status, JsonGenerator jsonGenerator, SerializerProvider notUsed)
+                throws IOException, JsonProcessingException {
+            jsonGenerator.writeString(status.getJsonString());
         }
     }
     

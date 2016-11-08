@@ -12,6 +12,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
+/**
+ * Honeywell Azure service bus data event. Contains general data about the settings and state of the device.
+ */
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class UiDataBasicEvent extends HoneywellWifiDataBase {
     private final Instant created;
@@ -33,9 +36,6 @@ public class UiDataBasicEvent extends HoneywellWifiDataBase {
     private final Integer deviceId;
     private final String macId;
     
-    /**
-     * Honeywell Azure service bus data event. Contains general data about the settings and state of the device.
-     */
     public UiDataBasicEvent(@JsonDeserialize(using=FROM_DATE_HONEYWELL.class) @JsonProperty("created") Instant created, 
                             @JsonProperty("displayedTemp") Double displayedTemp, 
                             @JsonProperty("heatSetpoint") Double heatSetpoint, 
