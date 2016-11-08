@@ -10,14 +10,6 @@
 <cti:standardPage module="operator" page="gateways.detail">
 
 <style>
-.map {
-  height: 100%;
-  width: 100%;
-  border: 1px solid #bbb;
-  box-shadow: 0px 0px 5px #ddd;
-  outline: none;
-}
-.map .ol-viewport canvas { vertical-align: middle; }
 #gateway-location-container { height: 300px; }
 </style>
 
@@ -100,9 +92,9 @@
 </div>
 
 <div class="stacked">
-    <tags:sectionContainer2 nameKey="comms" styleClass="stacked" id="gw-comm">
-        <div class="column-12-12 clearfix">
-            <div class="column one">
+    <div class="column-12-12 clearfix">
+        <div class="column one">
+            <tags:sectionContainer2 nameKey="comms" styleClass="stacked" id="gw-comm">
                 <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".admin" valueClass="js-gw-admin">
                         <c:if test="${empty data.admin}"><span class="empty-list"><i:inline key="yukon.common.none"/></span></c:if>
@@ -133,10 +125,6 @@
                             </c:forEach>
                         </c:if>
                     </tags:nameValue2>
-                </tags:nameValueContainer2>
-            </div>
-            <div class="column two nogutter">
-                <tags:nameValueContainer2>
                     <tags:nameValue2 nameKey=".connectionStatus">
                         <c:set var="clazz" value="${data.connectionStatus == 'CONNECTED' ? 'green' : 'red'}"/>
                         <span class="state-box ${clazz} js-gw-conn-state"></span>
@@ -166,13 +154,21 @@
                         <span class="js-gw-last-comm-time subtle">${lastCommTime}</span>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
-<%-- Add back when NM test connection works. --%>
-<%--                 <div class="action-area"> --%>
-<%--                     <cti:button nameKey="testConnection" busy="true" icon="icon-server-connect"/> --%>
-<%--                 </div> --%>
-            </div>
+            </tags:sectionContainer2>    
+            <%-- Add back when NM test connection works. --%>
+            <%-- <div class="action-area"> --%>
+                <%-- <cti:button nameKey="testConnection" busy="true" icon="icon-server-connect"/> --%>
+            <%-- </div> --%>
         </div>
-    </tags:sectionContainer2>
+        <div class="column two nogutter">
+            <c:set var="attributes" value="CONNECTED_DEVICE_COUNT"/>
+            <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                <c:set var="attributes" value="CONNECTED_DEVICE_COUNT,STREAMING_DEVICE_COUNT"/>
+            </cti:checkRolesAndProperties>
+            <cti:msg2 var="widgetTitle" key=".metrics.title"/>
+            <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" container="section" attributes="${attributes}" deviceId="${gateway.paoIdentifier.paoId}"/>
+        </div>
+    </div>
 </div>
 
 <div class="stacked">
@@ -215,20 +211,6 @@
             <%@ include file="sequences.jsp" %>
         </div>
     </tags:sectionContainer2>
-    
-    <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
-        <c:if test="${points.size() > 0}">
-            <tags:sectionContainer2 nameKey="points">
-                <div class="column-12-12 clearfix">
-                    <div class="column one">
-                        <div class="scroll-md">
-                            <%@ include file="/WEB-INF/pages/capcontrol/pointsTable.jsp" %>
-                        </div>
-                    </div>
-                </div>
-            </tags:sectionContainer2>
-        </c:if>
-    </cti:checkRolesAndProperties>
     
 </div>
 

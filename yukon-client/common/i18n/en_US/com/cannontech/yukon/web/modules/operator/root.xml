@@ -58,7 +58,7 @@
     <entry key="yukon.web.modules.operator.gateways.detail.location.set.label">Set Location</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.users.title">Users</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.dataCollection.title">Data Collection</entry>
-    <entry key="yukon.web.modules.operator.gateways.detail.points.title">Points</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.metrics.title">Gateway Metrics</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.testConnection.label">Test Connection</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.dataCompleteness">Data Completeness</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.sequencing">Sequencing</entry>
