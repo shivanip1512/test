@@ -20,4 +20,10 @@ public class DataStreamingSupportController {
         dsHelper.buildMatrixModel(model);
         return "dataStreaming/dataStreamingSupport.jsp";
     }
+
+    @RequestMapping(value="matrixView")
+    public String getMatrixView(ModelMap model){
+        dsHelper.buildMatrixModel(model);
+        return "dataStreaming/matrix.jsp";
+    }
 }

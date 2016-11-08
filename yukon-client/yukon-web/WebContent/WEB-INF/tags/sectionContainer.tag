@@ -13,6 +13,8 @@
 <%@ attribute name="id" description="The id of the outer container element. If not provided, the id is generated." %>
 <%@ attribute name="styleClass" description="CSS class names applied to the outer container element." %>
 <%@ attribute name="title" %>
+<%@ attribute name="helpWidth" %>
+<%@ attribute name="infoWidth" %>
 
 <cti:uniqueIdentifier prefix="section-container-" var="thisId"/>
 <cti:default var="id" value="${thisId}"/>
@@ -59,11 +61,11 @@
     <div id="section-container-info-popup-${id}" class="dn" 
             data-title="${pageScope.title}" 
             <c:if test="${not empty pageScope.helpUrl}">data-url="${helpUrl}"</c:if>
-            data-width="600">${helpText}</div>
+            data-width="${(not empty helpWidth && helpWidth > 0)? helpWidth: 600}">${helpText}</div>
 </c:if>
 <%-- Information Popup --%>
 <c:if test="${not empty pageScope.infoText}">
     <div id="section-container-information-popup-${id}" class="dn" 
             data-title="${pageScope.title}" 
-           data-width="500">${infoText}</div>
+           data-width="${(not empty infoWidth && infoWidth > 0)? infoWidth: 500}">${infoText}</div>
 </c:if>

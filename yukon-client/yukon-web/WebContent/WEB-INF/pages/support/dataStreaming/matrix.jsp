@@ -1,3 +1,8 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+
+<cti:msgScope paths="modules.support.dataStreamingSupport">
+
 <table class="matrix">
         <tr>
             <th style="width: 130px;" class="firstCol"><cti:msg2 key=".deviceType" /></th>
@@ -14,3 +19,4 @@
             </tr>
         </c:forEach>
     </table>
+    </cti:msgScope>

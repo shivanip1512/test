@@ -14,7 +14,6 @@
                 <cti:csrfToken/>
                 
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                <i:inline key=".bulk.dataStreaming.configure.deviceMatrix"/>: <cti:icon icon="icon-magnifier" id="deviceMatrixLnk" classes="fn cp"/>
                 <c:choose>
                     <c:when test="${dataStreamingNotSupported}">
                         <div class="user-message error"><i:inline key=".dataStreamingNotSupported"/></div>
@@ -25,6 +24,7 @@
                             <tags:nameValue2 nameKey=".configurationType">
                                  <tags:switchButton path="newConfiguration" offNameKey=".existingConfiguration" onNameKey=".newConfiguration" classes="js-configuration-type" color="false"
                                  toggleGroup="existingConfiguration" toggleAction="hide" toggleInverse="true" checked="${config.newConfiguration}"/>
+                                 <cti:icon icon="icon-help" id="deviceMatrixLnk" classes="fn cp"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".configuration" data-toggle-group="existingConfiguration">
                                 <tags:selectWithItems id="selectedConfiguration" inputClass="js-existing-configuration" path="selectedConfiguration" items="${existingConfigs}" itemValue="id" itemLabel="name" defaultItemValue="0" defaultItemLabel="Please select"/>
@@ -44,7 +44,8 @@
                         </tags:nameValueContainer2>
                         
                         <tags:nameValueContainer2 tableClass="dn js-new-configuration">
-                             <tags:sectionContainer2 nameKey="attributes" styleClass="dn js-new-configuration">
+                             <cti:url var="helpUrl" value="/support/matrixView"/>
+                             <tags:sectionContainer2 nameKey="attributes" styleClass="dn js-new-configuration" helpUrl="${helpUrl}" helpWidth="960">
                                 <c:forEach var="attribute" varStatus="status" items="${configuration.attributes}">
                                     <c:set var="idx" value="${status.index}" />
                                     <form:hidden path="attributes[${idx}].attribute" />

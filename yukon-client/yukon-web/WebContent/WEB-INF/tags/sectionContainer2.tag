@@ -9,6 +9,9 @@
 <%@ attribute name="styleClass" %>
 <%@ attribute name="hideEnabled" type="java.lang.Boolean" %>
 <%@ attribute name="hideInitially" type="java.lang.Boolean" %>
+<%@ attribute name="helpUrl" %>
+<%@ attribute name="helpWidth" %>
+<%@ attribute name="infoWidth" %>
 <%@ attribute name="controls" %>
 
 <cti:msgScope paths=".${nameKey},">
@@ -17,7 +20,7 @@
     <cti:msg2 var="infoText" key=".infoText" arguments="${arguments}" blankIfMissing="true"/>
 </cti:msgScope>
 <tags:sectionContainer title="${pageScope.title}" id="${pageScope.id}" styleClass="${pageScope.styleClass}" 
-    helpText="${pageScope.helpText}" infoText="${pageScope.infoText}" hideEnabled="${pageScope.hideEnabled}" hideInitially="${pageScope.hideInitially}" 
-    controls="${pageScope.controls}"
+    helpText="${pageScope.helpText}" helpUrl="${pageScope.helpUrl}" infoText="${pageScope.infoText}" hideEnabled="${pageScope.hideEnabled}" hideInitially="${pageScope.hideInitially}" 
+    controls="${pageScope.controls}" helpWidth="${helpWidth}" infoWidth="${infoWidth}"
     ><jsp:doBody/>
 </tags:sectionContainer>
