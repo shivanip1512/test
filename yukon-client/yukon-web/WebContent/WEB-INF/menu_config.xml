@@ -146,7 +146,7 @@
       <or>
         <role name="CONSUMER_INFO" />
         <role name="INVENTORY" />
-        <role name="DEVICE_MANAGEMENT"/> <!--  may need to change this to 4 separate role properties. Saw at Bowling Green, clicking assests gave no access error because they don't have any LCRs/DR/STARS --> 
+<!--        <role name="DEVICE_MANAGEMENT"/> --> <!--  may need to change this to 4 separate role properties. Saw at Bowling Green, clicking assests gave no access error because they don't have any LCRs/DR/STARS --> 
       </or>
     </permissions>
     <link>/stars/operator/inventory/home</link>
