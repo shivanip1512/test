@@ -60,17 +60,19 @@ yukon.assets.gateway.list = (function () {
                     row.find('.js-gw-conn-status').attr('title', data.connectionStatusText)
                     .find('.state-box').toggleClass('green', data.connected).toggleClass('red', !data.connected);
                     row.find('.js-gw-ip').text(data.ip);
-                    var capacity = row.find('.js-gw-capacity span');
-                    var color = "badge-success";
-                    if (data.dataStreamingLoadingPercent > 100 ){
-                        color = "badge-warning";
+                    var capacity = row.find('.js-gw-capacity span:visible');
+                    if (capacity.length > 0) {
+                        var color = "badge-success";
+                        if (data.dataStreamingLoadingPercent > 100 ){
+                            color = "badge-warning";
+                        }
+                        if (data.dataStreamingLoadingPercent > 120) {
+                            color = "badge-error";
+                        }
+                        capacity.text(data.dataStreamingLoadingPercent + "%");
+                        capacity.removeClass("badge-success badge-warning badge-error");
+                        capacity.addClass(color);
                     }
-                    if (data.dataStreamingLoadingPercent > 120) {
-                        color = "badge-error";
-                    }
-                    capacity.text(data.dataStreamingLoadingPercent + "%");
-                    capacity.removeClass("badge-success badge-warning badge-error");
-                    capacity.addClass(color);
                     row.find('.js-gw-rv-text').text(data.releaseVersion);
                     if(data.hasUpdateVersion) { 
                         row.find('.js-gateway-update-available').removeClass('dn');
