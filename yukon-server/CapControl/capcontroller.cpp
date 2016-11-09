@@ -382,6 +382,9 @@ void CtiCapController::messageSender()
 
 void CtiCapController::incomingMessageProcessor()
 {
+    ULONG MessageCount = 0;
+    ULONG MessageLog = 0;
+
     CTILOG_DEBUG(dout, "CtiCapController incoming message thread is starting");
 
     ThreadStatusKeeper threadKeeper("CapControl Incoming Message Thread");
@@ -404,6 +407,16 @@ void CtiCapController::incomingMessageProcessor()
                     }
                     CTILOG_INFO(dout, "Processing "<< msgCount <<" New Message(s).");
                 }
+
+                MessageCount++;
+                MessageLog++;
+
+                if (MessageLog >= 1000)
+                {
+                    MessageLog = 0;
+                    CTILOG_INFO(dout, "CapControl has processed " << MessageCount << " inbound messages");
+                }
+
 
                 parseMessage(msg);
                 delete msg;

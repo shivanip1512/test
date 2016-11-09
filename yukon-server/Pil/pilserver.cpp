@@ -162,6 +162,8 @@ void PilServer::mainThread()
 
     CtiMessage   *MsgPtr;
     int groupBypass = 0;
+    ULONG MessageCount = 0;
+    ULONG MessageLog = 0;
 
     CTILOG_INFO(dout, "PIL mainThread - Started");
 
@@ -202,6 +204,15 @@ void PilServer::mainThread()
             {
                 if(MsgPtr != NULL)
                 {
+                    MessageCount++;
+                    MessageLog++;
+                    
+                    if (MessageLog >= 1000)
+                    {
+                        MessageLog = 0;
+                        CTILOG_INFO(dout, "PIL has processed " << MessageCount << " inbound messages");
+                    }
+
                     Cti::Timing::DebugTimer messageProcessingTimer("PIL mainThread message processing");
 
                     if(DebugLevel & DEBUGLEVEL_PIL_MAINTHREAD)
@@ -460,6 +471,8 @@ void PilServer::resultThread()
     CTILOG_INFO(dout, "PIL resultThread - Started");
 
     bool clientReturnsWaiting = false;
+    ULONG MessageCount = 0;
+    ULONG MessageLog = 0;
 
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
@@ -478,6 +491,15 @@ void PilServer::resultThread()
             {
                 if( INMESS *im = _inQueue.getQueue(inQueueMaxWait - elapsed) )
                 {
+                    MessageCount++;
+                    MessageLog++;
+
+                    if (MessageLog >= 1000)
+                    {
+                        MessageLog = 0;
+                        CTILOG_INFO(dout, "PIL has processed " << MessageCount << " result messages");
+                    }
+
                     pendingInMessages.push_back(im);
                 }
             }

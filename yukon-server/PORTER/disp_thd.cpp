@@ -40,6 +40,8 @@ void DispatchMsgHandlerThread()
     CtiThreadMonitor::State previous;
     CtiTime         RefreshTime          = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
     CtiTime         nextCPULoadReportTime;
+    ULONG           MessageCount = 0;
+    ULONG           MessageLog = 0;
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Porter);
     long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::PorterCPU );
@@ -83,6 +85,15 @@ void DispatchMsgHandlerThread()
             auto_ptr<const CtiMessage> MsgPtr(VanGoghConnection.ReadConnQue(2000L));
 
             TimeNow = CtiTime::now();
+
+            MessageCount++;
+            MessageLog++;
+
+            if (MessageLog >= 1000)
+            {
+                MessageLog = 0;
+                CTILOG_INFO(dout, "Porter has processed " << MessageCount << " inbound messages");
+            }
 
             auto_ptr<const CtiDBChangeMsg> dbchg;
 
