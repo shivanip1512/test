@@ -10,10 +10,19 @@
 <form:form commandName="attribute" id="attribute-form" cssClass="js-no-submit-on-enter">
     <cti:csrfToken/>
     <tags:nameValueContainer2>
-        <tags:selectNameValue nameKey=".attribute" path="attribute" items="${groupedAttributes}" itemLabel="message" itemValue="key" groupItems="true"/>
+        <tags:selectNameValue id="chooseAttrib" nameKey=".attribute" path="attribute" items="${groupedAttributes}" itemLabel="message" itemValue="key" groupItems="true"/>
         <tags:selectNameValue items="${dataSelection}" nameKey=".dataSelection" path="dataSelection"/>
         <tags:inputNameValue nameKey=".daysPrevious" path="daysPrevious" maxlength="3" size="3"/>
     </tags:nameValueContainer2>
 </form:form>
-
+<style>
+#format-popup {
+    width: 430px !important;
+    height: 300px !important;
+    overflow: initial !important;
+} 
+</style>
+<script>
+    $("#chooseAttrib").chosen({width: "280px"});
+</script>
 </cti:msgScope>
