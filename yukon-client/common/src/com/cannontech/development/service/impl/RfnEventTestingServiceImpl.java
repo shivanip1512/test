@@ -10,7 +10,6 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.jms.ConnectionFactory;
 
@@ -63,7 +62,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
         
     private static final String meterReadingArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.MeterReadingArchiveRequest";
     private static final String lcrReadingArchiveRequestQueueName = "yukon.qr.obj.dr.rfn.LcrReadingArchiveRequest";
-    private static final String relayReadingArchiveRequestQueueName = "yukon.qr.obj.da.rfn.RfRelayArchiveRequest";
+    private static final String relayReadingArchiveRequestQueueName = "yukon.qr.obj.rfn.RfRelayArchiveRequest";
     private static final String rfDaArchiveRequestQueueName = "yukon.qr.obj.da.rfn.RfDaArchiveRequest";
     private static final String eventArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.EventArchiveRequest";
     private static final String alarmArchiveRequestQueueName = "yukon.qr.obj.amr.rfn.AlarmArchiveRequest";

@@ -23,6 +23,7 @@
                         <option value="GE">GE</option>
                         <option value="ELO">ELO</option>
                         <option value="ITRN">ITRN</option>
+                        <option value="_EMPTY_">_EMPTY_</option>
                     </select>
                 </tags:nameValue>
                 
@@ -39,6 +40,7 @@
                         <option value="2131T">2131T</option>
                         <option value="2131xT">2131xT</option>
                         <option value="C2SX">C2SX</option>
+                        <option value="_EMPTY_">_EMPTY_</option>
                     </select>
                 </tags:nameValue>
                 <tags:nameValue name="Latitude"><input name="latitude" type="text" value="45.091807"></tags:nameValue>

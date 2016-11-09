@@ -51,7 +51,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
         protected ConverterBase(String threadNameBase, int converterNumber, int queueSize) {
             super(threadNameBase + ": " + converterNumber);
-            inQueue = new ArrayBlockingQueue<T>(queueSize);
+            inQueue = new ArrayBlockingQueue<>(queueSize);
             this.converterNumber = converterNumber;
         }
         
@@ -129,7 +129,6 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                 if (log.isInfoEnabled()) {
                     log.info("Serial Number:" + rfnIdentifier.getSensorSerialNumber() + " Sensor Manufacturer:"
                              + rfnIdentifier.getSensorManufacturer() + " Sensor Model:" + rfnIdentifier.getSensorModel());
-                    log.info("Sending Acknowledgement");
                 }
                 sendAcknowledgement(request);
                 return;
@@ -147,7 +146,6 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
                     boolean isAcknowledgeable = e.getCause() instanceof Acknowledgeable;
                     if (isDev || isAcknowledgeable) {
                         log.info("Exception:" + e.getMessage());
-                        log.info("Sending Acknowledgement");
                         sendAcknowledgement(request);
                         return;
                     }
@@ -209,7 +207,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
 
         protected CalculatorBase(int calculatorNumber, int queueSize) {
             super("RfnCalculator: " + calculatorNumber);
-            inQueue = new ArrayBlockingQueue<List<CalculationData>>(queueSize);
+            inQueue = new ArrayBlockingQueue<>(queueSize);
         }
 
         public void queue(List<CalculationData> toCalculate) throws InterruptedException {
@@ -304,6 +302,7 @@ public abstract class ArchiveRequestListenerBase<T extends RfnIdentifyingMessage
     protected void sendAcknowledgement(T request) {
         Object response = getRfnArchiveResponse(request);
         String queueName = getRfnArchiveResponseQueueName();
+        log.info("Sending Acknowledgement response=" + response + " queueName=" + queueName);
         jmsTemplate.convertAndSend(queueName, response);
     }
 

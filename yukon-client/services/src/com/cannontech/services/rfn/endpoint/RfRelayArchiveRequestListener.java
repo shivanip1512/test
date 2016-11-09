@@ -21,7 +21,7 @@ import com.google.common.collect.ImmutableList;
 public class RfRelayArchiveRequestListener extends ArchiveRequestListenerBase<RfRelayArchiveRequest> {
 
     private static final Logger log = YukonLogManager.getLogger(RfRelayArchiveRequestListener.class);
-    private static final String archiveResponseQueueName = "yukon.qr.obj.da.rfn.RfRelayArchiveResponse";
+    private static final String archiveResponseQueueName = "yukon.qr.obj.rfn.RfRelayArchiveResponse";
 
     private List<Worker> workers = new ArrayList<>();
 
@@ -33,13 +33,13 @@ public class RfRelayArchiveRequestListener extends ArchiveRequestListenerBase<Rf
         @Override
         protected RfnDevice processCreation(RfRelayArchiveRequest request, RfnIdentifier identifier) {
             try {
+                log.debug("Recieved relay " + identifier + " " + request);
                 // Create the device in Yukon and send a DB change message
                 String deviceName = request.getRfnIdentifier().getSensorSerialNumber().trim();
                 RfnDevice device = rfnDeviceCreationService.createRelay(deviceName,
                                                                         request.getRfnIdentifier());
                 rfnDeviceCreationService.incrementNewDeviceCreated();
                 log.debug("Created new relay: " + device);
-                sendAcknowledgement(request);
                 return device;
             } catch (Exception e) {
                 log.warn("Creation failed for relay: " + request.getRfnIdentifier(), e);
@@ -52,6 +52,7 @@ public class RfRelayArchiveRequestListener extends ArchiveRequestListenerBase<Rf
             // no data to archive on this queue, just device creation requests
             // that have no other payload
             incrementProcessedArchiveRequest();
+            sendAcknowledgement(archiveRequest);
         }
     }
 
@@ -93,12 +94,6 @@ public class RfRelayArchiveRequestListener extends ArchiveRequestListenerBase<Rf
     @Override
     protected String getRfnArchiveResponseQueueName() {
         return archiveResponseQueueName;
-    }
-
-    @Override
-    @ManagedAttribute
-    public int getWorkerCount() {
-        return workers.size();
     }
 
     @ManagedAttribute

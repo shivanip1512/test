@@ -154,6 +154,6 @@
             concurrency="2"
             container-type="simple"
             container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
-        <jms:listener destination="yukon.qr.obj.da.rfn.RfRelayArchiveRequest" ref="rfRelayArchiveRequestListener" method="handleArchiveRequest"/>
+        <jms:listener destination="yukon.qr.obj.rfn.RfRelayArchiveRequest" ref="rfRelayArchiveRequestListener" method="handleArchiveRequest"/>
     </jms:listener-container>
 </beans>
