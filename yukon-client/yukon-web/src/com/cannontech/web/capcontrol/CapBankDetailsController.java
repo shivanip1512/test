@@ -146,11 +146,13 @@ public class CapBankDetailsController {
             allLitePaos = dbCache.getAllPaosMap();
             for (ViewableCapBank capBank : capBanks) {
                 LiteCapBankAdditional additionInfo = mapBankAdditionals.get(capBank.getCcId());
-                LiteYukonPAObject pao = allLitePaos.get(capBank.getCcId());
+                LiteYukonPAObject capBankPao = allLitePaos.get(capBank.getCcId());
 
                 if (additionInfo != null) {
+                    // LiteYukonPAObject.paoDescription gives the same value (description) as the
+                    // CapBankDevice.ccArea and both actually stores YukonPaoObject.Description value.
                     BankLocation location =
-                        new BankLocation(capBank.getCcName(), additionInfo.getSerialNumber(), pao.getPaoDescription(),
+                        new BankLocation(capBank.getCcName(), additionInfo.getSerialNumber(), capBankPao.getPaoDescription(),
                             additionInfo.getDrivingDirections());
                     bankLocationList.add(location);
                 } else {
