@@ -32,7 +32,6 @@ import com.cannontech.capcontrol.CapBankPotentialTransformer;
 import com.cannontech.capcontrol.CapBankSize;
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -174,7 +173,8 @@ public class CapBankController {
             
             int parentId = 0;
             try {
-                parentId = ccCache.getParentFeederId(capBankId);
+                parentId = capbankDao.getParentFeederIdentifier(capBankId).getPaoId();
+
                 LiteYukonPAObject parent = dbCache.getAllPaosMap().get(parentId);
                 model.addAttribute("orphan", false);
                 model.addAttribute("parent", parent);
@@ -200,17 +200,8 @@ public class CapBankController {
 
                 model.addAttribute("feederId", feeder.getCcId());
                 model.addAttribute("feederName", feeder.getCcName());
-            } catch (NotFoundException e){
+            } catch (EmptyResultDataAccessException | NotFoundException e) {
                 model.addAttribute("orphan", true);
-                //not found in cache so try accessing database
-                try {
-                    PaoIdentifier paoId = capbankDao.getParentFeederIdentifier(capBankId);
-                    parentId = paoId.getPaoId();
-                    LiteYukonPAObject parent = dbCache.getAllPaosMap().get(parentId);
-                    model.addAttribute("parent", parent);
-                } catch (EmptyResultDataAccessException er) {
-                    model.addAttribute("orphan", true);
-                }            
             }
             
             Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(capBankId);
