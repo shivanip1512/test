@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.log4j.Logger;
 import org.geojson.FeatureCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,11 +60,19 @@ public class MapNetworkController {
         model.addAttribute("geojson", geojson);
         model.addAttribute("deviceId", deviceId);
         
-        model.addAttribute("displayNeighborsLayer", !device.getDeviceType().isWaterMeter());
-        model.addAttribute("displayParentNodeLayer", device.getDeviceType().isWaterMeter());
-        
-        model.addAttribute("isGateway", PaoType.getRfGatewayTypes().contains(device.getDeviceType()));
+        boolean isGateway = PaoType.getRfGatewayTypes().contains(device.getDeviceType());
+        model.addAttribute("isGateway", isGateway);
         model.addAttribute("isRelay", PaoType.getRfRelayTypes().contains(device.getDeviceType()));
+        
+        boolean displayNeighborsLayer = !device.getDeviceType().isWaterMeter();
+        boolean displayParentNodeLayer = device.getDeviceType().isWaterMeter();
+        boolean displayPrimaryRouteLayer = !isGateway;
+        model.addAttribute("displayNeighborsLayer", displayNeighborsLayer);
+        model.addAttribute("displayParentNodeLayer", displayParentNodeLayer);
+        model.addAttribute("displayPrimaryRouteLayer", displayPrimaryRouteLayer);
+        
+        int numLayers = BooleanUtils.toInteger(displayNeighborsLayer) + BooleanUtils.toInteger(displayParentNodeLayer) + BooleanUtils.toInteger(displayPrimaryRouteLayer);
+        model.addAttribute("numLayers", numLayers);
         
         //try to get commstatus for device
         try {

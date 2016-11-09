@@ -63,11 +63,17 @@
             <div id="map-network-container" class="${empty geojson.features ? 'dn' : ''}">
                 <div id="device-location" class="map" data-has-location="${not empty geojson.features}"></div>
                 <div class="buffered">
-                    <div class="button-group stacked">
+                    <c:set var="groupClass" value=""/>
+                    <c:if test="${numLayers > 1}">
+                        <c:set var="groupClass" value="button-group"/>
+                    </c:if>
+                    <div class="${groupClass} stacked">
                         <c:if test="${displayNeighborsLayer}">
                             <tags:check name="neighbors" key=".neighbors" classes="js-neighbor-data" />                            
                         </c:if>
-                        <tags:check name="primary" key=".primary" classes="js-primary-route" />
+                        <c:if test="${displayPrimaryRouteLayer}">
+                            <tags:check name="primary" key=".primary" classes="js-primary-route" />
+                        </c:if>
                         <c:if test="${displayParentNodeLayer}">
                             <tags:check name="parent" key=".parent" classes="js-parent-node" />
                         </c:if>
