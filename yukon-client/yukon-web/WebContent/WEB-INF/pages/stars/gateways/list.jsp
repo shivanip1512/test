@@ -330,7 +330,9 @@
         <tr class="js-loaded-row" data-gateway="" data-loaded="true">
             <td class="js-gw-conn-status"><span class="state-box"></span></td>
             <td class="js-gw-name"><a></a></td>
-            <td class="js-gw-capacity"><span class="badge cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"></span></td>
+            <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                <td class="js-gw-capacity"><span class="badge cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"></span></td>
+            </cti:checkRolesAndProperties>
             <td class="js-gw-sn"></td>
             <td class="js-gw-ip"></td>
             <c:if test="${enableNMGatewayVersion}">
@@ -359,7 +361,9 @@
         <tr class="js-loading-row" data-gateway="" data-loaded="false">
             <td class="js-gw-conn-status"><cti:icon icon="icon-loading-bars"/></td>
             <td class="js-gw-name"></td>
-            <td class="js-gw-capacity"></td>
+            <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                <td class="js-gw-capacity"></td>
+            </cti:checkRolesAndProperties>
             <td class="js-gw-sn"></td>
             <td colspan="4"><i:inline key=".loadingGatewayData"/></td>
         </tr>
