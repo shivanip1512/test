@@ -24,7 +24,6 @@
                             <tags:nameValue2 nameKey=".configurationType">
                                  <tags:switchButton path="newConfiguration" offNameKey=".existingConfiguration" onNameKey=".newConfiguration" classes="js-configuration-type" color="false"
                                  toggleGroup="existingConfiguration" toggleAction="hide" toggleInverse="true" checked="${config.newConfiguration}"/>
-                                 <cti:icon icon="icon-help" id="deviceMatrixLnk" classes="fn cp"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".configuration" data-toggle-group="existingConfiguration">
                                 <tags:selectWithItems id="selectedConfiguration" inputClass="js-existing-configuration" path="selectedConfiguration" items="${existingConfigs}" itemValue="id" itemLabel="name" defaultItemValue="0" defaultItemLabel="Please select"/>
@@ -66,10 +65,6 @@
             </form:form>
         </div>
     </tags:bulkActionContainer>
-    <cti:msg2 var="matrixTitle" key=".bulk.dataStreaming.configure.deviceMatrix"/>
-    <tags:simplePopup title="${matrixTitle }" id="deviceMatrix" on="#deviceMatrixLnk" options="{width: 940}">
-         <%@ include file="../../support/dataStreaming/matrix.jsp" %>
-    </tags:simplePopup>
     <cti:includeScript link="/resources/js/pages/yukon.bulk.dataStreaming.js"/>
     
 </cti:standardPage>
