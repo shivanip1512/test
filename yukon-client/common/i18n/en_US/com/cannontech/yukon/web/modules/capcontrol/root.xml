@@ -107,7 +107,7 @@
     <!-- Cap Control Schedule Popup -->
     <entry key="yukon.web.modules.capcontrol.schedules.schedule">Schedule</entry>
     <entry key="yukon.web.modules.capcontrol.schedules.command">Command</entry>
-    <entry key="yukon.web.modules.capcontrol.schedules.ovuv">OV/UV</entry>
+    <entry key="yukon.web.modules.capcontrol.schedules.ovuv">Disable OV/UV</entry>
     <entry key="yukon.web.modules.capcontrol.schedules.pleaseSelect">Please select</entry>
         
     <!-- Cap Control Points -->
