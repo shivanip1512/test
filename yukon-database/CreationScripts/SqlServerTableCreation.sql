@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/8/2016 1:37:54 PM                         */
+/* Created on:     11/8/2016 3:31:33 PM                         */
 /*==============================================================*/
 
 
@@ -10102,7 +10102,7 @@ INSERT INTO YukonRole VALUES(-209,'Inventory','Operator','Operator Access to har
 INSERT INTO YukonRole VALUES(-210,'Work Order','Operator','Operator Access to work order management');
 
 /* ISOC */
-INSERT INTO YukonRole VALUES(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment'); 
+INSERT INTO YukonRole VALUES(-211,'CI Curtailment','Operator','Controls access to C&I Curtailment functionality.');
 
 /* Scheduler Role */
 INSERT INTO YukonRole VALUES(-212,'Scheduler','Operator','Operator access to Scheduler'); 
@@ -10328,7 +10328,7 @@ insert into YukonRoleProperty values(-21001,-210,'Create Work Order','true','Con
 insert into YukonRoleProperty values(-21002,-210,'Work Order Report','true','Controls whether to allow reporting on work orders');
 insert into YukonRoleProperty values(-21003,-210,'Addtl Order Number Label','Addtl Order Number','Customizable label for the additional order number field.');
 
-insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Exists','true','The default C&I Curtailment property.');
+INSERT INTO YukonRoleProperty VALUES(-21100,-211,'CI Curtailment Operator','true','Controls access to the CI Curtailment operator functionality. When false, only the CI Curtailment user pages are available.');
 
 /* Scheduler Role Properties */
 INSERT INTO YukonRoleProperty VALUES (-21200,-212,'Enable/Disable Scripts','true','Controls access to enable or disable a script.'); 

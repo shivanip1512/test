@@ -699,6 +699,16 @@ INSERT INTO State VALUES (-27, 0, 'Yes', 1, 6, 0);
 INSERT INTO State VALUES (-27, 1, 'No', 0, 6, 0);
 /* End YUK-15957 */
 
+/* Start YUK-15962 */
+UPDATE YukonRole
+SET RoleDescription = 'Controls access to C&I Curtailment functionality.'
+WHERE RoleId = -211;
+
+UPDATE YukonRoleProperty 
+SET KeyName = 'CI Curtailment Operator', Description = 'Controls access to the CI Curtailment operator functionality. When false, only the CI Curtailment user pages are available.' 
+WHERE RolePropertyId = -21100 AND RoleId = -211; 
+/* End YUK-15962 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
