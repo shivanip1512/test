@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.service.impl.MeterEventLookupService;
 import com.cannontech.amr.meter.service.impl.MeterEventStatusTypeGroupings;
 import com.cannontech.amr.paoPointValue.model.MeterPointValue;
@@ -41,6 +40,7 @@ import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationExce
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.service.DeviceCollectionService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.i18n.ObjectFormattingService;
@@ -58,6 +58,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -120,6 +121,7 @@ public class MeterEventsReportController {
     @Autowired private ScheduledFileExportService exportService;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private DeviceDao deviceDao;
     
     private ScheduledFileExportValidator exportValidator = 
             new ScheduledFileExportValidator(MeterEventsReportController.class);
@@ -152,6 +154,7 @@ public class MeterEventsReportController {
     @RequestMapping(value="home", params="collectionType")
     public String homeWithDeviceCollection(ModelMap model, DeviceCollection collection, YukonUserContext userContext) {
         
+        System.out.print(collection.getDeviceCount());
         setupNewHomeModelMap(model, collection, userContext);
         scheduledJobsTable(model);
         
@@ -515,8 +518,8 @@ public class MeterEventsReportController {
 
         for (MeterPointValue event : events) {
             String[] dataRow = new String[5];
-            dataRow[0] = event.getMeter().getName();
-            dataRow[1] = event.getMeter().getMeterNumber();
+            dataRow[0] = event.getDeviceName();
+            dataRow[1] = event.getMeterNumber();
 
             DateTime timeStamp = new DateTime(event.getPointValueHolder().getPointDataTimeStamp(), userContext.getJodaTimeZone());
             String dateTimeString = timeStamp.toString(DateTimeFormat.mediumDateTime());
@@ -533,9 +536,9 @@ public class MeterEventsReportController {
     
     private DeviceCollection getCollectionFromReport(List<MeterPointValue> events, YukonUserContext userContext) {
         
-        Set<YukonMeter> meters = Sets.newHashSet();
+        Set<SimpleDevice> meters = Sets.newHashSet();
         for (MeterPointValue reportEvent : events) {
-            meters.add(reportEvent.getMeter());
+            meters.add(deviceDao.getYukonDevice(reportEvent.getPaoIdentifier().getPaoId()));
         }
 
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);

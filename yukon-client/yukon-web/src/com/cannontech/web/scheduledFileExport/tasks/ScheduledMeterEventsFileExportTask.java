@@ -20,7 +20,6 @@ import com.cannontech.common.fileExportHistory.ExportHistoryEntry;
 import com.cannontech.common.fileExportHistory.FileExportType;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.Attribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.scheduledFileExport.ExportFileGenerationParameters;
 import com.cannontech.common.scheduledFileExport.MeterEventsExportGenerationParameters;
 import com.cannontech.common.util.Range;
@@ -39,7 +38,6 @@ import com.google.common.collect.Sets;
 public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask {
 	@Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
 	@Autowired private PaoPointValueService paoPointValueService;
-	@Autowired private AttributeService attributeService;
 	@Autowired private PointFormattingService pointFormattingService;
 	@Autowired private DeviceCollectionService deviceCollectionService;
 	
@@ -175,8 +173,8 @@ public class ScheduledMeterEventsFileExportTask extends ScheduledFileExportTask 
         
         for(MeterPointValue event : events) {
             String[] dataRow = new String[5];
-            dataRow[0] = event.getMeter().getName();
-            dataRow[1] = event.getMeter().getMeterNumber();
+            dataRow[0] = event.getDeviceName();
+            dataRow[1] = event.getMeterNumber();
             
             DateTime timeStamp = new DateTime(event.getPointValueHolder().getPointDataTimeStamp(), userTimeZone);
             String dateTimeString = timeStamp.toString(DateTimeFormat.mediumDateTime());

@@ -7,6 +7,7 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
@@ -16,23 +17,30 @@ import com.google.common.collect.Ordering;
 
 public class MeterPointValue implements YukonPao {
 
-    private final YukonMeter meter;
+    private final String deviceName;
+    private final String meterNumber;
     private final PaoPointIdentifier paoPointIdentifier;
     private final PointValueHolder pointValueHolder;
     private final String pointName;
     private String formattedValue;
     private String formattedRawValue;
 
-    public MeterPointValue(YukonMeter meter, PaoPointIdentifier paoPointIdentifier,
-                           PointValueHolder pointValueHolder, String pointName) {
-        this.meter = meter;
+    public MeterPointValue(YukonMeter meter, PaoPointIdentifier paoPointIdentifier, PointValueHolder pointValueHolder,
+            String pointName) {
+        this.deviceName = meter.getName();
+        this.meterNumber = meter.getMeterNumber();
         this.paoPointIdentifier = paoPointIdentifier;
         this.pointValueHolder = pointValueHolder;
         this.pointName = pointName;
     }
 
-    public YukonMeter getMeter() {
-        return meter;
+    public MeterPointValue(RfnDevice relay, PaoPointIdentifier paoPointIdentifier, PointValueHolder pointValueHolder,
+            String pointName) {
+        this.deviceName = relay.getName();
+        this.meterNumber = relay.getRfnIdentifier().getSensorSerialNumber();
+        this.paoPointIdentifier = paoPointIdentifier;
+        this.pointValueHolder = pointValueHolder;
+        this.pointName = pointName;
     }
 
     public PaoPointIdentifier getPaoPointIdentifier() {
@@ -80,33 +88,44 @@ public class MeterPointValue implements YukonPao {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         MeterPointValue other = (MeterPointValue) obj;
         if (formattedValue == null) {
-            if (other.formattedValue != null)
+            if (other.formattedValue != null) {
                 return false;
-        } else if (!formattedValue.equals(other.formattedValue))
+            }
+        } else if (!formattedValue.equals(other.formattedValue)) {
             return false;
+        }
         if (paoPointIdentifier == null) {
-            if (other.paoPointIdentifier != null)
+            if (other.paoPointIdentifier != null) {
                 return false;
-        } else if (!paoPointIdentifier.equals(other.paoPointIdentifier))
+            }
+        } else if (!paoPointIdentifier.equals(other.paoPointIdentifier)) {
             return false;
+        }
         if (pointName == null) {
-            if (other.pointName != null)
+            if (other.pointName != null) {
                 return false;
-        } else if (!pointName.equals(other.pointName))
+            }
+        } else if (!pointName.equals(other.pointName)) {
             return false;
+        }
         if (pointValueHolder == null) {
-            if (other.pointValueHolder != null)
+            if (other.pointValueHolder != null) {
                 return false;
-        } else if (!pointValueHolder.equals(other.pointValueHolder))
+            }
+        } else if (!pointValueHolder.equals(other.pointValueHolder)) {
             return false;
+        }
         return true;
     }
 
@@ -140,7 +159,7 @@ public class MeterPointValue implements YukonPao {
             .onResultOf(new Function<MeterPointValue, String>() {
                 @Override
                 public String apply(MeterPointValue from) {
-                    return from.getMeter().getMeterNumber();
+                    return from.getMeterNumber();
                 }
             });
         return meterNumberOrdering;
@@ -152,7 +171,7 @@ public class MeterPointValue implements YukonPao {
             .onResultOf(new Function<MeterPointValue, String>() {
                 @Override
                 public String apply(MeterPointValue from) {
-                    return from.getMeter().getPaoType().getDbString();
+                    return from.getPaoIdentifier().getPaoType().getDbString();
                 }
             });
         return typeOrdering;
@@ -184,7 +203,7 @@ public class MeterPointValue implements YukonPao {
             .onResultOf(new Function<MeterPointValue, String>() {
                 @Override
                 public String apply(MeterPointValue from) {
-                    return from.getMeter().getName();
+                    return from.getDeviceName();
                 }
             });
     }
@@ -207,5 +226,13 @@ public class MeterPointValue implements YukonPao {
                     return from.getPointName();
                 }
             });
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public String getMeterNumber() {
+        return meterNumber;
     }
 }

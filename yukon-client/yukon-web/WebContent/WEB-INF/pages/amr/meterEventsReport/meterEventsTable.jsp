@@ -40,10 +40,19 @@
                     <c:forEach var="event" items="${meterEvents.resultList}">
                         <tr>
                             <td>
-                                <cti:paoDetailUrl yukonPao="${event.meter}" >${fn:escapeXml(event.meter.name)}</cti:paoDetailUrl>
+                                <cti:paoDetailUrl yukonPao="${event}" >${fn:escapeXml(event.deviceName)}</cti:paoDetailUrl>
                             </td>
-                            <td>${event.meter.meterNumber}</td>
-                            <td><tags:paoType yukonPao="${event.meter}"/></td>
+                            <td>${event.meterNumber}</td>
+                            <td>
+                                <c:choose>
+                                     <c:when test="${event.getPaoIdentifier().getPaoType().isRfRelay()}">
+                                        <tags:paoType yukonPao="${event}" showLink="false" />
+                                     </c:when>
+                                     <c:otherwise>
+                                        <tags:paoType yukonPao="${event}" />
+                                     </c:otherwise>
+                                </c:choose>
+                            </td>
                             <td><cti:formatDate type="BOTH" value="${event.pointValueHolder.pointDataTimeStamp}"/></td>
                             <td>${fn:escapeXml(event.pointName)}</td>
                             <td>
@@ -51,7 +60,14 @@
                                 <cti:pointValueFormatter format="VALUE" value="${event.pointValueHolder}" />
                             </td>
                             <td>
-                                <cm:singleDeviceMenu deviceId="${event.meter.paoIdentifier.paoId}" triggerClasses="fr"/>
+                                <c:choose>
+                                    <c:when test="${event.getPaoIdentifier().getPaoType().isRfRelay()}">
+                                        <cm:singleDeviceMenu deviceId="${event.paoIdentifier.paoId}" menuBeanId="relayMenuSingleDevice" triggerClasses="fr"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <cm:singleDeviceMenu deviceId="${event.paoIdentifier.paoId}" menuBeanId="meterMenuSingleDevice" triggerClasses="fr"/>
+                                    </c:otherwise>
+                                </c:choose>
                             </td>
                         </tr>
                     </c:forEach>

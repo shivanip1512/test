@@ -69,23 +69,24 @@ public class MeterEventsWidget extends AdvancedWidgetControllerBase {
 
     public void setupModel(int deviceId, ModelMap model, YukonUserContext userContext) {
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
-        boolean isDisabled = false;
-        if (device.getPaoIdentifier().getPaoType().isMeter()) {
+        boolean isDisabled = true;
+        if (device.getPaoIdentifier().getPaoType().isRfMeter()) {
             YukonMeter meter = meterDao.getForId(deviceId);
             isDisabled = meter.isDisabled();
-            model.addAttribute("meter", meter);
+        } else if (device.getPaoIdentifier().getPaoType().isRfRelay()) {
+            isDisabled = false;
         }
-        
         model.addAttribute("isDisabled", isDisabled);
-
+        
         List<MeterPointValue> meterPointValues = getMeterPointValues(device, userContext, isDisabled);
+ 
         model.addAttribute("valueMap", meterPointValues);
         model.addAttribute("deviceId", deviceId);
         Instant now = new Instant();
         Instant defaultStartInstant = now.minus(Period.days(30).toDurationTo(now));
         model.addAttribute("defaultStartInstant", defaultStartInstant);
     }
-    
+   
     private List<MeterPointValue> getMeterPointValues(RfnDevice device, YukonUserContext userContext, boolean isDisabled) {
         Set<Attribute> availableEventAttributes =
             meterEventLookupService.getAvailableEventAttributes(Collections.singletonList(device));
