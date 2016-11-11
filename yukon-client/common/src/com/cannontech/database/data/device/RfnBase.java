@@ -5,12 +5,8 @@ import java.sql.SQLException;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.inventory.YukonInventory;
-import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.database.db.device.RfnAddress;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
@@ -97,15 +93,7 @@ public abstract class RfnBase extends DeviceBase {
     @Override
     public void update() throws SQLException {
         super.update();
-        
-        /* Use the rfn device dao to do updating since depending on the address arguments
-         * we will either be doing a delete, and insert or an update. */
-        RfnDeviceDao rfnDeviceDao = YukonSpringHook.getBean("rfnDeviceDao", RfnDeviceDao.class);
-        PaoIdentifier pao = new PaoIdentifier(getPAObjectID(), getPaoType());
-        RfnIdentifier rfn = new RfnIdentifier(getRfnAddress().getSerialNumber(), getRfnAddress().getManufacturer(), getRfnAddress().getModel());
-        RfnDevice device = new RfnDevice(getPAOName(), pao, rfn);
-        
-        rfnDeviceDao.updateDevice(device);
+        getRfnAddress().update();
     }
     
     @Override

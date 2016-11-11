@@ -55,7 +55,16 @@ public class RfnAddress extends DBPersistent  {
         Object setValues[] = { getSerialNumber(), getManufacturer(), getModel() };
         Object constraintValues[] = { getDeviceID() };
         
-        update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
+        RfnIdentifier rfn = new RfnIdentifier(getSerialNumber(), getManufacturer(), getModel());
+
+        if (rfn.isBlank()) {
+            delete();
+        } else {
+            // This is the "update". An entry may already exist, but it may not. Deleting, then adding should handle both add/update needs.
+            delete();
+            add();
+        }
+
     }
 
     public String getSerialNumber() {
