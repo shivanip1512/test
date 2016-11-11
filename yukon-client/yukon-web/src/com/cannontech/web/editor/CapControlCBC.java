@@ -42,7 +42,7 @@ public class CapControlCBC implements YukonPao {
     private boolean editingController;
 
     private static final Set<PaoType> twoWayTypes = ImmutableSet.of(PaoType.CBC_7020, PaoType.CBC_7022, PaoType.CBC_7023, PaoType.CBC_7024,
-        PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP);
+        PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP, PaoType.DNP_CBC_6510);
 
     public static final Set<PaoType> getTwoWayTypes() {
         return twoWayTypes;

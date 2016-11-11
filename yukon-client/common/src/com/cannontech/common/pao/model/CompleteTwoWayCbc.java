@@ -8,7 +8,7 @@ import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.google.common.base.Objects;
 
 @YukonPao(tableBacked = false, paoTypes = { PaoType.CBC_7020, PaoType.CBC_7022, PaoType.CBC_7023, PaoType.CBC_7024,
-    PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP })
+    PaoType.CBC_8020, PaoType.CBC_8024, PaoType.CBC_DNP, PaoType.DNP_CBC_6510})
 public class CompleteTwoWayCbc extends CompleteCbcBase {
     private CompleteDeviceScanRate completeDeviceScanRate = null;
     private final CompleteDeviceWindow completeDeviceWindow = new CompleteDeviceWindow();
