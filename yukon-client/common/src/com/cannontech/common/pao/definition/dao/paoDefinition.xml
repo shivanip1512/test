@@ -12317,6 +12317,20 @@
                 <unitofmeasure value="Megabytes" />
                 <decimalplaces value="0" />            
             </point>
+            <point type="Analog" offset="1030">
+                <init>true</init>
+                <name>Message Broker CPU Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Percent" />
+                <decimalplaces value="2" />            
+            </point>
+            <point type="Analog" offset="1031">
+                <init>true</init>
+                <name>Message Broker Memory Utilization</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Megabytes" />
+                <decimalplaces value="0" />            
+            </point>
         </points>
         <attributes>
             <attribute name="PORTER_CPU_UTILIZATION">
@@ -12384,6 +12398,12 @@
             </attribute>
             <attribute name="LOAD_MANAGEMENT_MEMORY_UTILIZATION">
                 <basicLookup point="Load Management Memory Utilization" />
+            </attribute>
+            <attribute name="MESSAGE_BROKER_CPU_UTILIZATION">
+                <basicLookup point="Message Broker CPU Utilization" />
+            </attribute>
+            <attribute name="MESSAGE_BROKER_MEMORY_UTILIZATION">
+                <basicLookup point="Message Broker Memory Utilization" />
             </attribute>
         </attributes>
     </pao>

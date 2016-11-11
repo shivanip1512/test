@@ -407,6 +407,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     NOTIFICATION_SERVER_CPU_UTILIZATION("Notification Server CPU Utilization", AttributeGroup.SYSTEM, false),
     SERVICE_MANAGER_CPU_UTILIZATION("Service Manager CPU Utilization", AttributeGroup.SYSTEM, false),
     WEB_SERVICE_CPU_UTILIZATION("Web Service CPU Utilization", AttributeGroup.SYSTEM, false),
+    MESSAGE_BROKER_CPU_UTILIZATION("Message Broker CPU Utilization", AttributeGroup.SYSTEM, false),
 
     PORTER_MEMORY_UTILIZATION("Porter Memory Utilization", AttributeGroup.SYSTEM, false),
     DISPATCH_MEMORY_UTILIZATION("Dispatch Memory Utilization", AttributeGroup.SYSTEM, false),
@@ -419,7 +420,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     NOTIFICATION_SERVER_MEMORY_UTILIZATION("Notification Server Memory Utilization", AttributeGroup.SYSTEM, false),
     SERVICE_MANAGER_MEMORY_UTILIZATION("Service Manager Memory Utilization", AttributeGroup.SYSTEM, false),
     WEB_SERVICE_MEMORY_UTILIZATION("Web Service Memory Utilization", AttributeGroup.SYSTEM, false),
-
+    MESSAGE_BROKER_MEMORY_UTILIZATION("Message Broker Memory Utilization", AttributeGroup.SYSTEM, false),
+    
     LOAD_MANAGEMENT_CPU_UTILIZATION("Load Management CPU Utilization", AttributeGroup.SYSTEM, false),
     LOAD_MANAGEMENT_MEMORY_UTILIZATION("Load Management Memory Utilization", AttributeGroup.SYSTEM, false),
 ;

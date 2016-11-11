@@ -8,4 +8,11 @@
     <context:annotation-config/>
     
     <bean class="com.cannontech.message.service.BrokerService"/>
+    
+    <bean id="systemMetrics" class="com.cannontech.common.systemMetrics.SystemMetricsImpl"
+           init-method="init" destroy-method="destroy">
+        <property name="loadAverageAttribute" value="MESSAGE_BROKER_CPU_UTILIZATION" />
+        <property name="memoryAttribute" value="MESSAGE_BROKER_MEMORY_UTILIZATION" />
+    </bean>
+    
 </beans>
