@@ -575,6 +575,7 @@ public:
     static const Attribute  NotificationServerCpuUtilization;
     static const Attribute  ServiceManagerCpuUtilization;
     static const Attribute  WebServiceCpuUtilization;
+    static const Attribute  MessageBrokerCpuUtilization;
 
     static const Attribute  PorterMemoryUtilization;
     static const Attribute  DispatchMemoryUtilization;
@@ -587,6 +588,7 @@ public:
     static const Attribute  NotificationServerMemoryUtilization;
     static const Attribute  ServiceManagerMemoryUtilization;
     static const Attribute  WebServiceMemoryUtilization;
+    static const Attribute  MessageBrokerMemoryUtilization;
 
     static const Attribute  LoadManagementCpuUtilization;
     static const Attribute  LoadManagementMemoryUtilization;

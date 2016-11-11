@@ -532,6 +532,7 @@ const Attribute Attribute::MacsCpuUtilization                               = At
 const Attribute Attribute::NotificationServerCpuUtilization                 = Attribute( "NOTIFICATION_SERVER_CPU_UTILIZATION" );
 const Attribute Attribute::ServiceManagerCpuUtilization                     = Attribute( "SERVICE_MANAGER_CPU_UTILIZATION" );
 const Attribute Attribute::WebServiceCpuUtilization                         = Attribute( "WEB_SERVICE_CPU_UTILIZATION" );
+const Attribute Attribute::MessageBrokerCpuUtilization                      = Attribute( "MESSAGE_BROKER_CPU_UTILIZATION" );
 
 const Attribute Attribute::PorterMemoryUtilization                          = Attribute( "PORTER_MEMORY_UTILIZATION" );
 const Attribute Attribute::DispatchMemoryUtilization                        = Attribute( "DISPATCH_MEMORY_UTILIZATION" );
@@ -544,6 +545,7 @@ const Attribute Attribute::MacsMemoryUtilization                            = At
 const Attribute Attribute::NotificationServerMemoryUtilization              = Attribute( "NOTIFICATION_SERVER_MEMORY_UTILIZATION" );
 const Attribute Attribute::ServiceManagerMemoryUtilization                  = Attribute( "SERVICE_MANAGER_MEMORY_UTILIZATION" );
 const Attribute Attribute::WebServiceMemoryUtilization                      = Attribute( "WEB_SERVICE_MEMORY_UTILIZATION" );
+const Attribute Attribute::MessageBrokerMemoryUtilization                   = Attribute( "MESSAGE_BROKER_MEMORY_UTILIZATION" );
 
 const Attribute Attribute::LoadManagementCpuUtilization                     = Attribute( "LOAD_MANAGEMENT_CPU_UTILIZATION" );
 const Attribute Attribute::LoadManagementMemoryUtilization                  = Attribute( "LOAD_MANAGEMENT_MEMORY_UTILIZATION" );
