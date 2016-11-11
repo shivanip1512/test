@@ -813,11 +813,11 @@ GO
 
 /* Start YUK-15962 */
 UPDATE YukonRole
-SET RoleDescription = 'Controls access to C&I Curtailment functionality.'
+SET RoleName = 'C&I Curtailment', RoleDescription = 'Controls user and operator access to C&I Curtailment.'
 WHERE RoleId = -211;
 
 UPDATE YukonRoleProperty 
-SET KeyName = 'CI Curtailment Operator', Description = 'Controls access to the CI Curtailment operator functionality. When false, only the CI Curtailment user pages are available.' 
+SET KeyName = 'C&I Curtailment Operator', Description = 'Controls access to the C&I Curtailment operator functionality. When false, only the C&I Curtailment user pages are available.' 
 WHERE RolePropertyId = -21100 AND RoleId = -211; 
 GO
 /* End YUK-15962 */
