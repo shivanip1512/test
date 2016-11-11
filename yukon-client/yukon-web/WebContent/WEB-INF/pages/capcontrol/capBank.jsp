@@ -382,7 +382,7 @@
                                 <tags:switchButton path="ccMonitorBankList[${idx}].overrideStrategySettings" offNameKey=".no.label" onNameKey=".yes.label" toggleGroup="overrideFeederLimits_${idx}" toggleAction="disabled"/>
                             </td>
     
-                            <td>
+                            <td style="max-width:150px;" class="db wrbw wsn">
                                 <span data-toggle-group="overrideFeederLimits_${idx}"><tags:input path="ccMonitorBankList[${idx}].upperBandwidth" size="10" /></span>
                             </td>
                             <td>

@@ -1,5 +1,7 @@
 package com.cannontech.web.capcontrol.validators;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
@@ -10,6 +12,7 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.yukon.IDatabaseCache;
 
 @Service
@@ -30,13 +33,30 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
         if (capbank.getCreateCBC()) {
             validateCBCName(capbank, errors);
         }
+        
+        if (!capbank.getCcMonitorBankList().isEmpty()) {
+            validateCcMonitorBankList(capbank.getCcMonitorBankList(), errors);
+        }
         YukonValidationUtils.checkExceedsMaxLength(errors, "CapBank.mapLocationID", capbank.getCapBank().getMapLocationID(), 64);
 
     }
 
+    private void validateCcMonitorBankList(List<CCMonitorBankList> ccMonitorBankLists, Errors errors) {
+        int index = 0;
+        for (CCMonitorBankList ccMonitorBankList : ccMonitorBankLists) {
+            if (ccMonitorBankList.getNINAvg() < 0) {
+                errors.rejectValue("ccMonitorBankList[" + index + "].NINAvg", "yukon.web.error.isNotPositive");
+            }
+            if (ccMonitorBankList.getLowerBandwidth() > ccMonitorBankList.getUpperBandwidth()) {
+                errors.rejectValue("ccMonitorBankList[" + index + "].upperBandwidth",
+                    "yukon.web.error.invalidBandwidth");
+            }
+            index++;
+        }
+    }
+
     private void validateName(CapBank capbank, Errors errors) {
         checkForNameConflicts(capbank, errors, false);
-
     }
     
     private void validateCBCName(CapBank capbank, Errors errors) {
