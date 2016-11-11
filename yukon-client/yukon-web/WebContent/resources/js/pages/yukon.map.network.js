@@ -142,7 +142,7 @@ yukon.map.network = (function () {
         
         _parentLine = layerLines;
         _map.addLayer(layerLines);
-        _map.getView().fitExtent(source.getExtent(), _map.getSize());
+        _updateZoom();
     },
     
     _loadNeighborData = function(neighbors) {
@@ -218,7 +218,7 @@ yukon.map.network = (function () {
             _neighborLines.push(layerLines);
             _map.addLayer(layerLines);
         }
-        _map.getView().fitExtent(source.getExtent(), _map.getSize());
+        _updateZoom();
     },
     
     _loadPrimaryRouteData = function(routeInfo) {
@@ -269,7 +269,7 @@ yukon.map.network = (function () {
             _primaryRouteLines.push(layerLines);
             _map.addLayer(layerLines);
         }
-        _map.getView().fitExtent(source.getExtent(), _map.getSize());
+        _updateZoom();
     },
     
     _updateZoom = function() {
@@ -277,6 +277,9 @@ yukon.map.network = (function () {
         var features = source.getFeatures();
         if (features != null && features.length > 1) {
             _map.getView().fitExtent(source.getExtent(), _map.getSize());
+            if (_map.getView().getZoom() > 13){
+                _map.getView().setZoom(13);
+            }
         } else {
             _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
             _map.getView().setZoom(13);
@@ -492,7 +495,7 @@ yukon.map.network = (function () {
                                 var neighborLine = _neighborLines[x];
                                 _map.addLayer(neighborLine);
                             }
-                            _map.getView().fitExtent(source.getExtent(), _map.getSize());
+                            _updateZoom();
                         } else {
                             var fc = yukon.fromJson('#geojson'),
                             feature = fc.features[0],
@@ -540,7 +543,7 @@ yukon.map.network = (function () {
                                 var routeLine = _primaryRouteLines[x];
                                 _map.addLayer(routeLine);
                             }
-                            _map.getView().fitExtent(source.getExtent(), _map.getSize());
+                            _updateZoom();
                         } else {
                             var fc = yukon.fromJson('#geojson'),
                             feature = fc.features[0],
@@ -581,7 +584,7 @@ yukon.map.network = (function () {
                             var source = _map.getLayers().getArray()[_tiles.length].getSource();
                             source.addFeature(_parentIcon);
                             _map.addLayer(_parentLine);
-                            _map.getView().fitExtent(source.getExtent(), _map.getSize());
+                            _updateZoom();
                         } else {
                             var fc = yukon.fromJson('#geojson'),
                             feature = fc.features[0],
