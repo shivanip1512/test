@@ -8,56 +8,65 @@ $(document).on('click', '#recentEventsView', function (event) {
 });
 </script>
 
-<tags:sectionContainer2 nameKey="busContainer" styleClass="padBottom">
-    <div>
+<tags:boxContainer title="busContainer" styleClass="padBottom">
+    <div class="dpt">
         <input type="checkbox" id="recentEventsBusSelectAll" onclick="yukon.da.common.checkAll(this, 'table.recentEventsBuses input[type=checkbox]');">
         <label for="recentEventsBusSelectAll"><i:inline key=".selectAllBuses"/></label>
     </div>
+    <hr>
     <div class="scroll-md">
-        <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsBuses recentEventsCheckboxes">
+        <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsBuses recentEventsCheckboxes" cellStyle="width: 25%;" tableStyle="width: 95%;">
             <c:forEach var="bus" items="${subBusList}">
                 <cti:dataGridCell>
-                    <input type="checkbox" value="${bus.ccId}" id="recentEventsBus_${bus.ccId}">
-                    <label for="recentEventsBus_${bus.ccId}">${fn:escapeXml(bus.ccName)}</label>
+                    <span class="wsnw">
+                        <input type="checkbox" value="${bus.ccId}" id="recentEventsBus_${bus.ccId}">
+                        <label for="recentEventsBus_${bus.ccId}">${fn:escapeXml(bus.ccName)}</label>
+                    </span>
                 </cti:dataGridCell>
             </c:forEach>
         </cti:dataGrid>
     </div>
-</tags:sectionContainer2>
+</tags:boxContainer>
 
-<tags:sectionContainer2 nameKey="feedersContainer" styleClass="padBottom">
-    <div>
+<tags:boxContainer title="feedersContainer" styleClass="padBottom">
+    <div class="dpt">
         <input type="checkbox" id="recentEventsFeederSelectAll" onclick="yukon.da.common.checkAll(this, 'table.recentEventsFeeders input[type=checkbox]');">
         <label for="recentEventsFeederSelectAll"><i:inline key=".selectAllFeeders"/></label>
     </div>
+    <hr>
     <div class="scroll-md">
-        <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsFeeders recentEventsCheckboxes">
+        <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsFeeders recentEventsCheckboxes" cellStyle="width: 25%;" tableStyle="width: 95%;">
             <c:forEach var="feeder" items="${feederList}">
                 <cti:dataGridCell>
+                <span class="wsnw">
                     <input type="checkbox" value="${feeder.ccId}" id="recentEventsFeeder_${feeder.ccId}">
                     <label for="recentEventsFeeder_${feeder.ccId}">${fn:escapeXml(feeder.ccName)}</label>
+                </span>
                 </cti:dataGridCell>
             </c:forEach>
         </cti:dataGrid>
     </div>
-</tags:sectionContainer2>
+</tags:boxContainer>
 
-<tags:sectionContainer2 nameKey="banksContainer">
-    <div>
+<tags:boxContainer title="banksContainer">
+    <div class="dpt">
         <input type="checkbox" id="recentEventsBankSelectAll" onclick="yukon.da.common.checkAll(this, 'table.recentEventsBanks input[type=checkbox]');">
         <label for="recentEventsBankSelectAll"><i:inline key=".selectAllBanks"/></label>
     </div>
+    <hr>
     <div class="scroll-md">
-        <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsBanks recentEventsCheckboxes">
+        <cti:dataGrid cols="4" tableClasses="checkBoxList recentEventsBanks recentEventsCheckboxes" cellStyle="width: 25%;" tableStyle="width: 95%;">
             <c:forEach var="bank" items="${capBankList}">
                 <cti:dataGridCell>
-                    <input type="checkbox" value="${bank.ccId}" id="recentEventsBank_${bank.ccId}">
-                    <label for="recentEventsBank_${bank.ccId}">${fn:escapeXml(bank.ccName)}</label>
+                    <span class="wsnw">
+                        <input type="checkbox" value="${bank.ccId}" id="recentEventsBank_${bank.ccId}">
+                        <label for="recentEventsBank_${bank.ccId}">${fn:escapeXml(bank.ccName)}</label>
+                    </span>
                 </cti:dataGridCell>
             </c:forEach>
         </cti:dataGrid>
     </div>
-</tags:sectionContainer2>
+</tags:boxContainer>
 
 <div class="action-area">
     <cti:button nameKey="recentEvents.view" disabled="true" id="recentEventsView" classes="js-blocker"/>

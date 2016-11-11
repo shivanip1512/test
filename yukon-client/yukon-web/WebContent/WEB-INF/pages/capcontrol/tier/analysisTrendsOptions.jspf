@@ -31,39 +31,45 @@ function showTrends(title, url, id) {
     <c:set var="id" value="${viewableArea.ccId}"/>
 </c:if>
 
-<tags:sectionContainer2 nameKey="busContainer">
-    <div>
+<tags:boxContainer title="busContainer">
+    <div class="dpt">
         <input type="checkbox" id="analysisBusSelectAll${id}" onclick="yukon.da.common.checkAll(this, 'table.analysisBuses${id} input[type=checkbox]');">
         <label for="analysisBusSelectAll"><i:inline key=".selectAllBuses"/></label>
     </div>
+    <hr>
     <div class="scroll-md">
-        <cti:dataGrid cols="4" tableClasses="checkBoxList analysisBuses${id} analysisCheckboxes${id}">
+        <cti:dataGrid cols="4" tableClasses="checkBoxList analysisBuses${id} analysisCheckboxes${id}" cellStyle="width: 25%;" tableStyle="width: 95%;">
             <c:forEach var="bus" items="${subBusList}">
                 <cti:dataGridCell>
-                    <input type="checkbox" value="${bus.ccId}" id="analysisBus_${bus.ccId}">
-                    <label for="analysisBus_${bus.ccId}">${fn:escapeXml(bus.ccName)}</label>
+                    <span class="wsnw">
+	                    <input type="checkbox" value="${bus.ccId}" id="analysisBus_${bus.ccId}">
+	                    <label for="analysisBus_${bus.ccId}">${fn:escapeXml(bus.ccName)}</label>
+                    </span>
                 </cti:dataGridCell>
             </c:forEach>
         </cti:dataGrid>
     </div>
-</tags:sectionContainer2>
+</tags:boxContainer>
 
-<tags:sectionContainer2 nameKey="feedersContainer" styleClass="padBottom">
-    <div>
+<tags:boxContainer title="feedersContainer" styleClass="padBottom">
+    <div class="dpt">
         <input type="checkbox" id="analysisFeederSelectAll${id}" onclick="yukon.da.common.checkAll(this, 'table.analysisFeeders${id} input[type=checkbox]');">
         <label for="analysisFeederSelectAll"><i:inline key=".selectAllFeeders"/></label>
     </div>
+    <hr>
     <div class="scroll-md">
-        <cti:dataGrid cols="4" tableClasses="checkBoxList analysisFeeders${id} analysisCheckboxes${id}">
+        <cti:dataGrid cols="4" tableClasses="checkBoxList analysisFeeders${id} analysisCheckboxes${id}" cellStyle="width: 25%;" tableStyle="width: 95%;">
             <c:forEach var="feeder" items="${feederList}">
                 <cti:dataGridCell>
-                    <input type="checkbox" value="${feeder.ccId}" id="analysisFeeder_${feeder.ccId}">
-                    <label for="analysisFeeder_${feeder.ccId}">${fn:escapeXml(feeder.ccName)}</label>
+                    <span class="wsnw">
+	                    <input type="checkbox" value="${feeder.ccId}" id="analysisFeeder_${feeder.ccId}">
+	                    <label for="analysisFeeder_${feeder.ccId}">${fn:escapeXml(feeder.ccName)}</label>
+                    </span>
                 </cti:dataGridCell>
             </c:forEach>
         </cti:dataGrid>
     </div>
-</tags:sectionContainer2>
+</tags:boxContainer>
 
 
 <div class="action-area">
