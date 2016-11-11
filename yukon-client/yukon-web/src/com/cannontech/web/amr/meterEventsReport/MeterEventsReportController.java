@@ -154,7 +154,6 @@ public class MeterEventsReportController {
     @RequestMapping(value="home", params="collectionType")
     public String homeWithDeviceCollection(ModelMap model, DeviceCollection collection, YukonUserContext userContext) {
         
-        System.out.print(collection.getDeviceCount());
         setupNewHomeModelMap(model, collection, userContext);
         scheduledJobsTable(model);
         
