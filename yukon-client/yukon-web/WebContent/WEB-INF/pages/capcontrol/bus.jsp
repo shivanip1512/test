@@ -83,10 +83,6 @@
                         </tags:nameValue2>
                             <cti:displayForPageEditModes modes="CREATE">
                                 <tags:nameValue2 nameKey=".points.voltReduction">
-                                    <c:set var="active"
-                                        value="${not empty bus.capControlSubstationBus.voltReductionPointId && bus.capControlSubstationBus.voltReductionPointId != 0}" />
-                                    <tags:switchButton name="vrActive" checked="${active}" offClasses="M0"
-                                        classes="js-volt-reduct" />
                                     <form:hidden id="volt-reduction-bus-point-input"
                                         path="capControlSubstationBus.voltReductionPointId" />
                                     <tags:pickerDialog
@@ -95,8 +91,16 @@
                                         linkType="selectionLabel"
                                         selectionProperty="paoPoint"
                                         destinationFieldId="volt-reduction-bus-point-input"
-                                        buttonStyleClass="js-picker-btn ${not active ? 'dn' : ''}"
-                                        allowEmptySelection="${true}" />
+                                        buttonStyleClass="M0"
+                                        viewOnlyMode="${mode == 'VIEW'}"
+                                        allowEmptySelection="${true}"
+                                        includeRemoveButton="${true}"
+                                        removeValue="0" />
+                                    <cti:displayForPageEditModes modes="VIEW">
+                                        <c:if test="${empty bus.capControlSubstationBus.voltReductionPointId}">
+                                            <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
+                                        </c:if>
+                                    </cti:displayForPageEditModes>
                                 </tags:nameValue2>
                             </cti:displayForPageEditModes>
                         </tags:nameValueContainer2>

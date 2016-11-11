@@ -43,26 +43,6 @@ yukon.da.substation = (function () {
             $(document).on('yukon:da:substation:delete', function () {
                 $('#delete-substation').submit();
             });
-            
-            /** User clicked volt reduction toggle button; show hide point picker. */
-            $(document).on('change', '.js-volt-reduct', function () {
-                
-                var toggle = $(this),
-                    row = toggle.closest('tr'),
-                    picker,
-                    btn = row.find('.js-picker-btn'),
-                    active = row.find('.switch-btn-checkbox').prop('checked');
-                
-                btn.toggleClass('dn', !active);
-                picker = yukon.pickers[btn.data('pickerId')];
-
-                if (!active) {
-                    picker.clearSelected();
-                    picker.clearEntireSelection();
-                } else {
-                    picker.show();
-                }
-            });
         }
     };
 

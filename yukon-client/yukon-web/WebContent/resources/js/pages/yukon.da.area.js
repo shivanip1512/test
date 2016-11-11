@@ -47,34 +47,11 @@ yukon.da.area = (function () {
                 dialog.dialog('close');
             });
             
-            /** User clicked volt reduction toggle button; show hide point picker. */
-            $(document).on('change', '.js-volt-reduct', function () {
-                
-                var toggle = $(this),
-                    row = toggle.closest('tr'),
-                    picker,
-                    btn = row.find('.js-picker-btn'),
-                    active = row.find('.switch-btn-checkbox').prop('checked');
-                
-                btn.toggleClass('dn', !active);
-                picker = yukon.pickers[btn.data('pickerId')];
-                
-                if (!active) {
-                    picker.clearSelected();
-                    picker.clearEntireSelection();
-                } else {
-                    picker.show();
-                }
-            });
-            
             /** User confirmed intent to delete feeder. */
             $(document).on('yukon:da:area:delete', function () {
                 $('#delete-area').submit();
             });
-            
 
-            
-            
             _initialized = true;
             debug.debug('yukon.da.area module initialized.');
         }

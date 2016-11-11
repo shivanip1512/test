@@ -143,8 +143,6 @@ $(function() {
                                 offNameKey=".disabled" onNameKey=".enabled" offClasses="M0"/>
                         </tags:nameValue2>
                        <tags:nameValue2 nameKey=".voltReduction">
-                            <c:set var="active" value="${not empty substation.capControlSubstation.voltReductionPointId && substation.capControlSubstation.voltReductionPointId != 0}"/>
-                            <tags:switchButton name="vrActive" checked="${active}" offClasses="M0" classes="js-volt-reduct"/>
                             <form:hidden id="var-point-input" path="CapControlSubstation.voltReductionPointId" />
                             <tags:pickerDialog
                                 id="varPointPicker"
@@ -152,9 +150,11 @@ $(function() {
                                 linkType="selectionLabel"
                                 selectionProperty="pointName"
                                 destinationFieldId="var-point-input"
-                                buttonStyleClass="js-picker-btn ${not active ? 'dn' : ''}"
+                                buttonStyleClass="M0"
                                 viewOnlyMode="${mode == 'VIEW'}"
-                                allowEmptySelection="${true}"/>
+                                allowEmptySelection="${true}"
+                                includeRemoveButton="${true}"
+                                removeValue="0" />
                             <cti:displayForPageEditModes modes="VIEW">
                                 <c:if test="${empty substation.capControlSubstation.voltReductionPointId || substation.capControlSubstation.voltReductionPointId == 0}">
                                     <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>

@@ -98,24 +98,20 @@
                             <span>${fn:escapeXml(description)}</span>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".state" rowClass="wsnw">
-                            <cti:displayForPageEditModes modes="EDIT,VIEW">
-                                <span class="box state-box js-cc-state-updater" data-pao-id="${areaId}">&nbsp;</span>
-                                <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" 
-                                        value="${updater}/${areaId}/STATE_FLAGS"/>
-                                <cti:capControlValue paoId="${areaId}" type="${updater}" format="STATE"/>
-                            </cti:displayForPageEditModes>
+                            <span class="box state-box js-cc-state-updater" data-pao-id="${areaId}">&nbsp;</span>
+                            <cti:dataUpdaterCallback function="yukon.da.updaters.stateColor" initialize="true" 
+                                    value="${updater}/${areaId}/STATE_FLAGS"/>
+                            <cti:capControlValue paoId="${areaId}" type="${updater}" format="STATE"/>
                          </tags:nameValue2>
                          <tags:nameValue2 nameKey=".voltReduction">
-                            <cti:displayForPageEditModes modes="EDIT,VIEW">
-                                <c:choose>
-                                    <c:when test="${not empty voltReduction}">
-                                        <span>${fn:escapeXml(voltReduction)}</span>:&nbsp;
-                                        <cti:pointStatus pointId="${voltReductionId}"/>
-                                        <cti:pointValue pointId="${voltReductionId}" format="VALUE"/>
-                                    </c:when>
-                                    <c:otherwise><em><i:inline key="yukon.common.none.choice"/></em></c:otherwise>
-                                </c:choose>
-                            </cti:displayForPageEditModes>
+                            <c:choose>
+                                <c:when test="${not empty voltReduction}">
+                                    <span>${fn:escapeXml(voltReduction)}</span>:&nbsp;
+                                    <cti:pointStatus pointId="${voltReductionId}"/>
+                                    <cti:pointValue pointId="${voltReductionId}" format="VALUE"/>
+                                </c:when>
+                                <c:otherwise><em><i:inline key="yukon.common.none.choice"/></em></c:otherwise>
+                            </c:choose>
                          </tags:nameValue2>
                     </tags:nameValueContainer2>
                     <capTags:warningImg paoId="${areaId}" type="${updater}" alertBox="true"/>
@@ -135,14 +131,18 @@
                             <tags:switchButton path="disabled" inverse="true" 
                                 offNameKey=".disabled" onNameKey=".enabled" offClasses="M0"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".voltReduction">
-                            <c:set var="active" value="${not empty area.voltReductionPoint}"/>
-                            <tags:switchButton name="vrActive" checked="${active}" offClasses="M0" classes="js-volt-reduct"/>
-                            <c:set var="initial" value="${not active ? '' : area.voltReductionPoint}"/>
-                            <tags:pickerDialog type="voltReductionPointPicker" id="voltReduction" allowEmptySelection="true"
-                                destinationFieldName="voltReductionPoint" initialId="${initial}" 
-                                buttonStyleClass="js-picker-btn ${not active ? 'dn' : ''}"
-                                linkType="selectionLabel" selectionProperty="pointName"/>
+                        <tags:nameValue2 nameKey=".voltReduction" valueClass="PT10">
+                            <tags:pickerDialog 
+                                id="voltReduction" 
+                                type="voltReductionPointPicker" 
+                                linkType="selectionLabel" 
+                                selectionProperty="pointName"
+                                destinationFieldName="voltReductionPoint" 
+                                initialId="${area.voltReductionPoint}" 
+                                buttonStyleClass="M0"
+                                allowEmptySelection="${true}"
+                                includeRemoveButton="${true}"
+                                removeValue="0" />
                         </tags:nameValue2>
                      </tags:nameValueContainer2>
                     <div class="page-action-area">
