@@ -4,10 +4,14 @@ import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.Optional;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
 public class YukonHttpProxy {
+    private static final Logger log = YukonLogManager.getLogger(YukonHttpProxy.class);
     private final String host;
     private final int port;
     
@@ -61,11 +65,17 @@ public class YukonHttpProxy {
                 YukonHttpProxy proxy = new YukonHttpProxy(proxySetting);
                 oProxy = Optional.of(proxy);
             } catch (IllegalArgumentException e) {
+                log.warn(e);
                 //return the empty optional
             }
         }
         
         return oProxy;
+    }
+    
+    public void setAsSystemProxy() {
+        System.setProperty("http.proxyHost", host);
+        System.setProperty("http.proxyPort", getPortString());
     }
     
 }

@@ -4552,6 +4552,15 @@
                 <archive><type>ON_CHANGE</type></archive>
                 <stategroup value="TrueFalse" />
             </point>
+            <point type="Status" offset="2000">
+                <init>true</init>
+                <name>Comm Status</name>
+                <archive>
+                    <type>ON_CHANGE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <stategroup value="Comm Status State" />
+            </point>
         </points>
         <attributes>
             <attribute name="RELAY_1_RUN_TIME_DATA_LOG">
@@ -4568,6 +4577,9 @@
             </attribute>
             <attribute name="CONTROL_STATUS">
                 <basicLookup point="Control Status" />
+            </attribute>
+            <attribute name="COMM_STATUS">
+                <basicLookup point="Comm Status" />
             </attribute>
         </attributes>
         <tags>

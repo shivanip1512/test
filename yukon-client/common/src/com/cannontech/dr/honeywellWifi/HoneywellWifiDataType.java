@@ -10,6 +10,7 @@ public enum HoneywellWifiDataType {
     UI_DATA_BASIC_EVENT("UIDataBasicEvent", UiDataBasicEvent.class),
     DEMAND_RESPONSE_EVENT("DemandResponseEvent", DemandResponseEvent.class),
     EQUIPMENT_STATUS_EVENT("EquipmentStatusEvent", EquipmentStatusEvent.class),
+    CONNECTION_STATUS_EVENT("ConnectionStatusEvent", ConnectionStatusEvent.class),
     UNKNOWN("", UnknownEvent.class);
     
     private String jsonString;
