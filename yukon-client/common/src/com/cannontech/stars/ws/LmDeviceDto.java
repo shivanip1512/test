@@ -17,7 +17,7 @@ public class LmDeviceDto {
     private String deviceLabel;
     private Date fieldInstallDate;
     private String macAddress;
-    private Integer userId;
+    private Integer deviceVendorUserId;
     private String serviceCompanyName;
     private Date fieldRemoveDate;
     private Throwable throwable;    
@@ -94,12 +94,12 @@ public class LmDeviceDto {
         this.macAddress = macAddress;
     }
     
-    public Integer getUserId() {
-        return userId;
+    public Integer getDeviceVendorUserId() {
+        return deviceVendorUserId;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setDeviceVendorUserId(Integer deviceVendorUserId) {
+        this.deviceVendorUserId = deviceVendorUserId;
     }
 
     public String toString() {
@@ -112,7 +112,7 @@ public class LmDeviceDto {
         tsc.append("deviceLabel", getDeviceLabel());
         tsc.append("fieldRemoveDate", getFieldRemoveDate());
         tsc.append("macAddress", getMacAddress());
-        tsc.append("userID", getUserId());
+        tsc.append("deviceVendorUserId", getDeviceVendorUserId());
         return tsc.toString();
     }
 

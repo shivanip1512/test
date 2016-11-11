@@ -118,8 +118,8 @@ $(function() { updateServiceCompanyInfo();});
                 <tags:inputNameValue nameKey=".macAddress" path="macAddress" maxlength="23" size="25"/>
             </c:if>
             
-            <c:if test="${showUserId}">
-                <tags:inputNameValue nameKey=".userId" path="userId" maxlength="23" size="25"/>
+            <c:if test="${showDeviceVendorUserId}">
+                <tags:inputNameValue nameKey=".deviceVendorUserId" path="deviceVendorUserId" maxlength="23" size="25"/>
             </c:if>
             
             <c:if test="${showFirmwareVersion}">

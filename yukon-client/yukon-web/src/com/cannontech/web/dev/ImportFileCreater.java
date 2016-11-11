@@ -13,7 +13,7 @@ public class ImportFileCreater {
 
         writeCsvLine(writer, "ACCOUNT_NO", "HW_Action", "Device_Type", "Serial_No", "Install_Date", "Remove_Date",
             "Service_Company", "Program_Name", "Addr_Group", "App_Type", "App_kW", "App_Relay_Num", "MAC_Address",
-            "UserId", "Option_Params");
+            "DeviceVendorUserId", "Option_Params");
 
         int serialNumberOffset = 0;
         for (int i = 0; i < numAccounts; i++) {

@@ -580,10 +580,10 @@ public class AccountImportService {
                                 result.getCustLines().put(lineNoKey, value);
                                 addToLog(lineNoKey, value, importLog);
                                 continue;
-                            } else if (hwFields[ImportFields.IDX_USER_ID].trim().length() == 0) {
+                            } else if (hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID].trim().length() == 0) {
                                 result.custFileErrors++;
                                 String[] value = result.getCustLines().get(lineNoKey);
-                                value[1] = "[line: " + lineNo + " error: UserId cannot be empty for Honeywell Device]";
+                                value[1] = "[line: " + lineNo + " error: Device Vendor UserId cannot be empty for Honeywell Device]";
                                 result.getCustLines().put(lineNoKey, value);
                                 addToLog(lineNoKey, value, importLog);
                                 continue;
@@ -834,10 +834,10 @@ public class AccountImportService {
                             result.getHwLines().put(lineNoKey, value);
                             addToLog(lineNoKey, value, importLog);
                             continue;
-                        } else if (hwFields[ImportFields.IDX_USER_ID].trim().length() == 0) {
+                        } else if (hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID].trim().length() == 0) {
                             result.hwFileErrors++;
                             String[] value = result.getHwLines().get(lineNoKey);
-                            value[1] = "[line: " + lineNo + " error: UserId cannot be empty for Honeywell Device]";
+                            value[1] = "[line: " + lineNo + " error: Device Vendor UserId cannot be empty for Honeywell Device]";
                             result.getHwLines().put(lineNoKey, value);
                             addToLog(lineNoKey, value, importLog);
                             continue;
@@ -1332,8 +1332,8 @@ public class AccountImportService {
         if (colIdx[result.COL_MAC_ADDRESS] >= 0 && colIdx[result.COL_MAC_ADDRESS] < columns.length) {
             fields[ImportFields.IDX_MAC_ADDRESS] = columns[colIdx[result.COL_MAC_ADDRESS]];
         }
-        if (colIdx[result.COL_USER_ID] >= 0 && colIdx[result.COL_USER_ID] < columns.length) {
-            fields[ImportFields.IDX_USER_ID] = columns[colIdx[result.COL_USER_ID]];
+        if (colIdx[result.COL_DEVICE_VENDOR_USER_ID] >= 0 && colIdx[result.COL_DEVICE_VENDOR_USER_ID] < columns.length) {
+            fields[ImportFields.IDX_DEVICE_VENDOR_USER_ID] = columns[colIdx[result.COL_DEVICE_VENDOR_USER_ID]];
         }
         if (colIdx[result.COL_OPTION_PARAMS] >= 0 && colIdx[result.COL_OPTION_PARAMS] < columns.length) {
             fields[ImportFields.IDX_OPTION_PARAMS] = columns[ colIdx[result.COL_OPTION_PARAMS] ];

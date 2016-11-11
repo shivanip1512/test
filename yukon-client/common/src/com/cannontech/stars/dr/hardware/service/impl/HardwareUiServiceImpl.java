@@ -253,7 +253,7 @@ public class HardwareUiServiceImpl implements HardwareUiService {
                 HoneywellWifiThermostat honeywellWifiThermostat =
                     honeywellWifiThermostatDao.getHoneywellWifiThermostat(deviceId);
                 hardware.setMacAddress(honeywellWifiThermostat.getMacAddress());
-                hardware.setUserId(honeywellWifiThermostat.getUserId());
+                hardware.setDeviceVendorUserId(honeywellWifiThermostat.getDeviceVendorUserId());
             }
             hardwareTypeExtensionService.retrieveDevice(hardware);
             

@@ -41,18 +41,18 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
     @Override
     public void createDevice(Hardware hardware) {
         createDevice(hardware.getInventoryId(), hardware.getSerialNumber(), hardware.getHardwareType(),
-            hardware.getMacAddress(), hardware.getUserId());
+            hardware.getMacAddress(), hardware.getDeviceVendorUserId());
     }
     
     public void createDevice(int inventoryId, String serialNumber, HardwareType hardwareType, String macAddress,
-            Integer userId) {
+            Integer deviceVendorUserId) {
         try {
           //TODO: Code to register new device with honeywell service??
 
             CompleteHoneywellWifiThermostat honeywellPao = new CompleteHoneywellWifiThermostat();
             honeywellPao.setPaoName(serialNumber);
             honeywellPao.setMacAddress(macAddress);
-            honeywellPao.setUserId(userId);
+            honeywellPao.setUserId(deviceVendorUserId);
             paoPersistenceService.createPaoWithDefaultPoints(honeywellPao, hardwareTypeToPaoType.get(hardwareType));
 
             // Update the Stars table with the device id
@@ -88,15 +88,15 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void updateDevice(Hardware hardware) {
-        updateDevice(hardware.getInventoryId(), hardware.getMacAddress(), hardware.getDeviceId(), hardware.getUserId(),
+        updateDevice(hardware.getInventoryId(), hardware.getMacAddress(), hardware.getDeviceId(), hardware.getDeviceVendorUserId(),
             hardware.getYukonPao());
     }
 
-    public void updateDevice(int inventoryId, String macAddress, int deviceId, Integer userId, YukonPao pao) {
+    public void updateDevice(int inventoryId, String macAddress, int deviceId, Integer deviceVendorUserId, YukonPao pao) {
         CompleteHoneywellWifiThermostat honeywellThermostat =
             paoPersistenceService.retreivePao(pao, CompleteHoneywellWifiThermostat.class);
         honeywellThermostat.setMacAddress(macAddress);
-        honeywellThermostat.setUserId(userId);
+        honeywellThermostat.setUserId(deviceVendorUserId);
         paoPersistenceService.updatePao(honeywellThermostat);
         inventoryBaseDao.updateInventoryBaseDeviceId(inventoryId, deviceId);
     }
@@ -119,8 +119,8 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
             errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.required");
         } else if (!Validator.isMacAddress(macAddress)) {
             errors.rejectValue("macAddress", "yukon.web.modules.operator.hardware.error.format.eui48");
-        } else if (hardware.getUserId() == null) {
-            errors.rejectValue("userId", "yukon.web.modules.operator.hardware.error.required");
+        } else if (hardware.getDeviceVendorUserId() == null) {
+            errors.rejectValue("deviceVendorUserId", "yukon.web.modules.operator.hardware.error.required");
         }
 
     }

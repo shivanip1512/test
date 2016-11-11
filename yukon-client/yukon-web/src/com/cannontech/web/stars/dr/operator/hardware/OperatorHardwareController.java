@@ -695,7 +695,7 @@ public class OperatorHardwareController {
             }
         } else if (type.isHoneywell()) {
             model.addAttribute("showMacAddress", true);
-            model.addAttribute("showUserId", true);
+            model.addAttribute("showDeviceVendorUserId", true);
         }
         
         boolean showVoltage = !type.isZigbee() && !clazz.isGateway() && !clazz.isThermostat();

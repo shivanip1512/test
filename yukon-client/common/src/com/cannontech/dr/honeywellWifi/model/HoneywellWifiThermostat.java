@@ -2,7 +2,7 @@ package com.cannontech.dr.honeywellWifi.model;
 
 public class HoneywellWifiThermostat {
     private String macAddress;
-    private Integer userId;
+    private Integer deviceVendorUserId;
 
     public String getMacAddress() {
         return macAddress;
@@ -12,16 +12,16 @@ public class HoneywellWifiThermostat {
         this.macAddress = macAddress;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public Integer getDeviceVendorUserId() {
+        return deviceVendorUserId;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setDeviceVendorUserId(Integer deviceVendorUserId) {
+        this.deviceVendorUserId = deviceVendorUserId;
     }
 
     @Override
     public String toString() {
-        return "HoneywellWifiThermostat [macAddress=" + macAddress + ", UserID=" + userId + "]";
+        return "HoneywellWifiThermostat [macAddress=" + macAddress + ", deviceVendorUserId=" + deviceVendorUserId + "]";
     }
 }

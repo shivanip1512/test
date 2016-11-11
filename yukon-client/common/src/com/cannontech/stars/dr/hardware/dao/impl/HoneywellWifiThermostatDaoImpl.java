@@ -23,7 +23,7 @@ public class HoneywellWifiThermostatDaoImpl implements HoneywellWifiThermostatDa
             public HoneywellWifiThermostat mapRow(YukonResultSet rs) throws SQLException {
                 HoneywellWifiThermostat honeywellWifiThermostat = new HoneywellWifiThermostat();
                 honeywellWifiThermostat.setMacAddress(rs.getString("MacAddress"));
-                honeywellWifiThermostat.setUserId(rs.getInt("UserId"));
+                honeywellWifiThermostat.setDeviceVendorUserId(rs.getInt("UserId"));
 
                 return honeywellWifiThermostat;
             }

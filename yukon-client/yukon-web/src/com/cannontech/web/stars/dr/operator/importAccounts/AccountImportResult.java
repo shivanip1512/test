@@ -68,7 +68,7 @@ public class AccountImportResult implements Completable {
         "APP_KW",
         "APP_RELAY_NUM",
         "MAC_ADDRESS",
-        "USER_ID",
+        "DEVICE_VENDOR_USER_ID",
         "OPTION_PARAMS",
         "DEVICE_LABEL"
     };
@@ -114,7 +114,7 @@ public class AccountImportResult implements Completable {
     public final int COL_APP_KW = 10;
     public final int COL_APP_RELAY_NUMBER = 11;
     public final int COL_MAC_ADDRESS = 12;
-    public final int COL_USER_ID = 13;
+    public final int COL_DEVICE_VENDOR_USER_ID = 13;
     public final int COL_OPTION_PARAMS = 14;
     public final int COL_DEVICE_LABEL = 15;
     

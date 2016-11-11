@@ -54,7 +54,7 @@ public class Hardware {
     private String macAddress;
     
     /* Honeywell field */
-    private Integer userId;
+    private Integer deviceVendorUserId;
     
     public int getAccountId() {
         return accountId;
@@ -337,12 +337,12 @@ public class Hardware {
         return destinationEndPointId;
     }
 
-    public Integer getUserId() {
-        return userId;
+    public Integer getDeviceVendorUserId() {
+        return deviceVendorUserId;
     }
 
-    public void setUserId(Integer userId) {
-        this.userId = userId;
+    public void setDeviceVendorUserId(Integer deviceVendorUserId) {
+        this.deviceVendorUserId = deviceVendorUserId;
     }
 
 }

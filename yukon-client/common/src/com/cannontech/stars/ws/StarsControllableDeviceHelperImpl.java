@@ -316,15 +316,15 @@ public class StarsControllableDeviceHelperImpl implements StarsControllableDevic
             } else if (ht.isHoneywell()) {
                 try {
                     String macAddress = dto.getMacAddress();
-                    Integer userId = dto.getUserId();
+                    Integer deviceVendorUserId = dto.getDeviceVendorUserId();
                     if (StringUtils.isBlank(macAddress) || !Validator.isMacAddress(macAddress)) {
                         throw new StarsInvalidArgumentException("Valid MAC Address is required");
                     }
-                    if (userId == null) {
+                    if (deviceVendorUserId == null) {
                         throw new StarsInvalidArgumentException("Valid UserId is required");
                     }
                     honeywellBuilder.createDevice(lib.getInventoryID(), dto.getSerialNumber(), ht, macAddress,
-                        dto.getUserId());
+                        dto.getDeviceVendorUserId());
                 } catch (DeviceCreationException e) {
                     throw new StarsClientRequestException("Failed to register honeywell wifi device with honeywell server.", e);
                 }
