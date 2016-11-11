@@ -4,14 +4,16 @@ import java.io.Serializable;
 import java.util.List;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 
-public class RfnPrimaryRouteDataReply implements Serializable {
+public class RfnPrimaryRouteDataReply implements RfnIdentifyingMessage, Serializable {
 
     private static final long serialVersionUID = 1L;
     private RfnIdentifier rfnIdentifier;
     private RfnPrimaryRouteDataReplyType replyType;
     private List<RouteData> routeData;
 
+    @Override
     public RfnIdentifier getRfnIdentifier() {
         return rfnIdentifier;
     }

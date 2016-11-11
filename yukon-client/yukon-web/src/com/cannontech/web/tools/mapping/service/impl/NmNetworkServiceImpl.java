@@ -127,7 +127,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             PaoLocation parentLocation = paoLocationDao.getLocation(parentDevice.getPaoIdentifier().getPaoId());
             if (parentLocation == null) {
                 log.error("No parent found for device=" + device);
-                throw new NmNetworkException(noParent, "noParent");
+                throw new NmNetworkException(noParent, "noParentLocation");
             }
             FeatureCollection location = paoLocationService.getFeatureCollection(Lists.newArrayList(parentLocation));
             Parent parent = new Parent(parentDevice, location, data, accessor);
@@ -141,7 +141,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             rfnDeviceCreationService.create(data.getRfnIdentifier());
             log.info(data.getRfnIdentifier() + " is not found. Creating device.");
             log.error("No parent found for device=" + device);
-            throw new NmNetworkException(noParent, "noParent");
+            throw new NmNetworkException(noParent, "noParentLocation");
         }
     }
     
@@ -192,6 +192,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
         Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
+        PaoLocation nextHopLocation = null;
         List<RouteInfo> routes = new ArrayList<>();
         for (int i = 0; i < response.getRouteData().size(); i++) {
             RouteData data = response.getRouteData().get(i);
@@ -202,7 +203,6 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 RouteInfo routeInfo = new RouteInfo(routeDevice, data, location, accessor);
                 // the first element shows the distance from the first element to the 2nd element
                 // only the last element has no distance, because it has no "next hop"
-                PaoLocation nextHopLocation = null;
                 if (i < response.getRouteData().size() - 1) {
                     RouteData nextHop = response.getRouteData().get(i + 1);
                     RfnDevice nextHopDevice = devices.get(nextHop.getRfnIdentifier());
@@ -213,11 +213,18 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                 addCommStatus(routeInfo, accessor);
                 routes.add(routeInfo);
                 log.debug(routeInfo);
+                if(nextHopLocation == null){
+                    break;
+                }
             } else {
                 log.error("Location is not found for " + routeDevice);
                 // one of the devices has no location, can't display a route
                 throw new NmNetworkException(noRoute, "noRoute");
             }
+        }
+        if(routes.isEmpty()){
+            // one of the devices has no location, can't display a route
+            throw new NmNetworkException(noRoute, "noRoute"); 
         }
         return routes;
     }
@@ -316,10 +323,13 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     /**
      * Calculates distance between 2 locations and adds it to MappingInfo.
      */
-    private void addDistance(MappingInfo info,  PaoLocation from,  PaoLocation to) {
+    private void addDistance(MappingInfo info, PaoLocation from, PaoLocation to) {
+        if (from == null || to == null) {
+            return;
+        }
         Distance distance = getDistance(from, to);
         info.setDistanceInKm(distance.distanceInKm);
-        info.setDistanceInMiles(distance.distanceInMiles);  
+        info.setDistanceInMiles(distance.distanceInMiles);
     }
 
     /**
@@ -337,7 +347,8 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             } catch (NotFoundException e) {
                 // create new device if it doesn't exist
                 try {
-                    rfnDeviceCreationService.create(identifier);
+                    rfnDevice = rfnDeviceCreationService.create(identifier);
+                    devices.put(identifier, rfnDevice);
                     log.info(identifier + " is not found. Creating device.");
                 } catch (DeviceCreationException e1) {
                     log.error("Drvice creation failed for " + identifier, e1);

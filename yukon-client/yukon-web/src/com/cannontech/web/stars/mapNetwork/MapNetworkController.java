@@ -23,11 +23,14 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.metadata.CommStatusType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
+import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -51,6 +54,7 @@ public class MapNetworkController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnDeviceMetadataService metadataService;
+    @Autowired private RfnGatewayDataCache gatewayDataCache;
     
     @RequestMapping("home")
     public String home(ModelMap model, @RequestParam("deviceId") int deviceId, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
@@ -74,12 +78,22 @@ public class MapNetworkController {
         int numLayers = BooleanUtils.toInteger(displayNeighborsLayer) + BooleanUtils.toInteger(displayParentNodeLayer) + BooleanUtils.toInteger(displayPrimaryRouteLayer);
         model.addAttribute("numLayers", numLayers);
         
-        //try to get commstatus for device
+        // try to get commstatus for device
         try {
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             RfnDevice rfnDevice = rfnDeviceDao.getDeviceForId(deviceId);
-            Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);        
-            Object commStatus = metadata.get(RfnMetadata.COMM_STATUS);
+            Object commStatus = null;
+            if (rfnDevice.getPaoIdentifier().getPaoType().isRfGateway()) {
+                RfnGatewayData gateway = gatewayDataCache.get(rfnDevice.getPaoIdentifier());
+                if (gateway.getConnectionStatus() == ConnectionStatus.CONNECTED) {
+                    commStatus = CommStatusType.READY;
+                } else if (gateway.getConnectionStatus() == ConnectionStatus.DISCONNECTED) {
+                    commStatus = CommStatusType.NOT_READY;
+                }
+            } else {
+                Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);
+                commStatus = metadata.get(RfnMetadata.COMM_STATUS);
+            }
             if (commStatus != null) {
                 CommStatusType status = CommStatusType.valueOf(commStatus.toString());
                 String statusString = accessor.getMessage(nameKey + "status." + status);

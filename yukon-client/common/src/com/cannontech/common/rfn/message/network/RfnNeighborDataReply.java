@@ -4,14 +4,16 @@ import java.io.Serializable;
 import java.util.Set;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 
-public class RfnNeighborDataReply implements Serializable {
+public class RfnNeighborDataReply implements RfnIdentifyingMessage, Serializable {
     private static final long serialVersionUID = 1L;
 
     private RfnIdentifier rfnIdentifier;
     private RfnNeighborDataReplyType replyType;
     private Set<NeighborData> neighborData;
 
+    @Override
     public RfnIdentifier getRfnIdentifier() {
         return rfnIdentifier;
     }

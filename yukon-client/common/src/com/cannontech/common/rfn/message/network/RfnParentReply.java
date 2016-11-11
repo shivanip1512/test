@@ -3,8 +3,9 @@ package com.cannontech.common.rfn.message.network;
 import java.io.Serializable;
 
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
 
-public class RfnParentReply implements Serializable {
+public class RfnParentReply implements RfnIdentifyingMessage, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -12,6 +13,7 @@ public class RfnParentReply implements Serializable {
     private RfnParentReplyType replyType;
     private ParentData parentData;
 
+    @Override
     public RfnIdentifier getRfnIdentifier() {
         return rfnIdentifier;
     }
