@@ -709,6 +709,17 @@ SET KeyName = 'CI Curtailment Operator', Description = 'Controls access to the C
 WHERE RolePropertyId = -21100 AND RoleId = -211; 
 /* End YUK-15962 */
 
+/* Start YUK-15963 */
+INSERT INTO Point VALUES(-34, 'Analog', 'Message Broker CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1030, 'None', 0);
+INSERT INTO Point VALUES(-35, 'Analog', 'Message Broker Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1031, 'None', 0);
+
+INSERT INTO pointanalog VALUES(-34, -1, 1, 0 );
+INSERT INTO pointanalog VALUES(-35, -1, 1, 0 );
+
+INSERT INTO pointunit VALUES(-34, 28, 2, 1.0E+30, -1.0E+30, 0);
+INSERT INTO pointunit VALUES(-35, 56, 0, 1.0E+30, -1.0E+30, 0);
+/* End YUK-15963 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
