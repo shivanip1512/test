@@ -173,21 +173,13 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         }
 
         Map<RfnIdentifier, RfnDevice> devices = new HashMap<>();
-        boolean isFound = true;
-        for (RouteData data : response.getRouteData()) {
-            if (data.getRfnIdentifier() == null) {
-                isFound = false;
-                log.error(data + " has no RfnIdentifier");
-            } else if (!findDevice(data.getRfnIdentifier(), devices)) {
-                isFound = false;
-            }
-        }
 
-        if (!isFound) {
-            // one of the devices doesn't exist in yukon or we got a response without valid rfnIdentifier
-            // since we will not be able to find location and route can't be generated, exception is thrown
-            log.error("No route found for device=" + device);
-            throw new NmNetworkException(noRoute, "noRoute");
+        for (RouteData data : response.getRouteData()) {
+            if (data.getRfnIdentifier() != null) {
+                findDevice(data.getRfnIdentifier(), devices);
+            } else{
+                log.error(data + " has no RfnIdentifier");
+            }
         }
 
         Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
