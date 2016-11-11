@@ -162,6 +162,10 @@ static const std::map<YukonError_t, error_info> CtiErrors = {
         { ClientErrors::E2eNetworkServiceFailure,    ei{ ERRTYPESYSTEM,   "Network service failure."                    } },
         { ClientErrors::ChannelDisabled,             ei{ ERRTYPESYSTEM,   "Channel not enabled in RF node."             } },
         { ClientErrors::ChannelUnsupported,          ei{ ERRTYPESYSTEM,   "Channel not supported by meter."             } },
+        { ClientErrors::InvalidDevice,               ei{ ERRTYPESYSTEM,   "Invalid water node device."                  } },
+        { ClientErrors::NoNode,                      ei{ ERRTYPESYSTEM,   "Unknown water node."                         } },
+        { ClientErrors::NoGateway,                   ei{ ERRTYPESYSTEM,   "Unknown gateway."                            } },
+        { ClientErrors::Failure,                     ei{ ERRTYPESYSTEM,   "Unspecified water node failure."             } },
     };
 
 }

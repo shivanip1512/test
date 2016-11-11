@@ -572,6 +572,8 @@
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\RfnExpressComBroadcastReply_types.cpp">
     </ClCompile>
+    <ClCompile Include="Serialization\Thrift\RfnWaterNodeConfigMessages_constants.cpp" />
+    <ClCompile Include="Serialization\Thrift\RfnWaterNodeConfigMessages_types.cpp" />
     <ClCompile Include="Serialization\Thrift\ServerRequest_constants.cpp">
     </ClCompile>
     <ClCompile Include="Serialization\Thrift\ServerRequest_types.cpp">
@@ -734,6 +736,8 @@
     <ClInclude Include="Serialization\Thrift\RfnE2eData_types.h" />
     <ClInclude Include="Serialization\Thrift\RfnExpressComBroadcastReply_constants.h" />
     <ClInclude Include="Serialization\Thrift\RfnExpressComBroadcastReply_types.h" />
+    <ClInclude Include="Serialization\Thrift\RfnWaterNodeConfigMessages_constants.h" />
+    <ClInclude Include="Serialization\Thrift\RfnWaterNodeConfigMessages_types.h" />
     <ClInclude Include="Serialization\Thrift\ServerRequest_constants.h" />
     <ClInclude Include="Serialization\Thrift\ServerRequest_types.h" />
     <ClInclude Include="Serialization\Thrift\ServerResponse_constants.h" />

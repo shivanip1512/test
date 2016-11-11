@@ -455,6 +455,12 @@
     <ClCompile Include="Serialization\Thrift\PorterDynamicPaoInfo_types.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Serialization\Thrift\RfnWaterNodeConfigMessages_constants.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Serialization\Thrift\RfnWaterNodeConfigMessages_types.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Serialization\Thrift\CCCapBankMove_constants.h">
@@ -899,6 +905,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Serialization\Thrift\PorterDynamicPaoInfo_types.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Serialization\Thrift\RfnWaterNodeConfigMessages_constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Serialization\Thrift\RfnWaterNodeConfigMessages_types.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

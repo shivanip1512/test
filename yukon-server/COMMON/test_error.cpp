@@ -246,7 +246,11 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("Channel not enabled in RF node.")
     ("Channel not supported by meter.")
     //  300
-    .repeat(50, UnknownErrorHelper(300));
+    ("Invalid water node device.")
+    ("Unknown water node.")
+    ("Unknown gateway.")
+    ("Unspecified water node failure.")
+    .repeat(46, UnknownErrorHelper(304));
 
 BOOST_AUTO_TEST_CASE(test_ClientErrors_None_must_be_zero)
 {

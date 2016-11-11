@@ -4,6 +4,7 @@
 
 #include "StreamableMessage.h"
 #include "RfnBroadcastReplyMessage.h"
+#include "RfnWaterNodeMessaging.h"
 
 #include "utility.h"
 
@@ -466,6 +467,20 @@ void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
 }
 
 
+template<typename Msg>
+void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
+        const ActiveMQ::Queues::OutboundQueue &queue,
+        const SerializedMessage &message,
+        typename CallbackFor<Msg>::type callback,
+        std::chrono::seconds timeout,
+        TimeoutCallback timedOut)
+{
+    MessageCallback callbackWrapper = DeserializationHelper<Msg>(callback);
+
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, TemporaryListener{ callbackWrapper, timeout, timedOut });
+}
+
+
 void ActiveMQConnectionManager::enqueueMessageWithCallback(
         const ActiveMQ::Queues::OutboundQueue &queue,
         const SerializedMessage &message,
@@ -757,6 +772,12 @@ const IM_EX_MSG OutboundQueue
 const IM_EX_MSG OutboundQueue
         OutboundQueue::ScannerInMessages
                 ("com.eaton.eas.yukon.scanner.inmessages");
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::GetWaterChannelConfigRequest
+                ("com.eaton.eas.yukon.networkmanager.waternode.GetChannelConfiguration");
+const IM_EX_MSG OutboundQueue
+        OutboundQueue::SetWaterChannelConfigRequest
+                ("com.eaton.eas.yukon.networkmanager.waternode.SetChannelConfiguration");
 
 InboundQueue::InboundQueue(std::string name_) : name(name_) {}
 
@@ -784,6 +805,9 @@ const IM_EX_MSG InboundQueue
 
 template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnBroadcastReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message, CallbackFor<Rfn::RfnBroadcastReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnSetChannelConfigReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<Rfn::RfnSetChannelConfigReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
+
+template void IM_EX_MSG ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnGetChannelConfigReplyMessage>(const ActiveMQ::Queues::OutboundQueue &queue, const ActiveMQConnectionManager::SerializedMessage & message, CallbackFor<Rfn::RfnGetChannelConfigReplyMessage>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
 
 }
 }

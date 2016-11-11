@@ -10064,10 +10064,24 @@
         <displayName>RFW-Meter</displayName>
     </pao>
 
-    <pao id="RFWMETER_GEN2" abstract="true" inherits="RFN_WATER_BASE, RFN_POINT_CALCULATION_WATER, SUPPORTS_DEVICE_CONFIGURATION, RFN_WATER_CHANNEL_CONFIGURATION">
+    <pao id="RFWMETER_GEN2" abstract="true" inherits="RFN_WATER_BASE, RFN_POINT_CALCULATION_WATER, SUPPORTS_DEVICE_CONFIGURATION, RFN_WATER_CHANNEL_CONFIGURATION, SUPPORTS_COMMANDER_REQUESTS_TAG">
         <displayGroup>RFMESH</displayGroup>
         <changeGroup>rfw</changeGroup>
         <points>
+            <point type="Analog" offset="5">
+                <init>true</init>
+                <name>Battery Voltage</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Volts" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="6">
+                <init>true</init>
+                <name>Temperature</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="Temp-C" />
+                <decimalplaces value="3" />
+            </point>
             <point type="Status" offset="81">
                 <name>Low Battery Voltage</name>
                 <stategroup value="TrueFalse" />

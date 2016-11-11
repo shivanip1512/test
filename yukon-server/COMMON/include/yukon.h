@@ -379,6 +379,12 @@ struct ClientErrors
 
         ChannelDisabled,
         ChannelUnsupported,
+
+        // Water node errors
+        InvalidDevice,
+        NoNode,
+        NoGateway,
+        Failure,
     };
 };
 

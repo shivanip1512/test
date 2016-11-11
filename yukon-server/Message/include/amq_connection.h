@@ -49,6 +49,8 @@ struct IM_EX_MSG OutboundQueue
     static const OutboundQueue NetworkManagerE2eDataRequest;
     static const OutboundQueue ScannerOutMessages;
     static const OutboundQueue ScannerInMessages;
+    static const OutboundQueue GetWaterChannelConfigRequest;
+    static const OutboundQueue SetWaterChannelConfigRequest;
 
 private:
     OutboundQueue(std::string name);
@@ -111,6 +113,10 @@ public:
     template<class Msg>
     static void enqueueMessageWithCallbackFor(
             const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message,
+            typename CallbackFor<Msg>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
+    template<class Msg>
+    static void enqueueMessageWithCallbackFor(
+            const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message,
             typename CallbackFor<Msg>::type callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
     static void enqueueMessageWithCallback(
             const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message,

@@ -5,6 +5,12 @@
 #include "RfnBroadcastReplyMessage.h"
 #include "Thrift/RfnExpressComBroadcastReply_types.h"
 
+#include "RfnWaterNodeMessaging.h"
+#include "Thrift/RfnWaterNodeConfigMessages_types.h"
+
+#include "Thrift/RfnE2eData_types.h"
+#include "Thrift/NetworkManagerMessaging_types.h"
+
 #include "std_helper.h"
 
 #include <boost/optional.hpp>
@@ -44,6 +50,143 @@ try
             msg.gatewayResults[itr->first] = *result;
         }
     }
+
+    return msg;
+}
+catch( apache::thrift::TException )
+{
+    //  log?
+    return boost::none;
+}
+
+template<>
+std::vector<unsigned char> IM_EX_MSG MessageSerializer<Rfn::RfnSetChannelConfigRequestMessage>::serialize( const Rfn::RfnSetChannelConfigRequestMessage &m )
+try
+{
+    Thrift::RfnIdentifier               identifier;
+    Thrift::RfnSetChannelConfigRequest  request;
+
+    identifier.__set_sensorManufacturer( m.rfnIdentifier.manufacturer ); 
+    identifier.__set_sensorModel( m.rfnIdentifier.model );
+    identifier.__set_sensorSerialNumber( m.rfnIdentifier.serialNumber ); 
+
+    request.__set_rfnIdentifier( identifier );
+
+    request.__set_reportingInterval( m.reportingInterval );
+    request.__set_recordingInterval( m.recordingInterval );
+
+    if ( m.header )
+    {
+        Thrift::NetworkManagerRequestHeader     header;
+
+        header.__set_clientGuid( m.header->clientGuid );
+        header.__set_sessionId( m.header->sessionId );
+        header.__set_messageId( m.header->messageId );
+        header.__set_groupId( m.header->groupId );
+        header.__set_priority( m.header->priority );
+        header.__set_expiration( m.header->expiration );
+        header.__set_lifetime( Thrift::NetworkManagerMessageLifetime::SESSION ); 
+
+        request.__set_header( header );
+    }
+
+    return SerializeThriftBytes( request );
+}
+catch( apache::thrift::TException )
+{
+    //  log?
+    return {};
+}
+
+namespace Thrift
+{
+
+bool ChannelInfo::operator<( const ChannelInfo & rhs ) const
+{
+    if ( UOM < rhs.UOM )
+        return true;
+    if ( UOM > rhs.UOM )
+        return false;
+    if ( uomModifier < rhs.uomModifier )
+        return true;
+    if ( uomModifier > rhs.uomModifier )
+        return false;
+    if ( channelNum < rhs.channelNum )
+        return true;
+    if ( channelNum > rhs.channelNum )
+        return false;
+
+    return enabled;
+}
+
+}
+
+template<>
+boost::optional<Rfn::RfnSetChannelConfigReplyMessage> IM_EX_MSG MessageSerializer<Rfn::RfnSetChannelConfigReplyMessage>::deserialize( const std::vector<unsigned char> &buf )
+try
+{
+    const Thrift::RfnSetChannelConfigReply thriftMsg = DeserializeThriftBytes<Thrift::RfnSetChannelConfigReply>(buf);
+
+    Rfn::RfnSetChannelConfigReplyMessage msg( thriftMsg.reply );
+
+    return msg;
+}
+catch( apache::thrift::TException )
+{
+    //  log?
+    return boost::none;
+}
+
+template<>
+std::vector<unsigned char> IM_EX_MSG MessageSerializer<Rfn::RfnGetChannelConfigRequestMessage>::serialize( const Rfn::RfnGetChannelConfigRequestMessage &m )
+try
+{
+    Thrift::RfnIdentifier               identifier;
+    Thrift::RfnGetChannelConfigRequest  request;
+
+    identifier.__set_sensorManufacturer( m.rfnIdentifier.manufacturer ); 
+    identifier.__set_sensorModel( m.rfnIdentifier.model );
+    identifier.__set_sensorSerialNumber( m.rfnIdentifier.serialNumber ); 
+
+    request.__set_rfnIdentifier( identifier );
+
+    return SerializeThriftBytes( request );
+}
+catch( apache::thrift::TException )
+{
+    //  log?
+    return {};
+}
+
+template<>
+boost::optional<Rfn::RfnGetChannelConfigReplyMessage> IM_EX_MSG MessageSerializer<Rfn::RfnGetChannelConfigReplyMessage>::deserialize( const std::vector<unsigned char> &buf )
+try
+{
+    const Thrift::RfnGetChannelConfigReply thriftMsg = DeserializeThriftBytes<Thrift::RfnGetChannelConfigReply>(buf);
+
+    Rfn::RfnGetChannelConfigReplyMessage msg;
+
+    msg.timestamp           = thriftMsg.timestamp;
+
+    for ( const auto & entry : thriftMsg.channelInfo )
+    {
+        Rfn::RfnGetChannelConfigReplyMessage::ChannelInfo   info;
+
+        info.UOM            = entry.UOM;
+        info.uomModifier    = entry.uomModifier;
+        info.channelNumber  = entry.channelNum;
+        info.enabled        = entry.enabled;
+
+        msg.channelInfo.insert( info );
+    }
+
+    msg.rfnIdentifier.manufacturer  = thriftMsg.rfnIdentifier.sensorManufacturer; 
+    msg.rfnIdentifier.model         = thriftMsg.rfnIdentifier.sensorModel; 
+    msg.rfnIdentifier.serialNumber  = thriftMsg.rfnIdentifier.sensorSerialNumber; 
+
+    msg.recordingInterval   = thriftMsg.recordingInterval; 
+    msg.reportingInterval   = thriftMsg.reportingInterval; 
+    msg.replyCode           = thriftMsg.reply; 
 
     return msg;
 }

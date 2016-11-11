@@ -442,6 +442,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="RfnBroadcastReplyMessage.cpp">
     </ClCompile>
+    <ClCompile Include="RfnWaterNodeMessaging.cpp" />
     <ClCompile Include="Serialization\message_factory.cpp">
     </ClCompile>
     <ClCompile Include="Serialization\message_serialization.cpp">

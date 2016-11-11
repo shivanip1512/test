@@ -2022,7 +2022,85 @@
             <modifiers match="equal"/>
         </point>
     </pointGroup>
+
+    <pointGroup>
+        <paoType value="RFW201"/>
+        <point name="Water Usage"> 
+            <uom>-</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        <point name="Water Usage"> 
+            <uom>gal</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        <point name="Water Usage"> 
+            <uom>ft^3</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        <point name="Water Usage"> 
+            <uom>m^3</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        <point name="Water Usage"> 
+        	<!-- uom intentially left out to support null -->
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        <point name="Battery Voltage"> 
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        <point name="Temperature"> 
+            <uom>&#176;C</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+    </pointGroup>
     
+    <pointGroup>
+        <paoType value="RFW205"/>
+        <point name="Water Usage"> 
+            <uom>-</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        <point name="Water Usage"> 
+            <uom>gal</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        <point name="Water Usage"> 
+            <uom>ft^3</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        <point name="Water Usage"> 
+            <uom>m^3</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        <point name="Water Usage"> 
+        	<!-- uom intentially left out to support null -->
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        <point name="Battery Voltage"> 
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+        <point name="Temperature"> 
+            <uom>&#176;C</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal"/>
+        </point>
+    </pointGroup>
+
     <!-- ITRON SENTINEL LEVEL 0 -->
     <pointGroup><!-- Itron Sentinel -->
         <paoType value="RFN430SL0"/>
