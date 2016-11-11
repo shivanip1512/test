@@ -7,8 +7,10 @@ $(document).on('click', '#recentEventsView', function (event) {
     window.location.href = yukon.url('/capcontrol/search/recentEvents?value=' + encodeURIComponent(values.join(',')));
 });
 </script>
-
-<tags:boxContainer title="busContainer" styleClass="padBottom">
+<cti:msg2 var="busContainer" key=".busContainer.title"/>
+<cti:msg2 var="feedersContainer" key=".feedersContainer.title"/>
+<cti:msg2 var="banksContainer" key=".banksContainer.title"/>
+<tags:boxContainer title="${busContainer}" styleClass="padBottom">
     <div class="dpt">
         <input type="checkbox" id="recentEventsBusSelectAll" onclick="yukon.da.common.checkAll(this, 'table.recentEventsBuses input[type=checkbox]');">
         <label for="recentEventsBusSelectAll"><i:inline key=".selectAllBuses"/></label>
@@ -28,7 +30,7 @@ $(document).on('click', '#recentEventsView', function (event) {
     </div>
 </tags:boxContainer>
 
-<tags:boxContainer title="feedersContainer" styleClass="padBottom">
+<tags:boxContainer title="${feedersContainer}" styleClass="padBottom">
     <div class="dpt">
         <input type="checkbox" id="recentEventsFeederSelectAll" onclick="yukon.da.common.checkAll(this, 'table.recentEventsFeeders input[type=checkbox]');">
         <label for="recentEventsFeederSelectAll"><i:inline key=".selectAllFeeders"/></label>
@@ -48,7 +50,7 @@ $(document).on('click', '#recentEventsView', function (event) {
     </div>
 </tags:boxContainer>
 
-<tags:boxContainer title="banksContainer">
+<tags:boxContainer title="${banksContainer}">
     <div class="dpt">
         <input type="checkbox" id="recentEventsBankSelectAll" onclick="yukon.da.common.checkAll(this, 'table.recentEventsBanks input[type=checkbox]');">
         <label for="recentEventsBankSelectAll"><i:inline key=".selectAllBanks"/></label>
