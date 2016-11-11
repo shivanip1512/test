@@ -806,8 +806,8 @@ GO
 INSERT INTO StateGroup VALUES (-27, 'NoYes', 'Status');
 GO
 
-INSERT INTO State VALUES (-27, 0, 'Yes', 1, 6, 0);
-INSERT INTO State VALUES (-27, 1, 'No', 0, 6, 0);
+INSERT INTO State VALUES (-27, 0, 'Yes', 0, 6, 0);
+INSERT INTO State VALUES (-27, 1, 'No', 1, 6, 0);
 GO
 /* End YUK-15957 */
 

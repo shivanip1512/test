@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/11/2016 12:52:25 PM                       */
+/* Created on:     11/11/2016 3:06:03 PM                        */
 /*==============================================================*/
 
 
@@ -8027,8 +8027,8 @@ create table State  (
    constraint PK_STATE primary key (StateGroupId, RawState)
 );
 
-INSERT INTO State VALUES(-27, 0, 'Yes', 1, 6, 0);
-INSERT INTO State VALUES(-27, 1, 'No', 0, 6, 0);
+INSERT INTO State VALUES(-27, 0, 'Yes', 0, 6, 0);
+INSERT INTO State VALUES(-27, 1, 'No', 1, 6, 0);
 INSERT INTO State VALUES(-26, 0, 'Time of Day', 0, 6, 0);
 INSERT INTO State VALUES(-26, 1, 'Countdown Timer', 1, 6, 0);
 INSERT INTO State VALUES(-25, 0, 'No', 0, 6, 0);

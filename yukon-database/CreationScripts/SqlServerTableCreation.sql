@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/11/2016 12:55:24 PM                       */
+/* Created on:     11/11/2016 3:02:15 PM                        */
 /*==============================================================*/
 
 
@@ -8527,8 +8527,8 @@ create table State (
 )
 go
 
-INSERT INTO State VALUES(-27, 0, 'Yes', 1, 6, 0);
-INSERT INTO State VALUES(-27, 1, 'No', 0, 6, 0);
+INSERT INTO State VALUES(-27, 0, 'Yes', 0, 6, 0);
+INSERT INTO State VALUES(-27, 1, 'No', 1, 6, 0);
 INSERT INTO State VALUES(-26, 0, 'Time of Day', 0, 6, 0);
 INSERT INTO State VALUES(-26, 1, 'Countdown Timer', 1, 6, 0);
 INSERT INTO State VALUES(-25, 0, 'No', 0, 6, 0);
