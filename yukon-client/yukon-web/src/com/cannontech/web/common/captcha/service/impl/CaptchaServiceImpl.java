@@ -1,16 +1,17 @@
 package com.cannontech.web.common.captcha.service.impl;
 
+import java.util.Optional;
+
 import javax.annotation.PostConstruct;
 
 import net.tanesha.recaptcha.ReCaptchaImpl;
 import net.tanesha.recaptcha.ReCaptchaResponse;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
+import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.captcha.model.Captcha;
@@ -20,7 +21,6 @@ import com.cannontech.web.common.captcha.service.CaptchaService;
 
 public class CaptchaServiceImpl implements CaptchaService{
     
-    private Logger log = YukonLogManager.getLogger(CaptchaServiceImpl.class);
     private String RECAPTCHA_PUBLIC_KEY;
     private String RECAPTCHA_PRIVATE_KEY;
     
@@ -36,17 +36,11 @@ public class CaptchaServiceImpl implements CaptchaService{
             configurationSource.getString(MasterConfigString.RECAPTCHA_PRIVATE_KEY,
                 "6LcLps0SAAAAAM40wM_-kRx-FCYeEA72XVpQwGl8");
  
-        String httpProxy = globalSettingDao.getString(GlobalSettingType.HTTP_PROXY);
         boolean isCaptchasEnabled = globalSettingDao.getBoolean(GlobalSettingType.ENABLE_CAPTCHAS);
-        if (isCaptchasEnabled && !httpProxy.equals("none")) {
-            String[] hostAndPort = httpProxy.split(":");
-            if (hostAndPort.length != 2) {
-                log.error("GlobalSettingType = HTTP_PROXY has an invalid value: " + httpProxy
-                    + ". Unable to setup proxy settings for Captcha service");
-            } else {
-                System.setProperty("http.proxyHost", hostAndPort[0]);
-                System.setProperty("http.proxyPort", hostAndPort[1]);
-            }
+        
+        Optional<YukonHttpProxy> proxy = YukonHttpProxy.fromGlobalSetting(globalSettingDao);
+        if (isCaptchasEnabled && proxy.isPresent()) {
+            proxy.get().setAsSystemProxy();
         }
     }
     
