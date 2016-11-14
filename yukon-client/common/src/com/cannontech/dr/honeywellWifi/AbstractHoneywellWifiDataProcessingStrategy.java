@@ -1,9 +1,5 @@
 package com.cannontech.dr.honeywellWifi;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +9,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
@@ -31,7 +28,8 @@ public abstract class AbstractHoneywellWifiDataProcessingStrategy implements Hon
      */
     protected PaoIdentifier getThermostatByMacId(String macId) {
         if (!macId.contains(":")) {
-            macId = addColons(macId);
+            macId = StringUtils.colonizeMacAddress(macId);
+            log.debug("Formatted Mac ID - " + macId);
         }
         PaoIdentifier paoIdentifier = honeywellWifiDao.getPaoIdentifierByMacId(macId);
         return paoIdentifier;
@@ -56,22 +54,7 @@ public abstract class AbstractHoneywellWifiDataProcessingStrategy implements Hon
         pointData.setTime(time.toDate());
         pointData.setTagsDataTimestampValid(true);
         
+        log.debug("Submitting point data: " + pointData);
         asyncDynamicDataSource.putValue(pointData);
-    }
-    
-    /**
-     * Formats a plain, alphanumeric mac id with colons between every two characters.
-     */
-    private String addColons(String macId) {
-        if (macId.length() != 12) {
-            throw new IllegalArgumentException("Invalid mac address, length is " + macId.length());
-        }
-        List<String> chunks = new ArrayList<>();
-        for (int i = 0; i < macId.length(); i += 2) {
-            chunks.add(macId.substring(i, i + 2));
-        }
-        String result = StringUtils.join(chunks, ":");
-        log.debug("Formatted Mac ID: " + result);
-        return result;
     }
 }
