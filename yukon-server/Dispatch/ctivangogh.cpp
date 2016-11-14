@@ -37,6 +37,7 @@
 
 #include "counter.h"
 #include "ctidate.h"
+#include "MessageCounter.h"
 
 #include <boost/tuple/tuple_comparison.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
@@ -225,9 +226,7 @@ int CtiVanGogh::execute()
 void CtiVanGogh::VGMainThread()
 {
     int  nRet;
-    ULONG MessageCount = 0;
-    ULONG MessageLog = 0;
-
+    Cti::MessageCounter mc("Dispatch Incoming Message");
     ThreadStatusKeeper threadStatus("VG Main Thread");
 
     INPUT_RECORD      inRecord;
@@ -355,8 +354,8 @@ void CtiVanGogh::VGMainThread()
                 case MSG_MULTI:
                     {
                         int increment = ((CtiMultiMsg*)MsgPtr)->getCount();
-                        MessageCount += increment;
-                        MessageLog += increment;
+
+                        mc.tick(increment);
 
                         if(increment > 1000)
                         {
@@ -366,16 +365,9 @@ void CtiVanGogh::VGMainThread()
                     }
                 default:
                     {
-                        MessageCount++;
-                        MessageLog++;
+                        mc.tick();
                         break;
                     }
-                }
-
-                if( MessageLog >= 1000  )
-                {
-                    MessageLog = 0;
-                    CTILOG_INFO(dout, "Dispatch has processed " << MessageCount << " inbound messages");
                 }
 
                 if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSFRMCLIENT)
