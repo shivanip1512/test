@@ -7,7 +7,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="operator" page="thermostatSelect">
-<cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">" >
+<cti:checkEnergyCompanyOperator showError="true" accountId="${accountId}">
     <script type="text/javascript">
 
     // credit to:
@@ -130,5 +130,5 @@
             <cti:button type="submit" value="${manualText}" label="${manualText}" name="manual"/>
         </div>
     </form>
-</cti:checkEnergyCompanyOperator>.
+</cti:checkEnergyCompanyOperator>
 </cti:standardPage>
