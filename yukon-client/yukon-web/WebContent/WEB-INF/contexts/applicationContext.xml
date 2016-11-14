@@ -1049,7 +1049,7 @@
     <bean id="meterAndRelayMenuDecider" class="com.cannontech.web.contextualMenu.MeterAndRelayMenuDecider"/>
 
     <bean id="menuItemAmrArchivedDataExporter" class="com.cannontech.web.contextualMenu.model.menuEntry.DeviceCollectionMenuAction">
-        <property name="decider" ref="meterMenuDecider"/>
+        <property name="decider" ref="meterAndRelayMenuDecider"/>
         <constructor-arg value="/tools/data-exporter/view"/>
         <constructor-arg value="ARCHIVED_DATA_EXPORT"/>
     </bean>
@@ -1201,6 +1201,7 @@
                 <ref bean="menuItemBulkMassDelete"/>
                 <ref bean="separatorMenuItem"/>
                 <ref bean="menuItemBulkDeviceCollectionReport"/>
+                <ref bean="menuItemAmrArchivedDataExporter"/>
                 <ref bean="separatorMenuItem"/>
                 <ref bean="menuItemBulkPointsAdd"/>
                 <ref bean="menuItemBulkPointsUpdate"/>
