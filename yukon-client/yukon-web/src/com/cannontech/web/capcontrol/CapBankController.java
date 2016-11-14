@@ -3,6 +3,7 @@ package com.cannontech.web.capcontrol;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -33,6 +34,7 @@ import com.cannontech.capcontrol.CapBankSize;
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -72,7 +74,7 @@ public class CapBankController {
     @Autowired private CbcServiceImpl cbcService;
     @Autowired private PaoDao paoDao;
     @Autowired private CapbankDao capbankDao;
-
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     private static final String baseKey = "yukon.web.modules.capcontrol.capbank";
 
@@ -226,7 +228,15 @@ public class CapBankController {
         model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
         model.addAttribute("opMethods", BankOpState.values());
         model.addAttribute("bankSizes", CapBankSize.values());
-        model.addAttribute("cbcTypes", PaoType.getCbcTypes());
+        
+        Set<PaoType> cbcTypes = new TreeSet<>();
+        for(PaoType p: PaoType.getCbcTypes()){
+            if(paoDefinitionDao.getPaoDefinition(p).isCreatable()){
+                cbcTypes.add(p);
+            }
+        }
+        
+        model.addAttribute("cbcTypes", cbcTypes);
         model.addAttribute("availablePorts", dbCache.getAllPorts());
         model.addAttribute("twoWayTypes", CapControlCBC.getTwoWayTypes());
         

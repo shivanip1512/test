@@ -13151,7 +13151,7 @@
         <changeGroup>cap</changeGroup>
     </pao>
 
-    <pao id="DNP_CBC_6510" inherits="CBC_DNP_BASE, DNP_CONFIGURATION">
+    <pao id="DNP_CBC_6510" inherits="CBC_DNP_BASE, DNP_CONFIGURATION" creatable="false">
         <displayName>CBC 6510</displayName>
         <changeGroup>cap</changeGroup>
     </pao>

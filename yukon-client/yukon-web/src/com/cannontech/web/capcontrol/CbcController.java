@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -28,6 +29,7 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.core.dao.NotFoundException;
@@ -66,7 +68,7 @@ public class CbcController {
     @Autowired private AttributeService attributeService;
     @Autowired private CapbankDao capbankDao;
     @Autowired private CapControlCache ccCache;
-
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     private static final String baseKey = "yukon.web.modules.capcontrol.cbc";
     
@@ -172,7 +174,14 @@ public class CbcController {
         model.addAttribute("cbcId", cbc.getId());
         model.addAttribute("cbcName", cbc.getName());
 
-        model.addAttribute("paoTypes", PaoType.getCbcTypes());
+        Set<PaoType> cbcTypes = new TreeSet<>();
+        for(PaoType p: PaoType.getCbcTypes()){
+            if(paoDefinitionDao.getPaoDefinition(p).isCreatable()){
+                cbcTypes.add(p);
+            }
+        }
+            
+        model.addAttribute("paoTypes", cbcTypes);
         model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
         model.addAttribute("scanGroups", CapControlCBC.ScanGroup.values());
         model.addAttribute("availablePorts", dbCache.getAllPorts());
