@@ -10065,10 +10065,10 @@
             </attribute>
         </attributes>
         <tags>
-	        <tag name="DEVICE_ICON_TYPE">
-	            <value>water_meter</value>
-	        </tag>
-	        <tag name="WATER_METER_DETAIL_DISPLAYABLE" />
+            <tag name="DEVICE_ICON_TYPE">
+                <value>water_meter</value>
+            </tag>
+            <tag name="WATER_METER_DETAIL_DISPLAYABLE" />
         </tags>
     </pao>
 
@@ -13800,13 +13800,13 @@
                 <name>Real Time Clock Battery Failure</name>
                 <stategroup value="TrueFalse" />
             </point>
-            <point type="Status" offset="10012">
+            <point type="Status" offset="0" >
                 <name>SCADA Override Clear</name>
                 <controlType value="NORMAL" />
                 <controlOffset value="12" />
                 <stateZeroControl value="PULSE" />
                 <stateOneControl value="PULSE" />                
-                <stategroup value="YesNo" />
+                <stategroup value="NoYes" />
             </point>
             <point type="Status" offset="10040">
                 <name>Ignore SCADA Override Time of Day</name>
@@ -13814,7 +13814,8 @@
                 <controlOffset value="40" />
                 <stategroup value="YesNo" />
             </point>
-            <point type="Status" offset="10049">
+            <!-- an offset of 0 or less makes the point a psuedo point. -->
+            <point type="Status" offset="-1">
                 <name>Enable SCADA Override</name>
                 <controlType value="NORMAL" />
                 <controlOffset value="49" />

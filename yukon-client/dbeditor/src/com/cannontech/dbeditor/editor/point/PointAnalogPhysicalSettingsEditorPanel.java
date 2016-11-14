@@ -932,8 +932,16 @@ public class PointAnalogPhysicalSettingsEditorPanel extends DataInputPanel imple
 
         Integer pointOffset = pointBase.getPoint().getPointOffset();
         if (pointOffset != null) {
-            getPhysicalPointOffsetCheckBox().setSelected(pointOffset.intValue() != 0);
-            getPointOffsetSpinner().setValue(pointOffset);
+            if( pointOffset.intValue() > 0)
+            {
+                getPhysicalPointOffsetCheckBox().setSelected(true);
+                getPointOffsetSpinner().setValue( pointOffset );
+            }
+            else
+            {
+                getPhysicalPointOffsetCheckBox().setSelected(false);
+                getPointOffsetSpinner().setValue( new Integer(0) );
+            }
         } else {
             getPhysicalPointOffsetCheckBox().setSelected(false);
             getPointOffsetSpinner().setValue(new Integer(0));
