@@ -58,7 +58,7 @@
             data-title="<cti:msg2 key=".schedule"/>"
             data-event="yukon:assets:gateway:schedule:save"
             data-ok-text="<cti:msg2 key="components.button.save.label"/>"
-            data-width="460" data-height="264"
+            data-width="400" data-height="250"
             data-url="${scheduleUrl}"></div>
 </cti:checkRolesAndProperties>
 

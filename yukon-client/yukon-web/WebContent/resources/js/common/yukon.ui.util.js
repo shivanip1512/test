@@ -394,6 +394,23 @@ yukon.ui.util = (function () {
             }
         },
         
+        cronGatewayHourlyRandomizedChange : function (id, checked) {
+            var cronField = $('[name=' + id + '_CRONEXP_CUSTOM_EXPRESSION]');
+            if (checked){
+                //generate random hourly
+                var min = 0;
+                var max = 59;
+                var seconds = Math.floor(Math.random() * (max - min + 1) + min);
+                var minutes = Math.floor(Math.random() * (max - min + 1) + min);
+                cronField.val(seconds + ' ' + minutes + ' */1 * * ? *');
+                cronField.prop('readonly', 'true');
+            } else {
+                //set to default
+                cronField.val('0 0 */1 * * ? *');
+                cronField.prop('readonly', 'false');
+            }
+        },
+        
         /** 
          * Jquery (and plain old javascript) returns color values in rgb format:
          *  rgb(0, 153, 51)
