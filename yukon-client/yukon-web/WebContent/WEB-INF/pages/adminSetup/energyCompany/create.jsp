@@ -26,7 +26,7 @@
                         <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="60"/>
                         <tags:inputNameValue nameKey=".email" path="email" size="35" maxlength="130"/>
                         <tags:selectNameValue items="${routes}" itemLabel="paoName" itemValue="yukonID"
-                            nameKey=".defaultRoute" path="defaultRouteId" defaultItemLabel="${none}" defaultItemValue="0"/>
+                            nameKey=".defaultRoute" path="defaultRouteId" defaultItemLabel="${none}" defaultItemValue="-1"/>
                     </tags:nameValueContainer2>
                 </tags:sectionContainer2>
                 
