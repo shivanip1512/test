@@ -52,9 +52,6 @@ public class RfnAddress extends DBPersistent  {
     }
     
     public void update() throws SQLException {
-        Object setValues[] = { getSerialNumber(), getManufacturer(), getModel() };
-        Object constraintValues[] = { getDeviceID() };
-        
         RfnIdentifier rfn = new RfnIdentifier(getSerialNumber(), getManufacturer(), getModel());
 
         if (rfn.isBlank()) {
