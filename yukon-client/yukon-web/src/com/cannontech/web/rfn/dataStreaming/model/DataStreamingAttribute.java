@@ -90,6 +90,7 @@ public class DataStreamingAttribute {
         ToStringBuilder builder = new ToStringBuilder(this, style);
         builder.append("attribute", attribute);
         builder.append("status", status);
+        builder.append("attributeOn", attributeOn);
         return builder.toString();
     }    
 }

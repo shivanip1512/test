@@ -69,9 +69,7 @@ public class DataStreamingConfig implements Cloneable {
      * 
      */
     public String getName() {
-        List<DataStreamingAttribute> onAttributes = attributes.stream()
-                .filter(DataStreamingAttribute::getAttributeOn)
-                .collect(Collectors.toList());
+        List<DataStreamingAttribute> onAttributes = getOnAttributes();
         if (accessor != null && onAttributes.size() > 0) {
             String attrName = accessor.getMessage(onAttributes.get(0).getAttribute());
             int interval = onAttributes.get(0).getInterval();
@@ -117,6 +115,10 @@ public class DataStreamingConfig implements Cloneable {
 
     public List<DataStreamingAttribute> getAttributes() {
         return attributes;
+    }
+    
+    public List<DataStreamingAttribute> getOnAttributes() {
+        return attributes.stream().filter(DataStreamingAttribute::getAttributeOn).collect(Collectors.toList());
     }
     
     public void addAttribute(DataStreamingAttribute attribute) {

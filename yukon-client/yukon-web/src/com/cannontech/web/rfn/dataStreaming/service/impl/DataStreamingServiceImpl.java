@@ -439,13 +439,13 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
     @Override
     public int saveConfig(DataStreamingConfig config) {
-        for (DataStreamingConfig savedConfig : getAllDataStreamingConfigurations()) {
-            if (config.equals(savedConfig)) {
-                return savedConfig.getId();
-            }
+        DataStreamingConfig savedConfig = findConfig(getAllDataStreamingConfigurations(), config);
+        if(savedConfig == null){
+            Behavior behavior = convertConfigToBehavior(config);
+            return deviceBehaviorDao.saveBehavior(behavior);  
         }
-        Behavior behavior = convertConfigToBehavior(config);
-        return deviceBehaviorDao.saveBehavior(behavior);
+       
+        return savedConfig.getId();
     }
 
     @Override
@@ -982,8 +982,13 @@ public class DataStreamingServiceImpl implements DataStreamingService {
      */
     private DataStreamingConfig findConfig(List<DataStreamingConfig> allConfigs, DataStreamingConfig reportedConfig) {
         // search for behavior with the same attributes and interval
-        return allConfigs.stream().filter(e -> compareByAttributesAndInterval(e, reportedConfig)).findFirst().orElse(
-            null);
+        for (DataStreamingConfig savedConfig : allConfigs) {
+            if (compareByAttributesAndInterval(savedConfig, reportedConfig)) {
+                return savedConfig;
+            }
+        }
+        
+        return null;
     }
 
     /**
@@ -991,8 +996,12 @@ public class DataStreamingServiceImpl implements DataStreamingService {
      * @return true if configs are equal
      */
     private boolean compareByAttributesAndInterval(DataStreamingConfig expectedConfig, DataStreamingConfig actualConfig){
-        Set<DataStreamingAttribute> differences = Sets.difference(Sets.newHashSet(expectedConfig.getAttributes()),
-            Sets.newHashSet(actualConfig.getAttributes()));
+        Set<BuiltInAttribute> expected =
+            expectedConfig.getOnAttributes().stream().map(x -> x.getAttribute()).collect(Collectors.toSet());
+        Set<BuiltInAttribute> actual =
+                actualConfig.getOnAttributes().stream().map(x -> x.getAttribute()).collect(Collectors.toSet());
+        //The returned set contains all elements that are contained in either set1 or set2 but not in both
+        Set<BuiltInAttribute> differences = Sets.symmetricDifference(expected,actual);
         boolean isEqualInterval = expectedConfig.getSelectedInterval() == actualConfig.getSelectedInterval();
         return differences.isEmpty() && isEqualInterval;
     }
