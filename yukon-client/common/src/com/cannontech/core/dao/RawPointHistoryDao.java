@@ -369,4 +369,15 @@ public interface RawPointHistoryDao {
      */
     @Deprecated
     List<PointValueQualityHolder> getMostRecentValues(int pointId, int rows);
+
+    /**
+     * Method to get a list of point values for a given point and time period (it includes the point values for disabled paos).
+     * StartDate is always exclusive, stopDate is inclusive.
+     * Ordering is always timestamp asc, changeid asc
+     * @param pointId - Id of point to get values for
+     * @param startDate - Start time of period (this is always the first argument in SQL, either > or >=)
+     * @param stopDate - End time of period (this is always the second argument in SQL, either < or <=)
+     * @return List of values for the point
+     */
+    List<PointValueHolder> getPointDataWithIncludeDisabledPaos(int pointId, Date startDate, Date stopDate);
 }
