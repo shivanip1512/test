@@ -369,7 +369,7 @@
                         <c:set var="idx" value="${status.index}" />
                         <tr>
                             <td>${point.name}</td>
-                            <td>
+                            <td style="max-width:200px;">
                                 <tags:input path="ccMonitorBankList[${idx}].NINAvg" size="10"/>
                             </td>
                             <td>
@@ -385,7 +385,7 @@
                             <td style="max-width:150px;" class="db wrbw wsn">
                                 <span data-toggle-group="overrideFeederLimits_${idx}"><tags:input path="ccMonitorBankList[${idx}].upperBandwidth" size="10" /></span>
                             </td>
-                            <td>
+                            <td style="max-width:150px;" class="wsn">
                                 <span data-toggle-group="overrideFeederLimits_${idx}"><tags:input path="ccMonitorBankList[${idx}].lowerBandwidth" size="10" /></span>
                             </td>
                             <td>
