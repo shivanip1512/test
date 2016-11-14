@@ -27,6 +27,7 @@
 #include "amq_constants.h"
 
 #include "coroutine_util.h"
+#include "MessageCounter.h"
 
 #include <boost/range.hpp>
 
@@ -625,6 +626,8 @@ void CtiCalcLogicService::_outputThread()
 
 void CtiCalcLogicService::_inputThread( void )
 {
+    Cti::MessageCounter mc("Dispatch->CalcLogic");
+
     try
     {
         ThreadStatusKeeper threadStatus("CalcLogicSvc _inputThread");
@@ -637,6 +640,8 @@ void CtiCalcLogicService::_inputThread( void )
             while( ! incomingMsg )
             {
                 incomingMsg.reset( dispatchConnection->ReadConnQue( 1000 ));
+
+                mc.tick();
 
                 if(!_shutdownOnThreadTimeout)
                 {

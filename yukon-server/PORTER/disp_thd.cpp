@@ -13,6 +13,7 @@
 
 #include "unsolicited_handler.h"
 #include "StatisticsManager.h"
+#include "MessageCounter.h"
 
 using namespace std;
 
@@ -40,8 +41,8 @@ void DispatchMsgHandlerThread()
     CtiThreadMonitor::State previous;
     CtiTime         RefreshTime          = nextScheduledTimeAlignedOnRate( TimeNow, PorterRefreshRate );
     CtiTime         nextCPULoadReportTime;
-    ULONG           MessageCount = 0;
-    ULONG           MessageLog = 0;
+
+    MessageCounter mc("Dispatch->Porter");
 
     long pointID = ThreadMonitor.getPointIDFromOffset(CtiThreadMonitor::Porter);
     long cpuPointID = GetPIDFromDeviceAndOffset( SYSTEM_DEVICE, SystemDevicePointOffsets::PorterCPU );
@@ -86,14 +87,7 @@ void DispatchMsgHandlerThread()
 
             TimeNow = CtiTime::now();
 
-            MessageCount++;
-            MessageLog++;
-
-            if (MessageLog >= 1000)
-            {
-                MessageLog = 0;
-                CTILOG_INFO(dout, "Porter has processed " << MessageCount << " inbound messages");
-            }
+            mc.tick();
 
             auto_ptr<const CtiDBChangeMsg> dbchg;
 

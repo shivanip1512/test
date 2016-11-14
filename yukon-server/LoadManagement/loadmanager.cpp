@@ -32,6 +32,7 @@
 #include "thread_monitor.h"
 #include "GlobalSettings.h"
 #include "win_helper.h"
+#include "MessageCounter.h"
 
 #include <time.h>
 #include <map>
@@ -191,6 +192,7 @@ void CtiLoadManager::stop()
   --------------------------------------------------------------------------*/
 void CtiLoadManager::controlLoop()
 {
+
     try
     {
         CTILOG_INFO(dout, "LoadManager Thread started");
@@ -226,6 +228,8 @@ void CtiLoadManager::controlLoop()
         // Fire up the notification server
         getNotificationConnection();
 
+        Cti::MessageCounter mc("Load Control Client Listener");
+
         while( TRUE )
         {
             long main_wait = control_loop_delay;
@@ -235,6 +239,8 @@ void CtiLoadManager::controlLoop()
 
             while( CtiMessage *msg = CtiLMClientListener::getInstance().getQueue(main_wait) )
             {
+                mc.tick();
+
                 CtiLMExecutor* executor = executorFactory.createExecutor(msg);
                 try
                 {
@@ -752,6 +758,7 @@ boost::shared_ptr<CtiClientConnection> CtiLoadManager::getNotificationConnection
 void CtiLoadManager::checkDispatch(CtiTime currentTime)
 {
     bool done = FALSE;
+    Cti::MessageCounter mc("Dispatch->LoadControl");
 
     do
     {
@@ -761,6 +768,8 @@ void CtiLoadManager::checkDispatch(CtiTime currentTime)
 
             if( in != NULL )
             {
+                mc.tick();
+
                 parseMessage(in, currentTime);
                 delete in;
             }
@@ -783,6 +792,7 @@ void CtiLoadManager::checkDispatch(CtiTime currentTime)
 void CtiLoadManager::checkPorter(CtiTime currentTime)
 {
     bool done = FALSE;
+    Cti::MessageCounter mc("Porter->LoadControl");
 
     do
     {
@@ -792,6 +802,8 @@ void CtiLoadManager::checkPorter(CtiTime currentTime)
 
             if( in != NULL )
             {
+                mc.tick();
+
                 parseMessage(in, currentTime);
                 delete in;
             }

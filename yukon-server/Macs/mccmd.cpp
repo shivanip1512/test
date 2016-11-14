@@ -44,6 +44,8 @@
 
 #include "string_util.h"
 
+#include "MessageCounter.h"
+
 #include <boost/algorithm/string.hpp>
 #include <boost/range.hpp>
 
@@ -138,6 +140,7 @@ static CtiCriticalSection _queue_mux;
 void _MessageThrFunc()
 {
     time_t last_cancellation_check = 0;
+    Cti::MessageCounter mc("Porter->MACS");
 
     try
     {
@@ -146,6 +149,8 @@ void _MessageThrFunc()
             //Wake up every second to respect cancellation requests
             if( CtiMessage *in_ptr = PorterConnection->ReadConnQue( 1000 ) )
             {
+                mc.tick();
+
                 std::auto_ptr<CtiMessage> inboundMessage(in_ptr);
 
                 unsigned int msgid = 0;
@@ -189,9 +194,13 @@ void _MessageThrFunc()
                 }
             }
 
+            Cti::MessageCounter mc2("Dispatch->MACS");
+
             //Clean out the VanGogh Connection
             while( CtiMessage *vgMsg = VanGoghConnection->ReadConnQue( 0 ) )
             {
+                mc2.tick();
+
                 // If it is a command message (are you there)
                 // message then echo it right back
                 if( vgMsg->isA() == MSG_COMMAND && ((CtiCommandMsg*)vgMsg)->getOperation() == CtiCommandMsg::AreYouThere )

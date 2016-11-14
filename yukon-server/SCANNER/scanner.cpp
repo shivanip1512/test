@@ -42,6 +42,7 @@
 #include "millisecond_timer.h"
 #include "GlobalSettings.h"
 #include "win_helper.h"
+#include "MessageCounter.h"
 
 #include <boost/ptr_container/ptr_deque.hpp>
 #include <boost/assign/list_of.hpp>
@@ -1241,6 +1242,7 @@ void DispatchMsgHandlerThread(void *Arg)
 {
     CtiTime         TimeNow;
     CtiTime         LastTime;
+    Cti::MessageCounter mc("Dispatch->Scanner");
 
     CtiDBChangeMsg* dbChange;
 
@@ -1253,6 +1255,8 @@ void DispatchMsgHandlerThread(void *Arg)
 
         if( const CtiMessage *MsgPtr = VanGoghConnection.ReadConnQue(5000L) )
         {
+            mc.tick();
+
             switch(MsgPtr->isA())
             {
             case MSG_DBCHANGE:

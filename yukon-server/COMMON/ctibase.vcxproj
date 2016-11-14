@@ -572,6 +572,7 @@
     <ClInclude Include="include\logManager.h" />
     <ClInclude Include="include\macro_offset.h" />
     <ClInclude Include="include\MASTER.H" />
+    <ClInclude Include="include\MessageCounter.h" />
     <ClInclude Include="include\MetricIdLookup.h" />
     <ClInclude Include="include\millisecond_timer.h" />
     <ClInclude Include="include\module_util.h" />

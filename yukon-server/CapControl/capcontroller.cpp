@@ -42,6 +42,7 @@
 #include "mgr_paosched.h"
 #include "mgr_season.h"
 #include "win_helper.h"
+#include "MessageCounter.h"
 
 extern void refreshGlobalCParms();
 
@@ -382,8 +383,7 @@ void CtiCapController::messageSender()
 
 void CtiCapController::incomingMessageProcessor()
 {
-    ULONG MessageCount = 0;
-    ULONG MessageLog = 0;
+    Cti::MessageCounter mc("CapControl Incoming Message");
 
     CTILOG_DEBUG(dout, "CtiCapController incoming message thread is starting");
 
@@ -408,15 +408,7 @@ void CtiCapController::incomingMessageProcessor()
                     CTILOG_INFO(dout, "Processing "<< msgCount <<" New Message(s).");
                 }
 
-                MessageCount++;
-                MessageLog++;
-
-                if (MessageLog >= 1000)
-                {
-                    MessageLog = 0;
-                    CTILOG_INFO(dout, "CapControl has processed " << MessageCount << " inbound messages");
-                }
-
+                mc.tick();
 
                 parseMessage(msg);
                 delete msg;
@@ -1355,6 +1347,8 @@ boost::shared_ptr<CtiClientConnection> CtiCapController::getPorterConnection()
 ---------------------------------------------------------------------------*/
 void CtiCapController::checkPIL()
 {
+    Cti::MessageCounter mc("PIL->CapControl");
+
     bool done = false;
 
     do
@@ -1365,6 +1359,8 @@ void CtiCapController::checkPIL()
 
             if ( inMsg != NULL )
             {
+                mc.tick();
+
                 parseMessage(inMsg);
                 delete inMsg;
             }

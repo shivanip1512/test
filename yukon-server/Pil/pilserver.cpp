@@ -44,6 +44,7 @@
 #include "connection_client.h"
 #include "win_helper.h"
 #include "desolvers.h"
+#include "MessageCounter.h"
 
 #include <boost/regex.hpp>
 #include <boost/bind.hpp>
@@ -162,8 +163,8 @@ void PilServer::mainThread()
 
     CtiMessage   *MsgPtr;
     int groupBypass = 0;
-    ULONG MessageCount = 0;
-    ULONG MessageLog = 0;
+
+    MessageCounter mc("PIL Listener");
 
     CTILOG_INFO(dout, "PIL mainThread - Started");
 
@@ -204,14 +205,7 @@ void PilServer::mainThread()
             {
                 if(MsgPtr != NULL)
                 {
-                    MessageCount++;
-                    MessageLog++;
-                    
-                    if (MessageLog >= 1000)
-                    {
-                        MessageLog = 0;
-                        CTILOG_INFO(dout, "PIL has processed " << MessageCount << " inbound messages");
-                    }
+                    mc.tick();
 
                     Cti::Timing::DebugTimer messageProcessingTimer("PIL mainThread message processing");
 
@@ -1383,6 +1377,7 @@ void PilServer::shutdown()
 void PilServer::vgConnThread()
 {
     CtiMessage *pMsg;
+    Cti::MessageCounter mc("Dispatch->PIL");
 
     CTILOG_INFO(dout, "PIL vgConnThread - Started");
 
@@ -1392,6 +1387,8 @@ void PilServer::vgConnThread()
     for( ; !bServerClosing ; )
     {
         pMsg = VanGoghConnection.ReadConnQue( 1500 );
+        
+        mc.tick();
 
         if(pMsg != NULL)
         {

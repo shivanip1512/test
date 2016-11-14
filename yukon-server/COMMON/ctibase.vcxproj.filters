@@ -632,6 +632,9 @@
     <ClInclude Include="include\database_bulk_writer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\MessageCounter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc">

@@ -22,6 +22,7 @@
 
 #include "utility.h"
 #include "amq_constants.h"
+#include "MessageCounter.h"
 
 using std::string;
 using std::endl;
@@ -779,6 +780,8 @@ void CtiFDRInterface::disconnect( void )
 */
 void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
 {
+    Cti::MessageCounter mc("Dispatch->FDR");
+
     try
     {
         if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
@@ -801,6 +804,9 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                     if( iDispatchConn && iDispatchConn->isConnectionUsable() )
                     {
                         incomingMsg.reset( iDispatchConn->ReadConnQue( 1000 ));
+                        
+                        mc.tick();
+
                         continue;
                     }
                 }
