@@ -379,5 +379,5 @@ public interface RawPointHistoryDao {
      * @param stopDate - End time of period (this is always the second argument in SQL, either < or <=)
      * @return List of values for the point
      */
-    List<PointValueHolder> getPointDataWithIncludeDisabledPaos(int pointId, Date startDate, Date stopDate);
+    List<PointValueHolder> getPointDataWithDisabledPaos(int pointId, Date startDate, Date stopDate);
 }

@@ -58,7 +58,7 @@ public class ChartServiceImpl implements ChartService {
         for (int pointId : pointIds) {
 
             // Get the point data for the time period
-            List<PointValueHolder> pointData = rphDao.getPointData(pointId, startDate, stopDate);
+            List<PointValueHolder> pointData = rphDao.getPointDataWithDisabledPaos(pointId, startDate, stopDate);
             LitePoint lPoint = pointDao.getLitePoint(pointId);
 
             // Set up the formatting based on the point unit

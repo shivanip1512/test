@@ -202,7 +202,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
 
     @Override
-    public List<PointValueHolder> getPointDataWithIncludeDisabledPaos(int pointId, Date startDate, Date stopDate) {
+    public List<PointValueHolder> getPointDataWithDisabledPaos(int pointId, Date startDate, Date stopDate) {
         Range<Date> dateRange = new Range<Date>(startDate, false, stopDate, true);
         SqlFragmentSource sql = buildSql(dateRange.translate(CtiUtilities.INSTANT_FROM_DATE),
                                          Collections.singleton(pointId),
