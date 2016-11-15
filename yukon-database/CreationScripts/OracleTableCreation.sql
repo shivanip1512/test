@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/11/2016 3:06:03 PM                        */
+/* Created on:     11/14/2016 11:32:50 PM                       */
 /*==============================================================*/
 
 
@@ -7158,11 +7158,11 @@ INSERT INTO Point VALUES(-30, 'Analog', 'Web Service Memory Utilization', 0,'Def
 INSERT INTO Point VALUES(-31, 'Status', 'Load Management Monitor', 0, 'Default', -7, 'N', 'N', 'R', 1027, 'None', 0);
 INSERT INTO Point VALUES(-32, 'Analog', 'Load Management CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1028, 'None', 0);
 INSERT INTO Point VALUES(-33, 'Analog', 'Load Management Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1029, 'None', 0);
+INSERT INTO Point VALUES(-34, 'Analog', 'Message Broker CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1030, 'None', 0);
+INSERT INTO Point VALUES(-35, 'Analog', 'Message Broker Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1031, 'None', 0);
 INSERT INTO Point VALUES(-100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 100 ,'None', 0);
 INSERT INTO Point VALUES( 100, 'Analog','Porter Work Count',0,'Default',0,'N','N','R',1500,'None',0);
 INSERT INTO Point VALUES(-110, 'System', 'MultiSpeak' , 0, 'Default', 0, 'N', 'N', 'S', 110 ,'None', 0);
-INSERT INTO Point VALUES(-34, 'Analog', 'Message Broker CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1030, 'None', 0);
-INSERT INTO Point VALUES(-35, 'Analog', 'Message Broker Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1031, 'None', 0);
 
 alter table POINT
    add constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID);
@@ -7248,9 +7248,9 @@ insert into pointanalog values(-29, -1, 1, 0 );
 insert into pointanalog values(-30, -1, 1, 0 );
 insert into pointanalog values(-32, -1, 1, 0 );
 insert into pointanalog values(-33, -1, 1, 0 );
-insert into pointanalog values( 100, 0, 1, 0 );
 INSERT INTO pointanalog VALUES(-34, -1, 1, 0 );
 INSERT INTO pointanalog VALUES(-35, -1, 1, 0 );
+insert into pointanalog values( 100, 0, 1, 0 );
 
 /*==============================================================*/
 /* Table: POINTLIMITS                                           */
@@ -7341,9 +7341,9 @@ insert into pointunit values(-29, 56, 0, 1.0E+30, -1.0E+30, 0);
 insert into pointunit values(-30, 56, 0, 1.0E+30, -1.0E+30, 0);
 insert into pointunit values(-32, 28, 2, 1.0E+30, -1.0E+30, 0);
 insert into pointunit values(-33, 56, 0, 1.0E+30, -1.0E+30, 0);
-insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30, 0);
 INSERT INTO pointunit VALUES(-34, 28, 2, 1.0E+30, -1.0E+30, 0);
 INSERT INTO pointunit VALUES(-35, 56, 0, 1.0E+30, -1.0E+30, 0);
+insert into pointunit values( 100, 9, 1, 1.0E+30, -1.0E+30, 0);
 
 /*==============================================================*/
 /* Index: INDX_UOMID_POINTID                                    */
