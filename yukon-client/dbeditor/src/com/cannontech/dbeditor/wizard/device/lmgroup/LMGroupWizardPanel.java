@@ -165,7 +165,7 @@ public class LMGroupWizardPanel extends WizardPanel {
         } else if (currentInputPanel == getSwitchTypePanel()) {
             PaoType paoType = getSwitchTypePanel().getTypeOfSwitchSelected();
             if (paoType == PaoType.LM_GROUP_HONEYWELL) {
-                if (LMGroupHoneywell.isMaximumGroupLimitExceeded(PaoType.LM_GROUP_HONEYWELL)) {
+                if (LMGroupHoneywell.isMaximumGroupLimitExceeded()) {
                     throw new Error("(Exceeded maximum limit of HONEYWELL GROUP (10000).)");
                 }
             }
