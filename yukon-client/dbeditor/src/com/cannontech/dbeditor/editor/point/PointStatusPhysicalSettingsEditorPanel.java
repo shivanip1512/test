@@ -1285,24 +1285,11 @@ public void setValue(Object val)
 
     Integer pointOffset = point.getPoint().getPointOffset();
 
-    if( pointOffset != null )
+    if( pointOffset != null && pointOffset.intValue() > 0 ) {
+        getPhysicalPointOffsetCheckBox().setSelected(true);
         getPointOffsetSpinner().setValue( pointOffset );
-
-    if( pointOffset != null )
-    {
-        if (pointOffset.intValue() <= 0)
-        {
-            getPhysicalPointOffsetCheckBox().setSelected(false);
-            getPointOffsetSpinner().setValue( new Integer(0) );
-        }
-        else
-        {
-            getPhysicalPointOffsetCheckBox().setSelected(true);
-            getPointOffsetSpinner().setValue( pointOffset );
-        }
-    }
-    else
-    {
+    } 
+    else {
         getPhysicalPointOffsetCheckBox().setSelected(false);
         getPointOffsetSpinner().setValue( new Integer(0) );
     }
