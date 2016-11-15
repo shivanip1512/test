@@ -8,8 +8,8 @@ $(document).on('click', '#recentEventsView', function (event) {
 });
 </script>
 
-<tags:boxContainer2 nameKey="busContainer" styleClass="padBottom">
-    <div class="dpt">
+<tags:boxContainer2 nameKey="busContainer">
+    <div class="div-align-to-table">
         <input type="checkbox" id="recentEventsBusSelectAll" onclick="yukon.da.common.checkAll(this, 'table.recentEventsBuses input[type=checkbox]');">
         <label for="recentEventsBusSelectAll"><i:inline key=".selectAllBuses"/></label>
     </div>
@@ -28,8 +28,8 @@ $(document).on('click', '#recentEventsView', function (event) {
     </div>
 </tags:boxContainer2>
 
-<tags:boxContainer2 nameKey="feedersContainer" styleClass="padBottom">
-    <div class="dpt">
+<tags:boxContainer2 nameKey="feedersContainer">
+    <div class="div-align-to-table">
         <input type="checkbox" id="recentEventsFeederSelectAll" onclick="yukon.da.common.checkAll(this, 'table.recentEventsFeeders input[type=checkbox]');">
         <label for="recentEventsFeederSelectAll"><i:inline key=".selectAllFeeders"/></label>
     </div>
@@ -49,7 +49,7 @@ $(document).on('click', '#recentEventsView', function (event) {
 </tags:boxContainer2>
 
 <tags:boxContainer2 nameKey="banksContainer">
-    <div class="dpt">
+    <div class="div-align-to-table">
         <input type="checkbox" id="recentEventsBankSelectAll" onclick="yukon.da.common.checkAll(this, 'table.recentEventsBanks input[type=checkbox]');">
         <label for="recentEventsBankSelectAll"><i:inline key=".selectAllBanks"/></label>
     </div>

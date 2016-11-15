@@ -31,7 +31,7 @@ function showTrends(title, url, id) {
     <c:set var="id" value="${viewableArea.ccId}"/>
 </c:if>
 <tags:boxContainer2 nameKey="busContainer">
-    <div class="dpt">
+    <div class="div-align-to-table">
         <input type="checkbox" id="analysisBusSelectAll${id}" onclick="yukon.da.common.checkAll(this, 'table.analysisBuses${id} input[type=checkbox]');">
         <label for="analysisBusSelectAll"><i:inline key=".selectAllBuses"/></label>
     </div>
@@ -50,8 +50,8 @@ function showTrends(title, url, id) {
     </div>
 </tags:boxContainer2>
 
-<tags:boxContainer2 nameKey="feedersContainer" styleClass="padBottom">
-    <div class="dpt">
+<tags:boxContainer2 nameKey="feedersContainer">
+    <div class="div-align-to-table">
         <input type="checkbox" id="analysisFeederSelectAll${id}" onclick="yukon.da.common.checkAll(this, 'table.analysisFeeders${id} input[type=checkbox]');">
         <label for="analysisFeederSelectAll"><i:inline key=".selectAllFeeders"/></label>
     </div>
