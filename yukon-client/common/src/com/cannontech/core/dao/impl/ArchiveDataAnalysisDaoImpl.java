@@ -168,7 +168,12 @@ public class ArchiveDataAnalysisDaoImpl implements ArchiveDataAnalysisDao {
          * Then Row number is allocated to each row and the rows are selected based on row number.
          */
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT RowNumber, PaObjectId, Name, Type, Meter_Number, Missing FROM (");
+        sql.append("SELECT");
+
+        if (sorting != null) {
+            sql.append("RowNumber,");
+        }
+        sql.append("PaObjectId, Name, Type, Meter_Number, Missing FROM (");
         sql.append(    "SELECT");
         
         if (sorting != null) {
