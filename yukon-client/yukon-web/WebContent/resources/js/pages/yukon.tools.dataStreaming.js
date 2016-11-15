@@ -133,7 +133,7 @@ yukon.tools.dataStreaming = (function () {
             });
             
             $('#searchSection :input').change(function (ev) {
-                $('#searchForm').attr('action', '/yukon/tools/dataStreaming/summary');
+                $('#searchForm').attr('action', yukon.url('/tools/dataStreaming/summary'));
                 $('#searchForm').submit(); //gut feeling I need to change the action back after submit
             });
             
