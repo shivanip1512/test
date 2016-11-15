@@ -229,6 +229,7 @@ yukon.assets.gateway.details = (function () {
                 $('#gateway-schedule-form').ajaxSubmit({
                     success: function (result, status, xhr, $form) {
                         popup.dialog('close');
+                        window.location.href = window.location.href;
                     },
                     error: function (xhr, status, error, $form) {
                         popup.html(xhr.responseText);

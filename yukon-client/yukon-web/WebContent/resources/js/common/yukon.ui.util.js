@@ -395,7 +395,7 @@ yukon.ui.util = (function () {
         },
         
         cronGatewayHourlyRandomizedChange : function (id, checked) {
-            var cronField = $('[name=' + id + '_CRONEXP_CUSTOM_EXPRESSION]');
+            var cronField = $('#' + id + '_CRONEXP_CUSTOM_EXPRESSION');
             if (checked){
                 //generate random hourly
                 var min = 0;
@@ -403,11 +403,11 @@ yukon.ui.util = (function () {
                 var seconds = Math.floor(Math.random() * (max - min + 1) + min);
                 var minutes = Math.floor(Math.random() * (max - min + 1) + min);
                 cronField.val(seconds + ' ' + minutes + ' */1 * * ? *');
-                cronField.prop('readonly', 'true');
+                cronField.attr('readonly', 'readonly');
             } else {
                 //set to default
                 cronField.val('0 0 */1 * * ? *');
-                cronField.prop('readonly', 'false');
+                cronField.removeAttr('readonly');
             }
         },
         

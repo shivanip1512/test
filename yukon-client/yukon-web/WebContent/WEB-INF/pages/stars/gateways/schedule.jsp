@@ -9,7 +9,6 @@
 
 <cti:msgScope paths="modules.operator.gateways">
 
-
 <c:if test="${not empty errorMsg}"><tags:alertBox>${errorMsg}</tags:alertBox></c:if>
 
 <cti:url var="url" value="/stars/gateways/${id}/schedule"/>
@@ -18,7 +17,43 @@
     
     <cti:uniqueIdentifier var="uid" prefix="schedule"/>
     <input type="hidden" name="uid" value="${uid}">
-    <tags:cronExpressionGatewayData id="${uid}" state="${state}"/>
+    
+    <cti:msgScope paths="components.cronPicker">
+
+        <input type="hidden" name="${uid}_CRONEXP_FREQ" value="CUSTOM"/>
+        
+        <c:set var="hourlyRandomizedChecked" value=""/>
+        <c:if test="${hourlyRandomized}">
+                <c:set var="hourlyRandomizedChecked" value="checked"/>
+        </c:if>
+        <input type="checkbox" id="${uid}_HOURLY_RANDOMIZED" name="${uid}_HOURLY_RANDOMIZED" ${hourlyRandomizedChecked} onclick="yukon.ui.util.cronGatewayHourlyRandomizedChange('${uid}', this.checked);"/><i:inline key=".hourlyRandomized"/>
+        <br/><br/>
+        
+        <div id="${uid}-cron-exp-custom">
+        
+            <i:inline key=".cronExpression"/><br>
+            <c:if test="${not empty invalidCronString}">
+                <c:set var="errorClass" value="error"/>
+            </c:if>
+            <div>
+                <input type="text" id="${uid}_CRONEXP_CUSTOM_EXPRESSION" name="${uid}_CRONEXP_CUSTOM_EXPRESSION" value="${state.customExpression}" class="${errorClass}"> 
+                <cti:icon icon="icon-help" data-popup="#${uid}-cron-help" classes="fn vatb cp"/>
+            </div>
+            <c:if test="${invalidCronString}">
+                <div class="error"><i:inline key="yukon.common.invalidCron"/></div>
+            </c:if>
+            
+            <cti:msg2 var="cronHelpTitle" key=".cronHelpTitle"/>
+            <div id="${uid}-cron-help" data-title="${cronHelpTitle}" class="dn">
+                <i:inline key=".cronHelpStart"/>
+                <a href="http://www.quartz-scheduler.org/documentation/quartz-2.x/tutorials/tutorial-lesson-06.html" target="_blank">
+                    <i:inline key=".cronHelpLink"/>
+                </a>
+                <i:inline key=".cronHelpEnd"/>
+            </div>
+            
+        </div>
+    </cti:msgScope>
     
 </form:form>
 

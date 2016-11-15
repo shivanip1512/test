@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -177,14 +179,15 @@ public class GatewaySettingsController {
         return "gateways/schedule.jsp";
     }
     
-    /** Set schedule. */ 
+    /** Set schedule. 
+     * @throws ServletRequestBindingException */ 
     @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_ADMIN)
     @RequestMapping("/gateways/{id}/schedule")
     public String schedule(HttpServletResponse resp, HttpServletRequest req, ModelMap model, FlashScope flash,
-            YukonUserContext userContext, @PathVariable int id, String uid) {
+            YukonUserContext userContext, @PathVariable int id, String uid) throws ServletRequestBindingException {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        
+
         try {
             String cron = cronService.build(uid, req, userContext);
             LiteYukonPAObject pao = cache.getAllPaosMap().get(id);
@@ -201,7 +204,13 @@ public class GatewaySettingsController {
         } catch (CronException | NmCommunicationException e) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("id", id);
-            model.addAttribute("state", new CronExpressionTagState());
+            //display what the user entered
+            CronExpressionTagState state = new CronExpressionTagState();
+            String customExpression = ServletRequestUtils.getRequiredStringParameter(req, uid + "_CRONEXP_CUSTOM_EXPRESSION");
+            state.setCustomExpression(customExpression);
+            model.addAttribute("state", state);
+            Boolean hourlyRandomized = ServletRequestUtils.getBooleanParameter(req, uid + "_HOURLY_RANDOMIZED", false);
+            model.addAttribute("hourlyRandomized", hourlyRandomized);
             
             if (e instanceof CronException) {
                 model.addAttribute("errorMsg", accessor.getMessage("yukon.common.invalidCron"));
