@@ -31,6 +31,7 @@ import com.cannontech.core.dao.PaoPropertyDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.capcontrol.CapBankController;
+import com.cannontech.database.data.capcontrol.CapBankController6510;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
 import com.cannontech.database.data.device.DNPBase;
@@ -136,7 +137,10 @@ public class CbcServiceImpl implements CbcService {
         } else if (dbPersistent instanceof CapBankControllerDNP) {
             CapBankControllerDNP capBankControllerDNP = (CapBankControllerDNP) dbPersistent;
             cbc.setDeviceCBC(capBankControllerDNP.getDeviceCBC());
-        }
+        } else if (dbPersistent instanceof CapBankController6510) {
+            CapBankController6510 capBankController6510 = (CapBankController6510) dbPersistent;
+            cbc.setDeviceCBC(capBankController6510.getDeviceCBC());
+        } 
 
         return cbc;
     }
