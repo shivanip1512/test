@@ -1,12 +1,10 @@
 package com.cannontech.web.tools.mapping.service;
 
-import java.util.List;
-
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.web.tools.mapping.model.Neighbor;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.model.Parent;
-import com.cannontech.web.tools.mapping.model.RouteInfo;
+import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
+import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Route;
 
 public interface NmNetworkService {
 
@@ -21,9 +19,10 @@ public interface NmNetworkService {
      * NM searches for the battery node's parent first, then finds the parent's primary route and returns that as the
      * battery node's primary route.
      * 
+     * @return Route - device route and first device without location
      * @throws NmNetworkException if the there is a communication error or if NM returned an error
      */
-    List<RouteInfo> getRoute(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException;
+    Route getRoute(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException;
 
     /**
      * Asks NM for the device neighbors.
@@ -34,9 +33,10 @@ public interface NmNetworkService {
      * If neighbor device has no location information in Yukon the neighbor will not be returned.
      * If all the neighbor devices received from NM have no location information in Yukon, empty list is returned.
      * 
+     * @return Neighbors - neighbor list and list of neighbor devices without location
      * @throws NmNetworkException if the there is a communication error or if NM returned an error
      */
-    List<Neighbor> getNeighbors(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException;
+    Neighbors getNeighbors(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException;
 
     /**
      * Asks NM for the parent information.

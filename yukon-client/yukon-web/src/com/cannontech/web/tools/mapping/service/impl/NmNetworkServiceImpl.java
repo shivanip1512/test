@@ -94,7 +94,43 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         parentReplyTemplate =
             new RequestReplyTemplateImpl<>(parentRequest, configSource, connectionFactory, requestQueue, false);
     }
+    
+    public class Neighbors {
+        private List<Neighbor> neighbors = new ArrayList<>();
+        private List<RfnDevice> neighborsWithoutLocation = new ArrayList<>();
 
+        public Neighbors(List<Neighbor> neighbors, List<RfnDevice> neighborsWithoutLocation) {
+            this.neighbors = neighbors;
+            this.neighborsWithoutLocation = neighborsWithoutLocation;
+        }
+
+        public List<Neighbor> getNeighbors() {
+            return neighbors;
+        }
+
+        public List<RfnDevice> getNeighborsWithoutLocation() {
+            return neighborsWithoutLocation;
+        }
+    }
+    
+    public class Route {
+        private List<RouteInfo> route = new ArrayList<>();
+        private RfnDevice deviceWithoutLocation = null;
+        
+        public Route(List<RouteInfo> route, RfnDevice deviceWithoutLocation) {
+            this.route = route;
+            this.deviceWithoutLocation = deviceWithoutLocation;
+        }
+
+        public RfnDevice getDeviceWithoutLocation() {
+            return deviceWithoutLocation;
+        }
+
+        public List<RouteInfo> getRoute() {
+            return route;
+        }
+    }
+    
     @Override
     public Parent getParent(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException {
 
@@ -146,7 +182,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
     }
     
     @Override
-    public List<RouteInfo> getRoute(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException {
+    public Route getRoute(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException {
 
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
         RfnPrimaryRouteDataRequest request = new RfnPrimaryRouteDataRequest();
@@ -186,6 +222,8 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
         PaoLocation nextHopLocation = null;
         List<RouteInfo> routes = new ArrayList<>();
+        RfnDevice hopWithoutLocation = null;
+        
         for (int i = 0; i < response.getRouteData().size(); i++) {
             RouteData data = response.getRouteData().get(i);
             RfnDevice routeDevice = devices.get(data.getRfnIdentifier());
@@ -200,6 +238,9 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     RfnDevice nextHopDevice = devices.get(nextHop.getRfnIdentifier());
                     PaoIdentifier nextHopPaoIdentifier = nextHopDevice.getPaoIdentifier();
                     nextHopLocation = locations.get(nextHopPaoIdentifier);
+                    if(nextHopLocation == null){
+                        hopWithoutLocation = nextHopDevice;
+                    }
                     addDistance(routeInfo, paoLocation, nextHopLocation);
                 }
                 addCommStatus(routeInfo, accessor);
@@ -218,11 +259,11 @@ public class NmNetworkServiceImpl implements NmNetworkService {
             // one of the devices has no location, can't display a route
             throw new NmNetworkException(noRoute, "noRoute"); 
         }
-        return routes;
+        return new Route(routes, hopWithoutLocation);
     }
 
     @Override
-    public List<Neighbor> getNeighbors(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException {
+    public Neighbors getNeighbors(int deviceId, MessageSourceAccessor accessor) throws NmNetworkException {
         RfnDevice device = rfnDeviceDao.getDeviceForId(deviceId);
         //the main entity (in which all neighbors are related to) shows no distance
         PaoLocation deviceLocation = paoLocationDao.getLocation(deviceId);
@@ -255,7 +296,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
 
         Set<PaoLocation> allLocations = paoLocationDao.getLocations(devices.values());
         Map<PaoIdentifier, PaoLocation> locations = Maps.uniqueIndex(allLocations, c -> c.getPaoIdentifier());
-
+        List<RfnDevice> neighborsWithoutLocation = new ArrayList<>();
         List<Neighbor> neighbors = new ArrayList<>();
         for (NeighborData data : response.getNeighborData()) {
             RfnDevice neighborDevice = devices.get(data.getRfnIdentifier());
@@ -272,11 +313,12 @@ public class NmNetworkServiceImpl implements NmNetworkService {
                     log.debug("-----" + deviceLocation + "-" + neighborLocation);
                     neighbors.add(neighbor);
                 } else {
+                    neighborsWithoutLocation.add(neighborDevice);
                     log.error("Location is not found for " + neighborDevice);
                 }
             }
         }
-        return neighbors;
+        return new Neighbors(neighbors, neighborsWithoutLocation);
     }
     
     /**

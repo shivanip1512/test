@@ -128,7 +128,7 @@ public class MapNetworkController {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            List<Neighbor> neighbors =  nmNetworkService.getNeighbors(deviceId, accessor);
+            List<Neighbor> neighbors =  nmNetworkService.getNeighbors(deviceId, accessor).getNeighbors();
             json.put("neighbors",  neighbors);
         } catch (NmNetworkException e) {
             json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
@@ -141,7 +141,7 @@ public class MapNetworkController {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            List<RouteInfo> route = nmNetworkService.getRoute(deviceId, accessor);
+            List<RouteInfo> route = nmNetworkService.getRoute(deviceId, accessor).getRoute();
             json.put("routeInfo",  route);
         } catch (NmNetworkException e) {
             json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
