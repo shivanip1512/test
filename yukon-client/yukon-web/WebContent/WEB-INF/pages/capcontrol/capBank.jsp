@@ -187,12 +187,12 @@
                                         <c:set var="twoWayClass" value="${cbc.twoWay? '' : 'dn'} js-two-way"/>
                                         <c:set var="oneWayClass" value="${cbc.twoWay? 'dn' : ''} js-one-way"/>
                                         <tags:nameValue2 nameKey=".cbc.controlRoute" rowClass="${oneWayClass}">
-                                            <c:if test="${cbc.deviceCBC.routeID == 0}">
-                                                <span class="empty-list"><i:inline key="yukon.common.none"/></span>
-                                            </c:if>
-                                            <c:if test="${cbc.deviceCBC.routeID != 0}">
-                                                ${fn:escapeXml(controllerRouteName)}
-                                            </c:if>
+                                            <c:choose>
+                                                <c:when test="${cbc.deviceCBC.routeID == 0}">
+                                                    <span class="empty-list"><i:inline key="yukon.common.none"/></span>
+                                                </c:when>
+                                                <c:otherwise>${fn:escapeXml(controllerRouteName)}</c:otherwise>
+                                            </c:choose>
                                         </tags:nameValue2>
                                         <tags:nameValue2 nameKey=".cbc.masterAddr" rowClass="${twoWayClass}">
                                             ${fn:escapeXml(cbc.deviceAddress.masterAddress)}
