@@ -204,6 +204,7 @@ public class HoneywellWifiDataListener {
         try {
             HoneywellWifiData data = jsonParser.readValue(jsonPayload, messageWrapper.getType().getMessageClass());
             data.setOriginalMessage(originalMessage);
+            data.setMessageWrapper(messageWrapper);
             return data;
         } catch (IOException e) {
             log.error("Unable to parse json payload in message data", e);

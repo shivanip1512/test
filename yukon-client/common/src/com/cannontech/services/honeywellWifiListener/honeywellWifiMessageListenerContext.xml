@@ -11,6 +11,7 @@
     <bean class="com.cannontech.dr.honeywellWifi.HoneywellUiDataBasicEventProcessingStrategy"/>
     <bean class="com.cannontech.dr.honeywellWifi.HoneywellDemandResponseEventProcessingStrategy"/>
     <bean class="com.cannontech.dr.honeywellWifi.HoneywellEquipmentStatusEventProcessingStrategy"/>
+    <bean class="com.cannontech.dr.honeywellWifi.HoneywellConnectionStatusEventProcessingStrategy"/>
     
     <context:annotation-config/>
     

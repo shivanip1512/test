@@ -103,7 +103,13 @@ public interface JsonSerializers {
         @Override
         public Instant deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
                 throws IOException, JsonProcessingException {
-            return HONEYWELL_WRAPPER_DATE_TIME.parseDateTime(paramJsonParser.getValueAsString()).toInstant();
+            
+            String stringValue = paramJsonParser.getValueAsString();
+            //If the date includes fractional seconds, strip them off
+            if (stringValue.length() > 19) {
+                stringValue = stringValue.substring(0, 19);
+            }
+            return HONEYWELL_WRAPPER_DATE_TIME.parseDateTime(stringValue).toInstant();
         }
     }
     
