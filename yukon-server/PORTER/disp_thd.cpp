@@ -87,7 +87,7 @@ void DispatchMsgHandlerThread()
 
             TimeNow = CtiTime::now();
 
-            mc.tick();
+            mc.increment();
 
             auto_ptr<const CtiDBChangeMsg> dbchg;
 

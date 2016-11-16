@@ -239,7 +239,7 @@ void CtiLoadManager::controlLoop()
 
             while( CtiMessage *msg = CtiLMClientListener::getInstance().getQueue(main_wait) )
             {
-                mc.tick();
+                mc.increment();
 
                 CtiLMExecutor* executor = executorFactory.createExecutor(msg);
                 try
@@ -768,7 +768,7 @@ void CtiLoadManager::checkDispatch(CtiTime currentTime)
 
             if( in != NULL )
             {
-                mc.tick();
+                mc.increment();
 
                 parseMessage(in, currentTime);
                 delete in;
@@ -802,7 +802,7 @@ void CtiLoadManager::checkPorter(CtiTime currentTime)
 
             if( in != NULL )
             {
-                mc.tick();
+                mc.increment();
 
                 parseMessage(in, currentTime);
                 delete in;

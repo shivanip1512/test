@@ -1255,7 +1255,7 @@ void DispatchMsgHandlerThread(void *Arg)
 
         if( const CtiMessage *MsgPtr = VanGoghConnection.ReadConnQue(5000L) )
         {
-            mc.tick();
+            mc.increment();
 
             switch(MsgPtr->isA())
             {

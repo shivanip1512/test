@@ -205,7 +205,7 @@ void PilServer::mainThread()
             {
                 if(MsgPtr != NULL)
                 {
-                    mc.tick();
+                    mc.increment();
 
                     Cti::Timing::DebugTimer messageProcessingTimer("PIL mainThread message processing");
 
@@ -1388,7 +1388,7 @@ void PilServer::vgConnThread()
     {
         pMsg = VanGoghConnection.ReadConnQue( 1500 );
         
-        mc.tick();
+        mc.increment();
 
         if(pMsg != NULL)
         {

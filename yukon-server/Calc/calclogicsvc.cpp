@@ -641,7 +641,7 @@ void CtiCalcLogicService::_inputThread( void )
             {
                 incomingMsg.reset( dispatchConnection->ReadConnQue( 1000 ));
 
-                mc.tick();
+                mc.increment();
 
                 if(!_shutdownOnThreadTimeout)
                 {

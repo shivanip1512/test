@@ -149,7 +149,7 @@ void _MessageThrFunc()
             //Wake up every second to respect cancellation requests
             if( CtiMessage *in_ptr = PorterConnection->ReadConnQue( 1000 ) )
             {
-                mc.tick();
+                mc.increment();
 
                 std::auto_ptr<CtiMessage> inboundMessage(in_ptr);
 
@@ -199,7 +199,7 @@ void _MessageThrFunc()
             //Clean out the VanGogh Connection
             while( CtiMessage *vgMsg = VanGoghConnection->ReadConnQue( 0 ) )
             {
-                mc2.tick();
+                mc2.increment();
 
                 // If it is a command message (are you there)
                 // message then echo it right back

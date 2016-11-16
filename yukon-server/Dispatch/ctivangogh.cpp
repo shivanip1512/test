@@ -355,7 +355,7 @@ void CtiVanGogh::VGMainThread()
                     {
                         int increment = ((CtiMultiMsg*)MsgPtr)->getCount();
 
-                        mc.tick(increment);
+                        mc.increment(increment);
 
                         if(increment > 1000)
                         {
@@ -365,7 +365,7 @@ void CtiVanGogh::VGMainThread()
                     }
                 default:
                     {
-                        mc.tick();
+                        mc.increment();
                         break;
                     }
                 }

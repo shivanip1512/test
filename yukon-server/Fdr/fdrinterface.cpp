@@ -805,7 +805,7 @@ void CtiFDRInterface::threadFunctionReceiveFromDispatch( void )
                     {
                         incomingMsg.reset( iDispatchConn->ReadConnQue( 1000 ));
                         
-                        mc.tick();
+                        mc.increment();
 
                         continue;
                     }

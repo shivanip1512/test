@@ -408,7 +408,7 @@ void CtiCapController::incomingMessageProcessor()
                     CTILOG_INFO(dout, "Processing "<< msgCount <<" New Message(s).");
                 }
 
-                mc.tick();
+                mc.increment();
 
                 parseMessage(msg);
                 delete msg;
@@ -1359,7 +1359,7 @@ void CtiCapController::checkPIL()
 
             if ( inMsg != NULL )
             {
-                mc.tick();
+                mc.increment();
 
                 parseMessage(inMsg);
                 delete inMsg;
