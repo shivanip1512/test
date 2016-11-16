@@ -174,12 +174,7 @@ public class CbcController {
         model.addAttribute("cbcId", cbc.getId());
         model.addAttribute("cbcName", cbc.getName());
 
-        Set<PaoType> cbcTypes = new TreeSet<>();
-        for(PaoType p: PaoType.getCbcTypes()){
-            if(paoDefinitionDao.getPaoDefinition(p).isCreatable()){
-                cbcTypes.add(p);
-            }
-        }
+        Set<PaoType> cbcTypes = PaoType.getCbcTypes().stream().filter(cbcType -> paoDefinitionDao.getPaoDefinition(cbcType).isCreatable()).collect(Collectors.toSet());
             
         model.addAttribute("paoTypes", cbcTypes);
         model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
