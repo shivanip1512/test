@@ -394,9 +394,11 @@
                                 <span data-toggle-group="overrideFeederLimits_${idx}"><tags:input path="ccMonitorBankList[${idx}].lowerBandwidth" size="10" /></span>
                             </td>
                             <td>
+                            <cti:displayForPageEditModes modes="EDIT">
                                 <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                                     <cti:button icon="icon-cross" renderMode="buttonImage" classes="select-box-item-remove js-remove-capbank-point show-on-hover" />
                                 </cti:checkRolesAndProperties>
+                            </cti:displayForPageEditModes>
                             </td>
                             <form:hidden path="ccMonitorBankList[${idx}].deviceId" />
                             <form:hidden path="ccMonitorBankList[${idx}].pointId" />
