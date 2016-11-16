@@ -22,7 +22,6 @@
 
         <input type="hidden" name="${uid}_CRONEXP_FREQ" value="CUSTOM"/>
         
-        <c:set var="hourlyRandomizedChecked" value=""/>
         <c:if test="${hourlyRandomized}">
                 <c:set var="hourlyRandomizedChecked" value="checked"/>
         </c:if>
