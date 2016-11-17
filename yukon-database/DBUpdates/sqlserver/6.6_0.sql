@@ -836,6 +836,21 @@ INSERT INTO pointunit VALUES(-35, 56, 0, 1.0E+30, -1.0E+30, 0);
 GO
 /* End YUK-15963 */
 
+/* Start YUK-15987 */
+EXEC sp_rename 'EncryptionKey.Value', 'PrivateKey', 'COLUMN';
+GO
+
+ALTER TABLE EncryptionKey
+ADD PublicKey varchar(608);
+
+ALTER TABLE EncryptionKey
+ADD ThirdPartyName varchar(128);
+
+ALTER TABLE EncryptionKey
+ALTER COLUMN PrivateKey VARCHAR(1920) NOT NULL;
+GO
+/* End YUK-15987
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

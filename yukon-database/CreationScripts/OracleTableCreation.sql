@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/14/2016 11:32:50 PM                       */
+/* Created on:     11/17/2016 10:05:37 AM                       */
 /*==============================================================*/
 
 
@@ -4997,7 +4997,9 @@ create table EcobeeReconciliationReport  (
 create table EncryptionKey  (
    EncryptionKeyId      NUMBER                          not null,
    Name                 VARCHAR2(128)                   not null,
-   Value                VARCHAR2(512)                   not null,
+   PrivateKey           VARCHAR2(1920)                  not null,
+   PublicKey            VARCHAR2(608),
+   ThirdPartyName       VARCHAR2(128),
    constraint PK_EncryptionKey primary key (EncryptionKeyId)
 );
 

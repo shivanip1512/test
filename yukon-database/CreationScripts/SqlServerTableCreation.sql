@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/14/2016 11:35:02 PM                       */
+/* Created on:     11/17/2016 10:06:34 AM                       */
 /*==============================================================*/
 
 
@@ -5248,7 +5248,9 @@ go
 create table EncryptionKey (
    EncryptionKeyId      numeric              not null,
    Name                 varchar(128)         not null,
-   Value                varchar(512)         not null,
+   PrivateKey           varchar(1920)        not null,
+   PublicKey            varchar(608)         null,
+   ThirdPartyName       varchar(128)         null,
    constraint PK_EncryptionKey primary key (EncryptionKeyId)
 )
 go

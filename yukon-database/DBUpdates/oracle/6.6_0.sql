@@ -720,6 +720,21 @@ INSERT INTO pointunit VALUES(-34, 28, 2, 1.0E+30, -1.0E+30, 0);
 INSERT INTO pointunit VALUES(-35, 56, 0, 1.0E+30, -1.0E+30, 0);
 /* End YUK-15963 */
 
+/* Start YUK-15987 */
+ALTER TABLE EncryptionKey
+RENAME COLUMN Value 
+TO PrivateKey;
+
+ALTER TABLE EncryptionKey
+ADD PublicKey VARCHAR2(608);
+
+ALTER TABLE EncryptionKey
+ADD ThirdPartyName VARCHAR2(128);
+
+ALTER TABLE EncryptionKey
+MODIFY PrivateKey VARCHAR2(1920);
+/* End YUK-15987
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
