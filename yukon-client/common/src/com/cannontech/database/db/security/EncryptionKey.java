@@ -3,20 +3,26 @@ package com.cannontech.database.db.security;
 public class EncryptionKey {
 
     private int encryptionKeyId;
-    private String value = null;
+    private String privateKey;
+    private String publicKey;
     private String name = null;
     private boolean currentlyUsed;
     private boolean isValid = true;
     
     public EncryptionKey() { }
     
-    public EncryptionKey(Integer encryptionKeyId, String name, String value, boolean currentlyUsed) {
+    public EncryptionKey(Integer encryptionKeyId, String name, String privateKey, boolean currentlyUsed) {
         this.encryptionKeyId = encryptionKeyId;
         this.name = name;
-        this.value = value;
+        this.privateKey = privateKey;
         this.currentlyUsed = currentlyUsed;
     }
     
+    public EncryptionKey(String privateKey, String publicKey) {
+        this.privateKey = privateKey;
+        this.publicKey = publicKey;
+    }
+
     public Integer getEncryptionKeyId() {
         return encryptionKeyId;
     }
@@ -25,12 +31,20 @@ public class EncryptionKey {
         this.encryptionKeyId = encryptionKeyId;
     }
 
-    public String getValue() {
-        return value;
+    public String getPrivateKey() {
+        return privateKey;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setPrivateKey(String privateKey) {
+        this.privateKey = privateKey;
+    }
+    
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
     }
 
     public String getName() {

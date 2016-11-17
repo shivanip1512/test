@@ -1,18 +1,28 @@
 package com.cannontech.encryption.impl;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.StringReader;
+import java.math.BigInteger;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.RSAPrivateKeySpec;
+import java.security.spec.RSAPublicKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
+import org.apache.commons.codec.binary.Base64;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 
@@ -143,5 +153,40 @@ public class RSAKeyfileServiceImpl implements RSAKeyfileService {
         } else {
             return expires;
         }
+    }
+    
+    @Override
+    public String getPublicKeyFromPrivateKey(String privateKeyString) throws IOException, NoSuchAlgorithmException,
+            InvalidKeySpecException {
+        Security.addProvider(new BouncyCastleProvider());
+        StringBuilder pkcs8Lines = new StringBuilder();
+        BufferedReader rdr = new BufferedReader(new StringReader(privateKeyString));
+        String line;
+        while ((line = rdr.readLine()) != null) {
+            pkcs8Lines.append(line);
+        }
+
+        // Remove the "BEGIN" and "END" lines, as well as any whitespace
+        String pkcs8Pem = pkcs8Lines.toString();
+        pkcs8Pem = pkcs8Pem.replace("-----BEGIN RSA PRIVATE KEY-----", "");
+        pkcs8Pem = pkcs8Pem.replace("-----END RSA PRIVATE KEY-----", "");
+        pkcs8Pem = pkcs8Pem.replaceAll("\\s+", "");
+
+        byte[] pkcs8EncodedBytes = new Base64().decode(pkcs8Pem);
+
+        // extract the private key
+
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(pkcs8EncodedBytes);
+        KeyFactory kf = KeyFactory.getInstance(ALGORITHM);
+        PrivateKey privateKey = kf.generatePrivate(keySpec);
+
+        RSAPrivateKeySpec priv = kf.getKeySpec(privateKey, RSAPrivateKeySpec.class);
+        RSAPublicKeySpec rsaKeySpec = new RSAPublicKeySpec(priv.getModulus(), new BigInteger("65537"));
+
+        PublicKey publicKey = kf.generatePublic(rsaKeySpec);
+
+        byte publicKeyEncoded[] = publicKey.getEncoded();
+        byte[] publicKeyEncoded64 = Base64.encodeBase64(publicKeyEncoded);
+        return new String(publicKeyEncoded64);
     }
 }

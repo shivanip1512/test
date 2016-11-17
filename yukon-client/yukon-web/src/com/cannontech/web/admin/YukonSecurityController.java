@@ -2,6 +2,12 @@ package com.cannontech.web.admin;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.security.SecureRandom;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -9,6 +15,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.StringUtils;
@@ -72,33 +79,50 @@ public class YukonSecurityController {
         public MultipartFile getFile() { return file; }
     }
 
+    private static class HoneywellFileImportBindingBean {
+        private String name = null;
+        private MultipartFile file = null;
+
+        public String getName() {
+            return name;
+        }
+
+        public void setFile(MultipartFile file) {
+            this.file = file;
+        }
+
+        public MultipartFile getFile() {
+            return file;
+        }
+    }
+
     private Validator addKeyValidator =
         new SimpleValidator<EncryptionKey>(EncryptionKey.class) {
         @Override
         public void doValidation(EncryptionKey encryptionKey, Errors errors) {
 
-            if (StringUtils.isNotEmpty(encryptionKey.getValue())) {
-                if (encryptionKey.getValue().length() != KEYHEX_DIGITS_LENGTH) {
-                    Integer [] length = {KEYHEX_DIGITS_LENGTH,encryptionKey.getValue().length()};
-                    errors.rejectValue("value", baseKey + ".errorMsg.exactLength",length,"");
+            if (StringUtils.isNotEmpty(encryptionKey.getPrivateKey())) {
+                if (encryptionKey.getPrivateKey().length() != KEYHEX_DIGITS_LENGTH) {
+                    Integer[] length = { KEYHEX_DIGITS_LENGTH, encryptionKey.getPrivateKey().length() };
+                    errors.rejectValue("privateKey", baseKey + ".errorMsg.exactLength", length, "");
                 }
 
                 Pattern lengthPattern = Pattern.compile(HEX_STRING_PATTERN);
-                YukonValidationUtils.regexCheck(errors, "value", encryptionKey.getValue(),
-                                                lengthPattern, baseKey + ".errorMsg.hexidecimal");
+                YukonValidationUtils.regexCheck(errors, "privateKey", encryptionKey.getPrivateKey(), lengthPattern,
+                    baseKey + ".errorMsg.hexidecimal");
             } else {
-                errors.rejectValue("value", baseKey + ".errorMsg.empty");
+                errors.rejectValue("privateKey", baseKey + ".errorMsg.empty");
             }
             if (StringUtils.isNotEmpty(encryptionKey.getName())) {
-                for (EncryptionKey e: encryptedRouteDao.getEncryptionKeys()) {
+                for (EncryptionKey e : encryptedRouteDao.getEncryptionKeys()) {
                     if (e.getName().equals(encryptionKey.getName())) {
                         errors.rejectValue("name", baseKey + ".errorMsg.previouslyUsedKey");
                         break;
                     }
                 }
                 if (encryptionKey.getName().length() > KEYNAME_MAX_LENGTH) {
-                    Integer [] length = {KEYNAME_MAX_LENGTH,encryptionKey.getName().length()};
-                    errors.rejectValue("name", baseKey + ".errorMsg.length",length,"");
+                    Integer[] length = { KEYNAME_MAX_LENGTH, encryptionKey.getName().length() };
+                    errors.rejectValue("name", baseKey + ".errorMsg.length", length, "");
                 }
             } else {
                 errors.rejectValue("name", baseKey + ".errorMsg.empty");
@@ -112,43 +136,43 @@ public class YukonSecurityController {
         public void doValidation(FileImportBindingBean fileImportBindingBean, Errors errors) {
 
             if (fileImportBindingBean.getName().length() > KEYNAME_MAX_LENGTH) {
-                Object [] args = {KEYNAME_MAX_LENGTH};
-                errors.rejectValue("name",baseKey + ".errorMsg.nameLength",args,"");
+                Object[] args = { KEYNAME_MAX_LENGTH };
+                errors.rejectValue("name", baseKey + ".errorMsg.nameLength", args, "");
             } else if (StringUtils.isEmpty(fileImportBindingBean.getName())) {
-                errors.rejectValue("name",baseKey + ".errorMsg.empty");
-            } else { 
-                for (EncryptionKey e: encryptedRouteDao.getEncryptionKeys()) {
+                errors.rejectValue("name", baseKey + ".errorMsg.empty");
+            } else {
+                for (EncryptionKey e : encryptedRouteDao.getEncryptionKeys()) {
                     if (e.getName().equals(fileImportBindingBean.getName())) {
-                        errors.rejectValue("name",baseKey + ".errorMsg.previouslyUsedKey");
+                        errors.rejectValue("name", baseKey + ".errorMsg.previouslyUsedKey");
                         break;
                     }
                 }
             }
 
             try {
-                if (fileImportBindingBean.getFile() == null 
-                        || StringUtils.isBlank(fileImportBindingBean.getFile().getOriginalFilename())) {
-                    errors.rejectValue("file",baseKey + ".fileUploadError.noFile");
-                } else if(fileImportBindingBean.getFile().getInputStream().available() <= 0) {
-                    errors.rejectValue("file",baseKey + ".fileUploadError.emptyFile");
-                } 
+                if (fileImportBindingBean.getFile() == null
+                    || StringUtils.isBlank(fileImportBindingBean.getFile().getOriginalFilename())) {
+                    errors.rejectValue("file", baseKey + ".fileUploadError.noFile");
+                } else if (fileImportBindingBean.getFile().getInputStream().available() <= 0) {
+                    errors.rejectValue("file", baseKey + ".fileUploadError.emptyFile");
+                }
             } catch (IOException e) {
-                errors.rejectValue("file",baseKey + ".fileUploadError.noFile");
+                errors.rejectValue("file", baseKey + ".fileUploadError.noFile");
             }
         }
     };
 
     @RequestMapping("/config/security/view")
-    public String view(HttpServletRequest request, ModelMap model, 
-                       FlashScope flashScope, YukonUserContext userContext) {
+    public String view(HttpServletRequest request, ModelMap model, FlashScope flashScope, YukonUserContext userContext) {
         model.addAttribute("showDialog", "");
-        return view(request, model, new EncryptedRoute(), new EncryptionKey(), new FileImportBindingBean(), flashScope, userContext);
+        return view(request, model, new EncryptedRoute(), new EncryptionKey(), new FileImportBindingBean(),
+            new HoneywellFileImportBindingBean(), flashScope, userContext);
     }
 
-    private String view(HttpServletRequest request, ModelMap model, 
-                       EncryptedRoute encryptedRoute, EncryptionKey encryptionKey, 
-                       FileImportBindingBean fileImportBindingBean, FlashScope flashScope,
-                       YukonUserContext userContext) {
+    private String view(HttpServletRequest request, ModelMap model, EncryptedRoute encryptedRoute,
+            EncryptionKey encryptionKey, FileImportBindingBean fileImportBindingBean,
+            HoneywellFileImportBindingBean honeywellFileImportBindingBean, FlashScope flashScope,
+            YukonUserContext userContext) {
 
         model.addAttribute("encryptedRoute", encryptedRoute);
         model.addAttribute("encryptedRoutes", encryptedRouteDao.getAllEncryptedRoutes());
@@ -158,78 +182,92 @@ public class YukonSecurityController {
         
         boolean invalidKeyFound = false;
         try {
-            char [] sharedPasskey = CryptoUtils.getSharedPasskey();
+            char[] sharedPasskey = CryptoUtils.getSharedPasskey();
             AESPasswordBasedCrypto aes = new AESPasswordBasedCrypto(sharedPasskey);
             // Check validity of each key. Making sure it decrypts with no exceptions
             boolean isValid;
             for (EncryptionKey key : encryptionKeys) {
                 try {
-                    isValid = aes.isAuthentic(Hex.decodeHex(key.getValue().toCharArray()));
+                    isValid = aes.isAuthentic(Hex.decodeHex(key.getPrivateKey().toCharArray()));
                 } catch (DecoderException e) {
                     isValid = false;
                 }
                 key.setIsValid(isValid);
                 invalidKeyFound = invalidKeyFound || !isValid;
             }
+
+            // Extract Honeywell key
+
+            EncryptionKey honeywellEncryptionKey = encryptedRouteDao.getHoneywellEncyptionKey();
+            if (honeywellEncryptionKey != null) {
+                String decryptedPublicKeyValue = new String(aes.decryptHexStr(honeywellEncryptionKey.getPublicKey()));
+                model.addAttribute("honeywellPublicKey", decryptedPublicKeyValue);
+            }
+            
+
         } catch (Exception e) {
             for (EncryptionKey key : encryptionKeys) {
                 key.setIsValid(false);
             }
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".sharedKeyFileCorrupt", e.getMessage()));
             model.addAttribute("blockingError", true);
-        } 
-        
+        }
+
         if (invalidKeyFound) {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".invalidKeyFound"));
             model.addAttribute("blockingError", true);
         }
 
-        model.addAttribute("encryptionKeys",encryptionKeys);
+        model.addAttribute("encryptionKeys", encryptionKeys);
 
         model.addAttribute("fileImportBindingBean", fileImportBindingBean);
+        model.addAttribute("honeywellFileImportBindingBean", honeywellFileImportBindingBean);
 
         return "security/view.jsp";
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/config/security/saveNewKey")
-    public String saveNewKey(HttpServletRequest request, ModelMap model,
-                             EncryptionKey encryptionKey, BindingResult bindingResult,
-                             FlashScope flashScope, YukonUserContext userContext) throws IOException, CryptoException, JDOMException, DecoderException {
+    public String saveNewKey(HttpServletRequest request, ModelMap model, EncryptionKey encryptionKey,
+            BindingResult bindingResult, FlashScope flashScope, YukonUserContext userContext) throws IOException,
+            CryptoException, JDOMException, DecoderException {
         addKeyValidator.validate(encryptionKey, bindingResult);
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("showDialog", "addKey");
-            return view(request, model, new EncryptedRoute(), encryptionKey, new FileImportBindingBean(), flashScope, userContext);
+            return view(request, model, new EncryptedRoute(), encryptionKey, new FileImportBindingBean(),
+                new HoneywellFileImportBindingBean(), flashScope, userContext);
         }
 
         char[] password = CryptoUtils.getSharedPasskey();
 
         AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
-        byte [] keyBytes = Hex.decodeHex(encryptionKey.getValue().toCharArray());
+        byte[] keyBytes = Hex.decodeHex(encryptionKey.getPrivateKey().toCharArray());
         String encryptedValue = new String(Hex.encodeHex(encrypter.encrypt(keyBytes)));
 
-        encryptedRouteDao.saveNewEncyptionKey(encryptionKey.getName(),encryptedValue);
+        encryptedRouteDao.saveNewEncyptionKey(encryptionKey.getName(), encryptedValue);
 
         return "redirect:view";
     }
 
     @RequestMapping("/config/security/remove")
     public String remove(HttpServletRequest request, ModelMap model, EncryptedRoute encryptedRoute,
-                         BindingResult bindingResult, FlashScope flashScope,
-                         YukonUserContext userContext) {
+            BindingResult bindingResult, FlashScope flashScope, YukonUserContext userContext) {
 
         List<EncryptedRoute> routes = encryptedRouteDao.getAllEncryptedRoutes();
         for (EncryptedRoute route : routes) {
             if (route.getPaobjectId().equals(encryptedRoute.getPaobjectId())) {
                 if (!route.isEncrypted()) {
                     flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".removeError.notAdded"));
-                    return view(request, model, new EncryptedRoute(), new EncryptionKey(),new FileImportBindingBean() ,flashScope , userContext);
-                } else if(!encryptedRoute.getEncryptionKeyId().equals(route.getEncryptionKeyId())) {
-                    // Trying to remove a route which showed it was added using a key. But actually added using different key.
+                    return view(request, model, new EncryptedRoute(), new EncryptionKey(), new FileImportBindingBean(),
+                        new HoneywellFileImportBindingBean(), flashScope, userContext);
+                } else if (!encryptedRoute.getEncryptionKeyId().equals(route.getEncryptionKeyId())) {
+                    // Trying to remove a route which showed it was added using a key. But actually added
+                    // using different key.
                     // So we want to inform them they are not disabling the key they thought.
-                    Object [] args = {encryptedRoute.getEncryptionKeyName(),route.getEncryptionKeyName()};
-                    flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".removeError.staleData",args));
-                    return view(request, model, new EncryptedRoute(), new EncryptionKey(),new FileImportBindingBean(),flashScope , userContext);
+                    Object[] args = { encryptedRoute.getEncryptionKeyName(), route.getEncryptionKeyName() };
+                    flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".removeError.staleData", args));
+                    return view(request, model, new EncryptedRoute(), new EncryptionKey(), new FileImportBindingBean(),
+                        new HoneywellFileImportBindingBean(), flashScope, userContext);
                 }
             }
         }
@@ -240,19 +278,20 @@ public class YukonSecurityController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/config/security/add")
     public String getRedirect(HttpServletRequest request, ModelMap model, EncryptedRoute encryptedRoute,
-                              BindingResult bindingResult, FlashScope flashScope) {
+            BindingResult bindingResult, FlashScope flashScope) {
         return "redirect:view";
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/config/security/add")
     public String add(HttpServletRequest request, ModelMap model, EncryptedRoute encryptedRoute,
-                      BindingResult bindingResult, FlashScope flashScope,
-                      YukonUserContext userContext) {
+            BindingResult bindingResult, FlashScope flashScope, YukonUserContext userContext) {
         List<EncryptedRoute> routes = encryptedRouteDao.getAllEncryptedRoutes();
         for (EncryptedRoute route : routes) {
             if (route.isEncrypted() && route.getPaobjectId().equals(encryptedRoute.getPaobjectId())) {
-                flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".addError.alreadyAdded", route.getEncryptionKeyName()));
-                return view(request, model, new EncryptedRoute(), new EncryptionKey(), new FileImportBindingBean(), flashScope, userContext);
+                flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".addError.alreadyAdded",
+                    route.getEncryptionKeyName()));
+                return view(request, model, new EncryptedRoute(), new EncryptionKey(), new FileImportBindingBean(),
+                    new HoneywellFileImportBindingBean(), flashScope, userContext);
             }
         }
         List<EncryptionKey> keys = encryptedRouteDao.getEncryptionKeys();
@@ -266,24 +305,24 @@ public class YukonSecurityController {
 
         if (!keyExists) {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".addError.invalidKey"));
-            return view(request, model, new EncryptedRoute(), new EncryptionKey(),new FileImportBindingBean(), flashScope, userContext);
+            return view(request, model, new EncryptedRoute(), new EncryptionKey(), new FileImportBindingBean(),
+                new HoneywellFileImportBindingBean(), flashScope, userContext);
         }
 
         encryptedRouteDao.addEncryptedRoute(encryptedRoute);
         return "redirect:view";
     }
 
-
     @RequestMapping(method = RequestMethod.POST, value = "/config/security/deleteKey")
-    public String deleteKey(HttpServletRequest request, ModelMap model, 
-                            FlashScope flashScope, Integer encryptionKeyId,
-                            YukonUserContext userContext) {
+    public String deleteKey(HttpServletRequest request, ModelMap model, FlashScope flashScope, Integer encryptionKeyId,
+            YukonUserContext userContext) {
         // Check to make sure key isn't being used before we delete it
         for (EncryptedRoute e : encryptedRouteDao.getAllEncryptedRoutes()) {
-            if (e.getEncryptionKeyId()!= null && e.getEncryptionKeyId().equals(encryptionKeyId)) {
-                Object[] args = {e.getEncryptionKeyName(),e.getPaoName()};
-                flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".errorMsg.keyInUse",args));
-                return view(request, model, new EncryptedRoute(), new EncryptionKey(),new FileImportBindingBean(), flashScope, userContext);
+            if (e.getEncryptionKeyId() != null && e.getEncryptionKeyId().equals(encryptionKeyId)) {
+                Object[] args = { e.getEncryptionKeyName(), e.getPaoName() };
+                flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".errorMsg.keyInUse", args));
+                return view(request, model, new EncryptedRoute(), new EncryptionKey(), new FileImportBindingBean(),
+                    new HoneywellFileImportBindingBean(), flashScope, userContext);
             }
         }
 
@@ -293,28 +332,72 @@ public class YukonSecurityController {
     }
 
     @RequestMapping(value = "/config/security/getPublicKey")
-    @ResponseBody 
-    public Map<String, Object> getPublicKey(HttpServletRequest request, boolean generateNewKey, YukonUserContext userContext) 
-                throws CryptoException {
-        if(generateNewKey) {
+    @ResponseBody
+    public Map<String, Object> getPublicKey(HttpServletRequest request, boolean generateNewKey,
+            YukonUserContext userContext) throws CryptoException {
+        if (generateNewKey) {
             rsaKeyfileService.generateNewKeyPair();
         }
 
         Map<String, Object> publicKeyJsonObj = Maps.newHashMapWithExpectedSize(4);
         publicKeyJsonObj.put("isExpired", rsaKeyfileService.isKeyPairExpired());
         publicKeyJsonObj.put("doesExist", rsaKeyfileService.doesKeyPairExist());
-        String expiration = dateFormattingService.format(rsaKeyfileService.getExpiration(),
-                                                         DateFormattingService.DateFormatEnum.DATE, userContext);
-        expiration += " " +  dateFormattingService.format(rsaKeyfileService.getExpiration(),
-                                                    DateFormattingService.DateFormatEnum.TIME, userContext);
+        String expiration =
+            dateFormattingService.format(rsaKeyfileService.getExpiration(), DateFormattingService.DateFormatEnum.DATE,
+                userContext);
+        expiration +=
+            " "
+                + dateFormattingService.format(rsaKeyfileService.getExpiration(),
+                    DateFormattingService.DateFormatEnum.TIME, userContext);
         publicKeyJsonObj.put("expiration", expiration);
         String publicKey = null;
         if (rsaKeyfileService.doesKeyPairExist()) {
             publicKey = new String(Hex.encodeHex(rsaKeyfileService.getPublicKey().getEncoded()));
         }
-        publicKeyJsonObj.put("publicKey",publicKey);
+        publicKeyJsonObj.put("publicKey", publicKey);
 
         return publicKeyJsonObj;
+    }
+
+    @RequestMapping(method = RequestMethod.GET, value = "/config/security/getHoneywellPublicKey")
+    @ResponseBody
+    public Map<String, Object> getHoneywellPublicKey() throws CryptoException {
+        Map<String, Object> json = new HashMap<>();
+
+        try {
+            char[] password = CryptoUtils.getSharedPasskey();
+            AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
+            // GENERATE THE PUBLIC/PRIVATE RSA KEY PAIR
+            KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+            keyPairGenerator.initialize(1024, new SecureRandom());
+
+            java.security.KeyPair keyPair = keyPairGenerator.generateKeyPair();
+            PublicKey publicKey = keyPair.getPublic();
+
+            byte publicKeyEncoded[] = publicKey.getEncoded();
+            byte[] publicKeyEncoded64 = Base64.encodeBase64(publicKeyEncoded);
+            String publicStringKey = new String(publicKeyEncoded64);
+
+            String encryptedpublicKeyValue = new String(Hex.encodeHex(encrypter.encrypt(publicStringKey.getBytes())));
+
+            PrivateKey privateKey = keyPair.getPrivate();
+
+            byte privateKeyEncoded[] = privateKey.getEncoded();
+            byte[] privateKeyEncoded64 = Base64.encodeBase64(privateKeyEncoded);
+            String privateStringKey = new String(privateKeyEncoded64);
+
+            String encryptedPrivateKeyValue = new String(Hex.encodeHex(encrypter.encrypt(privateStringKey.getBytes())));
+
+            encryptedRouteDao.saveNewHoneywellEncyptionKey(encryptedPrivateKeyValue, encryptedpublicKeyValue);
+            json.put("honeywellPublicKey", publicStringKey);
+
+        } catch (Exception ex) {
+            log.error(ex);
+            json.put("hasError", true);
+        }
+
+        return json;
+
     }
 
     @RequestMapping(method = RequestMethod.POST, value = "/config/security/importKeyFile")
@@ -323,7 +406,7 @@ public class YukonSecurityController {
                                 YukonUserContext userContext) {
         if (!ServletFileUpload.isMultipartContent(request)) {
             model.addAttribute("showDialog", "importKey");
-            return view(request, model, new EncryptedRoute(), new EncryptionKey(), fileImportBindingBean,flashScope, userContext);     
+            return view(request, model, new EncryptedRoute(), new EncryptionKey(), fileImportBindingBean, new HoneywellFileImportBindingBean(), flashScope, userContext);     
         }
 
         MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
@@ -334,13 +417,13 @@ public class YukonSecurityController {
 
         if (bindingResult.hasErrors()) {
             model.addAttribute("showDialog", "importKey");
-            return view(request, model, new EncryptedRoute(), new EncryptionKey() ,fileImportBindingBean, flashScope, userContext);
+            return view(request, model, new EncryptedRoute(), new EncryptionKey() ,fileImportBindingBean, new HoneywellFileImportBindingBean(), flashScope, userContext);
         }
 
         boolean success = handleUploadedFile(fileImportBindingBean, flashScope);
         if (!success) {
             model.addAttribute("showDialog", "importKey");
-            return view(request, model, new EncryptedRoute(), new EncryptionKey(),fileImportBindingBean, flashScope, userContext); 
+            return view(request, model, new EncryptedRoute(), new EncryptionKey(),fileImportBindingBean, new HoneywellFileImportBindingBean(), flashScope, userContext); 
         }
 
         return "redirect:view";
@@ -360,8 +443,9 @@ public class YukonSecurityController {
                 char[] sharedPassword = CryptoUtils.getSharedPasskey();
                 byte[] encryptedData = new AESPasswordBasedCrypto(sharedPassword).encrypt(bytes);
                 String encryptedValue = new String(Hex.encodeHex(encryptedData));
-                encryptedRouteDao.saveNewEncyptionKey(fileImportBindingBean.getName(),encryptedValue);
-                flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".fileUploadSuccess", fileImportBindingBean.getName()));
+                encryptedRouteDao.saveNewEncyptionKey(fileImportBindingBean.getName(), encryptedValue);
+                flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".fileUploadSuccess",
+                    fileImportBindingBean.getName()));
                 success = true;
             } catch (IOException e) {
                 log.error("File not found or other IO error", e);
@@ -372,9 +456,64 @@ public class YukonSecurityController {
             } catch (JDOMException e) {
                 log.error("Unable to properly read file", e);
                 flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
-            } 
+            }
         }
         return success;
     }
-    
+
+    @RequestMapping(method = RequestMethod.POST, value = "/config/security/importHoneywellKeyFile")
+    public String importHoneywellKeyFile(HttpServletRequest request, ModelMap model,
+            HoneywellFileImportBindingBean honeywellFileImportBindingBean, BindingResult bindingResult,
+            FlashScope flashScope, YukonUserContext userContext) {
+
+        MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
+        MultipartFile dataFile = mRequest.getFile(StringUtils.defaultIfEmpty(null, "keyFile"));
+        honeywellFileImportBindingBean.setFile(dataFile);
+        boolean success = handleHoneywellUploadedFile(honeywellFileImportBindingBean, flashScope);
+        if (!success) {
+            log.info("Import for Honeywell Key file failed.");
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
+        }
+        return "redirect:view";
+    }
+
+    private boolean handleHoneywellUploadedFile(HoneywellFileImportBindingBean fileImportBindingBean,
+            FlashScope flashScope) {
+        boolean success = false;
+
+        try {
+            char[] password = CryptoUtils.getSharedPasskey();
+            AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
+            byte[] privatekeyBytes = fileImportBindingBean.getFile().getBytes();
+            String encryptedPrivateKeyValue = new String(Hex.encodeHex(encrypter.encrypt(privatekeyBytes)));
+
+            String decryptedPrivateKeyString = new String(encrypter.decryptHexStr(encryptedPrivateKeyValue));
+
+            String publicKeyString = rsaKeyfileService.getPublicKeyFromPrivateKey(decryptedPrivateKeyString);
+
+            String encryptedpublicKeyValue = new String(Hex.encodeHex(encrypter.encrypt(publicKeyString.getBytes())));
+
+            encryptedRouteDao.saveNewHoneywellEncyptionKey(encryptedPrivateKeyValue, encryptedpublicKeyValue);
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".fileUploadSuccess",
+                "Honeywell"));
+            success = true;
+        } catch (IOException e) {
+            log.error("File not found or other IO error", e);
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
+        } catch (CryptoException e) {
+            log.error("Unable to decrypt file", e);
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unableToDecryptFile"));
+        } catch (JDOMException e) {
+            log.error("Unable to properly read file", e);
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
+        } catch (DecoderException e) {
+            log.error("Unable Decode", e);
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
+        } catch (GeneralSecurityException e) {
+            log.error("General security error", e);
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
+        }
+        return success;
+    }
+
 }

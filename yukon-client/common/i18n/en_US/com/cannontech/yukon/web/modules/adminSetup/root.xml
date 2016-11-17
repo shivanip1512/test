@@ -136,6 +136,11 @@
     
     <entry key="yukon.web.modules.adminSetup.security.pageName">Security</entry>
     <entry key="yukon.web.modules.adminSetup.security.keyBox.title">Encryption Keys</entry>
+    <entry key="yukon.web.modules.adminSetup.security.honeywellKeyBox.title">Honeywell Encryption Keys</entry>
+    <entry key="yukon.web.modules.adminSetup.security.honeywellKeyBox.helpText"><![CDATA[Honeywell Encryption Keys allows a user to either import a private key(1024 bit) or generate a new one.
+    <br><br><b>Note:After generating a new Key you need to share it with honeywell and DR functionality in Yukon would work only after it has been updated at their end.</b>
+    ]]></entry>
+    
     <entry key="yukon.web.modules.adminSetup.security.routesBox.title">Encrypted Routes</entry>
     
     <entry key="yukon.web.modules.adminSetup.security.deleteKeyBtnTitle">Delete Key</entry>
@@ -146,7 +151,12 @@
     
     <entry key="yukon.web.modules.adminSetup.security.importKeyFileDialog.title">Import Keyfile</entry>
     <entry key="yukon.web.modules.adminSetup.security.importKeyFileBtn.label">Import Keyfile</entry>
+    <entry key="yukon.web.modules.adminSetup.security.generateHonewellKeyFileBtn.label">Generate New Key</entry>
    
+    <entry key="yukon.web.modules.adminSetup.security.importHoneywellKeyFileDialog.title">Import Honeywell Keyfile</entry>
+    <entry key="yukon.web.modules.adminSetup.security.copyBtn.label">Copy Public Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.copyBtn.title">Copy Public Key</entry>
+    
     <entry key="yukon.web.modules.adminSetup.security.viewPublicKeyBtn.label">View Public Key</entry>
     <entry key="yukon.web.modules.adminSetup.security.viewPublicKeyDialog.title">View Public Key</entry>
    
@@ -161,6 +171,7 @@
     <entry key="yukon.web.modules.adminSetup.security.importKeyFile">Import Keyfile</entry>
     <entry key="yukon.web.modules.adminSetup.security.keyName">Key Name</entry>
     <entry key="yukon.web.modules.adminSetup.security.noKeysAvailable">No encryption keys available</entry>
+    <entry key="yukon.web.modules.adminSetup.security.noHoneywellKeysAvailable">No Honeywell encryption keys available</entry>
     <entry key="yukon.web.modules.adminSetup.security.currentPublicKey">Current Public Key:</entry>
     <entry key="yukon.web.modules.adminSetup.security.expires">Expires:</entry>
     <entry key="yukon.web.modules.adminSetup.security.status">Status</entry>
@@ -173,6 +184,7 @@
     <entry key="yukon.web.modules.adminSetup.security.publicKey.noKeyExists">No public key has been created yet.</entry>
     <entry key="yukon.web.modules.adminSetup.security.publicKey.keyExpired">The stored public key has expired. Please generate a new one.</entry>
     <entry key="yukon.web.modules.adminSetup.security.publicKey.keyGenerationFailed">New public key generation failed. Check logs for more information.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.honeywellPublicKey.notCreated">Honeywell Key could not be created.</entry>
         
     <entry key="yukon.web.modules.adminSetup.security.addError.alreadyAdded">Encrypted route is already added using key {0}.</entry>
     <entry key="yukon.web.modules.adminSetup.security.addError.invalidKey">Cannot enable because the key no longer exists.</entry>
@@ -205,6 +217,11 @@
     
     <entry key="yukon.web.modules.adminSetup.security.confirmDelete.title">Confirm Delete</entry>
     <entry key="yukon.web.modules.adminSetup.security.confirmDelete.message">Are you sure you want to delete key ''{0}''?</entry>
+    
+    <entry key="yukon.web.modules.adminSetup.security.confirmGenerate.title">Confirm Generate Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.confirmGenerate.message"><![CDATA[Are you sure you want to generate a new Honeywell key?
+    <br><br><b>Note:After generating a new Key you need to share it with honeywell and DR functionality in Yukon would work only after it has been updated at their end.</b>
+    ]]></entry>
     
     <!-- jobs/active.jsp --> 
     <entry key="yukon.web.modules.adminSetup.jobsscheduler.active.pageName">Active Jobs</entry>

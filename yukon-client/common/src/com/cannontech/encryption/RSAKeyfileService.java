@@ -1,7 +1,10 @@
 package com.cannontech.encryption;
 
 import java.io.File;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 
 import org.joda.time.Instant;
 
@@ -23,4 +26,10 @@ public interface RSAKeyfileService {
     boolean doesKeyPairExist();
     
     boolean isKeyPairExpired();
+
+    /**
+     * Creates a public key String from the given private Key.
+     */
+    String getPublicKeyFromPrivateKey(String privateKeyString) throws IOException, NoSuchAlgorithmException,
+            InvalidKeySpecException;
 }

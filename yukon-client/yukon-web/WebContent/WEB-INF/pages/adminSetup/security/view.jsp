@@ -18,7 +18,11 @@
             </div>
         </div>
     </div>
-
+	
+	<div id="honeywellPublicKeyStatus">
+		<tags:alertBox key='.honeywellPublicKey.notCreated'/>
+	</div>
+	
     <d:inline nameKey="addKeyDialog" okEvent="addKeyFormSubmit" on="#addNewKeyBtn">
         <tags:nameValueContainer2>
             <form:form method="POST" commandName="encryptionKey" action="saveNewKey" autocomplete="off">
@@ -28,7 +32,7 @@
                     <tags:input path="name" size="30" />
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".key">
-                    <tags:input path="value" size="30" />
+                    <tags:input path="privateKey" size="30" />
                 </tags:nameValue2>
             </form:form>
         </tags:nameValueContainer2>
@@ -49,6 +53,19 @@
             </form:form>
         </tags:nameValueContainer2>
     </d:inline>
+    
+    <d:inline nameKey="importHoneywellKeyFileDialog" okEvent="importHoneywellKeyFileFormSubmit" on="#importHoneywellKeyFileBtn">
+        <tags:nameValueContainer2>
+            <form:form method="POST" commandName="honeywellFileImportBindingBean" action="importHoneywellKeyFile" autocomplete="off" enctype="multipart/form-data">
+                <cti:csrfToken/>
+                <tags:nameValue2 nameKey=".importKeyFile">
+                    <tags:bind path="file">
+                        <tags:file name="keyFile"/>
+                    </tags:bind>
+                </tags:nameValue2>
+            </form:form>
+        </tags:nameValueContainer2>
+    </d:inline> 
     
     <d:inline nameKey="viewPublicKeyDialog" okEvent="none" 
         on="#viewPublicKeyBtn" options="{width: 600, 'buttons': [{text: 'Generate New Key', 'class': 'js-blocker2', click: function() { loadPublicKey(true);}},
@@ -197,12 +214,33 @@
                     <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  classes="js-blocker2" />
                 </div>
             </tags:boxContainer2>
+             <tags:boxContainer2 nameKey="honeywellKeyBox" styleClass="largeContainer">
+              <d:confirm on="#generateHonewellKeyFileBtn" nameKey="confirmGenerate" argument="Honeywell Key"/>
+                <c:choose>
+                      <c:when test="${fn:length(honeywellPublicKey) <= 0}">
+                            <i:inline key=".noKeysAvailable" />
+                      </c:when>
+                      <c:otherwise>
+                          <div id="honeywellPublicKeyText">
+            		          <p><i:inline key=".currentPublicKey" /></p>
+            		                 <textarea id="honeywellPublicKeyTextArea" rows="17" cols="60" 
+                		              readonly="readonly">${honeywellPublicKey}</textarea>
+        		          </div>
+                      </c:otherwise>
+                </c:choose>
+                
+                <div class="page-action-area">
+                    <cti:button id="generateHonewellKeyFileBtn" nameKey="generateHonewellKeyFileBtn" />
+                    <cti:button id="importHoneywellKeyFileBtn" nameKey="importKeyFileBtn" />
+                    <cti:button id="copyBtn" nameKey="copyBtn" />
+                </div>
+            </tags:boxContainer2>
         </div>
     </div>
     
     <script type="text/javascript">
     $(function(){
-        
+    	$('#honeywellPublicKeyStatus').hide();
         if ("${showDialog}" == "addKey") {
             $('#addNewKeyBtn').trigger($.Event("click")); // Opens up addKey Dialog
         } else if ("${showDialog}" == "importKey") {
@@ -218,6 +256,11 @@
     
     $("#viewPublicKeyBtn").click(function() {
         loadPublicKey(false);
+    });
+    
+    $("#copyBtn").click(function() {
+    	 $("#honeywellPublicKeyTextArea").select();
+    	    document.execCommand('copy');
     });
     
     function loadPublicKey(generateNewKey) {
@@ -251,6 +294,21 @@
         });
     }
     
+    $(document).on("yukon.dialog.confirm.ok", function(event) {
+    	$.ajax({ 
+            url: "getHoneywellPublicKey", 
+            type: "GET",
+        }).done(function(data) {
+        	if ( $( "#honeywellPublicKeyTextArea" ).length ){
+        		$("#honeywellPublicKeyTextArea").val(data.honeywellPublicKey);
+        	}else{
+        		location.reload(true);
+        	}
+        }).fail(function(data) {
+        	$('#honeywellPublicKeyStatus').show();
+    	});
+    });
+    
     $(document).on('addKeyFormSubmit', function(event) {
         yukon.ui.blockPage();
         $('#encryptionKey').submit();
@@ -259,6 +317,11 @@
     $(document).on('importKeyFileFormSubmit', function(event) {
         yukon.ui.blockPage();
         $('#fileImportBindingBean').submit();
+    });
+    
+    $(document).on('importHoneywellKeyFileFormSubmit', function(event) {
+        yukon.ui.blockPage();
+        $('#honeywellFileImportBindingBean').submit();
     });
     
     </script>
