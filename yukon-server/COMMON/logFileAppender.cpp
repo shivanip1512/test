@@ -398,19 +398,24 @@ void LogFileAppender::cleanupOldFiles() const
 }
 } // namespace Cti::Logging
 
+/**
+ *  Dummy class to register an appender for log4cxx.
+ */
+
 using namespace log4cxx;
 using namespace log4cxx::helpers;
 
-  // Register this class with log4cxx
+// Register this class with log4cxx
 IMPLEMENT_LOG4CXX_OBJECT(ServerFileAppender)
-ServerFileAppender::ServerFileAppender() {}
 
+ServerFileAppender::ServerFileAppender() {}
 ServerFileAppender::~ServerFileAppender() {}
 
+/** 
+  * This is where our logging will happen, eventually.
+  */
 void ServerFileAppender::append(const spi::LoggingEventPtr& event, Pool& p)
-{
-
-}
+{}
 
 void ServerFileAppender::close()
 {
@@ -418,10 +423,12 @@ void ServerFileAppender::close()
     {
         return;
     }
-
     this->closed = true;
 }
 
+/**
+  *  Capture the maxfilesizestring from the config file.
+  */
 void ServerFileAppender::setOption(const LogString &option, const LogString &value)
 {
     if (log4cxx::helpers::StringHelper::equalsIgnoreCase(option,
@@ -431,6 +438,9 @@ void ServerFileAppender::setOption(const LogString &option, const LogString &val
     }
 }
 
+/**
+  *  Getter for the maxfilesizestring from the config file.
+  */
 size_t ServerFileAppender::getMaxFileSize()
 {
     return maxFileSize;
