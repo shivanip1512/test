@@ -71,7 +71,7 @@ public:
     void setToStdOut      (const bool toStdout);
     void setRetentionDays (const unsigned long days);
     void setOutputFormat  (const LogFormats format);
-    void setMaxFileSize       (const size_t maxFileSize);
+    void setMaxFileSize   (const size_t maxFileSize);
     void start();
 
     static void refresh();
