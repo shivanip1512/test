@@ -683,7 +683,7 @@ void CtiRouteManager::refreshRouteEncryptionKeys( const Cti::Database::id_set & 
 
     // reload keys from db
 
-    std::string sql =   "SELECT Y.PAObjectID, E.Name, E.Value "
+    std::string sql =   "SELECT Y.PAObjectID, E.Name, E.PrivateKey "
                         "FROM   EncryptionKey E JOIN YukonPAObjectEncryptionKey Y ON E.EncryptionKeyId = Y.EncryptionKeyId "
                         "WHERE " + Cti::Database::createIdInClause( "Y", "PAObjectID", paoids.size() );
 
@@ -713,7 +713,7 @@ void CtiRouteManager::refreshRouteEncryptionKeys( const Cti::Database::id_set & 
 
             rdr[ "PAObjectID" ] >> paoId;
             rdr[ "Name" ]       >> name;
-            rdr[ "Value" ]      >> encryptedKey;
+            rdr[ "PrivateKey" ] >> encryptedKey;
 
             CtiRouteManager::ptr_type route = getRouteById( paoId );
 
