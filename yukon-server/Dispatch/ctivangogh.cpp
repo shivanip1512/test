@@ -353,13 +353,13 @@ void CtiVanGogh::VGMainThread()
                 case MSG_PCRETURN:
                 case MSG_MULTI:
                     {
-                        int increment = ((CtiMultiMsg*)MsgPtr)->getCount();
+                        int msgCount = ((CtiMultiMsg*)MsgPtr)->getCount();
 
-                        mc.increment(increment);
+                        mc.increment(msgCount);
 
-                        if(increment > 1000)
+                        if(msgCount > 1000)
                         {
-                            CTILOG_INFO(dout, "LARGE MULTI: submessages to process "<< increment <<" from " << MsgPtr->getSource() <<" "<< MsgPtr->getUser());
+                            CTILOG_INFO(dout, "LARGE MULTI: submessages to process "<< msgCount <<" from " << MsgPtr->getSource() <<" "<< MsgPtr->getUser());
                         }
                         break;
                     }
