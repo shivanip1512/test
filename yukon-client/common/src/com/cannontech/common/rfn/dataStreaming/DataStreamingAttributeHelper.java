@@ -48,6 +48,13 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DEMAND,           //metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 ),
+        //C2SX
+        RFN_420CD(PaoType.RFN420CD, 
+                BuiltInAttribute.DELIVERED_KWH,   //metric 1
+                BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DEMAND,           //metric 5
+                BuiltInAttribute.VOLTAGE          //metric 115
+                ),
         //Focus AXD
         RFN_420FX(PaoType.RFN420FX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
@@ -101,8 +108,22 @@ public class DataStreamingAttributeHelper {
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
                 ),
-        //FocuskWh
+        //FocuskWh (as 410FL)
         RFN_410FL(PaoType.RFN410FL,
+                BuiltInAttribute.DELIVERED_KWH,   //metric 1
+                BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DEMAND,           //metric 5
+                BuiltInAttribute.VOLTAGE         //metric 115
+                ),
+        //FocuskWh (as 420FL)
+        RFN_420FL(PaoType.RFN420FL,
+                BuiltInAttribute.DELIVERED_KWH,   //metric 1
+                BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DEMAND,           //metric 5
+                BuiltInAttribute.VOLTAGE         //metric 115
+                ),
+        //FocuskWh (as 420FD)
+        RFN_420FD(PaoType.RFN420FD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,           //metric 5
