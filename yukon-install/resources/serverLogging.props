@@ -1,0 +1,10 @@
+# root logger
+log4j.debug=999
+log4j.rootLogger=INFO, serverFileAppender
+
+# appenders
+# Custom appender for Yukon. Adjust maximum file size by setting maxFileSizeString
+# Possible values: 1gb, 1000MB, 1000000B or 10000000 
+  
+log4j.appender.serverFileAppender=ServerFileAppender
+log4j.appender.serverFileAppender.maxFileSizeString=512kb
