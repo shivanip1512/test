@@ -20,4 +20,11 @@ public interface HoneywellWifiThermostatDao {
      * @throws NotFoundException if there is no device with the specified MAC ID.
      */
     PaoIdentifier getPaoIdentifierByMacId(String macId) throws NotFoundException;
+    
+    /**
+     * @param  Group id in yukon
+     * @return Group id to send to honeywell
+     * @throws NotFoundException if there is no group with the specified group id.
+     */
+    int getHoneywellGroupId(int groupId) throws NotFoundException;
 }

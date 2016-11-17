@@ -375,5 +375,8 @@
       <sequence name="DataStreaming">
         <table name="DataStreaming" identitycolumn="requestSeqNumber"/>
       </sequence>
+      <sequence name="HoneywellDREvent">
+        <table name="HoneywellDREvent" identitycolumn="eventId"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

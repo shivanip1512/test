@@ -130,6 +130,8 @@
                 <constructor-arg ref="proxyAwareSimpleClientHttpRequestFactory"/>
                 <property name="messageConverters">
                     <list>
+                        <bean class = "org.springframework.http.converter.StringHttpMessageConverter"/>
+                        <bean class="org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter"/>
                         <ref bean="jacksonHttpMessageConverter"/>
                     </list>
                 </property>

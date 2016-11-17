@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
@@ -36,11 +35,16 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.dr.honeywell.HoneywellCommunicationException;
+import com.cannontech.dr.honeywell.message.DREventRequest;
+import com.cannontech.dr.honeywell.message.DutyCyclePeriod;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.dr.honeywellWifi.model.HoneywellWifiDutyCycleDrParameters;
+import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
 
 public class HoneywellCommunicationServiceImpl implements HoneywellCommunicationService {
@@ -49,12 +53,13 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
     @Autowired private @Qualifier("honeywell") RestOperations restTemplate;
     @Autowired private GlobalSettingDao settingDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private HoneywellWifiThermostatDao honeywellDao;
 
     private static final String createDREventGroupUrlPart = "webapi/api/drEventGroups/";
     private static final String cancelDREventForDevicesUrlPart = "api/drEvents/optout/";
     private static final String removeDeviceFromDRGroupUrlPart = "api/drEventGroups/";
-
+    private static final String drEventForGroupUrlPart = "WebAPI/api/drEvents";
+    
     private static final String CONTENT_TYPE = "application/json";
     // TODO:Needs to be removed after YUK-15886 is fixed.
     private static final String PRIVATE_RSA_KEY = "MIICXAIBAAKBgQCLkrVLUxQXnkHCWexPkKj0VRkkz3TYxsI8MNEWXptkAp/ksjLv\n"
@@ -83,12 +88,12 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                 body.add("thermostatIds", thermostatId.toArray());
 
                 HttpEntity<?> requestEntity =
-                    new HttpEntity<Object>(body, getHttpHeaders(url, HttpMethod.PUT, body.toString().getBytes("UTF-8")));
+                    new HttpEntity<Object>(body, getHttpHeaders(url, HttpMethod.PUT, body.toString()));
 
                 HttpEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, String.class);
 
             }
-        } catch (RestClientException | UnsupportedEncodingException ex) {
+        } catch (RestClientException ex) {
             log.error("Add devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
         }
@@ -105,11 +110,11 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
 
             HttpEntity<?> requestEntity =
-                new HttpEntity<Object>(body, getHttpHeaders(url, HttpMethod.POST, body.toString().getBytes("UTF-8")));
+                new HttpEntity<Object>(body, getHttpHeaders(url, HttpMethod.POST, body.toString()));
 
             HttpEntity<String> response =
                 restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity, String.class);
-        } catch (RestClientException | UnsupportedEncodingException ex) {
+        } catch (RestClientException ex) {
             log.error("Cancel DR event for devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
         }
@@ -124,29 +129,98 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             body.add("deviceIds", thermostatIds.toArray());
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
             HttpEntity<?> requestEntity =
-                new HttpEntity<Object>(body, getHttpHeaders(url, HttpMethod.PUT, body.toString().getBytes("UTF-8")));
+                new HttpEntity<Object>(body, getHttpHeaders(url, HttpMethod.PUT, body.toString()));
 
             HttpEntity<String> response =
                 restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.PUT, requestEntity, String.class);
-        } catch (RestClientException | UnsupportedEncodingException ex) {
+        } catch (RestClientException ex) {
             log.error("Removing devices from DR group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
         }
     }
 
-    private HttpHeaders getHttpHeaders(String url, HttpMethod httpMethod, byte[] body) {
+    @Override
+    public void sendDREventForGroup(HoneywellWifiDutyCycleDrParameters parameters) {
+        log.debug("Sending DR event for group " + parameters.getGroupId());
+        try {
+
+            int honeywellGroupId = honeywellDao.getHoneywellGroupId(parameters.getGroupId());
+            String url = getUrlBase() + drEventForGroupUrlPart + "?groupId=" + honeywellGroupId;
+
+            DREventRequest request = new DREventRequest(parameters.getEventId(),
+                                                        parameters.getStartTime(),
+                                                        Boolean.FALSE,
+                                                        parameters.getRandomizationInterval(),
+                                                        DutyCyclePeriod.HALFHOUR,
+                                                        1,
+                                                        parameters.getDutyCyclePercent(),
+                                                        parameters.getDurationSeconds());
+
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+            HttpEntity<?> requestEntity = new HttpEntity<Object>(request,
+                                                                 getHttpHeaders(url,
+                                                                                HttpMethod.POST,
+                                                                                JsonUtils.toJson(request)));
+
+            if (log.isDebugEnabled()) {
+                try {
+                    log.debug("Sending honeywell duty cycle DR:");
+                    log.debug("Headers: " + requestEntity.getHeaders());
+                    log.debug("Body: " + JsonUtils.toJson(request));
+                } catch (JsonProcessingException e) {
+                    log.warn("Error parsing json in debug.", e);
+                }
+            }
+
+            HttpEntity<String> response = restTemplate.exchange(builder.build().encode().toUri(),
+                                                                HttpMethod.POST,
+                                                                requestEntity,
+                                                                String.class);
+            log.info(response);
+        } catch (RestClientException | JsonProcessingException ex) {
+            log.error("Send DR event for group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellCommunicationException("Unable to send DR . Message: \"" + ex.getMessage() + "\".");
+        }
+    }
+
+    @Override
+    public void cancelDREventForGroup(int groupId, int eventId, boolean immediateCancel) {
+        log.debug("Sending cancel DR event for group " + groupId);
+        try {
+            int honeywellGroupId = honeywellDao.getHoneywellGroupId(groupId);
+            String url = getUrlBase() + drEventForGroupUrlPart + "/optout/" + eventId + "/" + immediateCancel + "?groupId=" + honeywellGroupId;
+
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+
+            HttpEntity<?> requestEntity = new HttpEntity<Object>(getHttpHeaders(url,
+                                                                                HttpMethod.POST,
+                                                                                null));
+
+            HttpEntity<String> response = restTemplate.exchange(builder.build().encode().toUri(),
+                                                                HttpMethod.POST,
+                                                                requestEntity,
+                                                                String.class);
+            log.info(response);
+        } catch (RestClientException ex) {
+            log.error("Send cancel DR event for group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellCommunicationException("Unable to send DR . Message: \"" + ex.getMessage() + "\".");
+        }
+    }
+    
+    private HttpHeaders getHttpHeaders(String url, HttpMethod httpMethod, String body) {
+
         TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
         Date date = new Date();
         SimpleDateFormat simFormatter = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z");
         String formattedDate = simFormatter.format(date);
+        
         HttpHeaders newheaders = new HttpHeaders();
         newheaders.add("Content-Hash", "sha1 " + getSignedContent(formattedDate, url, httpMethod, body));
         newheaders.add("Date", formattedDate);
-        newheaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         return newheaders;
     }
 
-    private String getSignedContent(String formattedDate, String url, HttpMethod httpMethod, byte[] body) {
+    private String getSignedContent(String formattedDate, String url, HttpMethod httpMethod, String body) {
         String signedContent = null;
         try {
             byte[] encoded = new Base64().decode(PRIVATE_RSA_KEY);
@@ -173,17 +247,19 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
              * 20:45:30 GMT).
              * 2.5 Canonized request URL.
              */
-
             String signatureData = httpMethod.toString() + "\n";
 
             if (body == null) {
                 signatureData += "\n";
             } else {
-                MessageDigest digest = MessageDigest.getInstance("SHA-256");
-                byte[] hash = digest.digest(body);
-                signatureData += new Base64().encodeToString(hash) + "\n" + CONTENT_TYPE;
-            }
+                MessageDigest md = MessageDigest.getInstance("SHA-256");
+                md.update(body.getBytes("UTF-8"));
+                byte[] aMessageDigest = md.digest();
+                String base64String = new String(Base64.encodeBase64(aMessageDigest));
 
+                signatureData += base64String + "\n" + "application/json";
+
+            }
             signatureData += "\n" + formattedDate + "\n" + cannonizedURL;
 
             // Step 3: take UTF8 encoded signature data string from Step 2 ,compute its hash value using SHA1
@@ -200,11 +276,11 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             signature.update(utf8EncodedSignatureData.getBytes());
 
             signedContent = new Base64().encodeToString(signature.sign());
-        } catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | UnsupportedEncodingException
-            | InvalidKeySpecException e) {
-            log.error("Request signing for Honeywell failed with message: \"" + e.getMessage() + "\".");
-            throw new HoneywellCommunicationException("Unable to communicate with Honeywell API.", e);
-        }
+        }  catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | UnsupportedEncodingException
+                | InvalidKeySpecException e) {
+                log.error("Request signing for Honeywell failed with message: \"" + e.getMessage() + "\".");
+                throw new HoneywellCommunicationException("Unable to communicate with Honeywell API.", e);
+            }
         return signedContent;
     }
 
@@ -220,13 +296,16 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                 String args3[] = query.split("&");
                 List<String> parameters = Arrays.asList(args3);
                 Collections.sort(parameters);
+                int paramsLeft = parameters.size();
                 for (String param : parameters) {
-                    cannonizedStr += param.replace('=', ':') + "\n";
+                    paramsLeft--;
+                    cannonizedStr += param.replace('=', ':');
+                    if (paramsLeft > 0)
+                        cannonizedStr += cannonizedStr + "\n";
                 }
             }
         } catch (MalformedURLException e) {
-            log.error("Could not cannonize url for Honeywell \"" + e.getMessage() + "\".");
-            throw new HoneywellCommunicationException("Unable to communicate with Honeywell API.", e);
+            e.printStackTrace();
         }
         return cannonizedStr;
     }

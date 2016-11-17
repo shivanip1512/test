@@ -70,10 +70,14 @@ public class HoneywellRestProxyFactory {
             Object arg = args[i];
             if (arg instanceof HttpEntity) {
                 Object httpBody = ((HttpEntity<?>) arg).getBody();
+                HttpHeaders httpheaders = ((HttpEntity<?>) arg).getHeaders();
 
                 HttpHeaders headers = new HttpHeaders();
                 headers.add("Authorization", "Bearer " + getAuthenticationToken());
+                headers.add("Content-Hash", httpheaders.get("Content-Hash").get(0));
+                headers.add("Date", httpheaders.get("Date").get(0));
                 headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+                headers.setContentType(MediaType.APPLICATION_JSON);
                 args[i] = new HttpEntity<>(httpBody, headers);
             }
         }
@@ -103,7 +107,7 @@ public class HoneywellRestProxyFactory {
         log.debug("Attempting login with userName " + plainClientId + " URL: " + url);
         TokenResponse response;
         try {
-            response = proxiedTemplate.postForObject(urlBase, requestEntity, TokenResponse.class);
+            response = proxiedTemplate.postForObject(url, requestEntity, TokenResponse.class);
         } catch (RestClientException e) {
             throw new HoneywellCommunicationException("Unable to communicate with Honeywell API.", e);
         }

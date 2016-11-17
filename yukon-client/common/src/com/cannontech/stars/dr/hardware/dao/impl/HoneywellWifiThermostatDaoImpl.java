@@ -57,4 +57,20 @@ public class HoneywellWifiThermostatDaoImpl implements HoneywellWifiThermostatDa
             throw new NotFoundException("A pao with MAC ID " + macId + " cannot be found.");
         }
     }
+    
+    @Override
+    public int getHoneywellGroupId(int groupId) throws NotFoundException {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT HoneywellGroupId");
+        sql.append("FROM LMGroupHoneywellWiFi");
+        sql.append("WHERE deviceId").eq(groupId);
+                
+        try {
+            int honeywellGroupId = jdbcTemplate.queryForInt(sql);
+            return honeywellGroupId;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("Group Id " + groupId + " cannot be found.");
+        }
+    }
 }

@@ -2,6 +2,8 @@ package com.cannontech.dr.honeywell.service;
 
 import java.util.List;
 
+import com.cannontech.dr.honeywellWifi.model.HoneywellWifiDutyCycleDrParameters;
+
 /**
  * This service provides the communications layer with the Honeywell portal.
  *
@@ -29,5 +31,22 @@ public interface HoneywellCommunicationService {
      * @param groupId ranging from 1 - 10000
      */
     void removeDeviceFromDRGroup(List<Integer> thermostatIds, int groupId);
+    
+    /**
+     * Send DREvent for a group.
+     * 
+     * @param honeywellDutyCycleParameters parameters for sending DREvent
+     */
+    void sendDREventForGroup(HoneywellWifiDutyCycleDrParameters honeywellDutyCycleParameters);
+    
+    /**
+     * Cancel DREvent for a group.
+     * 
+     * @param groupId ranging from 1 - 10000
+     * @param eventId is the eventId
+     * @param immediateCancel is to cancel the event immediately
+     */
+    void cancelDREventForGroup(int groupId, int eventId, boolean immediateCancel);
+    
 
 }
