@@ -397,3 +397,41 @@ void LogFileAppender::cleanupOldFiles() const
 
 }
 } // namespace Cti::Logging
+
+using namespace log4cxx;
+using namespace log4cxx::helpers;
+
+  // Register this class with log4cxx
+IMPLEMENT_LOG4CXX_OBJECT(ServerFileAppender)
+ServerFileAppender::ServerFileAppender() {}
+
+ServerFileAppender::~ServerFileAppender() {}
+
+void ServerFileAppender::append(const spi::LoggingEventPtr& event, Pool& p)
+{
+
+}
+
+void ServerFileAppender::close()
+{
+    if (this->closed)
+    {
+        return;
+    }
+
+    this->closed = true;
+}
+
+void ServerFileAppender::setOption(const LogString &option, const LogString &value)
+{
+    if (log4cxx::helpers::StringHelper::equalsIgnoreCase(option,
+        LOG4CXX_STR("MAXFILESIZESTRING"),
+        LOG4CXX_STR("maxfilesizestring"))) {
+        maxFileSize = log4cxx::helpers::OptionConverter::toFileSize(value, 1024 * 1024 * 1024);
+    }
+}
+
+size_t ServerFileAppender::getMaxFileSize()
+{
+    return maxFileSize;
+}

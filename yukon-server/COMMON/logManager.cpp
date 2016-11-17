@@ -112,6 +112,10 @@ bool FileInfo::shouldDeleteFile(const std::string& fileToDelete, const CtiDate& 
     return fileDate < cutOffDate;
 }
 
+void FileInfo::setMaxFileSize(const size_t maxFileSize) {
+    this->maxFileSize = maxFileSize;
+}
+
 /// class LogManager ///
 
 std::atomic<bool>  LogManager::inShutdown { false };
@@ -131,6 +135,11 @@ void LogManager::setOutputPath(const std::string& path)
 void LogManager::setOutputFile(const std::string& baseFileName)
 {
     _fileInfo.baseFileName.swap(scrub(baseFileName));
+}
+
+void LogManager::setMaxFileSize(const size_t maxFileSize)
+{
+    _fileInfo.setMaxFileSize(maxFileSize);
 }
 
 std::string LogManager::scrub(std::string fileName)

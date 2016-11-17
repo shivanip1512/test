@@ -19,6 +19,11 @@
 #include "xml.h"
 #include "thread_monitor.h"
 #include "module_util.h"
+#include "logFileAppender.h"
+
+#include "log4cxx/propertyconfigurator.h"
+
+#include <filesystem>
 
 using namespace std;
 
@@ -464,7 +469,30 @@ DLLEXPORT void InitYukonBaseGlobals(void)
             }
         }
     }*/
-}
+
+    /* Grab the maxFileSize from serverLogging.props */
+    using namespace std::experimental::filesystem::v1;
+    using namespace log4cxx;
+
+    path propertiesPath(getYukonBase());
+    propertiesPath.append("Server").append("Config").append("serverLogging.props");
+
+    PropertyConfigurator::configure(propertiesPath.string());
+
+    LoggerPtr root=Logger::getRootLogger();
+
+    AppenderPtr appender = root->getAppender(L"serverFileAppender");
+    if (appender != 0)
+    {
+        log4cxx::helpers::ObjectPtrT<ServerFileAppender> sfa = appender;
+        size_t maxFileSize = sfa->getMaxFileSize();
+        if (maxFileSize > 0)
+        {
+            doutManager.setMaxFileSize(maxFileSize);
+            slogManager.setMaxFileSize(maxFileSize);
+        }
+    }
+ }
 
 DLLEXPORT INT getDebugLevel(void)
 {

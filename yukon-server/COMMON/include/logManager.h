@@ -39,6 +39,7 @@ struct IM_EX_CTIBASE FileInfo
 
     std::string logFileName      (const CtiDate &date) const;
     bool        shouldDeleteFile (const std::string& fileToDelete, const CtiDate& cutOffDate) const;
+    void        setMaxFileSize   (const size_t maxFileSize);
 };
 
 enum LogFormats
@@ -70,6 +71,7 @@ public:
     void setToStdOut      (const bool toStdout);
     void setRetentionDays (const unsigned long days);
     void setOutputFormat  (const LogFormats format);
+    void setMaxFileSize       (const size_t maxFileSize);
     void start();
 
     static void refresh();
