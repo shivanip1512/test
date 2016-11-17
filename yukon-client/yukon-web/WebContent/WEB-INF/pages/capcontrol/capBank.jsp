@@ -24,22 +24,23 @@
     </script>
 </cti:checkRolesAndProperties>
 
-<div class="js-page-additional-actions dn">
-    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-        <li class="divider" />
-    </cti:checkRolesAndProperties>
-    <c:if test="${!orphan}">
-        <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
-            <cm:dropdownOption linkId="capbankState_${capbank.id}" key=".substation.capBank.actions" icon="icon-cog" href="javascript:void(0);" />
+<c:if test="${mode}!= CREATE" >
+    <div class="js-page-additional-actions dn">
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <li class="divider" />
         </cti:checkRolesAndProperties>
-    </c:if>
-    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-        <cti:url var="editUrl" value="/capcontrol/capbanks/${capbank.id}/edit" />
-        <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
-        <cm:dropdownOption key=".edit.points" icon="icon-add-remove" data-popup=".js-edit-points-popup" />
-    </cti:checkRolesAndProperties>
-</div>
-
+        <c:if test="${!orphan}">
+            <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
+                <cm:dropdownOption linkId="capbankState_${capbank.id}" key=".substation.capBank.actions" icon="icon-cog" href="javascript:void(0);" />
+            </cti:checkRolesAndProperties>
+        </c:if>
+            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                <cti:url var="editUrl" value="/capcontrol/capbanks/${capbank.id}/edit" />
+                <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+                <cm:dropdownOption key=".edit.points" icon="icon-add-remove" data-popup=".js-edit-points-popup" />
+            </cti:checkRolesAndProperties>
+    </div>
+</c:if>
     <cti:url var="action" value="/capcontrol/capbanks" />
     <cti:displayForPageEditModes modes="CREATE">
     <c:if test="${not empty parent}">

@@ -47,41 +47,41 @@ $(function() {
     yukon.da.common.initSubstation();
 });
 </script>
-
-<div class="js-page-additional-actions dn">
-    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-        <li class="divider" />
-    </cti:checkRolesAndProperties>
-    <cti:url var="locationsUrl" value="/capcontrol/capbank/capBankLocations">
-        <cti:param name="value" value="${substationId}" />
-    </cti:url>
-    <cm:dropdownOption key=".location.label" href="${locationsUrl}" icon="icon-interstate" />
-
-    <c:if test="${showAnalysis}">
-        <i:simplePopup styleClass="js-analysis-trends" titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
-            <%@ include file="analysisTrendsOptions.jspf" %>
-        </i:simplePopup>
-        <cm:dropdownOption key=".analysis.label" id="analysisTrendsButton" icon="icon-chart-line" />
-    </c:if>
-
-    <i:simplePopup styleClass="js-actions-recentEvents" titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
-        <%@ include file="recentEventsOptions.jspf" %>
-    </i:simplePopup>
-    <cm:dropdownOption key=".recentEvents.label" id="recentEventsButton" icon="icon-application-view-columns" />
-
-    <c:if test="${!orphan}">
-        <cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
-            <cm:dropdownOption linkId="substationState_${substationId}" key=".substation.actions" icon="icon-cog" href="javascript:void(0);" />
+<c:if test="${mode} != CREATE">
+    <div class="js-page-additional-actions dn">
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <li class="divider" />
         </cti:checkRolesAndProperties>
-    </c:if>
+        <cti:url var="locationsUrl" value="/capcontrol/capbank/capBankLocations">
+            <cti:param name="value" value="${substationId}" />
+        </cti:url>
+        <cm:dropdownOption key=".location.label" href="${locationsUrl}" icon="icon-interstate" />
     
-    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-        <cti:url var="editUrl" value="/capcontrol/substations/${substationId}/edit" />
-        <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
-        <cm:dropdownOption key=".edit.buses" icon="icon-add-remove" data-popup=".js-edit-buses-popup" />
-    </cti:checkRolesAndProperties>
-</div>
-
+        <c:if test="${showAnalysis}">
+            <i:simplePopup styleClass="js-analysis-trends" titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
+                <%@ include file="analysisTrendsOptions.jspf" %>
+            </i:simplePopup>
+            <cm:dropdownOption key=".analysis.label" id="analysisTrendsButton" icon="icon-chart-line" />
+        </c:if>
+    
+        <i:simplePopup styleClass="js-actions-recentEvents" titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
+            <%@ include file="recentEventsOptions.jspf" %>
+        </i:simplePopup>
+        <cm:dropdownOption key=".recentEvents.label" id="recentEventsButton" icon="icon-application-view-columns" />
+    
+        <c:if test="${!orphan}">
+            <cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
+                <cm:dropdownOption linkId="substationState_${substationId}" key=".substation.actions" icon="icon-cog" href="javascript:void(0);" />
+            </cti:checkRolesAndProperties>
+        </c:if>
+        
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <cti:url var="editUrl" value="/capcontrol/substations/${substationId}/edit" />
+            <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+            <cm:dropdownOption key=".edit.buses" icon="icon-add-remove" data-popup=".js-edit-buses-popup" />
+        </cti:checkRolesAndProperties>
+    </div>
+</c:if>
 <div class="dn" data-pao-id="${substationId}"></div>
 
 <div class="column-14-10">

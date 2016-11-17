@@ -31,33 +31,33 @@
         addCommandMenuBehavior('a[id^="substationState"]');
     </script>
 </cti:checkRolesAndProperties>
-
-<div class="js-page-additional-actions dn">
-    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-        <li class="divider" />
-    </cti:checkRolesAndProperties>
-    <c:if test="${showAnalysis}">
-        <i:simplePopup styleClass="js-analysis-trends" titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
-            <%@ include file="../tier/analysisTrendsOptions.jspf" %>
-        </i:simplePopup>
-        <cm:dropdownOption key=".analysis.label" id="analysisTrendsButton" icon="icon-chart-line" />
-    </c:if>
-
-    <i:simplePopup styleClass="js-actions-recentEvents" titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
-        <%@ include file="../tier/recentEventsOptions.jspf" %>
-    </i:simplePopup>
-    <cm:dropdownOption key=".recentEvents.label" id="recentEventsButton" icon="icon-application-view-columns" />
+<c:if test="${mode} != CREATE">
+    <div class="js-page-additional-actions dn">
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <li class="divider" />
+        </cti:checkRolesAndProperties>
+        <c:if test="${showAnalysis}">
+            <i:simplePopup styleClass="js-analysis-trends" titleKey=".analysisTrends" id="analysisTrendsOptions" on="#analysisTrendsButton">
+                <%@ include file="../tier/analysisTrendsOptions.jspf" %>
+            </i:simplePopup>
+            <cm:dropdownOption key=".analysis.label" id="analysisTrendsButton" icon="icon-chart-line" />
+        </c:if>
     
-    <cti:checkRolesAndProperties value="ALLOW_AREA_CONTROLS">
-        <cm:dropdownOption linkId="areaState_${areaId}" key=".area.actions" icon="icon-cog" href="javascript:void(0);" />
-    </cti:checkRolesAndProperties>
-    <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-        <cti:url var="editUrl" value="/capcontrol/areas/${areaId}/edit" />
-        <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
-        <cm:dropdownOption key=".edit.stations" icon="icon-add-remove" data-popup=".js-edit-stations-popup" />        
-    </cti:checkRolesAndProperties>
-</div>
-
+        <i:simplePopup styleClass="js-actions-recentEvents" titleKey=".recentEvents" id="recentEventsOptions" on="#recentEventsButton">
+            <%@ include file="../tier/recentEventsOptions.jspf" %>
+        </i:simplePopup>
+        <cm:dropdownOption key=".recentEvents.label" id="recentEventsButton" icon="icon-application-view-columns" />
+        
+        <cti:checkRolesAndProperties value="ALLOW_AREA_CONTROLS">
+            <cm:dropdownOption linkId="areaState_${areaId}" key=".area.actions" icon="icon-cog" href="javascript:void(0);" />
+        </cti:checkRolesAndProperties>
+        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+            <cti:url var="editUrl" value="/capcontrol/areas/${areaId}/edit" />
+            <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
+            <cm:dropdownOption key=".edit.stations" icon="icon-add-remove" data-popup=".js-edit-stations-popup" />        
+        </cti:checkRolesAndProperties>
+    </div>
+</c:if>
 <%-- EDIT SUBSTATIONS POPUP --%>
 <div class="dn js-edit-stations-popup"
     data-dialog

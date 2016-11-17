@@ -9,12 +9,12 @@
 
 <cti:standardPage module="capcontrol" page="regulator.${mode}">
 <cti:includeScript link="/resources/js/pages/yukon.da.regulator.js"/>
+<%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 <tags:setFormEditMode mode="${mode}"/>
 
 <cti:toJson object="${hours}" id="range-hours"/>
 
 <cti:displayForPageEditModes modes="VIEW">
-
 <div class="dn js-auto-map-dialog" data-dialog data-width="650"
     data-title="<cti:msg2 key=".automap.title"/>"
     data-ok-text="<cti:msg2 key="yukon.common.map"/>"
