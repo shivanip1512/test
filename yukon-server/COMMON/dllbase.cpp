@@ -23,6 +23,8 @@
 
 #include "log4cxx/propertyconfigurator.h"
 
+#include "openssl/crypto.h"
+
 #include <filesystem>
 
 using namespace std;
@@ -86,6 +88,10 @@ BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserv
             gConfigParms.RefreshConfigParameters();
 
             InitYukonBaseGlobals(); // Load up the config file.
+
+            InitLog4CXX();
+
+            InitSSL();
 
             // Set default database connection params
             setDatabaseParams(dbType, dbName, dbUser, dbPassword);
@@ -470,6 +476,14 @@ DLLEXPORT void InitYukonBaseGlobals(void)
         }
     }*/
 
+}
+
+
+/**
+  * Initialize the log4CXX logger.  
+  */
+void InitLog4CXX(void)
+{
     /* Grab the maxFileSize from serverLogging.props */
     using namespace std::experimental::filesystem::v1;
     using namespace log4cxx;
@@ -479,7 +493,7 @@ DLLEXPORT void InitYukonBaseGlobals(void)
 
     PropertyConfigurator::configure(propertiesPath.string());
 
-    LoggerPtr root=Logger::getRootLogger();
+    LoggerPtr root = Logger::getRootLogger();
 
     AppenderPtr appender = root->getAppender(L"serverFileAppender");
     if (appender != 0)
@@ -492,7 +506,19 @@ DLLEXPORT void InitYukonBaseGlobals(void)
             slogManager.setMaxFileSize(maxFileSize);
         }
     }
- }
+}
+
+
+/**
+  * Initialize SSL.  
+  *
+  * Currently this is simply to log the version listed in the DLL.
+  */
+void InitSSL(void)
+{
+    CTILOG_INFO(dout, SSLeay_version(SSLEAY_VERSION));
+}
+
 
 DLLEXPORT INT getDebugLevel(void)
 {
