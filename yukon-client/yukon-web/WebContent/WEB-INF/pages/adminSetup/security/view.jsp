@@ -223,7 +223,7 @@
                       <c:otherwise>
                           <div id="honeywellPublicKeyText">
             		          <p><i:inline key=".currentPublicKey" /></p>
-            		                 <textarea id="honeywellPublicKeyTextArea" rows="17" cols="60" 
+            		                 <textarea id="honeywellPublicKeyTextArea" rows="6" cols="60" 
                 		              readonly="readonly">${honeywellPublicKey}</textarea>
         		          </div>
                       </c:otherwise>
