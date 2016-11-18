@@ -12,7 +12,7 @@
 <cti:standardPage module="capcontrol" page="strategy.${mode}">
 
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
-
+<c:if test="${mode} != CREATE">
     <div class="js-page-additional-actions dn">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <li class="divider" />
@@ -20,7 +20,7 @@
             <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
         </cti:checkRolesAndProperties>
     </div>
-
+</c:if>
     <tags:setFormEditMode mode="${mode}" />
 
     <cti:url var="action" value="/capcontrol/strategies" />
@@ -145,7 +145,7 @@
                                     </cti:displayForPageEditModes>
                                     <cti:displayForPageEditModes modes="CREATE,EDIT">
                                         <c:set var="classes" value="${dayOfWeek.display ? '' : 'dn'}"/>
-                                        <tags:check path="peakDays[${dayOfWeek}]" key="${dayOfWeek}" classes="${classes}"/>
+                                        <tags:check id="${dayOfWeek}_chk" path="peakDays[${dayOfWeek}]" key="${dayOfWeek}" classes="${classes}"/>
                                     </cti:displayForPageEditModes>
                                 </c:forEach>
                                 <cti:displayForPageEditModes modes="VIEW">
