@@ -198,7 +198,7 @@ public class YukonSecurityController {
 
             // Extract Honeywell key
 
-            EncryptionKey honeywellEncryptionKey = encryptedRouteDao.getHoneywellEncyptionKey();
+            EncryptionKey honeywellEncryptionKey = encryptedRouteDao.getHoneywellEncryptionKey();
             if (honeywellEncryptionKey != null) {
                 String decryptedPublicKeyValue = new String(aes.decryptHexStr(honeywellEncryptionKey.getPublicKey()));
                 model.addAttribute("honeywellPublicKey", decryptedPublicKeyValue);
@@ -244,7 +244,7 @@ public class YukonSecurityController {
         byte[] keyBytes = Hex.decodeHex(encryptionKey.getPrivateKey().toCharArray());
         String encryptedValue = new String(Hex.encodeHex(encrypter.encrypt(keyBytes)));
 
-        encryptedRouteDao.saveNewEncyptionKey(encryptionKey.getName(), encryptedValue);
+        encryptedRouteDao.saveNewEncryptionKey(encryptionKey.getName(), encryptedValue);
 
         return "redirect:view";
     }
@@ -326,7 +326,7 @@ public class YukonSecurityController {
             }
         }
 
-        encryptedRouteDao.deleteEncyptionKey(encryptionKeyId);
+        encryptedRouteDao.deleteEncryptionKey(encryptionKeyId);
 
         return "redirect:view";
     }
@@ -388,7 +388,7 @@ public class YukonSecurityController {
 
             String encryptedPrivateKeyValue = new String(Hex.encodeHex(encrypter.encrypt(privateStringKey.getBytes())));
 
-            encryptedRouteDao.saveNewHoneywellEncyptionKey(encryptedPrivateKeyValue, encryptedpublicKeyValue);
+            encryptedRouteDao.saveNewHoneywellEncryptionKey(encryptedPrivateKeyValue, encryptedpublicKeyValue);
             json.put("honeywellPublicKey", publicStringKey);
 
         } catch (Exception ex) {
@@ -443,7 +443,7 @@ public class YukonSecurityController {
                 char[] sharedPassword = CryptoUtils.getSharedPasskey();
                 byte[] encryptedData = new AESPasswordBasedCrypto(sharedPassword).encrypt(bytes);
                 String encryptedValue = new String(Hex.encodeHex(encryptedData));
-                encryptedRouteDao.saveNewEncyptionKey(fileImportBindingBean.getName(), encryptedValue);
+                encryptedRouteDao.saveNewEncryptionKey(fileImportBindingBean.getName(), encryptedValue);
                 flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".fileUploadSuccess",
                     fileImportBindingBean.getName()));
                 success = true;
@@ -493,7 +493,7 @@ public class YukonSecurityController {
 
             String encryptedpublicKeyValue = new String(Hex.encodeHex(encrypter.encrypt(publicKeyString.getBytes())));
 
-            encryptedRouteDao.saveNewHoneywellEncyptionKey(encryptedPrivateKeyValue, encryptedpublicKeyValue);
+            encryptedRouteDao.saveNewHoneywellEncryptionKey(encryptedPrivateKeyValue, encryptedpublicKeyValue);
             flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".fileUploadSuccess",
                 "Honeywell"));
             success = true;

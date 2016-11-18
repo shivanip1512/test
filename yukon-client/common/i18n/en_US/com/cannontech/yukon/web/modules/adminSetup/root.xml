@@ -137,8 +137,8 @@
     <entry key="yukon.web.modules.adminSetup.security.pageName">Security</entry>
     <entry key="yukon.web.modules.adminSetup.security.keyBox.title">Encryption Keys</entry>
     <entry key="yukon.web.modules.adminSetup.security.honeywellKeyBox.title">Honeywell Encryption Keys</entry>
-    <entry key="yukon.web.modules.adminSetup.security.honeywellKeyBox.helpText"><![CDATA[Honeywell Encryption Keys allows a user to either import a private key(1024 bit) or generate a new one.
-    <br><br><b>Note:After generating a new Key you need to share it with honeywell and DR functionality in Yukon would work only after it has been updated at their end.</b>
+    <entry key="yukon.web.modules.adminSetup.security.honeywellKeyBox.helpText"><![CDATA[Honeywell Encryption Keys allows a user to either import a 1024-bit private key or generate a new one.
+    <br><br><b>Note:After generating a new key, you need to share it with Honeywell.  DR functionality in Yukon will only work after the key has been updated at their end.</b>
     ]]></entry>
     
     <entry key="yukon.web.modules.adminSetup.security.routesBox.title">Encrypted Routes</entry>
@@ -220,7 +220,7 @@
     
     <entry key="yukon.web.modules.adminSetup.security.confirmGenerate.title">Confirm Generate Key</entry>
     <entry key="yukon.web.modules.adminSetup.security.confirmGenerate.message"><![CDATA[Are you sure you want to generate a new Honeywell key?
-    <br><br><b>Note:After generating a new Key you need to share it with honeywell and DR functionality in Yukon would work only after it has been updated at their end.</b>
+    <br><br><b>Note:After generating a new key, you need to share it with Honeywell.  DR functionality in Yukon will only work after the key has been updated at their end.</b>
     ]]></entry>
     
     <!-- jobs/active.jsp --> 

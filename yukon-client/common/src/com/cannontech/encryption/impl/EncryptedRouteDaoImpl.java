@@ -31,6 +31,7 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DbChangeManager dbChangeManager;
+    private static final String HONEYWELL="HONEYWELL";
     private final YukonRowMapper<EncryptionKey> encryptionKeyRowMapper = new YukonRowMapper<EncryptionKey>() {
         @Override
         public EncryptionKey mapRow(YukonResultSet rs)
@@ -129,7 +130,7 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
     }
 
     @Override
-    public void saveNewEncyptionKey(String name, String value) {
+    public void saveNewEncryptionKey(String name, String value) {
             int encryptionKeyId = getNextEncryptionKeyId();
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("INSERT INTO EncryptionKey");
@@ -146,33 +147,33 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
     }
     
     @Override
-    public void saveNewHoneywellEncyptionKey(String privateKey, String publicKey) {
-        if (getHoneywellEncyptionKey() != null) {
+    public void saveNewHoneywellEncryptionKey(String privateKey, String publicKey) {
+        if (getHoneywellEncryptionKey() != null) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("UPDATE EncryptionKey ");
             sql.append("SET PrivateKey =").appendArgument(privateKey);
             sql.append(", PublicKey =").appendArgument(publicKey);
-            sql.append("WHERE ThirdPartyName =").appendArgument("HONEYWELL");
+            sql.append("WHERE ThirdPartyName =").appendArgument(HONEYWELL);
             yukonJdbcTemplate.update(sql.getSql(), sql.getArguments());
         } else {
             int encryptionKeyId = getNextEncryptionKeyId();
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("INSERT INTO EncryptionKey");
             sql.append("(EncryptionKeyId, Name, PrivateKey, PublicKey, ThirdPartyName)");
-            sql.values(encryptionKeyId, "", privateKey, publicKey, "HONEYWELL");
+            sql.values(encryptionKeyId, "", privateKey, publicKey, HONEYWELL);
 
             yukonJdbcTemplate.update(sql);
         }
     }
     
     @Override
-    public EncryptionKey getHoneywellEncyptionKey() {
+    public EncryptionKey getHoneywellEncryptionKey() {
         EncryptionKey encryptionKey=null;
         try{
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PrivateKey ,PublicKey ");
         sql.append("FROM EncryptionKey ");
-        sql.append("WHERE ThirdPartyName =").appendArgument("HONEYWELL");
+        sql.append("WHERE ThirdPartyName =").appendArgument(HONEYWELL);
         encryptionKey=yukonJdbcTemplate.queryForObject(sql, encryptionKeyRowMapper);
         }catch (EmptyResultDataAccessException ex) {
             // returns null if the encryptionKey was not found
@@ -182,7 +183,7 @@ public class EncryptedRouteDaoImpl implements EncryptedRouteDao {
     }
 
     @Override
-    public void deleteEncyptionKey(int encryptionKeyId) {
+    public void deleteEncryptionKey(int encryptionKeyId) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("DELETE FROM EncryptionKey");
             sql.append("WHERE");

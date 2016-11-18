@@ -15,18 +15,18 @@ public interface EncryptedRouteDao {
     
     public List<EncryptionKey> getEncryptionKeys();
     
-    public void saveNewEncyptionKey(String name, String value) throws CryptoException;
+    public void saveNewEncryptionKey(String name, String value) throws CryptoException;
     
-    public void deleteEncyptionKey(int encryptionKeyId);
+    public void deleteEncryptionKey(int encryptionKeyId);
 
     /**
      * Saves Honeywell public and private key in the EncryptionKey table
      */
-    void saveNewHoneywellEncyptionKey(String privateKey, String publicKey);
+    void saveNewHoneywellEncryptionKey(String privateKey, String publicKey);
 
     /**
      * Gets Honeywell Private and Public keys from the EncryptionKey table
      */
-    EncryptionKey getHoneywellEncyptionKey();
+    EncryptionKey getHoneywellEncryptionKey();
     
 }
