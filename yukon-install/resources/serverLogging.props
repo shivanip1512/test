@@ -1,5 +1,6 @@
 # root logger
-log4j.debug=0
+#log4j.debug=999
+
 log4j.rootLogger=INFO, serverFileAppender
 
 # appenders
