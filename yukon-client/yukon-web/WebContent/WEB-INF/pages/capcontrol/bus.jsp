@@ -24,7 +24,7 @@
         addCommandMenuBehavior('a[id^="busState_"]');
     </script>
 </cti:checkRolesAndProperties>
-<c:if test="${mode} != CREATE">
+<c:if test="${mode != 'CREATE'} ">
     <div class="js-page-additional-actions dn">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <li class="divider" />

@@ -18,7 +18,7 @@
     <tags:setFormEditMode mode="${mode}" />
     
     <div class="js-page-additional-actions dn">
-    <c:if test="${mode} != CREATE">
+    <c:if test="${mode != 'CREATE'} ">
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <li class="divider" />
         <cm:dropdownOption key="yukon.web.components.button.copy.label" icon="icon-disk-multiple"

@@ -12,15 +12,17 @@
 <cti:standardPage module="capcontrol" page="strategy.${mode}">
 
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
-<c:if test="${mode} != CREATE">
-    <div class="js-page-additional-actions dn">
-        <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
-            <li class="divider" />
-            <cti:url var="editUrl" value="/capcontrol/strategies/${strategy.id}/edit" />
-            <cm:dropdownOption  key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
-        </cti:checkRolesAndProperties>
-    </div>
-</c:if>
+    <c:if test="${mode != 'CREATE'} ">
+        <div class="js-page-additional-actions dn">
+            <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
+                <li class="divider" />
+                <cti:url var="editUrl"
+                    value="/capcontrol/strategies/${strategy.id}/edit" />
+                <cm:dropdownOption key="components.button.edit.label"
+                    icon="icon-pencil" href="${editUrl}" />
+            </cti:checkRolesAndProperties>
+        </div>
+    </c:if>
     <tags:setFormEditMode mode="${mode}" />
 
     <cti:url var="action" value="/capcontrol/strategies" />
