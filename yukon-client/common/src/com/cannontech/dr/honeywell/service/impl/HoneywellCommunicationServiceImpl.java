@@ -125,7 +125,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     public void removeDeviceFromDRGroup(List<Integer> thermostatIds, int groupId) {
         log.info("Removing specified devices from demand-response group:" + thermostatIds);
         try {
-            String url = getUrlBase() + removeDeviceFromDRGroupUrlPart + groupId + "/remove1";
+            String url = getUrlBase() + removeDeviceFromDRGroupUrlPart + groupId + "/remove";
 
             String body = JsonUtils.toJson(thermostatIds.toArray());
             
