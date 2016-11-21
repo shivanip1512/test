@@ -57,7 +57,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
     private static final String createDREventGroupUrlPart = "webapi/api/drEventGroups/";
     private static final String cancelDREventForDevicesUrlPart = "api/drEvents/optout/";
-    private static final String removeDeviceFromDRGroupUrlPart = "api/drEventGroups/";
+    private static final String removeDeviceFromDRGroupUrlPart = "WebAPI/api/drEventGroups/";
     private static final String drEventForGroupUrlPart = "WebAPI/api/drEvents";
     
     private static final String CONTENT_TYPE = "application/json";
@@ -78,25 +78,26 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
     @Override
     public void addDevicesToGroup(List<Integer> thermostatIds, int groupId) {
-        log.debug("Adding honeywell device with thermostat Id " + thermostatIds);
+        log.info("Adding honeywell device with thermostat Id " + thermostatIds);
         try {
             String url = getUrlBase() + createDREventGroupUrlPart + groupId + "/add";
-
-            MultiValueMap<String, Object> body;
+           
             for (List<Integer> thermostatId : Lists.partition(thermostatIds, 2000)) {
-                body = new LinkedMultiValueMap<String, Object>();
-                body.add("thermostatIds", thermostatId.toArray());
+                String body = JsonUtils.toJson(thermostatId);
 
-                HttpEntity<?> requestEntity =
-                    new HttpEntity<Object>(body, getHttpHeaders(url, HttpMethod.PUT, body.toString()));
+                HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.PUT, body);
+                HttpEntity<String> reqEntity =
+                    new HttpEntity<String>(body, newheaders);
+                UriComponentsBuilder builder =
+                        UriComponentsBuilder.fromHttpUrl(url);
 
-                HttpEntity<String> response = restTemplate.exchange(url, HttpMethod.PUT, requestEntity, String.class);
-
+                HttpEntity<String> response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.PUT, reqEntity, String.class);
+                log.debug(response);
             }
-        } catch (RestClientException ex) {
+        } catch (RestClientException | JsonProcessingException ex) {
             log.error("Add devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
-        }
+        } 
 
     }
 
@@ -122,18 +123,20 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
     @Override
     public void removeDeviceFromDRGroup(List<Integer> thermostatIds, int groupId) {
-        log.debug("Removing specified devices from demand-response group:" + thermostatIds);
+        log.info("Removing specified devices from demand-response group:" + thermostatIds);
         try {
-            String url = getUrlBase() + removeDeviceFromDRGroupUrlPart + "/remove";
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<String, Object>();
-            body.add("deviceIds", thermostatIds.toArray());
+            String url = getUrlBase() + removeDeviceFromDRGroupUrlPart + groupId + "/remove1";
+
+            String body = JsonUtils.toJson(thermostatIds.toArray());
+            
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
             HttpEntity<?> requestEntity =
-                new HttpEntity<Object>(body, getHttpHeaders(url, HttpMethod.PUT, body.toString()));
+                new HttpEntity<Object>(body, getHttpHeaders(url, HttpMethod.PUT, body));
 
             HttpEntity<String> response =
                 restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.PUT, requestEntity, String.class);
-        } catch (RestClientException ex) {
+            log.debug(response);
+        } catch (RestClientException | JsonProcessingException ex) {
             log.error("Removing devices from DR group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
         }
@@ -141,7 +144,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
     @Override
     public void sendDREventForGroup(HoneywellWifiDutyCycleDrParameters parameters) {
-        log.debug("Sending DR event for group " + parameters.getGroupId());
+        log.debug("Sending DR event for yukon LM group " + parameters.getGroupId());
         try {
 
             int honeywellGroupId = honeywellDao.getHoneywellGroupId(parameters.getGroupId());
@@ -176,7 +179,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                                                                 HttpMethod.POST,
                                                                 requestEntity,
                                                                 String.class);
-            log.info(response);
+            log.debug(response);
         } catch (RestClientException | JsonProcessingException ex) {
             log.error("Send DR event for group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to send DR . Message: \"" + ex.getMessage() + "\".");
@@ -185,7 +188,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
     @Override
     public void cancelDREventForGroup(int groupId, int eventId, boolean immediateCancel) {
-        log.debug("Sending cancel DR event for group " + groupId);
+        log.debug("Sending cancel DR event for yukon LM group " + groupId);
         try {
             int honeywellGroupId = honeywellDao.getHoneywellGroupId(groupId);
             String url = getUrlBase() + drEventForGroupUrlPart + "/optout/" + eventId + "/" + immediateCancel + "?groupId=" + honeywellGroupId;
@@ -200,7 +203,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                                                                 HttpMethod.POST,
                                                                 requestEntity,
                                                                 String.class);
-            log.info(response);
+            log.debug(response);
         } catch (RestClientException ex) {
             log.error("Send cancel DR event for group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to send DR . Message: \"" + ex.getMessage() + "\".");

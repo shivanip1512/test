@@ -17,6 +17,7 @@
     <entry key="yukon.web.modules.operator.enrollmentList.noRelay">None</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.status">Status</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.actions">Actions</entry>
+    <entry key="yukon.web.modules.operator.enrollmentList.noHardware">No hardware to select.</entry>
 
     <entry key="yukon.web.modules.operator.enrollmentList.edit.hoverText">Edit enrollment details</entry>
     <entry key="yukon.web.modules.operator.enrollmentList.edit.title">Edit Enrollment</entry>

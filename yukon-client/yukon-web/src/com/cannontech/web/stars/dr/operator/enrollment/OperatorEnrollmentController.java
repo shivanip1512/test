@@ -1,8 +1,11 @@
 package com.cannontech.web.stars.dr.operator.enrollment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -19,11 +22,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.common.events.loggers.AccountEventLogService;
 import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.dr.honeywell.HoneywellCommunicationException;
+import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.loadcontrol.loadgroup.dao.LoadGroupDao;
@@ -38,9 +44,13 @@ import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
 import com.cannontech.stars.dr.enrollment.exception.EnrollmentSystemConfigurationException;
 import com.cannontech.stars.dr.enrollment.service.EnrollmentHelperService;
+import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
+import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
+import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
@@ -50,6 +60,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.stars.dr.operator.enrollment.ProgramEnrollment.InventoryEnrollment;
 import com.cannontech.web.stars.dr.operator.general.AccountInfoFragment;
 import com.cannontech.web.stars.dr.operator.service.AccountInfoFragmentHelper;
 import com.google.common.collect.Lists;
@@ -75,6 +86,10 @@ public class OperatorEnrollmentController {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private EnergyCompanySettingDao ecSettingDao;
+    @Autowired private HoneywellCommunicationService honeywellCommunicationService;
+    @Autowired private HoneywellWifiThermostatDao honeywellWifiThermostatDao;
+    @Autowired private InventoryDao inventoryDao;
+    @Autowired private LMHardwareConfigurationDao lmHardwareConfigDao;
 
     /**
      * The main operator "enrollment" page. Lists all current enrollments and
@@ -150,8 +165,29 @@ public class OperatorEnrollmentController {
         DisplayableEnrollmentProgram displayable = 
             displayableEnrollmentDao.getProgram(account.getAccountId(), assignedProgramId);
         
-        model.addAttribute("programEnrollment", new ProgramEnrollment(displayable));
+        ProgramEnrollment programEnrollment = new ProgramEnrollment(displayable);
+        if (isAdd) {
+            List<InventoryEnrollment> inventoryEnrollments = programEnrollment.getInventoryEnrollments();
+            Iterator<InventoryEnrollment> inventoryEnrollmentsItr = inventoryEnrollments.iterator();
+            while (inventoryEnrollmentsItr.hasNext()) {
+                InventoryEnrollment invEnrlmnt = (InventoryEnrollment) inventoryEnrollmentsItr.next();
+                InventoryIdentifier inventory = inventoryDao.getYukonInventory(invEnrlmnt.getInventoryId());
+                if (inventory.getHardwareType().isHoneywell()) {
+                    List<LMHardwareConfiguration> hardwareConfig = lmHardwareConfigDao.getForInventoryId(invEnrlmnt.getInventoryId());
 
+                    if (!hardwareConfig.isEmpty()) {
+                        // Given device is already enrolled to a group.
+                        inventoryEnrollmentsItr.remove();
+                    }
+                }
+            }
+        }
+        model.addAttribute("programEnrollment", programEnrollment);
+        boolean isDisable = false;
+        if (programEnrollment.getInventoryEnrollments().isEmpty()) {
+            isDisable = true;
+        }
+        model.addAttribute("isDisable", isDisable);
         AccountInfoFragmentHelper.setupModelMapBasics(account, model);
 
         AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
@@ -244,13 +280,53 @@ public class OperatorEnrollmentController {
                                                                EventSource.OPERATOR);
         LiteYukonUser user = userContext.getYukonUser();
         validateAccountEditing(user);
-        
-        AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
+
+        List<InventoryEnrollment> inventoryEnrollments = programEnrollment.getInventoryEnrollments();
+        InventoryEnrollment inventEnrollment = inventoryEnrollments.get(0);
+        InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventEnrollment.getInventoryId());
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> programEnrollments = Lists.newArrayList();
-        programEnrollments.addAll(programEnrollment.makeProgramEnrollments(assignedProgram.getApplianceCategoryId(), assignedProgramId));
-        programEnrollments.addAll(getConflictingEnrollments(accountInfoFragment.getAccountId(), assignedProgramId,
-            accountInfoFragment.getEnergyCompanyId()));
+        AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
+        programEnrollments.addAll(programEnrollment.makeProgramEnrollments(assignedProgram.getApplianceCategoryId(),
+                                                                           assignedProgramId));
+        programEnrollments.addAll(getConflictingEnrollments(accountInfoFragment.getAccountId(),
+                                                            assignedProgramId,
+                                                            accountInfoFragment.getEnergyCompanyId()));
         try {
+
+            if (inventory.getHardwareType().isHoneywell()) {
+                Map<Integer, List<Integer>> groupThermostatMap = new HashMap<>();
+                if (!inventoryEnrollments.isEmpty()) {
+                    for (InventoryEnrollment inventoryEnrollment : inventoryEnrollments) {
+
+                        if (inventoryEnrollment.getLoadGroupId() != 0) {
+                            List<Integer> thermostatIds = null;
+                            int groupId = inventoryEnrollment.getLoadGroupId();
+                            int honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
+                            if (groupThermostatMap.containsKey(honeywellGroupId)) {
+                                thermostatIds = groupThermostatMap.get(honeywellGroupId);
+                            } else {
+                                thermostatIds = new ArrayList<>();
+                            }
+                            thermostatIds.add(inventoryEnrollment.getInventoryId());
+                            groupThermostatMap.put(honeywellGroupId, thermostatIds);
+                        }
+                    }
+                }
+
+                if (saveTypeKey.equalsIgnoreCase("enrollCompleted") || saveTypeKey.equalsIgnoreCase("enrollmentUpdated")) {
+                    // Add enrollment or edit enrollment
+                    for (Entry<Integer, List<Integer>> groupThermostatEntry : groupThermostatMap.entrySet()) {
+                        honeywellCommunicationService.addDevicesToGroup(groupThermostatEntry.getValue(),
+                                                                        groupThermostatEntry.getKey());
+                    }
+                } else if (saveTypeKey.equalsIgnoreCase("unenrollCompleted")) {
+                    // Unenrollment
+                    for (Entry<Integer, List<Integer>> groupThermostatEntry : groupThermostatMap.entrySet()) {
+                        honeywellCommunicationService.removeDeviceFromDRGroup(groupThermostatEntry.getValue(),
+                                                                              groupThermostatEntry.getKey());
+                    }
+                }
+            }
             enrollmentHelper.updateProgramEnrollments(programEnrollments, accountInfoFragment.getAccountId(), userContext);
             
             String msgKey = "yukon.web.modules.operator.enrollmentList." + saveTypeKey;
@@ -270,6 +346,11 @@ public class OperatorEnrollmentController {
             String msgKey = "yukon.web.modules.operator.enrollmentList.failed";
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
             MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName(), accessor.getMessage(e2.getKey()));
+            flashScope.setError(message);
+        } catch (HoneywellCommunicationException e3) {
+            String msgKey = "yukon.web.modules.operator.enrollmentList.failed";
+            MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey,
+                                                                               assignedProgram.getDisplayName());
             flashScope.setError(message);
         }
 

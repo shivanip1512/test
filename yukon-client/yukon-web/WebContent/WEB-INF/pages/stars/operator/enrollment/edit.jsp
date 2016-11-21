@@ -20,6 +20,8 @@
 
     <tags:sectionContainer2 nameKey="hardwareAssigned">
         <div class="scroll-md">
+        <c:choose>
+            <c:when test="${!isDisable}"> 
             <table id="hardwareAssignedTable" class="compact-results-table with-form-controls clearfix">
                 <thead>
                     <tr>
@@ -77,6 +79,12 @@
                     </c:forEach>
                 </tbody>
             </table>
+            </c:when>
+            <c:otherwise>
+                <span class="error"><cti:msg2 key=".noHardware"/></span>
+            </c:otherwise>
+        </c:choose>
+        <input type="hidden" name="isDisable" id="isDisable" value="${isDisable}" /> 
         </div>
     </tags:sectionContainer2>
 
