@@ -31,7 +31,7 @@
         addCommandMenuBehavior('a[id^="substationState"]');
     </script>
 </cti:checkRolesAndProperties>
-<c:if test="${mode != 'CREATE'} ">
+<cti:displayForPageEditModes modes="VIEW,EDIT">
     <div class="js-page-additional-actions dn">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <li class="divider" />
@@ -57,7 +57,7 @@
             <cm:dropdownOption key=".edit.stations" icon="icon-add-remove" data-popup=".js-edit-stations-popup" />        
         </cti:checkRolesAndProperties>
     </div>
-</c:if>
+</cti:displayForPageEditModes>
 <%-- EDIT SUBSTATIONS POPUP --%>
 <div class="dn js-edit-stations-popup"
     data-dialog

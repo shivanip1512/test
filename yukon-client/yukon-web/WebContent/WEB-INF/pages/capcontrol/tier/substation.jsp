@@ -47,7 +47,7 @@ $(function() {
     yukon.da.common.initSubstation();
 });
 </script>
-<c:if test="${mode != 'CREATE'}">
+<cti:displayForPageEditModes modes="VIEW,EDIT">
     <div class="js-page-additional-actions dn">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <li class="divider" />
@@ -81,12 +81,11 @@ $(function() {
             <cm:dropdownOption key=".edit.buses" icon="icon-add-remove" data-popup=".js-edit-buses-popup" />
         </cti:checkRolesAndProperties>
     </div>
-</c:if>
+</cti:displayForPageEditModes>
 <div class="dn" data-pao-id="${substationId}"></div>
 
 <div class="column-14-10">
 
-<tags:setFormEditMode mode="${mode}"/>
 <cti:url var="action" value="/capcontrol/substations"/>
 <cti:displayForPageEditModes modes="CREATE">
     <c:if test="${not empty parent}">

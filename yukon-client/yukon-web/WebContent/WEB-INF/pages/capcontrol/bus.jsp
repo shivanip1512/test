@@ -24,7 +24,7 @@
         addCommandMenuBehavior('a[id^="busState_"]');
     </script>
 </cti:checkRolesAndProperties>
-<c:if test="${mode != 'CREATE'} ">
+<cti:displayForPageEditModes modes="VIEW,EDIT">
     <div class="js-page-additional-actions dn">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <li class="divider" />
@@ -41,7 +41,7 @@
             <cm:dropdownOption key=".edit.feeders" icon="icon-add-remove" data-popup=".js-edit-feeders-popup" />
         </cti:checkRolesAndProperties>   
     </div>
-</c:if>
+</cti:displayForPageEditModes>
 <cti:url var="action" value="/capcontrol/buses"/>
 <cti:displayForPageEditModes modes="CREATE">
     <c:if test="${not empty parent}">

@@ -26,7 +26,7 @@
     </script>
 </cti:checkRolesAndProperties>
 
-<c:if test="${mode != 'CREATE'} ">
+<cti:displayForPageEditModes modes="VIEW,EDIT">
     <div class="js-page-additional-actions dn">
         <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
             <li class="divider" />
@@ -42,7 +42,7 @@
             <cm:dropdownOption key=".edit.capbanks" icon="icon-add-remove" data-popup=".js-edit-capbanks-popup" />
         </cti:checkRolesAndProperties>
     </div>
-</c:if>
+</cti:displayForPageEditModes>
 <cti:url var="action" value="/capcontrol/feeders"/>
 <cti:displayForPageEditModes modes="CREATE">
     <c:if test="${not empty parent}">

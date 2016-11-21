@@ -16,9 +16,8 @@
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 
     <tags:setFormEditMode mode="${mode}" />
-    
+    <cti:displayForPageEditModes modes="VIEW,EDIT">
     <div class="js-page-additional-actions dn">
-    <c:if test="${mode != 'CREATE'} ">
     <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
         <li class="divider" />
         <cm:dropdownOption key="yukon.web.components.button.copy.label" icon="icon-disk-multiple"
@@ -26,7 +25,7 @@
         <cti:url var="editUrl" value="/capcontrol/cbc/${cbc.id}/edit" />
         <cm:dropdownOption key="components.button.edit.label" icon="icon-pencil" href="${editUrl}" />
     </cti:checkRolesAndProperties>
-    </c:if>
+    </cti:displayForPageEditModes>
 </div>
 
     <cti:url var="action" value="/capcontrol/cbc" />

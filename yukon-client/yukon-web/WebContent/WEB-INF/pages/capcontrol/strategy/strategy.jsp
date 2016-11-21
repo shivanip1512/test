@@ -12,7 +12,9 @@
 <cti:standardPage module="capcontrol" page="strategy.${mode}">
 
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
-    <c:if test="${mode != 'CREATE'} ">
+
+    <tags:setFormEditMode mode="${mode}" />
+    <cti:displayForPageEditModes modes="VIEW,EDIT">
         <div class="js-page-additional-actions dn">
             <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
                 <li class="divider" />
@@ -22,8 +24,7 @@
                     icon="icon-pencil" href="${editUrl}" />
             </cti:checkRolesAndProperties>
         </div>
-    </c:if>
-    <tags:setFormEditMode mode="${mode}" />
+    </cti:displayForPageEditModes>
 
     <cti:url var="action" value="/capcontrol/strategies" />
     <form:form id="strategy-from" commandName="strategy" action="${action}" method="POST">
