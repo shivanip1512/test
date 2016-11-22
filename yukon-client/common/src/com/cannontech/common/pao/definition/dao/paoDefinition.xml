@@ -10580,6 +10580,7 @@
     <pao id="RFN530_S4_BASE" inherits="RFN_COMMON, THREE_PHASE_VOLTAGE, THREE_PHASE_CURRENT" abstract="true">
         <points>
             <point type="Analog" offset="265">
+                <init>true</init>
                 <name>Sum Peak kW</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kW"/>
@@ -10647,6 +10648,15 @@
             </point>
         </points>
         <attributes>
+            <!-- Overriding the USAGE attribute to map to Sum ("Total") for s4e meters. The Delivered kWh point shouldn't actually exist for these types.  -->
+            <attribute name="USAGE">
+                <basicLookup point="Sum kWh" />
+            </attribute>
+            <!-- Overriding the PEAK_DEMAND attribute to map to Sum ("Total") for s4e meters. The Peak kW point shouldn't actually exist for these types.  -->
+            <attribute name="PEAK_DEMAND">
+                <basicLookup point="Sum Peak kW"/>
+            </attribute>
+        
             <attribute name="SUM_PEAK_DEMAND">
                 <basicLookup point="Sum Peak kW"/>
             </attribute>
