@@ -56,8 +56,8 @@ END;
 
 /* Start YUK-15280 */
 CREATE TABLE UserSystemMetric  (
-   UserId               NUMBER                          not null,
-   SystemHealthMetricId VARCHAR2(64)                    not null,
+   UserId               NUMBER                          NOT NULL,
+   SystemHealthMetricId VARCHAR2(64)                    NOT NULL,
    CONSTRAINT PK_UserSystemMetric PRIMARY KEY (UserId, SystemHealthMetricId)
 );
 
@@ -68,21 +68,19 @@ ALTER TABLE UserSystemMetric
 /* End YUK-15280 */
 
 /* Start YUK-15374 */
-create table RfnBroadcastEventSummary  (
-   RfnBroadcastEventId  NUMBER                          not null,
-   Success              NUMBER                          not null,
-   SuccessUnenrolled    NUMBER                          not null,
-   Failure              NUMBER                          not null,
-   Unknown              NUMBER                          not null,
-   constraint PK_RFNBROADCASTEVENTSUMMARY primary key (RfnBroadcastEventId)
+CREATE TABLE RfnBroadcastEventSummary  (
+   RfnBroadcastEventId  NUMBER                          NOT NULL,
+   Success              NUMBER                          NOT NULL,
+   SuccessUnenrolled    NUMBER                          NOT NULL,
+   Failure              NUMBER                          NOT NULL,
+   Unknown              NUMBER                          NOT NULL,
+   CONSTRAINT PK_RFNBROADCASTEVENTSUMMARY PRIMARY KEY (RfnBroadcastEventId)
 );
 
-alter table RfnBroadcastEventSummary
-   add constraint FK_RFNBROAD_REFERENCE_RFNBROAD foreign key (RfnBroadcastEventId)
-      references RfnBroadcastEvent (RfnBroadcastEventId)
-      on delete cascade;
-
-go
+ALTER TABLE RfnBroadcastEventSummary
+   ADD CONSTRAINT FK_RFNBROAD_REFERENCE_RFNBROAD FOREIGN KEY (RfnBroadcastEventId)
+      REFERENCES RfnBroadcastEvent (RfnBroadcastEventId)
+      ON DELETE CASCADE;
 /* End YUK-15374 */
       
 /* Start YUK-15251 */
@@ -147,7 +145,7 @@ DECLARE
     v_newLine VARCHAR2(2);
     v_errorText VARCHAR2(512);
 BEGIN
-    SELECT count(*) INTO v_count FROM USER_INDEXES WHERE INDEX_NAME = 'PKC_RAWPOINTHISTORY';
+    SELECT COUNT(*) INTO v_count FROM USER_INDEXES WHERE INDEX_NAME = 'PKC_RAWPOINTHISTORY';
     IF v_count = 0 THEN 
         v_newLine := CHR(13) || CHR(10);
         v_errorText := 'Indexes on RawPointHistory are being modified to improve system performance.' || v_newLine
@@ -164,7 +162,7 @@ END;
 DECLARE
     v_count NUMBER := 0;
 BEGIN
-    SELECT count(*) INTO v_count FROM USER_INDEXES WHERE INDEX_NAME = 'PKC_RAWPOINTHISTORY';
+    SELECT COUNT(*) INTO v_count FROM USER_INDEXES WHERE INDEX_NAME = 'PKC_RAWPOINTHISTORY';
     IF v_count = 0 THEN
         EXECUTE IMMEDIATE 'DROP INDEX INDEX_POINTID';
         EXECUTE IMMEDIATE 'DROP INDEX INDX_TIMESTAMP';
@@ -236,66 +234,65 @@ WHERE p.PAObjectID = 0
 /* End YUK-15271 */
 
 /* Start YUK-15438 */
-create table BehaviorReport  (
-   BehaviorReportId     NUMBER                          not null,
-   DeviceId             NUMBER                          not null,
-   BehaviorType         VARCHAR2(60)                    not null,
-   BehaviorStatus       VARCHAR2(60)                    not null,
-   TimeStamp            DATE                            not null,
-   constraint PK_BEHAVIORREPORT primary key (BehaviorReportId)
+CREATE TABLE BehaviorReport  (
+   BehaviorReportId     NUMBER                          NOT NULL,
+   DeviceId             NUMBER                          NOT NULL,
+   BehaviorType         VARCHAR2(60)                    NOT NULL,
+   BehaviorStatus       VARCHAR2(60)                    NOT NULL,
+   TimeStamp            DATE                            NOT NULL,
+   CONSTRAINT PK_BEHAVIORREPORT PRIMARY KEY (BehaviorReportId)
 );
 
-create table BehaviorReportValue  (
-   BehaviorReportId     NUMBER                          not null,
-   Name                 VARCHAR2(60)                    not null,
-   Value                VARCHAR2(100)                   not null,
-   constraint PK_BEHAVIORREPORTVALUE primary key (BehaviorReportId, Name)
+CREATE TABLE BehaviorReportValue  (
+   BehaviorReportId     NUMBER                          NOT NULL,
+   Name                 VARCHAR2(60)                    NOT NULL,
+   Value                VARCHAR2(100)                   NOT NULL,
+   CONSTRAINT PK_BEHAVIORREPORTVALUE PRIMARY KEY (BehaviorReportId, Name)
 );
 
-create table DeviceBehaviorMap  (
-   BehaviorId           NUMBER                          not null,
-   DeviceId             NUMBER                          not null,
-   constraint PK_DEVICEBEHAVIORMAP primary key (BehaviorId, DeviceId)
+CREATE TABLE DeviceBehaviorMap  (
+   BehaviorId           NUMBER                          NOT NULL,
+   DeviceId             NUMBER                          NOT NULL,
+   CONSTRAINT PK_DEVICEBEHAVIORMAP PRIMARY KEY (BehaviorId, DeviceId)
 );
 
-create table Behavior  (
-   BehaviorId           NUMBER                          not null,
-   BehaviorType         VARCHAR2(60)                    not null,
-   constraint PK_BEHAVIOR primary key (BehaviorId)
+CREATE TABLE Behavior  (
+   BehaviorId           NUMBER                          NOT NULL,
+   BehaviorType         VARCHAR2(60)                    NOT NULL,
+   CONSTRAINT PK_BEHAVIOR PRIMARY KEY (BehaviorId)
 );
 
-create table BehaviorValue  (
-   BehaviorId           NUMBER                          not null,
-   Name                 VARCHAR2(60)                    not null,
-   Value                VARCHAR2(100)                   not null,
-   constraint PK_BEHAVIORVALUE primary key (BehaviorId, Name)
+CREATE TABLE BehaviorValue  (
+   BehaviorId           NUMBER                          NOT NULL,
+   Name                 VARCHAR2(60)                    NOT NULL,
+   Value                VARCHAR2(100)                   NOT NULL,
+   CONSTRAINT PK_BEHAVIORVALUE PRIMARY KEY (BehaviorId, Name)
 );
 
-alter table BehaviorReport
-   add constraint FK_Device_BehaviorReport foreign key (DeviceId)
-      references DEVICE (DEVICEID)
-      on delete cascade;
+ALTER TABLE BehaviorReport
+   ADD CONSTRAINT FK_Device_BehaviorReport FOREIGN KEY (DeviceId)
+      REFERENCES DEVICE (DEVICEID)
+      ON DELETE CASCADE;
 
-alter table BehaviorReportValue
-   add constraint FK_BehaviorRptVal_BehaviorRpt foreign key (BehaviorReportId)
-      references BehaviorReport (BehaviorReportId)
-      on delete cascade;
+ALTER TABLE BehaviorReportValue
+   ADD CONSTRAINT FK_BehaviorRptVal_BehaviorRpt FOREIGN KEY (BehaviorReportId)
+      REFERENCES BehaviorReport (BehaviorReportId)
+      ON DELETE CASCADE;
 
-alter table DeviceBehaviorMap
-   add constraint FK_Behavior_DeviceBehaviorMap foreign key (BehaviorId)
-      references Behavior (BehaviorId)
-      on delete cascade;
+ALTER TABLE DeviceBehaviorMap
+   ADD CONSTRAINT FK_Behavior_DeviceBehaviorMap FOREIGN KEY (BehaviorId)
+      REFERENCES Behavior (BehaviorId)
+      ON DELETE CASCADE;
 
-alter table DeviceBehaviorMap
-   add constraint FK_Device_DeviceBehaviorMap foreign key (DeviceId)
-      references DEVICE (DEVICEID)
-      on delete cascade;
+ALTER TABLE DeviceBehaviorMap
+   ADD CONSTRAINT FK_Device_DeviceBehaviorMap FOREIGN KEY (DeviceId)
+      REFERENCES DEVICE (DEVICEID)
+      ON DELETE CASCADE;
 
-alter table BehaviorValue
-   add constraint FK_BehaviorValue_Behavior foreign key (BehaviorId)
-      references Behavior (BehaviorId)
-      on delete cascade;
-
+ALTER TABLE BehaviorValue
+   ADD CONSTRAINT FK_BehaviorValue_Behavior FOREIGN KEY (BehaviorId)
+      REFERENCES Behavior (BehaviorId)
+      ON DELETE CASCADE;
 /* End YUK-15438 */
 
 /* Start YUK-13440 */
@@ -440,6 +437,8 @@ BEGIN
                     WHEN ItemName = ''timeZoneOffset'' AND ItemValue = ''-10'' THEN ''HONOLULU''
                     ELSE ItemValue
                 END ';
+        EXECUTE IMMEDIATE '
+            DROP TABLE temp_DeviceConfigCategoryItem';
     END IF;
 END;
 /
@@ -457,8 +456,7 @@ MODIFY
    ( 
    Destination VARCHAR2(256),
    Translation VARCHAR2(500)
-   )
-;
+   );
 /* End YUK-15548 */
 
 /* Start YUK-15611 */
@@ -468,7 +466,7 @@ INSERT INTO StateGroup VALUES (-23, 'Var Voltage Input', 'Status');
 INSERT INTO StateGroup VALUES (-24, 'SCADA TripClose', 'Status');
 INSERT INTO StateGroup VALUES (-25, 'YesNo', 'Status');
 INSERT INTO StateGroup VALUES (-26, 'SCADA Override Type', 'Status');
-GO
+
 
 INSERT INTO State VALUES (-21, 0, 'Closed', 0, 6, 0);
 INSERT INTO State VALUES (-21, 1, 'Open', 1, 6, 0);
@@ -491,7 +489,6 @@ INSERT INTO State VALUES (-25, 1, 'Yes', 1, 6, 0);
 
 INSERT INTO State VALUES (-26, 0, 'Time of Day', 0, 6, 0);
 INSERT INTO State VALUES (-26, 1, 'Countdown Timer', 1, 6, 0);
-GO
 /* End YUK-15611 */
 
 /* Start YUK-15502 */
@@ -577,7 +574,6 @@ ALTER TABLE LMControlHistory
 
 /* Start YUK-15729 */
 ALTER TABLE DYNAMICPOINTDISPATCH DROP (STALECOUNT, LastAlarmLogID);
-GO
 /* End YUK-15729 */
 
 /* Start YUK-15723*/
@@ -733,7 +729,7 @@ ADD ThirdPartyName VARCHAR2(128);
 
 ALTER TABLE EncryptionKey
 MODIFY PrivateKey VARCHAR2(1920);
-/* End YUK-15987
+/* End YUK-15987 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

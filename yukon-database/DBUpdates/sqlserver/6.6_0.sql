@@ -7,6 +7,7 @@
 INSERT INTO State VALUES(-20, 14, 'N/A', 9, 6, 0);
 INSERT INTO State VALUES(-20, 15, 'N/A', 9, 6, 0);
 INSERT INTO State VALUES(-20, 16, 'N/A', 9, 6, 0);
+GO
 /* @error ignore-end */
 /* End YUK-15182 */
 
@@ -20,16 +21,19 @@ AND Value = '/cc/user/overview.jsf';
 UPDATE YukonGroupRole SET Value = '/dr/cc/home' 
 WHERE RolePropertyId = -10800 
 AND Value = '/cc/ciSetup.jsf';
+GO
 /* End YUK-15180 */
 
 /* Start YUK-15216 */
 UPDATE DeviceConfigCategoryItem 
 SET ItemName = 'timeOffset', 
     ItemValue = CASE 
-                  WHEN ItemValue='true' THEN 'LOCAL' 
+                  WHEN ItemValue='true' 
+                  THEN 'LOCAL' 
                   ELSE 'UTC' 
                 END
 WHERE ItemName = 'localTime';
+GO
 /* End YUK-15216 */
 
 /* Start YUK-15201 */
@@ -58,22 +62,22 @@ BEGIN TRY
 
     DECLARE @start_time     DATETIME;
 
-    DECLARE @objectid       int;
-    DECLARE @indexid        int;
-    DECLARE @partitioncount bigint;
-    DECLARE @schemaname     nvarchar(130);
-    DECLARE @objectname     nvarchar(130);
-    DECLARE @indexname      nvarchar(130);
-    DECLARE @partitionnum   bigint;
-    DECLARE @partitions     bigint;
-    DECLARE @frag           float;
-    DECLARE @pagecount      int;
-    DECLARE @command        nvarchar(4000);
-    DECLARE @output         nvarchar(4000);
+    DECLARE @objectid       INT;
+    DECLARE @indexid        INT;
+    DECLARE @partitioncount BIGINT;
+    DECLARE @schemaname     NVARCHAR(130);
+    DECLARE @objectname     NVARCHAR(130);
+    DECLARE @indexname      NVARCHAR(130);
+    DECLARE @partitionnum   BIGINT;
+    DECLARE @partitions     BIGINT;
+    DECLARE @frag           FLOAT;
+    DECLARE @pagecount      INT;
+    DECLARE @command        NVARCHAR(4000);
+    DECLARE @output         NVARCHAR(4000);
 
-    DECLARE @page_count_minimum   smallint
-    DECLARE @frag_min_reorg       float
-    DECLARE @frag_min_rebuild     float
+    DECLARE @page_count_minimum   SMALLINT
+    DECLARE @frag_min_reorg       FLOAT
+    DECLARE @frag_min_rebuild     FLOAT
 
     SET @page_count_minimum       = 50
     SET @frag_min_reorg           = 10.0
@@ -88,9 +92,9 @@ BEGIN TRY
         page_count AS PageCount
         INTO #work_to_do
     FROM sys.dm_db_index_physical_stats (DB_ID(), NULL, NULL , NULL, 'LIMITED')
-        WHERE avg_fragmentation_in_percent > @frag_min_reorg
-        AND index_id > 0
-        AND page_count > @page_count_minimum;
+    WHERE avg_fragmentation_in_percent > @frag_min_reorg
+    AND index_id > 0
+    AND page_count > @page_count_minimum;
 
     /* Declare the cursor for the list of partitions (from temp table work_to_do) to be processed. */
     DECLARE partitions CURSOR FOR SELECT * FROM #work_to_do;
@@ -104,16 +108,16 @@ BEGIN TRY
     BEGIN
 
         SELECT @objectname = QUOTENAME(o.name), @schemaname = QUOTENAME(s.name)
-        FROM sys.objects AS o JOIN sys.schemas as s ON s.schema_id = o.schema_id
-            WHERE o.object_id = @objectid;
+        FROM sys.objects AS o JOIN sys.schemas AS s ON s.schema_id = o.schema_id
+        WHERE o.object_id = @objectid;
 
         SELECT @indexname = QUOTENAME(name)
         FROM sys.indexes
-            WHERE  object_id = @objectid AND index_id = @indexid;
+        WHERE  object_id = @objectid AND index_id = @indexid;
 
         SELECT @partitioncount = count (*)
         FROM sys.partitions
-            WHERE object_id = @objectid AND index_id = @indexid;
+        WHERE object_id = @objectid AND index_id = @indexid;
 
         SET @command = N'ALTER INDEX ' + @indexname + N' ON ' + @schemaname + N'.' + @objectname;
 
@@ -123,9 +127,9 @@ BEGIN TRY
             SET @command = @command + N' REORGANIZE';
 
         IF @partitioncount > 1
-            SET @command = @command + N' PARTITION=' + CAST(@partitionnum AS nvarchar(10));
+            SET @command = @command + N' PARTITION=' + CAST(@partitionnum AS NVARCHAR(10));
 
-        SET @output = @command + N' : Fragmentation: ' + CAST(@frag AS varchar(15)) + ' : Page Count: ' + CAST(@pagecount AS varchar(15));
+        SET @output = @command + N' : Fragmentation: ' + CAST(@frag AS varchar(15)) + ' : Page Count: ' + CAST(@pagecount AS VARCHAR(15));
 
         SET @start_time = CURRENT_TIMESTAMP;
         /* Execute the REBUILD or REORGANIZE command on the table index */
@@ -184,8 +188,8 @@ GO
 
 /* Start YUK-15280 */
 CREATE TABLE UserSystemMetric  (
-   UserId               numeric              not null,
-   SystemHealthMetricId varchar(64)          not null,
+   UserId               NUMERIC              NOT NULL,
+   SystemHealthMetricId VARCHAR(64)          NOT NULL,
    CONSTRAINT PK_UserSystemMetric PRIMARY KEY (UserId, SystemHealthMetricId)
 );
 
@@ -193,26 +197,26 @@ ALTER TABLE UserSystemMetric
    ADD CONSTRAINT FK_UserSystemMetric_YukonUser FOREIGN KEY (UserId)
       REFERENCES YukonUser (UserID)
       ON DELETE CASCADE;
+GO
 /* End YUK-15280 */
 
       
 /* Start YUK-15374 */
-create table RfnBroadcastEventSummary (
-   RfnBroadcastEventId  numeric        not null,
-   Success              numeric         not null,
-   SuccessUnenrolled    numeric         not null,
-   Failure              numeric         not null,
-   Unknown              numeric         not null,
-   constraint PK_RFNBROADCASTEVENTSUMMARY primary key (RfnBroadcastEventId)
-)
-go
+CREATE TABLE RfnBroadcastEventSummary (
+   RfnBroadcastEventId  NUMERIC        NOT NULL,
+   Success              NUMERIC        NOT NULL,
+   SuccessUnenrolled    NUMERIC        NOT NULL,
+   Failure              NUMERIC        NOT NULL,
+   Unknown              NUMERIC        NOT NULL,
+   CONSTRAINT PK_RFNBROADCASTEVENTSUMMARY PRIMARY KEY (RfnBroadcastEventId)
+);
+GO
 
-alter table RfnBroadcastEventSummary
-   add constraint FK_RFNBROAD_REFERENCE_RFNBROAD foreign key (RfnBroadcastEventId)
-      references RfnBroadcastEvent (RfnBroadcastEventId)
-         on delete cascade
-go
-
+ALTER TABLE RfnBroadcastEventSummary
+   ADD CONSTRAINT FK_RFNBROAD_REFERENCE_RFNBROAD FOREIGN KEY (RfnBroadcastEventId)
+      REFERENCES RfnBroadcastEvent (RfnBroadcastEventId)
+         ON DELETE CASCADE;
+GO
 /* End YUK-15374 */
 
 /* Start YUK-15251 */
@@ -223,6 +227,7 @@ WHERE PageName = 'substation';
 UPDATE UserPage
 SET PageName = 'substation.VIEW'
 WHERE PageName = 'substation';
+GO
 /* End YUK-15251 */
 
 /* Start YUK-15268 */
@@ -253,6 +258,7 @@ WHERE RolePropertyId =  -20211;
   
 DELETE FROM YukonRoleProperty
 WHERE RolePropertyId =  -20211;
+GO
 /* End YUK-15268 */
 
 /* Start YUK-15173 */
@@ -270,6 +276,7 @@ BEGIN
         + '~\YukonMisc\YukonDatabase\DatabaseUpdates\SqlServer\RPH_Index_Modification.sql';
     RAISERROR(@ErrorText, 16, 1);
 END;
+GO
 /* @end-block */
 /* End YUK-15173 */
 
@@ -295,6 +302,7 @@ UPDATE ThemeProperty
 SET Value = -1 
 WHERE Value = 1 
   AND Property = 'LOGO';
+GO
 /* End YUK-15217 */
 
 /* Start YUK-15352 */
@@ -314,6 +322,7 @@ JOIN Point p ON p.PointId = dpd.PointId
 JOIN YukonPAObject y ON y.PAObjectID = p.PAObjectID
 WHERE p.ServiceFlag = 'N' 
   AND CAST(dpd.Tags AS BIGINT) & 0x01 != 0;
+GO
 /* End YUK-15352 */
 
 /* Start YUK-15271 */
@@ -323,45 +332,46 @@ FROM Point p
 WHERE p.PAObjectID = 0
   AND p.PointType != 'System'
   AND p.PointId NOT IN (SELECT PointId FROM PointAlarming);
+GO
 /* End YUK-15271 */
 
 /* Start YUK-15438 */
 CREATE TABLE BehaviorReport (
-   BehaviorReportId     NUMERIC              not null,
-   DeviceId             NUMERIC              not null,
-   BehaviorType         VARCHAR(60)          not null,
-   BehaviorStatus       VARCHAR(60)          not null,
-   TimeStamp            DATETIME             not null,
+   BehaviorReportId     NUMERIC              NOT NULL,
+   DeviceId             NUMERIC              NOT NULL,
+   BehaviorType         VARCHAR(60)          NOT NULL,
+   BehaviorStatus       VARCHAR(60)          NOT NULL,
+   TimeStamp            DATETIME             NOT NULL,
    CONSTRAINT PK_BEHAVIORREPORT PRIMARY KEY (BehaviorReportId)
 );
 GO
 
 CREATE TABLE BehaviorReportValue (
-   BehaviorReportId     NUMERIC              not null,
-   Name                 VARCHAR(60)          not null,
-   Value                VARCHAR(100)         not null,
+   BehaviorReportId     NUMERIC              NOT NULL,
+   Name                 VARCHAR(60)          NOT NULL,
+   Value                VARCHAR(100)         NOT NULL,
    CONSTRAINT PK_BEHAVIORREPORTVALUE PRIMARY KEY (BehaviorReportId, Name)
 );
 GO
 
 CREATE TABLE DeviceBehaviorMap (
-   BehaviorId           NUMERIC              not null,
-   DeviceId             NUMERIC              not null,
+   BehaviorId           NUMERIC              NOT NULL,
+   DeviceId             NUMERIC              NOT NULL,
    CONSTRAINT PK_DEVICEBEHAVIORMAP PRIMARY KEY (BehaviorId, DeviceId)
 );
 GO
 
 CREATE TABLE Behavior (
-   BehaviorId           NUMERIC              not null,
-   BehaviorType         VARCHAR(60)          not null,
+   BehaviorId           NUMERIC              NOT NULL,
+   BehaviorType         VARCHAR(60)          NOT NULL,
    CONSTRAINT PK_BEHAVIOR PRIMARY KEY (BehaviorId)
 );
 GO
 
 CREATE TABLE BehaviorValue (
-   BehaviorId           NUMERIC              not null,
-   Name                 VARCHAR(60)          not null,
-   Value                VARCHAR(100)         not null,
+   BehaviorId           NUMERIC              NOT NULL,
+   Name                 VARCHAR(60)          NOT NULL,
+   Value                VARCHAR(100)         NOT NULL,
    CONSTRAINT PK_BEHAVIORVALUE PRIMARY KEY (BehaviorId, Name)
 );
 GO
@@ -420,65 +430,65 @@ BEGIN
           FROM [dbo].[DeviceConfigCategoryItem]
 
     UPDATE DeviceConfigCategoryItem SET ItemValue = ItemValue + 1
-    WHERE ItemName like 'channel%PhysicalChannel' 
+    WHERE ItemName LIKE 'channel%PhysicalChannel' 
 
-    UPDATE DeviceConfigCategoryItem SET ItemValue = CONVERT(DECIMAL(4,2), cast(ItemValue as decimal(4,2)) / 4)
-    WHERE ItemName like 'relay%Timer' 
+    UPDATE DeviceConfigCategoryItem SET ItemValue = CONVERT(DECIMAL(4,2), CAST(ItemValue AS DECIMAL(4,2)) / 4)
+    WHERE ItemName LIKE 'relay%Timer' 
 
     UPDATE DeviceConfigCategoryItem SET ItemValue = ItemValue * 15
     WHERE ItemName = 'tableReadInterval' 
 
     UPDATE DeviceConfigCategoryItem SET ItemValue = 
         CASE
-            WHEN ItemName like 'displayItem%' AND ItemValue='0'  THEN 'SLOT_DISABLED' 
-            WHEN ItemName like 'displayItem%' AND ItemValue='1'  THEN 'NO_SEGMENTS'
-            WHEN ItemName like 'displayItem%' AND ItemValue='2'  THEN 'ALL_SEGMENTS'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='0'  THEN 'SLOT_DISABLED' 
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='1'  THEN 'NO_SEGMENTS'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='2'  THEN 'ALL_SEGMENTS'
             /* 3 is unused */
-            WHEN ItemName like 'displayItem%' AND ItemValue='4'  THEN 'CURRENT_LOCAL_TIME'
-            WHEN ItemName like 'displayItem%' AND ItemValue='5'  THEN 'CURRENT_LOCAL_DATE'
-            WHEN ItemName like 'displayItem%' AND ItemValue='6'  THEN 'TOTAL_KWH'
-            WHEN ItemName like 'displayItem%' AND ItemValue='7'  THEN 'NET_KWH'
-            WHEN ItemName like 'displayItem%' AND ItemValue='8'  THEN 'DELIVERED_KWH'
-            WHEN ItemName like 'displayItem%' AND ItemValue='9'  THEN 'RECEIVED_KWH'
-            WHEN ItemName like 'displayItem%' AND ItemValue='10' THEN 'LAST_INTERVAL_KW'
-            WHEN ItemName like 'displayItem%' AND ItemValue='11' THEN 'PEAK_KW'
-            WHEN ItemName like 'displayItem%' AND ItemValue='12' THEN 'PEAK_KW_DATE'
-            WHEN ItemName like 'displayItem%' AND ItemValue='13' THEN 'PEAK_KW_TIME'
-            WHEN ItemName like 'displayItem%' AND ItemValue='14' THEN 'LAST_INTERVAL_VOLTAGE'
-            WHEN ItemName like 'displayItem%' AND ItemValue='15' THEN 'PEAK_VOLTAGE'
-            WHEN ItemName like 'displayItem%' AND ItemValue='16' THEN 'PEAK_VOLTAGE_DATE'
-            WHEN ItemName like 'displayItem%' AND ItemValue='17' THEN 'PEAK_VOLTAGE_TIME'
-            WHEN ItemName like 'displayItem%' AND ItemValue='18' THEN 'MINIMUM_VOLTAGE'
-            WHEN ItemName like 'displayItem%' AND ItemValue='19' THEN 'MINIMUM_VOLTAGE_DATE'
-            WHEN ItemName like 'displayItem%' AND ItemValue='20' THEN 'MINIMUM_VOLTAGE_TIME'
-            WHEN ItemName like 'displayItem%' AND ItemValue='21' THEN 'TOU_RATE_A_KWH'
-            WHEN ItemName like 'displayItem%' AND ItemValue='22' THEN 'TOU_RATE_A_PEAK_KW'
-            WHEN ItemName like 'displayItem%' AND ItemValue='23' THEN 'TOU_RATE_A_DATE_OF_PEAK_KW'
-            WHEN ItemName like 'displayItem%' AND ItemValue='24' THEN 'TOU_RATE_A_TIME_OF_PEAK_KW'
-            WHEN ItemName like 'displayItem%' AND ItemValue='25' THEN 'TOU_RATE_B_KWH'
-            WHEN ItemName like 'displayItem%' AND ItemValue='26' THEN 'TOU_RATE_B_PEAK_KW'
-            WHEN ItemName like 'displayItem%' AND ItemValue='27' THEN 'TOU_RATE_B_DATE_OF_PEAK_KW'
-            WHEN ItemName like 'displayItem%' AND ItemValue='28' THEN 'TOU_RATE_B_TIME_OF_PEAK_KW'
-            WHEN ItemName like 'displayItem%' AND ItemValue='29' THEN 'TOU_RATE_C_KWH'
-            WHEN ItemName like 'displayItem%' AND ItemValue='30' THEN 'TOU_RATE_C_PEAK_KW'
-            WHEN ItemName like 'displayItem%' AND ItemValue='31' THEN 'TOU_RATE_C_DATE_OF_PEAK_KW'
-            WHEN ItemName like 'displayItem%' AND ItemValue='32' THEN 'TOU_RATE_C_TIME_OF_PEAK_KW'
-            WHEN ItemName like 'displayItem%' AND ItemValue='33' THEN 'TOU_RATE_D_KWH'
-            WHEN ItemName like 'displayItem%' AND ItemValue='34' THEN 'TOU_RATE_D_PEAK_KW'
-            WHEN ItemName like 'displayItem%' AND ItemValue='35' THEN 'TOU_RATE_D_DATE_OF_PEAK_KW'
-            WHEN ItemName like 'displayItem%' AND ItemValue='36' THEN 'TOU_RATE_D_TIME_OF_PEAK_KW'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='4'  THEN 'CURRENT_LOCAL_TIME'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='5'  THEN 'CURRENT_LOCAL_DATE'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='6'  THEN 'TOTAL_KWH'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='7'  THEN 'NET_KWH'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='8'  THEN 'DELIVERED_KWH'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='9'  THEN 'RECEIVED_KWH'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='10' THEN 'LAST_INTERVAL_KW'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='11' THEN 'PEAK_KW'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='12' THEN 'PEAK_KW_DATE'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='13' THEN 'PEAK_KW_TIME'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='14' THEN 'LAST_INTERVAL_VOLTAGE'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='15' THEN 'PEAK_VOLTAGE'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='16' THEN 'PEAK_VOLTAGE_DATE'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='17' THEN 'PEAK_VOLTAGE_TIME'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='18' THEN 'MINIMUM_VOLTAGE'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='19' THEN 'MINIMUM_VOLTAGE_DATE'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='20' THEN 'MINIMUM_VOLTAGE_TIME'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='21' THEN 'TOU_RATE_A_KWH'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='22' THEN 'TOU_RATE_A_PEAK_KW'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='23' THEN 'TOU_RATE_A_DATE_OF_PEAK_KW'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='24' THEN 'TOU_RATE_A_TIME_OF_PEAK_KW'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='25' THEN 'TOU_RATE_B_KWH'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='26' THEN 'TOU_RATE_B_PEAK_KW'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='27' THEN 'TOU_RATE_B_DATE_OF_PEAK_KW'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='28' THEN 'TOU_RATE_B_TIME_OF_PEAK_KW'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='29' THEN 'TOU_RATE_C_KWH'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='30' THEN 'TOU_RATE_C_PEAK_KW'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='31' THEN 'TOU_RATE_C_DATE_OF_PEAK_KW'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='32' THEN 'TOU_RATE_C_TIME_OF_PEAK_KW'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='33' THEN 'TOU_RATE_D_KWH'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='34' THEN 'TOU_RATE_D_PEAK_KW'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='35' THEN 'TOU_RATE_D_DATE_OF_PEAK_KW'
+            WHEN ItemName LIKE 'displayItem%' AND ItemValue='36' THEN 'TOU_RATE_D_TIME_OF_PEAK_KW'
 
-            WHEN ItemName like 'channel%PeakKWResolution' AND ItemValue='1.0' THEN 'ZERO' 
-            WHEN ItemName like 'channel%PeakKWResolution' AND ItemValue='10.0' THEN 'ONE' 
+            WHEN ItemName LIKE 'channel%PeakKWResolution' AND ItemValue='1.0' THEN 'ZERO' 
+            WHEN ItemName LIKE 'channel%PeakKWResolution' AND ItemValue='10.0' THEN 'ONE' 
 
-            WHEN ItemName like 'channel%ProfileResolution' AND ItemValue='.1' THEN 'MINUS_ONE' 
-            WHEN ItemName like 'channel%ProfileResolution' AND ItemValue='1.0' THEN 'ZERO' 
-            WHEN ItemName like 'channel%ProfileResolution' AND ItemValue='10.0' THEN 'ONE' 
+            WHEN ItemName LIKE 'channel%ProfileResolution' AND ItemValue='.1' THEN 'MINUS_ONE' 
+            WHEN ItemName LIKE 'channel%ProfileResolution' AND ItemValue='1.0' THEN 'ZERO' 
+            WHEN ItemName LIKE 'channel%ProfileResolution' AND ItemValue='10.0' THEN 'ONE' 
 
-            WHEN ItemName like 'channel%LastIntervalDemandResolution' AND ItemValue='.01' THEN 'MINUS_TWO' 
-            WHEN ItemName like 'channel%LastIntervalDemandResolution' AND ItemValue='.1' THEN 'MINUS_ONE' 
-            WHEN ItemName like 'channel%LastIntervalDemandResolution' AND ItemValue='1.0' THEN 'ZERO' 
-            WHEN ItemName like 'channel%LastIntervalDemandResolution' AND ItemValue='10.0' THEN 'ONE' 
+            WHEN ItemName LIKE 'channel%LastIntervalDemandResolution' AND ItemValue='.01' THEN 'MINUS_TWO' 
+            WHEN ItemName LIKE 'channel%LastIntervalDemandResolution' AND ItemValue='.1' THEN 'MINUS_ONE' 
+            WHEN ItemName LIKE 'channel%LastIntervalDemandResolution' AND ItemValue='1.0' THEN 'ZERO' 
+            WHEN ItemName LIKE 'channel%LastIntervalDemandResolution' AND ItemValue='10.0' THEN 'ONE' 
 
             WHEN ItemName = 'electronicMeter' AND ItemValue='0' THEN 'NONE'
             WHEN ItemName = 'electronicMeter' AND ItemValue='1' THEN 'S4'
@@ -490,10 +500,10 @@ BEGIN
             WHEN ItemName = 'electronicMeter' AND ItemValue='7' THEN 'SENTINEL'
             WHEN ItemName = 'electronicMeter' AND ItemValue='8' THEN 'GEKV2C'
 
-            WHEN ItemName like 'channel%Type' AND ItemValue='0' THEN 'CHANNEL_NOT_USED'
-            WHEN ItemName like 'channel%Type' AND ItemValue='1' THEN 'ELECTRONIC_METER'
-            WHEN ItemName like 'channel%Type' AND ItemValue='2' THEN 'TWO_WIRE_KYZ_FORM_A'
-            WHEN ItemName like 'channel%Type' AND ItemValue='3' THEN 'THREE_WIRE_KYZ_FORM_C'
+            WHEN ItemName LIKE 'channel%Type' AND ItemValue='0' THEN 'CHANNEL_NOT_USED'
+            WHEN ItemName LIKE 'channel%Type' AND ItemValue='1' THEN 'ELECTRONIC_METER'
+            WHEN ItemName LIKE 'channel%Type' AND ItemValue='2' THEN 'TWO_WIRE_KYZ_FORM_A'
+            WHEN ItemName LIKE 'channel%Type' AND ItemValue='3' THEN 'THREE_WIRE_KYZ_FORM_C'
 
             WHEN ItemName = 'sunday' AND ItemValue = 'Schedule 1' THEN 'SCHEDULE_1'
             WHEN ItemName = 'monday' AND ItemValue = 'Schedule 1' THEN 'SCHEDULE_1'
@@ -542,12 +552,14 @@ BEGIN
             WHEN ItemName = 'timeZoneOffset' AND ItemValue = '-10' THEN 'HONOLULU'
             ELSE ItemValue
         END
+        DROP TABLE temp_DeviceConfigCategoryItem_Translate
 END;
-
+GO
 /* End YUK-13440 */
 
 /* Start YUK-15428 */
 DELETE FROM YukonServices WHERE ServiceId IN (6, -6);
+GO
 /* End YUK-15428 */
 
 /* Start YUK-15548 */
@@ -661,6 +673,7 @@ INSERT INTO DeviceTypeCommand VALUES (-1211, -193, 'RFN-530S4eAT', 1, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1217, -193, 'RFN-530S4eRD', 1, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-1223, -193, 'RFN-530S4eRT', 1, 'Y', -1);
+GO
 /* @error ignore-end */
 /* End YUK-15502 */
 
@@ -670,6 +683,7 @@ INSERT INTO Command VALUES (-213, 'ping', 'Ping', 'All Two Way LCR');
 
 INSERT INTO DeviceTypeCommand VALUES (-1229, -212, 'LCR-3102', 16, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1230, -213, 'LCR-3102', 17, 'Y', -1);
+GO
 /* End YUK-15671 */
 
 /* Start YUK-15633 */
@@ -689,11 +703,13 @@ GO
 
 /* Start YUK-15720*/
 INSERT INTO YukonRoleProperty VALUES (-21316, -213, 'RF Data Streaming', 'false', 'Controls access to RF data streaming configuration actions.');
+GO
 /* End YUK-15720*/
 
 /* Start YUK-15712 */
 /* @error ignore-begin */
 INSERT INTO Command VALUES (-214, 'putconfig install all', 'Send configuration', 'ALL RFNs');
+GO
 /* @error ignore-end */
 /* End YUK-15712 */
 
@@ -736,6 +752,7 @@ DELETE FROM DeviceTypeCommand WHERE DeviceCommandID IN (-1045, -1051, -1057, -10
     -1090, -1092, -1093, -1094, -1095, -1097, -1098, -1099, -1100, -1102, -1103, -1104, -1105, -1112, -1113, -1114,
     -1115, -1117, -1118, -1119, -1120, -1122, -1123, -1124, -1125, -1127, -1128, -1129, -1130, -1132, -1133, -1134,
     -1135, -1164, -1170, -1176, -1182);
+GO
 /* @error ignore-end */
 /* End YUK-15711 */
 
@@ -744,10 +761,12 @@ INSERT INTO YukonListEntry VALUES (2030, 1005, 0, 'Honeywell Wi-Fi 9000', 1332);
 INSERT INTO YukonListEntry VALUES (2031, 1005, 0, 'Honeywell Wi-Fi VisionPRO 8000', 1333);
 INSERT INTO YukonListEntry VALUES (2032, 1005, 0, 'Honeywell Wi-Fi FocusPRO', 1334);
 INSERT INTO YukonListEntry VALUES (2033, 1005, 0, 'Honeywell Wi-Fi Thermostat', 1335);
+GO
 /* End YUK-15746 */
 
 /* Start YUK-15836 */
 INSERT INTO YukonServices VALUES (22, 'HoneywellWifiDataListener', 'classpath:com/cannontech/services/honeywellWifiListener/honeywellWifiMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
+GO
 /* End YUK-15836 */
 
 /* Start YUK-15859 */
@@ -841,15 +860,15 @@ EXEC sp_rename 'EncryptionKey.Value', 'PrivateKey', 'COLUMN';
 GO
 
 ALTER TABLE EncryptionKey
-ADD PublicKey varchar(608);
+ADD PublicKey VARCHAR(608);
 
 ALTER TABLE EncryptionKey
-ADD ThirdPartyName varchar(128);
+ADD ThirdPartyName VARCHAR(128);
 
 ALTER TABLE EncryptionKey
 ALTER COLUMN PrivateKey VARCHAR(1920) NOT NULL;
 GO
-/* End YUK-15987
+/* End YUK-15987 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
