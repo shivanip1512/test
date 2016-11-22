@@ -11,6 +11,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
@@ -55,6 +56,16 @@ public abstract class AbstractHoneywellWifiDataProcessingStrategy implements Hon
         pointData.setTagsDataTimestampValid(true);
         
         log.debug("Submitting point data: " + pointData);
-        asyncDynamicDataSource.putValue(pointData);
+        
+        boolean dispatchConnected = false;
+        while (!dispatchConnected) {
+            try {
+                asyncDynamicDataSource.putValue(pointData);
+                dispatchConnected = true;
+            } catch (DispatchNotConnectedException e) {
+                log.info("Not connected to Dispatch. Point data cannot be processed. Retrying in 5 seconds.");
+                try { Thread.sleep(5000); } catch (InterruptedException e1) { /*ignore interruption*/ }
+            }
+        }
     }
 }

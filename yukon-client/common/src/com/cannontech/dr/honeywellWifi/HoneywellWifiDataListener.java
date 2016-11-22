@@ -16,6 +16,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -84,6 +85,9 @@ public class HoneywellWifiDataListener {
                             if (deleteMessageOnProcessingFailure) {
                                 log.info("Deleting bad message.");
                                 removeMessageFromQueue(data);
+                            } else {
+                                log.info("Unlocking bad message.");
+                                unlockMessage(data);
                             }
                         }
                     });
@@ -116,18 +120,13 @@ public class HoneywellWifiDataListener {
         Configuration config = new Configuration();
         config = ServiceBusConfiguration.configureWithConnectionString(null, config, connectionString);
 
-        //TODO: proxy support
-//        Optional<YukonHttpProxy> oProxy = YukonHttpProxy.fromGlobalSetting(settingDao);
-//        if (oProxy.isPresent()) {
-//            YukonHttpProxy proxy = oProxy.get();
-            // Azure seems to ignore the system-wide proxy settings.
-//            System.setProperty("http.proxyHost", proxy.getHost());
-//            System.setProperty("http.proxyPort", proxy.getPortString());
-//            log.debug("Set system proxy: " + proxy.getHost() + ":" + proxy.getPortString());
-            // Are these settings available in service bus 0.95?
-//            config.setProperty(Configuration.PROPERTY_HTTP_PROXY_HOST, "proxy.etn.com"); //http.proxyHost
-//            config.setProperty(Configuration.PROPERTY_HTTP_PROXY_PORT, 8080); //http.proxyPort
-//        }
+        Optional<YukonHttpProxy> oProxy = YukonHttpProxy.fromGlobalSetting(settingDao);
+        if (oProxy.isPresent()) {
+            YukonHttpProxy proxy = oProxy.get();
+            log.debug("Set Azure service bus proxy: " + proxy.getHost() + ":" + proxy.getPortString());
+            config.setProperty(Configuration.PROPERTY_HTTP_PROXY_HOST, proxy.getHost());
+            config.setProperty(Configuration.PROPERTY_HTTP_PROXY_PORT, proxy.getPort());
+        }
         
         azureService = ServiceBusService.create(config);
     }
@@ -237,6 +236,19 @@ public class HoneywellWifiDataListener {
             azureService.deleteMessage(originalMessage);
         } catch (ServiceException e) {
             log.error("Error removing message from queue.", e);
+        }
+    }
+    
+    /**
+     * "Unlocks" the specified message on the Azure service bus queue, allowing it to be processed again. 
+     */
+    private void unlockMessage(HoneywellWifiData data) {
+        BrokeredMessage originalMessage = data.getOriginalMessage();
+        log.debug("Unlocking message, id=" + originalMessage.getMessageId());
+        try {
+            azureService.unlockMessage(originalMessage);
+        } catch (ServiceException e) {
+            log.error("Error unlocking message on queue.", e);
         }
     }
 }
