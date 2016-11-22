@@ -2,18 +2,25 @@ package com.cannontech.dbeditor.wizard.device.lmgroup;
 
 import java.awt.Component;
 import java.awt.Dimension;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListSelectionModel;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.device.lm.LMFactory;
+import com.cannontech.spring.YukonSpringHook;
 
 public class SwitchTypePanel extends DataInputPanel {
     private javax.swing.JLabel ivjSelectLabel = null;
@@ -24,19 +31,15 @@ public class SwitchTypePanel extends DataInputPanel {
     public static final long SHOW_PROTOCOL = 
             Long.parseLong(ClientSession.getInstance().getRolePropertyValue(YukonRoleProperty.DATABASE_EDITOR_OPTIONAL_PRODUCT_DEV), 16);
 
-    private static final PaoType[] GROUP_LIST = { PaoType.LM_GROUP_DIGI_SEP, PaoType.LM_GROUP_ECOBEE, PaoType.LM_GROUP_HONEYWELL,
-            PaoType.LM_GROUP_EMETCON, PaoType.LM_GROUP_EXPRESSCOMM,
-            PaoType.LM_GROUP_GOLAY, PaoType.LM_GROUP_MCT,
-            PaoType.LM_GROUP_POINT, PaoType.LM_GROUP_RFN_EXPRESSCOMM,
-            PaoType.LM_GROUP_RIPPLE, PaoType.LM_GROUP_VERSACOM };
+    private static List<PaoType> GROUP_LIST = new LinkedList<PaoType>(Arrays.asList(PaoType.LM_GROUP_DIGI_SEP,
+        PaoType.LM_GROUP_ECOBEE, PaoType.LM_GROUP_EMETCON, PaoType.LM_GROUP_EXPRESSCOMM, PaoType.LM_GROUP_GOLAY,
+        PaoType.LM_GROUP_MCT, PaoType.LM_GROUP_POINT, PaoType.LM_GROUP_RFN_EXPRESSCOMM, PaoType.LM_GROUP_RIPPLE,
+        PaoType.LM_GROUP_VERSACOM));
 
-    private static final PaoType[] GROUP_LIST_SA = { PaoType.LM_GROUP_DIGI_SEP, PaoType.LM_GROUP_ECOBEE, PaoType.LM_GROUP_HONEYWELL,
-            PaoType.LM_GROUP_EMETCON, PaoType.LM_GROUP_EXPRESSCOMM,
-            PaoType.LM_GROUP_GOLAY, PaoType.LM_GROUP_MCT,
-            PaoType.LM_GROUP_POINT, PaoType.LM_GROUP_RFN_EXPRESSCOMM,
-            PaoType.LM_GROUP_RIPPLE, PaoType.LM_GROUP_SA205,
-            PaoType.LM_GROUP_SA305, PaoType.LM_GROUP_SADIGITAL,
-            PaoType.LM_GROUP_VERSACOM };
+    private static List<PaoType> GROUP_LIST_SA = new LinkedList<PaoType>(Arrays.asList(PaoType.LM_GROUP_DIGI_SEP,
+        PaoType.LM_GROUP_ECOBEE, PaoType.LM_GROUP_EMETCON, PaoType.LM_GROUP_EXPRESSCOMM, PaoType.LM_GROUP_GOLAY,
+        PaoType.LM_GROUP_MCT, PaoType.LM_GROUP_POINT, PaoType.LM_GROUP_RFN_EXPRESSCOMM, PaoType.LM_GROUP_RIPPLE,
+        PaoType.LM_GROUP_SA205, PaoType.LM_GROUP_SA305, PaoType.LM_GROUP_SADIGITAL, PaoType.LM_GROUP_VERSACOM));
 
     public SwitchTypePanel() {
         super();
@@ -53,12 +56,21 @@ public class SwitchTypePanel extends DataInputPanel {
     }
 
     private PaoType[] getGroupList() {
+        ConfigurationSource masterConfigSource =
+            YukonSpringHook.getBean("configurationSource", ConfigurationSource.class);
+        boolean honeywellEnabled = masterConfigSource.getBoolean(MasterConfigBoolean.HONEYWELL_SUPPORT_ENABLED, false);
+        if (honeywellEnabled) {
+            GROUP_LIST.add(PaoType.LM_GROUP_HONEYWELL);
+            Collections.sort(GROUP_LIST);
+            GROUP_LIST_SA.add(PaoType.LM_GROUP_HONEYWELL);
+            Collections.sort(GROUP_LIST);
+        }
         // normally we cannot show SA protocol groups, this checks the
         // specific property.
         if ((SHOW_PROTOCOL & ClientRights.SHOW_ADDITIONAL_PROTOCOLS) != 0) {
-            return SwitchTypePanel.GROUP_LIST_SA;
+            return SwitchTypePanel.GROUP_LIST_SA.toArray(new PaoType[GROUP_LIST_SA.size()]);
         }
-        return SwitchTypePanel.GROUP_LIST;
+        return SwitchTypePanel.GROUP_LIST.toArray(new PaoType[GROUP_LIST.size()]);
     }
 
     @Override

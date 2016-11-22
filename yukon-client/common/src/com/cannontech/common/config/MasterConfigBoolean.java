@@ -34,6 +34,7 @@ public enum MasterConfigBoolean {
     USE_OLD_FORGOTTEN_PASSWORD_PAGE,
     USER_FEEDBACK_ENABLED,
     VIRTUAL_PROGRAMS,
+    HONEYWELL_SUPPORT_ENABLED,
     ;
     
 }

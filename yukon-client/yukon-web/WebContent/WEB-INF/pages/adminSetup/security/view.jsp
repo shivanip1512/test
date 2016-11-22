@@ -214,9 +214,10 @@
                     <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  classes="js-blocker2" />
                 </div>
             </tags:boxContainer2>
-             <tags:boxContainer2 nameKey="honeywellKeyBox" styleClass="largeContainer">
-              <d:confirm on="#generateHonewellKeyFileBtn" nameKey="confirmGenerate" argument="Honeywell Key"/>
-                <c:choose>
+            <cti:checkRolesAndProperties value="HONEYWELL_SUPPORT_ENABLED">
+              <tags:boxContainer2 nameKey="honeywellKeyBox" styleClass="largeContainer">
+                <d:confirm on="#generateHonewellKeyFileBtn" nameKey="confirmGenerate" argument="Honeywell Key"/>
+                  <c:choose>
                       <c:when test="${fn:length(honeywellPublicKey) <= 0}">
                             <i:inline key=".noKeysAvailable" />
                       </c:when>
@@ -227,14 +228,15 @@
                 		              readonly="readonly">${honeywellPublicKey}</textarea>
         		          </div>
                       </c:otherwise>
-                </c:choose>
+                  </c:choose>
                 
-                <div class="page-action-area">
-                    <cti:button id="generateHonewellKeyFileBtn" nameKey="generateHonewellKeyFileBtn" />
-                    <cti:button id="importHoneywellKeyFileBtn" nameKey="importKeyFileBtn" />
-                    <cti:button id="copyBtn" nameKey="copyBtn" />
-                </div>
-            </tags:boxContainer2>
+                  <div class="page-action-area">
+                      <cti:button id="generateHonewellKeyFileBtn" nameKey="generateHonewellKeyFileBtn" />
+                      <cti:button id="importHoneywellKeyFileBtn" nameKey="importKeyFileBtn" />
+                      <cti:button id="copyBtn" nameKey="copyBtn" />
+                  </div>
+              </tags:boxContainer2>
+           </cti:checkRolesAndProperties>
         </div>
     </div>
     

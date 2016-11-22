@@ -7,8 +7,12 @@ import java.awt.Insets;
 import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.config.MasterConfigHelper;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.database.data.device.lm.LMFactory;
+import com.cannontech.spring.YukonSpringHook;
 
 public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInputPanel {
     ButtonGroup buttonGroup = new ButtonGroup();
@@ -160,12 +164,19 @@ public class LMProgramTypePanel extends com.cannontech.common.gui.util.DataInput
             constraintsJRadioButtonEcobeeProgram.insets = new Insets(9, 105, 8, 101);
             add(getJRadioButtonEcobeeControl(), constraintsJRadioButtonEcobeeProgram);
             
-            GridBagConstraints constraintsJRadioButtonHoneywellProgram = new GridBagConstraints();
-            constraintsJRadioButtonHoneywellProgram.gridx = 1; constraintsJRadioButtonHoneywellProgram.gridy = 4;
-            constraintsJRadioButtonHoneywellProgram.anchor = GridBagConstraints.WEST;
-            constraintsJRadioButtonHoneywellProgram.ipadx = 1;
-            constraintsJRadioButtonHoneywellProgram.insets = new Insets(9, 105, 151, 101);
-            add(getJRadioButtonHoneywellControl(), constraintsJRadioButtonHoneywellProgram);
+            ConfigurationSource masterConfigSource =
+                YukonSpringHook.getBean("configurationSource", ConfigurationSource.class);
+            boolean honeywellEnabled =
+                masterConfigSource.getBoolean(MasterConfigBoolean.HONEYWELL_SUPPORT_ENABLED, false);
+            if (honeywellEnabled) {
+                GridBagConstraints constraintsJRadioButtonHoneywellProgram = new GridBagConstraints();
+                constraintsJRadioButtonHoneywellProgram.gridx = 1;
+                constraintsJRadioButtonHoneywellProgram.gridy = 4;
+                constraintsJRadioButtonHoneywellProgram.anchor = GridBagConstraints.WEST;
+                constraintsJRadioButtonHoneywellProgram.ipadx = 1;
+                constraintsJRadioButtonHoneywellProgram.insets = new Insets(9, 105, 151, 101);
+                add(getJRadioButtonHoneywellControl(), constraintsJRadioButtonHoneywellProgram);
+            }
         } catch (java.lang.Throwable ivjExc) {
             handleException(ivjExc);
         }
