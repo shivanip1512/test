@@ -126,7 +126,7 @@ yukon.tools.map = (function() {
             source.addFeatures(icons);
             
             if (icons.length > 1) {
-                _map.getView().fitExtent(source.getExtent(), _map.getSize());
+                _map.getView().fit(source.getExtent(), _map.getSize());
             } else if (icons.length === 1) {
                 _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
                 _map.getView().setZoom(9);
