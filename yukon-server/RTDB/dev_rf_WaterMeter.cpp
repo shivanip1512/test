@@ -8,6 +8,8 @@
 #include "amq_connection.h"
 #include "message_factory.h"
 
+#include <future>
+
 
 namespace Cti       {
 namespace Devices   {
@@ -67,34 +69,19 @@ boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> readConfigurati
     ActiveMQConnectionManager::SerializedMessage    serialized
         = Messaging::Serialization::MessageSerializer<Rfn::RfnGetChannelConfigRequestMessage>::serialize( request ); 
 
-    boost::condition_variable   condition;
-    boost::mutex                mux;
-
-    std::atomic_bool    replyComplete = false;
-
-    boost::optional<Rfn::RfnGetChannelConfigReplyMessage>   returnedConfig;
+    std::promise<boost::optional<Rfn::RfnGetChannelConfigReplyMessage>> producer;
+    auto consumer = producer.get_future();
 
     auto msgReceivedCallback =
         [ & ]( const Rfn::RfnGetChannelConfigReplyMessage & reply )
         {
-            returnedConfig = reply;
-            {
-                boost::unique_lock<boost::mutex> lock( mux );
-
-                replyComplete = true;
-            }
-            condition.notify_one();
+            producer.set_value( reply );
         };
 
     auto timedOutCallback =
         [ & ](  )
         {
-            {
-                boost::unique_lock<boost::mutex> lock( mux );
-
-                replyComplete = true;
-            }
-            condition.notify_one();
+            producer.set_value( boost::none );
         };
 
     ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnGetChannelConfigReplyMessage>(
@@ -104,14 +91,7 @@ boost::optional<Messaging::Rfn::RfnGetChannelConfigReplyMessage> readConfigurati
             std::chrono::seconds{ 5 },
             timedOutCallback );
 
-    boost::unique_lock<boost::mutex> lock( mux );
-
-    while ( ! replyComplete )
-    {
-        condition.wait( lock );
-    }
-
-    return returnedConfig;
+    return consumer.get();
 }
 
 YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
@@ -199,35 +179,19 @@ YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, 
             ActiveMQConnectionManager::SerializedMessage    serialized
                 = Cti::Messaging::Serialization::MessageSerializer<Rfn::RfnSetChannelConfigRequestMessage>::serialize( request ); 
 
-            boost::condition_variable   condition;
-            boost::mutex                mux;
-
-            std::atomic_bool  replyComplete = false;
-
-            YukonError_t    returnCode = ClientErrors::None; 
+            std::promise<YukonError_t>  producer;
+            auto consumer = producer.get_future();
 
             auto msgReceivedCallback =
                 [ & ]( const Rfn::RfnSetChannelConfigReplyMessage & reply )
                 {
-                    returnCode = processChannelConfigReply( reply );
-                    {
-                        boost::unique_lock<boost::mutex> lock( mux );
-
-                        replyComplete = true;
-                    }
-                    condition.notify_one();
+                    producer.set_value( processChannelConfigReply( reply ) );
                 };
 
             auto timedOutCallback =
                 [ & ](  )
                 {
-                    returnCode = ClientErrors::NetworkManagerTimeout;
-                    {
-                        boost::unique_lock<boost::mutex> lock( mux );
-
-                        replyComplete = true;
-                    }
-                    condition.notify_one();
+                    producer.set_value( ClientErrors::NetworkManagerTimeout );
                 };
 
             ActiveMQConnectionManager::enqueueMessageWithCallbackFor<Rfn::RfnSetChannelConfigReplyMessage>(
@@ -237,14 +201,7 @@ YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, 
                     std::chrono::seconds{ 5 },
                     timedOutCallback );
 
-            boost::unique_lock<boost::mutex> lock( mux );
-
-            while ( ! replyComplete )
-            {
-                condition.wait( lock );
-            }
-
-            return returnCode;
+            return consumer.get();
         }
     }
 
