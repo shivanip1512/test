@@ -9,6 +9,7 @@
 #include "logger.h"
 
 #include "std_helper.h"
+#include "random_generator.h"
 
 #include <map>
 #include <random>
@@ -180,6 +181,10 @@ struct metric_response
     std::vector<channel> metrics;
 };
 
+const std::array<std::uint8_t, 5> intervals { 1, 3, 5, 15, 30 };
+
+RandomGenerator<size_t> random_interval_index { intervals.size() - 1 };  //  Constrain the new index to be a 0-based index that excludes the last element
+
 metric_response mangleResponse(metric_response contents, double mangleFactor)
 {
     unsigned long long steve = mangleFactor * pow( 2, contents.metrics.size() + 2 );  //  up to 61 metrics allowed for this method - as of 2016, we have 16 max (see streaming_s4_x above)
@@ -188,11 +193,18 @@ metric_response mangleResponse(metric_response contents, double mangleFactor)
 
     if( steve & 0x01 && ! contents.metrics.empty() )
     {
-        auto interval = contents.metrics[0].interval;
-        interval ^= static_cast<unsigned>(mangleFactor * 30);
+        //  select a random new interval
+        auto index = random_interval_index();
+        
+        if( intervals[index] == contents.metrics[0].interval )
+        {
+            //  ... but if it's the same as the original, use the next one
+            ++index %= intervals.size();
+        }
+
         for( auto& metric : contents.metrics )
         {
-            metric.interval = interval;
+            metric.interval = intervals[index];
         }
     }
     int enabledChannels = 0;

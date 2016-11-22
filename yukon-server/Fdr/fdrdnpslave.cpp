@@ -882,7 +882,7 @@ ControlStatus DnpSlave::tryPorterControl(const Protocols::DnpSlave::control_requ
         }
     }
 
-    const long userMessageId = _porterUserMsgIdGenerator;
+    const long userMessageId = _porterUserMsgIdGenerator();
 
     auto requestMsg =
         std::make_unique<CtiRequestMsg>(
@@ -1154,7 +1154,7 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
         }
     }
 
-    const long userMessageId = _porterUserMsgIdGenerator;
+    const long userMessageId = _porterUserMsgIdGenerator();
 
     auto requestMsg =
         std::make_unique<CtiRequestMsg>(

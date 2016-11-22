@@ -30,7 +30,7 @@ public:
     {
     }
 
-    operator T()
+    T operator()()
     {
         return _distribution(_generator);
     }

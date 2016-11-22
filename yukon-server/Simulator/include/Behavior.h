@@ -23,7 +23,7 @@ protected:
 
     bool behaviorOccurs()
     {
-        return _chance < _probability;
+        return _chance() < _probability;
     }
 
 private:

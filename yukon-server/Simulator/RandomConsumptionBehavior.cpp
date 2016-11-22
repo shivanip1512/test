@@ -25,7 +25,7 @@ void RandomConsumptionBehavior::apply(target_type &message, Logger &logger)
         {
             logger.breadcrumbLog("***** RANDOM CONSUMPTION VALUE GENERATED *****");
 
-            unsigned kwh = _consumptionValueGenerator;
+            unsigned kwh = _consumptionValueGenerator();
 
             // Remove the first three elements.
             message.data.erase(message.data.begin(), message.data.begin() + 3);
