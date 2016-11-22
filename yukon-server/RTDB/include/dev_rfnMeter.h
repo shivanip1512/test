@@ -27,15 +27,7 @@ protected:
         static const std::string voltageprofile;
     };
 
-    typedef std::function<YukonError_t (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)> ConfigMethod;
     typedef boost::container::flat_map<std::string, ConfigMethod> ConfigMap;
-
-    /// Helper function to bind configuration method.
-    template<typename Function, typename Caller>
-    inline static ConfigMethod bindConfigMethod(Function f, Caller c)
-    {
-        return boost::bind( f, c, _1, _2, _3, _4 );
-    }
 
     enum class InstallType {
         PutConfig,
@@ -92,7 +84,6 @@ private:
     YukonError_t executePutConfigBehaviorRfnDataStreaming(ReturnMsgList& returnMsgs, RfnCommandList& rfnRequests);
 
     YukonError_t executeConfigInstall(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, InstallType installType);
-    void executeConfigInstallSingle  (CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, const std::string &configPart, const ConfigMethod &configMethod );
     YukonError_t compareChannels(
         CtiRequestMsg    * pReq,
         CtiCommandParser & parse,

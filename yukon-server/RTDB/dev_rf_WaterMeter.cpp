@@ -20,7 +20,10 @@ YukonError_t RfWaterMeterDevice::executePutConfig(CtiRequestMsg *pReq, CtiComman
     {
         if ( *configPart == "all" || *configPart == "intervals" )
         {
-            return executePutConfigIntervals( pReq, parse, returnMsgs, rfnRequests ); 
+            executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, *configPart,
+                                        bindConfigMethod( &RfWaterMeterDevice::executePutConfigIntervals, this ) );
+            
+            return ClientErrors::None;
         }
     }
 
@@ -33,7 +36,10 @@ YukonError_t RfWaterMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiComman
     {
         if ( *configPart == "all" || *configPart == "intervals" )
         {
-            return executeGetConfigIntervals( pReq, parse, returnMsgs, rfnRequests ); 
+            executeConfigInstallSingle( pReq, parse, returnMsgs, rfnRequests, *configPart,
+                                        bindConfigMethod( &RfWaterMeterDevice::executeGetConfigIntervals, this ) );
+
+            return ClientErrors::None;
         }
     }
 

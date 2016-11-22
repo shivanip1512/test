@@ -148,6 +148,81 @@ YukonError_t RfnDevice::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &pa
     return ExecutionComplete;
 }
 
+/**
+ * Called by executeConfigInstall() to execute a putconfig/getconfig install for one config part
+ */
+void RfnDevice::executeConfigInstallSingle(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests, const std::string &configPart, const ConfigMethod &configMethod )
+{
+    YukonError_t nRet = ClientErrors::NoMethod;
+    std::string error_description;
+
+    try
+    {
+        nRet = configMethod(pReq, parse, returnMsgs, rfnRequests);
+    }
+    catch( const Commands::RfnCommand::CommandException &ce )
+    {
+        error_description = ce.error_description;
+        nRet              = ce.error_code;
+    }
+
+    if( nRet )
+    {
+        std::string result;
+
+        switch(nRet)
+        {
+            case ClientErrors::NoConfigData:
+            {
+                result = "ERROR: Device had no configuration for config:" + configPart;
+
+                CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - had no configuration for config: "<< configPart);
+
+                break;
+            }
+            case ClientErrors::ConfigCurrent:
+            {
+                result = "Config " + configPart + " is current.";
+
+                nRet = ClientErrors::None; //This is an OK return! Note that nRet is no longer propagated!
+
+                break;
+            }
+            case ClientErrors::ConfigNotCurrent:
+            {
+                result = "Config " + configPart + " is NOT current.";
+
+                break;
+            }
+            default:
+            {
+                if( error_description.empty() )
+                {
+                    error_description = "NoMethod or invalid config";
+                }
+
+                result = "ERROR: " + error_description + ". Config name:" + configPart;
+
+                CTILOG_ERROR(dout, "Device \""<< getName() <<"\" - had a configuration error using config: "<< configPart);
+            }
+        }
+
+        std::auto_ptr<CtiReturnMsg> retMsg(
+                new CtiReturnMsg(
+                        pReq->DeviceId(),
+                        pReq->CommandString(),
+                        result,
+                        nRet,
+                        0,
+                        MacroOffset::none,
+                        0,
+                        pReq->GroupMessageId(),
+                        pReq->UserMessageId()));
+
+        returnMsgs.push_back( retMsg );
+    }
+}
+
 YukonError_t RfnDevice::executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, ReturnMsgList &returnMsgs, RfnCommandList &rfnRequests)
 {
     return ClientErrors::NoMethod;
