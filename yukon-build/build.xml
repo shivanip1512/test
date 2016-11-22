@@ -186,6 +186,8 @@
                 <exclude name="activation.jar"/>
                 <exclude name="bcpkix-jdk15on-149.jar"/>
                 <exclude name="bcprov-jdk15on-149.jar"/>
+                <exclude name="azure-core-0.9.7.jar"/>
+                <exclude name="azure-servicebus-0.9.7.jar"/>
             </fileset>
         </signjar>
 
