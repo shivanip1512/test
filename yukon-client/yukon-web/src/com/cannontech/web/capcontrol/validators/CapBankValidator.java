@@ -44,13 +44,22 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
     private void validateCcMonitorBankList(List<CCMonitorBankList> ccMonitorBankLists, Errors errors) {
         int index = 0;
         for (CCMonitorBankList ccMonitorBankList : ccMonitorBankLists) {
-            if (ccMonitorBankList.getNINAvg() < 0) {
+
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "ccMonitorBankList[" + index + "].NINAvg",
+                "yukon.web.error.isBlank");
+            if (ccMonitorBankList.getNINAvg() != null && ccMonitorBankList.getNINAvg() < 0) {
                 errors.rejectValue("ccMonitorBankList[" + index + "].NINAvg", "yukon.web.error.isNotPositive");
             }
-            if (ccMonitorBankList.getLowerBandwidth() > ccMonitorBankList.getUpperBandwidth()) {
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "ccMonitorBankList[" + index + "].upperBandwidth",
+                "yukon.web.error.isBlank");
+            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "ccMonitorBankList[" + index + "].lowerBandwidth",
+                "yukon.web.error.isBlank");
+            if (ccMonitorBankList.getNINAvg() != null && ccMonitorBankList.getUpperBandwidth() != null
+                && ccMonitorBankList.getLowerBandwidth() > ccMonitorBankList.getUpperBandwidth()) {
                 errors.rejectValue("ccMonitorBankList[" + index + "].upperBandwidth",
                     "yukon.web.error.invalidBandwidth");
             }
+
             index++;
         }
     }
