@@ -22,7 +22,7 @@
     <c:if test="${not empty pageScope.key}"><cti:msg2 key="${key}"/></c:if>
     <cti:button classes="stepper-prev left" renderMode="buttonImage" icon="icon-resultset-previous-gray"
             disabled="${disabled}"
-    /><select class="stepper-select middle" type="checkbox" name="${name}" 
+    /><select class="stepper-select middle" name="${name}" 
             id="${id}"<c:if test="${disabled}">disabled</c:if>><jsp:doBody/>
     </select><cti:button classes="stepper-next right" renderMode="buttonImage" icon="icon-resultset-next-gray" 
             disabled="${disabled}"/>

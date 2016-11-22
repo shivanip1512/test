@@ -454,7 +454,7 @@ yukon.ui = (function () {
 
         /** STEPPER SELECT BEHAVIOR. */
         /** Move selection backward when previous button clicked. */
-        $(document).on('click', '.stepper .stepper-prev', function (ev) {
+        $(document).on('mousedown', '.stepper .stepper-prev', function (ev) {
 
             var btn = $(this);
             var wrapper = btn.closest('.stepper');
@@ -470,8 +470,8 @@ yukon.ui = (function () {
             return true;
         });
 
-        /** Move selection backward when previous button clicked. */
-        $(document).on('click', '.stepper .stepper-next', function (ev) {
+        /** Move selection forward when next button clicked. */
+        $(document).on('mousedown', '.stepper .stepper-next', function (ev) {
 
             var btn = $(this);
             var wrapper = btn.closest('.stepper');
