@@ -870,6 +870,17 @@ ALTER COLUMN PrivateKey VARCHAR(1920) NOT NULL;
 GO
 /* End YUK-15987 */
 
+/* Start YUK-15972 */
+ALTER TABLE DynamicPAOInfo DROP CONSTRAINT FK_DynPAOInfo_YukPAO;
+GO
+
+ALTER TABLE DynamicPAOInfo
+   ADD CONSTRAINT FK_DynPAOInfo_YukPAO FOREIGN KEY (PAObjectID)
+      REFERENCES YukonPAObject (PAObjectID)
+         ON DELETE CASCADE;
+GO
+/* End YUK-15972 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -731,6 +731,15 @@ ALTER TABLE EncryptionKey
 MODIFY PrivateKey VARCHAR2(1920);
 /* End YUK-15987 */
 
+/* Start YUK-15972 */
+ALTER TABLE DynamicPAOInfo DROP CONSTRAINT FK_DynPAOInfo_YukPAO;
+
+ALTER TABLE DynamicPAOInfo
+   ADD CONSTRAINT FK_DynPAOInfo_YukPAO FOREIGN KEY (PAObjectID)
+      REFERENCES YukonPAObject (PAObjectID)
+         ON DELETE CASCADE;
+/* End YUK-15972 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

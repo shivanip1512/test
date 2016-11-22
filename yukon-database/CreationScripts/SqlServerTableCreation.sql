@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     11/17/2016 10:06:34 AM                       */
+/* Created on:     11/22/2016 10:13:22 AM                       */
 /*==============================================================*/
 
 
@@ -12527,6 +12527,7 @@ go
 alter table DynamicPAOInfo
    add constraint FK_DynPAOInfo_YukPAO foreign key (PAObjectID)
       references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table DynamicPAOStatistics
