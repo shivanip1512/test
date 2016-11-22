@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.mapNetwork;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +41,8 @@ import com.cannontech.web.tools.mapping.model.Parent;
 import com.cannontech.web.tools.mapping.model.RouteInfo;
 import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
+import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
+import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Route;
 
 @RequestMapping("/mapNetwork/*")
 @Controller
@@ -128,8 +131,16 @@ public class MapNetworkController {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            List<Neighbor> neighbors =  nmNetworkService.getNeighbors(deviceId, accessor).getNeighbors();
+            Neighbors allNeighbors = nmNetworkService.getNeighbors(deviceId, accessor);
+            List<Neighbor> neighbors =  allNeighbors.getNeighbors();
             json.put("neighbors",  neighbors);
+            //check for any neighbors that have missing location data
+            List<RfnDevice> missingNeighbors = allNeighbors.getNeighborsWithoutLocation();
+            if (missingNeighbors.size() > 0) {
+                List<String> missingNeighborNames = new ArrayList<>();
+                missingNeighbors.forEach(neighbor -> missingNeighborNames.add(neighbor.getName()));
+                json.put("errorMsg",  accessor.getMessage(nameKey + "exception.neighbors.missingLocationData", String.join(", ",  missingNeighborNames)));
+            }
         } catch (NmNetworkException e) {
             json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
         }
@@ -141,8 +152,14 @@ public class MapNetworkController {
         Map<String, Object> json = new HashMap<>();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         try {
-            List<RouteInfo> route = nmNetworkService.getRoute(deviceId, accessor).getRoute();
+            Route entireRoute = nmNetworkService.getRoute(deviceId, accessor);
+            List<RouteInfo> route = entireRoute.getRoute();
             json.put("routeInfo",  route);
+            //check if any devices in the route have missing location data
+            RfnDevice missingRoute = entireRoute.getDeviceWithoutLocation();
+            if (missingRoute != null) {
+                json.put("errorMsg",  accessor.getMessage(nameKey + "exception.primaryRoute.missingLocationData", missingRoute.getName()));
+            }
         } catch (NmNetworkException e) {
             json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
         }
