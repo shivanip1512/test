@@ -15,7 +15,8 @@ public interface EncryptedRouteDao {
     
     public List<EncryptionKey> getEncryptionKeys();
     
-    public void saveNewEncryptionKey(String name, String value) throws CryptoException;
+    public void saveNewEncryptionKey(String name, String privateKey, String publicKey, EncryptionKeyType type)
+            throws CryptoException;
     
     public void deleteEncryptionKey(int encryptionKeyId);
 

@@ -43,6 +43,7 @@ import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.EncryptedRouteDao;
+import com.cannontech.encryption.EncryptionKeyType;
 import com.cannontech.encryption.RSAKeyfileService;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
@@ -244,7 +245,8 @@ public class YukonSecurityController {
         byte[] keyBytes = Hex.decodeHex(encryptionKey.getPrivateKey().toCharArray());
         String encryptedValue = new String(Hex.encodeHex(encrypter.encrypt(keyBytes)));
 
-        encryptedRouteDao.saveNewEncryptionKey(encryptionKey.getName(), encryptedValue);
+        encryptedRouteDao.saveNewEncryptionKey(encryptionKey.getName(), encryptedValue, null,
+            EncryptionKeyType.ExpresscomOneWay);
 
         return "redirect:view";
     }
@@ -443,7 +445,8 @@ public class YukonSecurityController {
                 char[] sharedPassword = CryptoUtils.getSharedPasskey();
                 byte[] encryptedData = new AESPasswordBasedCrypto(sharedPassword).encrypt(bytes);
                 String encryptedValue = new String(Hex.encodeHex(encryptedData));
-                encryptedRouteDao.saveNewEncryptionKey(fileImportBindingBean.getName(), encryptedValue);
+                encryptedRouteDao.saveNewEncryptionKey(fileImportBindingBean.getName(), encryptedValue, null,
+                    EncryptionKeyType.ExpresscomOneWay);
                 flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".fileUploadSuccess",
                     fileImportBindingBean.getName()));
                 success = true;
