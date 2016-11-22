@@ -3,6 +3,7 @@
 #include "std_helper.h"
 #include "RfnWaterNodeMessaging.h"
 
+#include <boost/algorithm/string/join.hpp>
 
 
 namespace Cti       {
@@ -47,20 +48,8 @@ RfnGetChannelConfigReplyMessage::RfnGetChannelConfigReplyMessage()
 
 bool RfnGetChannelConfigReplyMessage::ChannelInfo::operator<( const RfnGetChannelConfigReplyMessage::ChannelInfo & rhs ) const
 {
-    if ( UOM < rhs.UOM )
-        return true;
-    if ( UOM > rhs.UOM )
-        return false;
-    if ( uomModifier < rhs.uomModifier )
-        return true;
-    if ( uomModifier > rhs.uomModifier )
-        return false;
-    if ( channelNumber < rhs.channelNumber )
-        return true;
-    if ( channelNumber > rhs.channelNumber )
-        return false;
-
-    return enabled;
+    return std::tie( UOM, uomModifier, channelNumber, enabled )
+            < std::tie( rhs.UOM, rhs.uomModifier, rhs.channelNumber, rhs.enabled );
 }
 
 std::string RfnGetChannelConfigReplyMessage::description() const
@@ -91,19 +80,9 @@ std::string RfnGetChannelConfigReplyMessage::to_string() const
         output  +=  "\n\tChannel Number: "  + std::to_string( info.channelNumber )
                 +   "\n\tStatus: "          + ( info.enabled ? "Enabled" : "Disabled" )
                 +   "\n\tUOM: "             + info.UOM
-                +   "\n\tUOM Modifiers:";
-
-        if ( info.uomModifier.empty() )
-        {
-            output  += "<empty>";
-        }
-        else
-        {
-            for ( const auto &modifier : info.uomModifier )
-            {
-                output  +=  "\n\t\t" + modifier;
-            }
-        }
+                +   "\n\tUOM Modifiers: <"
+                +   ( info.uomModifier.empty() ? "empty" : boost::algorithm::join( info.uomModifier, ", " ) )
+                +   ">";
     }
 
     return output;

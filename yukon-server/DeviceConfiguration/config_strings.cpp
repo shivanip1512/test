@@ -353,8 +353,8 @@ const string RfnStrings::ChannelConfiguration::RecordingIntervalMinutes = "recor
 const string RfnStrings::ChannelConfiguration::ReportingIntervalMinutes = "reportingIntervalMinutes";
 
 // Water node configuration
-const string RfnStrings::WaterNodeIntervalConfiguration::ReportingIntervalSeconds = "reportingIntervalSeconds";
-const string RfnStrings::WaterNodeIntervalConfiguration::RecordingIntervalSeconds = "recordingIntervalSeconds";
+const string RfnStrings::WaterNodeConfiguration::ReportingIntervalSeconds = "reportingIntervalSeconds";
+const string RfnStrings::WaterNodeConfiguration::RecordingIntervalSeconds = "recordingIntervalSeconds";
 
 // Regulators
 const string RegulatorStrings::voltageControlMode  = "voltageControlMode";

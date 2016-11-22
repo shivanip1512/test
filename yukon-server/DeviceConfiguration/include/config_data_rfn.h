@@ -157,7 +157,7 @@ struct IM_EX_CONFIG RfnStrings
         };
     };
 
-    struct IM_EX_CONFIG WaterNodeIntervalConfiguration
+    struct IM_EX_CONFIG WaterNodeConfiguration
     {
         static const std::string ReportingIntervalSeconds;
         static const std::string RecordingIntervalSeconds;

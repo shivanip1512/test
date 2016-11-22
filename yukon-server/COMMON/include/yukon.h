@@ -381,10 +381,10 @@ struct ClientErrors
         ChannelUnsupported,
 
         // Water node errors
-        InvalidDevice,
-        NoNode,
-        NoGateway,
-        Failure,
+        InvalidWaterNode,
+        UnknownWaterNode,
+        UnknownGateway,
+        WaterNodeFailure,
     };
 };
 

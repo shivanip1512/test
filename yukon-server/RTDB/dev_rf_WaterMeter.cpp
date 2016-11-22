@@ -40,21 +40,17 @@ YukonError_t RfWaterMeterDevice::executeGetConfig(CtiRequestMsg *pReq, CtiComman
 
 YukonError_t processChannelConfigReply( const Cti::Messaging::Rfn::RfnSetChannelConfigReplyMessage & reply )
 {
-    Cti::StreamBuffer output;
-
-    output << "Received RFN Reply: " << reply.description();
-
-    CTILOG_INFO(dout, output);
+    CTILOG_INFO( dout, "Received RFN Reply: " << reply.description() );
 
     // translate reply.replyCode to YukonError_t
 
     static const std::map<int, YukonError_t>  replyCodeToYukonError
     {
         { 0, ClientErrors::None             },
-        { 1, ClientErrors::InvalidDevice    },
-        { 2, ClientErrors::NoNode           },
-        { 3, ClientErrors::NoGateway        },
-        { 4, ClientErrors::Failure          }
+        { 1, ClientErrors::InvalidWaterNode },
+        { 2, ClientErrors::UnknownWaterNode },
+        { 3, ClientErrors::UnknownGateway   },
+        { 4, ClientErrors::WaterNodeFailure }
     };
 
     return mapFindOrDefault( replyCodeToYukonError, reply.replyCode, ClientErrors::Unknown ); 
@@ -138,8 +134,8 @@ YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, 
 
     try
     {
-        reportingInterval = getConfigData<unsigned>( deviceConfig, Config::RfnStrings::WaterNodeIntervalConfiguration::ReportingIntervalSeconds );
-        recordingInterval = getConfigData<unsigned>( deviceConfig, Config::RfnStrings::WaterNodeIntervalConfiguration::RecordingIntervalSeconds );
+        reportingInterval = getConfigData<unsigned>( deviceConfig, Config::RfnStrings::WaterNodeConfiguration::ReportingIntervalSeconds );
+        recordingInterval = getConfigData<unsigned>( deviceConfig, Config::RfnStrings::WaterNodeConfiguration::RecordingIntervalSeconds );
     }
     catch( const InvalidConfigDataException &e )
     {
@@ -180,18 +176,13 @@ YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, 
     {
         if ( parse.isKeyValid( "verify" ) )
         {
-            // force 3rd parameter to optional<> ...  :(
+            reportConfigMismatchDetails<unsigned>( "Reporting Interval",
+                                                   reportingInterval, configInfo->reportingInterval,
+                                                   pReq, returnMsgs );
 
-            boost::optional<unsigned>   reporting = configInfo->reportingInterval,
-                                        recording = configInfo->recordingInterval;
-
-            reportConfigMismatchDetails<>( "Reporting Interval",
-                                           reportingInterval, reporting,
-                                           pReq, returnMsgs );
-
-            reportConfigMismatchDetails<>( "Recording Interval",
-                                           recordingInterval, recording,
-                                           pReq, returnMsgs );
+            reportConfigMismatchDetails<unsigned>( "Recording Interval",
+                                                   recordingInterval, configInfo->recordingInterval,
+                                                   pReq, returnMsgs );
 
             return ClientErrors::ConfigNotCurrent;
         }
@@ -279,9 +270,9 @@ YukonError_t RfWaterMeterDevice::executeGetConfigIntervals(CtiRequestMsg *pReq, 
             static const std::map<int, YukonError_t>  replyCodeToYukonError
             {
                 { 0, ClientErrors::None             },
-                { 1, ClientErrors::InvalidDevice    },
-                { 2, ClientErrors::NoNode           },
-                { 3, ClientErrors::Failure          }
+                { 1, ClientErrors::InvalidWaterNode },
+                { 2, ClientErrors::UnknownWaterNode },
+                { 3, ClientErrors::WaterNodeFailure }
             };
 
             return mapFindOrDefault( replyCodeToYukonError, configInfo->replyCode, ClientErrors::Unknown ); 

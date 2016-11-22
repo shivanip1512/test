@@ -66,28 +66,28 @@ try
     Thrift::RfnIdentifier               identifier;
     Thrift::RfnSetChannelConfigRequest  request;
 
-    identifier.__set_sensorManufacturer( m.rfnIdentifier.manufacturer ); 
-    identifier.__set_sensorModel( m.rfnIdentifier.model );
-    identifier.__set_sensorSerialNumber( m.rfnIdentifier.serialNumber ); 
+    identifier.__set_sensorManufacturer ( m.rfnIdentifier.manufacturer ); 
+    identifier.__set_sensorModel        ( m.rfnIdentifier.model );
+    identifier.__set_sensorSerialNumber ( m.rfnIdentifier.serialNumber ); 
 
-    request.__set_rfnIdentifier( identifier );
+    request.__set_rfnIdentifier         ( identifier );
 
-    request.__set_reportingInterval( m.reportingInterval );
-    request.__set_recordingInterval( m.recordingInterval );
+    request.__set_reportingInterval     ( m.reportingInterval );
+    request.__set_recordingInterval     ( m.recordingInterval );
 
     if ( m.header )
     {
         Thrift::NetworkManagerRequestHeader     header;
 
-        header.__set_clientGuid( m.header->clientGuid );
-        header.__set_sessionId( m.header->sessionId );
-        header.__set_messageId( m.header->messageId );
-        header.__set_groupId( m.header->groupId );
-        header.__set_priority( m.header->priority );
-        header.__set_expiration( m.header->expiration );
-        header.__set_lifetime( Thrift::NetworkManagerMessageLifetime::SESSION ); 
+        header.__set_clientGuid ( m.header->clientGuid );
+        header.__set_sessionId  ( m.header->sessionId );
+        header.__set_messageId  ( m.header->messageId );
+        header.__set_groupId    ( m.header->groupId );
+        header.__set_priority   ( m.header->priority );
+        header.__set_expiration ( m.header->expiration );
+        header.__set_lifetime   ( Thrift::NetworkManagerMessageLifetime::SESSION ); 
 
-        request.__set_header( header );
+        request.__set_header    ( header );
     }
 
     return SerializeThriftBytes( request );
@@ -103,20 +103,8 @@ namespace Thrift
 
 bool ChannelInfo::operator<( const ChannelInfo & rhs ) const
 {
-    if ( UOM < rhs.UOM )
-        return true;
-    if ( UOM > rhs.UOM )
-        return false;
-    if ( uomModifier < rhs.uomModifier )
-        return true;
-    if ( uomModifier > rhs.uomModifier )
-        return false;
-    if ( channelNum < rhs.channelNum )
-        return true;
-    if ( channelNum > rhs.channelNum )
-        return false;
-
-    return enabled;
+    return std::tie( UOM, uomModifier, channelNum, enabled )
+            < std::tie( rhs.UOM, rhs.uomModifier, rhs.channelNum, rhs.enabled );
 }
 
 }
@@ -144,11 +132,11 @@ try
     Thrift::RfnIdentifier               identifier;
     Thrift::RfnGetChannelConfigRequest  request;
 
-    identifier.__set_sensorManufacturer( m.rfnIdentifier.manufacturer ); 
-    identifier.__set_sensorModel( m.rfnIdentifier.model );
-    identifier.__set_sensorSerialNumber( m.rfnIdentifier.serialNumber ); 
+    identifier.__set_sensorManufacturer ( m.rfnIdentifier.manufacturer ); 
+    identifier.__set_sensorModel        ( m.rfnIdentifier.model );
+    identifier.__set_sensorSerialNumber ( m.rfnIdentifier.serialNumber ); 
 
-    request.__set_rfnIdentifier( identifier );
+    request.__set_rfnIdentifier         ( identifier );
 
     return SerializeThriftBytes( request );
 }
