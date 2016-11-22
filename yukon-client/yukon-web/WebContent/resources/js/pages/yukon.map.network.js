@@ -24,12 +24,16 @@ yukon.map.network = (function () {
     _routeColor = "#1E66CC",
     
     _devicePoints = [],
+    _deviceIcon,
     _parentIcon,
     _parentLine,
+    _parentIconLayer,
     _neighborIcons = [],
     _neighborLines = [],
+    _neighborIconLayer,
     _primaryRouteIcons = [],
     _primaryRouteLines = [],
+    _primaryRouteIconLayer,
     _primaryRoutePreviousPoints,
     
     /** @type {string} - The default projection code of our map tiles. */
@@ -97,6 +101,7 @@ yukon.map.network = (function () {
         _devicePoints = icon.getGeometry().getCoordinates();
         
         source.addFeature(icon);
+        _deviceIcon = icon;
         
         _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
         _map.getView().setZoom(13);
@@ -140,8 +145,15 @@ yukon.map.network = (function () {
             })
         });
         
+        layerLines.setZIndex(0);
         _parentLine = layerLines;
         _map.addLayer(layerLines);
+        
+        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: [_parentIcon, _deviceIcon]})});
+        iconsLayer.setZIndex(1);
+        _parentIconLayer = iconsLayer;
+        _map.addLayer(iconsLayer);
+        
         _updateZoom();
     },
     
@@ -218,6 +230,15 @@ yukon.map.network = (function () {
             _neighborLines.push(layerLines);
             _map.addLayer(layerLines);
         }
+        
+        var allIcons = [];
+        allIcons.push.apply(allIcons, _neighborIcons);
+        allIcons.push(_deviceIcon);
+        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: allIcons})});
+        iconsLayer.setZIndex(1);
+        _neighborIconLayer = iconsLayer;
+        _map.addLayer(iconsLayer);
+        
         _updateZoom();
     },
     
@@ -239,7 +260,7 @@ yukon.map.network = (function () {
                 var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
                 icon.setGeometry(new ol.geom.Point(coord));
             }
-            
+
             _primaryRouteIcons.push(icon);
             source.addFeature(icon);
             
@@ -266,9 +287,16 @@ yukon.map.network = (function () {
                 })
             });
             
+            layerLines.setZIndex(0);
             _primaryRouteLines.push(layerLines);
             _map.addLayer(layerLines);
         }
+        
+        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: _primaryRouteIcons})});
+        iconsLayer.setZIndex(1);
+        _primaryRouteIconLayer = iconsLayer;
+        _map.addLayer(iconsLayer);
+        
         _updateZoom();
     },
     
@@ -276,7 +304,7 @@ yukon.map.network = (function () {
         var source = _map.getLayers().getArray()[_tiles.length].getSource();
         var features = source.getFeatures();
         if (features != null && features.length > 1) {
-            _map.getView().fitExtent(source.getExtent(), _map.getSize());
+            _map.getView().fit(source.getExtent(), _map.getSize());
             if (_map.getView().getZoom() > 13){
                 _map.getView().setZoom(13);
             }
@@ -487,14 +515,16 @@ yukon.map.network = (function () {
                         _displayNeighborsLegend();
                         if (_neighborIcons.length > 0) {
                             var source = _map.getLayers().getArray()[_tiles.length].getSource();
-                            for (x in _neighborIcons) {
-                                var neighbor = _neighborIcons[x];
-                                source.addFeature(neighbor);
-                            }
                             for (x in _neighborLines) {
                                 var neighborLine = _neighborLines[x];
                                 _map.addLayer(neighborLine);
                             }
+                            for (x in _neighborIcons) {
+                                var neighbor = _neighborIcons[x];
+                                source.addFeature(neighbor);
+                            }
+                            _map.addLayer(_neighborIconLayer);
+                            _map.addLayer(_deviceLayer);
                             _updateZoom();
                         } else {
                             var fc = yukon.fromJson('#geojson'),
@@ -523,6 +553,8 @@ yukon.map.network = (function () {
                             var neighborLine = _neighborLines[x];
                             _map.removeLayer(neighborLine);
                         }
+                        _map.removeLayer(_neighborIconLayer);
+                        _map.removeLayer(_deviceLayer);
                         _updateZoom();
                     }
                 });
@@ -535,14 +567,15 @@ yukon.map.network = (function () {
                     if (!wasChecked) {
                         if (_primaryRouteIcons.length > 0) {
                             var source = _map.getLayers().getArray()[_tiles.length].getSource();
-                            for (x in _primaryRouteIcons) {
-                                var route = _primaryRouteIcons[x];
-                                source.addFeature(route);
-                            }
                             for (x in _primaryRouteLines) {
                                 var routeLine = _primaryRouteLines[x];
                                 _map.addLayer(routeLine);
                             }
+                            for (x in _primaryRouteIcons) {
+                                var route = _primaryRouteIcons[x];
+                                source.addFeature(route);
+                            }
+                            _map.addLayer(_primaryRouteIconLayer);
                             _updateZoom();
                         } else {
                             var fc = yukon.fromJson('#geojson'),
@@ -570,6 +603,7 @@ yukon.map.network = (function () {
                             var primaryRouteLine = _primaryRouteLines[x];
                             _map.removeLayer(primaryRouteLine);
                         }
+                        _map.removeLayer(_primaryRouteIconLayer);
                         _updateZoom();
                     }
                 });
@@ -584,6 +618,7 @@ yukon.map.network = (function () {
                             var source = _map.getLayers().getArray()[_tiles.length].getSource();
                             source.addFeature(_parentIcon);
                             _map.addLayer(_parentLine);
+                            _map.addLayer(_parentIconLayer);
                             _updateZoom();
                         } else {
                             var fc = yukon.fromJson('#geojson'),
@@ -606,6 +641,7 @@ yukon.map.network = (function () {
                         var source = _map.getLayers().getArray()[_tiles.length].getSource();
                         source.removeFeature(_parentIcon);
                         _map.removeLayer(_parentLine);
+                        _map.removeLayer(_parentIconLayer);
                         _updateZoom();
                     }
 
