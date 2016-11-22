@@ -863,9 +863,6 @@ ALTER TABLE EncryptionKey
 ADD PublicKey VARCHAR(608);
 
 ALTER TABLE EncryptionKey
-ADD ThirdPartyName VARCHAR(128);
-
-ALTER TABLE EncryptionKey
 ALTER COLUMN PrivateKey VARCHAR(1920) NOT NULL;
 GO
 /* End YUK-15987 */
@@ -880,6 +877,13 @@ ALTER TABLE DynamicPAOInfo
          ON DELETE CASCADE;
 GO
 /* End YUK-15972 */
+
+/* Start YUK-16013 */
+ALTER TABLE EncryptionKey
+ADD EncryptionKeyType VARCHAR(128) NOT NULL
+DEFAULT 'ExpresscomOneWay';
+GO
+/* End YUK-16013 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

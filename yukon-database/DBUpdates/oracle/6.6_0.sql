@@ -725,9 +725,6 @@ ALTER TABLE EncryptionKey
 ADD PublicKey VARCHAR2(608);
 
 ALTER TABLE EncryptionKey
-ADD ThirdPartyName VARCHAR2(128);
-
-ALTER TABLE EncryptionKey
 MODIFY PrivateKey VARCHAR2(1920);
 /* End YUK-15987 */
 
@@ -739,6 +736,12 @@ ALTER TABLE DynamicPAOInfo
       REFERENCES YukonPAObject (PAObjectID)
          ON DELETE CASCADE;
 /* End YUK-15972 */
+
+/* Start YUK-16013 */
+ALTER TABLE EncryptionKey
+ADD EncryptionKeyType VARCHAR(128)
+DEFAULT 'ExpresscomOneWay' NOT NULL;
+/* End YUK-16013 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

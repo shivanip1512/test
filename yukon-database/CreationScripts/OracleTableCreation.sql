@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     11/22/2016 10:11:41 AM                       */
+/* Created on:     11/22/2016 2:26:00 PM                        */
 /*==============================================================*/
 
 
@@ -4999,7 +4999,7 @@ create table EncryptionKey  (
    Name                 VARCHAR2(128)                   not null,
    PrivateKey           VARCHAR2(1920)                  not null,
    PublicKey            VARCHAR2(608),
-   ThirdPartyName       VARCHAR2(128),
+   EncryptionKeyType    VARCHAR2(128)                   not null,
    constraint PK_EncryptionKey primary key (EncryptionKeyId)
 );
 
