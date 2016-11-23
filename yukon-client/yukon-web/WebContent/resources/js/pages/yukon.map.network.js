@@ -372,14 +372,19 @@ yukon.map.network = (function () {
 
                         if (parent != null) {
                             var parentData = parent.data;
+                            $('.js-device-display').toggleClass('dn', parent.device.name == null);
                             $('.js-device').text(parent.device.name);
+                            $('.js-type-display').toggleClass('dn', parent.device.paoIdentifier.paoType == null);
                             $('.js-type').text(parent.device.paoIdentifier.paoType);
+                            $('.js-status-display').toggleClass('dn', parent.statusDisplay == null);
                             $('.js-status').text(parent.statusDisplay);
-                            $('.js-manufacturer').text(parentData.rfnIdentifier.sensorManufacturer);
-                            $('.js-model').text(parentData.rfnIdentifier.sensorModel);
-                            $('.js-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
+                            $('.js-node-sn-display').toggleClass('dn', parentData.nodeSN == null);
                             $('.js-node-sn').text(parentData.nodeSN);
+                            $('.js-serial-number-display').toggleClass('dn', parentData.rfnIdentifier.sensorSerialNumber == null);
+                            $('.js-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
+                            $('.js-mac-address-display').toggleClass('dn', parentData.nodeMacAddress == null);
                             $('.js-mac-address').text(parentData.nodeMacAddress);
+                            $('.js-distance-display').toggleClass('dn', parent.distanceDisplay == null);
                             $('.js-distance').text(parent.distanceDisplay);
                             $('#neighbor-info').hide();
                             $('#device-info').hide();
@@ -387,44 +392,55 @@ yukon.map.network = (function () {
                             $('#parent-info').show();
                         } else if (neighbor != null) {
                             var neighborData = neighbor.data;
+                            $('.js-device-display').toggleClass('dn', neighbor.device.name == null);
                             $('.js-device').text(neighbor.device.name);
+                            $('.js-type-display').toggleClass('dn', neighbor.device.paoIdentifier.paoType == null);
                             $('.js-type').text(neighbor.device.paoIdentifier.paoType);
+                            $('.js-status-display').toggleClass('dn', neighbor.statusDisplay == null);
                             $('.js-status').text(neighbor.statusDisplay);
+                            $('.js-node-sn-display').toggleClass('dn', neighborData.serialNumber == null);
+                            $('.js-node-sn').text(neighborData.serialNumber);
+                            $('.js-serial-number-display').toggleClass('dn', neighborData.rfnIdentifier.sensorSerialNumber == null);
                             $('.js-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
-                            $('.js-neighbor-serialNumber').text(neighborData.serialNumber);
+                            $('.js-address-display').toggleClass('dn', neighborData.neighborAddress == null);
                             $('.js-address').text(neighborData.neighborAddress);
-                            if (neighbor.commaDelimitedNeighborFlags != null) {
-                                $('.js-flags').text(neighbor.commaDelimitedNeighborFlags);
-                            }
+                            $('.js-flags-display').toggleClass('dn', neighbor.commaDelimitedNeighborFlags == null);
+                            $('.js-flags').text(neighbor.commaDelimitedNeighborFlags);
+                            $('.js-link-cost-display').toggleClass('dn', neighborData.neighborLinkCost == null);
                             $('.js-link-cost').text(neighborData.neighborLinkCost);
+                            $('.js-num-samples-display').toggleClass('dn', neighborData.numSamples == null);
                             $('.js-num-samples').text(neighborData.numSamples);
+                            $('.js-etx-band-display').toggleClass('dn', neighborData.etxBand == null);
                             $('.js-etx-band').text(neighborData.etxBand);
+                            $('.js-distance-display').toggleClass('dn', neighbor.distanceDisplay == null);
                             $('.js-distance').text(neighbor.distanceDisplay);
                             $('#parent-info').hide();
                             $('#device-info').hide();
                             $('#route-info').hide();
                             $('#neighbor-info').show();
                         } else if (routeInfo != null) {
+                            $('.js-device-display').toggleClass('dn', routeInfo.device.name == null);
                             $('.js-device').text(routeInfo.device.name);
+                            $('.js-type-display').toggleClass('dn', routeInfo.device.paoIdentifier.paoType == null);
                             $('.js-type').text(routeInfo.device.paoIdentifier.paoType);
+                            $('.js-status-display').toggleClass('dn', routeInfo.statusDisplay == null);
                             $('.js-status').text(routeInfo.statusDisplay);
+                            $('.js-node-sn-display').toggleClass('dn', routeInfo.route.serialNumber == null);
                             $('.js-node-sn').text(routeInfo.route.serialNumber);
+                            $('.js-serial-number-display').toggleClass('dn', routeInfo.route.rfnIdentifier.sensorSerialNumber == null);
                             $('.js-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
-                            //check if it's the last in the route then don't display the rest
-                            var lastItem = _primaryRouteIcons[_primaryRouteIcons.length - 1];
-                            var lastProperties = lastItem.getProperties();
-                            var lastRoute = lastProperties.routeInfo;
-                            if (lastRoute.device.name != routeInfo.device.name) {
-                                $('.js-route-display').show();
-                                $('.js-destination-address').text(routeInfo.route.destinationAddress);
-                                $('.js-next-hop-address').text(routeInfo.route.nextHopAddress);
-                                $('.js-total-cost').text(routeInfo.route.totalCost);
-                                $('.js-hop-count').text(routeInfo.route.hopCount);
-                                $('.js-route-flag').text(routeInfo.commaDelimitedRouteFlags);
-                                $('.js-distance').text(routeInfo.distanceDisplay);
-                            } else {
-                                $('.js-route-display').hide();
-                            }
+                            $('.js-destination-address-display').toggleClass('dn', routeInfo.route.destinationAddress == null);
+                            $('.js-destination-address').text(routeInfo.route.destinationAddress);
+                            $('.js-next-hop-address-display').toggleClass('dn', routeInfo.route.nextHopAddress == null);
+                            $('.js-next-hop-address').text(routeInfo.route.nextHopAddress);
+                            $('.js-total-cost-display').toggleClass('dn', routeInfo.route.totalCost == null);
+                            $('.js-total-cost').text(routeInfo.route.totalCost);
+                            $('.js-hop-count-display').toggleClass('dn', routeInfo.route.hopCount == null);
+                            $('.js-hop-count').text(routeInfo.route.hopCount);
+                            $('.js-route-flag-display').toggleClass('dn', routeInfo.commaDelimitedRouteFlags == null);
+                            $('.js-route-flag').text(routeInfo.commaDelimitedRouteFlags);
+                            $('.js-distance-display').toggleClass('dn', routeInfo.distanceInMiles == 0);
+                            $('.js-distance').text(routeInfo.distanceDisplay);
                             $('#parent-info').hide();
                             $('#neighbor-info').hide();
                             $('#device-info').hide();

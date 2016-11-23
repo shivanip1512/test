@@ -7,11 +7,11 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <tags:nameValueContainer2 tableClass="name-collapse">
-    <tags:nameValue2 nameKey=".device" valueClass="js-device"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".type" valueClass="js-type"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".status" valueClass="js-status"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".nodeSN" valueClass="js-node-sn"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".serialNumber" valueClass="js-serial-number"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".macAddress" valueClass="js-mac-address"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".distance" valueClass="js-distance"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".device" nameClass="js-device-display" valueClass="js-device js-device-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".type" nameClass="js-type-display" valueClass="js-type js-type-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".status" nameClass="js-status-display" valueClass="js-status js-status-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".nodeSN" nameClass="js-node-sn-display" valueClass="js-node-sn js-node-sn-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".serialNumber" nameClass="js-serial-number-display" valueClass="js-serial-number js-serial-number-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".macAddress" nameClass="js-mac-address-display" valueClass="js-mac-address js-mac-address-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".distance" nameClass="js-distance-display" valueClass="js-distance js-distance-display"></tags:nameValue2>
 </tags:nameValueContainer2>
