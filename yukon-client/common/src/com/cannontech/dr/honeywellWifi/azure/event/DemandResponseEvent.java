@@ -1,6 +1,5 @@
 package com.cannontech.dr.honeywellWifi.azure.event;
 
-import com.cannontech.dr.honeywellWifi.AbstractHoneywellWifiData;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

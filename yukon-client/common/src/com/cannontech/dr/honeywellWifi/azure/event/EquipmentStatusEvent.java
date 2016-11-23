@@ -2,7 +2,6 @@ package com.cannontech.dr.honeywellWifi.azure.event;
 
 import com.cannontech.dr.JsonSerializers.FROM_EQUIPMENT_STATUS;
 import com.cannontech.dr.JsonSerializers.TO_EQUIPMENT_STATUS;
-import com.cannontech.dr.honeywellWifi.AbstractHoneywellWifiData;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

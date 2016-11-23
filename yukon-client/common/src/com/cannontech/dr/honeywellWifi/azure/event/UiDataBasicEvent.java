@@ -7,7 +7,6 @@ import com.cannontech.dr.JsonSerializers.FROM_DATE_HONEYWELL;
 import com.cannontech.dr.JsonSerializers.FROM_TEMPERATURE_UNIT;
 import com.cannontech.dr.JsonSerializers.TO_DATE_HONEYWELL;
 import com.cannontech.dr.JsonSerializers.TO_TEMPERATURE_UNIT;
-import com.cannontech.dr.honeywellWifi.AbstractHoneywellWifiData;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
