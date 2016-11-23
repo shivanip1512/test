@@ -3,9 +3,7 @@
 /******************************************/
 
 /* Start YUK-15712 */
-/* @error ignore-begin */
 INSERT INTO Command VALUES (-214, 'putconfig install all', 'Send configuration', 'ALL RFNs');
-/* @error ignore-end */
 /* End YUK-15712 */
 
 /* Start YUK-15711 */
