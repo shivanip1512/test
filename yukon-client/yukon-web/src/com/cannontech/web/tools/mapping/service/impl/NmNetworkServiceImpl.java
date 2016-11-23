@@ -23,7 +23,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.metadata.CommStatusType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.message.network.NeighborData;
@@ -328,11 +327,7 @@ public class NmNetworkServiceImpl implements NmNetworkService {
         if (info.getDevice().getPaoIdentifier().getPaoType().isRfGateway()) {
             try {
                 RfnGatewayData gateway = gatewayDataCache.get(info.getDevice().getPaoIdentifier());
-                if (gateway.getConnectionStatus() == ConnectionStatus.CONNECTED) {
-                    info.setStatus(CommStatusType.READY);
-                } else if (gateway.getConnectionStatus() == ConnectionStatus.DISCONNECTED) {
-                    info.setStatus(CommStatusType.NOT_READY);
-                }
+                info.setConnectionStatus(gateway.getConnectionStatus());
             } catch (NmCommunicationException e) {
                 // ignore, status will be set to "UNKNOWN"
                 log.error("Failed to get gateway data for " + info.getDevice(), e);

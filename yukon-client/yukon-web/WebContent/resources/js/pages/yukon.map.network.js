@@ -23,6 +23,12 @@ yukon.map.network = (function () {
     //dark blue
     _routeColor = "#1E66CC",
     
+    //order layers should display, Icons > Parent > Primary Route > Neighbors
+    _neighborsLayerIndex = 0,
+    _primaryRouteLayerIndex = 1,
+    _parentLayerIndex = 2,
+    _iconLayerIndex = 3,
+    
     _devicePoints = [],
     _deviceIcon,
     _parentIcon,
@@ -145,12 +151,12 @@ yukon.map.network = (function () {
             })
         });
         
-        layerLines.setZIndex(0);
+        layerLines.setZIndex(_parentLayerIndex);
         _parentLine = layerLines;
         _map.addLayer(layerLines);
         
         var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: [_parentIcon, _deviceIcon]})});
-        iconsLayer.setZIndex(1);
+        iconsLayer.setZIndex(_iconLayerIndex);
         _parentIconLayer = iconsLayer;
         _map.addLayer(iconsLayer);
         
@@ -227,6 +233,7 @@ yukon.map.network = (function () {
                 })
             });
             
+            layerLines.setZIndex(_neighborsLayerIndex);
             _neighborLines.push(layerLines);
             _map.addLayer(layerLines);
         }
@@ -235,7 +242,7 @@ yukon.map.network = (function () {
         allIcons.push.apply(allIcons, _neighborIcons);
         allIcons.push(_deviceIcon);
         var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: allIcons})});
-        iconsLayer.setZIndex(1);
+        iconsLayer.setZIndex(_iconLayerIndex);
         _neighborIconLayer = iconsLayer;
         _map.addLayer(iconsLayer);
         
@@ -287,13 +294,13 @@ yukon.map.network = (function () {
                 })
             });
             
-            layerLines.setZIndex(0);
+            layerLines.setZIndex(_primaryRouteLayerIndex);
             _primaryRouteLines.push(layerLines);
             _map.addLayer(layerLines);
         }
         
         var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: _primaryRouteIcons})});
-        iconsLayer.setZIndex(1);
+        iconsLayer.setZIndex(_iconLayerIndex);
         _primaryRouteIconLayer = iconsLayer;
         _map.addLayer(iconsLayer);
         

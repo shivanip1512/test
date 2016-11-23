@@ -5,6 +5,7 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.geojson.FeatureCollection;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.metadata.CommStatusType;
 import com.cannontech.common.rfn.model.RfnDevice;
 
@@ -15,11 +16,13 @@ public abstract class MappingInfo {
     private RfnDevice device;
     private FeatureCollection location;
     private CommStatusType status = CommStatusType.UNKNOWN;
+    private ConnectionStatus connectionStatus = ConnectionStatus.DISCONNECTED;
     private double distanceInMiles;
     private double distanceInKm;
     private String statusDisplay;
     private String distanceDisplay;
     private MessageSourceAccessor accessor;
+    private boolean gatewayType;
 
     public MappingInfo(RfnDevice device, FeatureCollection location, MessageSourceAccessor accessor) {
         this.device = device;
@@ -73,13 +76,34 @@ public abstract class MappingInfo {
     }
 
     public String getStatusDisplay() {
-        statusDisplay = accessor.getMessage(nameKey + "status." + status.name());
+        if (isGatewayType()) {
+            statusDisplay = accessor.getMessage("yukon.web.modules.operator.gateways.connectionStatus." + connectionStatus.toString());
+        } else {
+            statusDisplay = accessor.getMessage(nameKey + "status." + status.name());
+        }
         return statusDisplay;
     }
 
     public String getDistanceDisplay() {
         distanceDisplay = String.format("%.4f", distanceInMiles) + " " + accessor.getMessage(nameKey + "distance.miles") + " (" + String.format("%.4f", distanceInKm) + " " + accessor.getMessage(nameKey + "distance.kilometers") + ")";
         return distanceDisplay;
+    }
+
+    public boolean isGatewayType() {
+        this.gatewayType = device.getPaoIdentifier().getPaoType().isRfGateway();
+        return gatewayType;
+    }
+
+    public void setGatewayType(boolean gatewayType) {
+        this.gatewayType = gatewayType;
+    }
+
+    public ConnectionStatus getConnectionStatus() {
+        return connectionStatus;
+    }
+
+    public void setConnectionStatus(ConnectionStatus connectionStatus) {
+        this.connectionStatus = connectionStatus;
     }
 
 }

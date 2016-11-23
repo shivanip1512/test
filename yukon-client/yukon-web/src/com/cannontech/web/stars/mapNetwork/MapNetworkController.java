@@ -24,7 +24,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.metadata.CommStatusType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadata;
 import com.cannontech.common.rfn.model.NmCommunicationException;
@@ -88,22 +87,19 @@ public class MapNetworkController {
             Object commStatus = null;
             if (rfnDevice.getPaoIdentifier().getPaoType().isRfGateway()) {
                 RfnGatewayData gateway = gatewayDataCache.get(rfnDevice.getPaoIdentifier());
-                if (gateway.getConnectionStatus() == ConnectionStatus.CONNECTED) {
-                    commStatus = CommStatusType.READY;
-                } else if (gateway.getConnectionStatus() == ConnectionStatus.DISCONNECTED) {
-                    commStatus = CommStatusType.NOT_READY;
-                }
+                String statusString = accessor.getMessage("yukon.web.modules.operator.gateways.connectionStatus." + gateway.getConnectionStatus().toString());
+                model.addAttribute("deviceStatus", statusString);
             } else {
                 Map<RfnMetadata, Object> metadata = metadataService.getMetadata(rfnDevice);
                 commStatus = metadata.get(RfnMetadata.COMM_STATUS);
-            }
-            if (commStatus != null) {
-                CommStatusType status = CommStatusType.valueOf(commStatus.toString());
-                String statusString = accessor.getMessage(nameKey + "status." + status);
-                model.addAttribute("deviceStatus", statusString);
-            } else {
-                // ignore, status will be set to "UNKNOWN"
-                log.error("NM didn't return communication status for " + deviceId);
+                if (commStatus != null) {
+                    CommStatusType status = CommStatusType.valueOf(commStatus.toString());
+                    String statusString = accessor.getMessage(nameKey + "status." + status);
+                    model.addAttribute("deviceStatus", statusString);
+                } else {
+                    // ignore, status will be set to "UNKNOWN"
+                    log.error("NM didn't return communication status for " + deviceId);
+                }
             }
         } catch (NmCommunicationException e) {
             // ignore, status will be set to "UNKNOWN"
