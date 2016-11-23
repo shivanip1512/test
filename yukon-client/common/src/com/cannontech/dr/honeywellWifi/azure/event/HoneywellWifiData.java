@@ -1,5 +1,6 @@
-package com.cannontech.dr.honeywellWifi;
+package com.cannontech.dr.honeywellWifi.azure.event;
 
+import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.microsoft.windowsazure.services.servicebus.models.BrokeredMessage;
 
 /**

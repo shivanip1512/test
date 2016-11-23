@@ -1,4 +1,7 @@
-package com.cannontech.dr.honeywellWifi;
+package com.cannontech.dr.honeywellWifi.azure.event.processing;
+
+import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
+import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
 
 /**
  * Interface for strategies that can process a specific type of Honeywell Azure service bus messages.

@@ -1,4 +1,4 @@
-package com.cannontech.dr.honeywellWifi;
+package com.cannontech.dr.honeywellWifi.azure.event.processing;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;

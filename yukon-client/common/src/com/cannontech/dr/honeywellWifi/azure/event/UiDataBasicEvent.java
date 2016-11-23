@@ -1,4 +1,4 @@
-package com.cannontech.dr.honeywellWifi;
+package com.cannontech.dr.honeywellWifi.azure.event;
 
 import org.joda.time.Instant;
 
@@ -7,6 +7,8 @@ import com.cannontech.dr.JsonSerializers.FROM_DATE_HONEYWELL;
 import com.cannontech.dr.JsonSerializers.FROM_TEMPERATURE_UNIT;
 import com.cannontech.dr.JsonSerializers.TO_DATE_HONEYWELL;
 import com.cannontech.dr.JsonSerializers.TO_TEMPERATURE_UNIT;
+import com.cannontech.dr.honeywellWifi.AbstractHoneywellWifiData;
+import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -16,7 +18,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * Honeywell Azure service bus data event. Contains general data about the settings and state of the device.
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class UiDataBasicEvent extends HoneywellWifiDataBase {
+public class UiDataBasicEvent extends AbstractHoneywellWifiData {
     private final Instant created;
     private final Double displayedTemp;
     private final Double heatSetpoint;

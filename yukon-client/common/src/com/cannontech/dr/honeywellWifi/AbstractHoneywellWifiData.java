@@ -1,8 +1,10 @@
 package com.cannontech.dr.honeywellWifi;
 
+import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
+import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiMessageWrapper;
 import com.microsoft.windowsazure.services.servicebus.models.BrokeredMessage;
 
-public abstract class HoneywellWifiDataBase implements HoneywellWifiData {
+public abstract class AbstractHoneywellWifiData implements HoneywellWifiData {
     private BrokeredMessage originalMessage;
     private HoneywellWifiMessageWrapper messageWrapper;
     

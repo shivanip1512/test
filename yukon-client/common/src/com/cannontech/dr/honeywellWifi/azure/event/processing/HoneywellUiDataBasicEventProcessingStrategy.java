@@ -1,4 +1,4 @@
-package com.cannontech.dr.honeywellWifi;
+package com.cannontech.dr.honeywellWifi.azure.event.processing;
 
 import org.apache.log4j.Logger;
 
@@ -7,6 +7,9 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.temperature.Temperature;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
+import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
+import com.cannontech.dr.honeywellWifi.azure.event.UiDataBasicEvent;
 
 public class HoneywellUiDataBasicEventProcessingStrategy extends AbstractHoneywellWifiDataProcessingStrategy {
     private static final Logger log = YukonLogManager.getLogger(HoneywellUiDataBasicEventProcessingStrategy.class);

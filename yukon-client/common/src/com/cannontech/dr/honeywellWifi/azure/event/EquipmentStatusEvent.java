@@ -1,7 +1,9 @@
-package com.cannontech.dr.honeywellWifi;
+package com.cannontech.dr.honeywellWifi.azure.event;
 
 import com.cannontech.dr.JsonSerializers.FROM_EQUIPMENT_STATUS;
 import com.cannontech.dr.JsonSerializers.TO_EQUIPMENT_STATUS;
+import com.cannontech.dr.honeywellWifi.AbstractHoneywellWifiData;
+import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -13,7 +15,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
  * relays.
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class EquipmentStatusEvent extends HoneywellWifiDataBase {
+public class EquipmentStatusEvent extends AbstractHoneywellWifiData {
     private final EquipmentStatus equipmentStatus;
     private final EquipmentStatus previousEquipmentStatus;
     // If we ever decide to care about fanStatus, these should be converted to an enum.

@@ -1,6 +1,8 @@
-package com.cannontech.dr.honeywellWifi;
+package com.cannontech.dr.honeywellWifi.azure.event;
 
 import com.cannontech.dr.JsonSerializers.FROM_CONNECTION_STATUS;
+import com.cannontech.dr.honeywellWifi.AbstractHoneywellWifiData;
+import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,7 +13,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
  * Honeywell servers or not (usually indicating whether the thermostat has a wifi connection).
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class ConnectionStatusEvent extends HoneywellWifiDataBase {
+public class ConnectionStatusEvent extends AbstractHoneywellWifiData {
     private final ConnectionStatus connectionStatus;
     private final Integer deviceId;
     private final String macId;

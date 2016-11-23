@@ -1,4 +1,4 @@
-package com.cannontech.dr.honeywellWifi;
+package com.cannontech.dr.honeywellWifi.azure.event;
 
 public enum ConnectionStatus {
     CONNECTED("Connected", 0.0),

@@ -1,8 +1,11 @@
-package com.cannontech.dr.honeywellWifi;
+package com.cannontech.dr.honeywellWifi.azure.event.processing;
 
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
+import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatusEvent;
+import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
 
 public class HoneywellEquipmentStatusEventProcessingStrategy implements HoneywellWifiDataProcessingStrategy {
     private static final Logger log = YukonLogManager.getLogger(HoneywellEquipmentStatusEventProcessingStrategy.class);

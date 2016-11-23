@@ -1,5 +1,7 @@
-package com.cannontech.dr.honeywellWifi;
+package com.cannontech.dr.honeywellWifi.azure.event;
 
+import com.cannontech.dr.honeywellWifi.AbstractHoneywellWifiData;
+import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
@@ -7,7 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
  * Honeywell Azure service bus demand response event. Contains info about what the device is doing in a DR event.
  */
 @JsonIgnoreProperties(ignoreUnknown=true)
-public class DemandResponseEvent extends HoneywellWifiDataBase {
+public class DemandResponseEvent extends AbstractHoneywellWifiData {
     
     @JsonCreator
     public DemandResponseEvent() {
