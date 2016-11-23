@@ -59,7 +59,7 @@ public class SwitchTypePanel extends DataInputPanel {
         ConfigurationSource masterConfigSource =
             YukonSpringHook.getBean("configurationSource", ConfigurationSource.class);
         boolean honeywellEnabled = masterConfigSource.getBoolean(MasterConfigBoolean.HONEYWELL_SUPPORT_ENABLED, false);
-        if (honeywellEnabled) {
+        if (honeywellEnabled && !GROUP_LIST.contains(PaoType.LM_GROUP_HONEYWELL)) {
             GROUP_LIST.add(PaoType.LM_GROUP_HONEYWELL);
             Collections.sort(GROUP_LIST);
             GROUP_LIST_SA.add(PaoType.LM_GROUP_HONEYWELL);
