@@ -8,11 +8,11 @@
   http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
     
     <bean class="com.cannontech.dr.honeywellWifi.HoneywellWifiDataListener"/>
-    <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.HoneywellUiDataBasicEventProcessingStrategy"/>
-    <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.HoneywellDemandResponseEventProcessingStrategy"/>
-    <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.HoneywellEquipmentStatusEventProcessingStrategy"/>
-    <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.HoneywellConnectionStatusEventProcessingStrategy"/>
-    <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.HoneywellApplicationAccessEventProcessingStrategy"/>
+    <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.UiDataBasicEventProcessor"/>
+    <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.DemandResponseEventProcessor"/>
+    <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.EquipmentStatusEventProcessor"/>
+    <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.ConnectionStatusEventProcessor"/>
+    <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.ApplicationAccessAddedEventProcessor"/>
     
     <context:annotation-config/>
     

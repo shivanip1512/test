@@ -20,7 +20,7 @@ import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
 import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiMessageWrapper;
 import com.cannontech.dr.honeywellWifi.azure.event.UnknownEvent;
-import com.cannontech.dr.honeywellWifi.azure.event.processing.HoneywellWifiDataProcessingStrategy;
+import com.cannontech.dr.honeywellWifi.azure.event.processing.HoneywellWifiDataProcessor;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -46,12 +46,12 @@ public class HoneywellWifiDataListener {
     private static boolean deleteMessageOnProcessingFailure = false;
     
     // Static configuration data
-    private Map<HoneywellWifiDataType, HoneywellWifiDataProcessingStrategy> dataTypeToProcessingStrategy = new HashMap<>();
+    private Map<HoneywellWifiDataType, HoneywellWifiDataProcessor> dataTypeToProcessingStrategy = new HashMap<>();
     private ReceiveMessageOptions receiveMessageOptions;
     private ServiceBusContract azureService;
     
     // Autowired dependencies
-    @Autowired private List<HoneywellWifiDataProcessingStrategy> dataProcessingStrategies;
+    @Autowired private List<HoneywellWifiDataProcessor> dataProcessingStrategies;
     @Autowired private GlobalSettingDao settingDao;
     
     // Thread control/monitoring
@@ -221,7 +221,7 @@ public class HoneywellWifiDataListener {
      * @throws IllegalStateException if no processor is found that can handle the message.
      */
     private void processMessage(HoneywellWifiData data) {
-        HoneywellWifiDataProcessingStrategy strategy = dataTypeToProcessingStrategy.get(data.getType());
+        HoneywellWifiDataProcessor strategy = dataTypeToProcessingStrategy.get(data.getType());
         if (strategy != null) {
             strategy.processData(data);
         } else {

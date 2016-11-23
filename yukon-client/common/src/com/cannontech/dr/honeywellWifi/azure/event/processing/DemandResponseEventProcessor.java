@@ -6,8 +6,8 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
 
-public class HoneywellDemandResponseEventProcessingStrategy implements HoneywellWifiDataProcessingStrategy {
-    private static final Logger log = YukonLogManager.getLogger(HoneywellDemandResponseEventProcessingStrategy.class);
+public class DemandResponseEventProcessor implements HoneywellWifiDataProcessor {
+    private static final Logger log = YukonLogManager.getLogger(DemandResponseEventProcessor.class);
     
     @Override
     public HoneywellWifiDataType getSupportedType() {

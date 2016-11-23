@@ -11,8 +11,8 @@ import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
 import com.cannontech.dr.honeywellWifi.azure.event.UiDataBasicEvent;
 
-public class HoneywellUiDataBasicEventProcessingStrategy extends AbstractHoneywellWifiDataProcessingStrategy {
-    private static final Logger log = YukonLogManager.getLogger(HoneywellUiDataBasicEventProcessingStrategy.class);
+public class UiDataBasicEventProcessor extends AbstractHoneywellWifiDataProcessor {
+    private static final Logger log = YukonLogManager.getLogger(UiDataBasicEventProcessor.class);
     
     @Override
     public HoneywellWifiDataType getSupportedType() {

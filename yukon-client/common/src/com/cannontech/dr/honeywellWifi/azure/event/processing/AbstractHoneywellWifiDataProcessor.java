@@ -16,8 +16,8 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 
-public abstract class AbstractHoneywellWifiDataProcessingStrategy implements HoneywellWifiDataProcessingStrategy {
-    private static final Logger log = YukonLogManager.getLogger(AbstractHoneywellWifiDataProcessingStrategy.class);
+public abstract class AbstractHoneywellWifiDataProcessor implements HoneywellWifiDataProcessor {
+    private static final Logger log = YukonLogManager.getLogger(AbstractHoneywellWifiDataProcessor.class);
     
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private AttributeService attributeService;
