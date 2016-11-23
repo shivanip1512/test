@@ -3,7 +3,9 @@
 /******************************************/
 
 /* Start YUK-15712 */
+/* @error ignore-begin */
 INSERT INTO Command VALUES (-214, 'putconfig install all', 'Send configuration', 'ALL RFNs');
+/* @error ignore-end */
 /* End YUK-15712 */
 
 /* Start YUK-15711 */
@@ -46,6 +48,17 @@ DELETE FROM DeviceTypeCommand WHERE DeviceCommandID IN (-1045, -1051, -1057, -10
     -1135, -1164, -1170, -1176, -1182, -1206, -1207, -1208, -1209, -1210, -1212, -1213, -1214, -1215, -1216, -1218,
     -1219, -1220, -1221, -1222, -1224, -1225, -1226, -1227, -1228 );
 /* End YUK-15711 */
+
+/* Start YUK-15972 */
+ALTER TABLE DynamicPAOInfo DROP CONSTRAINT FK_DynPAOInfo_YukPAO;
+GO
+
+ALTER TABLE DynamicPAOInfo
+   ADD CONSTRAINT FK_DynPAOInfo_YukPAO FOREIGN KEY (PAObjectID)
+      REFERENCES YukonPAObject (PAObjectID)
+         ON DELETE CASCADE;
+GO
+/* End YUK-15972 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
