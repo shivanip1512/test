@@ -185,7 +185,7 @@
                                 <form:hidden id="disable-bus-point-input" path="capControlSubstationBus.disableBusPointId"/>
                                 <tags:pickerDialog
                                     id="disableBusPointPicker"
-                                    type="pointPicker"
+                                    type="voltReductionPointPicker"
                                     linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="disable-bus-point-input"
@@ -220,7 +220,7 @@
                                 <form:hidden id="var-point-input" path="capControlSubstationBus.currentVarLoadPointID"/>
                                 <tags:pickerDialog
                                     id="varPointPicker"
-                                    type="pointPicker"
+                                    type="varPointPicker"
                                     linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="var-point-input"
@@ -239,7 +239,7 @@
                                 <form:hidden id="phase-b-point-input" path="capControlSubstationBus.phaseB"/>
                                 <tags:pickerDialog
                                     id="phaseBPointPicker"
-                                    type="pointPicker"
+                                    type="varPointPicker"
                                     linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="phase-b-point-input"
@@ -257,7 +257,7 @@
                                 <form:hidden id="phase-c-point-input" path="capControlSubstationBus.phaseC"/>
                                 <tags:pickerDialog
                                     id="phaseCPointPicker"
-                                    type="pointPicker"
+                                    type="varPointPicker"
                                     linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="phase-c-point-input"
@@ -276,7 +276,7 @@
                                 <form:hidden id="watt-point-input" path="capControlSubstationBus.currentWattLoadPointID"/>
                                 <tags:pickerDialog
                                     id="wattPointPicker"
-                                    type="pointPicker"
+                                    type="wattPointPicker"
                                     linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="watt-point-input"
@@ -295,7 +295,7 @@
                                 <form:hidden id="volt-point-input" path="capControlSubstationBus.currentVoltLoadPointID"/>
                                 <tags:pickerDialog
                                     id="voltPointPicker"
-                                    type="pointPicker"
+                                    type="voltPointPicker"
                                     linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="volt-point-input"
