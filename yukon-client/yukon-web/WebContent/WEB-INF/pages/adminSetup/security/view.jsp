@@ -24,8 +24,8 @@
 	</div>
 	
     <d:inline nameKey="addKeyDialog" okEvent="addKeyFormSubmit" on="#addNewKeyBtn">
+     <form:form method="POST" commandName="encryptionKey" action="saveNewKey" autocomplete="off">
         <tags:nameValueContainer2>
-            <form:form method="POST" commandName="encryptionKey" action="saveNewKey" autocomplete="off">
                 <cti:csrfToken/>
                 <h3><i:inline key=".addNewKeyHeading" /></h3>
                 <tags:nameValue2 nameKey=".keyName">
@@ -34,8 +34,8 @@
                 <tags:nameValue2 nameKey=".key">
                     <tags:input path="privateKey" size="30" />
                 </tags:nameValue2>
-            </form:form>
-        </tags:nameValueContainer2>
+         </tags:nameValueContainer2>
+      </form:form>
     </d:inline>
 
     <d:inline nameKey="importKeyFileDialog" okEvent="importKeyFileFormSubmit" on="#importKeyFileBtn">
