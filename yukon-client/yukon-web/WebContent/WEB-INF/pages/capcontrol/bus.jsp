@@ -350,7 +350,7 @@
                                 <form:hidden id="switch-point-input" path="capControlSubstationBus.switchPointID"/>
                                 <tags:pickerDialog
                                     id="switchPointPicker"
-                                    type="pointPicker"
+                                    type="twoStatePointPicker"
                                     linkType="selectionLabel"
                                     selectionProperty="paoPoint"
                                     destinationFieldId="switch-point-input"
