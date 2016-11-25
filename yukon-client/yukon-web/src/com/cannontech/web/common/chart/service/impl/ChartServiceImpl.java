@@ -87,13 +87,14 @@ public class ChartServiceImpl implements ChartService {
                 long timeStamp = data.getPointDataTimeStamp().getTime();
                 timeStamp += TimeZone.getDefault().getOffset(timeStamp);
 
+                String formattedValue = "<div>" + pointValueFormat.format(data.getValue()) + "</div>";
                 chartValue.setId(timeStamp);
                 chartValue.setTime(timeStamp); // x-axis
                 chartValue.setValue(data.getValue()); // y-axis
-                chartValue.setDescription("<div>" + units + "</div><div>"
-                    + timeFormat.format(data.getPointDataTimeStamp()) + "</div><div>" + lPoint.getPointName()
-                    + "</div>");
-                chartValue.setFormattedValue(pointValueFormat.format(data.getValue()));
+                chartValue.setDescription( formattedValue +"<div>" + units + "</div><div>"
+                        + timeFormat.format(data.getPointDataTimeStamp()) + "</div><div>" + lPoint.getPointName()
+                        + "</div>");
+                chartValue.setFormattedValue(formattedValue);
 
                 chartData.add(chartValue);
             }
