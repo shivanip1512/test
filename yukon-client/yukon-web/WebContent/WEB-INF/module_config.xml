@@ -303,7 +303,7 @@
                       <page name="bulk.analysis.progress" type="BASIC"/>
                       <page name="bulk.analysis.list" type="BASIC"/>
                       <page name="bulk.analysis.results" type="BASIC">
-                        <link>/bulk/archiveDataAnalysis/results/view?analysisId=${analysis.analysisId}</link>
+                        <link>/bulk/archiveDataAnalysis/results/view?analysisId=${analysisId}</link>
                         <pages>
                           <page name="bulk.analysis.tabular" type="BASIC"/>
                           <page name="bulk.analysis.readResults" type="BASIC"/>
