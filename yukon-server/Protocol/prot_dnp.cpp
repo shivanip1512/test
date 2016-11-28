@@ -609,14 +609,12 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
                 _string_results.push_back(s);
             }
+            else
+            {
+                _string_results.push_back("Device did not return a time result");
+                retVal = ClientErrors::Abnormal;
+            }
         }
-    }
-
-    // We've found the timestamps and have them parsed into cto and absoluteTime
-    if (!cto && !absoluteTime)
-    {
-        _string_results.push_back("Device did not return a time result");
-        retVal = ClientErrors::Abnormal;
     }
 
     //  and this is where the pointdata gets harvested
