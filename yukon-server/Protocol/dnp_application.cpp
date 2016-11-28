@@ -52,7 +52,7 @@ void ApplicationLayer::setCommand( FunctionCode fc, ObjectBlockPtr dob )
 {
     setCommand(fc);
 
-    _out_object_blocks.push(std::move(dob));
+    _out_object_blocks.push_back(std::move(dob));
 }
 
 
@@ -62,7 +62,7 @@ void ApplicationLayer::setCommand( FunctionCode fc, std::vector<ObjectBlockPtr> 
 
     for( auto &dob : dobs )
     {
-        _out_object_blocks.push(std::move(dob));
+        _out_object_blocks.push_back(std::move(dob));
     }
 }
 
@@ -145,7 +145,7 @@ void ApplicationLayer::processResponse( void )
             ob->setUnsolicited();
         }
 
-        _in_object_blocks.push(std::move(ob));
+        _in_object_blocks.push_back(std::move(ob));
     }
 }
 
@@ -192,7 +192,7 @@ void ApplicationLayer::initForOutput( void )
         ob->serialize(_request.buf + pos);
         pos += ob->getSerializedLen();
 
-        _out_object_blocks.pop();
+        _out_object_blocks.pop_front();
     }
 
     _request.buf_len = pos;
@@ -233,7 +233,7 @@ void ApplicationLayer::initForSlaveOutput( void )
         ob->serialize(_response.buf + pos);
         pos += ob->getSerializedLen();
 
-        _out_object_blocks.pop();
+        _out_object_blocks.pop_front();
     }
 
     _response.buf_len = pos;
@@ -261,8 +261,8 @@ void ApplicationLayer::getObjects( object_block_queue &ob_queue )
 {
     while( ! _in_object_blocks.empty() )
     {
-        ob_queue.push(std::move(_in_object_blocks.front()));
-        _in_object_blocks.pop();
+        ob_queue.push_back(std::move(_in_object_blocks.front()));
+        _in_object_blocks.pop_front();
     }
 }
 

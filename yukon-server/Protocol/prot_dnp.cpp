@@ -560,7 +560,64 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
     }
 
     scoped_ptr<TimeCTO> cto;
-    scoped_ptr<Time>    time_sent;
+    scoped_ptr<Time>    absoluteTime;
+
+    // Scan through the queue and see if there are any timestamps
+    for (const auto &ob : _object_blocks)
+    {
+        if (ob->getGroup() == TimeCTO::Group)
+        {
+            cto.reset(CTIDBG_new TimeCTO(*(reinterpret_cast<const TimeCTO *>(ob->at(0).object))));
+
+            CtiTime t = convertFromDeviceTimeOffset(*cto);
+
+            cto->setSeconds(t.seconds());
+
+            CTILOG_WARN(dout, "found CTO object in stream for device \"" << _name << "\" (" << t << "." << cto->getMilliseconds() << ")");
+        }
+        else if (ob->getGroup() == DNP::Time::Group &&
+            ob->getVariation() == DNP::Time::T_TimeAndDate)
+        {
+            ObjectBlock::object_descriptor od = ob->at(0);
+
+            if (od.object)
+            {
+                absoluteTime.reset(CTIDBG_new Time(*(reinterpret_cast<const DNP::Time *>(od.object))));
+
+                CtiTime t = convertFromDeviceTimeOffset(*absoluteTime);
+
+                absoluteTime->setSeconds(t.seconds());
+
+                string s = "Device time: ";
+                s.append(t.asString());
+                s.append(".");
+                s.append(CtiNumStr((int)absoluteTime->getMilliseconds()).zpad(3));
+
+                const int TimeDifferential = 60;
+                const int ComplaintInterval = 3600;
+
+                CtiTime now;
+
+                if (_nextTimeComplaint <= now
+                    && ((t - TimeDifferential) > now || (t + TimeDifferential) < now))
+                {
+                    _nextTimeComplaint = nextScheduledTimeAlignedOnRate(now, ComplaintInterval);
+
+                    CTILOG_WARN(dout, "large time differential for device \"" << _name << "\" (" << t << "); "
+                        "will not complain again until " << _nextTimeComplaint);
+                }
+
+                _string_results.push_back(s);
+            }
+        }
+    }
+
+    // We've found the timestamps and have them parsed into cto and absoluteTime
+    if (!cto && !absoluteTime)
+    {
+        _string_results.push_back("Device did not return a time result");
+        retVal = ClientErrors::Abnormal;
+    }
 
     //  and this is where the pointdata gets harvested
     while( !_object_blocks.empty() )
@@ -569,62 +626,13 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
 
         if( ob && !ob->empty() )
         {
-            if( ob->getGroup() == TimeCTO::Group )
-            {
-                cto.reset(CTIDBG_new TimeCTO(*(reinterpret_cast<const TimeCTO *>(ob->at(0).object))));
-
-                CtiTime t = convertFromDeviceTimeOffset(*cto);
-
-                cto->setSeconds(t.seconds());
-
-                CTILOG_WARN(dout, "found CTO object in stream for device \""<< _name <<"\" ("<< t <<"."<< cto->getMilliseconds() <<")");
-            }
-            else if( ob->getGroup()     == DNP::Time::Group &&
-                     ob->getVariation() == DNP::Time::T_TimeAndDate )
-            {
-                ObjectBlock::object_descriptor od = ob->at(0);
-
-                if( od.object )
-                {
-                    time_sent.reset(CTIDBG_new Time(*(reinterpret_cast<const DNP::Time *>(od.object))));
-
-                    CtiTime t = convertFromDeviceTimeOffset(*time_sent);
-
-                    time_sent->setSeconds(t.seconds());
-
-                    string s = "Device time: ";
-                    s.append(t.asString());
-                    s.append(".");
-                    s.append(CtiNumStr((int)time_sent->getMilliseconds()).zpad(3));
-
-                    const int TimeDifferential  =   60;
-                    const int ComplaintInterval = 3600;
-
-                    CtiTime now;
-
-                    if( _nextTimeComplaint <= now
-                        && ((t - TimeDifferential) > now || (t + TimeDifferential) < now) )
-                    {
-                        _nextTimeComplaint = nextScheduledTimeAlignedOnRate(now, ComplaintInterval);
-
-                        CTILOG_WARN(dout, "large time differential for device \""<< _name <<"\" ("<< t <<"); "
-                                "will not complain again until "<< _nextTimeComplaint);
-                    }
-
-                    _string_results.push_back(s);
-                }
-                else
-                {
-                    _string_results.push_back("Device did not return a time result");
-                    retVal = ClientErrors::Abnormal;
-                }
-            }
-            else
+            if ((ob->getGroup() != TimeCTO::Group) &&
+                (ob->getGroup() != Time::Group))
             {
                 pointlist_t points;
                 int count = ob->size();
 
-                ob->getPoints(points, cto.get(), time_sent.get());
+                ob->getPoints(points, cto.get(), absoluteTime.get());
 
                 recordPoints(ob->getGroup(), points);
 
@@ -636,7 +644,7 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
             }
         }
 
-        _object_blocks.pop();
+        _object_blocks.pop_front();
     }
 
     if( final )

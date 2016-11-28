@@ -20,7 +20,7 @@ public:
         BufferSize = 4096
     };
 
-    using object_block_queue = std::queue<ObjectBlockPtr>;
+    using object_block_queue = std::deque<ObjectBlockPtr>;
 
 private:
 
