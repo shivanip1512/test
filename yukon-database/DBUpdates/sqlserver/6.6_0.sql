@@ -7,7 +7,6 @@
 INSERT INTO State VALUES(-20, 14, 'N/A', 9, 6, 0);
 INSERT INTO State VALUES(-20, 15, 'N/A', 9, 6, 0);
 INSERT INTO State VALUES(-20, 16, 'N/A', 9, 6, 0);
-GO
 /* @error ignore-end */
 /* End YUK-15182 */
 
@@ -21,7 +20,6 @@ AND Value = '/cc/user/overview.jsf';
 UPDATE YukonGroupRole SET Value = '/dr/cc/home' 
 WHERE RolePropertyId = -10800 
 AND Value = '/cc/ciSetup.jsf';
-GO
 /* End YUK-15180 */
 
 /* Start YUK-15216 */
@@ -33,7 +31,6 @@ SET ItemName = 'timeOffset',
                   ELSE 'UTC' 
                 END
 WHERE ItemName = 'localTime';
-GO
 /* End YUK-15216 */
 
 /* Start YUK-15201 */
@@ -192,6 +189,7 @@ CREATE TABLE UserSystemMetric  (
    SystemHealthMetricId VARCHAR(64)          NOT NULL,
    CONSTRAINT PK_UserSystemMetric PRIMARY KEY (UserId, SystemHealthMetricId)
 );
+GO
 
 ALTER TABLE UserSystemMetric
    ADD CONSTRAINT FK_UserSystemMetric_YukonUser FOREIGN KEY (UserId)
@@ -227,7 +225,6 @@ WHERE PageName = 'substation';
 UPDATE UserPage
 SET PageName = 'substation.VIEW'
 WHERE PageName = 'substation';
-GO
 /* End YUK-15251 */
 
 /* Start YUK-15268 */
@@ -258,7 +255,6 @@ WHERE RolePropertyId =  -20211;
   
 DELETE FROM YukonRoleProperty
 WHERE RolePropertyId =  -20211;
-GO
 /* End YUK-15268 */
 
 /* Start YUK-15173 */
@@ -302,7 +298,6 @@ UPDATE ThemeProperty
 SET Value = -1 
 WHERE Value = 1 
   AND Property = 'LOGO';
-GO
 /* End YUK-15217 */
 
 /* Start YUK-15352 */
@@ -322,7 +317,6 @@ JOIN Point p ON p.PointId = dpd.PointId
 JOIN YukonPAObject y ON y.PAObjectID = p.PAObjectID
 WHERE p.ServiceFlag = 'N' 
   AND CAST(dpd.Tags AS BIGINT) & 0x01 != 0;
-GO
 /* End YUK-15352 */
 
 /* Start YUK-15271 */
@@ -332,7 +326,6 @@ FROM Point p
 WHERE p.PAObjectID = 0
   AND p.PointType != 'System'
   AND p.PointId NOT IN (SELECT PointId FROM PointAlarming);
-GO
 /* End YUK-15271 */
 
 /* Start YUK-15438 */
@@ -559,12 +552,12 @@ GO
 
 /* Start YUK-15428 */
 DELETE FROM YukonServices WHERE ServiceId IN (6, -6);
-GO
 /* End YUK-15428 */
 
 /* Start YUK-15548 */
 ALTER TABLE FDRTranslation 
 ALTER COLUMN Destination VARCHAR(256) NOT NULL;
+GO
 
 ALTER TABLE FDRTranslation 
 DROP CONSTRAINT PK_FDRTrans;
@@ -586,7 +579,6 @@ INSERT INTO StateGroup VALUES (-23, 'Var Voltage Input', 'Status');
 INSERT INTO StateGroup VALUES (-24, 'SCADA TripClose', 'Status');
 INSERT INTO StateGroup VALUES (-25, 'YesNo', 'Status');
 INSERT INTO StateGroup VALUES (-26, 'SCADA Override Type', 'Status');
-GO
 
 INSERT INTO State VALUES (-21, 0, 'Closed', 0, 6, 0);
 INSERT INTO State VALUES (-21, 1, 'Open', 1, 6, 0);
@@ -609,7 +601,6 @@ INSERT INTO State VALUES (-25, 1, 'Yes', 1, 6, 0);
 
 INSERT INTO State VALUES (-26, 0, 'Time of Day', 0, 6, 0);
 INSERT INTO State VALUES (-26, 1, 'Countdown Timer', 1, 6, 0);
-GO
 /* End YUK-15611 */
 
 /* Start YUK-15502 */
@@ -673,7 +664,6 @@ INSERT INTO DeviceTypeCommand VALUES (-1211, -193, 'RFN-530S4eAT', 1, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1217, -193, 'RFN-530S4eRD', 1, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-1223, -193, 'RFN-530S4eRT', 1, 'Y', -1);
-GO
 /* @error ignore-end */
 /* End YUK-15502 */
 
@@ -683,7 +673,6 @@ INSERT INTO Command VALUES (-213, 'ping', 'Ping', 'All Two Way LCR');
 
 INSERT INTO DeviceTypeCommand VALUES (-1229, -212, 'LCR-3102', 16, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1230, -213, 'LCR-3102', 17, 'Y', -1);
-GO
 /* End YUK-15671 */
 
 /* Start YUK-15633 */
@@ -703,13 +692,11 @@ GO
 
 /* Start YUK-15720*/
 INSERT INTO YukonRoleProperty VALUES (-21316, -213, 'RF Data Streaming', 'false', 'Controls access to RF data streaming configuration actions.');
-GO
 /* End YUK-15720*/
 
 /* Start YUK-15712 */
 /* @error ignore-begin */
 INSERT INTO Command VALUES (-214, 'putconfig install all', 'Send configuration', 'ALL RFNs');
-GO
 /* @error ignore-end */
 /* End YUK-15712 */
 
@@ -752,7 +739,6 @@ DELETE FROM DeviceTypeCommand WHERE DeviceCommandID IN (-1045, -1051, -1057, -10
     -1090, -1092, -1093, -1094, -1095, -1097, -1098, -1099, -1100, -1102, -1103, -1104, -1105, -1112, -1113, -1114,
     -1115, -1117, -1118, -1119, -1120, -1122, -1123, -1124, -1125, -1127, -1128, -1129, -1130, -1132, -1133, -1134,
     -1135, -1164, -1170, -1176, -1182);
-GO
 /* @error ignore-end */
 /* End YUK-15711 */
 
@@ -761,12 +747,10 @@ INSERT INTO YukonListEntry VALUES (2030, 1005, 0, 'Honeywell Wi-Fi 9000', 1332);
 INSERT INTO YukonListEntry VALUES (2031, 1005, 0, 'Honeywell Wi-Fi VisionPRO 8000', 1333);
 INSERT INTO YukonListEntry VALUES (2032, 1005, 0, 'Honeywell Wi-Fi FocusPRO', 1334);
 INSERT INTO YukonListEntry VALUES (2033, 1005, 0, 'Honeywell Wi-Fi Thermostat', 1335);
-GO
 /* End YUK-15746 */
 
 /* Start YUK-15836 */
 INSERT INTO YukonServices VALUES (22, 'HoneywellWifiDataListener', 'classpath:com/cannontech/services/honeywellWifiListener/honeywellWifiMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
-GO
 /* End YUK-15836 */
 
 /* Start YUK-15859 */
@@ -812,7 +796,6 @@ UPDATE YukonRoleProperty        SET KeyName = 'Transmission Exclusion Enabled'  
 UPDATE YukonRoleProperty        SET KeyName = 'Manage Users'                    WHERE RolePropertyID = -10008;
 UPDATE YukonRoleProperty        SET KeyName = 'Optional Protocols'              WHERE RolePropertyID = -10010;
 UPDATE YukonRoleProperty        SET KeyName = 'Program Member Management'       WHERE RolePropertyID = -10011;
-GO
 /* End YUK-14794 */
 
 /* Start YUK-15906 */
@@ -823,11 +806,9 @@ GO
 
 /* Start YUK-15957 */
 INSERT INTO StateGroup VALUES (-27, 'NoYes', 'Status');
-GO
 
 INSERT INTO State VALUES (-27, 0, 'Yes', 0, 6, 0);
 INSERT INTO State VALUES (-27, 1, 'No', 1, 6, 0);
-GO
 /* End YUK-15957 */
 
 /* Start YUK-15962 */
@@ -838,21 +819,17 @@ WHERE RoleId = -211;
 UPDATE YukonRoleProperty 
 SET KeyName = 'C&I Curtailment Operator', Description = 'Controls access to the C&I Curtailment operator functionality. When false, only the C&I Curtailment user pages are available.' 
 WHERE RolePropertyId = -21100 AND RoleId = -211; 
-GO
 /* End YUK-15962 */
 
 /* Start YUK-15963 */
 INSERT INTO Point VALUES(-34, 'Analog', 'Message Broker CPU Utilization', 0,'Default', 0, 'N', 'N', 'R', 1030, 'None', 0);
 INSERT INTO Point VALUES(-35, 'Analog', 'Message Broker Memory Utilization', 0,'Default', 0, 'N', 'N', 'R', 1031, 'None', 0);
-GO
 
 INSERT INTO pointanalog VALUES(-34, -1, 1, 0 );
 INSERT INTO pointanalog VALUES(-35, -1, 1, 0 );
-GO
 
 INSERT INTO pointunit VALUES(-34, 28, 2, 1.0E+30, -1.0E+30, 0);
 INSERT INTO pointunit VALUES(-35, 56, 0, 1.0E+30, -1.0E+30, 0);
-GO
 /* End YUK-15963 */
 
 /* Start YUK-15987 */
@@ -884,6 +861,10 @@ ADD EncryptionKeyType VARCHAR(128) NOT NULL
 DEFAULT 'ExpresscomOneWay';
 GO
 /* End YUK-16013 */
+
+/* Start YUK-16017 */
+INSERT INTO YukonRoleProperty VALUES(-20222,-202,'Water Leak Report','true','Controls access to the Water Leak Report.');
+/* End YUK-16017 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
