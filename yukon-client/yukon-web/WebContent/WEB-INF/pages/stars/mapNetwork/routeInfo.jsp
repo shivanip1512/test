@@ -11,7 +11,8 @@
     <tags:nameValue2 nameKey=".type" nameClass="js-type-display" valueClass="js-type js-type-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".status" nameClass="js-status-display" valueClass="js-status js-status-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".nodeSN" nameClass="js-node-sn-display" valueClass="js-node-sn js-node-sn-display"></tags:nameValue2>
-    <tags:nameValue2 nameKey=".serialNumber" nameClass="js-serial-number-display" valueClass="js-serial-number js-serial-number-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".serialNumber" nameClass="js-serial-number-display js-serial-number-label" valueClass="js-serial-number js-serial-number-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".gatewaySerialNumber" nameClass="js-gateway-serial-number-display" valueClass="js-gateway-serial-number js-gateway-serial-number-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".destinationAddress" nameClass="js-destination-address-display" valueClass="js-destination-address js-destination-address-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".nextHopAddress" nameClass="js-next-hop-address-display" valueClass="js-next-hop-address js-next-hop-address-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".totalCost" nameClass="js-total-cost-display" valueClass="js-total-cost js-total-cost-display"></tags:nameValue2>

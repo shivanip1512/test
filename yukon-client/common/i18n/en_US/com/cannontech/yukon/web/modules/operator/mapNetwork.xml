@@ -24,6 +24,7 @@
     <entry key="yukon.web.modules.operator.mapNetwork.device">Device</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.type">Type</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.serialNumber">Sensor S/N</entry>
+    <entry key="yukon.web.modules.operator.mapNetwork.gatewaySerialNumber">Gateway S/N</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.manufacturer">Manufacturer</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.model">Model</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.nodeSN">Node S/N</entry>

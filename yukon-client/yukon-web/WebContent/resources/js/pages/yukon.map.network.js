@@ -241,7 +241,7 @@ yukon.map.network = (function () {
         var allIcons = [];
         allIcons.push.apply(allIcons, _neighborIcons);
         allIcons.push(_deviceIcon);
-        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: allIcons})});
+        var iconsLayer = new ol.layer.Vector({style: style, source: new ol.source.Vector({features: allIcons}), rendererOptions: {zIndexing: true, yOrdering: true}});
         iconsLayer.setZIndex(_iconLayerIndex);
         _neighborIconLayer = iconsLayer;
         _map.addLayer(iconsLayer);
@@ -312,8 +312,8 @@ yukon.map.network = (function () {
         var features = source.getFeatures();
         if (features != null && features.length > 1) {
             _map.getView().fit(source.getExtent(), _map.getSize());
-            if (_map.getView().getZoom() > 13){
-                _map.getView().setZoom(13);
+            if (_map.getView().getZoom() > 16){
+                _map.getView().setZoom(16);
             }
         } else {
             _map.getView().setCenter(source.getFeatures()[0].getGeometry().getCoordinates());
@@ -385,10 +385,12 @@ yukon.map.network = (function () {
                             $('.js-type').text(parent.device.paoIdentifier.paoType);
                             $('.js-status-display').toggleClass('dn', parent.statusDisplay == null);
                             $('.js-status').text(parent.statusDisplay);
-                            $('.js-node-sn-display').toggleClass('dn', parentData.nodeSN == null);
+                            $('.js-node-sn-display').toggleClass('dn', (parentData.nodeSN == null || parent.gatewayType));
                             $('.js-node-sn').text(parentData.nodeSN);
-                            $('.js-serial-number-display').toggleClass('dn', parentData.rfnIdentifier.sensorSerialNumber == null);
+                            $('.js-serial-number-display').toggleClass('dn', (parentData.rfnIdentifier.sensorSerialNumber == null || parent.gatewayType));
                             $('.js-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
+                            $('.js-gateway-serial-number-display').toggleClass('dn', (parentData.rfnIdentifier.sensorSerialNumber == null || !parent.gatewayType));
+                            $('.js-gateway-serial-number').text(parentData.rfnIdentifier.sensorSerialNumber);
                             $('.js-mac-address-display').toggleClass('dn', parentData.nodeMacAddress == null);
                             $('.js-mac-address').text(parentData.nodeMacAddress);
                             $('.js-distance-display').toggleClass('dn', parent.distanceDisplay == null);
@@ -405,10 +407,12 @@ yukon.map.network = (function () {
                             $('.js-type').text(neighbor.device.paoIdentifier.paoType);
                             $('.js-status-display').toggleClass('dn', neighbor.statusDisplay == null);
                             $('.js-status').text(neighbor.statusDisplay);
-                            $('.js-node-sn-display').toggleClass('dn', neighborData.serialNumber == null);
+                            $('.js-node-sn-display').toggleClass('dn', (neighborData.serialNumber == null || neighbor.gatewayType));
                             $('.js-node-sn').text(neighborData.serialNumber);
-                            $('.js-serial-number-display').toggleClass('dn', neighborData.rfnIdentifier.sensorSerialNumber == null);
+                            $('.js-serial-number-display').toggleClass('dn', (neighborData.rfnIdentifier.sensorSerialNumber == null || neighbor.gatewayType));
                             $('.js-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
+                            $('.js-gateway-serial-number-display').toggleClass('dn', (neighborData.rfnIdentifier.sensorSerialNumber == null || !neighbor.gatewayType));
+                            $('.js-gateway-serial-number').text(neighborData.rfnIdentifier.sensorSerialNumber);
                             $('.js-address-display').toggleClass('dn', neighborData.neighborAddress == null);
                             $('.js-address').text(neighborData.neighborAddress);
                             $('.js-flags-display').toggleClass('dn', neighbor.commaDelimitedNeighborFlags == null);
@@ -432,10 +436,12 @@ yukon.map.network = (function () {
                             $('.js-type').text(routeInfo.device.paoIdentifier.paoType);
                             $('.js-status-display').toggleClass('dn', routeInfo.statusDisplay == null);
                             $('.js-status').text(routeInfo.statusDisplay);
-                            $('.js-node-sn-display').toggleClass('dn', routeInfo.route.serialNumber == null);
+                            $('.js-node-sn-display').toggleClass('dn', (routeInfo.route.serialNumber == null || routeInfo.gatewayType));
                             $('.js-node-sn').text(routeInfo.route.serialNumber);
-                            $('.js-serial-number-display').toggleClass('dn', routeInfo.route.rfnIdentifier.sensorSerialNumber == null);
+                            $('.js-serial-number-display').toggleClass('dn', (routeInfo.route.rfnIdentifier.sensorSerialNumber == null || routeInfo.gatewayType));
                             $('.js-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
+                            $('.js-gateway-serial-number-display').toggleClass('dn', (routeInfo.route.rfnIdentifier.sensorSerialNumber == null || !routeInfo.gatewayType));
+                            $('.js-gateway-serial-number').text(routeInfo.route.rfnIdentifier.sensorSerialNumber);
                             $('.js-destination-address-display').toggleClass('dn', routeInfo.route.destinationAddress == null);
                             $('.js-destination-address').text(routeInfo.route.destinationAddress);
                             $('.js-next-hop-address-display').toggleClass('dn', routeInfo.route.nextHopAddress == null);

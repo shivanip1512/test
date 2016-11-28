@@ -12,6 +12,7 @@
     <tags:nameValue2 nameKey=".status" nameClass="js-status-display" valueClass="js-status js-status-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".nodeSN" nameClass="js-node-sn-display" valueClass="js-node-sn js-node-sn-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".serialNumber" nameClass="js-serial-number-display" valueClass="js-serial-number js-serial-number-display"></tags:nameValue2>
+    <tags:nameValue2 nameKey=".gatewaySerialNumber" nameClass="js-gateway-serial-number-display" valueClass="js-gateway-serial-number js-gateway-serial-number-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".macAddress" nameClass="js-address-display" valueClass="js-address js-address-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".etxBand" nameClass="js-etx-band-display" valueClass="js-etx-band js-etx-band-display"></tags:nameValue2>
     <tags:nameValue2 nameKey=".linkCost" nameClass="js-link-cost-display" valueClass="js-link-cost js-link-cost-display"></tags:nameValue2>
