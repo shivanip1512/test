@@ -97,20 +97,20 @@ void ApplicationLayer::processResponse( void )
         itemList.add("_response.ctrl.seq")         << _response.ctrl.seq;
 
         itemList << "---";
-        itemList.add("_response.ind.all_stations") << _response.ind.all_stations;
-        itemList.add("_response.ind.already_exec") << _response.ind.already_exec;
-        itemList.add("_response.ind.bad_config  ") << _response.ind.bad_config;
-        itemList.add("_response.ind.bad_function") << _response.ind.bad_function;
-        itemList.add("_response.ind.buf_overflow") << _response.ind.buf_overflow;
-        itemList.add("_response.ind.class_1")      << _response.ind.class_1;
-        itemList.add("_response.ind.class_2")      << _response.ind.class_2;
-        itemList.add("_response.ind.class_3")      << _response.ind.class_3;
-        itemList.add("_response.ind.dev_trouble ") << _response.ind.dev_trouble;
-        itemList.add("_response.ind.need_time")    << _response.ind.need_time;
-        itemList.add("_response.ind.obj_unknown ") << _response.ind.obj_unknown;
-        itemList.add("_response.ind.out_of_range") << _response.ind.out_of_range;
-        itemList.add("_response.ind.reserved")     << _response.ind.reserved;
-        itemList.add("_response.ind.restart")      << _response.ind.restart;
+        itemList.add("_response.ind.broadcast")             << _response.ind.broadcast;
+        itemList.add("_response.ind.already_executing")     << _response.ind.already_executing;
+        itemList.add("_response.ind.config_corrupt")        << _response.ind.config_corrupt;
+        itemList.add("_response.ind.no_func_code_support")  << _response.ind.no_func_code_support;
+        itemList.add("_response.ind.event_buffer_overflow") << _response.ind.event_buffer_overflow;
+        itemList.add("_response.ind.class_1_events")        << _response.ind.class_1_events;
+        itemList.add("_response.ind.class_2_events")        << _response.ind.class_2_events;
+        itemList.add("_response.ind.class_3_events")        << _response.ind.class_3_events;
+        itemList.add("_response.ind.device_trouble")        << _response.ind.device_trouble;
+        itemList.add("_response.ind.need_time")             << _response.ind.need_time;
+        itemList.add("_response.ind.object_unknown")        << _response.ind.object_unknown;
+        itemList.add("_response.ind.parameter_error")       << _response.ind.parameter_error;
+        itemList.add("_response.ind.reserved")              << _response.ind.reserved;
+        itemList.add("_response.ind.device_restart")        << _response.ind.device_restart;
 
         std::ostringstream data;
         data << endl;
@@ -133,7 +133,7 @@ void ApplicationLayer::processResponse( void )
                 );
     }
 
-    //  ACH:  if class_1 || class_2 || class_3, we need to do something...  pass it up to the protocol layer, eh?
+    //  ACH:  if class_1_events || class_2_events || class_3_events, we need to do something...  pass it up to the protocol layer, eh?
 
     //  OR'ing them all together should catch all of the interesting indications from all frames
     _iin.raw |= _response.ind.raw;
@@ -218,10 +218,10 @@ void ApplicationLayer::initForSlaveOutput( void )
     _response.ctrl.final       = 1;
     _response.ctrl.app_confirm = 0;
     _response.ctrl.unsolicited = 0;
-    _response.ind.all_stations = 0;
-    _response.ind.class_1 = 0;
-    _response.ind.class_2 = 0;
-    _response.ind.class_3 = 0;
+    _response.ind.broadcast      = 0;
+    _response.ind.class_1_events = 0;
+    _response.ind.class_2_events = 0;
+    _response.ind.class_3_events = 0;
     _response.ctrl.seq = _seqno;
 
     _response.func_code = DNP::ApplicationLayer::ResponseResponse;
@@ -237,6 +237,11 @@ void ApplicationLayer::initForSlaveOutput( void )
     }
 
     _response.buf_len = pos;
+}
+
+void ApplicationLayer::setInternalIndications_FunctionCodeUnsupported()
+{
+    _response.ind.no_func_code_support = 1;
 }
 
 void ApplicationLayer::completeSlave( void )
@@ -273,21 +278,21 @@ string ApplicationLayer::getInternalIndications( void ) const
 
     if( _iin.raw )          iin += "Internal indications:\n";
 
-    if( _iin.all_stations ) iin += "Broadcast message received\n";
-    if( _iin.class_1      ) iin += "Class 1 data available\n";
-    if( _iin.class_2      ) iin += "Class 2 data available\n";
-    if( _iin.class_3      ) iin += "Class 3 data available\n";
-    if( _iin.need_time    ) iin += "Time synchronization needed\n";
-    if( _iin.local        ) iin += "Some digital output points in local mode - control disabled\n";
-    if( _iin.dev_trouble  ) iin += "Device trouble (see device spec for details)\n";
-    if( _iin.restart      ) iin += "Device restart\n";
+    if( _iin.broadcast      ) iin += "Broadcast message received\n";
+    if( _iin.class_1_events ) iin += "Class 1 data available\n";
+    if( _iin.class_2_events ) iin += "Class 2 data available\n";
+    if( _iin.class_3_events ) iin += "Class 3 data available\n";
+    if( _iin.need_time      ) iin += "Time synchronization needed\n";
+    if( _iin.local_control  ) iin += "Some digital output points in local mode - control disabled\n";
+    if( _iin.device_trouble ) iin += "Device trouble (see device spec for details)\n";
+    if( _iin.device_restart ) iin += "Device restart\n";
 
-    if( _iin.bad_function ) iin += "Function code not implemented\n";
-    if( _iin.obj_unknown  ) iin += "Requested objects unknown\n";
-    if( _iin.out_of_range ) iin += "Request parameters out of range\n";
-    if( _iin.buf_overflow ) iin += "Event buffers have overflowed\n";
-    if( _iin.already_exec ) iin += "Request already executing\n";
-    if( _iin.bad_config   ) iin += "DNP configuration is corrupt\n";
+    if( _iin.no_func_code_support  ) iin += "Function code not implemented\n";
+    if( _iin.object_unknown        ) iin += "Requested objects unknown\n";
+    if( _iin.parameter_error       ) iin += "Parameter error\n";
+    if( _iin.event_buffer_overflow ) iin += "Event buffers have overflowed\n";
+    if( _iin.already_executing     ) iin += "Request already executing\n";
+    if( _iin.config_corrupt        ) iin += "DNP configuration is corrupt\n";
 
     return iin;
 }
@@ -295,7 +300,7 @@ string ApplicationLayer::getInternalIndications( void ) const
 
 bool ApplicationLayer::hasDeviceRestarted() const
 {
-    return _iin.restart;
+    return _iin.device_restart;
 }
 
 bool ApplicationLayer::needsTime() const

@@ -184,6 +184,48 @@ BOOST_AUTO_TEST_CASE( test_getMessageSize )
     }
 }
 
+BOOST_AUTO_TEST_CASE( test_unsolicited_disable )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    const byte_str request(
+        "05 64 11 c4 1e 00 02 00 a1 de "
+        "c0 ca 14 3c 02 06 3c 03 06 3c 04 06 14 0f");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    const byte_str expected(
+        "05 64 0a 44 02 00 1e 00 cd c7 "
+        "c0 ca 81 00 01 44 e3");  //  IIN has Unsupported Function Code set
+
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+}
+
+BOOST_AUTO_TEST_CASE( test_unsolicited_enable )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    const byte_str request(
+        "05 64 11 c4 1e 00 02 00 a1 de "
+        "c0 ca 15 3c 02 06 3c 03 06 3c 04 06 76 cc");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    const byte_str expected(
+        "05 64 0a 44 02 00 1e 00 cd c7 "
+        "c0 ca 81 00 01 44 e3");  //  IIN has Unsupported Function Code set
+
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+}
+
+
+
 BOOST_AUTO_TEST_CASE( test_scan_request )
 {
     Test_FdrDnpSlave dnpSlave;

@@ -41,21 +41,21 @@ private:
     {
         struct
         {
-            unsigned short all_stations : 1;
-            unsigned short class_1      : 1;
-            unsigned short class_2      : 1;
-            unsigned short class_3      : 1;
-            unsigned short need_time    : 1;
-            unsigned short local        : 1;
-            unsigned short dev_trouble  : 1;
-            unsigned short restart      : 1;
-            unsigned short bad_function : 1;
-            unsigned short obj_unknown  : 1;
-            unsigned short out_of_range : 1;
-            unsigned short buf_overflow : 1;
-            unsigned short already_exec : 1;
-            unsigned short bad_config   : 1;
-            unsigned short reserved     : 2;
+            unsigned short broadcast             : 1;
+            unsigned short class_1_events        : 1;
+            unsigned short class_2_events        : 1;
+            unsigned short class_3_events        : 1;
+            unsigned short need_time             : 1;
+            unsigned short local_control         : 1;
+            unsigned short device_trouble        : 1;
+            unsigned short device_restart        : 1;
+            unsigned short no_func_code_support  : 1;
+            unsigned short object_unknown        : 1;
+            unsigned short parameter_error       : 1;
+            unsigned short event_buffer_overflow : 1;
+            unsigned short already_executing     : 1;
+            unsigned short config_corrupt        : 1;
+            unsigned short reserved : 2;
         };
 
         unsigned short raw;
@@ -138,10 +138,14 @@ public:
     void setCommand( FunctionCode fc );
     void setCommand( FunctionCode fc, ObjectBlockPtr obj );
     void setCommand( FunctionCode fc, std::vector<ObjectBlockPtr> objs );
+
     void initForOutput( void );
+
     void initForSlaveOutput( void );
+    void setInternalIndications_FunctionCodeUnsupported();
     void setSequenceNumber(int seqNbr);
     void completeSlave( void );
+    
     void initUnsolicited( void );
 
     //  comm functions

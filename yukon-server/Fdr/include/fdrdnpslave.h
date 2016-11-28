@@ -97,6 +97,10 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         int processAnalogOutputRequest        (ServerConnection &connection, const Protocols::DNP::ObjectBlock &control, const Protocols::DnpSlave::ControlAction);
         int processDataLinkConfirmationRequest(ServerConnection &connection);
         int processDataLinkReset              (ServerConnection &connection);
+        int processUnsolicitedDisableRequest  (ServerConnection &connection);
+        int processUnsolicitedEnableRequest   (ServerConnection &connection);
+
+        int doComms(ServerConnection &connection, const std::string& messageType);
 
         auto tryPorterControl  (const Protocols::DnpSlave::control_request &control, const long pointId) -> Protocols::DNP::ControlStatus;
         bool tryDispatchControl(const Protocols::DnpSlave::control_request &control, const long pointId);
@@ -105,8 +109,6 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         bool tryDispatchAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog, const long pointId);
 
         auto waitForResponse(const long userMessageId) -> Protocols::DNP::ControlStatus;
-
-        std::string dumpDNPMessage(const char* data, unsigned int size);
 
         typedef std::map<CtiFDRDestination, DnpId> DnpDestinationMap;
         /** Map of DNP Send and Receive Translations */

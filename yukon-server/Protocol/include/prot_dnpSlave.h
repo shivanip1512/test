@@ -31,6 +31,8 @@ public:
         SetDigitalOut_Select,
         SetDigitalOut_Operate,
         SetDigitalOut_Direct,
+        UnsolicitedEnable,
+        UnsolicitedDisable,
         LinkStatus,
         ResetLink,
         Complete,
@@ -44,6 +46,8 @@ public:
     void setScanCommand( std::vector<std::unique_ptr<DnpSlave::output_point>> outputPoints );
     void setControlCommand( const DnpSlave::control_request &control );
     void setAnalogOutputCommand( const DnpSlave::analog_output_request &analog );
+    void setUnsolicitedDisableCommand();
+    void setUnsolicitedEnableCommand();
 
     YukonError_t decode( CtiXfer &xfer );
     YukonError_t generate( CtiXfer &xfer );

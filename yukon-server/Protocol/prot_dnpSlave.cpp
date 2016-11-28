@@ -117,6 +117,14 @@ auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) ->
         {
             return Invalid;
         }
+        case ApplicationLayer::RequestDisableUnsolicited:
+        {
+            return { Commands::UnsolicitedDisable, nullptr };
+        }
+        case ApplicationLayer::RequestEnableUnsolicited:
+        {
+            return { Commands::UnsolicitedEnable, nullptr };
+        }
         case ApplicationLayer::RequestRead:
         {
             auto blocks =
@@ -361,6 +369,30 @@ void DnpSlaveProtocol::setAnalogOutputCommand( const DnpSlave::analog_output_req
 
     //  finalize the request
     _application.initForSlaveOutput();
+}
+
+
+void DnpSlaveProtocol::setUnsolicitedDisableCommand()
+{
+    _command = Commands::UnsolicitedDisable;
+
+    _application.setCommand(ApplicationLayer::ResponseResponse);
+
+    _application.initForSlaveOutput();
+
+    _application.setInternalIndications_FunctionCodeUnsupported();
+}
+
+
+void DnpSlaveProtocol::setUnsolicitedEnableCommand()
+{
+    _command = Commands::UnsolicitedEnable;
+
+    _application.setCommand(ApplicationLayer::ResponseResponse);
+
+    _application.initForSlaveOutput();
+
+    _application.setInternalIndications_FunctionCodeUnsupported();
 }
 
 

@@ -290,6 +290,14 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
             { "a DNP data link status request",
                 [&] { return processDataLinkConfirmationRequest(connection); }}},
 
+        { Cmd::UnsolicitedEnable,
+            { "a DNP unsolicited enable request",
+                [&] { return processUnsolicitedEnableRequest(connection); }}},
+
+        { Cmd::UnsolicitedDisable,
+            { "a DNP unsolicited disable request",
+                [&] { return processUnsolicitedDisableRequest(connection); }}},
+
         { Cmd::ResetLink,
             { "a DNP data link reset",
                 [&] { return processDataLinkReset(connection); }}},
@@ -382,6 +390,54 @@ int DnpSlave::processDataLinkReset(ServerConnection& connection)
     return 0;
 }
 
+int DnpSlave::processUnsolicitedDisableRequest(ServerConnection& connection)
+{
+    _dnpSlave.setUnsolicitedDisableCommand();
+
+    return doComms(connection, "unsolicited disable");
+}
+
+int DnpSlave::processUnsolicitedEnableRequest(ServerConnection& connection)
+{
+    _dnpSlave.setUnsolicitedEnableCommand();
+
+    return doComms(connection, "unsolicited enable");
+}
+
+
+int DnpSlave::doComms(ServerConnection& connection, const std::string& messageType)
+{
+    CtiXfer xfer;
+
+    //  reply with success
+    while( !_dnpSlave.isTransactionComplete() )
+    {
+        if( _dnpSlave.generate(xfer) == ClientErrors::None )
+        {
+            if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
+            {
+                int bufferSize = xfer.getOutCount();
+                char* buffer = new CHAR[bufferSize];
+                std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
+                if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+                {
+                    CTILOG_DEBUG(dout, logNow() << " sending DNP " << messageType << " message." << std::endl <<
+                        arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
+                }
+                connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
+            }
+
+            _dnpSlave.decode(xfer);
+        }
+        else if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
+        {
+            CTILOG_DEBUG(dout, logNow() <<" was not able to generate " << messageType << " response.");
+        }
+    }
+
+    return 0;
+}
+
 int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
 {
     const CtiTime Now;
@@ -461,34 +517,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
 
     _dnpSlave.setScanCommand(std::move(outputPoints));
 
-    CtiXfer xfer;
-
-    while( !_dnpSlave.isTransactionComplete() )
-     {
-         if( _dnpSlave.generate(xfer) == ClientErrors::None )
-         {
-             if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
-             {
-                 int bufferSize = xfer.getOutCount();
-                 char* buffer = new CHAR[bufferSize];
-                 std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
-                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-                 {
-                     CTILOG_DEBUG(dout, logNow() <<" sending DNP scan response message."<< std::endl <<
-                             arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
-                 }
-                 connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
-             }
-
-             _dnpSlave.decode(xfer);
-         }
-         else if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-         {
-             CTILOG_DEBUG(dout, logNow() <<" was not able to generate scan response.");
-         }
-     }
-
-    return 0;
+    return doComms(connection, "scan response");
 }
 
 
@@ -597,35 +626,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
 
     _dnpSlave.setControlCommand(control);
 
-    CtiXfer xfer;
-
-    //  reply with success
-    while( !_dnpSlave.isTransactionComplete() )
-    {
-        if( _dnpSlave.generate(xfer) == ClientErrors::None )
-        {
-            if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
-            {
-                int bufferSize = xfer.getOutCount();
-                char* buffer = new CHAR[bufferSize];
-                std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
-                if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-                {
-                    CTILOG_DEBUG(dout, logNow() << " sending DNP control response message." << std::endl <<
-                                        arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
-                }
-                connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
-            }
-
-            _dnpSlave.decode(xfer);
-        }
-        else if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-        {
-            CTILOG_DEBUG(dout, logNow() <<" was not able to generate control response.");
-        }
-    }
-
-    return 0;
+    return doComms(connection, "control response");
 }
 
 
@@ -1048,35 +1049,7 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
 
     _dnpSlave.setAnalogOutputCommand(analog);
 
-    CtiXfer xfer;
-
-    //  reply with success
-    while( !_dnpSlave.isTransactionComplete() )
-    {
-        if( _dnpSlave.generate(xfer) == ClientErrors::None )
-        {
-            if (xfer.getOutBuffer() != NULL && xfer.getOutCount() > 0)
-            {
-                int bufferSize = xfer.getOutCount();
-                char* buffer = new CHAR[bufferSize];
-                std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
-                if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-                {
-                    CTILOG_DEBUG(dout, logNow() << " sending DNP analog output response message." << std::endl <<
-                                        arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
-                }
-                connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
-            }
-
-            _dnpSlave.decode(xfer);
-        }
-        else if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
-        {
-            CTILOG_DEBUG(dout, logNow() <<" was not able to generate analog output response.");
-        }
-    }
-
-    return 0;
+    return doComms(connection, "analog output response");
 }
 
 
