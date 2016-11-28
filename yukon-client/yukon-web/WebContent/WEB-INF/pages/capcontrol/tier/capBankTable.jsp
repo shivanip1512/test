@@ -4,7 +4,11 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<flot:defaultIncludes/>
 
+<cti:includeScript link="JQUERY_TREE" />
+<cti:includeScript link="JQUERY_TREE_HELPERS" />
+<cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
 <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
     <c:set var="hasControlAttr" value="data-has-control" />
 </cti:checkRolesAndProperties>

@@ -20,12 +20,6 @@
 
 <%@ include file="/capcontrol/capcontrolHeader.jspf"%>
 
-<flot:defaultIncludes/>
-
-<cti:includeScript link="JQUERY_TREE" />
-<cti:includeScript link="JQUERY_TREE_HELPERS" />
-<cti:includeCss link="/resources/js/lib/dynatree/skin/ui.dynatree.css"/>
-
 <c:set var="substationId" value="${substation.id}"/>
 
 <cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
