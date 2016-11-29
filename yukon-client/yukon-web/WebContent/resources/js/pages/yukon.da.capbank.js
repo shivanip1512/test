@@ -136,7 +136,22 @@ yukon.da.capbank = (function () {
             });
             
             initialized = true;
-
+            var tabContainer = $('.tabbed-container');
+            var errorEncountered = false;
+            var firstErroredTab = $('.ui-tabs-panel')[0];
+            $('.ui-tabs-panel').each(function (idx, elem) {
+                elem = $(elem);
+                if (elem.find('.error').length) {
+                    var id = elem.attr('id');
+                    var link = $('[href="#' + id + '"]');
+                    link.closest('li').addClass('error');
+                    if (!errorEncountered) {
+                        firstErroredTab = idx;
+                        errorEncountered = true;
+                    }
+                }
+            });
+            tabContainer.tabs('option', 'active', firstErroredTab);
         }
     };
 

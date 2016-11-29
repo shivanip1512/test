@@ -349,6 +349,7 @@ yukon.tools.point = (function () {
 
             /* If there was an error in a a field, go to the first tab with an error */
             var errorEncountered = false;
+            var firstErroredTab = $('.ui-tabs-panel')[0];
             $('.ui-tabs-panel').each(function (idx, elem) {
                 elem = $(elem);
                 if (elem.find('.error').length) {
@@ -356,11 +357,12 @@ yukon.tools.point = (function () {
                     var link = $('[href="#' + id + '"]');
                     link.closest('li').addClass('error');
                     if (!errorEncountered) {
-                        tabContainer.tabs('option', 'active', idx);
+                        firstErroredTab = idx;
                         errorEncountered = true;
                     }
                 }
             });
+            tabContainer.tabs('option', 'active', firstErroredTab);
 
             $(document).on('yukon:da:point:delete', function () {
                 $('#delete-point').submit();
