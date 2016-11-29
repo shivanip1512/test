@@ -39,8 +39,8 @@
     </d:inline>
 
     <d:inline nameKey="importKeyFileDialog" okEvent="importKeyFileFormSubmit" on="#importKeyFileBtn">
-        <tags:nameValueContainer2>
             <form:form method="POST" commandName="fileImportBindingBean" action="importKeyFile" autocomplete="off" enctype="multipart/form-data">
+               <tags:nameValueContainer2>
                 <cti:csrfToken/>
                 <tags:nameValue2 nameKey=".importKeyFile">
                     <tags:bind path="file">
@@ -50,21 +50,21 @@
                 <tags:nameValue2 nameKey=".keyName">
                     <tags:input path="name" size="50" />
                 </tags:nameValue2>
+               </tags:nameValueContainer2>
             </form:form>
-        </tags:nameValueContainer2>
     </d:inline>
     
     <d:inline nameKey="importHoneywellKeyFileDialog" okEvent="importHoneywellKeyFileFormSubmit" on="#importHoneywellKeyFileBtn">
-        <tags:nameValueContainer2>
             <form:form method="POST" commandName="honeywellFileImportBindingBean" action="importHoneywellKeyFile" autocomplete="off" enctype="multipart/form-data">
+                <tags:nameValueContainer2>
                 <cti:csrfToken/>
                 <tags:nameValue2 nameKey=".importKeyFile">
                     <tags:bind path="file">
                         <tags:file name="keyFile"/>
                     </tags:bind>
                 </tags:nameValue2>
+                </tags:nameValueContainer2>
             </form:form>
-        </tags:nameValueContainer2>
     </d:inline> 
     
     <d:inline nameKey="viewPublicKeyDialog" okEvent="none" 
