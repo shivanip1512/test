@@ -19,6 +19,7 @@
 <tags:setFormEditMode mode="${mode}"/>
 
 <%@ include file="/capcontrol/capcontrolHeader.jspf"%>
+<flot:defaultIncludes/>
 
 <c:set var="substationId" value="${substation.id}"/>
 
