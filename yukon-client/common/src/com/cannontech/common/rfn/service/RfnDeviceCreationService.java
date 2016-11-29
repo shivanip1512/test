@@ -29,14 +29,6 @@ public interface RfnDeviceCreationService {
     
     public RfnDevice createGateway(String name, RfnIdentifier rfnIdentifier);
     
-    /**
-     * Creates a rfn relay with the given name and rfnIdentifier
-     * 
-     * @param name - Name of the relay.
-     * @param rfnIdentifier - rfnIdentifier of the relay
-     */
-    public RfnDevice createRelay(String name, RfnIdentifier rfnIdentifier);
-    
     public void incrementDeviceLookupAttempt();
     
     public void incrementNewDeviceCreated();

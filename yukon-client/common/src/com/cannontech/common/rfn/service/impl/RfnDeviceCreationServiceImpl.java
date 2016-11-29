@@ -105,11 +105,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     @Override
     @Transactional
     public RfnDevice create(final RfnIdentifier rfnIdentifier) {
-        if ("RFRelay".equals(rfnIdentifier.getSensorModel())) {
-            return createRelay(rfnIdentifier.getSensorSerialNumber().trim(), rfnIdentifier);
-        } else {
-            return createDevice(rfnIdentifier, null, null);
-        }
+        return createDevice(rfnIdentifier, null, null);
     }
     
     @Override
@@ -199,16 +195,6 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
         
         SimpleDevice device = deviceCreationService.createRfnDeviceByDeviceType(gatewayType, name, rfnIdentifier, true);
         return new RfnDevice(name, device.getPaoIdentifier(), rfnIdentifier);
-    }
-    
-    @Override
-    public synchronized RfnDevice createRelay(String name, RfnIdentifier rfnIdentifier) {
-        log.info("Creating rfn relay: " + rfnIdentifier);
-        
-        SimpleDevice device = deviceCreationService.createRfnDeviceByDeviceType(PaoType.RFN_RELAY, name, rfnIdentifier, true);
-        RfnDevice rfnDevice =  new RfnDevice(name, device.getPaoIdentifier(), rfnIdentifier);
-        rfnDeviceEventLogService.createdNewDeviceAutomatically(rfnDevice.getRfnIdentifier(), "N/A", device.getPaoIdentifier());
-        return rfnDevice;
     }
     
     private void createStarsDevice(HardwareType type, YukonDevice device, RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user) {

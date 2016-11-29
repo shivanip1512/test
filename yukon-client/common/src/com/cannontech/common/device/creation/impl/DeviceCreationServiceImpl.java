@@ -1,5 +1,6 @@
 package com.cannontech.common.device.creation.impl;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -8,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
@@ -22,6 +25,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
@@ -40,6 +44,7 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DeviceCreationServiceImpl implements DeviceCreationService {
 
+    @Autowired private ConfigurationSource configurationSource;
     @Autowired private DeviceDao deviceDao;
     @Autowired private PaoDao paoDao;
     @Autowired private PointDao pointDao;
@@ -249,22 +254,61 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     }
     
     private DeviceBase retrieveExistingDeviceByTemplate(String templateName) {
-        
         try {
             SimpleDevice templateYukonDevice = deviceDao.getYukonDeviceObjectByName(templateName);
-            int templateDeviceId = templateYukonDevice.getDeviceId();
+            return retrieveExistingDeviceByTemplate(templateYukonDevice);
 
-            DeviceBase templateDevice = DeviceFactory.createDevice(templateYukonDevice.getDeviceType());
-            templateDevice.setDeviceID(templateDeviceId);
-            dbPersistentDao.retrieveDBPersistent(templateDevice);
-
-            return templateDevice;
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new BadTemplateDeviceCreationException(templateName);
-        }catch (PersistenceException e) {
-            throw new DeviceCreationException("Could not load template device from database: " + templateName, "invalidTemplateDevice", templateName, e);
+            SimpleDevice templateYukonDevice = createDeviceForTemplate(templateName);
+            if (templateYukonDevice != null) {
+                return retrieveExistingDeviceByTemplate(templateYukonDevice);
+            } else {
+                throw new BadTemplateDeviceCreationException(templateName);
+            }
+        } catch (PersistenceException e) {
+            throw new DeviceCreationException("Could not load template device from database: " + templateName,
+                                              "invalidTemplateDevice",
+                                              templateName,
+                                              e);
         }
-        
+
+    }
+
+    private SimpleDevice createDeviceForTemplate(String templateName) {
+
+        // Here assumption is that manufacturer name will not have "_"
+        String[] parsedTemplateNm = StringUtils.split(templateName, "_", 3);
+        List<String> parsedTemplateName = Arrays.asList(parsedTemplateNm);
+
+        if (parsedTemplateName.size() == 3) {
+            String prefix = parsedTemplateName.get(0) + "_";
+            String templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX,
+                                                                  "*RfnTemplate_");
+            if (prefix.equals(templatePrefix)) {
+                RfnIdentifier templateWithNoSerialNumber = new RfnIdentifier(null,
+                                                                             parsedTemplateName.get(1),
+                                                                             parsedTemplateName.get(2));
+                RfnManufacturerModel rfnModel = RfnManufacturerModel.of(templateWithNoSerialNumber);
+                if (rfnModel != null) {
+                    SimpleDevice yukonDevice = createRfnDeviceByDeviceType(rfnModel.getType(),
+                                                                           templateName,
+                                                                           RfnIdentifier.createBlank(),
+                                                                           true);
+                    return yukonDevice;
+                }
+            }
+        }
+        return null;
+    }
+
+    private DeviceBase retrieveExistingDeviceByTemplate(SimpleDevice templateYukonDevice) {
+        int templateDeviceId = templateYukonDevice.getDeviceId();
+
+        DeviceBase templateDevice = DeviceFactory.createDevice(templateYukonDevice.getDeviceType());
+        templateDevice.setDeviceID(templateDeviceId);
+        dbPersistentDao.retrieveDBPersistent(templateDevice);
+        return templateDevice;
+
     }
     
     private void addToTemplatesGroups(SimpleDevice templateDevice, SimpleDevice newDevice) {

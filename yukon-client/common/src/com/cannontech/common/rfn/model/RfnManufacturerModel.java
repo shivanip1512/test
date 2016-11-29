@@ -92,6 +92,7 @@ public enum RfnManufacturerModel {
     RFN_530S4RD(PaoType.RFN530S4ERD, "LGYR", "S4-RD"),
     RFN_530S4RT(PaoType.RFN530S4ERT, "LGYR", "S4-RT"),
     RFN_530S4RR(PaoType.RFN530S4ERT, "LGYR", "S4-RR"),
+    RFN_RELAY(PaoType.RFN_RELAY, "EATON", "RFRelay")
     ;
     
     private PaoType type;

@@ -31,23 +31,6 @@ public class RfRelayArchiveRequestListener extends ArchiveRequestListenerBase<Rf
         }
 
         @Override
-        protected RfnDevice processCreation(RfRelayArchiveRequest request, RfnIdentifier identifier) {
-            try {
-                log.debug("Recieved relay " + identifier + " " + request);
-                // Create the device in Yukon and send a DB change message
-                String deviceName = request.getRfnIdentifier().getSensorSerialNumber().trim();
-                RfnDevice device = rfnDeviceCreationService.createRelay(deviceName,
-                                                                        request.getRfnIdentifier());
-                rfnDeviceCreationService.incrementNewDeviceCreated();
-                log.debug("Created new relay: " + device);
-                return device;
-            } catch (Exception e) {
-                log.warn("Creation failed for relay: " + request.getRfnIdentifier(), e);
-                throw new RuntimeException("Creation failed for " + request.getRfnIdentifier(), e);
-            }
-        }
-
-        @Override
         public void processData(RfnDevice rfnDevice, RfRelayArchiveRequest archiveRequest) {
             // no data to archive on this queue, just device creation requests
             // that have no other payload
