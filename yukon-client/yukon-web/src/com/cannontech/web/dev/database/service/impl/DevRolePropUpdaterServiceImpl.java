@@ -280,6 +280,7 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                     setRoleProperty(group, YukonRoleProperty.PORTER_RESPONSE_MONITORING,true);
                     setRoleProperty(group, YukonRoleProperty.DEVICE_DATA_MONITORING,true);
                     setRoleProperty(group, YukonRoleProperty.METER_EVENTS,true);
+                    setRoleProperty(group, YukonRoleProperty.WATER_LEAK_REPORT,true);
                     results.put(YukonRole.METERING, true);
                 } else {
                     results.put(YukonRole.METERING, false);

@@ -16,7 +16,7 @@
     <cti:checkRolesAndProperties value="METER_EVENTS">
         <a href="${meterEventsReportUrl}"><i:inline key=".meterEventsReport"/></a><br/>
     </cti:checkRolesAndProperties>
-    <cti:checkRolesAndProperties value="REPORTING">
+    <cti:checkRolesAndProperties value="WATER_LEAK_REPORT">
         <a href="${waterLeakReportUrl}"><i:inline key=".waterLeakReport"/></a><br/>
     </cti:checkRolesAndProperties>
 </div>

@@ -26,7 +26,7 @@ public enum SiteMapPage implements DisplayableEnum {
     METER_EVENTS_REPORT(SiteMapCategory.AMI, "yukon.web.modules.amr.meterEventsReport.report.pageName", "/amr/meterEventsReport/selectDevices",
             MatchStyle.all, YukonRoleProperty.METER_EVENTS),
     WATER_LEAK_REPORT(SiteMapCategory.AMI, "yukon.web.modules.amr.waterLeakReport.report.pageName", "/amr/waterLeakReport/report",
-            MatchStyle.all, YukonRole.METERING, YukonRole.REPORTING),
+            MatchStyle.all, YukonRoleProperty.WATER_LEAK_REPORT),
     BILLING_SCHEDULES(SiteMapCategory.AMI, "yukon.web.menu.config.amr.billing.schedules", "/billing/schedules",
             MatchStyle.all, YukonRole.APPLICATION_BILLING),
     REVIEW_FLAGGED_POINTS(SiteMapCategory.AMI, "yukon.web.widgets.validationMonitorsWidget.review", "/amr/veeReview/home",
