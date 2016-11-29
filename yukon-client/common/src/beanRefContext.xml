@@ -79,7 +79,7 @@
         </constructor-arg>
         <constructor-arg index="1" value="true"/>
         <constructor-arg index="2">
-            <ref bean="com.cannontech.context.common"/>
+            <null />
         </constructor-arg>
     </bean>
 </beans>
