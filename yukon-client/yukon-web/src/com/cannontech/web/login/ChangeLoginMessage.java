@@ -15,7 +15,7 @@ public enum ChangeLoginMessage implements DisplayableEnum {
     INVALID_CREDENTIALS_PASSWORD_CHANGE(FlashScopeMessageType.ERROR),
     USER_EXISTS(FlashScopeMessageType.ERROR),
     PASSWORD_CHANGE_NOT_SUPPORTED(FlashScopeMessageType.ERROR),
-    MIN_PASSWORD_LENGTH_NOT_MET(FlashScopeMessageType.ERROR), 
+    INVALID_PASSWORD_LENGTH(FlashScopeMessageType.ERROR),
     MIN_PASSWORD_AGE_NOT_MET(FlashScopeMessageType.ERROR), 
     PASSWORD_USED_TOO_RECENTLY(FlashScopeMessageType.ERROR), 
     PASSWORD_DOES_NOT_MEET_POLICY_QUALITY(FlashScopeMessageType.ERROR),

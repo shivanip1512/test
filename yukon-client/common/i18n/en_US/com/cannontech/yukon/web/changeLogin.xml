@@ -25,7 +25,7 @@
     <entry key="yukon.web.changelogin.message.RETRY">Login disabled, please retry after {0} seconds</entry>
     <entry key="yukon.web.changelogin.message.USER_EXISTS">Username already exists</entry>
     <entry key="yukon.web.changelogin.message.PASSWORD_CHANGE_NOT_SUPPORTED">Password changes are not supported</entry>
-    <entry key="yukon.web.changelogin.message.MIN_PASSWORD_LENGTH_NOT_MET">Password does not meet the required password length.</entry>
+    <entry key="yukon.web.changelogin.message.INVALID_PASSWORD_LENGTH">Password does not meet the required password length.</entry>
     <entry key="yukon.web.changelogin.message.MIN_PASSWORD_AGE_NOT_MET">Not enough time has passed since your last reset.</entry>
     <entry key="yukon.web.changelogin.message.PASSWORD_USED_TOO_RECENTLY">Password has been used too recently.</entry>
     <entry key="yukon.web.changelogin.message.PASSWORD_DOES_NOT_MEET_POLICY_QUALITY">Password does not meet enough of the policy rules.</entry>
