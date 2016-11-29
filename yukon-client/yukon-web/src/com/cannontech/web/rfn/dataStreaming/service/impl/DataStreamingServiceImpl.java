@@ -1468,13 +1468,15 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     
             boolean hasDiscrepancy = hasDiscrepancy(expectedConfig, reportedConfig);
             
-            // Add to result
-            if(hasDiscrepancy){
-                //mark device as failed
-                deviceGroupMemberEditorDao.addDevices(failedGroup, device);
-            }else{
-                //mark device as success
-                deviceGroupMemberEditorDao.addDevices(successGroup, device);
+            if (!isComplete()) {
+                // Add to result
+                if (hasDiscrepancy) {
+                    // mark device as failed
+                    deviceGroupMemberEditorDao.addDevices(failedGroup, device);
+                } else {
+                    // mark device as success
+                    deviceGroupMemberEditorDao.addDevices(successGroup, device);
+                }
             }
             
             handleReportedDataStreamingConfig(device, config, reportedBehavior);
@@ -1497,7 +1499,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         @Override
         public void receivedConfigError(SimpleDevice device, SpecificDeviceErrorDescription error, ReportedDataStreamingConfig config) {
             log.debug("Recieved a config error for device=" + device + " error=" + error.getDescription() + " config=" + config);
-            deviceGroupMemberEditorDao.addDevices(failedGroup, device);
+            
+            if (!isComplete()) {
+                deviceGroupMemberEditorDao.addDevices(failedGroup, device);
+            }
 
             if (config != null) {
                 BehaviorReport report = buildBehaviorReport(config, device.getDeviceId(), BehaviorReportStatus.FAILED);
