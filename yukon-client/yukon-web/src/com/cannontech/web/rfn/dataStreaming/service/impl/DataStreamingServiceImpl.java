@@ -373,6 +373,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                             result.setDisplayRemove(true);
                             log.debug(result + " didn't communticate for a week. Displaying remove option.");
                         }
+                    }else{
+                        result.setDisplayRemove(true);
                     }
                     results.add(result);
                 }
