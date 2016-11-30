@@ -43,11 +43,7 @@ public class YukonValidationUtils extends ValidationUtils {
         }
         
         if (serialNumber.length() <= 30) {
-            // Only electric meters and lcrs have serial numbers guaranteed to be numeric
-            if (!(paoType.isRfRelay() || paoType.isWaterMeter() || PaoType.getRfDaTypes().contains(paoType))) {
-                return StringUtils.isNumeric(serialNumber);
-            }
-            return true;
+            return StringUtils.isAlphanumeric(serialNumber);
         }
         return false;
     }
