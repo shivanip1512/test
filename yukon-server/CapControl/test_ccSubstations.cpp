@@ -375,9 +375,10 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     substations[ 13 ].setSaEnabledId( 201 );
 
     BOOST_CHECK_EQUAL(                  201, substations[ 13 ].getSaEnabledId() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].getStationUpdatedFlag() );
     BOOST_CHECK_EQUAL(                 true, substations[ 13 ].isDirty() );
 
+    substations[ 13 ].setStationUpdatedFlag( false );
     substations[ 13 ].setDirty( false );
 
     BOOST_CHECK_EQUAL(                  201, substations[ 13 ].getSaEnabledId() );
@@ -387,9 +388,10 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     substations[ 13 ].setSaEnabledId( 200 );
 
     BOOST_CHECK_EQUAL(                  200, substations[ 13 ].getSaEnabledId() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].getStationUpdatedFlag() );
     BOOST_CHECK_EQUAL(                 true, substations[ 13 ].isDirty() );
 
+    substations[ 13 ].setStationUpdatedFlag( false );
     substations[ 13 ].setDirty( false );
 
     BOOST_CHECK_EQUAL(                  200, substations[ 13 ].getSaEnabledId() );
@@ -411,9 +413,10 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     substations[ 13 ].setSaEnabledFlag( false );
 
     BOOST_CHECK_EQUAL(                false, substations[ 13 ].getSaEnabledFlag() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].getStationUpdatedFlag() );
     BOOST_CHECK_EQUAL(                 true, substations[ 13 ].isDirty() );
 
+    substations[ 13 ].setStationUpdatedFlag( false );
     substations[ 13 ].setDirty( false );
 
     BOOST_CHECK_EQUAL(                false, substations[ 13 ].getSaEnabledFlag() );
@@ -423,9 +426,10 @@ BOOST_AUTO_TEST_CASE( test_Substation_construction )
     substations[ 13 ].setSaEnabledFlag( true );
 
     BOOST_CHECK_EQUAL(                 true, substations[ 13 ].getSaEnabledFlag() );
-    BOOST_CHECK_EQUAL(                false, substations[ 13 ].getStationUpdatedFlag() );
+    BOOST_CHECK_EQUAL(                 true, substations[ 13 ].getStationUpdatedFlag() );
     BOOST_CHECK_EQUAL(                 true, substations[ 13 ].isDirty() );
 
+    substations[ 13 ].setStationUpdatedFlag( false );
     substations[ 13 ].setDirty( false );
 
     BOOST_CHECK_EQUAL(                 true, substations[ 13 ].getSaEnabledFlag() );

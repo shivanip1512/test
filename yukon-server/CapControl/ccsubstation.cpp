@@ -274,7 +274,7 @@ void CtiCCSubstation::setEstPFactor(const double estpfactor)
 
 void CtiCCSubstation::setSaEnabledFlag(const bool flag)
 {
-    updateDynamicValue( _saEnabledFlag, flag );
+    _stationUpdatedFlag |= updateDynamicValue( _saEnabledFlag, flag );
 }
 
 void CtiCCSubstation::setRecentlyControlledFlag(const bool flag)
@@ -289,7 +289,7 @@ void CtiCCSubstation::setStationUpdatedFlag(const bool flag)
 
 void CtiCCSubstation::setSaEnabledId(const long saId)
 {
-    updateDynamicValue( _saEnabledId, saId );
+    _stationUpdatedFlag |= updateDynamicValue( _saEnabledId, saId );
 }
 
 PaoIdVector CtiCCSubstation::getCCSubIds() const
