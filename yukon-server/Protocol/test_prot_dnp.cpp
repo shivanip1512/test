@@ -3047,4 +3047,167 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_control_sbo)
     }
 }
 
+void simulateUnsolicited(DnpProtocol &dnp, const byte_str &response, bool transactionComplete)
+{
+    CtiXfer xfer;
+    auto responseIterator = response.begin();
+
+    //  First cycle.  generate gives us a buffer big enough for the header.
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+
+        //  make sure we don't copy more than they expect
+        std::copy(responseIterator, responseIterator + xfer.getInCountExpected(),
+            stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+        xfer.setInCountActual(xfer.getInCountExpected());
+        responseIterator += xfer.getInCountExpected();
+
+        // now process that header
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+    }
+
+    //  Now we read in the remaining data for the packet
+    {
+        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        int remaining = response.end() - responseIterator;
+        BOOST_CHECK_EQUAL(remaining, xfer.getInCountExpected());
+
+        //  make sure we don't copy more than they expect
+        std::copy(responseIterator, response.end(),
+            stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+        xfer.setInCountActual(remaining);
+
+        // And process it
+        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+        // it isn't over till the fat lady sings.
+        BOOST_CHECK_EQUAL(transactionComplete, dnp.isTransactionComplete());
+    }
+}
+
+/**
+  * Test a message with an absolute time after all the point data to make sure the time gets propagated to the points.
+  * Message was captured from OpenDNP3 with a patch to send the Group50Var1 Absolute Time after the points.
+  */
+BOOST_AUTO_TEST_CASE(test_prot_dnp_late_absolute_time)
+{
+    DnpProtocol dnp;
+
+    BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+    dnp.setAddresses(2, 1);
+    dnp.setName("Test DNP device");
+    dnp.setCommand(DnpProtocol::Command_UnsolicitedInbound);
+    dnp.setConfigData(2, DNP::TimeOffset::Local, false, false, true, false, false, false);
+
+    // Actual data from OpenDNP simulating a CBC-8024
+    const byte_str response(
+        "05 64 ff 44 01 00 02 00 ce 84 "
+        "44 cb 81 00 01 01 02 01 01 00 03 00 02 02 02 01 73 91 02 01 05 00 05 00 02 01 "
+        "01 01 0d 00 0e 00 00 01 95 ae 02 01 43 00 45 00 02 02 02 01 02 01 47 00 47 00 "
+        "d3 31 02 01 02 01 55 00 55 00 02 01 02 01 58 00 58 00 e0 25 02 01 02 01 7d 00 "
+        "7e 00 02 02 01 02 01 d0 07 d0 16 8c 07 02 14 01 00 01 03 02 00 00 00 00 02 00 "
+        "00 00 61 34 00 02 00 00 00 00 1e 01 01 06 00 07 00 02 00 00 0d e8 00 00 02 00 "
+        "00 00 00 1e 01 01 0b 00 0b 00 01 9c 38 c4 04 00 00 1e 01 01 14 00 14 00 02 00 "
+        "00 00 00 1e 46 9b 01 01 71 00 71 00 02 00 00 00 00 1e 01 01 0e 27 68 e0 0e 27 "
+        "02 00 00 00 00 1e 01 01 10 27 10 27 02 00 71 64 00 00 00 1e 01 01 14 27 14 27 "
+        "02 00 00 00 00 1e 80 28 01 01 16 27 18 27 02 00 00 00 00 02 00 00 00 00 eb c1 "
+        "02 00 00 00 00 1e 01 01 1a 27 1c 27 02 00 00 00 57 a2 00 02 00 00 00 00 02 00 "
+        "00 00 00 1e 01 01 1f 27 05 9b 1f 27 02 00 00 00 00 1e 01 01 6f 47 "
+    );
+    simulateUnsolicited(dnp, response, false);
+
+    // This is a 2 packet message
+    const byte_str response2(
+        "05 64 31 44 01 00 02 00 35 ca "
+        "85 23 27 23 27 02 00 00 00 00 1e 01 01 4d 28 4d 63 ed 28 02 00 00 00 00 1e 01 "
+        "01 20 4e 20 4e 02 00 00 6c 1e 00 00 32 01 07 01 e8 be fc b1 58 01 2b 12 "
+    );
+    simulateUnsolicited(dnp, response2, true);
+
+    pointlist_t point_list;
+    dnp.getInboundPoints(point_list);
+    BOOST_CHECK_EQUAL(37, point_list.size());   // we have a lot of points
+
+    {
+        // Make some spot checks
+        for (auto pd : point_list)
+        {
+            switch (pd->getId())
+            {
+            case 12:
+                BOOST_CHECK_EQUAL(pd->getValue(), 1180.0000000000000);
+                BOOST_CHECK_EQUAL(pd->getType(), AnalogPointType);
+                // Time shouldn't be an issue because this is a canned message
+                BOOST_CHECK_EQUAL(pd->getTime(), CtiTime(1480476481));
+                break;
+            }
+        }
+    }
+}
+
+/**
+* Test a message with an absolute time before all the point data to make sure the time gets propagated to the points.
+* Message was captured from OpenDNP3 with a patch to send the Group50Var1 Absolute Time before the points.
+*/
+BOOST_AUTO_TEST_CASE(test_prot_dnp_early_absolute_time)
+{
+    DnpProtocol dnp;
+
+    BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
+
+    dnp.setAddresses(2, 1);
+    dnp.setName("Test DNP device");
+    dnp.setCommand(DnpProtocol::Command_UnsolicitedInbound);
+    dnp.setConfigData(2, DNP::TimeOffset::Local, false, false, true, false, false, false);
+
+    // Actual data from OpenDNP simulating a CBC-8024
+    const byte_str response(
+        "05 64 ff 44 01 00 02 00 ce 84 "
+        "4f c9 81 00 01 32 01 07 01 f0 7c 4a b7 58 01 01 97 a3 02 01 01 00 03 00 02 02 "
+        "02 01 02 01 05 00 05 00 a9 83 02 01 01 01 0d 00 0e 00 00 01 02 01 43 00 45 00 "
+        "78 a2 02 02 02 01 02 01 47 00 47 00 02 01 02 01 55 00 3a 41 55 00 02 01 02 01 "
+        "58 00 58 00 02 01 02 01 7d 00 22 7d 7e 00 02 02 01 02 01 d0 07 d0 07 02 14 01 "
+        "00 01 62 57 03 02 00 00 00 00 02 00 00 00 00 02 00 00 00 00 ea 78 1e 01 01 06 "
+        "00 07 00 02 00 00 00 00 02 00 00 00 92 cf 00 1e 01 01 0b 00 0b 00 01 0c 04 00 "
+        "00 1e 01 01 b1 8b 14 00 14 00 02 00 00 00 00 1e 01 01 71 00 71 00 17 85 02 00 "
+        "00 00 00 1e 01 01 0e 27 0e 27 02 00 00 00 30 88 00 1e 01 01 10 27 10 27 02 00 "
+        "00 00 00 1e 01 01 37 77 14 27 14 27 02 00 00 00 00 1e 01 01 16 27 18 27 8c 9d "
+        "02 00 00 00 00 02 00 00 00 00 02 00 00 00 00 1e 6a 97 01 01 1a 27 1c 27 02 00 "
+        "00 00 00 02 00 00 00 00 c5 e4 02 00 00 00 00 1e 01 01 1f 27 35 47 "
+    );
+    simulateUnsolicited(dnp, response, false);
+
+    // This is a 2 packet message
+    const byte_str response2(
+        "05 64 31 44 01 00 02 00 35 ca "
+        "90 1f 27 02 00 00 00 00 1e 01 01 23 27 23 27 02 16 84 00 00 00 00 1e 01 01 4d "
+        "28 4d 28 02 00 00 00 00 33 19 1e 01 01 20 4e 20 4e 02 00 00 00 00 39 38 "
+    );
+    simulateUnsolicited(dnp, response2, true);
+
+    pointlist_t point_list;
+    dnp.getInboundPoints(point_list);
+    BOOST_CHECK_EQUAL(37, point_list.size());   // we have a lot of points
+
+    {
+        // Make some spot checks
+        for (auto pd : point_list)
+        {
+            switch (pd->getId())
+            {
+            case 12:
+                BOOST_CHECK_EQUAL(pd->getValue(), 1036.0000000000000);
+                BOOST_CHECK_EQUAL(pd->getType(), AnalogPointType);
+                // Time shouldn't be an issue because this is a canned message
+                BOOST_CHECK_EQUAL(pd->getTime(), CtiTime(1480565462));
+                break;
+            }
+        }
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
