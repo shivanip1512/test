@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
@@ -16,7 +17,9 @@
     <cti:checkRolesAndProperties value="METER_EVENTS">
         <a href="${meterEventsReportUrl}"><i:inline key=".meterEventsReport"/></a><br/>
     </cti:checkRolesAndProperties>
-    <cti:checkRolesAndProperties value="WATER_LEAK_REPORT">
-        <a href="${waterLeakReportUrl}"><i:inline key=".waterLeakReport"/></a><br/>
-    </cti:checkRolesAndProperties>
+    <c:if test="${showWaterLeak}">
+        <cti:checkRolesAndProperties value="WATER_LEAK_REPORT">
+            <a href="${waterLeakReportUrl}"><i:inline key=".waterLeakReport"/></a><br/>
+        </cti:checkRolesAndProperties>
+    </c:if>
 </div>
