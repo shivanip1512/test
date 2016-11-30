@@ -62,6 +62,7 @@ import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
+import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -69,6 +70,7 @@ import com.google.common.collect.Maps;
 
 @Controller
 @CheckRole({ YukonRole.METERING, YukonRole.APPLICATION_BILLING, YukonRole.SCHEDULER, YukonRole.DEVICE_ACTIONS })
+
 public class MeterController {
     
     @Autowired private AttributeService attributeService;
@@ -97,12 +99,13 @@ public class MeterController {
     @RequestMapping("start")
     public String start(ModelMap model) {
         List<RfnGateway> overloadedGateways = new ArrayList<>();
-        try {
-            overloadedGateways = dataStreamingService.getOverloadedGateways();
-        } catch (DataStreamingConfigException e) {}
+        if(configurationSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false)){
+            try {
+                overloadedGateways = dataStreamingService.getOverloadedGateways();
+            } catch (DataStreamingConfigException e) {}
         
-        model.addAttribute("showOverloadedGatewaysWidget", overloadedGateways.size() > 0 ? true : false);
-        
+            model.addAttribute("showOverloadedGatewaysWidget", overloadedGateways.size() > 0 ? true : false);
+        }
         return "start.jsp";
     }
         
