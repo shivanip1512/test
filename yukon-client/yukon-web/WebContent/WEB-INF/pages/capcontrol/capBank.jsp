@@ -139,7 +139,7 @@
                                         <tags:input id="customBankSize" path="CapBank.bankSizeCustom" inputClass="dn" size="6" /> kVar
                                         <i:inline key=".custom"/><input id="customSizeCheckbox" type="checkbox" class="js-custom-bankSize" <c:if test="${capbank.capBank.customBankSize}">checked="checked"</c:if> <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if>>
                                     </tags:nameValue2>
-                                    <tags:nameValue2 nameKey=".recloseDelay" data-toggle-group="integrity">
+                                    <tags:nameValue2 nameKey=".recloseDelay">
                                         <tags:intervalDropdown path="CapBank.recloseDelay"
                                             intervals="${timeIntervals}"
                                             id="scan1" />
