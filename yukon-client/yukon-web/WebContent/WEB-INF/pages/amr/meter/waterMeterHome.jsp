@@ -13,14 +13,14 @@
         <cti:param name="collectionType" value="idList" />
         <cti:param name="idList.ids" value="${deviceId}" />
     </cti:url>
-    <cti:checkRolesAndProperties value="WATER_LEAK_REPORT">
-        <cti:url var="waterLeakReportUrl" value="/amr/waterLeakReport/report">
-            <cti:param name="collectionType" value="idList" />
-            <cti:param name="idList.ids" value="${deviceId}" />
-        </cti:url>
-    </cti:checkRolesAndProperties>
+    <cti:url var="waterLeakReportUrl" value="/amr/waterLeakReport/report">
+        <cti:param name="collectionType" value="idList" />
+        <cti:param name="idList.ids" value="${deviceId}" />
+    </cti:url>    
     <div id="page-actions" class="dn">
-        <cm:dropdownOption key=".waterLeakReport.report.pageName" href="${waterLeakReportUrl}" />
+        <cti:checkRolesAndProperties value="WATER_LEAK_REPORT">
+            <cm:dropdownOption key=".waterLeakReport.report.pageName" href="${waterLeakReportUrl}" />
+        </cti:checkRolesAndProperties>
         <!-- Actions: Map Network -->
         <c:if test="${showMapNetwork}">
             <cti:url var="mapNetworkUrl" value="/stars/mapNetwork/home?deviceId=${deviceId}"/>
