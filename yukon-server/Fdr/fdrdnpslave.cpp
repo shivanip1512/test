@@ -421,7 +421,7 @@ int DnpSlave::doComms(ServerConnection& connection, const std::string& messageTy
                 std::memcpy(buffer, xfer.getOutBuffer(), bufferSize);
                 if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                 {
-                    CTILOG_DEBUG(dout, logNow() << " sending DNP " << messageType << " message." << std::endl <<
+                    CTILOG_DEBUG(dout, logNow() << " sending DNP " << messageType << " response." << std::endl <<
                         arrayToRange(reinterpret_cast<const unsigned char*>(buffer), bufferSize));
                 }
                 connection.queueMessage(buffer,bufferSize, MAXPRIORITY - 1);
@@ -517,7 +517,7 @@ int DnpSlave::processScanSlaveRequest (ServerConnection& connection)
 
     _dnpSlave.setScanCommand(std::move(outputPoints));
 
-    return doComms(connection, "scan response");
+    return doComms(connection, "scan");
 }
 
 
@@ -626,7 +626,7 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
 
     _dnpSlave.setControlCommand(control);
 
-    return doComms(connection, "control response");
+    return doComms(connection, "control");
 }
 
 
@@ -1049,7 +1049,7 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
 
     _dnpSlave.setAnalogOutputCommand(analog);
 
-    return doComms(connection, "analog output response");
+    return doComms(connection, "analog output");
 }
 
 
