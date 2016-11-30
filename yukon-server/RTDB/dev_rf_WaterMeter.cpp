@@ -213,7 +213,7 @@ YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, 
                     std::chrono::seconds{ 5 },
                     timedOutCallback );
 
-            auto replyCode = consumer.get();
+            const auto replyCode = consumer.get();
 
             auto retMsg = std::make_unique<CtiReturnMsg>(
                 pReq->DeviceId(),
