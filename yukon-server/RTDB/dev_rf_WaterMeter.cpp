@@ -162,13 +162,19 @@ YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, 
     {
         if ( parse.isKeyValid( "verify" ) )
         {
-            reportConfigMismatchDetails<unsigned>( "Reporting Interval",
-                                                   reportingInterval, configInfo->reportingInterval,
-                                                   pReq, returnMsgs );
+            if ( configInfo->reportingInterval != reportingInterval )
+            {
+                reportConfigMismatchDetails<unsigned>( "Reporting Interval",
+                                                       reportingInterval, configInfo->reportingInterval,
+                                                       pReq, returnMsgs );
+            }
 
-            reportConfigMismatchDetails<unsigned>( "Recording Interval",
-                                                   recordingInterval, configInfo->recordingInterval,
-                                                   pReq, returnMsgs );
+            if ( configInfo->recordingInterval != recordingInterval )
+            {
+                reportConfigMismatchDetails<unsigned>( "Recording Interval",
+                                                       recordingInterval, configInfo->recordingInterval,
+                                                       pReq, returnMsgs );
+            }
 
             return ClientErrors::ConfigNotCurrent;
         }
