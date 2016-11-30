@@ -16,26 +16,26 @@ import com.cannontech.common.chart.service.ChartDataConverter;
  */
 public class ChartPowerFactorDataConverter implements ChartDataConverter {
     
-	public List<ChartValue<Double>> convertValues(List<ChartValue<Double>> chartValues,
+    public List<ChartValue<Double>> convertValues(List<ChartValue<Double>> chartValues,
             ChartInterval interval) {
-        
-		List<ChartValue<Double>> chartValuesCopy = new ArrayList<ChartValue<Double>>(chartValues);
+
+        List<ChartValue<Double>> chartValuesCopy = new ArrayList<ChartValue<Double>>(chartValues);
 
         for (ChartValue<Double> chartValue : chartValuesCopy) {
-        	Double origVal;
-        	double val = origVal = chartValue.getValue();
-        	
+            Double origVal;
+            double val = origVal = chartValue.getValue();
+            
             if(val < 0) {
-            	val += 2;
+                val += 2;
             }
             val *= 100;
 
             chartValue.setValue(val);
-            chartValue.setDescription("<div>" + chartValue.getFormattedValue() + "</div>" + chartValue.getDescription()
-                + "\nRaw Value: " + origVal.toString());
+            chartValue.setFormattedValue(new Double(val).toString());
+            chartValue.setDescription(chartValue.getDescriptionWithoutFormattedVal() + "\nRaw Value: " + origVal.toString());
         }
 
         return chartValuesCopy;
     }
-	
+    
 }
