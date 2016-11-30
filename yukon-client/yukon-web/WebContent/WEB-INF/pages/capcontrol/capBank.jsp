@@ -149,23 +149,28 @@
                                         <tags:input path="CapBank.maxDailyOps" size="5" toggleGroup="maxOperation"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".controlDevicePoint">
-                                        <form:hidden id="switch-control-point-input" path="CapBank.controlDeviceID"/>
-                                        <tags:pickerDialog
-                                            id="cbcOrphanPicker"
-                                            type="capControlCBCOrphanPicker"
-                                            linkType="selectionLabel"
-                                            selectionProperty="paoName"
-                                            destinationFieldId="switch-control-point-input"
-                                            viewOnlyMode="${mode == 'VIEW'}"
-                                            allowEmptySelection="${true}"
-                                            includeRemoveButton="${true}"
-                                            removeValue="0" 
-                                            extraArgs="${capbank.capBank.controlDeviceID}" />
-                                        <cti:displayForPageEditModes modes="VIEW">
-                                            <c:if test="${empty capbank.capBank.controlDeviceID}">
-                                                <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
-                                            </c:if>
+                                        <cti:displayForPageEditModes modes="EDIT">
+                                            <form:hidden id="switch-control-point-input" path="CapBank.controlDeviceID"/>
+                                                <tags:pickerDialog
+                                                    id="cbcOrphanPicker"
+                                                    type="capControlCBCOrphanPicker"
+                                                    linkType="selectionLabel"
+                                                    selectionProperty="paoName"
+                                                    destinationFieldId="switch-control-point-input"
+                                                    viewOnlyMode="${mode == 'VIEW'}"
+                                                    allowEmptySelection="${true}"
+                                                    includeRemoveButton="${true}"
+                                                    removeValue="0"
+                                                    extraArgs="${capbank.capBank.controlDeviceID}"/>
                                         </cti:displayForPageEditModes>
+                                        <cti:displayForPageEditModes modes="VIEW">
+                                            <c:choose>
+                                                <c:when test="${empty capbank.capBank.controlDeviceID || capbank.capBank.controlDeviceID == 0}">
+                                                    <span class="empty-list"><i:inline key="yukon.common.none"/></span>
+                                                </c:when>
+                                                <c:otherwise>${fn:escapeXml(cbc.name)}</c:otherwise>
+                                           </c:choose>
+                                       </cti:displayForPageEditModes>
                                     </tags:nameValue2>
                                 </tags:nameValueContainer2>
                             </tags:sectionContainer2>
