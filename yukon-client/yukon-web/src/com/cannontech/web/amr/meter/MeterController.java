@@ -98,8 +98,9 @@ public class MeterController {
     
     @RequestMapping("start")
     public String start(ModelMap model) {
-        List<RfnGateway> overloadedGateways = new ArrayList<>();
-        if(configurationSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false)){
+        boolean dataStreamingEnabled = configurationSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
+        if (dataStreamingEnabled) {
+            List<RfnGateway> overloadedGateways = new ArrayList<>();
             try {
                 overloadedGateways = dataStreamingService.getOverloadedGateways();
             } catch (DataStreamingConfigException e) {}
