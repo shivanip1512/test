@@ -863,7 +863,9 @@ GO
 /* End YUK-16013 */
 
 /* Start YUK-16017 */
+/* @error ignore-begin */
 INSERT INTO YukonRoleProperty VALUES(-20222,-202,'Water Leak Report','true','Controls access to the Water Leak Report.');
+/* @error ignore-end */
 /* End YUK-16017 */
 
 /* Start YUK-16029 */
