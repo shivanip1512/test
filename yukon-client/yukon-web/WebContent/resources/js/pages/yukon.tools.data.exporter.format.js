@@ -112,7 +112,7 @@ yukon.tools.dataExporterFormat = (function () {
                 popup.load(_attributeUrl, function () {
                     popup.dialog({
                         title: _config.text.addAttribute,
-                        width: '430px',
+                        width: '450px',
                         height: 300,
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.attribute.add', target: popup})
                     });
@@ -129,6 +129,7 @@ yukon.tools.dataExporterFormat = (function () {
                     popup.dialog({
                         title: _config.text.addField,
                         width: 'auto',
+                        height: 400,
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.field.add', target: popup})
                     });
                 });

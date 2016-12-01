@@ -15,6 +15,11 @@
         <tags:inputNameValue nameKey=".daysPrevious" path="daysPrevious" maxlength="3" size="3"/>
     </tags:nameValueContainer2>
 </form:form>
+<style>
+#format-popup {
+    overflow: initial !important;
+}
+</style>
 <script>
     $("#chooseAttrib").chosen({width: "280px"});
 </script>
