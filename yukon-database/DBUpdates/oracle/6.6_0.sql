@@ -747,6 +747,10 @@ DEFAULT 'ExpresscomOneWay' NOT NULL;
 INSERT INTO YukonRoleProperty VALUES(-20222,-202,'Water Leak Report','true','Controls access to the Water Leak Report.');
 /* End YUK-16017 */
 
+/* Start YUK-16029 */
+INSERT INTO YukonServices VALUES (23, 'BrokerSystemMetricsListener','classpath:com/cannontech/services/BrokerSystemMetricsListener/brokerSystemMetricsListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
+/* End YUK-16029 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
