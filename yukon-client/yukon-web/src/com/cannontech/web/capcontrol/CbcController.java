@@ -121,6 +121,9 @@ public class CbcController {
         cbcValidator.validate(cbc, result);
 
         if (result.hasErrors()) {
+            if (cbc.isTwoWay() && cbc.getDeviceDirectCommSettings() == null) {
+                flash.setError(new YukonMessageSourceResolvable(baseKey + ".error.noCommChannel"));
+            }
             return bindAndForward(cbc, result, redirectAttributes);
         }
         cbcService.save(cbc);

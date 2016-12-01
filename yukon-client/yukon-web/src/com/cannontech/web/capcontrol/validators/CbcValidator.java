@@ -100,6 +100,10 @@ public class CbcValidator extends SimpleValidator<CapControlCBC> {
 
     private void validateCommPort(CapControlCBC cbc, Errors errors) {
 
+        if(cbc.getDeviceDirectCommSettings()== null) {
+            return;
+        }
+
         Integer portId = cbc.getDeviceDirectCommSettings().getPortID();
         YukonValidationUtils.checkRange(errors, "deviceDirectCommSettings.portID", portId,
             0, Integer.MAX_VALUE, true);

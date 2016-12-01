@@ -1147,4 +1147,5 @@
     <entry key="yukon.web.modules.capcontrol.cbc.error.invalidConfig">Invalid Device Configuration</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.error.masterSlave">Master/Slave address already in use by {0}.</entry>
     <entry key="yukon.web.modules.capcontrol.cbc.error.duplicateSerial">Serial Number already in use by {0}.</entry>
+    <entry key="yukon.web.modules.capcontrol.cbc.error.noCommChannel">Please specify a valid communication channel.</entry>
 </properties>
