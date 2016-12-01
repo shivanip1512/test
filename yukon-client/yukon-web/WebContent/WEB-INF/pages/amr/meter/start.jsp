@@ -37,7 +37,7 @@
             <div class="column two nogutter">
                     <cti:msg2 key="yukon.web.widgets.meterSearchWidget.helpText" var="helpText"/>
                     <ct:widget bean="meterSearchWidget" helpText="${helpText}" />
-                    <cti:checkRolesAndProperties value="DEVICE_ACTIONS">
+                    <cti:checkRolesAndProperties value="ARCHIVED_DATA_ANALYSIS PHASE_DETECT METER_EVENTS WATER_LEAK_REPORT">
                         <ct:widget bean="systemActionsMenuWidget" />
                     </cti:checkRolesAndProperties>
                     

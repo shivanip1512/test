@@ -29,7 +29,7 @@ public class SystemActionsMenuWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("systemActionsMenuWidget/render.jsp");
         boolean showWaterLeak = false;
         Set<PaoType> waterMeters = Sets.intersection(serverDatabaseCache.getAllPaoTypes(), PaoType.getWaterMeterTypes());
-        if(!waterMeters.isEmpty()){
+        if (!waterMeters.isEmpty()) {
             showWaterLeak = true;
         }
         mav.addObject("showWaterLeak", showWaterLeak);
