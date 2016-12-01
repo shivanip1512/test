@@ -1081,8 +1081,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     @Override
     @Transactional
     public void unassignConfig(YukonDevice device) throws InvalidDeviceTypeException {
-        if (paoDefinitionDao.isDnpConfigurationType(device.getPaoIdentifier().getPaoType())
-                ||device.getPaoIdentifier().getPaoType().equals(PaoType.RFN_RELAY)) {
+        if (paoDefinitionDao.isDnpConfigurationType(device.getPaoIdentifier().getPaoType())) {
             throw new InvalidDeviceTypeException("Device type: "
                     + device.getPaoIdentifier().getPaoType().name()
                     + " cannot be unassigned from a configuration.");
