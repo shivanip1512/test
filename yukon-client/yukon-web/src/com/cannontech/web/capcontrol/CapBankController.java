@@ -1,9 +1,9 @@
 package com.cannontech.web.capcontrol;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -225,7 +225,12 @@ public class CapBankController {
         model.addAttribute("communicationMediumList", CapBankCommunicationMedium.values());
         model.addAttribute("antennaTypeList", CapBankAntennaType.values());
         model.addAttribute("pointPhaseList", CapBankPointPhase.values());
-        model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());
+
+        Set<TimeIntervals> timeInterval = TimeIntervals.getCapControlIntervals();
+        List<TimeIntervals> timeIntervals = new LinkedList<TimeIntervals>(timeInterval);
+        timeIntervals.add(0, TimeIntervals.NONE);
+
+        model.addAttribute("timeIntervals", timeIntervals);
         model.addAttribute("opMethods", BankOpState.values());
         model.addAttribute("bankSizes", CapBankSize.values());
         

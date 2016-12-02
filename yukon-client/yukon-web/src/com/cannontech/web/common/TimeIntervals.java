@@ -149,7 +149,6 @@ public enum TimeIntervals {
     }
 
     private static final Set<TimeIntervals> capControlIntervals = ImmutableSet.of(
-        NONE,
         SECONDS_1,
         SECONDS_2,
         SECONDS_5,
