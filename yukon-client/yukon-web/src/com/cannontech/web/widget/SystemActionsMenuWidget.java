@@ -27,12 +27,8 @@ public class SystemActionsMenuWidget extends WidgetControllerBase {
     @RequestMapping("render")
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView("systemActionsMenuWidget/render.jsp");
-        boolean hasRolePropertyToShowWaterLeak = false;
         Set<PaoType> hasWaterMeters = Sets.intersection(serverDatabaseCache.getAllPaoTypes(), PaoType.getWaterMeterTypes());
-        if (!hasWaterMeters.isEmpty()) {
-            hasRolePropertyToShowWaterLeak = true;
-        }
-        mav.addObject("showWaterLeak", hasRolePropertyToShowWaterLeak);
+        mav.addObject("showWaterLeak", !hasWaterMeters.isEmpty());
         return mav;
     }
 
