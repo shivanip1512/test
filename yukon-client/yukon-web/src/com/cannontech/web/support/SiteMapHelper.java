@@ -5,7 +5,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -13,14 +12,12 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.ObjectFormattingService;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.userpage.model.SiteMapCategory;
 import com.cannontech.common.util.MatchStyle;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -31,7 +28,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Sets;
 
 public class SiteMapHelper {
 
@@ -40,7 +36,6 @@ public class SiteMapHelper {
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ObjectFormattingService objectFormattingService;
-    @Autowired private ServerDatabaseCache serverDatabaseCache;
     
     public Map<SiteMapCategory, List<SiteMapWrapper>> getSiteMap(YukonUserContext context) {
         Multimap<SiteMapCategory, SiteMapWrapper> map = ArrayListMultimap.create();
