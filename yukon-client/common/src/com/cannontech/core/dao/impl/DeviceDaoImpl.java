@@ -341,12 +341,13 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public String getFormattedName(int deviceId) {
-        LiteYukonPAObject paoObj = cache.getAllPaosMap().get(deviceId);
-        if (paoObj == null) {
+        try {
             YukonMeter meter = meterDao.getForId(deviceId);
             return meterDao.getFormattedDeviceName(meter);
+        } catch (NotFoundException e) {
+            LiteYukonPAObject paoObj = cache.getAllPaosMap().get(deviceId);
+            return paoObj.getPaoName();
         }
-        return paoObj.getPaoName();
     }
 
     @Override

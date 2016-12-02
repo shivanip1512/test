@@ -255,6 +255,10 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
             
         case SA_ENABLED_ALL_MSG: {
             value = getSpecialAreaEnabledMsg(latestValue, updaterHelper, context);
+            // If there are many special areas assigned to a substation only one of them will be in the enabled
+            // state If none of them are enabled the value will contain only a space in the string, which means none
+            // of the special area assigned is enabled.Test to see if we have received a blank and display a
+            // "No Special Area active" message
             if (StringUtils.isBlank(value)) {
                 MessageSourceAccessor messageAccessor = resolver.getMessageSourceAccessor(context);
                 value = messageAccessor.getMessage("yukon.web.modules.capcontrol.noSpecialAreaEnabled");
