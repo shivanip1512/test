@@ -93,15 +93,7 @@ public class SiteMapHelper {
             if ( permission instanceof YukonRole) {
                 permissions += ((YukonRole) permission).name() + " ";
             } else if (permission instanceof YukonRoleProperty) {
-                if (permission != YukonRoleProperty.WATER_LEAK_REPORT) {
                     permissions += ((YukonRoleProperty) permission).name() + " ";
-                }
-                else {
-                    Set<PaoType> waterMeters = Sets.intersection(serverDatabaseCache.getAllPaoTypes(), PaoType.getWaterMeterTypes());
-                    if (!waterMeters.isEmpty()) {
-                        permissions += ((YukonRoleProperty) permission).name() + " ";
-                    }
-                }
             } else if (permission instanceof GlobalSettingType) {
                 permissions += ((GlobalSettingType) permission).name() + " ";
             } else if (permission instanceof MasterConfigBoolean) {
