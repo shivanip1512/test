@@ -5,10 +5,12 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
@@ -44,6 +46,8 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 
 public class DeviceCreationServiceImpl implements DeviceCreationService {
 
+    private static final Logger log = YukonLogManager.getLogger(DeviceCreationServiceImpl.class);
+    
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DeviceDao deviceDao;
     @Autowired private PaoDao paoDao;
@@ -273,9 +277,13 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
 
     }
-
+    
+    /*
+     * Validates template name and creates device for the template.
+     */
     private SimpleDevice createDeviceForTemplate(String templateName) {
 
+        log.info("Auto creating device for template: "+templateName);
         // Here assumption is that manufacturer name will not have "_"
         String[] parsedTemplateNm = StringUtils.split(templateName, "_", 3);
         List<String> parsedTemplateName = Arrays.asList(parsedTemplateNm);
@@ -294,6 +302,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
                                                                            templateName,
                                                                            RfnIdentifier.createBlank(),
                                                                            true);
+                    log.info("Auto created device for template: "+templateName);
                     return yukonDevice;
                 }
             }
@@ -301,6 +310,9 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         return null;
     }
 
+    /*
+     * Retrieves existing template device
+     */
     private DeviceBase retrieveExistingDeviceByTemplate(SimpleDevice templateYukonDevice) {
         int templateDeviceId = templateYukonDevice.getDeviceId();
 
