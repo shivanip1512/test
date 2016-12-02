@@ -3,8 +3,11 @@ package com.cannontech.web.updater.capcontrol;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.cbc.util.UpdaterHelper;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
@@ -250,6 +253,15 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
                 break;
             }
             
+        case SA_ENABLED_ALL_MSG: {
+            value = getSpecialAreaEnabledMsg(latestValue, updaterHelper, context);
+            if (StringUtils.isBlank(value)) {
+                MessageSourceAccessor messageAccessor = resolver.getMessageSourceAccessor(context);
+                value = messageAccessor.getMessage("yukon.web.modules.capcontrol.noSpecialAreaEnabled");
+            }
+            break;
+        }
+  
             case SA_ENABLED: {
                 value = getSpecialAreaEnabled(latestValue, updaterHelper, context);
                 break;

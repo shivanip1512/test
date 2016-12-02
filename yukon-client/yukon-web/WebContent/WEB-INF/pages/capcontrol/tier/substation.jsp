@@ -112,7 +112,8 @@ $(function() {
                                     <c:when test="${specialAreaId > 0}">
                                         <cti:classUpdater type="SUBSTATION" identifier="${substationId}/SA_ENABLED">
                                             <cti:url var="editSpecialArea" value="/capcontrol/areas/${specialAreaId}"/>
-                                            <a href="${editSpecialArea}"><cti:deviceName deviceId="${specialAreaId}"/></a>: <cti:capControlValue paoId="${specialAreaId}" type="CBCSPECIALAREA" format="STATE"/>
+                                            <cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="SA_ENABLED_ALL_MSG"
+                                            defaultBlank="true" initialize="true"/>
                                         </cti:classUpdater>
                                     </c:when>
                                     <c:otherwise><i:inline key="yukon.common.none.choice"/></c:otherwise>

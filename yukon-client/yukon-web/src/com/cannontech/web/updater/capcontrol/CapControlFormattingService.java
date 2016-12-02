@@ -53,7 +53,8 @@ public interface CapControlFormattingService<E> {
         SA_ENABLED,
         SA_ENABLED_MSG,
         DUALBUS_MESSAGE,
-        DUALBUS
+        DUALBUS,
+        SA_ENABLED_ALL_MSG
     }
     
     public String getValueString(E latestValue, Format format, YukonUserContext userContext);

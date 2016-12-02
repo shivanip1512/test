@@ -51,7 +51,7 @@
     <entry key="yukon.web.modules.capcontrol.addInfoTitle">Cap Bank Additional Information: {0}</entry>
     <entry key="yukon.web.modules.capcontrol.busAddInfoTitle">Sub Bus Additional Information: {0}</entry>
     <entry key="yukon.web.modules.capcontrol.moveBank">Move Bank</entry>
-    
+    <entry key="yukon.web.modules.capcontrol.noSpecialAreaEnabled">No Special Areas active.</entry>
     <entry key="yukon.web.modules.capcontrol.dailyOps">{0} / {1}</entry>
     <entry key="yukon.web.modules.capcontrol.dailyMaxTotalOps">{0} / {1} / {2}</entry>
     <entry key="yukon.web.modules.capcontrol.pfEstPf">{0} / {1}</entry>
