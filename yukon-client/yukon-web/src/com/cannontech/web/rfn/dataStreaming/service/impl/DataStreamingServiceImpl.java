@@ -367,15 +367,9 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     result.setLastCommunicated(getLastCommunicatedTime(deviceId, deviceIdsToPointValues));
                     result.setPaoName(serverDatabaseCache.getAllPaosMap().get(deviceId).getPaoName());
                     result.setDeviceId(deviceId);
-                    if(!ignoreTimeCheck){
-                        DateTime oneWeekAgo = new DateTime().minusWeeks(1);
-                        if (result.getLastCommunicated().isBefore(oneWeekAgo)) {
-                            result.setDisplayRemove(true);
-                            log.debug(result + " didn't communticate for a week. Displaying remove option.");
-                        }
-                    }else{
-                        result.setDisplayRemove(true);
-                    }
+                    DateTime oneWeekAgo = new DateTime().minusWeeks(1);
+                    boolean displayRemove = ignoreTimeCheck || result.getLastCommunicated().isBefore(oneWeekAgo);
+                    result.setDisplayRemove(displayRemove);
                     results.add(result);
                 }
                 log.debug("\n");
