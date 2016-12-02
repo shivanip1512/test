@@ -1036,6 +1036,30 @@ yukon.ui = (function () {
             }
         },
         
+        /** Highlights all tabs that have errors in Red and Sets the Active Tab to the First One With Errors */
+        highlightErrorTabs: function () {
+
+            /* Save tab selection */
+            var tabContainer = $('.tabbed-container');
+
+            /* If there was an error in a a field, go to the first tab with an error */
+            var errorEncountered = false;
+            var firstErroredTab = $('.ui-tabs-panel')[0];
+            $('.ui-tabs-panel').each(function (idx, elem) {
+                elem = $(elem);
+                if (elem.find('.error').length) {
+                    var id = elem.attr('id');
+                    var link = $('[href="#' + id + '"]');
+                    link.closest('li').addClass('error');
+                    if (!errorEncountered) {
+                        firstErroredTab = idx;
+                        errorEncountered = true;
+                    }
+                }
+            });
+            tabContainer.tabs('option', 'active', firstErroredTab);
+        },
+        
         /** Block out the closest valid container to the target element, or the page */
         block: function (target, timeout) {
             timeout = timeout || 0;
