@@ -334,4 +334,9 @@ public static int differenceMinutes(Date from, Date to) {
         }
         return dateTime.withTime(hourOfDay + 1, 0, 0, 0);
     }
+    
+    public static DateTime getStartOfHour(DateTime dateTime) {
+        int hourOfDay = dateTime.getHourOfDay();
+        return dateTime.withTime(hourOfDay, 0, 0, 0);
+    }
 }
