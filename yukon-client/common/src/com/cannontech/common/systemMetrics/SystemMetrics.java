@@ -1,5 +1,6 @@
 package com.cannontech.common.systemMetrics;
 
+import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
 public interface SystemMetrics {
@@ -32,4 +33,12 @@ public interface SystemMetrics {
      * @param attribute attribute Id.
      */
     void setMemoryAttribute(BuiltInAttribute memoryAttribute);
+    
+    /**
+     * Inserts point data for the attributes
+     * 
+     * @param attribute attribute Id.
+     * @param value point value
+     */
+    void insertPointData(Attribute attribute, double value);
 }
