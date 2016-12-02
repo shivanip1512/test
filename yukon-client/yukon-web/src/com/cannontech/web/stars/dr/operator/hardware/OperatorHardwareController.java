@@ -355,6 +355,9 @@ public class OperatorHardwareController {
         InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventoryId);
         model.addAttribute("canEnableDisable", inventory.getHardwareType().isSupportServiceInServiceOut());
         model.addAttribute("canSendShed", inventory.getHardwareType().isSupportsIndividualDeviceShed());
+        boolean isAllowDRControl =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_DR_CONTROL, userContext.getYukonUser());
+        model.addAttribute("isAllowDRControl", isAllowDRControl);
         if(hardware.getHardwareType() == HardwareType.NON_YUKON_METER){
             return "redirect:/stars/operator/hardware/mp/view";
         }

@@ -50,6 +50,7 @@ import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 import com.cannontech.stars.dr.hardware.service.HardwareConfigService;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.TimeIntervals;
 import com.cannontech.web.common.collection.InventoryCollectionFactoryImpl;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -295,11 +296,11 @@ public class InventoryActionsController {
             YukonUserContext userContext, FlashScope flash) {
 
         Map<String, Object> resultMap = new HashMap<>();
-        int duration =  Integer.parseInt(shedLoad.getDuration().substring(0, shedLoad.getDuration().indexOf("Minute")).trim());
+        int duration = shedLoad.getDuration();
         
         resultMap = hardwareServiceImpl.shedLoad(shedLoad.getInventoryId(),
-                                                 duration,
                                                  shedLoad.getRelayNo(),
+                                                 duration,
                                                  userContext);
 
         MessageSourceResolvable responseMsg = YukonMessageSourceResolvable.createDefaultWithoutCode((String) resultMap.get("message"));
@@ -311,15 +312,22 @@ public class InventoryActionsController {
     }
 
     @RequestMapping("/shedLoadPopup/{inventoryId}")
-    public String shedLoadPopup(@PathVariable int inventoryId, ModelMap model) {
-        List<String> duration = new ArrayList<>(Stream.of("1 Minute","2 Minute","3 Minute","4 Minute","5 Minute").collect(Collectors.toList()));
-        List<Integer> relayNo = new ArrayList<>(Stream.of(1,2,3,4,5).collect(Collectors.toList()));
-        
-        model.addAttribute("duration", duration);
+    public String shedLoadPopup(@PathVariable int inventoryId, ModelMap model,  YukonUserContext userContext) {
+
+        boolean isAllowDRControl =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_DR_CONTROL, userContext.getYukonUser());
+        if (isAllowDRControl) {
+            model.addAttribute("duration", TimeIntervals.getshedTimeOptions());
+        } else {
+            model.addAttribute("interval", TimeIntervals.MINUTES_5);
+        }
+
+        List<Integer> relayNo = new ArrayList<>(Stream.of(1, 2, 3, 4, 5).collect(Collectors.toList()));
+
         model.addAttribute("relayNo", relayNo);
-        
         ShedLoad shedLoad = new ShedLoad(inventoryId);
         model.addAttribute("shedLoad", shedLoad);
+        model.addAttribute("isAllowDRControl", isAllowDRControl);
         
         return "operator/inventory/shedLoad.jsp";
     }

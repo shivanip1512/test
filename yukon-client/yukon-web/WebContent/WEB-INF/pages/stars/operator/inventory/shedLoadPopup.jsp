@@ -16,17 +16,17 @@
 $(document).on('yukon:assets:shedload:send', function (ev) {
     var data = $('#shed-load-form').serialize();
     $('#device-shedload-popup').dialog('close');
-    yukon.ui.busy('#testShed');
+    yukon.ui.busy('#sendShed');
             $.ajax({
                  url: yukon.url('/stars/operator/inventory/shedLoad'),
                  data: data,
                  type: 'post',
                  success: function (result, status, xhr, $form) {
                     window.location.href = window.location.href;
-                    yukon.ui.unbusy('#testShed');
+                    yukon.ui.unbusy('#sendShed');
                  },
                  error: function (xhr, status, error, $form) {
-                    yukon.ui.unbusy('#testShed');
+                    yukon.ui.unbusy('#sendShed');
                      }
                  });
 }); 

@@ -20,7 +20,14 @@
 </c:if>
 <li>
     <c:if test="${canSendShed}">
-        <cti:button nameKey="testShed" data-popup="#device-shedload-popup" renderMode="labeledImage" icon="icon-link-go" id="testShed"/>
+      <c:choose>
+          <c:when test="${isAllowDRControl}">
+              <cti:button nameKey="timedShed" data-popup="#device-shedload-popup" renderMode="labeledImage" icon="icon-link-go" id="sendShed"/>
+          </c:when>
+         <c:otherwise>
+             <cti:button nameKey="testShed" data-popup="#device-shedload-popup" renderMode="labeledImage" icon="icon-link-go" id="sendShed"/>
+         </c:otherwise>
+      </c:choose>
     </c:if>    
 </li>
 

@@ -2,6 +2,7 @@ package com.cannontech.web.stars.dr.operator.hardware.service.impl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
@@ -61,7 +62,8 @@ public class HardwareShedLoadServiceImpl implements HardwareShedLoadService {
         command.setUser(userContext.getYukonUser());
         command.setType(LmHardwareCommandType.SHED);
         command.getParams().put(LmHardwareCommandParam.RELAY, relay);
-        command.getParams().put(LmHardwareCommandParam.DURATION, Duration.standardMinutes(duration));
+        command.getParams().put(LmHardwareCommandParam.DURATION,
+            Duration.standardMinutes(TimeUnit.SECONDS.toMinutes(duration)));
         command.getParams().put(LmHardwareCommandParam.OPTIONAL_ROUTE_ID, routeId);
         command.getParams().put(LmHardwareCommandParam.WAITABLE, true);
 

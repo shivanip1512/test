@@ -4,7 +4,7 @@ public class ShedLoad {
 
     private int inventoryId;
     private int relayNo;
-    private String duration;
+    private int duration;
    
     public ShedLoad() {
     }
@@ -29,11 +29,11 @@ public class ShedLoad {
         this.relayNo = relayNo;
     }
 
-    public String getDuration() {
+    public int getDuration() {
         return duration;
     }
 
-    public void setDuration(String duration) {
+    public void setDuration(int duration) {
         this.duration = duration;
     }
 }

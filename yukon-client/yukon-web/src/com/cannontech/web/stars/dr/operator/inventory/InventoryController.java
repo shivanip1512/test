@@ -135,6 +135,10 @@ public class InventoryController {
         InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventoryId);
         model.addAttribute("canEnableDisable", inventory.getHardwareType().isSupportServiceInServiceOut());
         model.addAttribute("canSendShed", inventory.getHardwareType().isSupportsIndividualDeviceShed());
+
+        boolean isAllowDRControl =
+            rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_DR_CONTROL, userContext.getYukonUser());
+        model.addAttribute("isAllowDRControl", isAllowDRControl);
         Hardware hardware = hardwareUiService.getHardware(inventoryId);
 
         if (hardware.getHardwareType().isRf()) {
