@@ -36,7 +36,7 @@ public class YukonValidationUtils extends ValidationUtils {
     /**
      * Check to ensure that the serial Number of an RFN device is a valid numeric value
      */
-    public static boolean isRfnSerialNumberValid(String serialNumber, PaoType paoType) {
+    public static boolean isRfnSerialNumberValid(String serialNumber) {
         
         if (StringUtils.isEmpty(serialNumber)) {
             return true;
