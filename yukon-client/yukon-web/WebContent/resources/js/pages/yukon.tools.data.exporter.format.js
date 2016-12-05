@@ -232,7 +232,8 @@ yukon.tools.dataExporterFormat = (function () {
                     popup.find('input[name=daysPrevious]').val(attribute.daysPrevious);
                     popup.dialog({
                         title: _config.text.editAttribute,
-                        width: 'auto',
+                        width: '430px',
+                        height: 360,
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.attribute.edit', target: row})
                     });
                 });
@@ -255,7 +256,8 @@ yukon.tools.dataExporterFormat = (function () {
                     popup.html(data);
                     popup.dialog({
                         title: _config.text.editField,
-                        width: 'auto',
+                        width: '430px',
+                        height: 425,
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.field.edit', target: row})
                     });
                 });
