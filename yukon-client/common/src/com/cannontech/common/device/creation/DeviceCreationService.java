@@ -32,8 +32,9 @@ public interface DeviceCreationService {
      * @throws DeviceCreationException
      * @throws BadConfigurationException 
      */
-    public SimpleDevice createRfnDeviceByTemplate(String templateName, String newDeviceName, String model, String manufacturer, String serialNumber, boolean copyPoints) throws DeviceCreationException, BadConfigurationException;
-    
+    public SimpleDevice createRfnDeviceByTemplate(String templateName, String newDeviceName,
+            RfnIdentifier rfnIdentifier, boolean copyPoints) throws DeviceCreationException, BadConfigurationException;
+
     /**
      * Creates the MCT device by device type.
      *

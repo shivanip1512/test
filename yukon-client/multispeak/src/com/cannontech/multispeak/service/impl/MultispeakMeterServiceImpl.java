@@ -1370,9 +1370,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 // Use Model and Manufacturer from template
                 newDevice = deviceCreationService.createRfnDeviceByTemplate(templateMeter.getName(),
                                                                             newPaoName,
-                                                                            newMeterRfnIdentifier.getSensorModel(),
-                                                                            newMeterRfnIdentifier.getSensorManufacturer(),
-                                                                            newMeterRfnIdentifier.getSensorSerialNumber(),
+                                                                            newMeterRfnIdentifier,
                                                                             true);
 
             } else if (templateMeter.getPaoType().isPlc()) {

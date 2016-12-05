@@ -82,18 +82,23 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
   
     @Override
     @Transactional
-    public SimpleDevice createRfnDeviceByTemplate(String templateName, String newDeviceName, String model, String manufacturer, String serialNumber, boolean copyPoints)
+    public SimpleDevice createRfnDeviceByTemplate(String templateName, String newDeviceName,
+            RfnIdentifier rfnIdentifier, boolean copyPoints)
             throws DeviceCreationException, BadConfigurationException {
         
         //get template, validate that a template is an RFN Template
         DeviceBase templateDevice = retrieveExistingDeviceByTemplate(templateName);
         
-        
+        if (!rfnIdentifier.isValid()) {
+            throw new DeviceCreationException("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.", "invalidRfnIdentifier");
+        }
         int templateDeviceId = templateDevice.getPAObjectID();
         PaoType paoType = templateDevice.getPaoType();
-        if ((!YukonValidationUtils.isRfnSerialNumberValid(serialNumber))) {
+
+        if ((!YukonValidationUtils.isRfnSerialNumberValid(rfnIdentifier.getSensorSerialNumber()))) {
             throw new DeviceCreationException("Device serial number must be alphanumeric and serial number length must be less than 30",
                                               "maxLength");
+
         }
         PaoIdentifier templateIdentifier = new PaoIdentifier(templateDeviceId, paoType);
         
@@ -110,10 +115,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         RfnBase newDevice = (RfnBase) buildNewDeviceFromTemplate(templateDevice,newDeviceName);
         
         // set RFN values
-        newDevice.getRfnAddress().setSerialNumber(serialNumber);
-        newDevice.getRfnAddress().setManufacturer(manufacturer);
-        newDevice.getRfnAddress().setModel(model);
-        
+        newDevice.getRfnAddress().setRfnIdentifier(rfnIdentifier);
         // create new device
         SimpleDevice newYukonDevice = createNewDeviceByTemplate(newDevice, templateIdentifier, templateName, copyPoints);
         
@@ -157,7 +159,9 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         if (type.getPaoClass() != PaoClass.RFMESH) {
             throw new DeviceCreationException(String.format("Could not create new device named '%s'. Device Type must be RFN Device Type.",  name), "invalidRfnDeviceType", name);
         }
-       
+        if (!rfId.isValid()) {
+            throw new DeviceCreationException("Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.", "invalidRfnIdentifier");
+        }
         // create device
         int newDeviceId = paoDao.getNextPaoId();
         RfnBase newDevice = (RfnBase) DeviceFactory.createDevice(type);
@@ -175,9 +179,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
         
         newDevice.setPAOName(name);
-        newDevice.getRfnAddress().setSerialNumber(rfId.getSensorSerialNumber());
-        newDevice.getRfnAddress().setManufacturer(rfId.getSensorManufacturer());
-        newDevice.getRfnAddress().setModel(rfId.getSensorModel());
+        newDevice.getRfnAddress().setRfnIdentifier(rfId);
 
         SimpleDevice yukonDevice = createNewDeviceByType(newDevice, createPoints, type);
         return yukonDevice;

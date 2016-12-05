@@ -75,6 +75,7 @@
 <entry key="yukon.exception.deviceCreationException.invalidRouteName">Could not create device by type: Invalid route name.</entry>
 <entry key="yukon.exception.deviceCreationException.nonNumericAddress">Could not create device by type: Non-numeric address value.</entry>
 <entry key="yukon.exception.deviceCreationException.invalidNewDevice">Could not create new device.</entry>
+<entry key="yukon.exception.deviceCreationException.invalidRfnIdentifier">Could not create new RFN device - Serial Number, Manufacturer, and Model fields must all be empty or all be filled in.</entry>
 <entry key="yukon.exception.deviceCreationException.invalidDeviceType">Could not create device by type: Invalid device type.</entry>
 <entry key="yukon.exception.deviceCreationException.maxLength">Device serial number must be numeric and serial number length must be less than 30.</entry>
 <entry key="yukon.exception.deviceCreationException.invalidRfnTemplate">Could not create new device named {0} from template {1}.Template must be an RFN Device.</entry>

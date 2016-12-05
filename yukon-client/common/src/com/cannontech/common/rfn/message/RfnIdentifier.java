@@ -54,6 +54,13 @@ public final class RfnIdentifier implements Serializable {
             && StringUtils.isBlank(sensorSerialNumber);
     }
     
+    /**
+     * Returns true if ALL of the fields are blank or ALL fields are non-blank.
+     */
+    public boolean isValid() {
+        return (isBlank() || isNotBlank());
+    }
+
     public static RfnIdentifier createBlank() {
         return new RfnIdentifier(null, null, null);
     }
@@ -78,28 +85,37 @@ public final class RfnIdentifier implements Serializable {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         RfnIdentifier other = (RfnIdentifier) obj;
         if (sensorManufacturer == null) {
-            if (other.sensorManufacturer != null)
+            if (other.sensorManufacturer != null) {
                 return false;
-        } else if (!sensorManufacturer.equals(other.sensorManufacturer))
+            }
+        } else if (!sensorManufacturer.equals(other.sensorManufacturer)) {
             return false;
+        }
         if (sensorModel == null) {
-            if (other.sensorModel != null)
+            if (other.sensorModel != null) {
                 return false;
-        } else if (!sensorModel.equals(other.sensorModel))
+            }
+        } else if (!sensorModel.equals(other.sensorModel)) {
             return false;
+        }
         if (sensorSerialNumber == null) {
-            if (other.sensorSerialNumber != null)
+            if (other.sensorSerialNumber != null) {
                 return false;
-        } else if (!sensorSerialNumber.equals(other.sensorSerialNumber))
+            }
+        } else if (!sensorSerialNumber.equals(other.sensorSerialNumber)) {
             return false;
+        }
         return true;
     }
     

@@ -10,6 +10,7 @@ import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.google.common.collect.ImmutableSet;
 
 public class RfnTemplateBulkImportMethod extends BulkImportMethodBase{
@@ -51,12 +52,9 @@ public class RfnTemplateBulkImportMethod extends BulkImportMethodBase{
         String rfnModelStringValue = fields.get(BulkFieldColumnHeader.RFN_MODEL);
         String rfnManufacturerStringValue = fields.get(BulkFieldColumnHeader.RFN_MANUFACTURER);
 
-        SimpleDevice device = deviceCreationService.createRfnDeviceByTemplate(creationFieldStringValue,
-                                                            nameFieldStringValue,
-                                                            rfnModelStringValue,
-                                                            rfnManufacturerStringValue,
-                                                            rfnSerialNumberStringValue,
-                                                            true);
+        SimpleDevice device =
+            deviceCreationService.createRfnDeviceByTemplate(creationFieldStringValue, nameFieldStringValue,
+                new RfnIdentifier(rfnSerialNumberStringValue, rfnManufacturerStringValue, rfnModelStringValue), true);
 
         return device;
     }
