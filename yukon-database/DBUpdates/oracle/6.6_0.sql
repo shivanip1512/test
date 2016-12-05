@@ -757,4 +757,4 @@ INSERT INTO YukonServices VALUES (23, 'BrokerSystemMetricsListener','classpath:c
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.6', '31-JUN-2016', 'Latest Update', 0, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('6.6', '05-DEC-2016', 'Latest Update', 0, SYSDATE);
