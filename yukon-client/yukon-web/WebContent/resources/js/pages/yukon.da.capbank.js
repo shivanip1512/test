@@ -76,6 +76,19 @@ yukon.da.capbank = (function () {
         }
     };
 
+    /**
+     * When disabling Max Daily Operation, make the value 0
+     */
+    var updateMaxDailyOperation = function (event) {
+        var checkbox = $(event.currentTarget);
+        var toggleGroup = checkbox.data('toggle');
+        var input = $('[data-toggle-group="' + toggleGroup + '"]');
+        
+        if (!checkbox.is(':checked')) {
+                input.val(0);
+         }
+    };
+    
     mod = {
 
         /** Initialize this module. */
@@ -90,6 +103,7 @@ yukon.da.capbank = (function () {
             updatePaoTypeFields();
             $('.js-create-cbc').on('change', updatePaoTypeFields); 
             $('#pao-type').on('change', updatePaoTypeFields);
+            $('.js-use-maxDailyOp').on('change', updateMaxDailyOperation);
             
             /** User confirmed intent to delete capbank. */
             $(document).on('yukon:da:capbank:delete', function () {

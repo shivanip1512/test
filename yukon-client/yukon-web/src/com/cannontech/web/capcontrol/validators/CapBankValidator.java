@@ -38,6 +38,8 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
             validateCcMonitorBankList(capbank.getCcMonitorBankList(), errors);
         }
         YukonValidationUtils.checkExceedsMaxLength(errors, "CapBank.mapLocationID", capbank.getCapBank().getMapLocationID(), 64);
+        YukonValidationUtils.checkIsPositiveInt(errors, "CapBank.bankSizeCustom", capbank.getCapBank().getBankSize());
+        YukonValidationUtils.checkIsPositiveInt(errors, "CapBank.maxDailyOps", capbank.getCapBank().getMaxDailyOps());
 
     }
 

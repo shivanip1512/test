@@ -134,10 +134,10 @@
                                         items="${opMethods}" itemValue="dbString"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".bankSize">
+                                    <i:inline key=".custom"/><tags:checkbox path="CapBank.customBankSize" id="customSizeCheckbox" styleClass="js-custom-bankSize"/>
                                         <tags:selectWithItems id="bankSize" path="CapBank.bankSize" 
                                         items="${bankSizes}" itemValue="displayValue"/>
-                                        <tags:input id="customBankSize" path="CapBank.bankSizeCustom" inputClass="dn" size="6" /> kVar
-                                        <i:inline key=".custom"/><input id="customSizeCheckbox" type="checkbox" class="js-custom-bankSize" <c:if test="${capbank.capBank.customBankSize}">checked="checked"</c:if> <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if>>
+                                        <tags:input units="kVar" id="customBankSize" path="CapBank.bankSizeCustom" inputClass="dn" size="6" />
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".recloseDelay">
                                         <tags:intervalDropdown path="CapBank.recloseDelay"
@@ -145,8 +145,16 @@
                                             id="scan1" />
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".maxDailyOperations">
-                                        <tags:switchButton path="CapBank.maxOperationDisabled" toggleGroup="maxOperation" toggleAction="hide"/>
-                                        <tags:input path="CapBank.maxDailyOps" size="5" toggleGroup="maxOperation"/>
+                                        <table>
+                                        <tr>
+                                        <td>
+                                            <tags:switchButton path="CapBank.maxOperationDisabled" offClasses="M0" toggleGroup="maxOperation" inputClass="js-use-maxDailyOp" toggleAction="hide"/>
+                                        </td>
+                                        <td>
+                                            <tags:input path="CapBank.maxDailyOps" size="5" toggleGroup="maxOperation" inputClass="dn"/>
+                                        </td>
+                                        </tr>
+                                        </table>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".controlDevicePoint">
                                         <cti:displayForPageEditModes modes="EDIT">

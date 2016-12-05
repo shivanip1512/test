@@ -63,6 +63,7 @@
                 <%-- BAD STATE!? --%>
             </c:otherwise>
         </c:choose>
+        <c:if test="${status.error}"><br><form:errors path="${path}" cssClass="error"/></c:if>
     </cti:displayForPageEditModes>
     
     <c:if test="${not empty descriptionNameKey}">

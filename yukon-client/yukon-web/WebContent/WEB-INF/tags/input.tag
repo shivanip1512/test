@@ -22,6 +22,7 @@
 <%@ attribute name="size" %>
 <%@ attribute name="tabindex" %>
 <%@ attribute name="autofocus" %>
+<%@ attribute name="units" %>
 <%@ attribute name="password" type="java.lang.Boolean" description="If true, a password field is used. Default: false." %>
 
 <cti:default var="password" value="${false}"/>
@@ -80,7 +81,9 @@
             placeholder="${pageScope.placeholder}"/>
     </c:otherwise>
 </c:choose>
-
+<c:if test="${pageScope.units != null}">
+&nbsp;${pageScope.units}
+</c:if>
 <c:if test="${status.error}"><br><form:errors path="${path}" cssClass="error"/></c:if>
 
 </cti:displayForPageEditModes>
