@@ -118,7 +118,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
             case SHED:
                 outputBuffer.put((byte) 0x08);
                 
-                /*• Control Flags [BEHDLLLL]:
+                /* Control Flags [BEHDLLLL]:
                 Bit 7: B = Bit set then beginning random ramp time for the started of payload is included.  Bit not set then field is omitted from the payload.
                 Bit 6: E = Bit set then ending random ramp time for the end of payload is included.  Bit not set then field is omitted from the payload.
                 Bit 5: H = Bit set then Control Time is in hours, otherwise it is in minutes.
@@ -130,8 +130,7 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
                 
                 Duration shedDuration = command.findParam(LmHardwareCommandParam.DURATION, Duration.class);
                 
-                if (shedDuration.getStandardMinutes() <= 255)
-                {
+                if (shedDuration.getStandardMinutes() <= 255) {
                     // We can send up to 255 minutes
                     outputBuffer.put(flags);
                     outputBuffer.put((byte) shedDuration.getStandardMinutes());
