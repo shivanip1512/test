@@ -113,7 +113,7 @@ yukon.tools.dataExporterFormat = (function () {
                     popup.dialog({
                         title: _config.text.addAttribute,
                         width: '450px',
-                        height: 360,
+                        dialogClass:'ov',
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.attribute.add', target: popup})
                     });
                 });
@@ -129,7 +129,6 @@ yukon.tools.dataExporterFormat = (function () {
                     popup.dialog({
                         title: _config.text.addField,
                         width: 'auto',
-                        height: 'auto',
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.field.add', target: popup})
                     });
                 });
@@ -232,8 +231,8 @@ yukon.tools.dataExporterFormat = (function () {
                     popup.find('input[name=daysPrevious]').val(attribute.daysPrevious);
                     popup.dialog({
                         title: _config.text.editAttribute,
-                        width: '430px',
-                        height: 360,
+                        width: '450px',
+                        dialogClass:'ov',
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.attribute.edit', target: row})
                     });
                 });
@@ -257,7 +256,6 @@ yukon.tools.dataExporterFormat = (function () {
                     popup.dialog({
                         title: _config.text.editField,
                         width: 'auto',
-                        height: 'auto',
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.field.edit', target: row})
                     });
                 });
