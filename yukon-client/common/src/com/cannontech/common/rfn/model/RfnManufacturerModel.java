@@ -40,6 +40,11 @@ public enum RfnManufacturerModel {
     RFN_WATER_SENSOR(PaoType.RFWMETER, "Eka", "water_sensor"),
     RFN_WATER_NODE(PaoType.RFWMETER, "Eka", "water_node"),
     
+    RFW201_PULSE(PaoType.RFW201, "WTR2", "Pulse-201"),
+    RFW201_ENCODER(PaoType.RFW201, "WTR2", "Encoder-201"),
+    RFW205_PULSE(PaoType.RFW205, "WTR2", "Pulse-205"),
+    RFW205_ENCODER(PaoType.RFW205, "WTR2", "Encoder-205"),
+    
     RFN_430KV(PaoType.RFN430KV, "GE", "kV2"),
     
     RFN_420FL(PaoType.RFN420FL, "LGYR", "FocuskWh"),
