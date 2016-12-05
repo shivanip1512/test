@@ -43,7 +43,7 @@ public class YukonValidationUtils extends ValidationUtils {
         }
         
         if (serialNumber.length() <= 30) {
-            return StringUtils.isAlphanumeric(serialNumber);
+            return true;
         }
         return false;
     }
