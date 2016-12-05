@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -91,21 +92,24 @@ public class JobStatusDaoImpl implements JobStatusDao {
     
     @Override
     public JobStatus<YukonJob> findLatestStatusByJobId(int jobId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select *");
-        sql.append("from JobStatus js");
-        sql.append("join Job j on js.jobid = j.jobid");
-        sql.append("where js.jobid").eq(jobId);
-        sql.append("order by js.startTime desc");
-        
-        JobStatusRowMapper<YukonJob> mapper = new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
-        List<JobStatus<YukonJob>> results = jdbcTemplate.query(sql, mapper);
-        
-        if (results.size() == 0) {
-        	return null;
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT * FROM (");
+            sql.append("SELECT jobStatusId, js.jobId, startTime, stopTime, jobState, message,");
+            sql.append("beanName, disabled, userId, jobGroupId, locale, timezone, themeName,");
+            sql.append("ROW_NUMBER() OVER (PARTITION BY js.jobid ORDER BY js.StartTime DESC) rn");
+            sql.append("FROM JobStatus js");
+            sql.append("JOIN Job j on js.JobId = j.JobId");
+            sql.append("WHERE js.jobid").eq(jobId);
+            sql.append(") numberedRows");
+            sql.append("WHERE numberedRows.rn <= 1");
+            sql.append("ORDER BY numberedRows.rn");
+            
+            JobStatusRowMapper<YukonJob> mapper = new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
+            return jdbcTemplate.queryForObject(sql, mapper);
+        } catch (IncorrectResultSizeDataAccessException e) {
+            return null;
         }
-        
-        return results.get(0);
     }
     
     @Override
