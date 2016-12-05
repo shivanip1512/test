@@ -113,7 +113,7 @@ yukon.tools.dataExporterFormat = (function () {
                     popup.dialog({
                         title: _config.text.addAttribute,
                         width: '450px',
-                        height: 300,
+                        height: 360,
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.attribute.add', target: popup})
                     });
                 });
