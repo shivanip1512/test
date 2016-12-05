@@ -48,7 +48,7 @@ public abstract class SystemMetricsBase extends Observable implements Runnable, 
      */
     private int reportFrequency =
         Integer.getInteger("com.cannontech.common.systemMetrics.SystemMetricsImpl.reportFrequency",
-                           1);
+                           30);
     /** Counter for reports */
     private int reportFrequencyCounter = 0;
 
