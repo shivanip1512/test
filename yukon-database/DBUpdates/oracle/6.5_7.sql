@@ -56,6 +56,10 @@ ALTER TABLE DynamicPAOInfo
          ON DELETE CASCADE;
 /* End YUK-15972 */
 
+/* Start YUK-16017 */
+INSERT INTO YukonRoleProperty VALUES(-20222,-202,'Water Leak Report','true','Controls access to the Water Leak Report.');
+/* End YUK-16017 */     
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
