@@ -53,6 +53,7 @@ public class HardwareShedLoadServiceImpl implements HardwareShedLoadService {
                 LiteYukonPAObject twoWayDevice = dbCache.getAllPaosMap().get(deviceId);
                 routeId = twoWayDevice.getRouteID();
             } else {
+                // For one way LCRs if this route is 0, the Porter executor uses the EC route
                 routeId = lmhb.getRouteID();
             }
         }

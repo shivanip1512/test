@@ -118,11 +118,28 @@ public class RawExpressComCommandBuilderImpl implements RawExpressComCommandBuil
             case SHED:
                 outputBuffer.put((byte) 0x08);
                 
-                Integer relay = command.findParam(LmHardwareCommandParam.RELAY, Integer.class);
-                outputBuffer.put((byte) relay.byteValue());
+                /*• Control Flags [BEHDLLLL]:
+                Bit 7: B = Bit set then beginning random ramp time for the started of payload is included.  Bit not set then field is omitted from the payload.
+                Bit 6: E = Bit set then ending random ramp time for the end of payload is included.  Bit not set then field is omitted from the payload.
+                Bit 5: H = Bit set then Control Time is in hours, otherwise it is in minutes.
+                Bit 4: D = Bit set then a Delayed Start Time is included in payload (in minutes)
+                Bits 0-3: LLLL = Load Number to control (supports 1 to 15 loads with 0 targeting all loads).
+                */
+                byte flags = command.findParam(LmHardwareCommandParam.RELAY, Integer.class).byteValue();
+                final byte ControlInHoursFlag = 0x20;
                 
                 Duration shedDuration = command.findParam(LmHardwareCommandParam.DURATION, Duration.class);
-                outputBuffer.put((byte) shedDuration.getStandardMinutes());
+                
+                if (shedDuration.getStandardMinutes() <= 255)
+                {
+                    // We can send up to 255 minutes
+                    outputBuffer.put(flags);
+                    outputBuffer.put((byte) shedDuration.getStandardMinutes());
+                } else {
+                    // If > 255, we have to send the value in hours. This is rounding down to avoid over control.
+                    outputBuffer.put((byte)(flags | ControlInHoursFlag));
+                    outputBuffer.put((byte) shedDuration.getStandardHours());
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Command Type: " + type + " not implemented");
