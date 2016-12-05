@@ -129,7 +129,7 @@ yukon.tools.dataExporterFormat = (function () {
                     popup.dialog({
                         title: _config.text.addField,
                         width: 'auto',
-                        height: 400,
+                        height: 'auto',
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.field.add', target: popup})
                     });
                 });
@@ -256,8 +256,8 @@ yukon.tools.dataExporterFormat = (function () {
                     popup.html(data);
                     popup.dialog({
                         title: _config.text.editField,
-                        width: '430px',
-                        height: 425,
+                        width: 'auto',
+                        height: 'auto',
                         buttons: yukon.ui.buttons({event: 'yukon.data.export.format.field.edit', target: row})
                     });
                 });
