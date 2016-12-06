@@ -27,6 +27,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.rfn.dataStreaming.DataStreamingMetricStatus;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfig;
@@ -119,6 +120,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
                               MetricConfig metricConfig = new MetricConfig();
                               metricConfig.setEnabled(attribute.isEnabled());
                               metricConfig.setInterval((short)attribute.getInterval());
+                              metricConfig.setStatus(attribute.getStatus().asShort());
                               return metricConfig;
                           }));
         config.setMetrics(metrics);
@@ -257,6 +259,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
                         MetricConfig metricConfig = new MetricConfig();
                         metricConfig.setEnabled(dsAttribute.getAttributeOn());
                         metricConfig.setInterval((short)dsAttribute.getInterval());
+                        metricConfig.setStatus(DataStreamingMetricStatus.OK.asShort());  //  We're expecting it to be OK
                         return metricConfig;
                 }));
             nmConfig.setMetrics(metrics);

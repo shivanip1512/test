@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_invalid_metric_i
             0x00, 0x53,  //  metric ID 3
             0x01,        //  metric ID 3 enable/disable
             0x1e,        //  metric ID 3 interval
-            0x08,        //  metric ID 3 status
+            0x08,        //  metric ID 3 status - invalid status (8), mapped to UNKNOWN_ERROR (6)
             0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
 
         RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
@@ -200,7 +200,7 @@ R"SQUID(json{
     "attribute" : "POWER_FACTOR",
     "interval" : 30,
     "enabled" : true,
-    "status" : "INVALID_STATUS"
+    "status" : "UNKNOWN_ERROR"
   }],
 "sequence" : 3735928559
 })SQUID";

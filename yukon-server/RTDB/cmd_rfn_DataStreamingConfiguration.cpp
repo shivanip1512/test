@@ -13,7 +13,8 @@ static const size_t BytesPerMetric = 5;
 static const size_t SequenceLength = 4;
 static const size_t ResponseHeaderLength = 1 + HeaderLength;
 
-//  These need to match the Java enum in DataStreamingMetricStatus.java
+//  This comes from the DS streaming spec, 10030-06_Hub_Meter_Application_ICD, section 2.2.50.
+//  It must match the Java enum in DataStreamingMetricStatus.java
 std::array<std::string, 8> statusStrings {
     "OK",
     "METER_ACCESS_ERROR",
@@ -83,7 +84,17 @@ RfnCommandResult RfnDataStreamingConfigurationCommand::decodeCommand(const CtiTi
                 metricDescription << ",";
             }
 
-            const auto statusString = (status < statusStrings.size() ? statusStrings[status] : "INVALID_STATUS");
+            std::string statusString;
+
+            if( status < statusStrings.size() )
+            {
+                statusString = statusStrings[status];
+            }
+            else
+            {
+                CTILOG_WARN(dout, "Received unknown status (" << status << "), mapping to UNKNOWN_ERROR (6)");
+                statusString = "UNKNOWN_ERROR";
+            }
 
             metricDescription << "\n  {"
                 "\n    \"attribute\" : \"" << attribute.getName() << "\","
