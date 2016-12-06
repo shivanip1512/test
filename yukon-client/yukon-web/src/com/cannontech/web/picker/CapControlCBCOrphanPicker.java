@@ -14,6 +14,7 @@ import com.cannontech.common.util.SimpleSqlFragment;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.data.point.PointType;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
@@ -65,7 +66,7 @@ public class CapControlCBCOrphanPicker extends DatabasePicker<Map<String, Object
                 orphanClause.append("OR ypo.PAObjectId").eq(selectedCBCId);
                 orphanClause.append(")");
                 orphanClause.append("AND p.PointOffset = 1 ");
-                orphanClause.append("AND p.PointType = 'Status' ");
+                orphanClause.append("AND p.PointType").eq_k(PointType.Status);
                 orphanClause.append("AND Type").in(PaoType.getCbcTypes());
                 return orphanClause;
             }
