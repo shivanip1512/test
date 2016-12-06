@@ -2,7 +2,12 @@
 /****     Oracle DBupdates             ****/ 
 /******************************************/ 
 
-/* No Updates */
+/* Start YUK-16039 */
+INSERT INTO StateGroup VALUES(-28, 'ThermostatRelayState', 'Status');
+INSERT INTO State VALUES(-28, 0, 'Heat', 0, 6, 0);
+INSERT INTO State VALUES(-28, 1, 'Cool', 1, 6, 0);
+INSERT INTO State VALUES(-28, 2, 'Off', 2, 6, 0);
+/* End YUK-16039 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
