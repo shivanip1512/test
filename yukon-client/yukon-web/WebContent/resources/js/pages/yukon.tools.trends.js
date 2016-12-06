@@ -4,7 +4,7 @@ yukon.namespace('yukon.tools.trends');
  * Module to manage the trends page, uses highstock library to display trends
  * 
  * @require JQUERY
- * @require highstock 1.3.9
+ * @require highstock 5.0.5
  */
 yukon.tools.trends = (function () {
     
@@ -133,6 +133,7 @@ yukon.tools.trends = (function () {
                     
                     tooltip: {
                         dateTimeLabelFormats: dateTimeLabelFormats,
+                        xDateFormat: labelFormat,
                         valueDecimals: 3
                     },
                     
@@ -142,8 +143,13 @@ yukon.tools.trends = (function () {
                         // http://api.highcharts.com/highstock#xAxis.ordinal
                         ordinal: false 
                     },
+
+                    yAxis: trend.yAxis,
                     
-                    yAxis: trend.yAxis
+                    yAxis: {
+                        opposite: false
+                    }
+
                 });
             });
             
