@@ -436,8 +436,6 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
         return;
     }
 
-    std::set<unsigned> coincidentMetricIdsReceived;
-
     unsigned coincidentValue = -1; // start with -1 in case the first metric has a non-zero coincident value
 
     while( offset < expectedSize )
@@ -469,18 +467,18 @@ void RfnChannelConfigurationCommand::decodeChannelDescriptors( const Bytes &resp
             }
 
             coincidentValue = 0;
-            coincidentMetricIdsReceived.clear();
         }
         else
         {
             const unsigned coincidentValueExp = (coincidentValue < 7) ? ++coincidentValue : 0;
 
-            validate( Condition( metricQFields.coincidentValue == coincidentValueExp, ClientErrors::InvalidData )
-                    << "Received unexpected coincident value: " << metricQFields.coincidentValue << " (expected: " << coincidentValueExp << "), "
-                    << metricDescription << " (" << metricId << ")" );
+            if( metricQFields.coincidentValue != coincidentValueExp )
+            {
+                CTILOG_ERROR(dout, "Received unexpected coincident value: " << metricQFields.coincidentValue 
+                    << " (expected: " << coincidentValueExp << "), " << metricDescription << " (" << metricId << ")" );
+            }
 
-            //  Duplicates are allowed - it's possible to receive multiple unrecognized (0) metrics
-            coincidentMetricIdsReceived.insert(metricId);
+            //  Ignore the coincidents - we don't record them in DynamicPaoInfo or report them to the user
         }
 
         result.description += metricQFields.resolve() + "\n";

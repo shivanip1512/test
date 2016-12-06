@@ -816,6 +816,98 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_allMetrics )
 }
 
 
+BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_duplicateCoincidents )
+{
+    RfnSetChannelSelectionCommand cmd { { 0x77 } };  //  Metric 0x77
+
+    // execute
+    {
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand( execute_time );
+
+        RfnCommand::RfnRequestPayload exp {
+            0x78, 0x00, 0x01, 
+            0x01, 0x00, 0x03, 
+            0x01, 0x00, 0x77 };  // command code + operation + 1 tlv
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            rcv.begin(), rcv.end(),
+            exp.begin(), exp.end());
+    }
+
+    // decode
+    {
+        //  Actual firmware response from TSSL-3276
+        const std::vector<unsigned char> response {
+        0x79, 0x00, 0x00, 0x01,      // command code + operation + status + 1 tlv
+            0x02,                    // tlv type 2
+            0x00, 0x61,              // tlv size (2-bytes)
+            0x18,                    // number of metrics descriptor
+            0x00, 0x01, 0x00, 0x00,
+            0x00, 0x02, 0x00, 0x00,
+            0x00, 0x07, 0x00, 0x00,
+            0x01, 0x00, 0x00, 0x08,
+            0x00, 0x09, 0x00, 0x00,
+            0x01, 0x00, 0x00, 0x08,  //  <-- Coincident 1
+            0x00, 0x09, 0x00, 0x08,  //  <-- Coincident 1 again?
+            0x00, 0x73, 0x00, 0x07,
+            0x00, 0x72, 0x00, 0x07,
+            0x01, 0x00, 0x00, 0x08,
+            0x00, 0x70, 0x00, 0x07,
+            0x01, 0x00, 0x00, 0x08,
+            0x03, 0xe9, 0x00, 0x00,
+            0x03, 0xea, 0x00, 0x00,
+            0x03, 0xef, 0x00, 0x00,
+            0x04, 0xe8, 0x00, 0x08,
+            0x03, 0xf1, 0x00, 0x00,
+            0x04, 0xe8, 0x00, 0x08,
+            0x07, 0xd1, 0x00, 0x00,
+            0x07, 0xd2, 0x00, 0x00,
+            0x07, 0xd7, 0x00, 0x00,
+            0x08, 0xd0, 0x00, 0x08,
+            0x07, 0xd9, 0x00, 0x00,
+            0x08, 0xd0, 0x00, 0x08 };
+
+        RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
+
+        const std::string desc_exp =
+            "Status: Success (0)"
+            "\nChannel Registration Full Description:"
+            "\nMetric(s) descriptors:"
+            "\nWatt hour delivered (1): Scaling Factor: 1"
+            "\nWatt hour received (2): Scaling Factor: 1"
+            "\nWatts delivered, peak demand (7): Scaling Factor: 1"
+            "\nTime in Seconds (256): Coincident Value 1, Scaling Factor: 1"
+            "\nWatts delivered, peak demand (Frozen) (9): Scaling Factor: 1"
+            "\nTime in Seconds (256): Coincident Value 1, Scaling Factor: 1"  //  <-- Coincident 1
+            "\nWatts delivered, peak demand (Frozen) (9): Coincident Value 1, Scaling Factor: 1"  //  <-- Coincident 1 again
+            "\nVoltage (115): Scaling Factor: 10e-3 (milli)"
+            "\nVoltage Max (114): Scaling Factor: 10e-3 (milli)"
+            "\nTime in Seconds (256): Coincident Value 1, Scaling Factor: 1"
+            "\nVoltage Min (112): Scaling Factor: 10e-3 (milli)"
+            "\nTime in Seconds (256): Coincident Value 1, Scaling Factor: 1"
+            "\nWatt hour delivered, Rate A (1001): Scaling Factor: 1"
+            "\nWatt hour received, Rate A (1002): Scaling Factor: 1"
+            "\nWatts delivered, peak demand, Rate A (1007): Scaling Factor: 1"
+            "\nTime in Seconds, Rate A (1256): Coincident Value 1, Scaling Factor: 1"
+            "\nWatts delivered, peak demand (Frozen), Rate A (1009): Scaling Factor: 1"
+            "\nTime in Seconds, Rate A (1256): Coincident Value 1, Scaling Factor: 1"
+            "\nWatt hour delivered, Rate B (2001): Scaling Factor: 1"
+            "\nWatt hour received, Rate B (2002): Scaling Factor: 1"
+            "\nWatts delivered, peak demand, Rate B (2007): Scaling Factor: 1"
+            "\nTime in Seconds, Rate B (2256): Coincident Value 1, Scaling Factor: 1"
+            "\nWatts delivered, peak demand (Frozen), Rate B (2009): Scaling Factor: 1"
+            "\nTime in Seconds, Rate B (2256): Coincident Value 1, Scaling Factor: 1\n";
+
+        BOOST_CHECK_EQUAL( rcv.description, desc_exp );
+
+        const RfnChannelConfigurationCommand::MetricIds metricsExpected {
+            1, 2, 7, 9, 112, 114, 115, 1001, 1002, 1007, 1009, 2001, 2002, 2007, 2009 };
+
+        BOOST_CHECK_EQUAL( cmd.getMetricsReceived(), metricsExpected );
+    }
+}
+
+
 BOOST_AUTO_TEST_CASE( test_RfnGetChannelSelectionCommand )
 {
     // execute
