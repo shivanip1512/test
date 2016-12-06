@@ -317,7 +317,7 @@ public class InventoryActionsController {
         boolean isAllowDRControl =
             rolePropertyDao.checkProperty(YukonRoleProperty.ALLOW_DR_CONTROL, userContext.getYukonUser());
         if (isAllowDRControl) {
-            model.addAttribute("duration", TimeIntervals.getshedTimeOptions());
+            model.addAttribute("duration", TimeIntervals.getShedTimeOptions());
         } else {
             model.addAttribute("interval", TimeIntervals.MINUTES_5);
         }

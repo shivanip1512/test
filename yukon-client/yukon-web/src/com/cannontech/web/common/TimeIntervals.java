@@ -201,7 +201,7 @@ public enum TimeIntervals {
     /**
      * Used for Timed Shed options
      */
-    public static Set<TimeIntervals> getshedTimeOptions() {
+    public static Set<TimeIntervals> getShedTimeOptions() {
         return shedTimeOptions;
     }
 }
