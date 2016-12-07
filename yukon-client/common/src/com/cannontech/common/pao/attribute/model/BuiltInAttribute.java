@@ -153,6 +153,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     PHASE("Phase", AttributeGroup.OTHER),
     POWER_FACTOR("Power Factor", AttributeGroup.REACTIVE),
     POWER_FACTOR_COIN("Power Factor Coincidental", AttributeGroup.REACTIVE),
+    DELIVERED_POWER_FACTOR("Delivered Power Factor", AttributeGroup.REACTIVE),
+    RECEIVED_POWER_FACTOR("Received Power Factor", AttributeGroup.REACTIVE),
     POWER_FACTOR_PHASE_A("Power Factor (Phase A)", AttributeGroup.REACTIVE),
     POWER_FACTOR_PHASE_B("Power Factor (Phase B)", AttributeGroup.REACTIVE),
     POWER_FACTOR_PHASE_C("Power Factor (Phase C)", AttributeGroup.REACTIVE),
