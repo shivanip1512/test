@@ -183,10 +183,19 @@ auto RfDataStreamingProcessor::processPacket(const Packet &p) -> DeviceReport
 
         try
         {
+            const auto attributeDescriptor = MetricIdLookup::getAttributeDescription(metricId);
+
+            auto scaledValue = dataValue * scaling(modifier / 16);
+
+            if( attributeDescriptor.magnitude )
+            {
+                scaledValue /= std::pow(10, attributeDescriptor.magnitude);  //  Adjust from Watts to kiloWatts, etc, if necessary
+            }
+
             dr.values.emplace_back(Value{
-                MetricIdLookup::getAttribute(metricId),
+                attributeDescriptor.attrib,
                 DataStreamingEpoch + std::chrono::seconds(timestamp),
-                dataValue * scaling(modifier / 16),
+                scaledValue,
                 convertQuality(modifier % 16)});
         }
         catch( AttributeMappingNotFound &ex )

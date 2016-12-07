@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE( test_processPacket_one_point_start_of_epoch )
     BOOST_CHECK_EQUAL( reportValue.attribute, Attribute::Demand );
     BOOST_CHECK_EQUAL( reportValue.quality, NormalQuality );
     BOOST_CHECK_EQUAL( reportValue.timestamp, make_time_point(2016, 1, 1, 0, 0, 0) );
-    BOOST_CHECK_EQUAL( reportValue.value, 257 );
+    BOOST_CHECK_CLOSE( reportValue.value, 0.257, 1e-8 );
 }
 
 BOOST_AUTO_TEST_CASE( test_processPacket_three_points )
@@ -226,7 +226,7 @@ BOOST_AUTO_TEST_CASE( test_processPacket_three_points )
         0x00, 0xff, 0xa9, 0xfd,  //    12 Jul 2016 22:13:17
         0x75,                    //    scaling 7, status 5 (ChannelNotSupported, maps to Invalid)
         0x00, 0x03, 0xbf, 0xae,
-        0x00, 0x53, 
+        0x00, 0x50, 
         0xff, 0xff, 0xff, 0xff,  //    07 Feb 2152 06:28:15 GMT
         0x3f,                    //    scaling 3, status 15 (Unknown, maps to UnknownQuality)
         0xff, 0xff, 0xff, 0xff };
@@ -247,7 +247,7 @@ BOOST_AUTO_TEST_CASE( test_processPacket_three_points )
         BOOST_CHECK_EQUAL( reportValue.attribute, Attribute::Demand );
         BOOST_CHECK_EQUAL( reportValue.quality, AbnormalQuality );
         BOOST_CHECK_EQUAL( reportValue.timestamp, make_time_point(2016, 7, 12, 22, 13, 18) );
-        BOOST_CHECK_CLOSE( reportValue.value, 3.735928559, 0.000'000'01 );
+        BOOST_CHECK_CLOSE( reportValue.value, 0.003735928559, 1e-8 );
     }
 
     {
@@ -256,7 +256,7 @@ BOOST_AUTO_TEST_CASE( test_processPacket_three_points )
         BOOST_CHECK_EQUAL( reportValue.attribute, Attribute::Voltage );
         BOOST_CHECK_EQUAL( reportValue.quality, InvalidQuality );
         BOOST_CHECK_EQUAL( reportValue.timestamp, make_time_point(2016, 7, 12, 22, 13, 17) );
-        BOOST_CHECK_CLOSE( reportValue.value, 245.678, 0.000'000'01 );
+        BOOST_CHECK_CLOSE( reportValue.value, 245.678, 1e-8 );
     }
 
     {
@@ -265,7 +265,7 @@ BOOST_AUTO_TEST_CASE( test_processPacket_three_points )
         BOOST_CHECK_EQUAL( reportValue.attribute, Attribute::PowerFactor );
         BOOST_CHECK_EQUAL( reportValue.quality, UnknownQuality );
         BOOST_CHECK_EQUAL( reportValue.timestamp, make_time_point(2152, 2, 7, 6, 28, 15) );
-        BOOST_CHECK_CLOSE( reportValue.value, 4.294967295e+18, 0.000'000'01 );
+        BOOST_CHECK_CLOSE( reportValue.value, 4.294967295e+18, 1e-8 );
     }
 }
 
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
         {
             auto& pdatum = *pdata_itr++;
 
-            BOOST_CHECK_CLOSE(pdatum->getValue(), 3.735928559, 0.000'000'01);
+            BOOST_CHECK_CLOSE(pdatum->getValue(), 3.735928559, 1e-8);
             BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 12, 7, 2016 ), 18, 13, 18 ));
             BOOST_CHECK_EQUAL(pdatum->getId(), 123101);  //  device ID 123, point offset 101
             BOOST_CHECK_EQUAL(pdatum->getType(), 1);  //  Analog
@@ -313,7 +313,7 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
         {
             auto& pdatum = *pdata_itr++;
 
-            BOOST_CHECK_CLOSE(pdatum->getValue(), 245.678, 0.000'000'01);
+            BOOST_CHECK_CLOSE(pdatum->getValue(), 245.678, 1e-8);
             BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 12, 7, 2016 ), 18, 13, 17 ));
             BOOST_CHECK_EQUAL(pdatum->getId(), 123005);
             BOOST_CHECK_EQUAL(pdatum->getType(), 1);
@@ -359,7 +359,7 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
         {
             auto& pdatum = *pdata_itr++;
 
-            BOOST_CHECK_CLOSE(pdatum->getValue(), 111.207785677, 0.000'000'01);
+            BOOST_CHECK_CLOSE(pdatum->getValue(), 111.207785677, 1e-8);
             BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 12, 7, 2016 ), 18, 13, 18 ));
             BOOST_CHECK_EQUAL(pdatum->getId(), 499133);  //  device ID 123, point offset 10
             BOOST_CHECK_EQUAL(pdatum->getType(), 1);  //  Analog
@@ -368,7 +368,7 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
         {
             auto& pdatum = *pdata_itr++;
 
-            BOOST_CHECK_CLOSE(pdatum->getValue(), 837.034, 0.000'000'01);
+            BOOST_CHECK_CLOSE(pdatum->getValue(), 837.034, 1e-8);
             BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 12, 7, 2016 ), 18, 13, 17 ));
             BOOST_CHECK_EQUAL(pdatum->getId(), 499070);
             BOOST_CHECK_EQUAL(pdatum->getType(), 1);
@@ -377,7 +377,7 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
         {
             auto& pdatum = *pdata_itr++;
 
-            BOOST_CHECK_CLOSE(pdatum->getValue(), 1.2884901885e+19, 0.000'000'01);
+            BOOST_CHECK_CLOSE(pdatum->getValue(), 1.2884901885e+19, 1e-8);
             BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 7, 2, 2152 ), 1, 28, 15 ));
             BOOST_CHECK_EQUAL(pdatum->getId(), 499073);  
             BOOST_CHECK_EQUAL(pdatum->getType(), 1);  //  Analog

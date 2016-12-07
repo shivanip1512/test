@@ -12,13 +12,20 @@ public:
     using MetricId = unsigned short;
     using MetricIds = std::set<MetricId>;
 
-    static void AddMetricForAttribute(const Attribute & attrib, const MetricId metric);
+    struct AttributeDescriptor
+    {
+        Attribute attrib;
+        int magnitude;
+    };
+
+    static void AddMetricForAttribute(const AttributeDescriptor & attribute, const MetricId metric);
     static void AddUnknownAttribute(const std::string & attributeName);
 
     static MetricId  GetForAttribute (const Attribute &attrib);
     static MetricIds GetForAttributes(const std::set<Attribute> & attribs);
 
     static Attribute getAttribute(const MetricId metric);
+    static AttributeDescriptor getAttributeDescription(const MetricId metric);
 
     static std::set<std::string> getUnknownAttributes();
 
@@ -27,6 +34,7 @@ private:
     using position = attribute_bimap::value_type;
 
     static attribute_bimap attributes;
+    static std::map< Attribute, int > attributeMagnitudes;
     static std::set<std::string> unknownAttributes;
 };
 
