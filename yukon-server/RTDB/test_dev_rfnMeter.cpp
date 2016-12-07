@@ -636,7 +636,7 @@ BOOST_AUTO_TEST_CASE( putconfig_behavior_rfndatastreaming_disabled_unassigned )
                 0x00,        //  metric ID 2 enable/disable
                 0x0f,        //  metric ID 2 interval
                 0x00,        //  metric ID 2 status
-                0x00, 0x53,  //  metric ID 3
+                0x00, 0x50,  //  metric ID 3
                 0x01,        //  metric ID 3 enable/disable
                 0x1e,        //  metric ID 3 interval
                 0x00,        //  metric ID 3 status
@@ -1027,7 +1027,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_opp
                 0x00, 0x20,  //  metric ID 3
                 0x00,        //  metric ID 3 enable/disable
                 0x1e,        //  metric ID 3 interval
-                0x00, 0x53,  //  metric ID 4
+                0x00, 0x50,  //  metric ID 4
                 0x00,        //  metric ID 4 enable/disable
                 0x1e         //  metric ID 4 interval
             };

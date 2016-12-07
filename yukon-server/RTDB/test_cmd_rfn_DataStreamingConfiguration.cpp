@@ -40,7 +40,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand)
             0x00,          //  metric ID 2 enable/disable
             0x0f,          //  metric ID 2 interval
             0x01,          //  metric ID 2 status
-            0x00, 0x53,  //  metric ID 3
+            0x00, 0x50,  //  metric ID 3
             0x01,          //  metric ID 3 enable/disable
             0x1e,          //  metric ID 3 interval
             0x02,          //  metric ID 3 status
@@ -106,7 +106,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_globally_disable
             0x00,        //  metric ID 2 enable/disable
             0x0f,        //  metric ID 2 interval
             0x04,        //  metric ID 2 status
-            0x00, 0x53,  //  metric ID 3
+            0x00, 0x50,  //  metric ID 3
             0x01,        //  metric ID 3 enable/disable
             0x1e,        //  metric ID 3 interval
             0x05,        //  metric ID 3 status
@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_invalid_metric_i
             0x00,        //  metric ID 2 enable/disable
             0x0f,        //  metric ID 2 interval
             0x07,        //  metric ID 2 status
-            0x00, 0x53,  //  metric ID 3
+            0x00, 0x50,  //  metric ID 3
             0x01,        //  metric ID 3 enable/disable
             0x1e,        //  metric ID 3 interval
             0x08,        //  metric ID 3 status - invalid status (8), mapped to UNKNOWN_ERROR (6)
@@ -238,7 +238,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_enable)
             0x00,        //  metric ID 2 enable/disable
             0x0f,        //  metric ID 2 interval
             0x00,        //  metric ID 2 status
-            0x00, 0x53,  //  metric ID 3
+            0x00, 0x50,  //  metric ID 3
             0x01,        //  metric ID 3 enable/disable
             0x1e,        //  metric ID 3 interval
             0x00,        //  metric ID 3 status
@@ -304,7 +304,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_disable)
             0x00,        //  metric ID 2 enable/disable
             0x0f,        //  metric ID 2 interval
             0x00,        //  metric ID 2 status
-            0x00, 0x53,  //  metric ID 3
+            0x00, 0x50,  //  metric ID 3
             0x01,        //  metric ID 3 enable/disable
             0x1e,        //  metric ID 3 interval
             0x00,        //  metric ID 3 status
@@ -399,7 +399,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_disable_one)
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ { MetricState{ 83, 0 } } };
+    RfnDataStreamingSetMetricsCommand cmd{ { MetricState{ 80, 0 } } };
 
     // execute
     {
@@ -408,7 +408,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_disable_one)
             0x86,  //  command code
             0x01,  //  number of metrics
             0x01,  //  data streaming ON
-            0x00, 0x53,  //  metric ID 1
+            0x00, 0x50,  //  metric ID 1
             0x00,        //  metric ID 1 enable/disable
             0x1e         //  metric ID 1 interval
         };
@@ -422,7 +422,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_disable_one)
             0x87,  //  command code
             0x01,  //  number of metrics
             0x01,  //  data streaming on/off
-            0x00, 0x53,  //  metric ID 1
+            0x00, 0x50,  //  metric ID 1
             0x00,        //  metric ID 1 enable/disable
             0x1e,        //  metric ID 1 interval
             0x00,        //  metric ID 1 status
@@ -454,7 +454,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_two)
 
     RfnDataStreamingSetMetricsCommand cmd{ { 
             MetricState{ 5, 5 }, 
-            MetricState{ 83, 15 } } };
+            MetricState{ 80, 15 } } };
 
     // execute
     {
@@ -466,7 +466,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_two)
             0x00, 0x05,  //  metric ID 1
             0x01,        //  metric ID 1 enable/disable
             0x05,        //  metric ID 1 interval
-            0x00, 0x53,  //  metric ID 2
+            0x00, 0x50,  //  metric ID 2
             0x01,        //  metric ID 2 enable/disable
             0x0f         //  metric ID 2 interval
         };
@@ -482,7 +482,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_one_disable_o
 
     RfnDataStreamingSetMetricsCommand cmd{ { 
             MetricState{ 5, 5 }, 
-            MetricState{ 83, 0 } } };
+            MetricState{ 80, 0 } } };
 
     // execute
     {
@@ -494,7 +494,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_one_disable_o
             0x00, 0x05,  //  metric ID 1
             0x01,        //  metric ID 1 enable/disable
             0x05,        //  metric ID 1 interval
-            0x00, 0x53,  //  metric ID 2
+            0x00, 0x50,  //  metric ID 2
             0x00,        //  metric ID 2 enable/disable
             0x1e         //  metric ID 2 interval
         };
