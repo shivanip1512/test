@@ -47,7 +47,7 @@
                         </c:if>
                         <th>${fn:escapeXml(column.title)}</th>
                     </c:forEach>
-                    <th></th>
+                    <th><cti:icon icon="icon-cog"/></th>
                 </tr>
             </thead>
             <tfoot></tfoot>

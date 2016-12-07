@@ -52,7 +52,7 @@
                             <tags:sort column="${typeColumn}"/>
                             <tags:sort column="${addressColumn}"/>
                             <tags:sort column="${routeColumn}"/>
-                           <th></th>
+                           <th><cti:icon icon="icon-cog"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -68,7 +68,7 @@
                                 <td><tags:paoType yukonPao="${row}"/></td>
                                 <td><c:if test="${!empty row.serialOrAddress}">${fn:escapeXml(row.serialOrAddress)}</c:if></td>
                                 <td><c:if test="${!empty row.route}">${fn:escapeXml(row.route)}</c:if></td>
-                                <td><cm:singleDeviceMenu deviceId="${row.paoIdentifier.paoId}" triggerClasses="fr"/></td>
+                                <td><cm:singleDeviceMenu deviceId="${row.paoIdentifier.paoId}" /></td>
                             </tr>
                         </c:forEach>
                     </tbody>

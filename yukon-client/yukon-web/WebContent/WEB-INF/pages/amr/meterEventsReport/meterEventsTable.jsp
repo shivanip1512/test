@@ -32,7 +32,7 @@
                         <tags:sort column="${dateColumn}"/>
                         <tags:sort column="${eventColumn}"/>
                         <tags:sort column="${valueColumn}"/>
-                        <th></th>
+                        <th><cti:icon icon="icon-cog"/></th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>

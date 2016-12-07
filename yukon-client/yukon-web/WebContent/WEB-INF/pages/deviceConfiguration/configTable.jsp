@@ -11,6 +11,7 @@
             <c:forEach var="column" items="${columns}">
                 <tags:sort column="${column}" />
             </c:forEach>
+            <th><cti:icon icon="icon-cog"/></th>
         </tr>
     </thead>
     <tfoot></tfoot>
@@ -31,7 +32,10 @@
                             data-popup=".js-device-count-${id}" />
                         <div data-title="${fn:escapeXml(config.name)}" data-url="${url}"
                             data-width="450" data-height="300" class="dn js-device-count-${id}"></div>
-                    </c:if> <cm:dropdown triggerClasses="fr">
+                    </c:if> 
+                    </td>
+                    <td>
+                    <cm:dropdown >
                         <cti:url var="groupUrl" value="/group/editor/home">
                             <cti:param name="groupName"
                                 value="/System/Device Configs/${config.name}" />

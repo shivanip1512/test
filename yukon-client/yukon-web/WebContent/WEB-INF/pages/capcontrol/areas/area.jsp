@@ -240,7 +240,7 @@
                     <th class="tar"><i:inline key=".unavailableKvars"/></th>
                     <th class="tar"><i:inline key=".closedKvars"/></th>
                     <th class="tar"><i:inline key=".trippedKvars"/></th>
-                    <th class="tar"><i:inline key=".pfactorEstimatedOps"/></th>
+                    <th class="tar"><i:inline key=".pfactorEstimatedOps"/><cti:icon icon="icon-cog" classes="fr"/></th>
                 </tr>
             </thead>
             

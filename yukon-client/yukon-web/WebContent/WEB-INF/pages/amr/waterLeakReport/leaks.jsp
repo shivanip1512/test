@@ -18,7 +18,7 @@
             <tags:sort column="${typeColumn}"/>
             <tags:sort column="${rateColumn}"/>
             <c:if test="${hasVendorId}"><th><i:inline key=".tableHeader.cisDetails"/></th></c:if>
-            <th></th>
+            <th><cti:icon icon="icon-cog" classes="fr"/></th>
         </tr>
     </thead>
     <tfoot></tfoot>

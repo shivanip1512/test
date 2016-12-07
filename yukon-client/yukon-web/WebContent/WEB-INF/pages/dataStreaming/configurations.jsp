@@ -26,7 +26,8 @@
             <tr>
                 <tags:sort column="${attributes}"/>
                 <tags:sort column="${interval}"/>    
-                <tags:sort column="${numberOfDevices}"/>            
+                <tags:sort column="${numberOfDevices}"/>
+                <th><cti:icon icon="icon-cog"/></th>
             </tr>
         </thead>
         <tbody>
@@ -48,6 +49,8 @@
                                </td>
                                <td>
                                     ${deviceCollection.deviceCount}
+                               </td>
+                               <td>
                                     <cm:dropdown icon="icon-cog" triggerClasses="fr">
                                         <cti:url var="summaryUrl" value="/tools/dataStreaming/summary?selectedConfiguration=${config.id}"/>
                                         <cm:dropdownOption key=".summary.pageName" href="${summaryUrl}" icon="icon-application-view-columns"/>

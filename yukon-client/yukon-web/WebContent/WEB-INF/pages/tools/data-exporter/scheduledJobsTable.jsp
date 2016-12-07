@@ -19,7 +19,7 @@
                             <th><i:inline key=".nameHeader"/></th>
                             <th><i:inline key=".scheduleHeader"/></th>
                             <th><i:inline key=".nextRunHeader"/></th>
-                            <th><i:inline key=".jobStatus"/>
+                            <th><i:inline key=".jobStatus"/><cti:icon icon="icon-cog" classes="fr"/></th>
                             
                         </thead>
                         <tfoot></tfoot>

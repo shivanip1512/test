@@ -23,6 +23,7 @@
                     <tags:sort column="${actualAttributes}" />
                     <tags:sort column="${status}" />
                     <tags:sort column="${lastCommunicated}" />
+                    <th><cti:icon icon="icon-cog"/></th>
                 </tr>
             </thead>
             <tbody>
@@ -104,7 +105,9 @@
                                 </td>
                                 <c:set var="disabled" value="false" />
                                 <td class="wsnw dif">
-                                    <cti:formatDate value="${discrepancy.lastCommunicated}" type="DATEHM_12" />&nbsp;&nbsp;
+                                    <cti:formatDate value="${discrepancy.lastCommunicated}" type="DATEHM_12" />
+                                </td>
+                                <td>
                                     <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
                                         <cm:dropdown icon="icon-cog" triggerClasses="fr">
                                             <cti:url var="resendUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/resend" />

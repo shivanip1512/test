@@ -29,7 +29,7 @@
                 <th><i:inline key=".timestamp"/></th>
                 <th class="tar"><i:inline key=".bankSize"/></th>
                 <th><i:inline key=".parentFeeder"/></th>
-                <th><i:inline key=".dailyMaxTotal"/></th>
+                <th><i:inline key=".dailyMaxTotal"/><cti:icon icon="icon-cog" classes="fr"/></th>
             </tr>
         </thead>
 

@@ -58,7 +58,7 @@
                                 <cti:checkRolesAndProperties value="ENABLE_ESTIMATED_LOAD">
                                     <th><i:inline key=".heading.kwSavings"/></th>
                                 </cti:checkRolesAndProperties>
-                                <th class="action-column"></th>
+                                <th class="action-column"><cti:icon icon="icon-cog"/></th>
                             </tr>
                         </thead>
                         <tfoot></tfoot>

@@ -200,7 +200,7 @@
                             <th><i:inline key=".name"/></th>
                             <th><i:inline key=".type"/></th>
                             <th><i:inline key=".state"/></th>
-                            <th class="action-column"></th>
+                            <th class="action-column"><cti:icon icon="icon-cog"/></th>
                         </tr>
                         </thead>
                         <tfoot></tfoot>

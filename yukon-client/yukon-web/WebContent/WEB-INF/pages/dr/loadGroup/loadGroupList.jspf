@@ -97,7 +97,7 @@
                             <cti:checkRolesAndProperties value="DR_VIEW_REDUCTION">
                                 <tags:sort column="${REDUCTION}"/>
                             </cti:checkRolesAndProperties>
-                            <th class="action-column"></th>
+                            <th class="action-column"><cti:icon icon="icon-cog"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>

@@ -22,7 +22,7 @@
             <th><i:inline key=".timestamp"/></th>
             <th><i:inline key=".pfactorEstimated"/></th>
             <th><i:inline key=".kwVolts"/></th>
-            <th><i:inline key=".dailyMax"/></th>
+            <th><i:inline key=".dailyMax"/><cti:icon icon="icon-cog" classes="fr"/></th>
          </tr>
     </thead>
     <c:forEach var="viewfeeder" items="${feederList}">

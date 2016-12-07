@@ -22,7 +22,8 @@
                     <th><i:inline key=".device"/></th>
                     <th><i:inline key=".lastRunTime"/></th>
                     <th><i:inline key=".nextRunTime"/></th>
-                    <th><i:inline key=".scheduleAssignments.command"/></th>
+                    <th><i:inline key=".scheduleAssignments.command"/><cti:icon icon="icon-cog" classes="fr"/></th>
+                    
                 </tr>
             </thead>
             

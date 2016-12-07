@@ -49,7 +49,7 @@
                             <tags:sort column="${typeColumn}"/>
                             <tags:sort column="${usageColumn}"/>
                             <tags:sort column="${dateColumn}"/>
-                            <th></th>
+                            <th><cti:icon icon="icon-cog" classes="fr"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
