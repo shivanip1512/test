@@ -209,6 +209,8 @@
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_WATER">Water Usage Reading</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR">Power Factor</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_COIN">Power Factor Coincidental</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELIVERED_POWER_FACTOR">Delivered Power Factor</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECEIVED_POWER_FACTOR">Received Power Factor</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_PHASE_A">Power Factor (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_PHASE_B">Power Factor (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.POWER_FACTOR_PHASE_C">Power Factor (Phase C)</entry>
