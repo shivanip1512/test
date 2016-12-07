@@ -169,6 +169,8 @@ public class InventoryController {
         rolePropertyDao.verifyProperty(YukonRoleProperty.INVENTORY_CREATE_HARDWARE, user);
 
         Hardware hardware = new Hardware();
+        EnergyCompany energyCompany = ecDao.getEnergyCompany(userContext.getYukonUser());
+        hardware.setEnergyCompanyId(energyCompany.getId());
         hardware.setHardwareTypeEntryId(hardwareTypeId);
         hardware.setFieldInstallDate(new Date());
         YukonListEntry entry = listDao.getYukonListEntry(hardwareTypeId);
