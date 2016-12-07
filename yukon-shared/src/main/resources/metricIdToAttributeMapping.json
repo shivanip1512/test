@@ -5,6 +5,7 @@
                 { "metricId" :  3, "attribute" : "SUM_KWH" },
                 { "metricId" :  4, "attribute" : "NET_KWH" },
                 { "metricId" :  5, "attribute" : "DEMAND" },
+                { "metricId" :  6, "attribute" : "RECEIVED_DEMAND" },
 
                 { "metricId" :  7, "attribute" : "PEAK_DEMAND" },
 
@@ -26,6 +27,7 @@
 
                 { "metricId" : 32, "attribute" : "KVAR" },
 
+                { "metricId" : 33, "attribute" : "RECEIVED_KVAR" },
                 { "metricId" : 34, "attribute" : "PEAK_KVAR" },
 
                 { "metricId" : 36, "attribute" : "PEAK_KVAR_COIN" },
@@ -35,8 +37,12 @@
                 { "metricId" : 42, "attribute" : "RECEIVED_KVAH" },
                 { "metricId" : 43, "attribute" : "SUM_KVAH" },
 
+                { "metricId" : 49, "attribute" : "DELIVERED_KVA" },
+                { "metricId" : 50, "attribute" : "RECEIVED_KVA" },
 
-                { "metricId" : 83, "attribute" : "POWER_FACTOR" },
+                { "metricId" : 80, "attribute" : "POWER_FACTOR" },
+                { "metricId" : 81, "attribute" : "DELIVERED_POWER_FACTOR" },
+                { "metricId" : 82, "attribute" : "RECEIVED_POWER_FACTOR" },
 
 
                 { "metricId" : 100, "attribute" : "VOLTAGE_PHASE_A" },
