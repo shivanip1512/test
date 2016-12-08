@@ -64,4 +64,4 @@ INSERT INTO YukonRoleProperty VALUES(-20222,-202,'Water Leak Report','true','Con
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.5', '18-AUG-2016', 'Latest Update', 7, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('6.5', '08-DEC-2016', 'Latest Update', 7, SYSDATE);
