@@ -125,21 +125,15 @@ yukon.assets.enroll = (function () {
                 assignedProgramId: program.assignedProgramId,
                 accountId: popup.data('accountId')
             }, function () {
-                 var isDisable = $("#isDisable").val();
-                 var isSaveDisable;
-                 if(isDisable == 'true'){
-                     isSaveDisable=true;
-                 } else {
-                     isSaveDisable = false;
-                }
-                 
+                var disableString = $('#isDisable').val();
+                var isSaveDisabled = (disableString === 'true');
                 popup.dialog({
                     width: 500,
                     title: popup.data('addTitle'),
                     buttons: yukon.ui.buttons({
                         okText: yg.text.save,
                         event: 'yukon_assets_enroll_save',
-                        okDisabled : isSaveDisable
+                        okDisabled : isSaveDisabled
                     })
                 });
             });
