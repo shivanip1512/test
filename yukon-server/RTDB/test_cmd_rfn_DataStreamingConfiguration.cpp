@@ -1,7 +1,6 @@
 #include "cmd_rfn_DataStreamingConfiguration.h"
+#include "Exceptions.h"
 
-#include "ctidate.h"
-#include "std_helper.h"
 #include "boost_test_helpers.h"
 
 #include <boost/test/unit_test.hpp>
@@ -500,6 +499,274 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_one_disable_o
         };
 
         BOOST_CHECK_EQUAL_RANGES(rcv, exp);
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_enable_failed)
+{
+    using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
+
+    RfnDataStreamingSetMetricsCommand cmd{ RfnDataStreamingSetMetricsCommand::StreamingEnabled };
+
+    // execute
+    {
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand(execute_time);
+        RfnCommand::RfnRequestPayload exp{
+            0x86,  //  command code
+            0x00,  //  number of metrics
+            0x01   //  data streaming ON
+        };
+
+        BOOST_CHECK_EQUAL_RANGES(rcv, exp);
+    }
+
+    // decode
+    {
+        const std::vector<unsigned char> response{
+            0x87,  //  command code
+            0x01,  //  number of metrics
+            0x00,  //  data streaming OFF, discrepancy!
+            0x00, 0x50,  //  metric ID 1
+            0x00,        //  metric ID 1 enable/disable
+            0x1e,        //  metric ID 1 interval
+            0x00,        //  metric ID 1 status
+            0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
+
+        try
+        {
+            RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
+            BOOST_FAIL("Did not throw");
+        }
+        catch( const Cti::YukonErrorException& ex )
+        {
+            const std::string desc_exp =
+                R"SQUID(json{
+"streamingEnabled" : false,
+"configuredMetrics" : [
+  {
+    "attribute" : "POWER_FACTOR",
+    "interval" : 30,
+    "enabled" : false,
+    "status" : "OK"
+  }],
+"sequence" : 3735928559
+})SQUID";
+
+            BOOST_CHECK_EQUAL(ex.error_description, desc_exp);
+            BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::ConfigNotCurrent);
+        }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_channel_enable_failed)
+{
+    using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
+
+    RfnDataStreamingSetMetricsCommand cmd{ { 
+            MetricState{ 5, 5 }, 
+            MetricState{ 80, 0 } } };
+
+    // execute
+    {
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand(execute_time);
+        RfnCommand::RfnRequestPayload exp{
+            0x86,  //  command code
+            0x02,  //  number of metrics
+            0x01,  //  data streaming ON
+            0x00, 0x05,  //  metric ID 1
+            0x01,        //  metric ID 1 enable/disable
+            0x05,        //  metric ID 1 interval
+            0x00, 0x50,  //  metric ID 2
+            0x00,        //  metric ID 2 enable/disable
+            0x1e         //  metric ID 2 interval
+        };
+
+        BOOST_CHECK_EQUAL_RANGES(rcv, exp);
+    }
+
+    // decode
+    {
+        const std::vector<unsigned char> response{
+            0x87,  //  command code
+            0x02,  //  number of metrics
+            0x01,  //  data streaming on
+            0x00, 0x50,  //  metric ID 1
+            0x00,        //  metric ID 1 disabled
+            0x1e,        //  metric ID 1 interval
+            0x00,        //  metric ID 1 status
+            0x00, 0x05,  //  metric ID 2
+            0x00,        //  metric ID 2 disabled, discrepancy!
+            0x1e,        //  metric ID 2 interval
+            0x00,        //  metric ID 2 status
+            0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
+
+        try
+        {
+            RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
+            BOOST_FAIL("Did not throw");
+        }
+        catch( const Cti::YukonErrorException& ex )
+        {
+            const std::string desc_exp =
+                R"SQUID(json{
+"streamingEnabled" : true,
+"configuredMetrics" : [
+  {
+    "attribute" : "POWER_FACTOR",
+    "interval" : 30,
+    "enabled" : false,
+    "status" : "OK"
+  },
+  {
+    "attribute" : "DEMAND",
+    "interval" : 30,
+    "enabled" : false,
+    "status" : "OK"
+  }],
+"sequence" : 3735928559
+})SQUID";
+
+            BOOST_CHECK_EQUAL(ex.error_description, desc_exp);
+            BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::ConfigNotCurrent);
+        }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_channel_disable_failed)
+{
+    using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
+
+    RfnDataStreamingSetMetricsCommand cmd{ { 
+            MetricState{ 5, 5 }, 
+            MetricState{ 80, 0 } } };
+
+    // execute
+    {
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand(execute_time);
+        RfnCommand::RfnRequestPayload exp{
+            0x86,  //  command code
+            0x02,  //  number of metrics
+            0x01,  //  data streaming ON
+            0x00, 0x05,  //  metric ID 1
+            0x01,        //  metric ID 1 enable/disable
+            0x05,        //  metric ID 1 interval
+            0x00, 0x50,  //  metric ID 2
+            0x00,        //  metric ID 2 enable/disable
+            0x1e         //  metric ID 2 interval
+        };
+
+        BOOST_CHECK_EQUAL_RANGES(rcv, exp);
+    }
+
+    // decode
+    {
+        const std::vector<unsigned char> response{
+            0x87,  //  command code
+            0x02,  //  number of metrics
+            0x01,  //  data streaming on
+            0x00, 0x50,  //  metric ID 1
+            0x00,        //  metric ID 1 disabled
+            0x1e,        //  metric ID 1 interval
+            0x00,        //  metric ID 1 status
+            0x00, 0x05,  //  metric ID 2
+            0x00,        //  metric ID 2 disabled, discrepancy!
+            0x1e,        //  metric ID 2 interval
+            0x00,        //  metric ID 2 status
+            0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
+
+        try
+        {
+            RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
+            BOOST_FAIL("Did not throw");
+        }
+        catch( const Cti::YukonErrorException& ex )
+        {
+            const std::string desc_exp =
+                R"SQUID(json{
+"streamingEnabled" : true,
+"configuredMetrics" : [
+  {
+    "attribute" : "POWER_FACTOR",
+    "interval" : 30,
+    "enabled" : false,
+    "status" : "OK"
+  },
+  {
+    "attribute" : "DEMAND",
+    "interval" : 30,
+    "enabled" : false,
+    "status" : "OK"
+  }],
+"sequence" : 3735928559
+})SQUID";
+
+            BOOST_CHECK_EQUAL(ex.error_description, desc_exp);
+            BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::ConfigNotCurrent);
+        }
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_channel_not_returned)
+{
+    using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
+
+    RfnDataStreamingSetMetricsCommand cmd{ { 
+            MetricState{ 5, 5 } } };
+
+    // execute
+    {
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand(execute_time);
+        RfnCommand::RfnRequestPayload exp{
+            0x86,  //  command code
+            0x01,  //  number of metrics
+            0x01,  //  data streaming ON
+            0x00, 0x05,  //  metric ID 1
+            0x01,        //  metric ID 1 enable/disable
+            0x05         //  metric ID 1 interval
+        };
+
+        BOOST_CHECK_EQUAL_RANGES(rcv, exp);
+    }
+
+    // decode
+    {
+        const std::vector<unsigned char> response{
+            0x87,  //  command code
+            0x01,  //  number of metrics
+            0x01,  //  data streaming on
+            0x00, 0x50,  //  metric ID 1
+            0x00,        //  metric ID 1 disabled
+            0x1e,        //  metric ID 1 interval
+            0x00,        //  metric ID 1 status
+            0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
+
+        try
+        {
+            RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
+            BOOST_FAIL("Did not throw");
+        }
+        catch( const Cti::YukonErrorException& ex )
+        {
+            const std::string desc_exp =
+                R"SQUID(json{
+"streamingEnabled" : true,
+"configuredMetrics" : [
+  {
+    "attribute" : "POWER_FACTOR",
+    "interval" : 30,
+    "enabled" : false,
+    "status" : "OK"
+  }],
+"sequence" : 3735928559
+})SQUID";
+
+            BOOST_CHECK_EQUAL(ex.error_description, desc_exp);
+            BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::ConfigNotCurrent);
+        }
     }
 }
 

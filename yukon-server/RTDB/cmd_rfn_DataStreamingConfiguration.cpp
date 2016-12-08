@@ -222,7 +222,39 @@ RfnCommandResult RfnDataStreamingSetMetricsCommand::decodeCommand(const CtiTime 
 {
     const auto cr = decodeConfigResponse(response);
 
-    return createJson(cr);
+    auto json = createJson(cr);
+
+    //  If we've gotten this far, all of the enabled channels have an a MetricStatus of OK.
+    if( _enabled != cr.streamingEnabled )
+    {
+        throw YukonErrorException(ClientErrors::ConfigNotCurrent, json);
+    }
+
+    std::map<unsigned, unsigned> reported;
+
+    //  Build the device states into a map for lookup
+    for( const auto& metric : cr.metrics )
+    {
+        reported.emplace(metric.metricId, metric.enabled ? metric.interval : 0);
+    }
+
+    //  We just need to make sure the requested metrics took effect
+    for( const auto& state : _states )
+    {
+        if( const auto reportedInterval = mapFind(reported, state.metricId) )
+        {
+            if( *reportedInterval != state.interval )
+            {
+                throw YukonErrorException(ClientErrors::ConfigNotCurrent, json);
+            }
+        }
+        else
+        {
+            throw YukonErrorException(ClientErrors::ConfigNotCurrent, json);
+        }
+    }
+
+    return json;
 }
 
 
