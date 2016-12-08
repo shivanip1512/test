@@ -100,7 +100,6 @@ import com.cannontech.simulators.message.response.RfnMeterDataSimulatorStatusRes
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.dev.dataStreaming.DataStreamingDevSettings;
 import com.cannontech.web.dev.service.YsmJmxQueryService;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
@@ -123,7 +122,6 @@ public class NmIntegrationController {
     @Autowired private RfnGatewayDataCache gatewayCache;
     @Autowired private RfnGatewaySimulatorService gatewaySimService;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
-    @Autowired private DataStreamingDevSettings dataStreamingDevSettings;
 
     SimulatorSettings lcrCurrentSettings = new SimulatorSettings(100000, 200000, 300000, 320000, 10,
         ReportingInterval.REPORTING_INTERVAL_24_HOURS);
@@ -274,6 +272,7 @@ public class NmIntegrationController {
             if (!status.isDataReplyActive()) {
                 SimulatedGatewayDataSettings dataSettings = new SimulatedGatewayDataSettings();
                 dataSettings.setReturnGwy800Model(false);
+                dataSettings.setCurrentDataStreamingLoading(50);
                 request.setDataSettings(dataSettings);
             }
             
@@ -330,13 +329,14 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("enableGatewayDataReply")
-    public String enableGatewayDataReply(@RequestParam(defaultValue="false") boolean alwaysGateway2, FlashScope flash) {
+    public String enableGatewayDataReply(@RequestParam(defaultValue="false") boolean alwaysGateway2, @RequestParam(defaultValue="50") String currentDataStreamingLoading, FlashScope flash) {
         
         SimulatedGatewayDataSettings dataSettings = new SimulatedGatewayDataSettings();
         dataSettings.setReturnGwy800Model(alwaysGateway2);
+        dataSettings.setCurrentDataStreamingLoading(Double.valueOf(currentDataStreamingLoading));
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
         request.setDataSettings(dataSettings);
-        
+        clearGatewayCache();
         sendStartStopRequest(request, flash, true);
         
         return "redirect:gatewaySimulator";

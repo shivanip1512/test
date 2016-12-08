@@ -103,12 +103,22 @@
                             <td>
                                 <c:if test="${autoDataReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="Data Streaming Loading">
+                                            ${dataSettings.currentDataStreamingLoading}%
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
+                                    <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Always Return GWY-800 Model">
                                             ${dataSettings.returnGwy800Model}
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
                                 <c:if test="${not autoDataReplyActive}">
+                                    <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="Data Streaming Loading">
+                                            <input type="text" name="currentDataStreamingLoading" style="width: 40px;" value="50"/>%
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Always Return GWY-800 Model">
                                             <input name="alwaysGateway2" type="checkbox">
