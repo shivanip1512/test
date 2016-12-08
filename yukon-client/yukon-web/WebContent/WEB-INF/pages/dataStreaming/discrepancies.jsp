@@ -23,7 +23,7 @@
                     <tags:sort column="${actualAttributes}" />
                     <tags:sort column="${status}" />
                     <tags:sort column="${lastCommunicated}" />
-                    <th><cti:icon icon="icon-cog"/></th>
+                    <th><cti:checkRolesAndProperties value="RF_DATA_STREAMING"><cti:icon icon="icon-cog"/></cti:checkRolesAndProperties></th>
                 </tr>
             </thead>
             <tbody>
@@ -109,7 +109,7 @@
                                 </td>
                                 <td>
                                     <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
-                                        <cm:dropdown icon="icon-cog" triggerClasses="fr">
+                                        <cm:dropdown icon="icon-cog">
                                             <cti:url var="resendUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/resend" />
                                             <cm:dropdownOption id="resendConfiguration_${discrepancy.deviceId}" key=".resend" icon="icon-control-repeat-blue"
                                                 data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:resend" />

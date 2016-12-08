@@ -47,7 +47,7 @@
                         </c:if>
                         <th>${fn:escapeXml(column.title)}</th>
                     </c:forEach>
-                    <th><cti:icon icon="icon-cog"/></th>
+                    <th><c:if test="${display.type == cti:constantValue('com.cannontech.common.tdc.model.DisplayType.CUSTOM_DISPLAYS')}"><cti:icon icon="icon-cog"/></c:if></th>
                 </tr>
             </thead>
             <tfoot></tfoot>

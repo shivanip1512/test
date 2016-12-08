@@ -51,7 +51,7 @@
                                     ${deviceCollection.deviceCount}
                                </td>
                                <td>
-                                    <cm:dropdown icon="icon-cog" triggerClasses="fr">
+                                    <cm:dropdown icon="icon-cog">
                                         <cti:url var="summaryUrl" value="/tools/dataStreaming/summary?selectedConfiguration=${config.id}"/>
                                         <cm:dropdownOption key=".summary.pageName" href="${summaryUrl}" icon="icon-application-view-columns"/>
                                         <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
