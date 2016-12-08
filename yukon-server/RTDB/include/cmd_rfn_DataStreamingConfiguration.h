@@ -10,8 +10,6 @@ namespace Commands {
 class IM_EX_DEVDB RfnDataStreamingConfigurationCommand : public RfnCommand
 {
 public:
-    RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
-
     enum StreamingState : unsigned char
     {
         StreamingDisabled,
@@ -21,12 +19,29 @@ public:
     struct MetricState 
     {
         unsigned short metricId;
-        unsigned char interval;
+        unsigned char interval;  //  interval of 0 means disabled
     };
 
     using MetricList = std::vector<MetricState>;
 
 protected:
+
+    struct ConfigResponse
+    {
+        bool streamingEnabled;
+        struct MetricConfiguration
+        {
+            uint16_t metricId;
+            bool enabled;
+            uint8_t interval;
+            uint8_t status;
+        };
+        std::vector<MetricConfiguration> metrics;
+        uint32_t sequence;
+    };
+    
+    ConfigResponse decodeConfigResponse(const RfnResponsePayload & response) const;
+    static std::string createJson(const ConfigResponse& response);
 
     virtual unsigned char getResponseCode() const = 0;
 
@@ -41,6 +56,9 @@ private:
 
 class IM_EX_DEVDB RfnDataStreamingGetMetricsListCommand : public RfnDataStreamingConfigurationCommand, NoResultHandler
 {
+public:
+    RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
+
 private:
     enum
     {
@@ -60,6 +78,8 @@ class IM_EX_DEVDB RfnDataStreamingSetMetricsCommand : public RfnDataStreamingCon
 public:
     RfnDataStreamingSetMetricsCommand(StreamingState enabled);
     RfnDataStreamingSetMetricsCommand(MetricList&& states);
+
+    RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
 
 private:
     const StreamingState _enabled;

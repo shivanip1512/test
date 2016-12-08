@@ -37,10 +37,12 @@ DeviceCommand::Bytes RfnDataStreamingConfigurationCommand::getCommandHeader()
     return { getCommandCode() }; 
 }
 
-RfnCommandResult RfnDataStreamingConfigurationCommand::decodeCommand(const CtiTime now, const RfnResponsePayload & response)
+auto RfnDataStreamingConfigurationCommand::decodeConfigResponse(const RfnResponsePayload & response) const -> ConfigResponse
 {
     validate(Condition(response.size() >= ResponseHeaderLength, ClientErrors::InvalidData) 
         << "Response size was less than " << ResponseHeaderLength);
+
+    ConfigResponse cr;
 
     const auto responseCode = response[0];
 
@@ -48,26 +50,14 @@ RfnCommandResult RfnDataStreamingConfigurationCommand::decodeCommand(const CtiTi
         << "Invalid response code (" << responseCode << " != " << getResponseCode() << ")");
 
     const auto metricCount = response[1];
-    const auto streamingEnabled = response[2];
+    cr.streamingEnabled = response[2];
 
     const auto expectedLength = ResponseHeaderLength + (metricCount * BytesPerMetric) + SequenceLength;
 
     validate(Condition(response.size() >= expectedLength, ClientErrors::InvalidData)
         << "Response size was too small for reported metric count (" << response.size() << "<" << expectedLength << ")");
 
-    StreamBuffer metricDescription;
-
-    //  Generate the response as JSON for the Java client to consume
-    
-    metricDescription << "json{";
-    metricDescription << "\n\"streamingEnabled\" : " << (streamingEnabled ? "true" : "false");
-
-    metricDescription << ",\n\"configuredMetrics\" : [";
-
-    bool seenDisabledChannel    = false;
-    bool seenUnsupportedChannel = false;
-
-    for( int i = 0, metricsPrinted = 0; i < metricCount; ++i )
+    for( int i = 0; i < metricCount; ++i )
     {
         const auto offset = ResponseHeaderLength + i * BytesPerMetric;
         const auto metricId = getValueFromBytes_bEndian(response, offset, 2);
@@ -75,39 +65,70 @@ RfnCommandResult RfnDataStreamingConfigurationCommand::decodeCommand(const CtiTi
         const auto interval = response[offset + 3];
         const auto status   = response[offset + 4];
 
+        ConfigResponse::MetricConfiguration mc { metricId, enabled, interval, status };
+
+        cr.metrics.emplace_back(mc);
+    }
+
+    const auto offset = ResponseHeaderLength + metricCount * BytesPerMetric;
+
+    cr.sequence = getValueFromBytes_bEndian(response, offset, 4);
+
+    return cr;
+}
+
+
+std::string RfnDataStreamingConfigurationCommand::createJson(const ConfigResponse& response)
+{
+    StreamBuffer metricDescription;
+
+    //  Generate the response as JSON for the Java client to consume
+
+    metricDescription << "json{";
+    metricDescription << "\n\"streamingEnabled\" : " << (response.streamingEnabled ? "true" : "false");
+
+    metricDescription << ",\n\"configuredMetrics\" : [";
+
+    bool seenDisabledChannel    = false;
+    bool seenUnsupportedChannel = false;
+
+    unsigned metricsPrinted = 0;
+
+    for( const auto& metric : response.metrics )
+    {
         try
         {
-            const auto attribute = MetricIdLookup::getAttribute(metricId);
-            
+            const auto attribute = MetricIdLookup::getAttribute(metric.metricId);
+
+            std::string statusString;
+
             if( metricsPrinted++ )
             {
                 metricDescription << ",";
             }
 
-            std::string statusString;
-
-            if( status < statusStrings.size() )
+            if( metric.status < statusStrings.size() )
             {
-                statusString = statusStrings[status];
+                statusString = statusStrings[metric.status];
             }
             else
             {
-                CTILOG_WARN(dout, "Received unknown status (" << status << "), mapping to UNKNOWN_ERROR (6)");
+                CTILOG_WARN(dout, "Received unknown status (" << metric.status << "), mapping to UNKNOWN_ERROR (6)");
                 statusString = "UNKNOWN_ERROR";
             }
 
             metricDescription << "\n  {"
                 "\n    \"attribute\" : \"" << attribute.getName() << "\","
-                "\n    \"interval\" : " << interval << ","
-                "\n    \"enabled\" : " << (enabled ? "true" : "false") << ","
+                "\n    \"interval\" : " << metric.interval << ","
+                "\n    \"enabled\" : " << (metric.enabled ? "true" : "false") << ","
                 "\n    \"status\" : \"" << statusString << "\"\n  }";
 
-            if( enabled && status )
+            if( metric.enabled && metric.status )
             {
-                seenUnsupportedChannel |= (status == 5);
-                seenDisabledChannel    |= (status == 7);
+                seenUnsupportedChannel |= (metric.status == 5);
+                seenDisabledChannel    |= (metric.status == 7);
 
-                CTILOG_WARN(dout, "Received status " << status << " (" << statusString << ") for enabled metric " << metricId);
+                CTILOG_WARN(dout, "Received status " << metric.status << " (" << statusString << ") for enabled metric " << metric.metricId);
             }
         }
         catch( AttributeMappingNotFound &ex )
@@ -117,11 +138,7 @@ RfnCommandResult RfnDataStreamingConfigurationCommand::decodeCommand(const CtiTi
         }
     }
 
-    const auto offset = ResponseHeaderLength + metricCount * BytesPerMetric;
-
-    const unsigned sequence = getValueFromBytes_bEndian(response, offset, 4);
-
-    metricDescription << "],\n\"sequence\" : " << sequence << "\n}";
+    metricDescription << "],\n\"sequence\" : " << response.sequence << "\n}";
 
     //  Disabled channel can be fixed by the user (by enabling the channel in rfnChannelConfiguration)
     //    so notify them about this first.
@@ -153,6 +170,13 @@ DeviceCommand::Bytes RfnDataStreamingGetMetricsListCommand::getCommandData()
 unsigned char RfnDataStreamingGetMetricsListCommand::getResponseCode() const
 {
     return CommandCode_Response;
+}
+
+RfnCommandResult RfnDataStreamingGetMetricsListCommand::decodeCommand(const CtiTime now, const RfnResponsePayload & response)
+{
+    const auto cr = decodeConfigResponse(response);
+
+    return createJson(cr);
 }
 
 
@@ -192,6 +216,13 @@ DeviceCommand::Bytes RfnDataStreamingSetMetricsCommand::getCommandData()
 unsigned char RfnDataStreamingSetMetricsCommand::getResponseCode() const
 {
     return CommandCode_Response;
+}
+
+RfnCommandResult RfnDataStreamingSetMetricsCommand::decodeCommand(const CtiTime now, const RfnResponsePayload & response)
+{
+    const auto cr = decodeConfigResponse(response);
+
+    return createJson(cr);
 }
 
 
