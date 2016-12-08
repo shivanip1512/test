@@ -41,6 +41,7 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
         YukonValidationUtils.checkIsPositiveInt(errors, "CapBank.bankSizeCustom", capbank.getCapBank().getBankSize());
         YukonValidationUtils.checkIsPositiveInt(errors, "CapBank.maxDailyOps", capbank.getCapBank().getMaxDailyOps());
 
+        validateAdditionalInfo(capbank, errors);
     }
 
     private void validateCcMonitorBankList(List<CCMonitorBankList> ccMonitorBankLists, Errors errors) {
@@ -104,6 +105,40 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
                     errors.rejectValue(fieldName, "yukon.web.error.nameConflict");
                 }
             }
+        }
+    }
+    
+    private void validateAdditionalInfo(CapBank capbank, Errors errors) {
+        if (capbank.getCapbankAdditionalInfo().getMaintAreaID() == null) {
+            errors.rejectValue("capbankAdditionalInfo.maintAreaID", "yukon.web.error.isBlank");
+        } else if (capbank.getCapbankAdditionalInfo().getMaintAreaID() < 0) {
+            errors.rejectValue("capbankAdditionalInfo.maintAreaID", "yukon.web.error.isNotPositiveInt");
+        }
+
+        if (capbank.getCapbankAdditionalInfo().getPoleNumber() == null) {
+            errors.rejectValue("capbankAdditionalInfo.poleNumber", "yukon.web.error.isBlank");
+        } else if (capbank.getCapbankAdditionalInfo().getPoleNumber() < 0) {
+            errors.rejectValue("capbankAdditionalInfo.poleNumber", "yukon.web.error.isNotPositiveInt");
+        }
+
+        if (capbank.getCapbankAdditionalInfo().getCommStrengh() == null) {
+            errors.rejectValue("capbankAdditionalInfo.commStrengh", "yukon.web.error.isBlank");
+        } else if (capbank.getCapbankAdditionalInfo().getCommStrengh() < 0) {
+            errors.rejectValue("capbankAdditionalInfo.commStrengh", "yukon.web.error.isNotPositiveInt");
+        }
+
+        if (capbank.getCapbankAdditionalInfo().getLatit() == null) {
+            errors.rejectValue("capbankAdditionalInfo.latit", "yukon.web.error.isBlank");
+        } else {
+            YukonValidationUtils.checkRange(errors, "capbankAdditionalInfo.latit",
+                capbank.getCapbankAdditionalInfo().getLatit(), -90.0, 90.0, true);
+        }
+
+        if (capbank.getCapbankAdditionalInfo().getLongtit() == null) {
+            errors.rejectValue("capbankAdditionalInfo.longtit", "yukon.web.error.isBlank");
+        } else {
+            YukonValidationUtils.checkRange(errors, "capbankAdditionalInfo.longtit",
+                capbank.getCapbankAdditionalInfo().getLongtit(), -180.0, 180.0, true);
         }
     }
 }
