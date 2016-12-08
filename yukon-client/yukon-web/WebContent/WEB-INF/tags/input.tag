@@ -36,6 +36,9 @@
         ${fn:escapeXml(status.value)}
     </span>
     <form:hidden path="${path}" cssClass="${pageScope.inputClass}"/>
+    <c:if test="${pageScope.units != null}">
+    &nbsp;${pageScope.units}
+    </c:if>
 </cti:displayForPageEditModes>
 
 <%-- EDIT/CREATE MODE --%>

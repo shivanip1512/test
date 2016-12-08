@@ -134,10 +134,18 @@
                                         items="${opMethods}" itemValue="dbString"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".bankSize">
-                                    <i:inline key=".custom"/><tags:checkbox path="CapBank.customBankSize" id="customSizeCheckbox" styleClass="js-custom-bankSize"/>
+                                    <table> 
+                                    <tr>
+                                    <td>
                                         <tags:selectWithItems id="bankSize" path="CapBank.bankSize" 
-                                        items="${bankSizes}" itemValue="displayValue"/>
-                                        <tags:input units="kVar" id="customBankSize" path="CapBank.bankSizeCustom" inputClass="dn" size="6" />
+                                         items="${bankSizes}" itemValue="displayValue"/>
+                                        <tags:input units="kVar" id="customBankSize" path="CapBank.bankSizeCustom" inputClass="dn" size="6"/>
+                                    </td> 
+                                    <td style="vertical-align:middle;">
+                                        <i:inline key=".custom"/><tags:checkbox path="CapBank.customBankSize" id="customSizeCheckbox" styleClass="js-custom-bankSize"/>
+                                    </td>
+                                    </tr>
+                                    </table>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".recloseDelay">
                                         <tags:intervalDropdown path="CapBank.recloseDelay"
