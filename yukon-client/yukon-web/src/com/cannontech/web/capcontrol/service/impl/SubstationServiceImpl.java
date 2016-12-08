@@ -1,6 +1,7 @@
 package com.cannontech.web.capcontrol.service.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.model.CompleteCapControlSubstation;
@@ -97,6 +99,7 @@ public class SubstationServiceImpl implements SubstationService {
         try {
             SubStation cachedSub = ccCache.getSubstation(substationId);
             List<SubBus> capBuses = ccCache.getSubBusesBySubStation(cachedSub);
+            Collections.sort(capBuses, CapControlUtils.SUB_DISPLAY_COMPARATOR);
             viewableBuses = ccWebUtilsService.createViewableSubBus(capBuses);
 
         } catch (NotFoundException e) {
