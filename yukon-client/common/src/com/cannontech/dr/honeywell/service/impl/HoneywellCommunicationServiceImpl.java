@@ -1,5 +1,6 @@
 package com.cannontech.dr.honeywell.service.impl;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -14,10 +15,12 @@ import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.codec.binary.Base64;
@@ -56,6 +59,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     @Autowired private HoneywellWifiThermostatDao honeywellDao;
 
     private static final String createDREventGroupUrlPart = "webapi/api/drEventGroups/";
+    private static final String getGatewayByMacId = "webapi/api/gateways";
     private static final String cancelDREventForDevicesUrlPart = "api/drEvents/optout/";
     private static final String removeDeviceFromDRGroupUrlPart = "WebAPI/api/drEventGroups/";
     private static final String drEventForGroupUrlPart = "WebAPI/api/drEvents";
@@ -78,26 +82,25 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
     @Override
     public void addDevicesToGroup(List<Integer> thermostatIds, int groupId) {
-        log.info("Adding honeywell device with thermostat Id " + thermostatIds);
+        log.debug("Adding honeywell device with thermostat Id " + thermostatIds);
         try {
             String url = getUrlBase() + createDREventGroupUrlPart + groupId + "/add";
-           
+
             for (List<Integer> thermostatId : Lists.partition(thermostatIds, 2000)) {
                 String body = JsonUtils.toJson(thermostatId);
 
                 HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.PUT, body);
-                HttpEntity<String> reqEntity =
-                    new HttpEntity<String>(body, newheaders);
-                UriComponentsBuilder builder =
-                        UriComponentsBuilder.fromHttpUrl(url);
+                HttpEntity<String> reqEntity = new HttpEntity<String>(body, newheaders);
+                UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
 
-                HttpEntity<String> response = restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.PUT, reqEntity, String.class);
+                HttpEntity<String> response =
+                    restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.PUT, reqEntity, String.class);
                 log.debug(response);
             }
         } catch (RestClientException | JsonProcessingException ex) {
             log.error("Add devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
-        } 
+        }
 
     }
 
@@ -123,15 +126,14 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
     @Override
     public void removeDeviceFromDRGroup(List<Integer> thermostatIds, int groupId) {
-        log.info("Removing specified devices from demand-response group:" + thermostatIds);
+        log.debug("Removing specified devices from demand-response group:" + thermostatIds);
         try {
             String url = getUrlBase() + removeDeviceFromDRGroupUrlPart + groupId + "/remove";
 
             String body = JsonUtils.toJson(thermostatIds.toArray());
-            
+
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
-            HttpEntity<?> requestEntity =
-                new HttpEntity<Object>(body, getHttpHeaders(url, HttpMethod.PUT, body));
+            HttpEntity<?> requestEntity = new HttpEntity<Object>(body, getHttpHeaders(url, HttpMethod.PUT, body));
 
             HttpEntity<String> response =
                 restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.PUT, requestEntity, String.class);
@@ -315,5 +317,51 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
     private String getUrlBase() {
         return settingDao.getString(GlobalSettingType.HONEYWELL_SERVER_URL);
+    }
+
+    @Override
+    public int getGatewayDetailsForMacId(String macId, String userId) {
+        log.debug("Getting Gateway Details for given macid - " + macId);
+        int deviceId = 0;
+        try {
+            String url = getUrlBase() + getGatewayByMacId;
+
+            MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
+            HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.GET, null);
+
+            newheaders.add("UserId", "17106");
+            // UserId - '17106' is hardcoded just for testing.
+
+            // TODO : remove above line (this hardcoded UserId) and uncomment below line after fixing
+            // YUK-16052
+            // newheaders.add("UserId", userId);
+            HttpEntity<?> requestEntity = new HttpEntity<Object>(body, newheaders);
+
+            UriComponentsBuilder builder =
+                UriComponentsBuilder.fromHttpUrl(url).queryParam("macId", "00D02D81CF23").queryParam("allData", "true");
+            // macId - '00D02D81CF23' is hardcoded just for testing.
+
+            // TODO : remove this hardcoded macId and replace it with parameter macId after fixing YUK-16052
+            HttpEntity<String> response =
+                restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity, String.class);
+
+            log.debug(response);
+            String responseString = response.getBody().toString();
+            try {
+                Map<String, Object> data = JsonUtils.fromJson(responseString, Map.class);
+                ArrayList<Object> jsonArray = (ArrayList<Object>) data.get("devices");
+                for (Object mapObject : jsonArray) {
+                    Map<String, Object> deviceMap = (Map<String, Object>) mapObject;
+                    deviceId = (int) deviceMap.get("deviceID");
+                }
+            } catch (IOException e) {
+                log.error("Error occured");
+            }
+
+        } catch (RestClientException ex) {
+            log.error("Get gateway details for macId for Honeywell failed with message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
+        }
+        return deviceId;
     }
 }

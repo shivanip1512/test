@@ -164,24 +164,8 @@ public class OperatorEnrollmentController {
 
         DisplayableEnrollmentProgram displayable = 
             displayableEnrollmentDao.getProgram(account.getAccountId(), assignedProgramId);
-        
-        ProgramEnrollment programEnrollment = new ProgramEnrollment(displayable);
-        if (isAdd) {
-            List<InventoryEnrollment> inventoryEnrollments = programEnrollment.getInventoryEnrollments();
-            Iterator<InventoryEnrollment> inventoryEnrollmentsItr = inventoryEnrollments.iterator();
-            while (inventoryEnrollmentsItr.hasNext()) {
-                InventoryEnrollment invEnrlmnt = (InventoryEnrollment) inventoryEnrollmentsItr.next();
-                InventoryIdentifier inventory = inventoryDao.getYukonInventory(invEnrlmnt.getInventoryId());
-                if (inventory.getHardwareType().isHoneywell()) {
-                    List<LMHardwareConfiguration> hardwareConfig = lmHardwareConfigDao.getForInventoryId(invEnrlmnt.getInventoryId());
 
-                    if (!hardwareConfig.isEmpty()) {
-                        // Given device is already enrolled to a group.
-                        inventoryEnrollmentsItr.remove();
-                    }
-                }
-            }
-        }
+        ProgramEnrollment programEnrollment = new ProgramEnrollment(displayable);
         model.addAttribute("programEnrollment", programEnrollment);
         boolean isDisable = false;
         if (programEnrollment.getInventoryEnrollments().isEmpty()) {
@@ -237,7 +221,8 @@ public class OperatorEnrollmentController {
         model.addAttribute("assignedProgram", assignedProgram);
 
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> conflictingEnrollments =
-            getConflictingEnrollments(account.getAccountId(), assignedProgramId, account.getEnergyCompanyId());
+            getConflictingEnrollments(account.getAccountId(), assignedProgramId, account.getEnergyCompanyId(),
+                programEnrollment);
 
         // For confirmation, we just need a list of conflicting programs.
         Set<Integer> conflictingAssignedProgramIds = Sets.newHashSet();
@@ -281,52 +266,14 @@ public class OperatorEnrollmentController {
         LiteYukonUser user = userContext.getYukonUser();
         validateAccountEditing(user);
 
-        List<InventoryEnrollment> inventoryEnrollments = programEnrollment.getInventoryEnrollments();
-        InventoryEnrollment inventEnrollment = inventoryEnrollments.get(0);
-        InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventEnrollment.getInventoryId());
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> programEnrollments = Lists.newArrayList();
         AssignedProgram assignedProgram = assignedProgramDao.getById(assignedProgramId);
         programEnrollments.addAll(programEnrollment.makeProgramEnrollments(assignedProgram.getApplianceCategoryId(),
                                                                            assignedProgramId));
         programEnrollments.addAll(getConflictingEnrollments(accountInfoFragment.getAccountId(),
                                                             assignedProgramId,
-                                                            accountInfoFragment.getEnergyCompanyId()));
+                                                            accountInfoFragment.getEnergyCompanyId(), programEnrollment));
         try {
-
-            if (inventory.getHardwareType().isHoneywell()) {
-                Map<Integer, List<Integer>> groupThermostatMap = new HashMap<>();
-                if (!inventoryEnrollments.isEmpty()) {
-                    for (InventoryEnrollment inventoryEnrollment : inventoryEnrollments) {
-
-                        if (inventoryEnrollment.getLoadGroupId() != 0) {
-                            List<Integer> thermostatIds = null;
-                            int groupId = inventoryEnrollment.getLoadGroupId();
-                            int honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
-                            if (groupThermostatMap.containsKey(honeywellGroupId)) {
-                                thermostatIds = groupThermostatMap.get(honeywellGroupId);
-                            } else {
-                                thermostatIds = new ArrayList<>();
-                            }
-                            thermostatIds.add(inventoryEnrollment.getInventoryId());
-                            groupThermostatMap.put(honeywellGroupId, thermostatIds);
-                        }
-                    }
-                }
-
-                if (saveTypeKey.equalsIgnoreCase("enrollCompleted") || saveTypeKey.equalsIgnoreCase("enrollmentUpdated")) {
-                    // Add enrollment or edit enrollment
-                    for (Entry<Integer, List<Integer>> groupThermostatEntry : groupThermostatMap.entrySet()) {
-                        honeywellCommunicationService.addDevicesToGroup(groupThermostatEntry.getValue(),
-                                                                        groupThermostatEntry.getKey());
-                    }
-                } else if (saveTypeKey.equalsIgnoreCase("unenrollCompleted")) {
-                    // Unenrollment
-                    for (Entry<Integer, List<Integer>> groupThermostatEntry : groupThermostatMap.entrySet()) {
-                        honeywellCommunicationService.removeDeviceFromDRGroup(groupThermostatEntry.getValue(),
-                                                                              groupThermostatEntry.getKey());
-                    }
-                }
-            }
             enrollmentHelper.updateProgramEnrollments(programEnrollments, accountInfoFragment.getAccountId(), userContext);
             
             String msgKey = "yukon.web.modules.operator.enrollmentList." + saveTypeKey;
@@ -390,11 +337,15 @@ public class OperatorEnrollmentController {
     }
 
     private List<com.cannontech.stars.dr.program.service.ProgramEnrollment> getConflictingEnrollments(int accountId,
-            int assignedProgramId, int ecId) {
+            int assignedProgramId, int ecId, ProgramEnrollment programEnrollment) {
 
+        boolean isThermostatOfHoneywellWifi = isThermostatOfHoneywellWifi(programEnrollment);
         boolean multiplePerCategory =
             ecSettingDao.getBoolean(EnergyCompanySettingType.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, ecId);
-        
+        if (isThermostatOfHoneywellWifi) {
+            multiplePerCategory = false;
+        }
+
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> conflictingEnrollments = Lists.newArrayList();
         if (!multiplePerCategory) {
             // Only one program per appliance category is allowed.  Find other
@@ -406,8 +357,16 @@ public class OperatorEnrollmentController {
         return conflictingEnrollments;
     }
 
+    private boolean isThermostatOfHoneywellWifi(ProgramEnrollment programEnrollment) {
+        List<InventoryEnrollment> inventoryEnrollments = programEnrollment.getInventoryEnrollments();
+        InventoryEnrollment inventEnrollment = inventoryEnrollments.get(0);
+        InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventEnrollment.getInventoryId());
+        return inventory.getHardwareType().isHoneywell();
+    }
+
     private void validateAccountEditing(LiteYukonUser user) {
         boolean allowEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
         Validate.isTrue(allowEditing, "Account editing not allowed by this user.");
-    } 
+    }
+
 }

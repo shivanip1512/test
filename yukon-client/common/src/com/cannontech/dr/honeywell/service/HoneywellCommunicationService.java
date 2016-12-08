@@ -48,5 +48,13 @@ public interface HoneywellCommunicationService {
      */
     void cancelDREventForGroup(int groupId, int eventId, boolean immediateCancel);
     
+    /**
+     * Get Gateway details for macId for. This is used to fetch the honeywell deviceId by macId
+     * 
+     * @param macId : Registered honeywell macId
+     * @param userId : Device vendor userId
+     * @return
+     */
+    int getGatewayDetailsForMacId(String macId, String userId);
 
 }

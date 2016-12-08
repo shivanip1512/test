@@ -56,9 +56,11 @@ import com.cannontech.stars.dr.controlHistory.service.StarsControlHistoryService
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.stars.dr.enrollment.exception.EnrollmentException;
 import com.cannontech.stars.dr.enrollment.exception.EnrollmentSystemConfigurationException;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
+import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
@@ -101,6 +103,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired private StarsControlHistoryService controlHistoryService;
     @Autowired private StarsCustAccountInformationDao starsCustAccountInformationDao;
     @Autowired private YukonListDao listDao;
+    @Autowired private LMHardwareConfigurationDao lmHardwareConfigDao;
 
     private final Map<Integer, Object> accountIdMutex = Collections.synchronizedMap(new HashMap<Integer, Object>());
 
@@ -165,7 +168,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         // Whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION energy
                         // company setting.
                         if (autoConfig) {
-                            if (!trackAddressing || hardwareType.isZigbee() || hardwareType.isEcobee()) {
+                            if (!trackAddressing || hardwareType.isZigbee() || hardwareType.isEcobee() || hardwareType.isHoneywell()) {
                                 LmHardwareCommand command = new LmHardwareCommand();
                                 command.setDevice(liteHw);
                                 command.setType(LmHardwareCommandType.CONFIG);
@@ -183,10 +186,17 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                             lmHardwareCommandService.sendInServiceCommand(command);
                         }
                     } else {
-                        LmHardwareCommand command = new LmHardwareCommand();
+                        int grpId = 0;
+                        if (previouslyEnrolledPrograms.get(0) != null) {
+                            grpId = previouslyEnrolledPrograms.get(0).getGroupID();
+                        }
+                      LmHardwareCommand command = new LmHardwareCommand();
                         command.setDevice(liteHw);
                         command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
                         command.setUser(user);
+                        Map<LmHardwareCommandParam, Object> params = new HashMap<LmHardwareCommandParam, Object>();
+                        params.put(LmHardwareCommandParam.GROUP_ID, grpId);
+                        command.setParams(params);
 
                         lmHardwareCommandService.sendOutOfServiceCommand(command);
                     }
