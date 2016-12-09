@@ -21,6 +21,7 @@ yukon.da.strategy = (function () {
         var method = $('#control-method').val();
         var settings = _algorithmToSettings[algorithm];
 
+        $('#kvarMessage').hide();
         $('[data-mapping]').hide().find('input').prop('disabled', true);
 
         settings.forEach(function (setting) {
@@ -32,6 +33,10 @@ yukon.da.strategy = (function () {
         $('.js-ivvc-only').toggle(algorithm === 'INTEGRATED_VOLT_VAR');
         $('.js-bus-ivvc-only').toggle(algorithm === 'INTEGRATED_VOLT_VAR' &&
                                       method === 'BUSOPTIMIZED_FEEDER');
+        
+        if (algorithm == 'KVAR' || algorithm == 'MULTI_VOLT_VAR') {
+           $('#kvarMessage').show();
+        }
     };
     
     var _methodSetup = function () {

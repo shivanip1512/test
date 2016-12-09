@@ -206,6 +206,9 @@
                         </c:forEach>
                     </tbody>
                 </table>
+                <cti:displayForPageEditModes modes="EDIT,CREATE">
+                 <div id="kvarMessage" class="empty-list dn"><i:inline key="yukon.web.modules.capcontrol.strategy.message.KVAR"/></div>
+                </cti:displayForPageEditModes>
             
                 <tags:sectionContainer2 nameKey="powerFactorSettings" styleClass="stacked-lg js-bus-ivvc-only">
                     <tags:nameValueContainer2 tableClass="natural-width ${tableClass}">

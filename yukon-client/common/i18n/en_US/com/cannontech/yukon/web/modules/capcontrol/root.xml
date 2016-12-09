@@ -744,6 +744,7 @@
     <entry key="yukon.web.modules.capcontrol.strategy.endDaySetting.NONE">(none)</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.endDaySetting.TRIP">Trip</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.endDaySetting.CLOSE">Close</entry>
+    <entry key="yukon.web.modules.capcontrol.strategy.message.KVAR">*(-)indicates leading.</entry>
     
     <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.low.cost">Cost must be less than or equal to zero.</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.low.emergencyCost">Emergency Cost must be less than or equal to cost.</entry>
@@ -752,6 +753,8 @@
     <entry key="yukon.web.modules.capcontrol.strategy.error.voltageViolation.high.emergencyCost">Emergency Cost must be greater than or equal to cost.</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.error.intervalViolation.integrationInterval">When using Integrate Control, the Analysis Interval must be greater than or equal to the Integration Interval.</entry>
     <entry key="yukon.web.modules.capcontrol.strategy.error.peakTimesViolation.startIsAfterStopTime">Start Time must be before the Stop Time.</entry>
+    <entry key="yukon.web.error.themes.isNotValidVoltLimit">Must be Greater than Lower Volt Limit.</entry>
+    <entry key="yukon.web.error.themes.isNotValidKVRValue">Must be Lower than KVAR Lagging.</entry>
     
     <!-- schedules.jsp -->
     <entry key="yukon.web.modules.capcontrol.schedules.pageName">Schedules</entry>

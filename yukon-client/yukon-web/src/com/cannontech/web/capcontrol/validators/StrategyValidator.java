@@ -181,6 +181,37 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
                 YukonValidationUtils.checkRange(errors, "targetSettings[" + entry.getKey() + "].offPeakValue",
                     peakTargetSetting.getOffPeakValue(), 0.0, 100.0, true);
             }
+            if (entry.getKey().equals(TargetSettingType.UPPER_VOLT_LIMIT)) {
+                double upperVoltPeakValue = targetSettings.get(TargetSettingType.UPPER_VOLT_LIMIT).getPeakValue();
+                double lowerVoltPeakValue = targetSettings.get(TargetSettingType.LOWER_VOLT_LIMIT).getPeakValue();
+                if (upperVoltPeakValue < lowerVoltPeakValue) {
+                    errors.rejectValue("targetSettings[" + entry.getKey() + "].peakValue",
+                        "yukon.web.error.themes.isNotValidVoltLimit");
+                }
+                double upperOffPeakValue = targetSettings.get(TargetSettingType.UPPER_VOLT_LIMIT).getOffPeakValue();
+                double lowerOffPeakValue = targetSettings.get(TargetSettingType.LOWER_VOLT_LIMIT).getOffPeakValue();
+                if (upperOffPeakValue < lowerOffPeakValue) {
+                    errors.rejectValue("targetSettings[" + entry.getKey() + "].offPeakValue",
+                        "yukon.web.error.themes.isNotValidVoltLimit");
+                }
+            }
+            
+            if (entry.getKey().equals(TargetSettingType.KVAR_LEADING)) {
+                double kVRLeadingPeakValue = targetSettings.get(TargetSettingType.KVAR_LEADING).getPeakValue();
+                double kVRLaggingPeakValue = targetSettings.get(TargetSettingType.KVAR_LAGGING).getPeakValue();
+                if (kVRLeadingPeakValue > kVRLaggingPeakValue) {
+                    errors.rejectValue("targetSettings[" + entry.getKey() + "].peakValue",
+                        "yukon.web.error.themes.isNotValidKVRValue");
+                }
+                double kVRLeadingOffPeakValue = targetSettings.get(TargetSettingType.KVAR_LEADING).getOffPeakValue();
+                double kVRLaggingOffPeakValue = targetSettings.get(TargetSettingType.KVAR_LAGGING).getOffPeakValue();
+                if (kVRLeadingOffPeakValue > kVRLaggingOffPeakValue) {
+                    errors.rejectValue("targetSettings[" + entry.getKey() + "].offPeakValue",
+                        "yukon.web.error.themes.isNotValidKVRValue");
+                }
+                
+                
+            }
         }
     }
     
