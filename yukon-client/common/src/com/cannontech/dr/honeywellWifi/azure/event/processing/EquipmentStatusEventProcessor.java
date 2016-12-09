@@ -1,13 +1,17 @@
 package com.cannontech.dr.honeywellWifi.azure.event.processing;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatusEvent;
 import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
 
-public class EquipmentStatusEventProcessor implements HoneywellWifiDataProcessor {
+public class EquipmentStatusEventProcessor extends AbstractHoneywellWifiDataProcessor {
     private static final Logger log = YukonLogManager.getLogger(EquipmentStatusEventProcessor.class);
     
     @Override
@@ -28,11 +32,17 @@ public class EquipmentStatusEventProcessor implements HoneywellWifiDataProcessor
         if (dataEvent.getEquipmentStatus() == null) {
             return;
         } else {
-            //TODO process the message
-            //dataEvent.getEquipmentStatus();
-            //dataEvent.getPreviousEquipmentStatus();
-            //dataEvent.getMacId();
-            //dataEvent.getMessageWrapper().getDate();
+            double stateValue = dataEvent.getEquipmentStatus().getStateValue();
+            Instant statusDateTime = dataEvent.getMessageWrapper().getDate();
+            
+            try {
+                PaoIdentifier thermostat = getThermostatByMacId(dataEvent.getMacId());
+                
+                //Send point data to dispatch
+                inputPointValue(thermostat, BuiltInAttribute.THERMOSTAT_RELAY_STATE, statusDateTime, stateValue);
+            } catch (NotFoundException e) {
+                log.info("Honeywell equipment status message received for unknown device with MAC ID " + dataEvent.getMacId());
+            }
         }
         
     }

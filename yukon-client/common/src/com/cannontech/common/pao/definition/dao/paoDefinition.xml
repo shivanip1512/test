@@ -4552,6 +4552,12 @@
                 <archive><type>ON_CHANGE</type></archive>
                 <stategroup value="TrueFalse" />
             </point>
+            <point type="Status" offset="2">
+                <init>true</init>
+                <name>Thermostat Relay State</name>
+                <archive><type>ON_UPDATE</type></archive>
+                <stategroup value="ThermostatRelayState" />
+            </point>
             <point type="Status" offset="2000">
                 <init>true</init>
                 <name>Comm Status</name>
@@ -4563,6 +4569,9 @@
             </point>
         </points>
         <attributes>
+            <attribute name="THERMOSTAT_RELAY_STATE">
+                <basicLookup point="Thermostat Relay State" />
+            </attribute>
             <attribute name="RELAY_1_RUN_TIME_DATA_LOG">
                 <basicLookup point="Run Time Data Log" />
             </attribute>

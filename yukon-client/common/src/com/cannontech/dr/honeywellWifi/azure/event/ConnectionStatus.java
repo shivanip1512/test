@@ -4,8 +4,8 @@ public enum ConnectionStatus {
     CONNECTED("Connected", 0.0),
     CONNECTION_LOST("ConnectionLost", 1.0);
     
-    private String jsonString;
-    private double commStatus;
+    private final String jsonString;
+    private final double commStatus;
     
     private ConnectionStatus(String jsonString, double commStatus) {
         this.jsonString = jsonString;
