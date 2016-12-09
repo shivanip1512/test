@@ -1455,24 +1455,11 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         public void receivedConfigReport(SimpleDevice device, ReportedDataStreamingConfig config) {
             
             BehaviorReport reportedBehavior = buildBehaviorReport(config, device.getDeviceId(), BehaviorReportStatus.CONFIRMED);
-            Behavior expectedBehavior = deviceIdToBehavior.get(device.getDeviceId());
-            
-            // behavior
-            DataStreamingConfig expectedConfig = convertBehaviorToConfig(expectedBehavior);
-            // behavior report
-            DataStreamingConfig reportedConfig = convertBehaviorToConfig(reportedBehavior);
-                    
-            boolean hasDiscrepancy = hasDiscrepancy(expectedConfig, reportedConfig);
-            
+                                
             if (!isComplete()) {
                 // Add to result
-                if (hasDiscrepancy) {
-                    // mark device as failed
-                    deviceGroupMemberEditorDao.addDevices(failedGroup, device);
-                } else {
-                    // mark device as success
-                    deviceGroupMemberEditorDao.addDevices(successGroup, device);
-                }
+                // mark device as success
+                deviceGroupMemberEditorDao.addDevices(successGroup, device);
             }
             
             handleReportedDataStreamingConfig(device, config, reportedBehavior);
