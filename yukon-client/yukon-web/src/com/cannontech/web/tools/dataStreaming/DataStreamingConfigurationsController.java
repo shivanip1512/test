@@ -74,7 +74,7 @@ import com.google.common.collect.Ordering;
 @RequestMapping("/dataStreaming/*")
 @CheckCparm(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED)
 public class DataStreamingConfigurationsController {
-    
+
     private final static String baseKey = "yukon.web.modules.tools.dataStreaming.";
 
     @Autowired private DataStreamingService dataStreamingService;
@@ -85,14 +85,14 @@ public class DataStreamingConfigurationsController {
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceDao deviceDao;
-    
+
     private static final List<Integer> intervals = ImmutableList.of(1, 3, 5, 15, 30);
-    
+
     private Map<ConfigurationSortBy, Comparator<DataStreamingConfig>> sorters;
     private Map<SummarySortBy, Comparator<SummarySearchResult>> summarySorters;
     private Map<DiscrepancySortBy, Comparator<DiscrepancyResult>> discrepancySorters;
 
-    
+
     @PostConstruct
     public void initialize() {
         Builder<ConfigurationSortBy, Comparator<DataStreamingConfig>> builder = ImmutableMap.builder();
@@ -117,7 +117,7 @@ public class DataStreamingConfigurationsController {
         discrepancyBuilder.put(DiscrepancySortBy.lastCommunicated, getLastCommunicatedComparator());
         discrepancySorters = discrepancyBuilder.build();
     }
-    
+
     @RequestMapping("configurations")
     public String configurations(@DefaultSort(dir=Direction.asc, sort="attributes") SortingParameters sorting, PagingParameters paging, ModelMap model, YukonUserContext userContext) throws ServletException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -131,7 +131,7 @@ public class DataStreamingConfigurationsController {
             config.getName();
             config.setNumberOfDevices(configsAndDevices.get(config).getDeviceCount());
         });
-        
+
         SearchResults<DataStreamingConfig> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
         int itemsPerPage = paging.getItemsPerPage();
@@ -139,7 +139,7 @@ public class DataStreamingConfigurationsController {
 
         ConfigurationSortBy sortBy = ConfigurationSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
-        
+
         List<DataStreamingConfig> itemList = Lists.newArrayList(existingConfigs);
 
         Comparator<DataStreamingConfig> comparator = sorters.get(sortBy);
@@ -147,7 +147,7 @@ public class DataStreamingConfigurationsController {
             comparator = Collections.reverseOrder(comparator);
         }
         Collections.sort(itemList, comparator);
-        
+
         List<SortableColumn> columns = new ArrayList<>();
         for (ConfigurationSortBy column : ConfigurationSortBy.values()) {
             String text = accessor.getMessage(column);
@@ -155,17 +155,17 @@ public class DataStreamingConfigurationsController {
             columns.add(col);
             model.addAttribute(column.name(), col);
         }
-        
+
         itemList = itemList.subList(startIndex, endIndex);
         searchResult.setBounds(startIndex, itemsPerPage, existingConfigs.size());
         searchResult.setResultList(itemList);
-        
+
         model.addAttribute("existingConfigs", searchResult);
         model.addAttribute("configsAndDevices", configsAndDevices);
 
         return "../dataStreaming/configurations.jsp";
     }
-    
+
     @RequestMapping("createTemporaryGroup")
     public String createTemporaryGroup(HttpServletRequest request) {
 
@@ -181,18 +181,18 @@ public class DataStreamingConfigurationsController {
             SimpleDevice device = deviceDao.getYukonDevice(deviceIdInt);
             devices.add(device);
         }
-        
+
         deviceGroupMemberEditorDao.addDevices(deviceGroup,  devices);
-        
+
         return "redirect:" + redirectUrl + "?collectionType=group&group.name=" + deviceGroup.getFullName();
-            
+
     }
-    
+
     @RequestMapping("summary")
     public String summary(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
-                          PagingParameters paging, ModelMap model, YukonUserContext userContext, 
-                          HttpServletRequest request, FlashScope flash) throws ServletException {
-        
+            PagingParameters paging, ModelMap model, YukonUserContext userContext, 
+            HttpServletRequest request, FlashScope flash) throws ServletException {
+
         List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
         Collections.sort(gateways);
         model.addAttribute("gateways", gateways);
@@ -204,36 +204,36 @@ public class DataStreamingConfigurationsController {
         List<BuiltInAttribute> attributes = new ArrayList<>(dataStreamingAttributeHelper.getAllSupportedAttributes());
         attributes.sort((a1, a2) -> a1.getDescription().compareTo(a2.getDescription()));
         model.addAttribute("searchAttributes", attributes);
-        
+
         model.addAttribute("searchIntervals", intervals);
         getSummaryResults(model, flash, sorting, paging, userContext, request);
-        
+
         return "../dataStreaming/summary.jsp";
     }
-    
+
     @RequestMapping("summaryResults")
     public String summaryResults(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
-                                 PagingParameters paging, ModelMap model, YukonUserContext userContext, 
-                                 HttpServletRequest request, FlashScope flash) throws ServletException {
-        
+            PagingParameters paging, ModelMap model, YukonUserContext userContext, 
+            HttpServletRequest request, FlashScope flash) throws ServletException {
+
         getSummaryResults(model, flash, sorting, paging, userContext, request);
         return "../dataStreaming/summaryResults.jsp";
     }
-    
+
     private void getSummaryResults(ModelMap model, FlashScope flash, SortingParameters sorting, PagingParameters paging, 
-                                   YukonUserContext userContext, HttpServletRequest request) {
-        
+            YukonUserContext userContext, HttpServletRequest request) {
+
         SearchResults<SummarySearchResult> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
         int itemsPerPage = paging.getItemsPerPage();
-        
+
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         SummarySearchCriteria searchFilter = new SummarySearchCriteria();
         int selectedConfiguration = ServletRequestUtils.getIntParameter(request, "selectedConfiguration", -1);
         searchFilter.setSelectedConfiguration(selectedConfiguration);
-        Integer[] gatewaysSelected = ArrayUtils.toObject(ServletRequestUtils.getIntParameters(request, "gatewaysSelect"));
+        Integer[] gatewaysSelected = ArrayUtils.toObject(ServletRequestUtils.getIntParameters(request,"selectedGatewayIds"));
         searchFilter.setSelectedGatewayIds(Arrays.asList(gatewaysSelected));
-        String[] attributesSelected = ServletRequestUtils.getStringParameters(request, "attributesSelect");
+        String[] attributesSelected = ServletRequestUtils.getStringParameters(request, "selectedAttributes");
         int selectedInterval = ServletRequestUtils.getIntParameter(request, "selectedInterval", -1);
         searchFilter.setSelectedInterval(selectedInterval);
         searchFilter.setSelectedAttributes(Arrays.asList(attributesSelected));
@@ -244,7 +244,7 @@ public class DataStreamingConfigurationsController {
         } catch (ServletRequestBindingException e) {
             searchFilter.setMinLoadPercent(null);
         }
-        
+
         try {
             Double maxPercent = ServletRequestUtils.getDoubleParameter(request,  "maxLoadPercent");
             searchFilter.setMaxLoadPercent(maxPercent);
@@ -252,9 +252,9 @@ public class DataStreamingConfigurationsController {
             searchFilter.setMaxLoadPercent(null);
         }
         model.addAttribute("searchFilters", searchFilter);
-        
+
         List<SummarySearchResult> results = new ArrayList<>();
-        
+
         if (searchFilter.getMaxLoadPercent() != null && searchFilter.getMinLoadPercent() != null && searchFilter.getMaxLoadPercent() < searchFilter.getMinLoadPercent()) {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.tools.dataStreaming.summary.filter.maxLessThanMinError"));
         } else {
@@ -264,12 +264,12 @@ public class DataStreamingConfigurationsController {
                 flash.setError(e.getMessageSourceResolvable());
             }
         }
-        
+
         int endIndex = Math.min(startIndex + itemsPerPage, results.size());
 
         SummarySortBy sortBy = SummarySortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
-        
+
         List<SummarySearchResult> itemList = Lists.newArrayList(results);
 
         Comparator<SummarySearchResult> comparator = summarySorters.get(sortBy);
@@ -277,7 +277,7 @@ public class DataStreamingConfigurationsController {
             comparator = Collections.reverseOrder(comparator);
         }
         Collections.sort(itemList, comparator);
-        
+
         List<SortableColumn> columns = new ArrayList<>();
         for (SummarySortBy column : SummarySortBy.values()) {
             String text = accessor.getMessage(column);
@@ -285,13 +285,13 @@ public class DataStreamingConfigurationsController {
             columns.add(col);
             model.addAttribute(column.name(), col);
         }
-        
+
         itemList = itemList.subList(startIndex, endIndex);
         searchResult.setBounds(startIndex, itemsPerPage, results.size());
         searchResult.setResultList(itemList);
-        
+
         model.addAttribute("searchResults", searchResult);
-        
+
         List<Integer> deviceIds = new ArrayList<>();
         results.forEach(device -> deviceIds.add(device.getMeter().getPaoIdentifier().getPaoId()));
         DeviceCollection deviceCollection = dcProducer.createDeviceCollection(deviceIds, null);
@@ -300,9 +300,9 @@ public class DataStreamingConfigurationsController {
                 .map(i -> i.toString())
                 .collect(Collectors.joining(","));
         model.addAttribute("deviceIds", deviceIdList);
-        
+
     }
-    
+
     private List<SummarySearchResult> getSearchResults(SummarySearchCriteria criteria, MessageSourceAccessor accessor) throws DataStreamingConfigException {
         List<SummarySearchResult> results = dataStreamingService.search(criteria);
         for(SummarySearchResult result: results){
@@ -310,7 +310,7 @@ public class DataStreamingConfigurationsController {
         }
         return results;
     }
-    
+
     @RequestMapping(value = "exportSearch")
     public String exportSearchResults(ModelMap model, FlashScope flash, SummarySearchCriteria criteria,
             HttpServletResponse response,
@@ -329,9 +329,9 @@ public class DataStreamingConfigurationsController {
     }
     private void downloadSearchResults(SummarySearchCriteria criteria, HttpServletResponse response, MessageSourceAccessor accessor)
             throws DataStreamingConfigException, IOException {
-        
+
         List<SummarySearchResult> results = getSearchResults(criteria, accessor);
-        
+
         List<String> columnNames = Lists.newArrayList();
 
         columnNames.add(accessor.getMessage("yukon.web.modules.tools.dataStreaming.summary.results.deviceName"));
@@ -341,13 +341,13 @@ public class DataStreamingConfigurationsController {
         columnNames.add(accessor.getMessage("yukon.web.modules.tools.dataStreaming.summary.results.gatewayLoading"));
         columnNames.add(accessor.getMessage("yukon.web.modules.tools.dataStreaming.summary.results.attributes"));
         columnNames.add(accessor.getMessage("yukon.web.modules.tools.dataStreaming.summary.results.interval"));
-        
+
         List<List<String>> dataGrid = getGrid(results, accessor);
-        
+
         String csvFileName = accessor.getMessage("yukon.web.modules.tools.dataStreaming.summary.results.exportFileName");
         WebFileUtils.writeToCSV(response, columnNames, dataGrid, csvFileName + ".csv");
     }
-    
+
     private List<List<String>> getGrid(List<SummarySearchResult> results, MessageSourceAccessor accessor){
         List<List<String>> lists = new ArrayList<>();
         for(SummarySearchResult result: results){
@@ -364,7 +364,7 @@ public class DataStreamingConfigurationsController {
         }
         return lists;
     }
-    
+
     @RequestMapping("discrepancies")
     public String discrepancies(@DefaultSort(dir=Direction.asc, sort="device") SortingParameters sorting, PagingParameters paging, ModelMap model, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
@@ -388,7 +388,7 @@ public class DataStreamingConfigurationsController {
 
         DiscrepancySortBy sortBy = DiscrepancySortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
-        
+
         List<DiscrepancyResult>itemList = Lists.newArrayList(discrepancies);
 
         Comparator<DiscrepancyResult> comparator = discrepancySorters.get(sortBy);
@@ -396,7 +396,7 @@ public class DataStreamingConfigurationsController {
             comparator = Collections.reverseOrder(comparator);
         }
         Collections.sort(itemList, comparator);
-        
+
         List<SortableColumn> columns = new ArrayList<>();
         for (DiscrepancySortBy column : DiscrepancySortBy.values()) {
             String text = accessor.getMessage(column);
@@ -404,23 +404,23 @@ public class DataStreamingConfigurationsController {
             columns.add(col);
             model.addAttribute(column.name(), col);
         }
-        
+
         itemList = itemList.subList(startIndex, endIndex);
         searchResult.setBounds(startIndex, itemsPerPage, discrepancies.size());
         searchResult.setResultList(itemList);
 
         model.addAttribute("discrepancies", searchResult);
-        
+
         List<Integer> deviceIds = new ArrayList<>();
         itemList.forEach(discrepancy -> deviceIds.add(discrepancy.getDeviceId()));
         String deviceIdList = deviceIds.stream()
                 .map(i -> i.toString())
                 .collect(Collectors.joining(","));
         model.addAttribute("deviceIds", deviceIdList);
-        
+
         return "../dataStreaming/discrepancies.jsp";
     }
-    
+
     @RequestMapping("discrepancies/{deviceId}/resend")
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String resendDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext,
@@ -441,7 +441,7 @@ public class DataStreamingConfigurationsController {
         }
         return "redirect:/bulk/dataStreaming/dataStreamingResults";
     }
-    
+
     @RequestMapping("discrepancies/{deviceId}/accept")
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String acceptDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
@@ -451,19 +451,19 @@ public class DataStreamingConfigurationsController {
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptSuccess"));
         return "redirect:/tools/dataStreaming/discrepancies";
     }
-    
+
     @RequestMapping("discrepancies/{deviceId}/remove")
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String removeDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext,
             FlashScope flash) {
         LiteYukonUser user = userContext.getYukonUser();
-        
+
         DataStreamingConfigResult result = dataStreamingService.deleteDataStreamingReportAndUnassignConfig(deviceId, user);
         model.addAttribute("resultsId", result.getResultsId());
         return "redirect:/bulk/dataStreaming/dataStreamingResults";
 
     }
-    
+
     @RequestMapping(value="discrepancies/resendAll", method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String resendAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash,
@@ -477,7 +477,7 @@ public class DataStreamingConfigurationsController {
         String redirectUrl = "redirect:/tools/dataStreaming/discrepancies" + getSortingPagingParameters(sorting, paging);
 
         LiteYukonUser user = userContext.getYukonUser();
-    
+
         DataStreamingConfigResult result;
         try {
             result = dataStreamingService.resend(deviceList, user);
@@ -490,13 +490,13 @@ public class DataStreamingConfigurationsController {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError"));
             } else {
                 flash.setError(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError.resending",
-                    result.getAcceptedWithErrorFailedDeviceCount(), result.getTotalItems()));
+                        result.getAcceptedWithErrorFailedDeviceCount(), result.getTotalItems()));
             }
         }
         model.addAttribute("resultsId", result.getResultsId());
         return "redirect:/bulk/dataStreaming/dataStreamingResults";
     }
-    
+
     @RequestMapping(value="discrepancies/acceptAll", method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String acceptAll(ModelMap model, HttpServletRequest request, YukonUserContext userContext, FlashScope flash, PagingParameters paging, SortingParameters sorting) {
@@ -507,18 +507,18 @@ public class DataStreamingConfigurationsController {
             deviceList.add(Integer.parseInt(deviceId));
         }
         LiteYukonUser user = userContext.getYukonUser();
-        
+
         dataStreamingService.accept(deviceList, user);
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptAllSuccess"));
         return "redirect:/tools/dataStreaming/discrepancies" + getSortingPagingParameters(sorting, paging);
     }
-    
+
     private String getSortingPagingParameters(SortingParameters sorting, PagingParameters paging) {
         return "?page=" + paging.getPage() + "&itemsPerPage=" + paging.getItemsPerPage() + "&sort=" + sorting.getSort() + "&dir=" + sorting.getDirection();
     }
-    
+
     public enum DiscrepancySortBy implements DisplayableEnum {
-        
+
         device,
         expectedAttributes,
         actualAttributes,
@@ -530,69 +530,69 @@ public class DataStreamingConfigurationsController {
             return "yukon.web.modules.tools.dataStreaming.discrepancies." + name();
         }
     }
-    
+
     private Comparator<DiscrepancyResult> getDeviceComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<DiscrepancyResult> nameOrdering = normalStringComparer
-            .onResultOf(new Function<DiscrepancyResult, String>() {
-                @Override
-                public String apply(DiscrepancyResult from) {
-                    return from.getPaoName();
-                }
-            });
+                .onResultOf(new Function<DiscrepancyResult, String>() {
+                    @Override
+                    public String apply(DiscrepancyResult from) {
+                        return from.getPaoName();
+                    }
+                });
         return nameOrdering;
     }
-    
+
     private Comparator<DiscrepancyResult> getExpectedAttributesComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<DiscrepancyResult> attOrdering = normalStringComparer
-            .onResultOf(new Function<DiscrepancyResult, String>() {
-                @Override
-                public String apply(DiscrepancyResult from) {
-                    return from.getExpected().getCommaDelimitedAttributesOnOff();
-                }
-            });
+                .onResultOf(new Function<DiscrepancyResult, String>() {
+                    @Override
+                    public String apply(DiscrepancyResult from) {
+                        return from.getExpected().getCommaDelimitedAttributesOnOff();
+                    }
+                });
         return attOrdering;
     }
-    
+
     private Comparator<DiscrepancyResult> getActualAttributesComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<DiscrepancyResult> attOrdering = normalStringComparer
-            .onResultOf(new Function<DiscrepancyResult, String>() {
-                @Override
-                public String apply(DiscrepancyResult from) {
-                    return from.getActual().getCommaDelimitedAttributesOnOff();
-                }
-            });
+                .onResultOf(new Function<DiscrepancyResult, String>() {
+                    @Override
+                    public String apply(DiscrepancyResult from) {
+                        return from.getActual().getCommaDelimitedAttributesOnOff();
+                    }
+                });
         return attOrdering;
     }
-    
+
     private Comparator<DiscrepancyResult> getStatusComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<DiscrepancyResult> statusOrdering = normalStringComparer
-            .onResultOf(new Function<DiscrepancyResult, String>() {
-                @Override
-                public String apply(DiscrepancyResult from) {
-                    return from.getStatus().name();
-                }
-            });
+                .onResultOf(new Function<DiscrepancyResult, String>() {
+                    @Override
+                    public String apply(DiscrepancyResult from) {
+                        return from.getStatus().name();
+                    }
+                });
         return statusOrdering;
     }
-    
+
     private Comparator<DiscrepancyResult> getLastCommunicatedComparator() {
         Ordering<Instant> instantComparer = Ordering.natural();
         Ordering<DiscrepancyResult> statusOrdering = instantComparer
-            .onResultOf(new Function<DiscrepancyResult, Instant>() {
-                @Override
-                public Instant apply(DiscrepancyResult from) {
-                    return from.getLastCommunicated();
-                }
-            });
+                .onResultOf(new Function<DiscrepancyResult, Instant>() {
+                    @Override
+                    public Instant apply(DiscrepancyResult from) {
+                        return from.getLastCommunicated();
+                    }
+                });
         return statusOrdering;
     }
-    
+
     public enum SummarySortBy implements DisplayableEnum {
-        
+
         deviceName,
         deviceType,
         serialNumber,
@@ -606,94 +606,94 @@ public class DataStreamingConfigurationsController {
             return "yukon.web.modules.tools.dataStreaming.summary.results." + name();
         }
     }
-    
+
     private Comparator<SummarySearchResult> getDeviceNameComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<SummarySearchResult> nameOrdering = normalStringComparer
-            .onResultOf(new Function<SummarySearchResult, String>() {
-                @Override
-                public String apply(SummarySearchResult from) {
-                    return from.getMeter().getName();
-                }
-            });
+                .onResultOf(new Function<SummarySearchResult, String>() {
+                    @Override
+                    public String apply(SummarySearchResult from) {
+                        return from.getMeter().getName();
+                    }
+                });
         return nameOrdering;
     }
-    
+
     private Comparator<SummarySearchResult> getDeviceTypeComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<SummarySearchResult> typeOrdering =
-            normalStringComparer.onResultOf(new Function<SummarySearchResult, String>() {
-                @Override
-                public String apply(SummarySearchResult from) {
-                    return from.getMeter().getPaoIdentifier().getPaoType().getPaoTypeName();
-                }
-            });
+                normalStringComparer.onResultOf(new Function<SummarySearchResult, String>() {
+                    @Override
+                    public String apply(SummarySearchResult from) {
+                        return from.getMeter().getPaoIdentifier().getPaoType().getPaoTypeName();
+                    }
+                });
         return typeOrdering;
     }
-    
+
     private Comparator<SummarySearchResult> getSerialNumberComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<SummarySearchResult> meterNumberOrdering = normalStringComparer
-            .onResultOf(new Function<SummarySearchResult, String>() {
-                @Override
-                public String apply(SummarySearchResult from) {
-                    return from.getMeter().getRfnIdentifier().getSensorSerialNumber();
-                }
-            });
+                .onResultOf(new Function<SummarySearchResult, String>() {
+                    @Override
+                    public String apply(SummarySearchResult from) {
+                        return from.getMeter().getRfnIdentifier().getSensorSerialNumber();
+                    }
+                });
         return meterNumberOrdering;
     }
-    
+
     private Comparator<SummarySearchResult> getGatewayNameComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<SummarySearchResult> gatewayOrdering = normalStringComparer
-            .onResultOf(new Function<SummarySearchResult, String>() {
-                @Override
-                public String apply(SummarySearchResult from) {
-                    return from.getGateway().getName();
-                }
-            });
+                .onResultOf(new Function<SummarySearchResult, String>() {
+                    @Override
+                    public String apply(SummarySearchResult from) {
+                        return from.getGateway().getName();
+                    }
+                });
         return gatewayOrdering;
     }
-    
+
     private Comparator<SummarySearchResult> getGatewayLoadingComparator() {
         Ordering<Double> normalDoubleComparer = Ordering.natural();
         Ordering<SummarySearchResult> doubleOrdering = normalDoubleComparer
-            .onResultOf(new Function<SummarySearchResult, Double>() {
-                @Override
-                public Double apply(SummarySearchResult from) {
-                    return from.getGateway().getData().getDataStreamingLoadingPercent();
-                }
-            });
+                .onResultOf(new Function<SummarySearchResult, Double>() {
+                    @Override
+                    public Double apply(SummarySearchResult from) {
+                        return from.getGateway().getData().getDataStreamingLoadingPercent();
+                    }
+                });
         return doubleOrdering;
     }
-    
+
     private Comparator<SummarySearchResult> getSummaryAttributesComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<SummarySearchResult> attOrdering = normalStringComparer
-            .onResultOf(new Function<SummarySearchResult, String>() {
-                @Override
-                public String apply(SummarySearchResult from) {
-                    return from.getConfig().getCommaDelimitedAttributes();
-                }
-            });
+                .onResultOf(new Function<SummarySearchResult, String>() {
+                    @Override
+                    public String apply(SummarySearchResult from) {
+                        return from.getConfig().getCommaDelimitedAttributes();
+                    }
+                });
         return attOrdering;
     }
-    
+
     private Comparator<SummarySearchResult> getSummaryIntervalComparator() {
         Ordering<Integer> normalIntComparer = Ordering.natural();
         Ordering<SummarySearchResult> intOrdering = normalIntComparer
-            .onResultOf(new Function<SummarySearchResult, Integer>() {
-                @Override
-                public Integer apply(SummarySearchResult from) {
-                    return from.getConfig().getSelectedInterval();
-                }
-            });
+                .onResultOf(new Function<SummarySearchResult, Integer>() {
+                    @Override
+                    public Integer apply(SummarySearchResult from) {
+                        return from.getConfig().getSelectedInterval();
+                    }
+                });
         return intOrdering;
     }
 
-    
+
     public enum ConfigurationSortBy implements DisplayableEnum {
-        
+
         attributes,
         interval,
         numberOfDevices;
@@ -703,40 +703,40 @@ public class DataStreamingConfigurationsController {
             return "yukon.web.modules.tools.dataStreaming." + name();
         }
     }
-    
+
     private Comparator<DataStreamingConfig> getIntervalComparator() {
         Ordering<Integer> normalIntComparer = Ordering.natural();
         Ordering<DataStreamingConfig> intOrdering = normalIntComparer
-            .onResultOf(new Function<DataStreamingConfig, Integer>() {
-                @Override
-                public Integer apply(DataStreamingConfig from) {
-                    return from.getSelectedInterval();
-                }
-            });
+                .onResultOf(new Function<DataStreamingConfig, Integer>() {
+                    @Override
+                    public Integer apply(DataStreamingConfig from) {
+                        return from.getSelectedInterval();
+                    }
+                });
         return intOrdering;
     }
-    
+
     private Comparator<DataStreamingConfig> getAttributesComparator() {
         Ordering<String> normalStringComparer = Ordering.natural();
         Ordering<DataStreamingConfig> attOrdering = normalStringComparer
-            .onResultOf(new Function<DataStreamingConfig, String>() {
-                @Override
-                public String apply(DataStreamingConfig from) {
-                    return from.getCommaDelimitedAttributes();
-                }
-            });
+                .onResultOf(new Function<DataStreamingConfig, String>() {
+                    @Override
+                    public String apply(DataStreamingConfig from) {
+                        return from.getCommaDelimitedAttributes();
+                    }
+                });
         return attOrdering;
     }
-    
+
     private Comparator<DataStreamingConfig> getNumberOfDevicesComparator() {
         Ordering<Integer> normalIntComparer = Ordering.natural();
         Ordering<DataStreamingConfig> intOrdering = normalIntComparer
-            .onResultOf(new Function<DataStreamingConfig, Integer>() {
-                @Override
-                public Integer apply(DataStreamingConfig from) {
-                    return from.getNumberOfDevices();
-                }
-            });
+                .onResultOf(new Function<DataStreamingConfig, Integer>() {
+                    @Override
+                    public Integer apply(DataStreamingConfig from) {
+                        return from.getNumberOfDevices();
+                    }
+                });
         return intOrdering;
     }
 }
