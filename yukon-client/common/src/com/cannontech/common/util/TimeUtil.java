@@ -339,4 +339,24 @@ public static int differenceMinutes(Date from, Date to) {
         int hourOfDay = dateTime.getHourOfDay();
         return dateTime.withTime(hourOfDay, 0, 0, 0);
     }
+    
+    /**
+     * @return The date that comes first, chronologically. If they represent the same date, the first object is returned.
+     */
+    public static DateTime getLeastRecent(DateTime time1, DateTime time2) {
+        if (time1.isAfter(time2)) {
+            return time2;
+        }
+        return time1;
+    }
+    
+    /**
+     * @return The date that comes last, chronologically. If they represent the same date, the first object is returned.
+     */
+    public static DateTime getMostRecent(DateTime time1, DateTime time2) {
+        if (time1.isBefore(time2)) {
+            return time2;
+        }
+        return time1;
+    }
 }

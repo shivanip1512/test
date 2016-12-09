@@ -9,7 +9,6 @@ import java.util.Map;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
-import com.cannontech.dr.honeywellWifi.DatedRuntimeStatus;
 import com.cannontech.dr.service.RuntimeCalcService;
 
 public class RuntimeCalcServiceImpl implements RuntimeCalcService {
@@ -67,7 +66,8 @@ public class RuntimeCalcServiceImpl implements RuntimeCalcService {
         } else {
             // This period is contained within an hour
             int runtimeSeconds = getRuntimeSecondsWithinHour(isRuntime, previousStatus.getDate(), currentStatus.getDate());
-            hourlyRuntimeSeconds.put(startOfCurrentHour, runtimeSeconds);
+            //add runtime as hour-ending
+            hourlyRuntimeSeconds.put(roundUpToNextHour(currentStatus.getDate()), runtimeSeconds);
         }
         
         return hourlyRuntimeSeconds;
@@ -98,7 +98,8 @@ public class RuntimeCalcServiceImpl implements RuntimeCalcService {
         // Calculate all hours prior to the last one
         while (endOfInternalPeriod.isBefore(startOfFinalHour) || endOfInternalPeriod.equals(startOfFinalHour)) {
             int runtimeSeconds = getRuntimeSecondsWithinHour(isRuntime, startOfInternalPeriod, endOfInternalPeriod);
-            hourlyRuntimeSeconds.put(getStartOfHour(startOfInternalPeriod), runtimeSeconds);
+            //add runtime as hour-ending
+            hourlyRuntimeSeconds.put(roundUpToNextHour(startOfInternalPeriod), runtimeSeconds);
             startOfInternalPeriod = endOfInternalPeriod;
             endOfInternalPeriod = endOfInternalPeriod.plus(Duration.standardHours(1));
         }
@@ -106,7 +107,8 @@ public class RuntimeCalcServiceImpl implements RuntimeCalcService {
         // Calculate the last hour (or skip if the end of the period is exactly at the top of the hour)
         if (!startOfFinalHour.equals(endOfRuntimePeriod)) {
             int runtimeSeconds = getRuntimeSecondsWithinHour(isRuntime, startOfFinalHour, endOfRuntimePeriod);
-            hourlyRuntimeSeconds.put(startOfFinalHour, runtimeSeconds);
+            //add runtime as hour-ending
+            hourlyRuntimeSeconds.put(roundUpToNextHour(startOfFinalHour), runtimeSeconds);
         }
         
         return hourlyRuntimeSeconds;

@@ -13,6 +13,7 @@ import javax.annotation.PreDestroy;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -58,6 +59,10 @@ public class HoneywellWifiDataListener {
     private volatile boolean isStopping = false;
     private volatile boolean isStopped = false;
     
+    // For monitoring how up-to-date message processing is
+    private volatile DateTime lastEmptyQueueTime;
+    private volatile DateTime lastProcessedMessageTime;
+    
     @PostConstruct
     public void init() {
         
@@ -82,6 +87,7 @@ public class HoneywellWifiDataListener {
                     message.ifPresent(data -> {
                         try {
                             processMessage(data);
+                            lastProcessedMessageTime = data.getMessageWrapper().getDate().toDateTime();
                             removeMessageFromQueue(data);
                         } catch (Exception e) {
                             log.error("Error processing Honeywell wifi message of type: " + data.getType(), e);
@@ -104,6 +110,14 @@ public class HoneywellWifiDataListener {
         
         log.info("Starting Honeywell wifi data listener.");
         new Thread(thread).start();
+    }
+    
+    public DateTime getLastEmptyQueueTime() {
+        return lastEmptyQueueTime;
+    }
+    
+    public DateTime getLastProcessedMessageTime() {
+        return lastProcessedMessageTime;
     }
     
     @PreDestroy
@@ -155,6 +169,7 @@ public class HoneywellWifiDataListener {
         // No more messages on the queue
         if (message == null || message.getMessageId() == null) {
             log.debug("No messages available. (Message or messageId null)");
+            lastEmptyQueueTime = DateTime.now();
             return Optional.empty();
         }
         

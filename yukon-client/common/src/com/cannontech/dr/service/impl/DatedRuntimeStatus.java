@@ -1,8 +1,6 @@
-package com.cannontech.dr.honeywellWifi;
+package com.cannontech.dr.service.impl;
 
 import org.joda.time.DateTime;
-
-import com.cannontech.dr.service.impl.RuntimeStatus;
 
 /**
  * Object representation of DR device relay state at a particular point in time, for calculating runtime.

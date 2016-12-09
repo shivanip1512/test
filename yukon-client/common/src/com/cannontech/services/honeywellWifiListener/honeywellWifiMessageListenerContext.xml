@@ -7,6 +7,8 @@
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
   http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
     
+    <context:annotation-config/>
+    
     <bean class="com.cannontech.dr.honeywellWifi.HoneywellWifiDataListener"/>
     <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.UiDataBasicEventProcessor"/>
     <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.DemandResponseEventProcessor"/>
@@ -14,17 +16,17 @@
     <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.ConnectionStatusEventProcessor"/>
     <bean class="com.cannontech.dr.honeywellWifi.azure.event.processing.ApplicationAccessAddedEventProcessor"/>
     
-    <context:annotation-config/>
+    <bean class="com.cannontech.dr.honeywellWifi.HoneywellWifiRuntimeCalcServiceImpl" />
     
     <bean id="honeywellWifiMessageListener" class="com.cannontech.dr.honeywellWifi.HoneywellWifiMessageListener"/>
 
-	<jms:listener-container connection-factory="connectionFactory"
-		destination-type="queue" concurrency="1" container-type="simple"
-		container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
-		<jms:listener destination="yukon.notif.stream.dr.HoneywellCyclingControlMessage"
-			ref="honeywellWifiMessageListener" method="handleLMHoneywellCyclingControlMessage" />
-		<jms:listener destination="yukon.notif.stream.dr.HoneywellRestoreMessage"
-			ref="honeywellWifiMessageListener" method="handleLMHoneywellRestoreMessage" />
-	</jms:listener-container>
-  
+    <jms:listener-container connection-factory="connectionFactory"
+        destination-type="queue" concurrency="1" container-type="simple"
+        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="yukon.notif.stream.dr.HoneywellCyclingControlMessage"
+            ref="honeywellWifiMessageListener" method="handleLMHoneywellCyclingControlMessage" />
+        <jms:listener destination="yukon.notif.stream.dr.HoneywellRestoreMessage"
+            ref="honeywellWifiMessageListener" method="handleLMHoneywellRestoreMessage" />
+    </jms:listener-container>
+    
 </beans>

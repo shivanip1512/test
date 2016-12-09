@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.joda.time.DateTime;
 
-import com.cannontech.dr.honeywellWifi.DatedRuntimeStatus;
+import com.cannontech.dr.service.impl.DatedRuntimeStatus;
 
 /**
  * A service for calculating runtimes for DR devices, based upon sequences of DatedRuntimeStatuses.

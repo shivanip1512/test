@@ -179,4 +179,68 @@ public class PointData extends com.cannontech.message.util.Message implements Po
             tags &= ~TAG_POINT_DATA_TIMESTAMP_VALID;
         }
     }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + id;
+        result = prime * result + (int) (millis ^ (millis >>> 32));
+        result = prime * result + ((pointQuality == null) ? 0 : pointQuality.hashCode());
+        result = prime * result + ((str == null) ? 0 : str.hashCode());
+        result = prime * result + (int) (tags ^ (tags >>> 32));
+        result = prime * result + ((time == null) ? 0 : time.hashCode());
+        result = prime * result + type;
+        long temp;
+        temp = Double.doubleToLongBits(value);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        PointData other = (PointData) obj;
+        if (id != other.id) {
+            return false;
+        }
+        if (millis != other.millis) {
+            return false;
+        }
+        if (pointQuality != other.pointQuality) {
+            return false;
+        }
+        if (str == null) {
+            if (other.str != null) {
+                return false;
+            }
+        } else if (!str.equals(other.str)) {
+            return false;
+        }
+        if (tags != other.tags) {
+            return false;
+        }
+        if (time == null) {
+            if (other.time != null) {
+                return false;
+            }
+        } else if (!time.equals(other.time)) {
+            return false;
+        }
+        if (type != other.type) {
+            return false;
+        }
+        if (Double.doubleToLongBits(value) != Double.doubleToLongBits(other.value)) {
+            return false;
+        }
+        return true;
+    }
 }

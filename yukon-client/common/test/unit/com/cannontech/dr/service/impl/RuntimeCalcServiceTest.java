@@ -14,24 +14,23 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.cannontech.dr.honeywellWifi.DatedRuntimeStatus;
 import com.cannontech.dr.service.RuntimeCalcService;
 
 public class RuntimeCalcServiceTest {
     
     private static final DateTimeFormatter dtFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss").withZoneUTC(); 
-    private static DateTime hour10;
     private static DateTime hour11;
     private static DateTime hour12;
+    private static DateTime hour13;
     
     private static RuntimeCalcService runtimeCalcService;
     private static List<DatedRuntimeStatus> statuses;
     
     @BeforeClass
     public static void init() {
-        hour10 = dtFormatter.parseDateTime("10/10/2016 10:00:00");
         hour11 = dtFormatter.parseDateTime("10/10/2016 11:00:00");
         hour12 = dtFormatter.parseDateTime("10/10/2016 12:00:00");
+        hour13 = dtFormatter.parseDateTime("10/10/2016 13:00:00");
     }
     
     @Before
@@ -76,7 +75,7 @@ public class RuntimeCalcServiceTest {
         Map<DateTime, Integer> hourlyRuntimeSeconds = runtimeCalcService.getHourlyRuntimeSeconds(statuses);
         
         // device is off during measured period, runtime of 0 should be recorded
-        assertThat("10:00 hour runtime", hourlyRuntimeSeconds.get(hour10), equalTo(0)); 
+        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(0)); 
         assertThat("hourly runtimes size", hourlyRuntimeSeconds.size(), equalTo(1));
     }
     
@@ -89,7 +88,7 @@ public class RuntimeCalcServiceTest {
         Map<DateTime, Integer> hourlyRuntimeSeconds = runtimeCalcService.getHourlyRuntimeSeconds(statuses);
         
         // 10:10-10:30 = 20 minutes (1200 seconds)
-        assertThat("10:00 hour runtime", hourlyRuntimeSeconds.get(hour10), equalTo(1200));
+        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(1200));
         assertThat("hourly runtimes size", hourlyRuntimeSeconds.size(), equalTo(1));
     }
     
@@ -102,8 +101,8 @@ public class RuntimeCalcServiceTest {
         Map<DateTime, Integer> hourlyRuntimeSeconds = runtimeCalcService.getHourlyRuntimeSeconds(statuses);
         
         // device is off during measured periods, runtimes of 0 should be recorded
-        assertThat("10:00 hour runtime", hourlyRuntimeSeconds.get(hour10), equalTo(0)); 
-        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(0));
+        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(0)); 
+        assertThat("12:00 hour runtime", hourlyRuntimeSeconds.get(hour12), equalTo(0));
         assertThat("hourly runtimes size", hourlyRuntimeSeconds.size(), equalTo(2));
     }
     
@@ -117,8 +116,8 @@ public class RuntimeCalcServiceTest {
         
         // 10:50-11:00 = 10 minutes (600 seconds)
         // 11:00-11:10 = 10 minutes (600 seconds)
-        assertThat("10:00 hour runtime", hourlyRuntimeSeconds.get(hour10), equalTo(600)); 
-        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(600));
+        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(600)); 
+        assertThat("12:00 hour runtime", hourlyRuntimeSeconds.get(hour12), equalTo(600));
         assertThat("hourly runtimes size", hourlyRuntimeSeconds.size(), equalTo(2));
     }
     
@@ -131,9 +130,9 @@ public class RuntimeCalcServiceTest {
         Map<DateTime, Integer> hourlyRuntimeSeconds = runtimeCalcService.getHourlyRuntimeSeconds(statuses);
         
         // device is off during measured periods, runtimes of 0 should be recorded
-        assertThat("10:00 hour runtime", hourlyRuntimeSeconds.get(hour10), equalTo(0)); 
-        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(0));
+        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(0)); 
         assertThat("12:00 hour runtime", hourlyRuntimeSeconds.get(hour12), equalTo(0));
+        assertThat("13:00 hour runtime", hourlyRuntimeSeconds.get(hour13), equalTo(0));
         assertThat("hourly runtimes size", hourlyRuntimeSeconds.size(), equalTo(3));
     }
     
@@ -148,9 +147,9 @@ public class RuntimeCalcServiceTest {
         // 10:50-11:00 = 10 minutes (600 seconds)
         // 11:00-12:00 = 60 minutes (3600 seconds)
         // 12:00-12:10 = 10 minutes (600 seconds)
-        assertThat("10:00 hour runtime", hourlyRuntimeSeconds.get(hour10), equalTo(600));
-        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(3600));
-        assertThat("12:00 hour runtime", hourlyRuntimeSeconds.get(hour12), equalTo(600));
+        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(600));
+        assertThat("12:00 hour runtime", hourlyRuntimeSeconds.get(hour12), equalTo(3600));
+        assertThat("13:00 hour runtime", hourlyRuntimeSeconds.get(hour13), equalTo(600));
         assertThat("hourly runtimes size", hourlyRuntimeSeconds.size(), equalTo(3));
     }
     
@@ -170,7 +169,7 @@ public class RuntimeCalcServiceTest {
         // 11:20-11:30 = 10 minutes (600 seconds)
         // 11:50-11:59 = 9m 59s (599 seconds)
         //   hour 11 total: 29m 59s (1799 seconds)
-        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(1799));
+        assertThat("12:00 hour runtime", hourlyRuntimeSeconds.get(hour12), equalTo(1799));
         assertThat("hourly runtimes size", hourlyRuntimeSeconds.size(), equalTo(1));
     }
     
@@ -191,9 +190,9 @@ public class RuntimeCalcServiceTest {
         // 11:20-11:30 = 10 minutes (600 seconds)
         //  (hour 11 total: 20 minutes (1200 seconds))
         // 12:10-12:20 = 10 minutes (600 seconds)
-        assertThat("10:00 hour runtime", hourlyRuntimeSeconds.get(hour10), equalTo(600));
-        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(1200));
-        assertThat("12:00 hour runtime", hourlyRuntimeSeconds.get(hour12), equalTo(600));
+        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(600));
+        assertThat("12:00 hour runtime", hourlyRuntimeSeconds.get(hour12), equalTo(1200));
+        assertThat("13:00 hour runtime", hourlyRuntimeSeconds.get(hour13), equalTo(600));
         assertThat("hourly runtimes size", hourlyRuntimeSeconds.size(), equalTo(3));
     }
     
@@ -210,9 +209,9 @@ public class RuntimeCalcServiceTest {
         // 10:00-11:00 = 60 minutes (3600 seconds)
         // 11:00-12:00 = 0 minutes (0 seconds)
         // 12:00-13:00 = 60 minutes (3600 seconds)
-        assertThat("10:00 hour runtime", hourlyRuntimeSeconds.get(hour10), equalTo(3600));
-        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(0));
-        assertThat("12:00 hour runtime", hourlyRuntimeSeconds.get(hour12), equalTo(3600));
+        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(3600));
+        assertThat("12:00 hour runtime", hourlyRuntimeSeconds.get(hour12), equalTo(0));
+        assertThat("13:00 hour runtime", hourlyRuntimeSeconds.get(hour13), equalTo(3600));
         assertThat("hourly runtimes size", hourlyRuntimeSeconds.size(), equalTo(3));
     }
     
@@ -234,9 +233,9 @@ public class RuntimeCalcServiceTest {
         // 10:00-10:10 = 10 minutes (600 seconds)
         // 11:40-11:50 = 10 minutes (600 seconds)
         // hour12 = 0 minutes (0 seconds)
-        assertThat("10:00 hour runtime", hourlyRuntimeSeconds.get(hour10), equalTo(600));
         assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(600));
-        assertThat("12:00 hour runtime", hourlyRuntimeSeconds.get(hour12), equalTo(0));
+        assertThat("12:00 hour runtime", hourlyRuntimeSeconds.get(hour12), equalTo(600));
+        assertThat("13:00 hour runtime", hourlyRuntimeSeconds.get(hour13), equalTo(0));
         assertThat("hourly runtimes size", hourlyRuntimeSeconds.size(), equalTo(3));
     }
     
@@ -263,9 +262,9 @@ public class RuntimeCalcServiceTest {
         // 12:00-12:10 = 10 minutes (600 seconds)
         // 12:10-12:20 = 10 minutes (600 seconds)
         //  (hour 12 total = 20 minutes (1200 seconds)
-        assertThat("10:00 hour runtime", hourlyRuntimeSeconds.get(hour10), equalTo(1200));
-        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(600));
-        assertThat("12:00 hour runtime", hourlyRuntimeSeconds.get(hour12), equalTo(1200));
+        assertThat("11:00 hour runtime", hourlyRuntimeSeconds.get(hour11), equalTo(1200));
+        assertThat("12:00 hour runtime", hourlyRuntimeSeconds.get(hour12), equalTo(600));
+        assertThat("13:00 hour runtime", hourlyRuntimeSeconds.get(hour13), equalTo(1200));
         assertThat("hourly runtimes size", hourlyRuntimeSeconds.size(), equalTo(3));
     }
     

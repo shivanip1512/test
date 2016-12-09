@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
+import com.cannontech.dr.honeywellWifi.azure.event.DemandResponseEvent;
 import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
 
 public class DemandResponseEventProcessor implements HoneywellWifiDataProcessor {
@@ -16,7 +17,13 @@ public class DemandResponseEventProcessor implements HoneywellWifiDataProcessor 
 
     @Override
     public void processData(HoneywellWifiData data) {
-        log.info("Processing demand response message"); //TODO change to debug
+        log.debug("Processing demand response message: " + data);
+        if (!(data instanceof DemandResponseEvent)) {
+            throw new IllegalArgumentException("Invalid data object passed to processor: " + data.getType());
+        }
+        
+        DemandResponseEvent event = (DemandResponseEvent) data;
+        
         //TODO
     }
 

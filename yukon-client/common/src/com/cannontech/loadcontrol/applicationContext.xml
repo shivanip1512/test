@@ -121,6 +121,8 @@
         <qualifier value="ecobee"/>
     </bean>
     
+    <bean class="com.cannontech.dr.service.impl.RuntimeCalcServiceImpl" />
+    
     <!-- Honeywell Wifi -->
     <bean class="com.cannontech.dr.honeywell.service.impl.HoneywellCommunicationServiceImpl"/>
 
