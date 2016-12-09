@@ -59,7 +59,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     @Autowired private HoneywellWifiThermostatDao honeywellDao;
 
     private static final String createDREventGroupUrlPart = "webapi/api/drEventGroups/";
-    private static final String getGatewayByMacId = "webapi/api/gateways";
+    private static final String getGatewayByMacIdUrlPart = "webapi/api/gateways";
     private static final String cancelDREventForDevicesUrlPart = "api/drEvents/optout/";
     private static final String removeDeviceFromDRGroupUrlPart = "WebAPI/api/drEventGroups/";
     private static final String drEventForGroupUrlPart = "WebAPI/api/drEvents";
@@ -324,7 +324,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         log.debug("Getting Gateway Details for given macid - " + macId);
         int deviceId = 0;
         try {
-            String url = getUrlBase() + getGatewayByMacId;
+            String url = getUrlBase() + getGatewayByMacIdUrlPart;
 
             MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
             HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.GET, null);
