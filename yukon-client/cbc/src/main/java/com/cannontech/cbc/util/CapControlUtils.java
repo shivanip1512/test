@@ -106,6 +106,9 @@ public final class CapControlUtils {
         }
     };
 
+    public static final Comparator<CapBankDevice> BANK_CONTROL_ORDER_COMPARATOR = Comparator.comparing(CapBankDevice::getControlOrder)
+                                                                                            .thenComparing(CapBankDevice::getCcId);
+
     public static final Comparator<CCFeederBankList> BANK_TRIP_ORDER_COMPARATOR = new Comparator<CCFeederBankList>() {
         @Override
         public int compare(CCFeederBankList o1, CCFeederBankList o2) {

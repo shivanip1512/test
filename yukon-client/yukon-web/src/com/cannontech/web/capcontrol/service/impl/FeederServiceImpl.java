@@ -91,6 +91,7 @@ public class FeederServiceImpl implements FeederService {
         try {
             ccCache.getFeeder(feederId);
             List<CapBankDevice> capBanks = ccCache.getCapBanksByFeeder(feederId);
+            Collections.sort(capBanks, CapControlUtils.BANK_CONTROL_ORDER_COMPARATOR);
             viewableCapBanks = ccWebUtilsService.createViewableCapBank(capBanks);
 
         } catch (NotFoundException e) {
