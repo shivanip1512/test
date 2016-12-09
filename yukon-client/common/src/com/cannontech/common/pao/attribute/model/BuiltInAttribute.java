@@ -430,7 +430,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     LOAD_MANAGEMENT_CPU_UTILIZATION("Load Management CPU Utilization", AttributeGroup.SYSTEM, false),
     LOAD_MANAGEMENT_MEMORY_UTILIZATION("Load Management Memory Utilization", AttributeGroup.SYSTEM, false),
 
-    THERMOSTAT_RELAY_STATE("Thermostat Relay State", AttributeGroup.RELAY, false);
+    THERMOSTAT_RELAY_STATE("Thermostat Relay State", AttributeGroup.RELAY, false),
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
