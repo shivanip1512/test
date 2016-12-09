@@ -24,6 +24,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     // This ordering is shared by our C++ code. 
     // Any changes/additions here need to be reflected there as well.
     
+    // yukon-server/COMMON/PointAttribute.cpp
+    // yukon-server/COMMON/include/PointAttribute.h
+    
     BLINK_COUNT("Blink Count", AttributeGroup.BLINK_AND_OUTAGE),
     COMM_STATUS("Communication Status", AttributeGroup.STATUS, false),   // updated directly by port activity only
     CONTROL_POINT("Control Point", AttributeGroup.STATUS),

@@ -552,6 +552,8 @@ const Attribute Attribute::MessageBrokerMemoryUtilization                   = At
 const Attribute Attribute::LoadManagementCpuUtilization                     = Attribute( "LOAD_MANAGEMENT_CPU_UTILIZATION" );
 const Attribute Attribute::LoadManagementMemoryUtilization                  = Attribute( "LOAD_MANAGEMENT_MEMORY_UTILIZATION" );
 
+const Attribute Attribute::ThermostatRelayState                             = Attribute( "THERMOSTAT_RELAY_STATE" );
+
 AttributeNotFound::AttributeNotFound(const std::string &name)
 {
     desc = "Attribute not found: " + name;

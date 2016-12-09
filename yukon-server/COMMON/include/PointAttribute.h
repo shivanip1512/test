@@ -594,6 +594,8 @@ public:
 
     static const Attribute  LoadManagementCpuUtilization;
     static const Attribute  LoadManagementMemoryUtilization;
+
+    static const Attribute  ThermostatRelayState;
 };
 
 
