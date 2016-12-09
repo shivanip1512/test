@@ -1451,7 +1451,7 @@ void CtiVanGogh::VGCacheHandlerThread(int threadNumber)
                 lastPointExpireTime = lastPointExpireTime.now();
             }
 
-            MsgPtr = CacheQueue_.getQueue(10000);
+            MsgPtr = CacheQueue_.getQueue(2500);
 
             start = start.now();
             while(MsgPtr != NULL)
@@ -5916,6 +5916,9 @@ void CtiVanGogh::stopDispatch()
     // Interrupt the CtiThread based threads.
     _pendingOpThread.interrupt(CtiThread::SHUTDOWN);
     _rphArchiver.interrupt();
+    _cacheHandlerThread1.interrupt();
+    _cacheHandlerThread2.interrupt();
+    _cacheHandlerThread3.interrupt();
     ThreadMonitor.interrupt(CtiThread::SHUTDOWN);
 
     if( ! _connThread.timed_join(boost::posix_time::seconds(30)) )
@@ -5953,6 +5956,18 @@ void CtiVanGogh::stopDispatch()
     {
         CTILOG_WARN(dout, "Terminating RPH thread");
         _rphArchiver.terminate();
+    }
+    if( ! _cacheHandlerThread1.timed_join(boost::posix_time::seconds(30)) )
+    {
+        CTILOG_WARN(dout, "Cache handler thread 1 failed to join in a timely manner");
+    }
+    if (!_cacheHandlerThread2.timed_join(boost::posix_time::seconds(30)))
+    {
+        CTILOG_WARN(dout, "Cache handler thread 2 failed to join in a timely manner");
+    }
+    if (!_cacheHandlerThread3.timed_join(boost::posix_time::seconds(30)))
+    {
+        CTILOG_WARN(dout, "Cache handler thread 3 failed to join in a timely manner");
     }
     ThreadMonitor.join();
 
