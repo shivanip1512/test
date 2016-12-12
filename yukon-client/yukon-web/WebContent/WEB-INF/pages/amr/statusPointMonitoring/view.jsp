@@ -11,7 +11,9 @@
 <cti:standardPage module="amr" page="statusPointMonitorView">
 
     <%-- MAIN DETAILS --%>
-    <tags:sectionContainer2 nameKey="sectionHeader">
+    
+    <c:set var="cogs"><cti:icon icon="icon-cog" classes="fr"/></c:set>
+    <tags:sectionContainer2 nameKey="sectionHeader" controls="${cogs}">
         <tags:nameValueContainer2 tableClass="has-actions">
             <tags:nameValue2 nameKey=".name">${fn:escapeXml(statusPointMonitor.statusPointMonitorName)}</tags:nameValue2>
             <tags:nameValue2 nameKey=".monitoring">

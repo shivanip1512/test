@@ -15,8 +15,9 @@
     </div>
 
     <%@ include file="shared.jspf"%>
+    <c:set var="cogs"><cti:icon icon="icon-cog" classes="fr"/></c:set>
     <cti:msgScope paths=",yukon.web.components.button">
-    <tags:sectionContainer2 nameKey="settings" styleClass="${settings_section_class}">
+    <tags:sectionContainer2 nameKey="settings" styleClass="${settings_section_class}" contorls="${cogs}">
             
         <input type="hidden" id="monitor-id" value="${monitor.id}"/>
         <tags:nameValueContainer2 tableClass="has-actions">

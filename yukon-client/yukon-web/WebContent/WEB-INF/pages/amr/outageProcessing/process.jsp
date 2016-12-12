@@ -13,11 +13,12 @@
         <div class="error">${param.processError}</div>
     </c:if>
     
+    <c:set var="cogs"><cti:icon icon="icon-cog" classes="fr"/></c:set>
     <div class="column-14-10">
         <div class="column one">
             <%-- MAIN DETAILS --%>
             <cti:msg2 var="mainDetailSectionHeaderText" key=".mainDetail.sectionHeader" />
-            <tags:sectionContainer title="${mainDetailSectionHeaderText}">
+            <tags:sectionContainer title="${mainDetailSectionHeaderText}" controls="${cogs}">
             
                 <tags:nameValueContainer2 tableClass="has-actions" naturalWidth="false">
                     <tags:nameValue2 nameKey=".mainDetail.name">${fn:escapeXml(outageMonitor.outageMonitorName)}</tags:nameValue2>

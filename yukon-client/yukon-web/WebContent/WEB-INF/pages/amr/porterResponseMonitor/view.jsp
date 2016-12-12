@@ -73,7 +73,8 @@ $(function () {
         </div>
     </i:simplePopup>
     
-    <tags:sectionContainer2 nameKey="sectionHeader" styleClass="stacked">
+    <c:set var="cogs"><cti:icon icon="icon-cog" classes="fr"/></c:set>
+    <tags:sectionContainer2 nameKey="sectionHeader" styleClass="stacked" controls="${cogs}">
         <tags:nameValueContainer2 tableClass="has-actions">
         
             <%-- monitor name --%>

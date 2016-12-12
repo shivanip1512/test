@@ -31,7 +31,7 @@
                     <th><i:inline key=".tableHeader.scheduleDescription"/></th>
                     <th><i:inline key=".tableHeader.status"/></th>
                     <c:if test="${canManage}">
-                        <th><cti:icon icon="icon-cog"/><!-- the cog column --></th>
+                        <th><cti:icon icon="icon-cog"/></th>
                     </c:if>
                 </thead>
                 <tfoot></tfoot>

@@ -13,10 +13,11 @@
         <div class="error">${param.processError}</div>
     </c:if>
     
+    <c:set var="cogs"><cti:icon icon="icon-cog" classes="fr"/></c:set>
     <%-- MAIN DETAILS --%>
     <div class="column-14-10">
         <div class="column one">
-            <tags:sectionContainer2 nameKey="section.mainDetail.sectionHeader">
+            <tags:sectionContainer2 nameKey="section.mainDetail.sectionHeader" controls="${cogs}">
             
                 <tags:nameValueContainer2 tableClass="has-actions" naturalWidth="false">
                     <tags:nameValue2 nameKey=".section.mainDetail.name">${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</tags:nameValue2>
