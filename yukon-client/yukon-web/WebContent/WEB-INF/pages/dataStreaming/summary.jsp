@@ -104,10 +104,10 @@
 
         <cti:url var="dataUrl" value="/tools/dataStreaming/summaryResults">
             <c:forEach var="gateway" items="${searchFilters.selectedGatewayIds}">
-                <cti:param name="gatewaysSelect" value="${gateway}"/>
+                <cti:param name="selectedGatewayIds" value="${gateway}"/>
             </c:forEach>
             <c:forEach var="attribute" items="${searchFilters.selectedAttributes}">
-                <cti:param name="attributesSelect" value="${attribute}"/>
+                <cti:param name="selectedAttributes" value="${attribute}"/>
             </c:forEach>
             <cti:param name="selectedConfiguration" value="${searchFilters.selectedConfiguration}"/>
             <cti:param name="selectedInterval" value="${searchFilters.selectedInterval}"/>
