@@ -141,7 +141,7 @@
                                          items="${bankSizes}" itemValue="displayValue"/>
                                         <tags:input units="kVar" id="customBankSize" path="CapBank.bankSizeCustom" inputClass="dn" size="6"/>
                                     </td> 
-                                    <td style="vertical-align:middle;">
+                                    <td class="vam">
                                         <i:inline key=".custom"/><tags:checkbox path="CapBank.customBankSize" id="customSizeCheckbox" styleClass="js-custom-bankSize"/>
                                     </td>
                                     </tr>
