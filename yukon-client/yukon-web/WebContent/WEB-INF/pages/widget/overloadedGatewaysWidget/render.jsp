@@ -7,7 +7,7 @@
     /** User clicked the streaming capacity pill.  Redirect to Data Streaming Summary Page with gateway selected */
     $(document).on('click', '.js-streaming-capacity', function (ev) {
         var gatewayId = $(this).closest('tr').data('gateway');
-        window.location.href = yukon.url('/tools/dataStreaming/summary?gatewaysSelect=' + gatewayId);
+        window.location.href = yukon.url('/tools/dataStreaming/summary?selectedGatewayIds=' + gatewayId);
     });
 </script>
 
