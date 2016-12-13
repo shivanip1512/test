@@ -21,7 +21,7 @@
 
                         <tags:nameValue2 nameKey=".filter.gateway">
                             <form:select multiple="true" id="gatewaysSelect" path="selectedGatewayIds" size="6" style="min-width:200px;">
-                                <option value="-1" <c:if test="${searchFilters.selectedGatewayIds.size() == 0}">selected</c:if>>Any</option>
+                                <option value="-1" ${searchFilters.selectedGatewayIds.size() == 0 || (fn:contains(searchFilters.selectedGatewayIds, -1))? 'selected':''}>Any</option>
                                 <c:forEach var="gateway" items="${gateways}">
                                     <option value="${gateway.id}" ${(fn:contains(searchFilters.selectedGatewayIds, gateway.id))? 'selected':''}>${gateway.name}</option>
                                 </c:forEach>
@@ -52,7 +52,7 @@
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".filter.attributes" valueClass="dif">
                             <form:select multiple="true" path="selectedAttributes" id="attributesSelect" class="js-selected-attInterval" size="6" style="min-width:200px;">
-                                <option value="-1" <c:if test="${searchFilters.selectedAttributes.size() == 0}">selected</c:if>>Any</option>
+                                <option value="-1" ${searchFilters.selectedAttributes.size() == 0 || (fn:contains(searchFilters.selectedAttributes, -1))? 'selected':''}>Any</option>
                                 <c:forEach var="attribute" items="${searchAttributes}">
                                     <option value="${attribute.key}" ${(fn:contains(searchFilters.selectedAttributes, attribute.key))? 'selected':''}>${attribute.description}</option>
                                 </c:forEach>
@@ -117,7 +117,6 @@
         <div data-url="${dataUrl}" data-load-event="yukon:tools:dataStreaming:results:load">
             <%@ include file="summaryResults.jsp" %>
         </div>
-        
             
         <cti:includeScript link="/resources/js/pages/yukon.tools.dataStreaming.js"/>
             
