@@ -23,6 +23,7 @@ import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.dr.hardware.model.LmCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
@@ -34,6 +35,7 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
+import com.google.common.collect.ImmutableSet;
 
 public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
     private static final Logger log = YukonLogManager.getLogger(HoneywellCommandStrategy.class);
@@ -41,6 +43,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
     @Autowired private HoneywellCommunicationService honeywellCommunicationService;
     @Autowired private LMHardwareConfigurationDao lmHardwareConfigDao;
     @Autowired private HoneywellWifiThermostatDao honeywellWifiThermostatDao;
+    @Autowired private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     
     @Override
     public HardwareStrategyType getType() {
@@ -85,6 +88,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
                 groupId = getGroupId(device.getInventoryID());
                 honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
                 HoneywellThermostatIds = getHoneywellDeviceIds(deviceIds);
+                unEnrollPastEnrolledGroups(device.getLiteID(), honeywellGroupId, HoneywellThermostatIds);
                 honeywellCommunicationService.addDevicesToGroup(HoneywellThermostatIds, honeywellGroupId);
                 break;
             case PERFORMANCE_VERIFICATION:
@@ -98,6 +102,28 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
         }
     }
     
+    /**
+     * UnEnroll Past Enrollments only by sending the unenroll API call to Honeywell for groups enrolled in the
+     * past
+     * 
+     * @param inventoryId
+     * @param currentHoneywellGroupId
+     * @param honeywellThermostatIds
+     */
+    private void unEnrollPastEnrolledGroups(int inventoryId, int currentHoneywellGroupId,
+            ArrayList<Integer> honeywellThermostatIds) {
+
+        List<Integer> pastEnrolledGroupDevices =
+            ImmutableSet.copyOf(lmHardwareControlGroupDao. 
+                    getPastEnrolledHoneywellGroupsByInventoryId(inventoryId)).asList();
+
+        for (Integer pastGroupId : pastEnrolledGroupDevices) {
+            if (pastGroupId != currentHoneywellGroupId) {
+                honeywellCommunicationService.removeDeviceFromDRGroup(pastEnrolledGroupDevices, pastGroupId);
+            }
+        }
+    }
+
     private ArrayList<Integer> getHoneywellDeviceIds(ArrayList<Integer> yukonThermostatIds) {
         ArrayList<Integer> HoneywellThermostatIds = new ArrayList<Integer>();
         Map<Integer, HoneywellWifiThermostat> deviceIdThermostatMap =
@@ -168,7 +194,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
     private int getGroupId(int inventoryId) {
         List<LMHardwareConfiguration> hardwareConfig = lmHardwareConfigDao.getForInventoryId(inventoryId);
         if (hardwareConfig.size() != 1) {
-            throw new BadConfigurationException("Ecobee only supports one and only one group per device. "
+            throw new BadConfigurationException("Honeywell only supports one and only one group per device. "
                 + hardwareConfig.size() + " groups found.");
         }
         return hardwareConfig.get(0).getAddressingGroupId();

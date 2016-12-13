@@ -29,6 +29,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.IntegerRowMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -507,6 +508,19 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         return retVal;
     }
 
+    @Override
+    public List<Integer> getPastEnrolledHoneywellGroupsByInventoryId(final Integer inventoryId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT hg.honeywellgroupId oldEnrolledgroupId ");
+        sql.append(" FROM lmHardwareControlGroup hcg JOIN LMGroupHoneywellWifi hg on hg.deviceId=hcg.lmGroupId ");
+        sql.append(" WHERE hcg.inventoryId").eq(inventoryId);
+        sql.append(" AND hcg.type = 1 ");
+        sql.append(" AND hcg. groupEnrollStop IS NOT NULL ");
+       
+        return yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
+    }
+    
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> 
