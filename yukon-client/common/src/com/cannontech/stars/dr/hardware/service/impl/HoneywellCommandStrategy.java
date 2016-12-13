@@ -113,13 +113,13 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
     private void unEnrollPastEnrolledGroups(int inventoryId, int currentHoneywellGroupId,
             ArrayList<Integer> honeywellThermostatIds) {
 
-        List<Integer> pastEnrolledGroupDevices =
+        List<Integer> pastEnrolledGroupIds =
             ImmutableSet.copyOf(lmHardwareControlGroupDao. 
                     getPastEnrolledHoneywellGroupsByInventoryId(inventoryId)).asList();
 
-        for (Integer pastGroupId : pastEnrolledGroupDevices) {
+        for (Integer pastGroupId : pastEnrolledGroupIds) {
             if (pastGroupId != currentHoneywellGroupId) {
-                honeywellCommunicationService.removeDeviceFromDRGroup(pastEnrolledGroupDevices, pastGroupId);
+                honeywellCommunicationService.removeDeviceFromDRGroup(pastEnrolledGroupIds, pastGroupId);
             }
         }
     }
