@@ -56,6 +56,13 @@
                     <c:set var="color" value="badge-${gateway.data.dataStreamingLoadingPercent > 120 ? 'error':'warning'}"/>
                 </c:if>
                 <span class="badge ${color} cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${gateway.data.dataStreamingLoadingPercent / 100}"/></span>
+                    <cti:attributeResolver pao="${gateway}" attribute="${streamingCapacity}" var="pointId"/>
+                    <cti:url var="valuesUrl" value="/meter/historicalReadings/view">
+                        <cti:param name="pointId" value="${pointId}"/>
+                        <cti:param name="attribute" value="${streamingCapacity}"/>
+                    </cti:url>
+                    <a href="javascript:void(0);" data-popup="#load-popup"><i:inline key=".streamingCapacityHistory"/></a>
+                    <div id="load-popup" data-width="500" data-height="400" data-url="${valuesUrl}"></div>
             </tags:nameValue2>
         </cti:checkRolesAndProperties>
     </tags:nameValueContainer2>

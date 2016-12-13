@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
@@ -75,6 +76,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     @RequestMapping("render")
     public String render(ModelMap model, int deviceId, YukonUserContext userContext) {
 
+            model.addAttribute("streamingCapacity", BuiltInAttribute.DATA_STREAMING_LOAD);
         try {
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(deviceId);
             model.addAttribute("gateway", gateway);
