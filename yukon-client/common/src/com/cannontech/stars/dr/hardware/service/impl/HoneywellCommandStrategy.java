@@ -127,7 +127,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
     private ArrayList<Integer> getHoneywellDeviceIds(ArrayList<Integer> yukonThermostatIds) {
         ArrayList<Integer> HoneywellThermostatIds = new ArrayList<Integer>();
         Map<Integer, HoneywellWifiThermostat> deviceIdThermostatMap =
-            getHonerywellWifiThermostatByDeviceId(yukonThermostatIds);
+            getHoneywellWifiThermostatByDeviceId(yukonThermostatIds);
         for (Entry<Integer, HoneywellWifiThermostat> thermostatEntry : deviceIdThermostatMap.entrySet()) {
             HoneywellWifiThermostat thermostat = thermostatEntry.getValue();
             int honeywellDeviceId =
@@ -138,7 +138,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
         return HoneywellThermostatIds;
     }
 
-    private Map<Integer, HoneywellWifiThermostat> getHonerywellWifiThermostatByDeviceId(ArrayList<Integer> deviceIds) {
+    private Map<Integer, HoneywellWifiThermostat> getHoneywellWifiThermostatByDeviceId(ArrayList<Integer> deviceIds) {
         Map<Integer, HoneywellWifiThermostat> deviceIdThermostatMap = new HashMap<Integer, HoneywellWifiThermostat>();
         for (int deviceId : deviceIds) {
             HoneywellWifiThermostat thermostat = honeywellWifiThermostatDao.getHoneywellWifiThermostat(deviceId);
