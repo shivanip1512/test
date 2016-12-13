@@ -13,12 +13,11 @@
         <div class="error">${param.processError}</div>
     </c:if>
     
-    <c:set var="cogs"><cti:icon icon="icon-cog" classes="fr"/></c:set>
     <div class="column-14-10">
         <div class="column one">
             <%-- MAIN DETAILS --%>
             <cti:msg2 var="mainDetailSectionHeaderText" key=".mainDetail.sectionHeader" />
-            <tags:sectionContainer title="${mainDetailSectionHeaderText}" controls="${cogs}">
+            <tags:sectionContainer title="${mainDetailSectionHeaderText}">
             
                 <tags:nameValueContainer2 tableClass="has-actions" naturalWidth="false">
                     <tags:nameValue2 nameKey=".mainDetail.name">${fn:escapeXml(outageMonitor.outageMonitorName)}</tags:nameValue2>
@@ -48,7 +47,7 @@
                             <cti:param name="groupName">${fn:escapeXml(outageMonitor.groupName)}</cti:param>
                         </cti:url>
                         <a href="${deviceGroupUrl}">${fn:escapeXml(outageMonitor.groupName)}</a>
-                        <cm:dropdown triggerClasses="fr">
+                        <cm:dropdown triggerClasses="fr vv">
                             <cti:url var="outagesGroupReportUrl" value="/amr/reports/groupDevicesReport">
                                 <cti:param name="groupName" value="${outageMonitor.groupName}"/>
                             </cti:url>
@@ -71,7 +70,7 @@
                             <cti:param name="groupName">${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}</cti:param>
                         </cti:url>
                         <a href="${outageGroupUrl}">${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}</a>
-                        <cm:dropdown triggerClasses="fr">
+                        <cm:dropdown triggerClasses="fr vv">
                             <cti:url var="outagesGroupReportUrl" value="/amr/reports/groupDevicesReport">
                                 <cti:param name="groupName" value="${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}"/>
                             </cti:url>

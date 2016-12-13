@@ -346,7 +346,7 @@
                         <tr>
                             <th><i:inline key=".serialNumber"/></th>
                             <th><i:inline key=".displayType.SWITCH"/></th>
-                            <th><i:inline key=".label"/></th>
+                            <th><i:inline key=".label"/><cti:icon icon="icon-cog"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -430,7 +430,7 @@
                         <tr>
                             <th><i:inline key=".serialNumber"/></th>
                             <th><i:inline key=".displayType.THERMOSTAT"/></th>
-                            <th><i:inline key=".label"/></th>
+                            <th><i:inline key=".label"/><cti:icon icon="icon-cog"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -546,7 +546,7 @@
                             <c:if test="${not starsMeters}">
                                 <th><i:inline key=".displayType.METER"/></th>
                             </c:if>
-                            <th><i:inline key=".label"/></th>
+                            <th><i:inline key=".label"/><cti:icon icon="icon-cog"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -645,7 +645,7 @@
                         <tr>
                             <th><i:inline key=".displayName"/></th>
                             <th><i:inline key=".displayType.GATEWAY"/></th>
-                            <th><i:inline key=".gateways.commStatus"/></th>
+                            <th><i:inline key=".gateways.commStatus"/><cti:icon icon="icon-cog"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>

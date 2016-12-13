@@ -44,7 +44,7 @@
                                 <td>${job.cronString}</td>
                                 <td>
                                     <cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/>
-                                    <cm:dropdown triggerClasses="fr">
+                                    <cm:dropdown triggerClasses="fr vv">
                                         <cm:dropdownOption key="components.button.history.label" 
                                             href="${historyUrl}" icon="icon-script"/>
                                         <cm:dropdownOption key="components.button.delete.label"

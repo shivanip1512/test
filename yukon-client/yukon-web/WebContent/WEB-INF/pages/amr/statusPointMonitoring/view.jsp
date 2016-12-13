@@ -12,8 +12,7 @@
 
     <%-- MAIN DETAILS --%>
     
-    <c:set var="cogs"><cti:icon icon="icon-cog" classes="fr"/></c:set>
-    <tags:sectionContainer2 nameKey="sectionHeader" controls="${cogs}">
+    <tags:sectionContainer2 nameKey="sectionHeader">
         <tags:nameValueContainer2 tableClass="has-actions">
             <tags:nameValue2 nameKey=".name">${fn:escapeXml(statusPointMonitor.statusPointMonitorName)}</tags:nameValue2>
             <tags:nameValue2 nameKey=".monitoring">
@@ -34,7 +33,7 @@
                     <cti:param name="groupName">${fn:escapeXml(statusPointMonitor.groupName)}</cti:param>
                 </cti:url>
                 <a href="${deviceGroupUrl}" class="fl" style="margin-right: 10px;">${fn:escapeXml(statusPointMonitor.groupName)}</a>
-                <cm:dropdown triggerClasses="fl">
+                <cm:dropdown triggerClasses="fl vv">
                     <cti:url var="statusPointGroupReportUrl" value="/amr/reports/groupDevicesReport">
                         <cti:param name="groupName" value="${statusPointMonitor.groupName}"/>
                     </cti:url>

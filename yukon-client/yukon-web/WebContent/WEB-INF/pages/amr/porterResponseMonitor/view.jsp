@@ -73,8 +73,7 @@ $(function () {
         </div>
     </i:simplePopup>
     
-    <c:set var="cogs"><cti:icon icon="icon-cog" classes="fr"/></c:set>
-    <tags:sectionContainer2 nameKey="sectionHeader" styleClass="stacked" controls="${cogs}">
+    <tags:sectionContainer2 nameKey="sectionHeader" styleClass="stacked">
         <tags:nameValueContainer2 tableClass="has-actions">
         
             <%-- monitor name --%>
@@ -109,7 +108,7 @@ $(function () {
                     <cti:param name="groupName">${fn:escapeXml(monitorDto.groupName)}</cti:param>
                 </cti:url>
                 <a href="${deviceGroupUrl}" class="fl" style="margin-right: 10px;">${fn:escapeXml(monitorDto.groupName)}</a>
-                <cm:dropdown triggerClasses="fl">
+                <cm:dropdown triggerClasses="fl vv">
                     <cti:url var="groupReportUrl" value="/amr/reports/groupDevicesReport">
                         <cti:param name="groupName" value="${monitorDto.groupName}"/>
                     </cti:url>

@@ -15,9 +15,8 @@
     </div>
 
     <%@ include file="shared.jspf"%>
-    <c:set var="cogs"><cti:icon icon="icon-cog" classes="fr"/></c:set>
     <cti:msgScope paths=",yukon.web.components.button">
-    <tags:sectionContainer2 nameKey="settings" styleClass="${settings_section_class}" controls="${cogs}">
+    <tags:sectionContainer2 nameKey="settings" styleClass="${settings_section_class}" >
             
         <input type="hidden" id="monitor-id" value="${monitor.id}"/>
         <tags:nameValueContainer2 tableClass="has-actions">
@@ -60,7 +59,7 @@
                 </cti:url>
                 <span class="dn js-monitor-group"><input type="hidden" value="${fn:escapeXml(monitor.groupName)}"></span>
                 <a href="${deviceGroupUrl}">${fn:escapeXml(monitor.groupName)}</a>
-                <cm:dropdown triggerClasses="fr">
+                <cm:dropdown triggerClasses="fr vv">
                     <cm:dropdownOption icon="icon-folder-explore" key=".view.label" href="${deviceGrouphtmlReportUrl}"/>
                     <cti:url var="mapUrl" value="/tools/map/dynamic">
                         <cti:param name="collectionType" value="group"/>
@@ -76,7 +75,7 @@
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".violationsGroup">
                 ${violationsGroup}
-                <cm:dropdown triggerClasses="fr">
+                <cm:dropdown triggerClasses="fr vv">
                     <cm:dropdownOption icon="icon-folder-explore" key=".view.label" href="${htmlReportUrl}"/>
                     <cti:url var="mapUrl" value="/tools/map/dynamic">
                         <cti:param name="collectionType" value="group"/>
