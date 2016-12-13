@@ -311,21 +311,14 @@ public class DataStreamingConfigurationsController {
         return results;
     }
 
-    @RequestMapping(value = "exportSearch")
-    public String exportSearchResults(ModelMap model, FlashScope flash, SummarySearchCriteria criteria,
+    @RequestMapping("exportSearch")
+    public void exportSearchResults(ModelMap model, FlashScope flash, SummarySearchCriteria criteria,
             HttpServletResponse response,
-            YukonUserContext userContext) {
-        try {
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            YukonUserContext userContext) throws DataStreamingConfigException, IOException {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
-            downloadSearchResults(criteria, response, accessor);
-        } catch (IOException ioe) {
-            flash.setError(YukonMessageSourceResolvable.createSingleCodeWithArguments(
-                    "yukon.web.modules.tools.dataStreaming.summary.results.errors.connectionError", ioe));
-        } catch (DataStreamingConfigException dsce) {
-            flash.setError(dsce.getMessageSourceResolvable());
-        }
-        return "../dataStreaming/summaryResults.jsp";
+        downloadSearchResults(criteria, response, accessor);
+
     }
     private void downloadSearchResults(SummarySearchCriteria criteria, HttpServletResponse response, MessageSourceAccessor accessor)
             throws DataStreamingConfigException, IOException {
