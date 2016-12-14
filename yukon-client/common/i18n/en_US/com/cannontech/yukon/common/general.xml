@@ -177,7 +177,7 @@
 <entry key="yukon.common.name">Name</entry>
 <entry key="yukon.common.networkManager">Network Manager</entry>
 <entry key="yukon.common.no">No</entry>
-<entry key="yukon.common.noDevices">(no devices selected)</entry>
+<entry key="yukon.common.noDevices">(No Devices Selected)</entry>
 <entry key="yukon.common.none">None</entry>
 <entry key="yukon.common.none.choice">(none)</entry>
 <entry key="yukon.common.note">Note</entry>
@@ -236,10 +236,10 @@
 <entry key="yukon.common.search.noResultsFound">No results found.</entry>
 <entry key="yukon.common.search.placeholder">search</entry>
 <entry key="yukon.common.selectall">Select All</entry>
-<entry key="yukon.common.selectGroup">select device group...</entry>
+<entry key="yukon.common.selectGroup">Select Device Group</entry>
 <entry key="yukon.common.selectGroup.more">and {0} more</entry>
 <entry key="yukon.common.selectGroup.title">Select Device Group</entry>
-<entry key="yukon.common.selectGroups">select device group(s)...</entry>
+<entry key="yukon.common.selectGroups">Select Device Group(s)</entry>
 <entry key="yukon.common.selectGroups.title">Select Device Group(s)</entry>
 <entry key="yukon.common.selector.selectOne">-- Select One --</entry>
 <entry key="yukon.common.settings">Settings</entry>
