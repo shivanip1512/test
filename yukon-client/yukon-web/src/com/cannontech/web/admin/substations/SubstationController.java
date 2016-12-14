@@ -9,14 +9,15 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.model.Route;
 import com.cannontech.common.model.Substation;
-import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
@@ -26,176 +27,135 @@ import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.cannontech.stars.service.EnergyCompanyService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.admin.substations.model.SubstationRouteMapping;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 
 @RequestMapping("/substations/*")
 @CheckRole(YukonRole.OPERATOR_ADMINISTRATOR)
 @Controller
 public class SubstationController {
-    
+
     @Autowired private EnergyCompanyService energyCompanyService;
     @Autowired private SubstationDao substationDao;
     @Autowired private SubstationToRouteMappingDao strmDao;
     @Autowired private EnergyCompanyDao ecDao;
     @Autowired private GlobalSettingDao globalSettingDao;
-    private TypeReference<List<Integer>> integerListType = new TypeReference<List<Integer>>() {/*Jackson requires*/};
-    
+    public final static String BASE_KEY = "yukon.web.modules.adminSetup.substationToRouteMapping.";
+
     @RequestMapping("routeMapping/view")
-    public ModelAndView view(HttpServletRequest request, HttpServletResponse response) {
-        
-        ModelAndView mav = new ModelAndView();
-        mav.setViewName("substations/mappings.jsp");
-        
-        return mav;
-    }
-    
-    @RequestMapping("routeMapping/viewRoute")
-    public ModelAndView viewRoute(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-        final ModelAndView mav = new ModelAndView();
-        final Integer id = ServletRequestUtils.getIntParameter(request, "substationid");
-        
-        List<Route> routeList = Lists.newArrayList();
-        if (id != null) {
-            routeList = strmDao.getRoutesBySubstationId(id);
-        }
-        final List<Route> avList = (id != null) ? strmDao.getAvailableRoutesBySubstationId(id) : strmDao.getAll();
-                
-        mav.setViewName("substations/routeView.jsp");
-        mav.addObject("list", routeList);
-        mav.addObject("avlist", avList);
-        return mav;
-    }
-    
-    @RequestMapping("routeMapping/viewSubstation")
-    public ModelAndView viewSubstation(HttpServletRequest request, HttpServletResponse response) {
-        
-        ModelAndView mav = new ModelAndView();
-        
+    public String view(ModelMap model, HttpServletRequest request, HttpServletResponse response,
+            YukonUserContext userContext) throws Exception {
+        Integer id = ServletRequestUtils.getIntParameter(request, "substationId");
         boolean hasVendorId = false;
         int vendorId = globalSettingDao.getInteger(GlobalSettingType.MSP_PRIMARY_CB_VENDORID);
         if (vendorId > 0) {
             hasVendorId = true;
         }
-        mav.addObject("hasVendorId", hasVendorId);
-        
+        model.addAttribute("hasVendorId", hasVendorId);
+
         List<Substation> list = substationDao.getAll();
         Collections.sort(list);
-        
-        mav.setViewName("substations/substationView.jsp");
-        mav.addObject("list", list);
-        
-        return mav;
-    }
-    
-    @RequestMapping("routeMapping/addRoute")
-    public ModelAndView add(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-        final Integer substationId = ServletRequestUtils.getIntParameter(request, "substationid");
-        final Integer routeId = ServletRequestUtils.getIntParameter(request, "routeid");
-        final Integer ordering = ServletRequestUtils.getIntParameter(request, "ordering");
+        model.addAttribute("list", list);
 
-        if (substationId == null || routeId == null || ordering == null) {
-            return viewRoute(request, response); 
+        List<Route> routeList = Lists.newArrayList();
+        List<Route> avList = null;
+        if (id == null) {
+            id = (list != null && list.size() > 0) ? list.get(0).getId() : null;
         }
-        
-        strmDao.add(substationId, routeId, ordering);
-        
-        return viewRoute(request, response);
-    }
-    
-    @RequestMapping("routeMapping/removeRoute")
-    public ModelAndView remove(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-        final Integer substationId = ServletRequestUtils.getIntParameter(request, "substationid");
-        final Integer routeId = ServletRequestUtils.getIntParameter(request, "routeid");
-        
-        if (substationId == null || routeId == null) {
-            return viewRoute(request, response);
-        }
-        
-        strmDao.remove(substationId, routeId);
-        
-        return viewRoute(request, response);
+        routeList = (id != null) ? strmDao.getRoutesBySubstationId(id) : null;
+        avList = (id != null) ? strmDao.getAvailableRoutesBySubstationId(id) : strmDao.getAll();
+
+        model.addAttribute("routeList", routeList);
+        model.addAttribute("avlist", avList);
+        SubstationRouteMapping substationRouteMapping = new SubstationRouteMapping();
+        substationRouteMapping.setSubstationId(id);
+        substationRouteMapping.setRouteList(routeList);
+        substationRouteMapping.setAvList(avList);
+        model.addAttribute("substationRouteMapping", substationRouteMapping);
+        return "substations/mappings.jsp";
     }
 
-    @RequestMapping("routeMapping/update")
-    public ModelAndView update(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-        final Integer substationId = ServletRequestUtils.getIntParameter(request, "substationid");
-        final String jsonString = ServletRequestUtils.getStringParameter(request, "array");
+    @RequestMapping(value = "/routeMapping/save", method = RequestMethod.POST)
+    public String saveRoutes(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext,
+            FlashScope flashScope, ModelMap modelMap,
+            @RequestParam(value = "routeIds[]", required = false, defaultValue = "") List<Integer> routeIds,
+            @RequestParam(value = "substationId", required = false, defaultValue = "") Integer substationId) {
         if (substationId == null) {
-            return viewRoute(request, response);
+            return "redirect:view";
         }
-        List<Integer> routeIdList = JsonUtils.fromJson(jsonString, integerListType);
-        
+        List<Integer> routeIdList = routeIds;
         strmDao.update(substationId, routeIdList);
-        
-        return viewRoute(request, response);
+        flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "routesUpdated"));
+        return "redirect:view";
     }
-    
-    @RequestMapping(value="routeMapping/edit", params="add")
-    public ModelAndView addSubstation(HttpServletRequest request, HttpServletResponse response, FlashScope flashScope) throws Exception {
-        
-        ModelAndView mav = new ModelAndView("redirect:view");
 
-        String name = ServletRequestUtils.getStringParameter(request, "name");
+    @RequestMapping(value = "routeMapping/save", params = "addSubstation", method = RequestMethod.POST)
+    public String addSubstation(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext,
+            FlashScope flashScope, ModelMap modelMap, SubstationRouteMapping substationRouteMapping) {
+
+        String name = substationRouteMapping.getSubstationName();
         if (!(DeviceGroupUtil.isValidName(name))) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.error.deviceGroupName.containsIllegalChars"));
-            return mav;
+            return "redirect:view";
         }
         Substation substation = new Substation();
         substation.setName(name);
         substationDao.add(substation);
-        
-        return mav;
+        flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "createdSubstation", name));
+        return "redirect:view";
     }
-    
-    @RequestMapping("routeMapping/updateSubstation")
-    public ModelAndView updateSubstation(HttpServletRequest request, HttpServletResponse response) {
-        return viewSubstation(request, response);
-    }
-    
-    @RequestMapping(value="routeMapping/edit", params="remove")
-    public ModelAndView removeSubstation(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-        ModelAndView mav = new ModelAndView("redirect:view");
-        
-        Integer id = ServletRequestUtils.getIntParameter(request, "selection_list");
-        if (id == null) {
-            return mav;
+
+    @RequestMapping(value = "routeMapping/save", params = "removeSubstation", method = RequestMethod.POST)
+    public String removeSubstation(HttpServletRequest request, HttpServletResponse response,
+            YukonUserContext userContext, FlashScope flashScope, ModelMap modelMap,
+            SubstationRouteMapping substationRouteMapping) {
+        Integer removeSubstation = substationRouteMapping.getSubstationId();
+        if (removeSubstation == null) {
+            return "redirect:view";
         }
-        
+
         Substation substation = new Substation();
-        substation.setId(id);
-        
+        substation.setId(removeSubstation);
+
         Collection<EnergyCompany> allEnergyCompanies = ecDao.getAllEnergyCompanies();
         for (EnergyCompany energyCompany : allEnergyCompanies) {
-            energyCompanyService.removeSubstationFromEnergyCompany(energyCompany.getId(), id);
+            energyCompanyService.removeSubstationFromEnergyCompany(energyCompany.getId(), removeSubstation);
         }
-        
-        strmDao.removeAllBySubstationId(id);
+
+        strmDao.removeAllBySubstationId(removeSubstation);
         substationDao.remove(substation);
         
-        return mav;
+        flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "substationDeleted"));
+        return "redirect:view";
     }
-    
-    @RequestMapping("routeMapping/removeAll")
-    public ModelAndView removeAll(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-        ModelAndView mav = new ModelAndView("redirect:view");
-        
+
+    @RequestMapping(value = "routeMapping/save", params = "removeAllSubstations", method = RequestMethod.POST)
+    public String removeAllSubstations(HttpServletRequest request, HttpServletResponse response,
+            YukonUserContext userContext, FlashScope flashScope, ModelMap modelMap,
+            SubstationRouteMapping substationRouteMapping) {
+
         List<Substation> currentSubstations = substationDao.getAll();
         for (Substation currentSubstation : currentSubstations) {
-            
+
             strmDao.removeAllBySubstationId(currentSubstation.getId());
             substationDao.remove(currentSubstation);
         }
-
-        return mav;
+        flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "allSubstationDeleted"));
+        return "redirect:view";
     }
-    
+
+    /**
+     * This method removes a route from the given energy company.
+     */
+    @RequestMapping(value = "/routeMapping/save", params = "removeRoute", method = RequestMethod.POST)
+    public String removeRoute(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext,
+            FlashScope flashScope, ModelMap modelMap, Integer removeRoute, SubstationRouteMapping substationRouteMapping) {
+        strmDao.remove(substationRouteMapping.getSubstationId(), removeRoute);
+        flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "routeDeleted"));
+        return "redirect:view";
+    }
+
 }

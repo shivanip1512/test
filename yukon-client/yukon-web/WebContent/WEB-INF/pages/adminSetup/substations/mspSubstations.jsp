@@ -5,6 +5,13 @@
 
 <cti:msgScope paths="yukon.web.modules.adminSetup.substationToRouteMapping">
 <cti:url var="submitUrl" value="/admin/substations/routemapping/multispeak/add"/>  
+<script type="text/javascript">
+function mspSubstations_check(doCheck) {
+    $('input[type=checkbox].mspSubstationCheckbox').each(function(index, c) {
+        $(c).prop("checked", doCheck);
+    });
+}
+</script>
 <form action="${submitUrl}" method="post">
     <cti:csrfToken/>
 
@@ -14,7 +21,7 @@
     <br><br>
     </div>
 
-    <div style="overflow:auto; height:300px;">
+    <div style="width:500px; height:200px;">
     <table class="compact-results-table" style="width:95%;">
     
         <tr>

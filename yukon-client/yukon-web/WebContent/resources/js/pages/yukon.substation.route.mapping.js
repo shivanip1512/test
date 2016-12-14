@@ -1,90 +1,107 @@
+yukon.namespace('yukon.admin.substations');
 
-function SubstationToRouteMappings_SelectListener(url) {
-    var substationIndex = $("#subSelectList")[0].selectedIndex,
-        optionsList = $("#subSelectList")[0].options,
-        substationId,
-        routeElement = $('#route_element');
-    if (substationIndex < 0 || 0 >= optionsList.length) {
-        return;
-    }
-    substationId = optionsList[substationIndex].value;
-    $.ajax({
-        type: "POST",
-        url: url,
-        data: {"substationid": substationId, "view": ""}
-    }).done( function (data, textStatus, jqXHR) {
-        routeElement.html(data);
-    });
-}
-function SubstationToRouteMappings_addRoute() {
-    var substationIndex = $("#subSelectList")[0].selectedIndex,
-        routeIndex,
-        routeId,
-        routeName,
-        length;
-    if (substationIndex === -1) {
-        return false;
-    }
-    routeIndex = $("#avRoutesSelectList")[0].selectedIndex;
-    routeId = $("#avRoutesSelectList")[0].options[routeIndex].value;
-    routeName = $("#avRoutesSelectList")[0].options[routeIndex].text;
-    $($("#avRoutesSelectList")[0].options[routeIndex]).remove();
-    length = $("#routeIdSelectList")[0].options.length;
-    $("#routeIdSelectList")[0].options[length] = new Option(routeName, routeId);
-}
-function SubstationToRouteMappings_removeRoute() {
-    var substationIndex = $("#subSelectList")[0].selectedIndex,
-        routeIndex,
-        route,
-        length;
-    if (substationIndex === -1) {
-        return false;
-    }
-    routeIndex = $("#routeIdSelectList")[0].selectedIndex;
-    if (0 > routeIndex) {
-        return false;
-    }
-    route = $("#routeIdSelectList")[0].options[routeIndex];
-    if ('undefined' === typeof route) {
-        return false;
-    }
-    $("#routeIdSelectList")[0].options[routeIndex] = null;
+/**
+ * Module that manages the substations and route mapping on the substations page under Admin menu.
+ * @module yukon.admin.substations
+ * @requires JQUERY
+ * @requires JQUERY UI
+ * @requires yukon
+ * @requires yukon.ui
+ */
+yukon.admin.substations = (function () {
+	 var
+	    _initialized = false,
+	    removedRouteIds=[];
+	    mod = {
+	            
+	            /**
+	             * Initializes the module, hooking up event handlers to components.
+	             * Depends on localized text in the jsp, so only run after DOM is ready.
+	             */
+	            init: function () {
+	            	/** Move row up. */
+	                $(document).on('click','.js-up', function (ev) {
+	                	debugger;
+	                    var row = $(this).closest('tr'),
+	                        prevRow = row.prev();
+	                    
+	                    row.insertBefore(prevRow);
+	                    yukon.ui.reindexInputs(row.closest('table'));
+	                    
+	                });
+	                
+	                /** Move row down. */
+	                $(document).on('click','.js-down', function (ev) {
+	                    var row = $(this).closest('tr'),
+	                        nextRow = row.next();
+	                    
+	                    row.insertAfter(nextRow);
+	                    yukon.ui.reindexInputs(row.closest('table'));
+	                    
+	                });
+	                
+	                /** Remove attribute button clicked, remove row and re-index the rest. Update any fields necessary */
+	                $(document).on('click', '#routes-table .js-remove', function (ev) {
+	                	var row = $(this).closest('tr');
+	                	//
+	                	var routeId = $(this).find("input").val();
+	                	removedRouteIds.push(routeId);
+	                	alert(removedRouteIds);
+	                	//
+	                    var table = row.closest('table');
+	                    row.remove();
+	                    yukon.ui.reindexInputs(table);
+	                });
+	                
+	                $('#b-add-route').click(function (ev) {
+	                    $('#selectedRoutes :selected').each(function(i, selected){ 
+	                    	
+	                    	var id = $(selected).val();
+	                    	
+	                    	var name = $(selected).text();
+	                    	var row = $('#route-template tr').clone(),
+	                        field = row.find('td:first-child');
+	                    	field.find('input').val(id);
+	                    	field.find('input').addClass('routeId');
+	                        field.append('<span>' + name + '</span>');
+	                        $('#routes-table tbody').append(row);
+	                        yukon.ui.reindexInputs(row.closest('table'));
+	                        selected.remove();
+	                    });
+	                    
+	                    
+	                });
+	                $('#saveAllRoutes').click(function (ev) {
+	                	var routeIds=[];
+	                	
+	                	$('#routes-table > tbody  > tr').each(function() {
+	                		
+	                		var routeId = $(this).find("input").val();
+	                		routeIds.push(routeId);
+	                		});
+	                    
+	                	var substationId=$("#substation").val();
+	                    $.ajax({
+	                        url: yukon.url('/admin/substations/routeMapping/save'),
+	                        method: 'post',
+	                        data: { routeIds: routeIds, substationId: substationId}
+	                    }).done(function () {
+	                    	$("div.user-message").remove();
+	                    	$('#saveStatusMessage').addMessage({message:'Changes Saved Successfully', messageClass:'success'}).show();
+	                    	yukon.ui.unbusy('#saveAllRoutes');
+	                    });
 
-    length = $("#avRoutesSelectList")[0].options.length;
-    $("#avRoutesSelectList")[0].options[length] = new Option(route.text, route.value);
-}
-function SubstationToRouteMappings_updateRoutes(url) {
-    var substationIndex = $("#subSelectList")[0].selectedIndex,
-        substationId,
-        array,
-        array2,
-        jsonObject;
-    if (-1 === substationIndex) {
-        return;
-    }
-    substationId = $("#subSelectList")[0].options[substationIndex].value;
-    array = $("#routeIdSelectList")[0].options;
-    array = Array.prototype.slice.call(array, 0); // convert HTMLOptionsCollection to array
-    array2 = array.map(function (el) {
-        return el.value;
-    });
-    jsonObject = JSON.stringify(array2);
-    $.ajax({
-        type: "POST",
-        url: url,
-        data: {"array": jsonObject, "substationid": substationId, "update": ""}
-    }).done( function (data, textStatus, jqXHR) {
-    });
-}
+	                });
+	                submitTypeSelect = function() {
+	                	document.substationForm.action = yukon.url("/admin/substations/routeMapping/view");
+	                    document.substationForm.submit();
+	                };
+	               
+	                if (_initialized) return;
+	                _initialized = true;
+	            }
+	        };
+return mod;
+}());
 
-function mspSubstations_check(doCheck) {
-    $('input[type=checkbox].mspSubstationCheckbox').each(function(index, c) {
-        $(c).prop("checked", doCheck);
-    });
-}
-
-function SubstationToRouteMappings_disableInputs(doDisable) {
-    $('input').each(function(index, c) {
-        $(c).prop('disabled', doDisable);
-    });
-}
+$(function () { yukon.admin.substations.init(); });
