@@ -119,7 +119,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
 
         for (Integer pastGroupId : pastEnrolledGroupIds) {
             if (pastGroupId != currentHoneywellGroupId) {
-                honeywellCommunicationService.removeDeviceFromDRGroup(pastEnrolledGroupIds, pastGroupId);
+                honeywellCommunicationService.removeDeviceFromDRGroup(honeywellThermostatIds, pastGroupId);
             }
         }
     }

@@ -516,7 +516,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
         sql.append(" FROM lmHardwareControlGroup hcg JOIN LMGroupHoneywellWifi hg on hg.deviceId=hcg.lmGroupId ");
         sql.append(" WHERE hcg.inventoryId").eq(inventoryId);
         sql.append(" AND hcg.type = 1 ");
-        sql.append(" AND hcg. groupEnrollStop IS NOT NULL ");
+        sql.append(" AND hcg.groupEnrollStop IS NOT NULL ");
        
         return yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
