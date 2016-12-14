@@ -78,10 +78,10 @@ public class HoneywellRestProxyFactory {
                 headers.add("Date", httpheaders.get("Date").get(0));
                 headers.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
                 headers.setContentType(MediaType.APPLICATION_JSON);
-                if (httpheaders.get("UserId") != null) {
-                    headers.add("UserId", httpheaders.get("UserId").get(0));
+                if (httpheaders.getFirst("UserId") != null) {
+                    headers.add("UserId", httpheaders.getFirst("UserId"));
                 }
-                args[i] = new HttpEntity<>(httpBody, headers);
+               args[i] = new HttpEntity<>(httpBody, headers);
             }
         }
     }

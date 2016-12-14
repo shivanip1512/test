@@ -58,20 +58,18 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
     @Override
     public void sendCommand(LmHardwareCommand command) throws CommandCompletionException {
         LiteLmHardwareBase device = command.getDevice();
-        ArrayList<Integer> deviceIds=new ArrayList<>();
-        deviceIds.add(device.getDeviceID());
         try {
             int groupId;
             int honeywellGroupId;
-            ArrayList<Integer> HoneywellThermostatIds;
+            ArrayList<Integer> honeywellThermostatIds;
             switch (command.getType()) {
             case IN_SERVICE:
                 break;
             case OUT_OF_SERVICE:
                 int grpId = (int) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
                 honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(grpId);
-                HoneywellThermostatIds = getHoneywellDeviceIds(deviceIds);
-                honeywellCommunicationService.removeDeviceFromDRGroup(HoneywellThermostatIds, honeywellGroupId);
+                honeywellThermostatIds = getHoneywellDeviceIds(device.getDeviceID());
+                honeywellCommunicationService.removeDeviceFromDRGroup(honeywellThermostatIds, honeywellGroupId);
                 break;
             case TEMP_OUT_OF_SERVICE:
                 // TODO:Update code for eventId and test Calls for honeywell
@@ -87,9 +85,9 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
             case CONFIG:
                 groupId = getGroupId(device.getInventoryID());
                 honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
-                HoneywellThermostatIds = getHoneywellDeviceIds(deviceIds);
-                unEnrollPastEnrolledGroups(device.getLiteID(), honeywellGroupId, HoneywellThermostatIds);
-                honeywellCommunicationService.addDevicesToGroup(HoneywellThermostatIds, honeywellGroupId);
+                honeywellThermostatIds = getHoneywellDeviceIds(device.getDeviceID());
+                unEnrollPastEnrolledGroups(device.getLiteID(), honeywellGroupId, honeywellThermostatIds);
+                honeywellCommunicationService.addDevicesToGroup(honeywellThermostatIds, honeywellGroupId);
                 break;
             case PERFORMANCE_VERIFICATION:
             case READ_NOW:
@@ -124,27 +122,19 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
         }
     }
 
-    private ArrayList<Integer> getHoneywellDeviceIds(ArrayList<Integer> yukonThermostatIds) {
+    private ArrayList<Integer> getHoneywellDeviceIds(int yukonThermostatId) {
         ArrayList<Integer> HoneywellThermostatIds = new ArrayList<Integer>();
-        Map<Integer, HoneywellWifiThermostat> deviceIdThermostatMap =
-            getHoneywellWifiThermostatByDeviceId(yukonThermostatIds);
-        for (Entry<Integer, HoneywellWifiThermostat> thermostatEntry : deviceIdThermostatMap.entrySet()) {
-            HoneywellWifiThermostat thermostat = thermostatEntry.getValue();
-            int honeywellDeviceId =
-                honeywellCommunicationService.getGatewayDetailsForMacId(thermostat.getMacAddress(),
-                    thermostat.getDeviceVendorUserId().toString());
-            HoneywellThermostatIds.add(honeywellDeviceId);
-        }
+        HoneywellWifiThermostat thermostat = getHoneywellWifiThermostatByDeviceId(yukonThermostatId);
+        int honeywellDeviceId =
+            honeywellCommunicationService.getGatewayDetailsForMacId(thermostat.getMacAddress(),
+                thermostat.getDeviceVendorUserId().toString());
+        HoneywellThermostatIds.add(honeywellDeviceId);
         return HoneywellThermostatIds;
     }
 
-    private Map<Integer, HoneywellWifiThermostat> getHoneywellWifiThermostatByDeviceId(ArrayList<Integer> deviceIds) {
-        Map<Integer, HoneywellWifiThermostat> deviceIdThermostatMap = new HashMap<Integer, HoneywellWifiThermostat>();
-        for (int deviceId : deviceIds) {
-            HoneywellWifiThermostat thermostat = honeywellWifiThermostatDao.getHoneywellWifiThermostat(deviceId);
-            deviceIdThermostatMap.put(deviceId, thermostat);
-        }
-        return deviceIdThermostatMap;
+    private HoneywellWifiThermostat getHoneywellWifiThermostatByDeviceId(int deviceId) {
+        HoneywellWifiThermostat thermostat = honeywellWifiThermostatDao.getHoneywellWifiThermostat(deviceId);
+        return thermostat;
     }
 
     private void moveDevice(ArrayList<Integer> deviceIds, int groupId) {

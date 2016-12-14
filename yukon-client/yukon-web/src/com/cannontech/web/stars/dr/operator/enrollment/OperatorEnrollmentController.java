@@ -339,13 +339,10 @@ public class OperatorEnrollmentController {
     private List<com.cannontech.stars.dr.program.service.ProgramEnrollment> getConflictingEnrollments(int accountId,
             int assignedProgramId, int ecId, ProgramEnrollment programEnrollment) {
 
-        boolean isThermostatOfHoneywellWifi = isThermostatOfHoneywellWifi(programEnrollment);
         boolean multiplePerCategory =
-            ecSettingDao.getBoolean(EnergyCompanySettingType.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, ecId);
-        if (isThermostatOfHoneywellWifi) {
-            multiplePerCategory = false;
-        }
-
+            isThermostatOfHoneywellWifi(programEnrollment) ? false : ecSettingDao.getBoolean(
+                EnergyCompanySettingType.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, ecId);
+        
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> conflictingEnrollments = Lists.newArrayList();
         if (!multiplePerCategory) {
             // Only one program per appliance category is allowed.  Find other

@@ -187,8 +187,10 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                         }
                     } else {
                         int grpId = 0;
-                        if (previouslyEnrolledPrograms.get(0) != null) {
-                            grpId = previouslyEnrolledPrograms.get(0).getGroupID();
+                        if (!previouslyEnrolledPrograms.isEmpty()) {
+                            if (previouslyEnrolledPrograms.get(0) != null) {
+                                grpId = previouslyEnrolledPrograms.get(0).getGroupID();
+                            }
                         }
                       LmHardwareCommand command = new LmHardwareCommand();
                         command.setDevice(liteHw);
