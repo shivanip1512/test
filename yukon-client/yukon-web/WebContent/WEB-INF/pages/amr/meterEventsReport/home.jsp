@@ -148,8 +148,15 @@
 
     <c:if test="${empty deviceCollection}">
         <tags:sectionContainer2 nameKey="filterSectionHeader">
-            <span class="empty-list">No devices selected</span>
-            <a href="selectDevices">Select Devices</a>
+            <a href="javascript:void(0);" class="selectDevices clearfix fl" title="<cti:msg2 key=".chooseDevices.tooltip"/>">
+                                <c:if test="${empty deviceCollection}">
+                                    <span class="empty-list fl"><i:inline key="yukon.common.noDevices"/></span>
+                                </c:if>
+                                <c:if test="${not empty deviceCollection}">
+                                    <span class="b-label fl"><i:inline key="${deviceCollection.description}"/></span>
+                                </c:if>
+                                <i class="icon icon-folder-edit"></i>
+                            </a>
         </tags:sectionContainer2>
     </c:if>
     <div id="scheduledJobsTable" data-url="scheduledJobsTable">

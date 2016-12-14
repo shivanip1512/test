@@ -49,19 +49,19 @@
         class="js-device-group-picker ${pageScope.classes}">
     <cti:icon icon="icon-folder-edit" classes="fn vatb"/>
     <c:choose>
-        <c:when test="${empty inputValue}">
-            <span><i:inline key="${selectKey}"/></span>
+        <c:when test="${empty inputValue or empty group}">
+            <span class="fl"><i:inline key="${selectKey}"/></span>
             <input type="hidden" name="${inputName}">
         </c:when>
         <c:otherwise>
             <c:choose>
                 <c:when test="${fn:length(inputValue) > 1}">
-                    <span>${fn:escapeXml(inputValue[0])}&nbsp;
+                    <span class="fl">${fn:escapeXml(inputValue[0])}&nbsp;
                         <i:inline key="yukon.common.selectGroup.more" arguments="${fn:length(inputValue) - 1}"/>
                     </span>
                 </c:when>
                 <c:otherwise>
-                    <span>${fn:escapeXml(inputValue[0])}</span>
+                    <span class="fl">${fn:escapeXml(inputValue[0])}</span>
                 </c:otherwise>
             </c:choose>
             <c:forEach var="group" items="${inputValue}">

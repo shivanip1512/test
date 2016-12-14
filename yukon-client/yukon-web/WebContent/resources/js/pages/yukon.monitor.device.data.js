@@ -102,7 +102,7 @@ yukon.ami.ddm = (function () {
             $('.js-supported-devices-count .js-details .js-missing-list').empty();
             $('.js-loading').hide();
             
-            var help = $('<div>').html(data.totalSupportedCountMessage).appendTo(countSel);
+            var help = $('<div>').html("<span class='fl'>"+data.totalSupportedCountMessage+"</span>").appendTo(countSel);
             
             $('<a>').attr('href', 'javascript:void(0);')
             .addClass('js-show-violation-help js-violation-help-link')
@@ -410,7 +410,7 @@ yukon.ami.ddm = (function () {
             var ctrl_name = select_state.length > 0 ? select_state.attr("name") : input_state.attr("name");
             var html = 
                 '<div class="js-states">'
-                    + '<input type="hidden" name="' + ctrl_name +'" value="' + "null" +'">'
+                    + '<input type="hidden" name="' + ctrl_name +'" value="' + "null" +'"/>'
                     + $('#str_na').text()
                 + '</div>';
             
@@ -487,9 +487,9 @@ yukon.ami.ddm = (function () {
                     
                     var str = '<div class="js-state-group"><input type="hidden" name="'+ ctrl_name +'"';
                     if (data.stateGroups.length == 0) {
-                        DOM_stategroups.replaceWith(str +' value="">'+ $('#str_na').text() +'</div>');
+                        DOM_stategroups.replaceWith(str +' value=""/>'+ $('#str_na').text() +'</div>');
                     } else if (data.stateGroups.length == 1) {
-                        var fullString = str +' value="'+ data.stateGroups[0].id +'">'+ data.stateGroups[0].name +'</div>';
+                        var fullString = str +' value="'+ data.stateGroups[0].id +'"/>'+ data.stateGroups[0].name +'</div>';
                         DOM_stategroups.replaceWith(fullString);
                     }
                 	DOM_stategroups = row.find('.js-state-group input');
