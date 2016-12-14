@@ -50,8 +50,8 @@
                         </tags:nameValue2>
                        
                        <tr>
-                         <tags:nameValue2>
-                           <form:input id="substationName" name="substationName" path="substationName"/>
+                         <tags:nameValue2 excludeColon = "true">
+                           <form:input id="substationName" name="substationName" path="substationName" placeholder="Substation Name"/>
                            <td>
                                <cti:button nameKey="add" icon="icon-add" id="b-add" type="submit" name="addSubstation"/>
                                <cti:button nameKey="mspSubstation" icon="icon-add" id="b-add" onclick="openSimpleDialog('mspAddDialog', '${mspAddUrl}', 'Choose Substations');"/>
@@ -90,9 +90,9 @@
                                 <cti:button icon="icon-cross" id="removeRouteBtn_${route.id}" name="removeRoute" value="${route.id}" type="submit" renderMode="buttonImage" />
                                     <c:set var="disableUp" value="${row.first}" />
                                     <c:set var="disableDown" value="${row.last}" />
-                                    <cti:button icon="icon-bullet-go-up" classes="js-up fn right M0"
+                                    <cti:button icon="icon-bullet-go-up" classes="js-up right M0"
                                         renderMode="buttonImage" disabled="${disableUp}" />
-                                    <cti:button icon="icon-bullet-go-down" classes="js-down fn left M0"
+                                    <cti:button icon="icon-bullet-go-down" classes="js-down left M0"
                                         renderMode="buttonImage" disabled="${disableDown}" />
                               </div>
                            </td>
