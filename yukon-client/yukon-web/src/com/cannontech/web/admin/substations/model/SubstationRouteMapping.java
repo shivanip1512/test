@@ -11,8 +11,6 @@ public class SubstationRouteMapping {
     private List<Route> routeList = LazyList.ofInstance(Route.class);
     private List<Route> avList=LazyList.ofInstance(Route.class);
     private List<Integer> selectedRoutes;
-    private List<Integer> orderedRoutes= LazyList.ofInstance(Integer.class);
-    
 
     public Integer getSubstationId() {
         return substationId;
@@ -46,14 +44,6 @@ public class SubstationRouteMapping {
         this.selectedRoutes = selectedRoutes;
     }
     
-    public List<Integer> getOrderedRoutes() {
-        return orderedRoutes;
-    }
-
-    public void setOrderedRoutes(List<Integer> orderedRoutes) {
-        this.orderedRoutes = orderedRoutes;
-    }
-
     @Override
     public int hashCode() {
         final int prime = 31;
