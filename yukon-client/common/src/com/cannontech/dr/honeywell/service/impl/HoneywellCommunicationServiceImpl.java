@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.TimeZone;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,7 @@ import com.cannontech.common.util.JsonUtils;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.dr.honeywell.HoneywellCommunicationException;
 import com.cannontech.dr.honeywell.HoneywellConfigException;
+import com.cannontech.dr.honeywell.message.AccessControlListItemRequest;
 import com.cannontech.dr.honeywell.message.DREventRequest;
 import com.cannontech.dr.honeywell.message.DutyCyclePeriod;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
@@ -67,8 +69,39 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     private static final String cancelDREventForDevicesUrlPart = "api/drEvents/optout/";
     private static final String removeDeviceFromDRGroupUrlPart = "WebAPI/api/drEventGroups/";
     private static final String drEventForGroupUrlPart = "WebAPI/api/drEvents";
-    
+    private static final String registerDeviceOnACLUrlPart = "WebAPI/api/accessControlList";
+
     private static final String CONTENT_TYPE = "application/json";
+
+    @Override
+    public void registerDevice(String macAddress, Integer deviceVendorUserId) {
+
+        log.debug("Registering honeyWell device with Mac Address " + macAddress);
+        try {
+            int deviceId = getGatewayDetailsForMacId(macAddress, String.valueOf(deviceVendorUserId));
+            String url = getUrlBase() + registerDeviceOnACLUrlPart + "?userId=" + deviceVendorUserId;
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
+
+            AccessControlListItemRequest accessControlListItemRequest = new AccessControlListItemRequest(deviceId, true);
+            List<AccessControlListItemRequest> controlListItemRequests = new ArrayList<>();
+            controlListItemRequests.add(accessControlListItemRequest);
+
+            String body = JsonUtils.toJson(controlListItemRequests);
+            HttpHeaders httpHeaders = getHttpHeaders(url, HttpMethod.PUT, body);
+
+            httpHeaders.add("userId", String.valueOf(deviceVendorUserId));
+            HttpEntity<?> requestEntity = new HttpEntity<Object>(body, httpHeaders);
+
+            HttpEntity<String> response =
+                restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.PUT, requestEntity, String.class);
+            log.debug(response);
+
+        } catch (RestClientException | JsonProcessingException ex) {
+            log.error("Unable to register Honeywell device in Access Control List. Message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellCommunicationException("Unable to register honeywell device. Message: \""
+                + ex.getMessage() + "\".");
+        }
+    }
 
     @Override
     public void addDevicesToGroup(List<Integer> thermostatIds, int groupId) {
@@ -340,19 +373,13 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
             HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.GET, null);
 
-            newheaders.add("UserId", "17106");
-            // UserId - '17106' is hardcoded just for testing.
-
-            // TODO : remove above line (this hardcoded UserId) and uncomment below line after fixing
-            // YUK-16052
-            // newheaders.add("UserId", userId);
+            newheaders.add("UserId", userId);
             HttpEntity<?> requestEntity = new HttpEntity<Object>(body, newheaders);
-
+            
+            macId = macId.replace(":", StringUtils.EMPTY);
             UriComponentsBuilder builder =
-                UriComponentsBuilder.fromHttpUrl(url).queryParam("macId", "00D02D81CF23").queryParam("allData", "true");
-            // macId - '00D02D81CF23' is hardcoded just for testing.
+                UriComponentsBuilder.fromHttpUrl(url).queryParam("macId", macId).queryParam("allData", "true");
 
-            // TODO : remove this hardcoded macId and replace it with parameter macId after fixing YUK-16052
             HttpEntity<String> response =
                 restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity, String.class);
 

@@ -17,12 +17,13 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.CompleteHoneywellWifiThermostat;
 import com.cannontech.common.pao.service.PaoPersistenceService;
+import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
+import com.cannontech.util.Validator;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.cannontech.util.Validator;
 
 public class HoneywellBuilder implements HardwareTypeExtensionProvider {
     private static final Logger log = YukonLogManager.getLogger(HoneywellBuilder.class);
@@ -34,6 +35,7 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
             .put(HardwareType.HONEYWELL_THERMOSTAT, PaoType.HONEYWELL_THERMOSTAT)
             .build();
     
+    @Autowired private HoneywellCommunicationService honeywellCommunicationService;
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
     private final Map<Integer, String> inventoryIdToSerialNumber = new HashMap<>();
@@ -47,7 +49,7 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
     public void createDevice(int inventoryId, String serialNumber, HardwareType hardwareType, String macAddress,
             Integer deviceVendorUserId) {
         try {
-          //TODO: Code to register new device with honeywell service??
+            honeywellCommunicationService.registerDevice(macAddress, deviceVendorUserId);
 
             CompleteHoneywellWifiThermostat honeywellPao = new CompleteHoneywellWifiThermostat();
             honeywellPao.setPaoName(serialNumber);

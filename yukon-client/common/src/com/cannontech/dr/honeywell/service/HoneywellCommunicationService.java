@@ -11,6 +11,11 @@ import com.cannontech.dr.honeywellWifi.model.HoneywellWifiDutyCycleDrParameters;
 public interface HoneywellCommunicationService {
 
     /**
+     * Registers the specified device with Honeywell WI-FI.
+     */
+    void registerDevice(String macAddress, Integer deviceVendorUserId);
+    
+    /**
      * Cancels DREvent for specified devices.
      */
     void cancelDREventForDevices(List<Integer> thermostatIds, int eventId, boolean immediateCancel);
