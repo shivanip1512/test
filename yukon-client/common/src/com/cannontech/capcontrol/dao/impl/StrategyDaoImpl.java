@@ -80,7 +80,7 @@ public class StrategyDaoImpl implements StrategyDao {
             p.addValue("StrategyName", o.getName());
             p.addValue("ControlMethod", o.getControlMethod());
             p.addValue("MaxDailyOperation", o.getMaxDailyOperation());
-            p.addValue("MaxOperationDisableFlag", o.isMaxOperationEnabled());
+            p.addValue("MaxOperationDisableFlag", o.isMaxOperationEnabled()); //MaxOperationEnabled is saying that it will disable the device at max operation value
             p.addValue("PeakStartTime", o.getPeakStartTime().getMillisOfDay() / 1000);
             LocalTime stopTime = o.getPeakStopTime();
             if (stopTime.equals(LocalTime.MIDNIGHT)) {
@@ -268,7 +268,7 @@ public class StrategyDaoImpl implements StrategyDao {
             strategy.setName( rs.getString("StrategyName") );
             strategy.setControlMethod( ControlMethod.valueOf(rs.getString("ControlMethod")) );
             strategy.setMaxDailyOperation( rs.getInt("MaxDailyOperation") );
-            strategy.setMaxOperationEnabled(rs.getBoolean("MaxOperationDisableFlag"));
+            strategy.setMaxOperationEnabled(rs.getBoolean("MaxOperationDisableFlag"));//This is saying that we will disable a device at the max operation limit
 
             int peakStartSeconds = rs.getInt("PeakStartTime");
             LocalTime peakStart = LocalTime.fromMillisOfDay(peakStartSeconds * 1000);
