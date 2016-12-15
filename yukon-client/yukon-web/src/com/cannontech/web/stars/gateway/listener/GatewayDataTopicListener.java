@@ -10,8 +10,8 @@ import javax.jms.ObjectMessage;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
@@ -23,6 +23,7 @@ import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.web.rfn.dataStreaming.service.DataStreamingCommunicationService;
 
 /**
  * This listener receives gateway data messages and gateway certificate update responses from service manager.
@@ -35,7 +36,7 @@ public class GatewayDataTopicListener implements MessageListener {
     
     @Autowired private RfnGatewayDataCache cache;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private DataStreamingCommunicationService dataStreamingCommunicationService;
     @Autowired private GatewayCertificateUpdateDao certificateUpdateDao;
     
     @Override
@@ -62,7 +63,11 @@ public class GatewayDataTopicListener implements MessageListener {
         try {
             RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
             log.debug("Handling gateway data message: " + message);
-            cache.put(rfnDevice.getPaoIdentifier(), new RfnGatewayData(message));
+            RfnGatewayData data = new RfnGatewayData(message);
+            cache.put(rfnDevice.getPaoIdentifier(), data);
+            dataStreamingCommunicationService.generatePointDataForDataStreaming(rfnDevice, BuiltInAttribute.DATA_STREAMING_LOAD,
+                data.getDataStreamingLoadingPercent(), false);
+
         } catch (NotFoundException e) {
             log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
         }

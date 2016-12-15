@@ -36,7 +36,9 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.SimulatedDataStreamingSettings;
+import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.service.DataStreamingSimulatorService;
+import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.google.common.collect.Lists;
 
 public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulatorService {
@@ -48,6 +50,7 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
     @Autowired private DataStreamingAttributeHelper attributeHelper;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService gatewayService;
+    @Autowired private RfnGatewaySimulatorService gatewaySimulatorService;
     
     private JmsTemplate jmsTemplate;
     
@@ -143,15 +146,16 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         } else {
             dataStreamingDevices.forEach(device -> deviceSubLists.add(Lists.newArrayList(device)));
         }
-        
+               
         List<RfnIdentifier> gatewayRfnIds = Lists.newArrayList(request.getGatewayRfnIdentifiers());
         Map<RfnIdentifier, GatewayDataStreamingInfo> gatewayDataStreamingInfos = new HashMap<>();
         for (int i = 0; i < numberOfGateways; i++) {
             RfnIdentifier gatewayRfnId = gatewayRfnIds.get(i);
             GatewayDataStreamingInfo info = new GatewayDataStreamingInfo();
             info.setGatewayRfnIdentifier(gatewayRfnId);
-            info.setCurrentLoading(1.0);
-            info.setMaxCapacity(10.0);
+            SimulatedGatewayDataSettings simulatedGatewayDataSettings = gatewaySimulatorService.getGatewayDataSettings();
+            info.setCurrentLoading(simulatedGatewayDataSettings.getCurrentDataStreamingLoading());
+            info.setMaxCapacity(DefaultGatewaySimulatorData.maxDataStreamingLoading);
             //info.setResultLoading(0.0);
             
             Map<RfnIdentifier, Double> deviceRfnIdentifiers = new HashMap<>();
@@ -230,8 +234,9 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
             
             GatewayDataStreamingInfo info = new GatewayDataStreamingInfo();
             info.setGatewayRfnIdentifier(gateway.getRfnIdentifier());
-            info.setCurrentLoading(1.0);
-            info.setMaxCapacity(10.0);
+            SimulatedGatewayDataSettings simulatedGatewayDataSettings = gatewaySimulatorService.getGatewayDataSettings();
+            info.setCurrentLoading(simulatedGatewayDataSettings.getCurrentDataStreamingLoading());
+            info.setMaxCapacity(DefaultGatewaySimulatorData.maxDataStreamingLoading);
             if (isOverloadGateways) {
                 info.setResultLoading(11.5);
             } else {

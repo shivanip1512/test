@@ -252,10 +252,21 @@ public class NmIntegrationController {
     public String sendGatewayDataResponse(@RequestParam String serial,
             @RequestParam(defaultValue = "false") boolean isGateway2, FlashScope flash) {
 
-        gatewaySimService.sendGatewayDataResponse(serial, isGateway2);
-        flash.setConfirm(new YukonMessageSourceResolvable(
-            "yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayDataResponse" , serial));
-
+        try {
+            GatewaySimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(
+                new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
+            SimulatedGatewayDataSettings settings = response.getDataSettings();
+            if(settings == null){
+                settings = enableGatewayDataSimulator(false, "50", flash);
+            }
+            gatewaySimService.sendGatewayDataResponse(serial, isGateway2, settings);
+            flash.setConfirm(new YukonMessageSourceResolvable(
+                "yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayDataResponse", serial));
+        } catch (ExecutionException e) {
+            log.error("Error communicating with Yukon Simulators Service.", e);
+            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
+            return "redirect:gatewaySimulator";
+        }
         return "redirect:gatewaySimulator";
     }
 
@@ -330,16 +341,19 @@ public class NmIntegrationController {
 
     @RequestMapping("enableGatewayDataReply")
     public String enableGatewayDataReply(@RequestParam(defaultValue="false") boolean alwaysGateway2, @RequestParam(defaultValue="50") String currentDataStreamingLoading, FlashScope flash) {
-        
+        enableGatewayDataSimulator(alwaysGateway2, currentDataStreamingLoading, flash);
+        return "redirect:gatewaySimulator";
+    }
+    
+    private SimulatedGatewayDataSettings enableGatewayDataSimulator(boolean alwaysGateway2, String currentDataStreamingLoading, FlashScope flash){
+        clearGatewayCache();
         SimulatedGatewayDataSettings dataSettings = new SimulatedGatewayDataSettings();
         dataSettings.setReturnGwy800Model(alwaysGateway2);
         dataSettings.setCurrentDataStreamingLoading(Double.valueOf(currentDataStreamingLoading));
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
         request.setDataSettings(dataSettings);
-        clearGatewayCache();
         sendStartStopRequest(request, flash, true);
-        
-        return "redirect:gatewaySimulator";
+        return dataSettings;
     }
 
     @RequestMapping("disableGatewayDataReply")

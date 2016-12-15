@@ -1,6 +1,5 @@
 package com.cannontech.web.rfn.dataStreaming.service.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +73,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     @Autowired private DbChangeManager dbChangeManager;
     private RequestReplyTemplate<DeviceDataStreamingConfigResponse> configRequestTemplate;
     private RequestReplyTemplate<GatewayDataStreamingInfoResponse> gatewayInfoRequestTemplate;
+    private boolean isDataStreamingEnabled;
     
     @PostConstruct
     public void init() {
@@ -81,7 +81,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
                 requestQueue, false);
         gatewayInfoRequestTemplate = new RequestReplyTemplateImpl<>(gatewayInfoRequestCparm, configSource,
                 connectionFactory, requestQueue, false);
-        
+        isDataStreamingEnabled = configurationSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
         collectGatewayStatistics();
     }
    
@@ -165,35 +165,46 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     }
     
     @Override
-    public Collection<GatewayDataStreamingInfo> getGatewayInfo(Collection<RfnGateway> gateways) throws DataStreamingConfigException {
-        
-        Set<RfnIdentifier> gatewayIds = gateways.stream()
-                                                .map(gateway -> gateway.getRfnIdentifier())
-                                                .collect(Collectors.toSet());
-        
+    public Collection<GatewayDataStreamingInfo> getGatewayInfo(Collection<RfnGateway> gateways,
+            boolean tagsPointMustArchive) throws DataStreamingConfigException {
+
+        Set<RfnIdentifier> gatewayIds =
+            gateways.stream().map(gateway -> gateway.getRfnIdentifier()).collect(Collectors.toSet());
+
         GatewayDataStreamingInfoRequest request = new GatewayDataStreamingInfoRequest();
         request.setGatewayRfnIdentifiers(gatewayIds);
-        
+
         log.debug("Sending gateway data streaming info request to Network Manager: " + request);
-        
-        //Send the request
-        BlockingJmsReplyHandler<GatewayDataStreamingInfoResponse> replyHandler = 
-                new BlockingJmsReplyHandler<>(GatewayDataStreamingInfoResponse.class);
+
+        // Send the request
+        BlockingJmsReplyHandler<GatewayDataStreamingInfoResponse> replyHandler =
+            new BlockingJmsReplyHandler<>(GatewayDataStreamingInfoResponse.class);
         gatewayInfoRequestTemplate.send(request, replyHandler);
-        
-        //Wait for the response
+
+        // Wait for the response
         GatewayDataStreamingInfoResponse response;
         try {
             response = replyHandler.waitForCompletion();
             log.debug("Gateway data streaming info response: " + response);
+
+            for (GatewayDataStreamingInfo info : response.getGatewayDataStreamingInfos().values()) {
+                RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(info.getGatewayRfnIdentifier());
+                generatePointDataForDataStreaming(gateway, BuiltInAttribute.DATA_STREAMING_LOAD, info.getDataStreamingLoadingPercent(),
+                    tagsPointMustArchive);
+                generatePointDataForDataStreaming(gateway, BuiltInAttribute.STREAMING_DEVICE_COUNT,
+                    info.getDeviceRfnIdentifiers().size(), tagsPointMustArchive);
+                generatePointDataForDataStreaming(gateway, BuiltInAttribute.CONNECTED_DEVICE_COUNT,
+                    info.getDeviceRfnIdentifiers().size(), tagsPointMustArchive);
+            }
         } catch (ExecutionException e) {
-            String errorMessage = "Unable to send request due to a communication error between Yukon and Network Manager";
+            String errorMessage =
+                "Unable to send request due to a communication error between Yukon and Network Manager";
             throw new DataStreamingConfigException(errorMessage, e, "commsError");
         }
-        
+
         return response.getGatewayDataStreamingInfos().values();
     }
-    
+
     /**
      * Builds a DeviceDataStreamingConfigRequest with all the specified configs and devices.
      */
@@ -269,34 +280,16 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     }
     
     /**
-     * If data streaming is enabled, schedules gateway statistics collection to run ever hour.
+     * If data streaming is enabled, schedules gateway statistics collection to run every hour.
      */
     private void collectGatewayStatistics() {
-        boolean isDataStreamingEnabled =
-            configurationSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
         if (isDataStreamingEnabled) {
             Runnable gatewayStatistics = new Runnable() {
                 @Override
                 public void run() {
                     log.debug("Starting gateway statistics collecton.");
-                    List<PointData> datas = new ArrayList<>();
                     try {
-                        Collection<GatewayDataStreamingInfo> infos = getGatewayInfo(rfnGatewayService.getAllGateways());
-                        for (GatewayDataStreamingInfo info : infos) {
-                            RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(info.getGatewayRfnIdentifier());
-
-                            LitePoint loadPoint = findPoint(gateway, BuiltInAttribute.DATA_STREAMING_LOAD);
-                            datas.add(generatePointData(info.getDataStreamingLoadingPercent(), loadPoint));
-
-                            LitePoint streamingDeviceCountPoint = findPoint(gateway, BuiltInAttribute.STREAMING_DEVICE_COUNT);
-                            datas.add(generatePointData(info.getDeviceRfnIdentifiers().size(), streamingDeviceCountPoint));
-
-                            LitePoint connectedDeviceCountPoint =findPoint(gateway, BuiltInAttribute.CONNECTED_DEVICE_COUNT);
-                            datas.add(generatePointData(info.getDeviceRfnIdentifiers().size(), connectedDeviceCountPoint));
-                        }
-                        if (!datas.isEmpty()) {
-                            dataSource.putValues(datas);
-                        }
+                        getGatewayInfo(rfnGatewayService.getAllGateways(), true);
                     } catch (Exception e) {
                         log.error("Error accured during gateway statistics collection", e);
                     }
@@ -315,27 +308,33 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         try{
             point = attributeService.getPointForAttribute(gateway, attribute);
         }catch(IllegalUseOfAttribute e){
-            log.info("Created point for "+attribute+" device:"+gateway.getRfnIdentifier());
             attributeService.createPointForAttribute(gateway, attribute);
             point = attributeService.getPointForAttribute(gateway, attribute);
+            log.info("Created point "+point+" for "+attribute+" device:"+gateway.getRfnIdentifier());
             dbChangeManager.processPaoDbChange(gateway, DbChangeType.UPDATE);
         }
         return point;
     }
     
-    /**
-     * Creates point data to be send to dispatch.
-     */
-    private PointData generatePointData(double value, LitePoint point) {
-        
-        PointData pointData = new PointData();
-        pointData = new PointData();
-        pointData.setId(point.getLiteID());
-        pointData.setPointQuality(PointQuality.Normal);
-        pointData.setValue(value);
-        pointData.setType(point.getPointType());
-        pointData.setTagsPointMustArchive(true);
+    @Override
+    public void generatePointDataForDataStreaming(RfnDevice gateway, BuiltInAttribute attribute, double value,
+            boolean tagsPointMustArchive) {
+        if (isDataStreamingEnabled) {
 
-        return pointData;
+            LitePoint point = findPoint(gateway, attribute);
+
+            PointData pointData = new PointData();
+            pointData = new PointData();
+            pointData.setId(point.getLiteID());
+            pointData.setPointQuality(PointQuality.Normal);
+            pointData.setValue(value);
+            pointData.setType(point.getPointType());
+            pointData.setTagsPointMustArchive(tagsPointMustArchive);
+            
+            log.debug("Creating point data for " + pointData + " device:" + gateway.getRfnIdentifier()
+                + " archive tags=" + tagsPointMustArchive);
+            
+            dataSource.putValue(pointData);
+        }
     }
 }

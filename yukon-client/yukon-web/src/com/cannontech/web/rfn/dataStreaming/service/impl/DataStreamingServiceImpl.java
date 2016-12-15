@@ -244,7 +244,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         Map<RfnIdentifier, RfnGateway> gatewaysForLoadingRange = getGatewaysForLoadingRange(criteria);
 
         Collection<GatewayDataStreamingInfo> gatewayInfos =
-            dataStreamingCommService.getGatewayInfo(rfnGatewayService.getAllGateways());
+            dataStreamingCommService.getGatewayInfo(rfnGatewayService.getAllGateways(), false);
 
         for (GatewayDataStreamingInfo gatewayInfo : gatewayInfos) {
             for (RfnIdentifier identifier : gatewayInfo.getDeviceRfnIdentifiers().keySet()) {

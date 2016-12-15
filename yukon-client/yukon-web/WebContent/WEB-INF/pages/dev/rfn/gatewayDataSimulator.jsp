@@ -385,7 +385,7 @@
                             <input name="name" value="Fake Gateway">
                         </tags:nameValue>
                         <tags:nameValue name="Serial Number">
-                            <input name="serial" value="7500001337">
+                            <input name="serial" value="7500000019">
                         </tags:nameValue>
                         <tags:nameValue name="GWY-800">
                             <input name="isGateway2" type="checkbox">
@@ -404,7 +404,7 @@
                     <cti:csrfToken/>
                     <tags:nameValueContainer tableClass="natural-width">
                         <tags:nameValue name="Serial Number">
-                            <input name="serial" value="7500001337">
+                            <input name="serial" value="7500000019">
                         </tags:nameValue>
                         <tags:nameValue name="GWY-800">
                             <input name="isGateway2" type="checkbox">

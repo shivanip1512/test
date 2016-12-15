@@ -83,7 +83,7 @@ public interface RfnGatewaySimulatorService {
     /**
      * Send an unsolicited gateway data message.
      */
-    void sendGatewayDataResponse(String serial, boolean isGateway2);
+    void sendGatewayDataResponse(String serial, boolean isGateway2, SimulatedGatewayDataSettings settings);
     
     /**
      * Send an unsolicited gateway archive message (which will create a new gateway device in Yukon).
@@ -143,6 +143,5 @@ public interface RfnGatewaySimulatorService {
      * Get the current settings for gateway firmware version replies.
      * @return the settings if the thread is running, otherwise null.
      */
-    public SimulatedFirmwareVersionReplySettings getFirmwareVersionSettings();
-    
+    public SimulatedFirmwareVersionReplySettings getFirmwareVersionSettings();    
 }
