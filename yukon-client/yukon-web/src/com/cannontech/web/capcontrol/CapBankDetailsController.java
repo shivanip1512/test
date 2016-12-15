@@ -74,8 +74,7 @@ public class CapBankDetailsController {
         .build();
 
     @RequestMapping("capBankLocations")
-	public String capBankLocations(ModelMap model, FlashScope flash,
-			LiteYukonUser user, int value) {
+    public String capBankLocations(ModelMap model, FlashScope flash, LiteYukonUser user, int value) {
         boolean isSubstationOrphan = false;
         List<CapBankDevice> deviceList = null;
         List<ViewableCapBank> capBanks = null;
@@ -147,30 +146,25 @@ public class CapBankDetailsController {
             }
         } else {
             allLitePaos = dbCache.getAllPaosMap();
-			if (capBanks != null && !capBanks.isEmpty()) {
-				for (ViewableCapBank capBank : capBanks) {
-					LiteCapBankAdditional additionInfo = mapBankAdditionals
-							.get(capBank.getCcId());
-					LiteYukonPAObject capBankPao = allLitePaos.get(capBank
-							.getCcId());
+            if (capBanks != null && !capBanks.isEmpty()) {
+                for (ViewableCapBank capBank : capBanks) {
+                    LiteCapBankAdditional additionInfo = mapBankAdditionals.get(capBank.getCcId());
+                    LiteYukonPAObject capBankPao = allLitePaos.get(capBank.getCcId());
 
-					if (additionInfo != null) {
-						// LiteYukonPAObject.paoDescription gives the same value
-						// (description) as the
-						// CapBankDevice.ccArea and both actually stores
-						// YukonPaoObject.Description value.
-						BankLocation location = new BankLocation(
-								capBank.getCcName(),
-								additionInfo.getSerialNumber(),
-								capBankPao.getPaoDescription(),
-								additionInfo.getDrivingDirections());
-						bankLocationList.add(location);
-					} else {
-						log.warn("Cap Bank Additional info missing for bank id: "
-								+ capBank.getCcId());
-					}
-				}
-			}
+                    if (additionInfo != null) {
+                        // LiteYukonPAObject.paoDescription gives the same value
+                        // (description) as the
+                        // CapBankDevice.ccArea and both actually stores
+                        // YukonPaoObject.Description value.
+                        BankLocation location =
+                            new BankLocation(capBank.getCcName(), additionInfo.getSerialNumber(),
+                                capBankPao.getPaoDescription(), additionInfo.getDrivingDirections());
+                        bankLocationList.add(location);
+                    } else {
+                        log.warn("Cap Bank Additional info missing for bank id: " + capBank.getCcId());
+                    }
+                }
+            }
         }
         StreamableCapObject area = null;
         if (type == CapControlType.SUBBUS) {
@@ -187,11 +181,10 @@ public class CapBankDetailsController {
             substation = cache.getSubstation(value);
             area = cache.getArea(substation.getParentID());
         }
-		if (bankLocationList.isEmpty()) {
-			flash.setError(new YukonMessageSourceResolvable(
-					"yukon.web.modules.capcontrol.feeder.noAssignedCapBanks"));
-		}
-       model.addAttribute("capBankList", bankLocationList);
+        if (bankLocationList.isEmpty()) {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.capcontrol.feeder.noAssignedCapBanks"));
+        }
+      model.addAttribute("capBankList", bankLocationList);
         if (!isSubstationOrphan) {
             model.addAttribute("areaId", area.getCcId());
             model.addAttribute("areaName", area.getCcName());
