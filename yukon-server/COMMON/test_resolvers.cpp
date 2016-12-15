@@ -345,6 +345,10 @@ BOOST_AUTO_TEST_CASE(test_isKnownUnsupportedDevice)
     BOOST_CHECK(isKnownUnsupportedDevice("ltc"));
     BOOST_CHECK(isKnownUnsupportedDevice("go_regulator"));
     BOOST_CHECK(isKnownUnsupportedDevice("po_regulator"));
+    BOOST_CHECK(isKnownUnsupportedDevice("honeywell wi-fi 9000"));
+    BOOST_CHECK(isKnownUnsupportedDevice("honeywell wi-fi focuspro"));
+    BOOST_CHECK(isKnownUnsupportedDevice("honeywell wi-fi thermostat"));
+    BOOST_CHECK(isKnownUnsupportedDevice("honeywell wi-fi visionpro 8000"));
     // Make sure it doesn't always return true
     BOOST_CHECK( ! isKnownUnsupportedDevice("alpha power plus"));
 }

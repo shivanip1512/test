@@ -418,7 +418,11 @@ bool isKnownUnsupportedDevice(const string& typeStr)
         "ecobee smart si",
         "ltc",
         "go_regulator",
-        "po_regulator"
+        "po_regulator",
+        "honeywell wi-fi 9000",
+        "honeywell wi-fi focuspro",
+        "honeywell wi-fi thermostat",
+        "honeywell wi-fi visionpro 8000"
     };
 
     return unsupported_devices.count( sanitizeInput( typeStr ) );
