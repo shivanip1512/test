@@ -39,11 +39,14 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.dr.honeywell.HoneywellCommunicationException;
+import com.cannontech.dr.honeywell.HoneywellConfigException;
 import com.cannontech.dr.honeywell.message.DREventRequest;
 import com.cannontech.dr.honeywell.message.DutyCyclePeriod;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
 import com.cannontech.dr.honeywellWifi.model.HoneywellWifiDutyCycleDrParameters;
+import com.cannontech.encryption.EncryptedRouteDao;
 import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -57,6 +60,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     @Autowired private @Qualifier("honeywell") RestOperations restTemplate;
     @Autowired private GlobalSettingDao settingDao;
     @Autowired private HoneywellWifiThermostatDao honeywellDao;
+    @Autowired private EncryptedRouteDao encryptedRouteDao;
 
     private static final String createDREventGroupUrlPart = "webapi/api/drEventGroups/";
     private static final String getGatewayByMacIdUrlPart = "webapi/api/gateways";
@@ -65,20 +69,6 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     private static final String drEventForGroupUrlPart = "WebAPI/api/drEvents";
     
     private static final String CONTENT_TYPE = "application/json";
-    // TODO:Needs to be removed after YUK-15886 is fixed.
-    private static final String PRIVATE_RSA_KEY = "MIICXAIBAAKBgQCLkrVLUxQXnkHCWexPkKj0VRkkz3TYxsI8MNEWXptkAp/ksjLv\n"
-                                                + "fHukdWANLthSJXheRqPi5LDqIWAovwxqph/r9iQTzU6tzDlov3lbOMsuZ2J10RtS\n"
-                                                + "3xkqLQi8KRVYZqKXQuk0KZHDPDNYUiKWaXGAsqmsrl4MrxxSTN91uAi++wIDAQAB\n"
-                                                + "AoGAMx5pfgwQiNHynb8XmNCPwOVGD0BYOGkbjLYIblv6J7f6XeWSWDpMgqBmrI1i\n"
-                                                + "tzt4CXdv4NMHpMjSkjnez1TGzbcGKNFgUCY4bfNCTOF2SxkloKX2v5cPp7trXqp/\n"
-                                                + "HMYXzloJoO1GMnY7bjgOGr4YmeDsu2oTBrfLaAWd1Gd0ffkCQQDTV/oTbo0yer4U\n"
-                                                + "DXaloZkAa9bsgHgtHxbcBY1kp1NXqtoPlSF1o2v35nH5mNmaDEvoKc/+/8euQb/L\n"
-                                                + "kze6t4n9AkEAqRCCdvA/au2wNU+V6O5ikQfF0K2F+4W6wurHjLSsudooy0cSiILZ\n"
-                                                + "Cbo/I+ay4OoxSYRer9UzbcRQ0SlS2Q5iVwJBAI7iZ/xDPcrnGSNNhu2sN1kFj6UN\n"
-                                                + "pjI7VqUiS9nFFp+qrwrh9GEoP5K2hlANevCfZ6JqwmjQXRv+78Ceo4rlE7ECQGUQ\n"
-                                                + "an1BRxfbuM9VoQ7amm+KTvVdFc/y9F8azGlPhEWhpWtHNEwItEe9X4tNmLcdKJOD\n"
-                                                + "HrtL3u+KQKmYY18/2wcCQB4PddTYGU72igyRRP68MqWzlAIaHsHvIfo5JiU3RPcl\n"
-                                                + "Lxc5BGEVGGDcW3+ySXzhMzHqPIhhb2wAzLBB+MfzPWI=\n";
 
     @Override
     public void addDevicesToGroup(List<Integer> thermostatIds, int groupId) {
@@ -100,6 +90,9 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         } catch (RestClientException | JsonProcessingException ex) {
             log.error("Add devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
+        } catch (HoneywellConfigException ex) {
+            log.error("Add devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellConfigException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
         }
 
     }
@@ -120,7 +113,10 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                 restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity, String.class);
         } catch (RestClientException ex) {
             log.error("Cancel DR event for devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
-            throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellCommunicationException("Unable to cancel device. Message: \"" + ex.getMessage() + "\".");
+        } catch (HoneywellConfigException ex) {
+            log.error("Add devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellConfigException("Unable to cancel device. Message: \"" + ex.getMessage() + "\".");
         }
     }
 
@@ -140,7 +136,10 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             log.debug(response);
         } catch (RestClientException | JsonProcessingException ex) {
             log.error("Removing devices from DR group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
-            throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellCommunicationException("Unable to remove device. Message: \"" + ex.getMessage() + "\".");
+        } catch (HoneywellConfigException ex) {
+            log.error("Removing devices from DR group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellConfigException("Unable to remove device. Message: \"" + ex.getMessage() + "\".");
         }
     }
 
@@ -185,6 +184,9 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         } catch (RestClientException | JsonProcessingException ex) {
             log.error("Send DR event for group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to send DR . Message: \"" + ex.getMessage() + "\".");
+        } catch (HoneywellConfigException ex) {
+            log.error("Send DR event for group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellConfigException("Unable to send DR . Message: \"" + ex.getMessage() + "\".");
         }
     }
 
@@ -209,6 +211,9 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         } catch (RestClientException ex) {
             log.error("Send cancel DR event for group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to send DR . Message: \"" + ex.getMessage() + "\".");
+        } catch (HoneywellConfigException ex) {
+            log.error("Send cancel DR event for group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellConfigException("Unable to send DR . Message: \"" + ex.getMessage() + "\".");
         }
     }
     
@@ -228,7 +233,13 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     private String getSignedContent(String formattedDate, String url, HttpMethod httpMethod, String body) {
         String signedContent = null;
         try {
-            byte[] encoded = new Base64().decode(PRIVATE_RSA_KEY);
+            EncryptionKey honeywellEncryptionKey = encryptedRouteDao.getHoneywellEncryptionKey();
+            if (honeywellEncryptionKey == null) {
+                log.error("Honeywell Encryption key not found.");
+                throw new HoneywellConfigException("Honeywell Encryption key not found");
+            }
+            
+            byte[] encoded = new Base64().decode(honeywellEncryptionKey.getPrivateKey().toString());
 
             // PKCS8 decode the encoded RSA private key
             java.security.Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());

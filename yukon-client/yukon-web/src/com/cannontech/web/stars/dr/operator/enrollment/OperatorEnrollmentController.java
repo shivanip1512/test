@@ -1,11 +1,8 @@
 package com.cannontech.web.stars.dr.operator.enrollment;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -29,6 +26,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.honeywell.HoneywellCommunicationException;
+import com.cannontech.dr.honeywell.HoneywellConfigException;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -50,7 +48,6 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.dao.StaticLoadGroupMappingDao;
 import com.cannontech.stars.dr.hardware.model.HardwareConfigAction;
-import com.cannontech.stars.dr.hardware.model.LMHardwareConfiguration;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
@@ -298,6 +295,10 @@ public class OperatorEnrollmentController {
             String msgKey = "yukon.web.modules.operator.enrollmentList.failed";
             MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey,
                                                                                assignedProgram.getDisplayName());
+            flashScope.setError(message);
+        } catch (HoneywellConfigException e4) {
+            String msgKey = "yukon.web.modules.operator.enrollmentList.noEncryptionKey";
+            MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey);
             flashScope.setError(message);
         }
 
