@@ -14,6 +14,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.common.device.groups.util.DeviceGroupUtil;
 import com.cannontech.common.model.Route;
@@ -152,9 +153,10 @@ public class SubstationController {
      */
     @RequestMapping(value = "/routeMapping/save", params = "removeRoute", method = RequestMethod.POST)
     public String removeRoute(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext,
-            FlashScope flashScope, ModelMap modelMap, Integer removeRoute, SubstationRouteMapping substationRouteMapping) {
+            FlashScope flashScope, ModelMap modelMap, Integer removeRoute, SubstationRouteMapping substationRouteMapping,RedirectAttributes redirectAttributes) {
         strmDao.remove(substationRouteMapping.getSubstationId(), removeRoute);
         flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "routeDeleted"));
+        redirectAttributes.addAttribute("substationId", substationRouteMapping.getSubstationId());
         return "redirect:view";
     }
 
