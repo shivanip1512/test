@@ -34,6 +34,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
@@ -43,6 +44,7 @@ import com.cannontech.web.capcontrol.models.ViewableCapBank;
 import com.cannontech.web.capcontrol.models.ViewableFeeder;
 import com.cannontech.web.capcontrol.models.ViewableSubBus;
 import com.cannontech.web.capcontrol.service.SubstationService;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableMap;
 
@@ -72,7 +74,8 @@ public class CapBankDetailsController {
         .build();
 
     @RequestMapping("capBankLocations")
-    public String capBankLocations(ModelMap model, LiteYukonUser user, int value) {
+	public String capBankLocations(ModelMap model, FlashScope flash,
+			LiteYukonUser user, int value) {
         boolean isSubstationOrphan = false;
         List<CapBankDevice> deviceList = null;
         List<ViewableCapBank> capBanks = null;
@@ -144,21 +147,30 @@ public class CapBankDetailsController {
             }
         } else {
             allLitePaos = dbCache.getAllPaosMap();
-            for (ViewableCapBank capBank : capBanks) {
-                LiteCapBankAdditional additionInfo = mapBankAdditionals.get(capBank.getCcId());
-                LiteYukonPAObject capBankPao = allLitePaos.get(capBank.getCcId());
+			if (capBanks != null && !capBanks.isEmpty()) {
+				for (ViewableCapBank capBank : capBanks) {
+					LiteCapBankAdditional additionInfo = mapBankAdditionals
+							.get(capBank.getCcId());
+					LiteYukonPAObject capBankPao = allLitePaos.get(capBank
+							.getCcId());
 
-                if (additionInfo != null) {
-                    // LiteYukonPAObject.paoDescription gives the same value (description) as the
-                    // CapBankDevice.ccArea and both actually stores YukonPaoObject.Description value.
-                    BankLocation location =
-                        new BankLocation(capBank.getCcName(), additionInfo.getSerialNumber(), capBankPao.getPaoDescription(),
-                            additionInfo.getDrivingDirections());
-                    bankLocationList.add(location);
-                } else {
-                    log.warn("Cap Bank Additional info missing for bank id: " + capBank.getCcId());
-                }
-            }
+					if (additionInfo != null) {
+						// LiteYukonPAObject.paoDescription gives the same value
+						// (description) as the
+						// CapBankDevice.ccArea and both actually stores
+						// YukonPaoObject.Description value.
+						BankLocation location = new BankLocation(
+								capBank.getCcName(),
+								additionInfo.getSerialNumber(),
+								capBankPao.getPaoDescription(),
+								additionInfo.getDrivingDirections());
+						bankLocationList.add(location);
+					} else {
+						log.warn("Cap Bank Additional info missing for bank id: "
+								+ capBank.getCcId());
+					}
+				}
+			}
         }
         StreamableCapObject area = null;
         if (type == CapControlType.SUBBUS) {
@@ -175,8 +187,11 @@ public class CapBankDetailsController {
             substation = cache.getSubstation(value);
             area = cache.getArea(substation.getParentID());
         }
-
-        model.addAttribute("capBankList", bankLocationList);
+		if (bankLocationList.isEmpty()) {
+			flash.setError(new YukonMessageSourceResolvable(
+					"yukon.web.modules.capcontrol.feeder.noAssignedCapBanks"));
+		}
+       model.addAttribute("capBankList", bankLocationList);
         if (!isSubstationOrphan) {
             model.addAttribute("areaId", area.getCcId());
             model.addAttribute("areaName", area.getCcName());
