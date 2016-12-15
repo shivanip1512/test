@@ -21,7 +21,6 @@ function mspSubstations_check(doCheck) {
     <br><br>
     </div>
 
-    <!-- <div style="width:500px; height:200px;"> -->
     <div style="min-width: 400px;width: auto;min-height:200px;" class="scroll-md">
     <table class="compact-results-table" style="width:95%;">
     

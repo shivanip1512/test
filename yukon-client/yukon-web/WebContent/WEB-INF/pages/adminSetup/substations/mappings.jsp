@@ -54,7 +54,9 @@
                            <form:input id="substationName" name="substationName" path="substationName" placeholder="Substation Name"/>
                            <td>
                                <cti:button nameKey="add" icon="icon-add" id="b-add" type="submit" name="addSubstation"/>
-                               <cti:button nameKey="mspSubstation" icon="icon-add" id="b-add" onclick="openSimpleDialog('mspAddDialog', '${mspAddUrl}', 'Choose Substations');"/>
+                               <c:if test="${hasVendorId}"> 
+                                 <cti:button nameKey="mspSubstation" icon="icon-add" id="b-add" onclick="openSimpleDialog('mspAddDialog', '${mspAddUrl}', 'Choose Substations');"/>
+                               </c:if>
                            </td>
                          </tags:nameValue2>
                        </tr>
