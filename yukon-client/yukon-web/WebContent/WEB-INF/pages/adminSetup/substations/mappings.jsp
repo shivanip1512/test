@@ -67,11 +67,12 @@
                 <div class="column-10-4-10 clearfix">
                   <div class="column one">
                     <tags:boxContainer2 nameKey="assignedRoutes" styleClass="stacked"> 
+                    <div class="scroll-lg" style="height:200px;">
                       <table id="routes-table" class="compact-results-table dashed with-form-controls">
                         <thead>
                           <tr>
                             <th><i:inline key=".route"/></th>
-                            <th style="width: 155px;"></th>
+                            <th></th>
                           </tr>
                        </thead>
                 
@@ -100,10 +101,11 @@
                       </c:forEach>
                   </tbody>
                 </table>
+                </div>
               </tags:boxContainer2>
             </div>
             <div class="column two">
-              <div class="action-area">
+              <div class="action-area" style="width:80%;padding-top:100px;">
                 <c:set var="disabled" value="${empty list}"/>
                 <cti:button id="b-add-route" nameKey="add" icon="icon-arrow-left" disabled="${disabled}"/>
               </div>
@@ -112,8 +114,8 @@
              <tags:boxContainer2 nameKey="availableRoutes"> 
                <c:choose>
                  <c:when test="${substationRouteMapping.avList!=null}">
-                   <div class="scroll-md">
-                     <form:select path="selectedRoutes" multiple="true" size="5">
+                    <div style="height:200px;">
+                     <form:select path="selectedRoutes" multiple="true" size="11">
                        <form:options class="selectedRoutes" id="routes" items="${substationRouteMapping.avList}" itemValue="id" title="name" itemLabel="name"/> 
                        <form:options items="${avList}" itemValue="id" title="name" itemLabel="name"/>
                      </form:select> 
