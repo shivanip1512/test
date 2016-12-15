@@ -146,11 +146,4 @@ public interface LMHardwareControlGroupDao {
     LMHardwareControlGroup findCurrentEnrollmentByInventoryIdAndRelayAndAccountId(int inventoryId, int relay,
             int accountId);
 
-    /**
-     * This method retrieves all past enrolled groupIds for a given InventoryId
-     * 
-     * @param inventoryId
-     * @return
-     */
-    List<Integer> getPastEnrolledHoneywellGroupsByInventoryId(Integer inventoryId);
 }

@@ -109,7 +109,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
             ArrayList<Integer> honeywellThermostatIds) {
 
         List<Integer> pastEnrolledGroupIds =
-            ImmutableSet.copyOf(lmHardwareControlGroupDao. 
+            ImmutableSet.copyOf(honeywellWifiThermostatDao. 
                     getPastEnrolledHoneywellGroupsByInventoryId(inventoryId)).asList();
 
         for (Integer pastGroupId : pastEnrolledGroupIds) {

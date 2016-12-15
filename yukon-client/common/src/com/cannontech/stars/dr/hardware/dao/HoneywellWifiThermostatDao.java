@@ -1,5 +1,7 @@
 package com.cannontech.stars.dr.hardware.dao;
 
+import java.util.List;
+
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.dr.honeywellWifi.model.HoneywellWifiThermostat;
@@ -27,4 +29,12 @@ public interface HoneywellWifiThermostatDao {
      * @throws NotFoundException if there is no group with the specified group id.
      */
     int getHoneywellGroupId(int groupId) throws NotFoundException;
+    
+    /**
+     * Gets the honey well groupIds with which the inventory was enrolled in the past.
+     * 
+     * @param inventoryId
+     * @return
+     */
+    List<Integer> getPastEnrolledHoneywellGroupsByInventoryId(Integer inventoryId);
 }

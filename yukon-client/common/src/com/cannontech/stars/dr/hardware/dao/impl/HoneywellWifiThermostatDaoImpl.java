@@ -1,6 +1,7 @@
 package com.cannontech.stars.dr.hardware.dao.impl;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -72,5 +73,18 @@ public class HoneywellWifiThermostatDaoImpl implements HoneywellWifiThermostatDa
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("Group Id " + groupId + " cannot be found.");
         }
+    }
+    
+    @Override
+    public List<Integer> getPastEnrolledHoneywellGroupsByInventoryId(final Integer inventoryId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT hg.honeywellgroupId oldEnrolledgroupId ");
+        sql.append(" FROM lmHardwareControlGroup hcg JOIN LMGroupHoneywellWifi hg on hg.deviceId=hcg.lmGroupId ");
+        sql.append(" WHERE hcg.inventoryId").eq(inventoryId);
+        sql.append(" AND hcg.type = 1 ");
+        sql.append(" AND hcg.groupEnrollStop IS NOT NULL ");
+       
+        return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
 }

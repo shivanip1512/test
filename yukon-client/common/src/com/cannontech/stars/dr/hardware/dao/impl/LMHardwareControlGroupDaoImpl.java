@@ -509,19 +509,6 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao 
     }
 
     @Override
-    public List<Integer> getPastEnrolledHoneywellGroupsByInventoryId(final Integer inventoryId) {
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT hg.honeywellgroupId oldEnrolledgroupId ");
-        sql.append(" FROM lmHardwareControlGroup hcg JOIN LMGroupHoneywellWifi hg on hg.deviceId=hcg.lmGroupId ");
-        sql.append(" WHERE hcg.inventoryId").eq(inventoryId);
-        sql.append(" AND hcg.type = 1 ");
-        sql.append(" AND hcg.groupEnrollStop IS NOT NULL ");
-       
-        return yukonJdbcTemplate.query(sql, TypeRowMapper.INTEGER);
-    }
-    
-    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LMHardwareControlGroup> 
                 getCurrentEnrollmentByProgramIdAndAccountId(int programId, int accountId) {
