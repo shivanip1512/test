@@ -102,16 +102,13 @@
                             <%-- Fall back to like-day history control --%>
                             <tags:switchButton path="likeDayFallBack" offClasses="M0" color="${not viewMode}"/>
                         </tags:nameValue2>
-                        
-                        <tags:nameValue2 nameKey=".maxDailyOperation"  rowClass="js-not-time-of-day">
+                        <tags:nameValue2 nameKey=".maxDailyOperations">
+                            <tags:input path="maxDailyOperation" size="3" />
+                        </tags:nameValue2>
+                        <tags:nameValue2 nameKey=".maxDailyOperationsHalt"  rowClass="js-not-time-of-day">
                             <spring:bind path="maxOperationEnabled">
-                                <c:if test="${not viewMode or not status.value}">
-                                    <tags:switchButton path="maxOperationEnabled" offClasses="M0"
-                                    toggleGroup="maxOperation" toggleAction="hide" color="${not viewMode}" />
-                                </c:if>
-                                <c:if test="${not viewMode or status.value}">
-                                    <tags:input path="maxDailyOperation" size="3" toggleGroup="maxOperation"/>
-                                </c:if>
+                                <tags:switchButton path="maxOperationEnabled" offClasses="M0"
+                                    color="${not viewMode}" />
                             </spring:bind>
                         </tags:nameValue2>
                         
