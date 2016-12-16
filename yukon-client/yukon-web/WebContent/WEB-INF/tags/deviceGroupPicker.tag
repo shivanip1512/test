@@ -50,7 +50,7 @@
     <cti:icon icon="icon-folder-edit" classes="fn vatb"/>
     <c:choose>
         <c:when test="${empty inputValue or empty group}">
-            <span class="fl"><i:inline key="${selectKey}"/></span>
+            <span class="fl empty-list"><i:inline key="${selectKey}"/></span>
             <input type="hidden" name="${inputName}">
         </c:when>
         <c:otherwise>
