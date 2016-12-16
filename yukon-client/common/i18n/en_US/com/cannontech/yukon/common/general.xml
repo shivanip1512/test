@@ -52,6 +52,7 @@
 <entry key="yukon.common.choose">Choose</entry>
 <entry key="yukon.common.chooseAccountNumbers">Choose Account Numbers</entry>
 <entry key="yukon.common.chooseControlAreas">Choose Control Areas</entry>
+<entry key="yukon.common.chooseDevices.tooltip">Click to select devices</entry>
 <entry key="yukon.common.chooseFile">Choose File</entry>
 <entry key="yukon.common.chooseGroups">Choose Groups</entry>
 <entry key="yukon.common.chooseProgram">Choose Program</entry>

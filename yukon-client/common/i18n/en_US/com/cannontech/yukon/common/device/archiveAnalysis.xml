@@ -165,7 +165,6 @@
 
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.formatType">Format Type</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.existingFormat">Format</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.chooseDevices.tooltip">Click to select devices</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.noDevices.tooltip">Select some devices</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.selectFormatType">Select Format Type</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.createNewFormat.title">Create New Format</entry>

@@ -10,7 +10,6 @@
     <!-- METER EVENTS REPORT report.jsp -->
     <entry key="yukon.web.modules.amr.meterEventsReport.report.pageName">Meter Events Report</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.pageDescription">Meter Events Report</entry>
-    <entry key="yukon.web.modules.amr.meterEventsReport.report.chooseDevices.tooltip">Click to select devices</entry>
 	<entry key="yukon.web.modules.amr.meterEventsReport.report.deviceSectionHeader.title">Devices</entry>
 	<entry key="yukon.web.modules.amr.meterEventsReport.report.filterSectionHeader.title">Filter</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.selectedDevices">Selected</entry>

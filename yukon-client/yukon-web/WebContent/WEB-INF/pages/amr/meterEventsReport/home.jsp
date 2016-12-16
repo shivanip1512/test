@@ -148,7 +148,7 @@
 
     <c:if test="${empty deviceCollection}">
         <tags:sectionContainer2 nameKey="filterSectionHeader">
-            <a href="javascript:void(0);" class="selectDevices clearfix fl" title="<cti:msg2 key=".chooseDevices.tooltip"/>">
+            <a href="javascript:void(0);" class="selectDevices clearfix fl" title="<cti:msg2 key="yukon.common.chooseDevices.tooltip"/>">
                 <c:if test="${empty deviceCollection}">
                     <span class="empty-list fl"><i:inline key="yukon.common.noDevices"/></span>
                 </c:if>
