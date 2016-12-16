@@ -132,7 +132,6 @@
        <div class="page-action-area">
          <cti:button id="saveAllRoutes" nameKey="save" busy="true"/>
          <cti:button id="removeSubstation" nameKey="delete" classes="delete js-delete" name="removeSubstation" type="submit"/>
-         <cti:button id="removeAllSubstations" nameKey="deleteAll" icon="icon-cross" name="removeAllSubstations" type="submit"/>
        </div>
       </form:form>
 <div id="addRoute-popup"></div>

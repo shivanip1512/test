@@ -133,21 +133,6 @@ public class SubstationController {
         return "redirect:view";
     }
 
-    @RequestMapping(value = "routeMapping/save", params = "removeAllSubstations", method = RequestMethod.POST)
-    public String removeAllSubstations(HttpServletRequest request, HttpServletResponse response,
-            YukonUserContext userContext, FlashScope flashScope, ModelMap modelMap,
-            SubstationRouteMapping substationRouteMapping) {
-
-        List<Substation> currentSubstations = substationDao.getAll();
-        for (Substation currentSubstation : currentSubstations) {
-
-            strmDao.removeAllBySubstationId(currentSubstation.getId());
-            substationDao.remove(currentSubstation);
-        }
-        flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "allSubstationDeleted"));
-        return "redirect:view";
-    }
-
     /**
      * This method removes a route from the given energy company.
      */

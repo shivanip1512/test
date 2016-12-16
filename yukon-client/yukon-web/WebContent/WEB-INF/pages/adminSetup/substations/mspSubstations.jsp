@@ -54,7 +54,7 @@ function mspSubstations_check(doCheck) {
     </div>
     
     <div class="page-action-area">
-        <cti:button type="submit" nameKey="add"/>
+        <cti:button type="submit" icon="icon-add" id="b-add-msp" nameKey="add"/>
     </div>
 
 </form>
