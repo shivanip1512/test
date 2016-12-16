@@ -23,7 +23,7 @@ SessionInfo AppSessionId::getSessionInfo() const
 }
 
 NetworkManagerRequestHeader AppSessionId::makeNmHeader( const long long groupId,
-                                                        const long long expiration_ms,
+                                                        const CtiTime & expiration,
                                                         const char      priority )
 {
     NetworkManagerRequestHeader header;
@@ -34,7 +34,7 @@ NetworkManagerRequestHeader AppSessionId::makeNmHeader( const long long groupId,
     header.messageId    = ++_messageId;
 
     header.groupId      = groupId;
-    header.expiration   = expiration_ms;
+    header.expiration   = 1000 * expiration.seconds();
     header.priority     = priority;
 
     return header;
@@ -42,9 +42,9 @@ NetworkManagerRequestHeader AppSessionId::makeNmHeader( const long long groupId,
 
 std::unique_ptr<AppSessionId>    SessionInfoManager::_appSession;
 
-void SessionInfoManager::setNmHeaderInfo( std::unique_ptr<Messaging::Rfn::AppSessionId> && appID )
+void SessionInfoManager::setClientGuid( const std::string & clientGuid )
 {
-    _appSession = std::move( appID );
+    _appSession = std::make_unique<AppSessionId>( clientGuid );
 }
 
 SessionInfo SessionInfoManager::getSessionInfo()
@@ -60,12 +60,12 @@ SessionInfo SessionInfoManager::getSessionInfo()
 }
 
 NetworkManagerRequestHeader SessionInfoManager::getNmHeader( const long long groupId,
-                                                             const long long expiration_ms,
+                                                             const CtiTime & expiration,
                                                              const char      priority )
 {
     if ( _appSession )
     {
-        return _appSession->makeNmHeader( groupId, expiration_ms, priority );
+        return _appSession->makeNmHeader( groupId, expiration, priority );
     }
 
     CTILOG_ERROR( dout, "Failed to generate Network Manager Request header" );

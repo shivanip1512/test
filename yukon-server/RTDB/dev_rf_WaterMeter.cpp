@@ -192,7 +192,7 @@ YukonError_t RfWaterMeterDevice::executePutConfigIntervals(CtiRequestMsg *pReq, 
 
             request.header = Rfn::SessionInfoManager::getNmHeader(
                                 pReq->GroupMessageId(),
-                                1000 * ( ( priority > 7 ) ? 3600 : 86400 ),
+                                CtiTime::now() + ( ( priority > 7 ) ? 3600 : 86400 ),
                                 priority );
 
             ActiveMQConnectionManager::SerializedMessage    serialized

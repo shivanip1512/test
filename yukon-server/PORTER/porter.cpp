@@ -717,8 +717,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
 
     static const char *PorterGuid = "134B8C32-4505-B5EC-1371-8CBC643446A0";
 
-    Cti::Messaging::Rfn::SessionInfoManager::setNmHeaderInfo(
-        std::make_unique<Cti::Messaging::Rfn::AppSessionId>( PorterGuid ) ); 
+    Cti::Messaging::Rfn::SessionInfoManager::setClientGuid( PorterGuid ); 
 
     /* check for various flags */
     if(argc > 1)

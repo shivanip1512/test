@@ -1,6 +1,7 @@
 #pragma once
 
 #include "dlldefs.h"
+#include "ctitime.h"
 
 #include <atomic>
 #include <string>
@@ -36,7 +37,7 @@ public:
     SessionInfo getSessionInfo() const;
 
     NetworkManagerRequestHeader makeNmHeader( const long long groupId,
-                                              const long long expiration_ms,
+                                              const CtiTime & expiration,
                                               const char      priority );
 
 private:
@@ -50,12 +51,12 @@ class IM_EX_MSG SessionInfoManager
 {
 public:
 
-    static void setNmHeaderInfo( std::unique_ptr<AppSessionId> && appID ); 
+    static void setClientGuid( const std::string & clientGuid );
 
     static SessionInfo getSessionInfo();
 
     static NetworkManagerRequestHeader getNmHeader( const long long groupId,
-                                                    const long long expiration_ms,
+                                                    const CtiTime & expiration,
                                                     const char      priority );
 
 protected:

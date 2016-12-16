@@ -396,9 +396,7 @@ void E2eMessenger::serializeAndQueue(const Request &req, Confirm::Callback callb
     msg.payload       = req.payload;
 
     msg.header =
-        Rfn::SessionInfoManager::getNmHeader( req.groupId,
-                                              req.expiration.seconds() * 1000,
-                                              req.priority );
+        Rfn::SessionInfoManager::getNmHeader( req.groupId, req.expiration, req.priority );
 
     SerializedMessage serialized;
 
