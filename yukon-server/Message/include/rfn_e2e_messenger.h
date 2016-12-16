@@ -94,9 +94,6 @@ private:
     CallbacksPerRfnIdentifier _dnp3Callbacks;
     boost::optional<Indication::Callback> _dataStreamingCallback;
 
-    long long _sessionId;
-    long long _messageId;
-
     void handleRfnE2eDataIndicationMsg(const SerializedMessage &msg);
     void handleRfnE2eDataConfirmMsg   (const SerializedMessage &msg);
     void handleNetworkManagerResponseMsg(const SerializedMessage &msg, const std::string &type);

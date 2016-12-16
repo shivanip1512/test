@@ -32,10 +32,7 @@ extern Serialization::MessageFactory<NetworkManagerBase> nmMessageFactory;
 E2eMessenger::E2eMessenger() :
     _timeoutProcessor([this]{processTimeouts();})
 {
-    _sessionId = _messageId =
-            std::uniform_int_distribution<long long>()(
-                    std::mt19937_64(
-                            std::random_device()()));
+    // empty
 }
 
 E2eMessenger::~E2eMessenger()
@@ -388,8 +385,6 @@ void E2eMessenger::sendE2eAp_Dnp(const Request &req, Confirm::Callback callback,
 }
 
 
-static const char *PorterGuid = "134B8C32-4505-B5EC-1371-8CBC643446A0";
-
 void E2eMessenger::serializeAndQueue(const Request &req, Confirm::Callback callback, TimeoutCallback timeout, const ApplicationServiceIdentifiers asid)
 {
     E2eDataRequestMsg msg;
@@ -400,12 +395,10 @@ void E2eMessenger::serializeAndQueue(const Request &req, Confirm::Callback callb
     msg.protocol      = E2eMsg::Application;
     msg.payload       = req.payload;
 
-    msg.header.clientGuid = PorterGuid;
-    msg.header.sessionId  = _sessionId;
-    msg.header.messageId  = ++_messageId;
-    msg.header.groupId    = req.groupId;
-    msg.header.priority   = req.priority;
-    msg.header.expiration = req.expiration.seconds() * 1000;
+    msg.header =
+        Rfn::SessionInfoManager::getNmHeader( req.groupId,
+                                              req.expiration.seconds() * 1000,
+                                              req.priority );
 
     SerializedMessage serialized;
 
@@ -443,10 +436,12 @@ void E2eMessenger::cancelByGroupId(const long groupId)
 
 void E2eMessenger::cancel(const long id, NetworkManagerCancelRequest::CancelType cancelType)
 {
+    Rfn::SessionInfo sessionInfo = Rfn::SessionInfoManager::getSessionInfo();
+
     NetworkManagerCancelRequest msg;
 
-    msg.clientGuid = PorterGuid;
-    msg.sessionId  = _sessionId;
+    msg.clientGuid = sessionInfo.appGuid; 
+    msg.sessionId  = sessionInfo.sessionId; 
     msg.type       = cancelType;
 
     msg.ids.insert(id);

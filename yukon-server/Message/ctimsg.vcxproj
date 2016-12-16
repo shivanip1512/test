@@ -432,6 +432,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="msg_trace.cpp">
     </ClCompile>
+    <ClCompile Include="NetworkManagerMessaging.cpp" />
     <ClCompile Include="PointDataHandler.cpp">
     </ClCompile>
     <ClCompile Include="PointDataRequestFactory.cpp">
