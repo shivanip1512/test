@@ -15,6 +15,7 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.dr.honeywellWifi.model.HoneywellWifiThermostat;
 import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
+import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 
 public class HoneywellWifiThermostatDaoImpl implements HoneywellWifiThermostatDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
@@ -82,7 +83,7 @@ public class HoneywellWifiThermostatDaoImpl implements HoneywellWifiThermostatDa
         sql.append("SELECT hg.HoneywellGroupId OldEnrolledGroupId ");
         sql.append(" FROM LMHardwareControlGroup hcg JOIN LMGroupHoneywellWifi hg on hg.DeviceId=hcg.LMGroupId ");
         sql.append(" WHERE hcg.InventoryId").eq(inventoryId);
-        sql.append(" AND hcg.Type = 1 ");
+        sql.append(" AND hcg.Type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
         sql.append(" AND hcg.GroupEnrollStop IS NOT NULL ");
        
         return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
