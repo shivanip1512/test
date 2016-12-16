@@ -83,7 +83,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
                 groupId = getGroupId(device.getInventoryID());
                 honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
                 honeywellThermostatIds = getHoneywellDeviceIds(device.getDeviceID());
-                unEnrollPastEnrolledGroups(device.getLiteID(), honeywellGroupId, honeywellThermostatIds);
+                unEnrollDeviceFromPastEnrolledGroups(device.getLiteID(), honeywellGroupId, honeywellThermostatIds);
                 honeywellCommunicationService.addDevicesToGroup(honeywellThermostatIds, honeywellGroupId);
                 break;
             case PERFORMANCE_VERIFICATION:
@@ -98,14 +98,14 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
     }
     
     /**
-     * UnEnroll Past Enrollments only by sending the unenroll API call to Honeywell for groups enrolled in the
+     * UnEnroll Device From Past Enrolled Groups by sending the unenroll API call to Honeywell for groups enrolled in the
      * past
      * 
      * @param inventoryId
      * @param currentHoneywellGroupId
      * @param honeywellThermostatIds
      */
-    private void unEnrollPastEnrolledGroups(int inventoryId, int currentHoneywellGroupId,
+    private void unEnrollDeviceFromPastEnrolledGroups(int inventoryId, int currentHoneywellGroupId,
             ArrayList<Integer> honeywellThermostatIds) {
 
         List<Integer> pastEnrolledGroupIds =
