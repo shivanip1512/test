@@ -878,8 +878,25 @@ public class NmIntegrationController {
             ModifyDataStreamingSimulatorRequest request = new ModifyDataStreamingSimulatorRequest();
             request.setSettings(settings);
             SimulatorResponseBase response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);
+            
+            //start gateway simulator
+            boolean startedGatewaySimualtor = false;
+            GatewaySimulatorStatusResponse gatewayResponse = simulatorsCommunicationService.sendRequest(
+                new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
+            SimulatedGatewayDataSettings gatewaySettings = gatewayResponse.getDataSettings();
+            if(gatewaySettings == null){
+                enableGatewayDataSimulator(false, "50", flash);
+                startedGatewaySimualtor = true;
+            }
+            
             if (response.isSuccessful()) {
-                flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.dataStreamingSimulator.simulatorStart"));
+                if (startedGatewaySimualtor) {
+                    flash.setConfirm(new YukonMessageSourceResolvable(
+                        "yukon.web.modules.dev.rfnTest.dataStreamingSimulator.gatewayAndDataStreamingSimulatorsStart"));
+                } else {
+                    flash.setConfirm(new YukonMessageSourceResolvable(
+                        "yukon.web.modules.dev.rfnTest.dataStreamingSimulator.simulatorStart"));
+                }
             }
         } catch (ExecutionException e) {
             log.error("Error communicating with Yukon Simulators Service.", e);
