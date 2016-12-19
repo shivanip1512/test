@@ -66,7 +66,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
             case OUT_OF_SERVICE:
                     int grpId = (int) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
                     honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(grpId);
-                    honeywellThermostatIds.add(getHoneywellDeviceIds(device.getDeviceID()).getThemostatId());
+                    honeywellThermostatIds.add(getHoneywellDeviceIds(device.getDeviceID()).getThermostatId());
                     honeywellCommunicationService.removeDeviceFromDRGroup(honeywellThermostatIds, honeywellGroupId);
                     break;
             case TEMP_OUT_OF_SERVICE:
@@ -74,11 +74,11 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
                     groupId = getGroupId(device.getInventoryID());
                     honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
                     HoneywellWifiThermostat honeywellThermostat = getHoneywellDeviceIds(device.getDeviceID());
-                    honeywellThermostatIds.add(honeywellThermostat.getThemostatId());
+                    honeywellThermostatIds.add(honeywellThermostat.getThermostatId());
                     honeywellCommunicationService.removeDeviceFromDRGroup(honeywellThermostatIds, honeywellGroupId);
                     // Get current events for this device from Honeywell
                     List<HoneywellDREvent> drEventResponses =
-                        honeywellCommunicationService.getDREventsForDevice(honeywellThermostat.getThemostatId(),
+                        honeywellCommunicationService.getDREventsForDevice(honeywellThermostat.getThermostatId(),
                             honeywellThermostat.getDeviceVendorUserId().toString());
                     for (HoneywellDREvent event : drEventResponses) {
                         if (!event.isOptedOut() && event.isOptOutable()) {
@@ -93,13 +93,13 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
                 // Add device to group in honeywell
                 groupId = getGroupId(device.getInventoryID());
                 honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
-                honeywellThermostatIds.add(getHoneywellDeviceIds(device.getDeviceID()).getThemostatId());
+                honeywellThermostatIds.add(getHoneywellDeviceIds(device.getDeviceID()).getThermostatId());
                 honeywellCommunicationService.addDevicesToGroup(honeywellThermostatIds, honeywellGroupId);
                 break;
             case CONFIG:
                 groupId = getGroupId(device.getInventoryID());
                 honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
-                honeywellThermostatIds.add(getHoneywellDeviceIds(device.getDeviceID()).getThemostatId());
+                honeywellThermostatIds.add(getHoneywellDeviceIds(device.getDeviceID()).getThermostatId());
                 unEnrollDeviceFromPastEnrolledGroups(device.getLiteID(), honeywellGroupId, honeywellThermostatIds);
                 honeywellCommunicationService.addDevicesToGroup(honeywellThermostatIds, honeywellGroupId);
                 break;
@@ -147,7 +147,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
         int honeywellDeviceId =
             honeywellCommunicationService.getGatewayDetailsForMacId(thermostat.getMacAddress(),
                 thermostat.getDeviceVendorUserId().toString());
-        thermostat.setThemostatId(honeywellDeviceId);
+        thermostat.setThermostatId(honeywellDeviceId);
         return thermostat;
     }
 
