@@ -165,8 +165,8 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     }
     
     @Override
-    public Collection<GatewayDataStreamingInfo> getGatewayInfo(Collection<RfnGateway> gateways,
-            boolean tagsPointMustArchive) throws DataStreamingConfigException {
+    public Collection<GatewayDataStreamingInfo> getGatewayInfo(Collection<RfnGateway> gateways, boolean shouldArchive)
+            throws DataStreamingConfigException {
 
         Set<RfnIdentifier> gatewayIds = gateways.stream()
                                                 .map(gateway -> gateway.getRfnIdentifier())
@@ -191,11 +191,11 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
             for (GatewayDataStreamingInfo info : response.getGatewayDataStreamingInfos().values()) {
                 RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(info.getGatewayRfnIdentifier());
                 generatePointDataForDataStreaming(gateway, BuiltInAttribute.DATA_STREAMING_LOAD, info.getDataStreamingLoadingPercent(),
-                    tagsPointMustArchive);
+                    shouldArchive);
                 generatePointDataForDataStreaming(gateway, BuiltInAttribute.STREAMING_DEVICE_COUNT,
-                    info.getDeviceRfnIdentifiers().size(), tagsPointMustArchive);
+                    info.getDeviceRfnIdentifiers().size(), shouldArchive);
                 generatePointDataForDataStreaming(gateway, BuiltInAttribute.CONNECTED_DEVICE_COUNT,
-                    info.getDeviceRfnIdentifiers().size(), tagsPointMustArchive);
+                    info.getDeviceRfnIdentifiers().size(), shouldArchive);
             }
         } catch (ExecutionException e) {
             String errorMessage =

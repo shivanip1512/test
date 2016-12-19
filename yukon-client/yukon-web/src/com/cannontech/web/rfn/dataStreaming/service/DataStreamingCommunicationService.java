@@ -58,10 +58,10 @@ public interface DataStreamingCommunicationService {
      * When response is received, generates point data for
      * DATA_STREAMING_LOAD,STREAMING_DEVICE_COUNT,CONNECTED_DEVICE_COUNT and sends it to dispatch.
      * 
-     * @param tagsPointMustArchive - sets Pointdata.setTagsPointMustArchive to true or false.
+     * @param shouldArchive - sets Pointdata.setTagsPointMustArchive to true or false.
      * @throws DataStreamingConfigException - if there was a connection problem sending the request.
      */
-    Collection<GatewayDataStreamingInfo> getGatewayInfo(Collection<RfnGateway> gateways, boolean tagsPointMustArchive)
+    Collection<GatewayDataStreamingInfo> getGatewayInfo(Collection<RfnGateway> gateways, boolean shouldArchive)
             throws DataStreamingConfigException;
 
     /**
