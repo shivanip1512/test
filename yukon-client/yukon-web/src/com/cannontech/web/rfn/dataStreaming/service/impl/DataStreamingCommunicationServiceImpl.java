@@ -168,8 +168,9 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     public Collection<GatewayDataStreamingInfo> getGatewayInfo(Collection<RfnGateway> gateways,
             boolean tagsPointMustArchive) throws DataStreamingConfigException {
 
-        Set<RfnIdentifier> gatewayIds =
-            gateways.stream().map(gateway -> gateway.getRfnIdentifier()).collect(Collectors.toSet());
+        Set<RfnIdentifier> gatewayIds = gateways.stream()
+                                                .map(gateway -> gateway.getRfnIdentifier())
+                                                .collect(Collectors.toSet());
 
         GatewayDataStreamingInfoRequest request = new GatewayDataStreamingInfoRequest();
         request.setGatewayRfnIdentifiers(gatewayIds);
