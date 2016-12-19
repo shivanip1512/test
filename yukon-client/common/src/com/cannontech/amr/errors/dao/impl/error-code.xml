@@ -443,6 +443,19 @@
             </ul>
         </troubleshooting>
     </error>
+    
+    <error code="58">
+        <category>Powerline Carrier</category>
+        <porter>B-Word Received in Returned Message</porter>
+        <description>Yukon detected interference between two transmitters.</description>
+        <troubleshooting>
+            The CCU was expecting to hear a response from a meter, but heard a request from another transmitter instead.  PLC meter responses are Emetcon D words, and CCU requests are Emetcon B words.
+            <ul>
+                <li>The Porter log will contain B word details, including the PLC address that was specified in the B word request.  The route (or routes) that the addressed device is on are likely to be the source of the interference.</li>
+                <li>This error is often accompanied by Bad BCH (error 100). Bad BCH can be caused by low signal as well as interference, but B Word Received can only be the result of interference.</li>    
+            </ul>
+        </troubleshooting>
+    </error>
 
     <error code="65">
         <category>Bulk Communications</category>

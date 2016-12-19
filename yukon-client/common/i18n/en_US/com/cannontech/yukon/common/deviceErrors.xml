@@ -362,6 +362,14 @@
                 </ul>
             </ul>]]></entry>
 
+    <entry key="yukon.web.error.code.58.porter">B-Word Received in Returned Message</entry>
+    <entry key="yukon.web.error.code.58.description">Yukon detected interference between two transmitters.</entry>
+    <entry key="yukon.web.error.code.58.troubleshooting"><![CDATA[The CCU was expecting to hear a response from a meter, but heard a request from another transmitter instead.  PLC meter responses are Emetcon D words, and CCU requests are Emetcon B words.
+            <ul>
+                <li>The Porter log will contain B word details, including the PLC address that was specified in the B word request.  The route (or routes) that the addressed device is on are likely to be the source of the interference.</li>
+                <li>This error is often accompanied by Bad BCH (error 100). Bad BCH can be caused by low signal as well as interference, but B Word Received can only be the result of interference.</li>    
+            </ul>]]></entry>
+
 	<entry key="yukon.web.error.code.65.porter">No DCD on Return Message</entry>
 	<entry key="yukon.web.error.code.65.description">The master station timed out while waiting for carrier
 		detect on the communications channel.</entry>
