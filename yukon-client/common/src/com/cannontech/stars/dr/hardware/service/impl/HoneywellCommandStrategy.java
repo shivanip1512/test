@@ -15,6 +15,7 @@ import com.cannontech.common.model.YukonTextMessage;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.honeywell.HoneywellCommunicationException;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
+import com.cannontech.dr.honeywellWifi.model.HoneywellDREvent;
 import com.cannontech.dr.honeywellWifi.model.HoneywellWifiThermostat;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -58,31 +59,47 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
         try {
             int groupId;
             int honeywellGroupId;
-            ArrayList<Integer> honeywellThermostatIds;
+            ArrayList<Integer> honeywellThermostatIds = new ArrayList<Integer>();
             switch (command.getType()) {
             case IN_SERVICE:
                 break;
             case OUT_OF_SERVICE:
-                int grpId = (int) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
-                honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(grpId);
-                honeywellThermostatIds = getHoneywellDeviceIds(device.getDeviceID());
-                honeywellCommunicationService.removeDeviceFromDRGroup(honeywellThermostatIds, honeywellGroupId);
-                break;
+                    int grpId = (int) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
+                    honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(grpId);
+                    honeywellThermostatIds.add(getHoneywellDeviceIds(device.getDeviceID()).getThemostatId());
+                    honeywellCommunicationService.removeDeviceFromDRGroup(honeywellThermostatIds, honeywellGroupId);
+                    break;
             case TEMP_OUT_OF_SERVICE:
-                // TODO:Update code for eventId and test Calls for honeywell
-                // groupId = getGroupId(device.getInventoryID());
-                // moveDevice(deviceIds, groupId);
-                // honeywellCommunicationService.cancelDREventForDevices(deviceIds, eventId, true);
+                    // Remove device from current group in honeywell, not in Yukon
+                    groupId = getGroupId(device.getInventoryID());
+                    honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
+                    HoneywellWifiThermostat honeywellThermostat = getHoneywellDeviceIds(device.getDeviceID());
+                    honeywellThermostatIds.add(honeywellThermostat.getThemostatId());
+                    honeywellCommunicationService.removeDeviceFromDRGroup(honeywellThermostatIds, honeywellGroupId);
+                    // Get current events for this device from Honeywell
+                    List<HoneywellDREvent> drEventResponses =
+                        honeywellCommunicationService.getDREventsForDevice(honeywellThermostat.getThemostatId(),
+                            honeywellThermostat.getDeviceVendorUserId().toString());
+                    for (HoneywellDREvent event : drEventResponses) {
+                        if (!event.isOptedOut() && event.isOptOutable()) {
+                            // Choose only optOutable events from the list and which are marked optedOut=false and
+                            // optOutable=true
+                            honeywellCommunicationService.cancelDREventForDevices(honeywellThermostatIds,
+                                event.getEventId(), false);
+                        }
+                    }
                 break;
             case CANCEL_TEMP_OUT_OF_SERVICE:
-                // TODO: Test Calls for honeywell
-                // groupId = getGroupId(device.getInventoryID());
-                // moveDevice(deviceIds, groupId);
+                // Add device to group in honeywell
+                groupId = getGroupId(device.getInventoryID());
+                honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
+                honeywellThermostatIds.add(getHoneywellDeviceIds(device.getDeviceID()).getThemostatId());
+                honeywellCommunicationService.addDevicesToGroup(honeywellThermostatIds, honeywellGroupId);
                 break;
             case CONFIG:
                 groupId = getGroupId(device.getInventoryID());
                 honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
-                honeywellThermostatIds = getHoneywellDeviceIds(device.getDeviceID());
+                honeywellThermostatIds.add(getHoneywellDeviceIds(device.getDeviceID()).getThemostatId());
                 unEnrollDeviceFromPastEnrolledGroups(device.getLiteID(), honeywellGroupId, honeywellThermostatIds);
                 honeywellCommunicationService.addDevicesToGroup(honeywellThermostatIds, honeywellGroupId);
                 break;
@@ -119,14 +136,19 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
         }
     }
 
-    private ArrayList<Integer> getHoneywellDeviceIds(int yukonThermostatId) {
-        ArrayList<Integer> HoneywellThermostatIds = new ArrayList<Integer>();
-        HoneywellWifiThermostat thermostat = getHoneywellWifiThermostatByDeviceId(yukonThermostatId);
+    /** 
+     * Gets Honeywell Device Information by using the yukon specific device Id
+     * 
+     * @param deviceId
+     * @return
+     */
+    private HoneywellWifiThermostat getHoneywellDeviceIds(int deviceId) {
+        HoneywellWifiThermostat thermostat = getHoneywellWifiThermostatByDeviceId(deviceId);
         int honeywellDeviceId =
             honeywellCommunicationService.getGatewayDetailsForMacId(thermostat.getMacAddress(),
                 thermostat.getDeviceVendorUserId().toString());
-        HoneywellThermostatIds.add(honeywellDeviceId);
-        return HoneywellThermostatIds;
+        thermostat.setThemostatId(honeywellDeviceId);
+        return thermostat;
     }
 
     private HoneywellWifiThermostat getHoneywellWifiThermostatByDeviceId(int deviceId) {

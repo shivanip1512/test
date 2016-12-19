@@ -2,6 +2,7 @@ package com.cannontech.dr.honeywell.service;
 
 import java.util.List;
 
+import com.cannontech.dr.honeywellWifi.model.HoneywellDREvent;
 import com.cannontech.dr.honeywellWifi.model.HoneywellWifiDutyCycleDrParameters;
 
 /**
@@ -61,5 +62,13 @@ public interface HoneywellCommunicationService {
      * @return
      */
     int getGatewayDetailsForMacId(String macId, String userId);
+
+    /** Gets DR event details for the given device
+     * 
+     * @param thermostatId : deviceId that needs to be queried for the events configured on it
+     * @param userId : Device vendor userId
+     * @return
+     */
+    List<HoneywellDREvent> getDREventsForDevice(Integer thermostatId, String userId);
 
 }

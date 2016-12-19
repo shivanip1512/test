@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import javax.xml.bind.DatatypeConverter;
+
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
@@ -47,6 +49,7 @@ import com.cannontech.dr.honeywell.message.AccessControlListItemRequest;
 import com.cannontech.dr.honeywell.message.DREventRequest;
 import com.cannontech.dr.honeywell.message.DutyCyclePeriod;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
+import com.cannontech.dr.honeywellWifi.model.HoneywellDREvent;
 import com.cannontech.dr.honeywellWifi.model.HoneywellWifiDutyCycleDrParameters;
 import com.cannontech.encryption.EncryptedRouteDao;
 import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
@@ -70,7 +73,8 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     private static final String removeDeviceFromDRGroupUrlPart = "WebAPI/api/drEventGroups/";
     private static final String drEventForGroupUrlPart = "WebAPI/api/drEvents";
     private static final String registerDeviceOnACLUrlPart = "WebAPI/api/accessControlList";
-
+    private static final String getDREventForDeviceUrlPart = "WebAPI/api/drEvents/";
+    
     private static final String CONTENT_TYPE = "application/json";
 
     @Override
@@ -401,5 +405,45 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
         }
         return deviceId;
+    }
+    
+    @Override
+    public List<HoneywellDREvent> getDREventsForDevice(Integer thermostatId, String userId) {
+        log.debug("Get DR events for devices " + thermostatId);
+        
+        List<HoneywellDREvent> drEvents = new ArrayList<HoneywellDREvent>();
+        try {
+            String url = getUrlBase() + getDREventForDeviceUrlPart + thermostatId ;
+            HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.GET, null);
+            newheaders.add("UserId", userId);
+            MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
+            HttpEntity<?> requestEntity = new HttpEntity<Object>(body, newheaders);
+
+            UriComponentsBuilder builder =
+                UriComponentsBuilder.fromHttpUrl(url);
+            HttpEntity<String> response =
+                    restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity, String.class);
+            log.debug(response);
+            String responseString = response.getBody().toString();
+            try {
+                ArrayList<Object> jsonArray = (ArrayList<Object>) JsonUtils.fromJson(responseString, List.class);
+                for (Object mapObject : jsonArray) {
+                    Map<String, Object> eventMap = (Map<String, Object>) mapObject;
+                    Integer eventId = (int) eventMap.get("eventID");
+                    boolean optOutable = (boolean) eventMap.get("optOutable");
+                    boolean optedOut = (boolean) eventMap.get("optedOut");
+                    drEvents.add(new HoneywellDREvent(eventId, optOutable, optedOut));
+                }
+              
+            } catch (IOException e) {
+                log.error("Error occured");
+            }
+        } catch (RestClientException ex) {
+            log.error("Get DR event details of the devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
+            throw new HoneywellCommunicationException("Unable to get DR event details for the device. Message: \"" + ex.getMessage() + "\".");
+        } catch (Exception ex){
+            log.error("Get DR event details of the devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
+        }
+        return drEvents;
     }
 }
