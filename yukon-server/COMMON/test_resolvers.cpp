@@ -349,6 +349,7 @@ BOOST_AUTO_TEST_CASE(test_isKnownUnsupportedDevice)
     BOOST_CHECK(isKnownUnsupportedDevice("honeywell wi-fi focuspro"));
     BOOST_CHECK(isKnownUnsupportedDevice("honeywell wi-fi thermostat"));
     BOOST_CHECK(isKnownUnsupportedDevice("honeywell wi-fi visionpro 8000"));
+    BOOST_CHECK(isKnownUnsupportedDevice("rfn relay"));
     // Make sure it doesn't always return true
     BOOST_CHECK( ! isKnownUnsupportedDevice("alpha power plus"));
 }

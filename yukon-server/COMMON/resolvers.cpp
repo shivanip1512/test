@@ -422,7 +422,8 @@ bool isKnownUnsupportedDevice(const string& typeStr)
         "honeywell wi-fi 9000",
         "honeywell wi-fi focuspro",
         "honeywell wi-fi thermostat",
-        "honeywell wi-fi visionpro 8000"
+        "honeywell wi-fi visionpro 8000",
+        "rfn relay"
     };
 
     return unsupported_devices.count( sanitizeInput( typeStr ) );
