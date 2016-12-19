@@ -45,12 +45,12 @@
 
                 <span><i:inline key=".ruleSentence.deviceGroup.suffix"/></span>
 
-                <c:if test="${not empty group.groupFullName}">
-                    <cti:list var="values">
-                        <cti:item value="${group.groupFullName}" />
-                    </cti:list>
-                </c:if>
-                <tags:deviceGroupPicker inputName="groups[${status.index}].groupFullName" inputValue="${values}" callbacks="${callbacks}"/>
+	                <c:if test="${not empty group.groupFullName}">
+	                    <cti:list var="values">
+	                        <cti:item value="${group.groupFullName}" />
+	                    </cti:list>
+	                </c:if>
+                    <div class="dib"><tags:deviceGroupPicker inputName="groups[${status.index}].groupFullName" inputValue="${values}" callbacks="${callbacks}"/></div>
                 <cti:button classes="fr js-remove-rule" nameKey="remove"  renderMode="buttonImage" icon="icon-cross"/>
             </div>
         </c:forEach>
@@ -74,7 +74,7 @@
         <option value="true"><i:inline key=".notContained"/></option>
     </select>
     <span><i:inline key=".ruleSentence.deviceGroup.suffix"/></span>
-    <tags:deviceGroupPicker inputName="groups[?].groupFullName" callbacks="${callbacks}"/>
+    <div class="dib"><tags:deviceGroupPicker inputName="groups[?].groupFullName" callbacks="${callbacks}"/></div>
     <cti:button classes="fr js-remove-rule" nameKey="remove"  renderMode="buttonImage" icon="icon-cross"/>
 </div>
 <cti:includeScript link="/resources/js/pages/yukon.tools.composed.group.js"/>
