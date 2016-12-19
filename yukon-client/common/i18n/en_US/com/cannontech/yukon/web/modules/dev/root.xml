@@ -290,6 +290,7 @@
     <entry key="yukon.web.modules.dev.rfnTest.viewDataStreamingSimulator.crumbTitle">Data Streaming Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.viewDataStreamingSimulator.pageName">Data Streaming Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataStreamingSimulator.simulatorStart">Data streaming simulator started!</entry>
+    <entry key="yukon.web.modules.dev.rfnTest.dataStreamingSimulator.gatewayAndDataStreamingSimulatorsStart">Data streaming and Gateway simulators started!</entry>
     <entry key="yukon.web.modules.dev.rfnTest.dataStreamingSimulator.simulatorStop">Data streaming simulator stopped.</entry>
     <entry key="yukon.web.modules.dev.rfnTest.viewMappingSimulator.crumbTitle">Mapping Simulator</entry>
     <entry key="yukon.web.modules.dev.rfnTest.viewMappingSimulator.pageName">Mapping Simulator</entry>
