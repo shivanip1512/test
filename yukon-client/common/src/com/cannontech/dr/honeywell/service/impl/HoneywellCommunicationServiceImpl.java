@@ -407,7 +407,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     
     @Override
     public List<HoneywellDREvent> getDREventsForDevice(Integer thermostatId, String userId) {
-        log.debug("Get DR events for devices " + thermostatId);
+        log.debug("Get DR events for device " + thermostatId);
         
         List<HoneywellDREvent> drEvents = new ArrayList<HoneywellDREvent>();
         try {
@@ -432,15 +432,12 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                     boolean optedOut = (boolean) eventMap.get("optedOut");
                     drEvents.add(new HoneywellDREvent(eventId, optOutable, optedOut));
                 }
-              
             } catch (IOException e) {
                 log.error("Error occured");
             }
         } catch (RestClientException ex) {
             log.error("Get DR event details of the devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to get DR event details for the device. Message: \"" + ex.getMessage() + "\".");
-        } catch (Exception ex){
-            log.error("Get DR event details of the devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
         }
         return drEvents;
     }
