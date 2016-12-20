@@ -40,6 +40,12 @@ NetworkManagerRequestHeader AppSessionId::makeNmHeader( const long long groupId,
     return header;
 }
 
+bool AppSessionId::isActive() const
+{
+    //  If we've generated a message, we're active
+    return _sessionInfo.sessionId != _messageId;
+}
+
 std::unique_ptr<AppSessionId>    SessionInfoManager::_appSession;
 
 void SessionInfoManager::setClientGuid( const std::string & clientGuid )
@@ -72,6 +78,12 @@ NetworkManagerRequestHeader SessionInfoManager::getNmHeader( const long long gro
 
     throw std::runtime_error( "Failed to generate Network Manager Request header" );
 }
+
+bool SessionInfoManager::isSessionActive()
+{
+    return _appSession && _appSession->isActive();
+}
+
 
 }
 }

@@ -434,6 +434,13 @@ void E2eMessenger::cancelByGroupId(const long groupId)
 
 void E2eMessenger::cancel(const long id, NetworkManagerCancelRequest::CancelType cancelType)
 {
+    if( ! Rfn::SessionInfoManager::isSessionActive() )
+    {
+        CTILOG_DEBUG(dout, "No NM requests have been sent, cancel request for id " << id << " will not be sent to NM");
+
+        return;
+    }
+
     Rfn::SessionInfo sessionInfo = Rfn::SessionInfoManager::getSessionInfo();
 
     NetworkManagerCancelRequest msg;

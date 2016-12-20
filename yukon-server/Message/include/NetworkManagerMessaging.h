@@ -40,6 +40,8 @@ public:
                                               const CtiTime & expiration,
                                               const char      priority );
 
+    bool isActive() const;
+
 private:
 
     const SessionInfo   _sessionInfo;
@@ -58,6 +60,8 @@ public:
     static NetworkManagerRequestHeader getNmHeader( const long long groupId,
                                                     const CtiTime & expiration,
                                                     const char      priority );
+
+    static bool isSessionActive();
 
 protected:
 
