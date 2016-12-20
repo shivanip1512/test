@@ -466,7 +466,7 @@ yukon.tools.commander = (function () {
     
     /** Setup the 'on route' section and device actions menu. */
     _setupFieldsForDevice = function (data) {
-        
+    	$('#other-actions-btn a').attr('href', yukon.url('/bulk/collectionActions?collectionType=idList&idList.ids=' + data.pao.liteID));
         $('#change-route-btn').toggleClass('dn', !data.isRoutable);
         $('#view-meter-detail-btn').toggleClass('dn', !data.isMeter);
         if (data.isRoutable) {
