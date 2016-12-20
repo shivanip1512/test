@@ -33,7 +33,6 @@ import com.cannontech.common.rfn.model.GatewayUpdateException;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
-import com.cannontech.common.rfn.service.NMConfigurationService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -67,7 +66,6 @@ public class GatewaySettingsController {
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private GatewaySettingsValidator validator;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private NMConfigurationService nmConfigurationService;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ServerDatabaseCache cache;

@@ -34,7 +34,6 @@ import com.cannontech.common.rfn.model.CertificateUpdate;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
-import com.cannontech.common.rfn.service.NMConfigurationService;
 import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
@@ -74,7 +73,6 @@ public class GatewayListController {
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private RfnGatewayFirmwareUpgradeService rfnGatewayFirmwareUpgradeService;
-    @Autowired private NMConfigurationService nmConfigurationService;
     @Autowired private GlobalSettingDao globalSettingDao;
     private Map<SortBy, Comparator<CertificateUpdate>> sorters;
     

@@ -52,7 +52,6 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.model.RfnGwy800;
 import com.cannontech.common.rfn.service.BlockingJmsReplyHandler;
-import com.cannontech.common.rfn.service.NMConfigurationService;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
@@ -83,7 +82,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private DeviceDao deviceDao;
     private EndpointEventLogService endpointEventLogService;
     private GlobalSettingDao globalSettingDao;
-    private NMConfigurationService nmConfigurationService;
     private PaoLocationDao paoLocationDao;
     private RfnDeviceCreationService creationService;
     private RfnDeviceDao rfnDeviceDao;
@@ -103,7 +101,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             DeviceDao deviceDao,
             EndpointEventLogService endpointEventLogService,
             GlobalSettingDao globalSettingDao,
-            NMConfigurationService nmConfigurationService,
             PaoLocationDao paoLocationDao,
             RfnDeviceCreationService creationService,
             RfnDeviceDao rfnDeviceDao,
@@ -114,7 +111,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         this.deviceDao = deviceDao;
         this.endpointEventLogService = endpointEventLogService;
         this.globalSettingDao = globalSettingDao;
-        this.nmConfigurationService = nmConfigurationService;
         this.paoLocationDao = paoLocationDao;
         this.creationService = creationService;
         this.rfnDeviceDao = rfnDeviceDao;

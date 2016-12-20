@@ -35,7 +35,6 @@ import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.rfn.service.NMConfigurationService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -77,7 +76,6 @@ public class DeviceConfigurationCategoryController {
     @Autowired private DeviceConfigurationService deviceConfigService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
-    @Autowired private NMConfigurationService nmConfigurationService;
 
     private final static String baseKey = "yukon.web.modules.tools.configs";
 

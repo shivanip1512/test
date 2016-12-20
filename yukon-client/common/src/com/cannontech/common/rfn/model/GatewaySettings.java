@@ -15,7 +15,6 @@ public class GatewaySettings {
     private String updateServerUrl;
     private Authentication updateServerLogin;
     private boolean useDefault;
-    private boolean checkUpdateServer;
     
     public Integer getId() {
         return id;
@@ -177,12 +176,4 @@ public class GatewaySettings {
         this.useDefault = useDefault;
     }
 
-    public boolean isCheckUpdateServer() {
-        return checkUpdateServer;
-    }
-
-    public void setCheckUpdateServer(boolean checkUpdateServer) {
-        this.checkUpdateServer = checkUpdateServer;
-    }
-    
 }
