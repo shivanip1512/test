@@ -136,7 +136,7 @@ auto RawPointHistoryArchiver::getFilteredRows(size_t maximum) -> std::vector<std
 
     if( ! duplicates.empty() )
     {
-        CTILOG_ERROR(dout, "Detected duplicates:" << duplicates);
+        CTILOG_INFO(dout, "Detected duplicates:" << duplicates);
     }
 
     return rows;
