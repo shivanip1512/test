@@ -79,17 +79,15 @@ public class GatewaySettingsController {
         model.addAttribute("mode", PageEditMode.CREATE);
         GatewaySettings settings = new GatewaySettings();
         
-        if (nmConfigurationService.isFirmwareUpdateSupported()) {
+        settings.setUpdateServerUrl(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER));
 
-            settings.setUpdateServerUrl(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER));
+        Authentication auth = new Authentication();
+        auth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
+        auth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
 
-            Authentication auth = new Authentication();
-            auth.setUsername(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_USER));
-            auth.setPassword(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER_PASSWORD));
-
-            settings.setUpdateServerLogin(auth);
-            settings.setUseDefault(true);
-        }
+        settings.setUpdateServerLogin(auth);
+        settings.setUseDefault(true);
+        
         model.addAttribute("settings", settings);
         
         return "../widget/gatewayInformationWidget/settings.jsp";

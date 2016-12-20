@@ -22,30 +22,28 @@
         data-ok-text="<cti:msg2 key="components.button.save.label"/>" 
         data-load-event="yukon:assets:gateway:load"></div>
 
-    <c:if test="${enableNMGatewayVersion}">
-        <div id="firmware-server-popup"
-            data-dialog
-            data-big-content
-            data-width="750"
-            data-height="450"
-            data-url="<cti:url value="/stars/gateways/update-servers"/>"
-            data-title="<cti:msg2 key=".updateServer.set"/>"
-            data-event="yukon:assets:gateway:update-server:save"
-            data-ok-text="<cti:msg2 key="components.button.save.label"/>">
-        </div>
+    <div id="firmware-server-popup"
+        data-dialog
+        data-big-content
+        data-width="750"
+        data-height="450"
+        data-url="<cti:url value="/stars/gateways/update-servers"/>"
+        data-title="<cti:msg2 key=".updateServer.set"/>"
+        data-event="yukon:assets:gateway:update-server:save"
+        data-ok-text="<cti:msg2 key="components.button.save.label"/>">
+    </div>
 
-        <div id="send-firmware-upgrade-popup"
-            data-dialog
-            data-big-content
-            data-width="750"
-            data-height="450"
-            data-url="<cti:url value="/stars/gateways/firmware-upgrade"/>"
-            data-title="<cti:msg2 key=".firmwareUpdate"/>"
-            data-event="yukon:assets:gateway:firmware-upgrade:send"
-            data-confirm-multiple-text="<cti:msg2 key=".firmwareUpdate.confirmMultiple"/>"
-            data-ok-text="<cti:msg2 key="components.button.send.label"/>">
-        </div>
-    </c:if>
+    <div id="send-firmware-upgrade-popup"
+        data-dialog
+        data-big-content
+        data-width="750"
+        data-height="450"
+        data-url="<cti:url value="/stars/gateways/firmware-upgrade"/>"
+        data-title="<cti:msg2 key=".firmwareUpdate"/>"
+        data-event="yukon:assets:gateway:firmware-upgrade:send"
+        data-confirm-multiple-text="<cti:msg2 key=".firmwareUpdate.confirmMultiple"/>"
+        data-ok-text="<cti:msg2 key="components.button.send.label"/>">
+    </div>
 </cti:checkRolesAndProperties>
 
 <c:if test="${showPageActions}">
@@ -61,18 +59,16 @@
             </cm:dropdownOption>
         </cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="INFRASTRUCTURE_CREATE_AND_UPDATE">
-            <c:if test="${enableNMGatewayVersion}">
-                <cm:dropdownOption data-popup="#firmware-server-popup" icon="icon-drive-go"
-                    classes="update-servers disabled" disabled="true">
+            <cm:dropdownOption data-popup="#firmware-server-popup" icon="icon-drive-go"
+                classes="update-servers disabled" disabled="true">
 
-                    <i:inline key=".updateServer.set"/>
-                </cm:dropdownOption>
-                <cm:dropdownOption data-popup="#send-firmware-upgrade-popup" icon="icon-drive-go"
-                    classes="update-servers disabled" disabled="true">
+                <i:inline key=".updateServer.set"/>
+            </cm:dropdownOption>
+            <cm:dropdownOption data-popup="#send-firmware-upgrade-popup" icon="icon-drive-go"
+                classes="update-servers disabled" disabled="true">
 
-                    <i:inline key=".firmwareUpdate"/>
-                </cm:dropdownOption>
-            </c:if>
+                <i:inline key=".firmwareUpdate"/>
+            </cm:dropdownOption>
         </cti:checkRolesAndProperties>
     </div>
 </c:if>
@@ -101,9 +97,7 @@
             </cti:checkRolesAndProperties>
             <th><i:inline key=".serialNumber"/></th>
             <th><i:inline key=".ipaddress"/></th>
-            <c:if test="${enableNMGatewayVersion}">
-                <th><i:inline key=".firmwareVersion"/></th>
-            </c:if>
+            <th><i:inline key=".firmwareVersion"/></th>
             <th><i:inline key=".lastComms"/></th>
             <th colspan="2"><i:inline key=".detail.dataCollection.title"/></th>
         </tr>
@@ -136,19 +130,17 @@
                         </cti:checkRolesAndProperties>
                         <td class="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
                         <td class="js-gw-ip">${fn:escapeXml(gateway.data.ipAddress)}</td>
-                        <c:if test="${enableNMGatewayVersion}">
-                            <td class="js-gw-rv">
-                                <span class="js-gw-rv-text">
-                                    ${fn:escapeXml(gateway.data.releaseVersion)}
-                                </span>
-                                <c:set var="dn" value=""/>
-                                <c:if test="${not gateway.upgradeAvailable}">
-                                    <c:set var="dn" value="dn"/>
-                                </c:if>
-                                <cti:msg2 var="updateAvailable" key=".firmwareUpdateAvailable"/>
-                                <cti:icon icon="icon-download" data-popup="#send-firmware-upgrade-popup" classes="js-gateway-update-available fn cp ${dn}" title="${updateAvailable}"/>
-                            </td>
-                        </c:if>
+                        <td class="js-gw-rv">
+                            <span class="js-gw-rv-text">
+                                ${fn:escapeXml(gateway.data.releaseVersion)}
+                            </span>
+                            <c:set var="dn" value=""/>
+                            <c:if test="${not gateway.upgradeAvailable}">
+                                <c:set var="dn" value="dn"/>
+                            </c:if>
+                            <cti:msg2 var="updateAvailable" key=".firmwareUpdateAvailable"/>
+                            <cti:icon icon="icon-download" data-popup="#send-firmware-upgrade-popup" classes="js-gateway-update-available fn cp ${dn}" title="${updateAvailable}"/>
+                        </td>
                         <c:set var="clazz" value="green"/>
                         <c:if test="${gateway.lastCommFailed}">
                             <c:set var="clazz" value="red"/>
@@ -269,7 +261,6 @@
 </table>
 </div>
 
-<c:if test="${enableNMGatewayVersion}">
 <h3><i:inline key=".firmwareUpdates"/></h3>
 <c:if test="${empty firmwareUpdates}">
     <div class="js-no-firmware-updates empty-list">
@@ -323,7 +314,6 @@
         </tbody>
     </table>
 </div>
-</c:if>
 
 <div id="gateway-templates" class="dn">
     <table>
@@ -335,13 +325,11 @@
             </cti:checkRolesAndProperties>
             <td class="js-gw-sn"></td>
             <td class="js-gw-ip"></td>
-            <c:if test="${enableNMGatewayVersion}">
-                <td class="js-gw-rv">
-                    <span class="js-gw-rv-text"></span>
-                    <cti:msg2 var="updateAvailable" key=".firmwareUpdateAvailable"/>
-                    <cti:icon icon="icon-download" data-popup="#send-firmware-upgrade-popup" classes="js-gateway-update-available fn cp dn" title="${updateAvailable}"/>
-                </td>
-            </c:if>
+            <td class="js-gw-rv">
+                <span class="js-gw-rv-text"></span>
+                <cti:msg2 var="updateAvailable" key=".firmwareUpdateAvailable"/>
+                <cti:icon icon="icon-download" data-popup="#send-firmware-upgrade-popup" classes="js-gateway-update-available fn cp dn" title="${updateAvailable}"/>
+            </td>
             <td class="js-gw-last-comm"></td>
             <td class="js-gw-data-collection">
                 <div class="dib vat progress">

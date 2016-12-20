@@ -472,11 +472,9 @@ public class DeviceConfigurationCategoryController {
 
         CategoryType type = CategoryType.fromValue(categoryEditBean.getCategoryType());
         
-        if (nmConfigurationService.isNewVoltageProfileUpdateSupported()) {
-            boolean enableVoltageDataStreamingOptions =
-                isEnabled(type, CategoryType.RFN_CHANNEL_CONFIGURATION, configId, voltageDataStreamingTypes);
-            model.addAttribute("enableVoltageDataStreamingOptions", enableVoltageDataStreamingOptions);
-        }
+        boolean enableVoltageDataStreamingOptions =
+            isEnabled(type, CategoryType.RFN_CHANNEL_CONFIGURATION, configId, voltageDataStreamingTypes);
+        model.addAttribute("enableVoltageDataStreamingOptions", enableVoltageDataStreamingOptions);
 
         boolean enableDisconnectDisplayDisabled =
             isEnabled(type, CategoryType.LCD_CONFIGURATION, configId, disconnectDisplayDisabledTypes);

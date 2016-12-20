@@ -629,17 +629,15 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             settings.setLongitude(gateway.getLocation().getLongitude());
         }
 
-        if(nmConfigurationService.isFirmwareUpdateSupported()) {
 
-            String defaultUpdateServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+        String defaultUpdateServer = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
 
-            String updateServerUrl = gateway.getData().getUpdateServerUrl();
-            settings.setUpdateServerUrl(updateServerUrl);
-            settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
+        String updateServerUrl = gateway.getData().getUpdateServerUrl();
+        settings.setUpdateServerUrl(updateServerUrl);
+        settings.setUpdateServerLogin(gateway.getData().getUpdateServerLogin());
 
-            if(StringUtils.isBlank(updateServerUrl) || updateServerUrl.equals(defaultUpdateServer)) {
-                settings.setUseDefault(true);
-            }
+        if(StringUtils.isBlank(updateServerUrl) || updateServerUrl.equals(defaultUpdateServer)) {
+            settings.setUseDefault(true);
         }
 
         return settings;

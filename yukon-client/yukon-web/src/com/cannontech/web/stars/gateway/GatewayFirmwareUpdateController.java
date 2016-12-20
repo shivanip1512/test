@@ -39,11 +39,9 @@ public class GatewayFirmwareUpdateController {
         
         Map<Integer, Object> json = new HashMap<>();
         
-        if (nmConfigurationService.isFirmwareUpdateSupported()) {
-            List<RfnGatewayFirmwareUpdateSummary> results = firmwareUpgradeService.getFirmwareUpdateSummaries();
-            for (RfnGatewayFirmwareUpdateSummary result : results) {
-                json.put(result.getUpdateId(), result);
-            }
+        List<RfnGatewayFirmwareUpdateSummary> results = firmwareUpgradeService.getFirmwareUpdateSummaries();
+        for (RfnGatewayFirmwareUpdateSummary result : results) {
+            json.put(result.getUpdateId(), result);
         }
         
         return json;

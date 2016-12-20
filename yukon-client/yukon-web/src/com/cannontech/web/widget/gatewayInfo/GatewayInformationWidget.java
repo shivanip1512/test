@@ -97,9 +97,6 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         model.addAttribute("mode", PageEditMode.EDIT);
         model.addAttribute("deviceId", deviceId);
 
-        boolean updateServerCompatability = nmConfigurationService.isFirmwareUpdateSupported();
-        model.addAttribute("updateServerCompatability", updateServerCompatability);
-
         try {
             
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(deviceId);
@@ -127,8 +124,6 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             BindingResult result) {
         
         MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-        boolean updateServerCompatability = nmConfigurationService.isFirmwareUpdateSupported();
-        settings.setCheckUpdateServer(updateServerCompatability);
 
         validator.validate(settings, result);
         model.addAttribute("deviceId", deviceId);
@@ -136,7 +131,6 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.EDIT);
-            model.addAttribute("updateServerCompatability", updateServerCompatability);
             return "gatewayInformationWidget/settings.jsp";
         }
         
@@ -153,7 +147,6 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             }
             
             
-            if(nmConfigurationService.isFirmwareUpdateSupported()) {
             
             if(settings.isUseDefault()) {
                 updateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
@@ -163,7 +156,6 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
                 updateServerUrl = settings.getUpdateServerUrl();
                 auth.setUsername(settings.getUpdateServerLogin().getUsername());
                 auth.setPassword(settings.getUpdateServerLogin().getPassword());
-            }
             }
             RfnGatewayData.Builder builder = new RfnGatewayData.Builder();
             RfnGatewayData data = builder.copyOf(gateway.getData())

@@ -129,19 +129,16 @@ public class GatewayListController {
         }
         model.addAttribute("certUpdates", certUpdates);
         helper.addText(model, userContext);
-        boolean enableNMGatewayVersion = nmConfigurationService.isFirmwareUpdateSupported();
-        model.addAttribute("enableNMGatewayVersion", enableNMGatewayVersion);
         
-        if (enableNMGatewayVersion) {
-            List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateSummaries();
-            firmwareUpdates.sort(new Comparator<RfnGatewayFirmwareUpdateSummary>() {
-                @Override
-                public int compare(RfnGatewayFirmwareUpdateSummary first, RfnGatewayFirmwareUpdateSummary second) {
-                    return second.getSendDate().compareTo(first.getSendDate());
-                }
-            });
-            model.addAttribute("firmwareUpdates", firmwareUpdates);
-        }
+        List<RfnGatewayFirmwareUpdateSummary> firmwareUpdates = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateSummaries();
+        firmwareUpdates.sort(new Comparator<RfnGatewayFirmwareUpdateSummary>() {
+            @Override
+            public int compare(RfnGatewayFirmwareUpdateSummary first, RfnGatewayFirmwareUpdateSummary second) {
+                return second.getSendDate().compareTo(first.getSendDate());
+            }
+        });
+        model.addAttribute("firmwareUpdates", firmwareUpdates);
+        
         
         return "gateways/list.jsp";
     }
