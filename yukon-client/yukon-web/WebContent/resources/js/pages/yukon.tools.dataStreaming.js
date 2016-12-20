@@ -39,12 +39,14 @@ yukon.tools.dataStreaming = (function () {
             $('.js-select-all-item').each(function (index, item) {
                 if (list.indexOf($(item).val()) !== -1) {
                     $(item).prop('checked', true);
-                    $('.js-select-all').prop('checked', true);
                 } else {
                     $(item).prop('checked', false);
                     $('.js-select-all').prop('checked', false);
                 }
             });
+            if(parseInt($('.page-num-text').text().split("of")[1].trim()) === list.length){
+                $('.js-select-all').prop('checked', true);
+            }
         },
 
         checkAll: function() {
