@@ -39,6 +39,7 @@ yukon.tools.dataStreaming = (function () {
             $('.js-select-all-item').each(function (index, item) {
                 if (list.indexOf($(item).val()) !== -1) {
                     $(item).prop('checked', true);
+                    $('.js-select-all').prop('checked', true);
                 } else {
                     $(item).prop('checked', false);
                     $('.js-select-all').prop('checked', false);
