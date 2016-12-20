@@ -29,9 +29,11 @@ import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClientException;
@@ -414,27 +416,14 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             String url = getUrlBase() + getDREventForDeviceUrlPart + thermostatId ;
             HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.GET, null);
             newheaders.add("UserId", userId);
-            MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
-            HttpEntity<?> requestEntity = new HttpEntity<Object>(body, newheaders);
+            HttpEntity<?> requestEntity = new HttpEntity<Object>(null, newheaders);
 
             UriComponentsBuilder builder =
                 UriComponentsBuilder.fromHttpUrl(url);
-            HttpEntity<String> response =
-                    restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity, String.class);
+            ResponseEntity<List<HoneywellDREvent>> response =
+                    restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<HoneywellDREvent>>() {});
             log.debug(response);
-            String responseString = response.getBody().toString();
-            try {
-                ArrayList<Object> jsonArray = (ArrayList<Object>) JsonUtils.fromJson(responseString, List.class);
-                for (Object mapObject : jsonArray) {
-                    Map<String, Object> eventMap = (Map<String, Object>) mapObject;
-                    Integer eventId = (int) eventMap.get("eventID");
-                    boolean optOutable = (boolean) eventMap.get("optOutable");
-                    boolean optedOut = (boolean) eventMap.get("optedOut");
-                    drEvents.add(new HoneywellDREvent(eventId, optOutable, optedOut));
-                }
-            } catch (IOException e) {
-                log.error("Error occured");
-            }
+            drEvents = response.getBody();
         } catch (RestClientException ex) {
             log.error("Get DR event details of the devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to get DR event details for the device. Message: \"" + ex.getMessage() + "\".");

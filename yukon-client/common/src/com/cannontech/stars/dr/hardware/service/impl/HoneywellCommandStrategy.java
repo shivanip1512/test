@@ -81,12 +81,8 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
                         honeywellCommunicationService.getDREventsForDevice(honeywellThermostat.getThermostatId(),
                             honeywellThermostat.getDeviceVendorUserId().toString());
                     for (HoneywellDREvent event : drEventResponses) {
-                        if (!event.isOptedOut() && event.isOptOutable()) {
-                            // Choose only optOutable events from the list and which are marked optedOut=false and
-                            // optOutable=true
-                            honeywellCommunicationService.cancelDREventForDevices(honeywellThermostatIds,
-                                event.getEventId(), false);
-                        }
+                        honeywellCommunicationService.cancelDREventForDevices(honeywellThermostatIds, event.getEventId(),
+                            false);
                     }
                 break;
             case CANCEL_TEMP_OUT_OF_SERVICE:
