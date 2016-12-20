@@ -61,7 +61,14 @@
                     </span>
                 </c:when>
                 <c:otherwise>
-                    <span class="fl">root ${fn:escapeXml(inputValue[0])}</span>
+                    <c:choose>
+                        <c:when test="${fn:length(fn:escapeXml(inputValue[0])) > 1}">
+                            <span class="fl">${fn:escapeXml(inputValue[0])}</span>
+                        </c:when>
+                        <c:otherwise>
+                            <span class="fl"><i:inline key="yukon.common.allGroups"/></span>
+                        </c:otherwise>
+                        </c:choose>
                 </c:otherwise>
             </c:choose>
             <c:forEach var="group" items="${inputValue}">
