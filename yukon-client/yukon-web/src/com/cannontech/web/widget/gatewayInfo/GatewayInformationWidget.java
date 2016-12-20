@@ -29,7 +29,6 @@ import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.model.TimeoutExecutionException;
-import com.cannontech.common.rfn.service.NMConfigurationService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
@@ -57,7 +56,6 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
     
     @Autowired private RfnGatewayService rfnGatewayService;
-    @Autowired private NMConfigurationService nmConfigurationService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private GatewaySettingsValidator validator;
     @Autowired private GlobalSettingDao globalSettingDao;
