@@ -35,6 +35,7 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatus;
 import com.cannontech.dr.service.impl.DatedRuntimeStatus;
 import com.cannontech.dr.service.impl.RuntimeStatus;
@@ -54,7 +55,6 @@ public class HoneywellWifiRuntimeCalcServiceTest {
     private static LiteYukonPAObject focusPro;
     private static LiteYukonPAObject visionPro8000;
     private static LiteYukonPAObject honeywellThermostat;
-    
     private static List<YukonPao> allThermostats;
     
     private static final DateTime date1 = TimeUtil.getStartOfHour(DateTime.now());
@@ -101,7 +101,9 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         
         ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "paoDao", mockPaoDao);
         
-        List<YukonPao> thermostats = honeywellWifiRuntimeCalcService.getAllThermostats();
+        // Reflectively invoke private method 
+        // honeywellWifiRuntimeCalcService.getAllThermostats();
+        List<YukonPao> thermostats = ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, "getAllThermostats", new Object[0]);
         
         assertThat("thermostats list contains honeywell 9000", thermostats, hasItem(honeywell9000));
         assertThat("thermostats list contains focus pro", thermostats, hasItem(focusPro));
@@ -136,7 +138,11 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         
         ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "rphDao", mockRphDao);
         
-        Map<Integer, DateTime> lastRuntimes = honeywellWifiRuntimeCalcService.getLastRuntimes(allThermostats);
+        // Reflectively invoke private method 
+        // honeywellWifiRuntimeCalcService.getLastRuntimes(allThermostats);
+        Map<Integer, DateTime> lastRuntimes = ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, 
+                                                                               "getLastRuntimes", allThermostats);
+        
         
         assertThat("honeywell9000 present in last runtimes", lastRuntimes.keySet(), hasItem(honeywell9000Id));
         assertThat("focusPro present in last runtimes", lastRuntimes.keySet(), hasItem(focusProId));
@@ -162,7 +168,10 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         replay(mockDataListener);
         
         ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "dataListener", mockDataListener);
-        honeywellWifiRuntimeCalcService.getEndOfRuntimeCalcRange();
+        
+        // Reflectively invoke private method 
+        // honeywellWifiRuntimeCalcService.getEndOfRuntimeCalcRange();
+        ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, "getEndOfRuntimeCalcRange", new Object[0]);
     }
     
     @Test
@@ -176,7 +185,11 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         replay(mockDataListener);
         
         ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "dataListener", mockDataListener);
-        DateTime lastRuntimeStatusDate = honeywellWifiRuntimeCalcService.getEndOfRuntimeCalcRange();
+        
+        // Reflectively invoke private method 
+        // honeywellWifiRuntimeCalcService.getEndOfRuntimeCalcRange();
+        DateTime lastRuntimeStatusDate = ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, 
+                                                                          "getEndOfRuntimeCalcRange", new Object[0]);
         
         assertThat(lastRuntimeStatusDate, equalTo(date2));
     }
@@ -192,7 +205,11 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         replay(mockDataListener);
         
         ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "dataListener", mockDataListener);
-        DateTime lastRuntimeStatusDate = honeywellWifiRuntimeCalcService.getEndOfRuntimeCalcRange();
+        
+        // Reflectively invoke private method 
+        // honeywellWifiRuntimeCalcService.getEndOfRuntimeCalcRange();
+        DateTime lastRuntimeStatusDate = ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, 
+                                                                          "getEndOfRuntimeCalcRange", new Object[0]);
         
         assertThat(lastRuntimeStatusDate, equalTo(date2));
     }
@@ -208,7 +225,11 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         replay(mockDataListener);
         
         ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "dataListener", mockDataListener);
-        DateTime lastRuntimeStatusDate = honeywellWifiRuntimeCalcService.getEndOfRuntimeCalcRange();
+        
+        // Reflectively invoke private method 
+        // honeywellWifiRuntimeCalcService.getEndOfRuntimeCalcRange();
+        DateTime lastRuntimeStatusDate = ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, 
+                                                                          "getEndOfRuntimeCalcRange", new Object[0]);
         
         DateTime startOfPreviousHour = TimeUtil.getStartOfHour(DateTime.now().minus(Duration.standardHours(1)));
         assertThat(lastRuntimeStatusDate, equalTo(startOfPreviousHour));
@@ -225,7 +246,11 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         replay(mockDataListener);
         
         ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "dataListener", mockDataListener);
-        DateTime lastRuntimeStatusDate = honeywellWifiRuntimeCalcService.getEndOfRuntimeCalcRange();
+        
+        // Reflectively invoke private method 
+        // honeywellWifiRuntimeCalcService.getEndOfRuntimeCalcRange();
+        DateTime lastRuntimeStatusDate = ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, 
+                                                                          "getEndOfRuntimeCalcRange", new Object[0]);
         
         DateTime startOfPreviousHour = TimeUtil.getStartOfHour(DateTime.now().minus(Duration.standardHours(1)));
         assertThat(lastRuntimeStatusDate, equalTo(startOfPreviousHour));
@@ -241,7 +266,10 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         
         ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "asyncDynamicDataSource", mockDispatch);
         
-        honeywellWifiRuntimeCalcService.insertRuntimes(honeywell9000, hourlyRuntimeSeconds, null);
+        // Reflectively invoke private method 
+        // honeywellWifiRuntimeCalcService.insertRuntimes(honeywell9000, hourlyRuntimeSeconds, null);
+        ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, "insertRuntimes",
+                                         new Object[] {honeywell9000, hourlyRuntimeSeconds, null});
         //Mock dispatch will throw an exception if any methods are called.
     }
     
@@ -267,7 +295,11 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         
         ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "asyncDynamicDataSource", mockDispatch);
         ReflectionTestUtils.setField(honeywellWifiRuntimeCalcService, "pointDao", mockPointDao);
-        honeywellWifiRuntimeCalcService.insertRuntimes(honeywell9000, hourlyRuntimeSeconds, null);
+        
+        // Reflectively invoke private method 
+        // honeywellWifiRuntimeCalcService.insertRuntimes(honeywell9000, hourlyRuntimeSeconds, null)
+        ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, "insertRuntimes",
+                                         new Object[] {honeywell9000, hourlyRuntimeSeconds, null});
         
         PointData pointData1 = buildPointData(1, date4, 10);
         PointData pointData2 = buildPointData(1, date3, 0);
@@ -306,7 +338,10 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         
         Predicate<Map.Entry<DateTime, Integer>> filter = entry -> entry.getKey().isAfter(date4);
         
-        honeywellWifiRuntimeCalcService.insertRuntimes(honeywell9000, hourlyRuntimeSeconds, filter);
+        // Reflectively invoke private method 
+        // honeywellWifiRuntimeCalcService.insertRuntimes(honeywell9000, hourlyRuntimeSeconds, filter)
+        ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, "insertRuntimes",
+                                         new Object[] {honeywell9000, hourlyRuntimeSeconds, filter});
         
         PointData pointData2 = buildPointData(1, date3, 0);
         PointData pointData3 = buildPointData(1, date2, 20);
@@ -328,9 +363,14 @@ public class HoneywellWifiRuntimeCalcServiceTest {
         PointValueQualityHolder pointValue2 = buildPvqh(1, PointType.Status, date3.toDate(), 
                                                         EquipmentStatus.OFF.getStateValue());
         
-        DatedRuntimeStatus status0 = honeywellWifiRuntimeCalcService.getRuntimeStatusFromPoint(pointValue0);
-        DatedRuntimeStatus status1 = honeywellWifiRuntimeCalcService.getRuntimeStatusFromPoint(pointValue1);
-        DatedRuntimeStatus status2 = honeywellWifiRuntimeCalcService.getRuntimeStatusFromPoint(pointValue2);
+        // Reflectively invoke private method 
+        // honeywellWifiRuntimeCalcService.getRuntimeStatusFromPoint
+        DatedRuntimeStatus status0 = ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, 
+                                                                      "getRuntimeStatusFromPoint", pointValue0);
+        DatedRuntimeStatus status1 = ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, 
+                                                                      "getRuntimeStatusFromPoint", pointValue1);
+        DatedRuntimeStatus status2 = ReflectionTestUtils.invokeMethod(honeywellWifiRuntimeCalcService, 
+                                                                      "getRuntimeStatusFromPoint", pointValue2);
         
         assertThat("status 0 date", status0.getDate(), equalTo(date1));
         assertThat("status 0 heating == running", status0.getRuntimeStatus(), equalTo(RuntimeStatus.RUNNING));
@@ -358,7 +398,7 @@ public class HoneywellWifiRuntimeCalcServiceTest {
     private PointData buildPointData(int pointId, DateTime date, double value) {
         PointData pointData = new PointData();
         pointData.setId(pointId);
-        pointData.setType(1); //Analog
+        pointData.setType(PointTypes.ANALOG_POINT); //Analog
         pointData.setMillis(0);
         pointData.setPointQuality(PointQuality.Normal);
         pointData.setTime(date.toDate());
