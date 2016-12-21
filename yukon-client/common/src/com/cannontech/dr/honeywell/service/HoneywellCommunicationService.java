@@ -67,7 +67,7 @@ public interface HoneywellCommunicationService {
      * 
      * @param thermostatId : deviceId that needs to be queried for the events configured on it
      * @param userId : Device vendor userId
-     * @return
+     * @returns Honeywell DR events list
      */
     List<HoneywellDREvent> getDREventsForDevice(Integer thermostatId, String userId);
 
