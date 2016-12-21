@@ -148,6 +148,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
             HttpEntity<String> response =
                 restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity, String.class);
+            log.debug(response);
         } catch (RestClientException ex) {
             log.error("Cancel DR event for devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to cancel device. Message: \"" + ex.getMessage() + "\".");
