@@ -41,6 +41,7 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatus;
 import com.cannontech.dr.service.RuntimeCalcService;
 import com.cannontech.dr.service.impl.DatedRuntimeStatus;
@@ -214,7 +215,7 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
                                                              
                                                              PointData pointData = new PointData();
                                                              pointData.setId(runtimePoint.getLiteID());
-                                                             pointData.setType(1); //Analog
+                                                             pointData.setType(PointTypes.ANALOG_POINT);
                                                              pointData.setMillis(0);
                                                              pointData.setPointQuality(PointQuality.Normal);
                                                              pointData.setTime(runtimeDate);
