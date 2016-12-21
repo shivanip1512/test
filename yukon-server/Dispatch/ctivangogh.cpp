@@ -3908,10 +3908,31 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                     {
                         if( auto optDevLite = Cti::mapFindRef(_deviceLites, id ) )
                         {
+                            if( dout->isLevelEnable(Cti::Logging::Logger::Debug) )
+                            {
+                                Cti::FormattedList l;
+                                l.add("Device name") << optDevLite->getName();
+                                l.add("Device ID")   << optDevLite->getID();
+    
+                                l.add("Is disabled")          << optDevLite->isDisabled();
+                                l.add("Is control inhibited") << optDevLite->isControlInhibited();
+
+                                l.add("Previously disabled")          << deviceDisabled;
+                                l.add("Previously control inhibited") << controlInhibited;
+
+                                CTILOG_DEBUG(dout, l)
+                            }
+
                             if( deviceDisabled   != optDevLite->isDisabled() ||
                                 controlInhibited != optDevLite->isControlInhibited() )
                             {
+                                CTILOG_DEBUG(dout, "Adjusting device disable tags for device ID " << id);
+
                                 adjustDeviceDisableTags(id, true, username);
+                            }
+                            else
+                            {
+                                CTILOG_DEBUG(dout, "No change to device disable tags for device ID " << id);
                             }
                         }
                     }
@@ -4185,8 +4206,25 @@ bool CtiVanGogh::ablementPoint(const CtiPointBase &point, bool &devicedifferent,
 
     devicedifferent = false;        // Make it false by default.
 
-    if( CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(point) )
+    CtiDynamicPointDispatchSPtr pDyn = PointMgr.getDynamic(point);
+    
+    Cti::FormattedList l;
+    l.add("Point ID") << point.getID();
+    l.add("Device ID") << point.getDeviceID();
+    l.add("Point name") << point.getName();
+    l.add("pDyn found") << !!pDyn;
+    l.add("pDyn tags") << (pDyn ? pDyn->getDispatch().getTags() : 0);
+    l.add("setmask") << setmask;
+    l.add("tagmask") << tagmask;
+
+    if( ! pDyn )
     {
+        CTILOG_ERROR(dout, "pDyn not found" << l);
+    }
+    else
+    {
+        CTILOG_DEBUG(dout, l);
+
         UINT currtags  = (pDyn->getDispatch().getTags() & (tagmask & MASK_ANY_DISABLE));        // All (dev & pnt) ablement tags.
         UINT newpttags = (setmask & (tagmask & MASK_ANY_DISABLE));
 
@@ -4231,14 +4269,22 @@ bool CtiVanGogh::ablementPoint(const CtiPointBase &point, bool &devicedifferent,
                 }
                 else
                 {
-                    CTILOG_INFO(dout, "Updated "<< point.getName() <<"'s point enablement status");
+                    CTILOG_INFO(dout, "Updated point enablement status on point ID " << point.getID());
                 }
+            }
+            else
+            {
+                CTILOG_DEBUG(dout, "No point enablement change on point ID " << point.getID());
             }
 
             if(currdvtags != dvtags)    // Is the difference in the device tags?
             {
                 addnl += string("Point tags: ") + (dvtags_cnt > currdvtags_cnt ? " device disable" : " device enable");
                 devicedifferent = true;
+            }
+            else
+            {
+                CTILOG_DEBUG(dout, "No device enablement change on point ID " << point.getID());
             }
 
             pDyn->getDispatch().resetTags(tagmask);
@@ -4263,6 +4309,18 @@ bool CtiVanGogh::ablementDevice(DeviceBaseLite &dLite, UINT setmask, UINT tagmas
 {
     bool delta = false;     // Anything changed???
 
+    if( dout->isLevelEnable(Cti::Logging::Logger::Debug) )
+    {
+        Cti::FormattedList l;
+        l.add("Device ID") << dLite.getID();
+        l.add("Device name") << dLite.getID();
+        l.add("Device disabled") << dLite.isDisabled();
+        l.add("Device control inhibited") << dLite.isControlInhibited();
+        l.add("setmask") << setmask;
+        l.add("tagmask") << tagmask;
+        CTILOG_DEBUG(dout, l);
+    }
+        
     if( tagmask & TAG_DISABLE_DEVICE_BY_DEVICE )
     {
         bool initialsetting = dLite.isDisabled();
@@ -4847,9 +4905,8 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
         UINT tagmask = TAG_DISABLE_DEVICE_BY_DEVICE | TAG_DISABLE_CONTROL_BY_DEVICE;
 
         {
-            CtiMultiMsg *pMulti = CTIDBG_new CtiMultiMsg;
+            auto pMulti = std::make_unique<CtiMultiMsg>();
 
-            if(pMulti)
             {
                 pMulti->setUser(user);
                 pMulti->setSource(DISPATCH_APPLICATION_NAME);
@@ -4865,11 +4922,13 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
                     vector<CtiPointManager::ptr_type> points;
                     PointMgr.getEqualByPAO(id, points);
 
+                    CTILOG_DEBUG(dout, "Setting point ablements for Device ID " << id << "'s " << points.size() << " point(s)");
+
                     if( auto optDevLite = findDeviceLite(id) )
                     {
                         const DeviceBaseLite &dLite = *optDevLite;
 
-                        for each( CtiPointSPtr pPoint in points )
+                        for( const auto& pPoint : points )
                         {
                             if( pPoint )
                             {
@@ -4879,7 +4938,15 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
 
                                 ablementPoint(*pPoint, devicedifferent, setmask, tagmask, user, *pMulti);
                             }
+                            else
+                            {
+                                CTILOG_ERROR(dout, "pPoint null for device ID " << id);
+                            }
                         }
+                    }
+                    else
+                    {
+                        CTILOG_ERROR(dout, "device not found for device ID " << id);
                     }
                 }
 
@@ -4903,15 +4970,15 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
                             CTILOG_INFO(dout, "Updated "<< dLite.getName() <<"'s device enablement status");
                         }
                     }
+                    else
+                    {
+                        CTILOG_ERROR(dout, "device not found for device ID " << id);
+                    }
                 }
 
                 if(pMulti->getData().size())
                 {
-                    MainQueue_.putQueue(pMulti);
-                }
-                else
-                {
-                    delete pMulti;
+                    MainQueue_.putQueue(pMulti.release());
                 }
             }
         }
