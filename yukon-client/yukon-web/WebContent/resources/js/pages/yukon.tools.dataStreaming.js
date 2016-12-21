@@ -44,7 +44,7 @@ yukon.tools.dataStreaming = (function () {
                     $('.js-select-all').prop('checked', false);
                 }
             });
-            if(parseInt($('.js-results-count').text()) === list.length){
+            if (parseInt($('.js-results-count').text()) === list.length) {
                 $('.js-select-all').prop('checked', true);
             }
         },
