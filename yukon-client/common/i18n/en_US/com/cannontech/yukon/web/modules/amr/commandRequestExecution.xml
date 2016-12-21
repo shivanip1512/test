@@ -27,7 +27,7 @@
     <!-- CommandRequestExecutionController detail.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
-    <entry key="yukon.web.modules.amr.cre.detail.pageHeading">Command Request Execution Detail</entry>
+    <entry key="yukon.web.modules.amr.cre.detail.pageName">Command Request Execution Detail</entry>
     <entry key="yukon.web.modules.amr.cre.detail.crumbTitle">Detail</entry>
     <entry key="yukon.web.modules.amr.cre.detail.info.section">Info</entry>
     <entry key="yukon.web.modules.amr.cre.detail.info.type">Type</entry>
