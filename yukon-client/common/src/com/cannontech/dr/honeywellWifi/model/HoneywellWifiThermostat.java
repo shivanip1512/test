@@ -31,7 +31,7 @@ public class HoneywellWifiThermostat {
         return thermostatId;
     }
 
-    public void setThermostatId(Integer themostatId) {
-        this.thermostatId = themostatId;
+    public void setThermostatId(Integer thermostatId) {
+        this.thermostatId = thermostatId;
     }
 }
