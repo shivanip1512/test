@@ -73,7 +73,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     private static final String removeDeviceFromDRGroupUrlPart = "WebAPI/api/drEventGroups/";
     private static final String drEventForGroupUrlPart = "WebAPI/api/drEvents";
     private static final String registerDeviceOnACLUrlPart = "WebAPI/api/accessControlList";
-    private static final String getDREventForDeviceUrlPart = "WebAPI/api/drEvents/";
+    private static final String drEventsForDeviceUrlPart = "WebAPI/api/drEvents/";
     
     private static final String CONTENT_TYPE = "application/json";
 
@@ -413,10 +413,10 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         
         List<HoneywellDREvent> drEvents = new ArrayList<HoneywellDREvent>();
         try {
-            String url = getUrlBase() + getDREventForDeviceUrlPart + thermostatId ;
+            String url = getUrlBase() + drEventsForDeviceUrlPart + thermostatId ;
             HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.GET, null);
             newheaders.add("UserId", userId);
-            HttpEntity<?> requestEntity = new HttpEntity<Object>(null, newheaders);
+            HttpEntity<?> requestEntity = new HttpEntity<Object>(newheaders);
 
             UriComponentsBuilder builder =
                 UriComponentsBuilder.fromHttpUrl(url);
