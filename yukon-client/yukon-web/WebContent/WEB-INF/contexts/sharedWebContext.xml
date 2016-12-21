@@ -30,6 +30,7 @@
         <mvc:message-converters>
              <ref bean="jacksonHttpMsgConverter"/>
         </mvc:message-converters>
+        <mvc:path-matching suffix-pattern="false" trailing-slash="false" />
     </mvc:annotation-driven>
     
     <bean id="deviceArgumentResolver" class="com.cannontech.web.bulk.model.DeviceCollectionArgumentResolver"/>
