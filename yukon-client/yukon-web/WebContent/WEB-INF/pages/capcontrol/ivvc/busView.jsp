@@ -225,7 +225,12 @@
         </div>
         <div class="scroll-lg dn js-ivvc-events-holder stacked-md clear">
             <table id="ivvc-events" class="has-alerts full-width dashed stacked striped">
-                <thead></thead>
+                <thead>
+                    <th><i:inline key=".ivvc.busView.eventMessage"/></th>
+                    <th><i:inline key=".ivvc.busView.deviceName"/></th>
+                    <th><i:inline key=".ivvc.busView.user"/></th>
+                    <th><i:inline key=".ivvc.busView.timestamp"/></th>
+                </thead>
                 <tfoot></tfoot>
                 <tbody>
                 </tbody>
