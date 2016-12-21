@@ -16,9 +16,9 @@ public class HoneywellDREvent {
     private final boolean optedOut;
 
     @JsonCreator
-    public HoneywellDREvent(@JsonProperty("eventID") Integer eventId, 
-            @JsonProperty("optOutable") boolean optOutable,
-            @JsonProperty("optedOut") boolean optedOut) {
+    public HoneywellDREvent(@JsonProperty("EventID") Integer eventId, 
+            @JsonProperty("OptOutable") boolean optOutable,
+            @JsonProperty("OptedOut") boolean optedOut) {
         this.eventId = eventId;
         this.optOutable = optOutable;
         this.optedOut = optedOut;
