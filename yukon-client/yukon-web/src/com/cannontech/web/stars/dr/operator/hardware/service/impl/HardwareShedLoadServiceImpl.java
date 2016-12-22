@@ -16,6 +16,7 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
+import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteLmHardwareBase;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -23,6 +24,8 @@ import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
+import com.cannontech.stars.energyCompany.model.EnergyCompany;
+import com.cannontech.stars.service.DefaultRouteService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.operator.hardware.service.HardwareShedLoadService;
 
@@ -32,7 +35,9 @@ public class HardwareShedLoadServiceImpl implements HardwareShedLoadService {
     @Autowired private LmHardwareCommandService lmHardwareCommandService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private ServerDatabaseCache dbCache;
-
+    @Autowired private DefaultRouteService defaultRouteService;
+    @Autowired private EnergyCompanyDao ecDao;
+    
     private static final Logger log = YukonLogManager.getLogger(HardwareShedLoadServiceImpl.class);
     private static final String keyBase = "yukon.web.modules.operator.hardware.";
 
@@ -55,6 +60,11 @@ public class HardwareShedLoadServiceImpl implements HardwareShedLoadService {
             } else {
                 // For one way LCRs if this route is 0, the Porter executor uses the EC route
                 routeId = lmhb.getRouteID();
+            }
+            // For one way or two way LCRs if this route is 0, set the default EC route
+            if (routeId == 0) {
+                EnergyCompany ec = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
+                routeId = defaultRouteService.getDefaultRouteId(ec);
             }
         }
 
