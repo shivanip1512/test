@@ -66,11 +66,14 @@ yukon.da.bus = (function () {
                     enableDualBusRow = toggle.closest('tr'),
                     active = enableDualBusRow.find('.switch-btn-checkbox').prop('checked');
 
-                if (!active)
+                if (!active) {
                     yukon.pickers['altBusPicker'].removeEvent();
+                    $('#altBusError').hide();
+                }
 
             });
             
+            yukon.ui.highlightErrorTabs();
         }
     };
 

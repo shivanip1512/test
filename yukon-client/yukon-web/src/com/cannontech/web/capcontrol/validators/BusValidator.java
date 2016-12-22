@@ -29,6 +29,11 @@ public class BusValidator extends SimpleValidator<CapControlSubBus> {
         validateName(bus, errors);
         YukonValidationUtils.checkExceedsMaxLength(errors, "geoAreaName", bus.getGeoAreaName(), 60);
         YukonValidationUtils.checkExceedsMaxLength(errors, "capControlSubstationBus.mapLocationID", bus.getCapControlSubstationBus().getMapLocationID(), 64);
+        if (bus.getCapControlSubstationBus().isDualBusEnabledBoolean()
+            && (bus.getCapControlSubstationBus().getAltSubPAOId() == null
+            || bus.getCapControlSubstationBus().getAltSubPAOId() == 0)) {
+            errors.rejectValue("capControlSubstationBus.altSubPAOId", "yukon.web.modules.capcontrol.bus.noAltBusError");
+        }
     }
 
     private void validateName(CapControlSubBus bus, Errors errors) {

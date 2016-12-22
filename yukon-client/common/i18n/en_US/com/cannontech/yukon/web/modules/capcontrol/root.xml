@@ -126,7 +126,7 @@
     <entry key="yukon.web.modules.capcontrol.bus.enableDualBus">Enable Dual Bus</entry>
     <entry key="yukon.web.modules.capcontrol.bus.alternateBus">Alternate Bus</entry>
     <entry key="yukon.web.modules.capcontrol.bus.switchPoint">Switch Point</entry>
-    
+    <entry key="yukon.web.modules.capcontrol.bus.noAltBusError">No alternate bus selected for dual bus mode</entry>
     
     <!-- bankMove.jsp -->
     <entry key="yukon.web.modules.capcontrol.bankMove.currentLocation">Current Location</entry>

@@ -135,10 +135,10 @@
                                     <td>
                                         <c:choose>
                                             <c:when test="${schedule.disableOvUvBoolean}">
-                                                <span class="success">On</span>
+                                                <span class="green">On</span>
                                             </c:when>
                                             <c:otherwise>
-                                                <span class="error">Off</span>
+                                                <span class="red">Off</span>
                                             </c:otherwise>
                                         </c:choose>
                                     </td>
@@ -345,6 +345,7 @@
                                         <span class="empty-list"><i:inline key="yukon.common.none.choice"/></span>
                                     </c:if>
                                 </cti:displayForPageEditModes>
+                                <br><div id="altBusError"><form:errors path="capControlSubstationBus.altSubPAOId" cssClass="error"/></div>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".switchPoint">
                                 <form:hidden id="switch-point-input" path="capControlSubstationBus.switchPointID"/>
