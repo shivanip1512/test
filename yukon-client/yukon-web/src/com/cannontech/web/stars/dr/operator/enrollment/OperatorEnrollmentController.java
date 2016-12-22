@@ -25,8 +25,6 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.dr.honeywell.HoneywellCommunicationException;
-import com.cannontech.dr.honeywell.HoneywellConfigException;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -286,19 +284,10 @@ public class OperatorEnrollmentController {
             String msgKey = "yukon.web.modules.operator.enrollmentList.withError." + saveTypeKey;
             MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName(),reason);
             flashScope.setWarning(message);
-        } catch (EnrollmentException e2) {
+        } catch (EnrollmentException e) {
             String msgKey = "yukon.web.modules.operator.enrollmentList.failed";
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName(), accessor.getMessage(e2.getKey()));
-            flashScope.setError(message);
-        } catch (HoneywellCommunicationException e3) {
-            String msgKey = "yukon.web.modules.operator.enrollmentList.failed";
-            MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey,
-                                                                               assignedProgram.getDisplayName());
-            flashScope.setError(message);
-        } catch (HoneywellConfigException e4) {
-            String msgKey = "yukon.web.modules.operator.enrollmentList.noEncryptionKey";
-            MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey);
+            MessageSourceResolvable message = new YukonMessageSourceResolvable(msgKey, assignedProgram.getDisplayName(), accessor.getMessage(e.getKey()));
             flashScope.setError(message);
         }
 

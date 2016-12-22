@@ -44,7 +44,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.database.db.security.EncryptionKey;
 import com.cannontech.dr.honeywell.HoneywellCommunicationException;
-import com.cannontech.dr.honeywell.HoneywellConfigException;
 import com.cannontech.dr.honeywell.message.AccessControlListItemRequest;
 import com.cannontech.dr.honeywell.message.DREventRequest;
 import com.cannontech.dr.honeywell.message.DutyCyclePeriod;
@@ -127,9 +126,6 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         } catch (RestClientException | JsonProcessingException ex) {
             log.error("Add devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
-        } catch (HoneywellConfigException ex) {
-            log.error("Add devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
-            throw new HoneywellConfigException("Unable to add device. Message: \"" + ex.getMessage() + "\".");
         }
 
     }
@@ -152,9 +148,6 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         } catch (RestClientException ex) {
             log.error("Cancel DR event for devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to cancel device. Message: \"" + ex.getMessage() + "\".");
-        } catch (HoneywellConfigException ex) {
-            log.error("Add devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
-            throw new HoneywellConfigException("Unable to cancel device. Message: \"" + ex.getMessage() + "\".");
         }
     }
 
@@ -175,9 +168,6 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         } catch (RestClientException | JsonProcessingException ex) {
             log.error("Removing devices from DR group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to remove device. Message: \"" + ex.getMessage() + "\".");
-        } catch (HoneywellConfigException ex) {
-            log.error("Removing devices from DR group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
-            throw new HoneywellConfigException("Unable to remove device. Message: \"" + ex.getMessage() + "\".");
         }
     }
 
@@ -222,9 +212,6 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         } catch (RestClientException | JsonProcessingException ex) {
             log.error("Send DR event for group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to send DR . Message: \"" + ex.getMessage() + "\".");
-        } catch (HoneywellConfigException ex) {
-            log.error("Send DR event for group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
-            throw new HoneywellConfigException("Unable to send DR . Message: \"" + ex.getMessage() + "\".");
         }
     }
 
@@ -249,9 +236,6 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         } catch (RestClientException ex) {
             log.error("Send cancel DR event for group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to send DR . Message: \"" + ex.getMessage() + "\".");
-        } catch (HoneywellConfigException ex) {
-            log.error("Send cancel DR event for group for Honeywell failed with message: \"" + ex.getMessage() + "\".");
-            throw new HoneywellConfigException("Unable to send DR . Message: \"" + ex.getMessage() + "\".");
         }
     }
     
@@ -274,7 +258,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             EncryptionKey honeywellEncryptionKey = encryptedRouteDao.getHoneywellEncryptionKey();
             if (honeywellEncryptionKey == null) {
                 log.error("Honeywell Encryption key not found.");
-                throw new HoneywellConfigException("Honeywell Encryption key not found");
+                throw new HoneywellCommunicationException("Honeywell Encryption key not found");
             }
             
             byte[] encoded = new Base64().decode(honeywellEncryptionKey.getPrivateKey().toString());
