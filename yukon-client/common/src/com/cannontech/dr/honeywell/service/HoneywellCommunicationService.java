@@ -13,6 +13,9 @@ public interface HoneywellCommunicationService {
 
     /**
      * Registers the specified device with Honeywell WI-FI.
+     * 
+     * @param macAddress : Registered honeywell macAddress
+     * @param deviceVendorUserId : Device vendor userId
      */
     void registerDevice(String macAddress, Integer deviceVendorUserId);
     
