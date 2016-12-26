@@ -210,14 +210,11 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
         boolean isBulkConfigCommand = false;
         if (command.getParams().get(LmHardwareCommandParam.BULK) != null) {
             isBulkConfigCommand = (boolean) command.getParams().get(LmHardwareCommandParam.BULK);
+            if (isBulkConfigCommand) {
+                return;
+            }
         }
-        try {
-            getGroupId(command.getDevice().getInventoryID());
-        } catch (BadConfigurationException bce) {
-            if (!isBulkConfigCommand) {
-                throw bce;
-            } // else suppress error, to allow reconfigure of a device even when it is not enrolled
-        }
+        getGroupId(command.getDevice().getInventoryID());
     }
     
     private int getGroupId(int inventoryId) {
