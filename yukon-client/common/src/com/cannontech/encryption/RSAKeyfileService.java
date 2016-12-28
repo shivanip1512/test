@@ -6,6 +6,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.joda.time.Instant;
 
 public interface RSAKeyfileService {
@@ -28,8 +29,8 @@ public interface RSAKeyfileService {
     boolean isKeyPairExpired();
 
     /**
-     * Creates a public key String from the given private Key.
+     * Creates a key pair (private and public) from the given String.
      */
-    String getPublicKeyFromPrivateKey(String privateKeyString) throws IOException, NoSuchAlgorithmException,
-            InvalidKeySpecException;
+    Pair<String, String> getKeyPair(String keyString) throws IOException, NoSuchAlgorithmException,
+    InvalidKeySpecException;
 }

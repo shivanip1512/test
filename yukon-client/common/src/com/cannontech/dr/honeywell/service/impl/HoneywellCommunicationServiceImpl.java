@@ -1,7 +1,6 @@
 package com.cannontech.dr.honeywell.service.impl;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.security.InvalidKeyException;
@@ -23,10 +22,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.jdom2.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.core.ParameterizedTypeReference;
@@ -50,7 +51,10 @@ import com.cannontech.dr.honeywell.message.DutyCyclePeriod;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
 import com.cannontech.dr.honeywellWifi.model.HoneywellDREvent;
 import com.cannontech.dr.honeywellWifi.model.HoneywellWifiDutyCycleDrParameters;
+import com.cannontech.encryption.CryptoException;
+import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.EncryptedRouteDao;
+import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -255,13 +259,17 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     private String getSignedContent(String formattedDate, String url, HttpMethod httpMethod, String body) {
         String signedContent = null;
         try {
+            char[] password = CryptoUtils.getSharedPasskey();
+            AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
+            
             EncryptionKey honeywellEncryptionKey = encryptedRouteDao.getHoneywellEncryptionKey();
             if (honeywellEncryptionKey == null) {
                 log.error("Honeywell Encryption key not found.");
                 throw new HoneywellCommunicationException("Honeywell Encryption key not found");
             }
-            
-            byte[] encoded = new Base64().decode(honeywellEncryptionKey.getPrivateKey().toString());
+
+            String decryptedPrivateKey = encrypter.decryptHexStr(honeywellEncryptionKey.getPrivateKey().toString());
+            byte[] encoded = new Base64().decode(decryptedPrivateKey);
 
             // PKCS8 decode the encoded RSA private key
             java.security.Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
@@ -314,8 +322,8 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
             signature.update(utf8EncodedSignatureData.getBytes());
 
             signedContent = new Base64().encodeToString(signature.sign());
-        }  catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException | UnsupportedEncodingException
-                | InvalidKeySpecException e) {
+        }  catch (NoSuchAlgorithmException | InvalidKeyException | SignatureException
+                | InvalidKeySpecException | CryptoException | IOException | JDOMException | DecoderException e) {
                 log.error("Request signing for Honeywell failed with message: \"" + e.getMessage() + "\".");
                 throw new HoneywellCommunicationException("Unable to communicate with Honeywell API.", e);
             }

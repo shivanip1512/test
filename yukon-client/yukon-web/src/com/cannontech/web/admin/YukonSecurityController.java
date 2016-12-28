@@ -19,6 +19,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.jdom2.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -488,17 +489,14 @@ public class YukonSecurityController {
             char[] password = CryptoUtils.getSharedPasskey();
             AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
             byte[] privatekeyBytes = fileImportBindingBean.getFile().getBytes();
-            String encryptedPrivateKeyValue = new String(Hex.encodeHex(encrypter.encrypt(privatekeyBytes)));
 
-            String decryptedPrivateKeyString = new String(encrypter.decryptHexStr(encryptedPrivateKeyValue));
+            Pair<String, String> keyPair = rsaKeyfileService.getKeyPair(new String(privatekeyBytes));
 
-            String publicKeyString = rsaKeyfileService.getPublicKeyFromPrivateKey(decryptedPrivateKeyString);
+            String encryptedPublicKey = new String(Hex.encodeHex(encrypter.encrypt(keyPair.getValue().getBytes())));
+            String encryptedPrivateKey = new String(Hex.encodeHex(encrypter.encrypt(keyPair.getKey().getBytes())));
 
-            String encryptedpublicKeyValue = new String(Hex.encodeHex(encrypter.encrypt(publicKeyString.getBytes())));
-
-            encryptedRouteDao.saveNewHoneywellEncryptionKey(encryptedPrivateKeyValue, encryptedpublicKeyValue);
-            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".fileUploadSuccess",
-                "Honeywell"));
+            encryptedRouteDao.saveNewHoneywellEncryptionKey(encryptedPrivateKey, encryptedPublicKey);
+            flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".fileUploadSuccess", "Honeywell"));
             success = true;
         } catch (IOException e) {
             log.error("File not found or other IO error", e);
@@ -508,9 +506,6 @@ public class YukonSecurityController {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unableToDecryptFile"));
         } catch (JDOMException e) {
             log.error("Unable to properly read file", e);
-            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
-        } catch (DecoderException e) {
-            log.error("Unable Decode", e);
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
         } catch (GeneralSecurityException e) {
             log.error("General security error", e);

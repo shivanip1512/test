@@ -22,6 +22,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.tuple.Pair;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -156,11 +157,11 @@ public class RSAKeyfileServiceImpl implements RSAKeyfileService {
     }
     
     @Override
-    public String getPublicKeyFromPrivateKey(String privateKeyString) throws IOException, NoSuchAlgorithmException,
+    public Pair<String, String> getKeyPair(String keyString) throws IOException, NoSuchAlgorithmException,
             InvalidKeySpecException {
         Security.addProvider(new BouncyCastleProvider());
         StringBuilder pkcs8Lines = new StringBuilder();
-        BufferedReader rdr = new BufferedReader(new StringReader(privateKeyString));
+        BufferedReader rdr = new BufferedReader(new StringReader(keyString));
         String line;
         while ((line = rdr.readLine()) != null) {
             pkcs8Lines.append(line);
@@ -180,13 +181,19 @@ public class RSAKeyfileServiceImpl implements RSAKeyfileService {
         KeyFactory kf = KeyFactory.getInstance(ALGORITHM);
         PrivateKey privateKey = kf.generatePrivate(keySpec);
 
+        byte privateKeyEncoded[] = privateKey.getEncoded();
+        byte[] privateKeyEncoded64 = Base64.encodeBase64(privateKeyEncoded);
+        String privateKeyString = new String(privateKeyEncoded64);
+
         RSAPrivateKeySpec priv = kf.getKeySpec(privateKey, RSAPrivateKeySpec.class);
         RSAPublicKeySpec rsaKeySpec = new RSAPublicKeySpec(priv.getModulus(), new BigInteger("65537"));
-
         PublicKey publicKey = kf.generatePublic(rsaKeySpec);
 
         byte publicKeyEncoded[] = publicKey.getEncoded();
         byte[] publicKeyEncoded64 = Base64.encodeBase64(publicKeyEncoded);
-        return new String(publicKeyEncoded64);
+        String publicKeyString = new String(publicKeyEncoded64);
+
+        Pair<String, String> pair = Pair.of(privateKeyString, publicKeyString);
+        return pair;
     }
 }
