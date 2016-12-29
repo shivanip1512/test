@@ -268,7 +268,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
                 throw new HoneywellCommunicationException("Honeywell Encryption key not found");
             }
 
-            String decryptedPrivateKey = encrypter.decryptHexStr(honeywellEncryptionKey.getPrivateKey().toString());
+            String decryptedPrivateKey = encrypter.decryptHexStr(honeywellEncryptionKey.getPrivateKey());
             byte[] encoded = new Base64().decode(decryptedPrivateKey);
 
             // PKCS8 decode the encoded RSA private key
