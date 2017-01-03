@@ -13,4 +13,4 @@ INSERT INTO State VALUES(-28, 2, 'Off', 2, 6, 0);
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.6', '5-DEC-2016', 'Latest Update', 1, GETDATE());*/
+INSERT INTO CTIDatabase VALUES ('6.6', '3-JAN-2017', 'Latest Update', 1, GETDATE());
