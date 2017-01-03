@@ -13,6 +13,7 @@ public class ViewableCapBank implements Comparable<ViewableCapBank>{
     private String cbcName;
     private boolean twoWayCbc;
     private boolean bankMoved;
+    private boolean userPerPhaseData;
 
     public void setBankInfo(CapBankDevice bank) {
         ccId = bank.getCcId();
@@ -70,5 +71,13 @@ public class ViewableCapBank implements Comparable<ViewableCapBank>{
     @Override
     public int compareTo(ViewableCapBank o) {
         return ccName.compareToIgnoreCase(o.ccName);
+    }
+
+    public boolean isUserPerPhaseData() {
+        return userPerPhaseData;
+    }
+
+    public void setUserPerPhaseData(boolean userPerPhaseData) {
+        this.userPerPhaseData = userPerPhaseData;
     }
 }

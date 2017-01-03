@@ -86,33 +86,41 @@
                 <%-- Timestamp --%>
                 <td>
                     <div id="bank-timestamp-${bankId}" class="dn">
-                        <table class='compact-results-table'>
+                        <table class="compact-results-table">
                             <tr>
                                 <th><i:inline key=".kvar"/></th>
-                                <th><i:inline key=".phaseA"/></th>
-                                <th><i:inline key=".phaseB"/></th>
-                                <th><i:inline key=".phaseC"/></th>
+                                <c:if test="${viewableCapBank.userPerPhaseData}">
+                                    <th><i:inline key=".phaseA"/></th>
+                                    <th><i:inline key=".phaseB"/></th>
+                                    <th><i:inline key=".phaseC"/></th>
+                                </c:if>
                                 <th><i:inline key=".total"/></th>
                             </tr>
                             <tr>
                                 <td><i:inline key=".before"/></td>
-                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEA_BEFORE"/></td>
-                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEB_BEFORE"/></td>
-                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEC_BEFORE"/></td>
+                                <c:if test="${viewableCapBank.userPerPhaseData}">
+                                    <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEA_BEFORE"/></td>
+                                    <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEB_BEFORE"/></td>
+                                    <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEC_BEFORE"/></td>
+                                </c:if>
                                 <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_BEFORE_TOTAL"/></td>
                             </tr>
                             <tr>
                                 <td><i:inline key=".after"/></td>
-                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEA_AFTER"/></td>
-                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEB_AFTER"/></td>
-                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEC_AFTER"/></td>
+                                <c:if test="${viewableCapBank.userPerPhaseData}">
+                                    <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEA_AFTER"/></td>
+                                    <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEB_AFTER"/></td>
+                                    <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEC_AFTER"/></td>
+                                </c:if>
                                 <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_AFTER_TOTAL"/></td>
                             </tr>
                             <tr>
                                 <td><i:inline key=".change"/></td>
-                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEA_PERCENTCHANGE"/></td>
-                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEB_PERCENTCHANGE"/></td>
-                                <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEC_PERCENTCHANGE"/></td>
+                                <c:if test="${viewableCapBank.userPerPhaseData}">       
+                                    <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEA_PERCENTCHANGE"/></td>
+                                    <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEB_PERCENTCHANGE"/></td>
+                                    <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PHASEC_PERCENTCHANGE"/></td>
+                                </c:if>
                                 <td><cti:capControlValue paoId="${bankId}" type="CAPBANK" format="CB_PERCENTCHANGE_TOTAL"/></td>
                             </tr>
                         </table>

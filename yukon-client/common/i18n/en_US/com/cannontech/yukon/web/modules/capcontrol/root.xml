@@ -531,7 +531,7 @@
     <entry key="yukon.web.modules.capcontrol.substation.total">Total</entry>
     <entry key="yukon.web.modules.capcontrol.substation.before">Before:</entry>
     <entry key="yukon.web.modules.capcontrol.substation.after">After:</entry>
-    <entry key="yukon.web.modules.capcontrol.substation.change">Change:</entry>
+    <entry key="yukon.web.modules.capcontrol.substation.change">% Change:</entry>
     <entry key="yukon.web.modules.capcontrol.substation.moveBank">Click here to fully move or temporarily move this Cap Bank from its current parent feeder</entry>
     <entry key="yukon.web.modules.capcontrol.substation.moveBankTitle">Cap Bank Move for {0} (Pick feeder by clicking on name)</entry>
     <entry key="yukon.web.modules.capcontrol.substation.verificationInProgress.hoverText">Currently being used in a Verification schedule</entry>

@@ -347,7 +347,7 @@ public class UpdaterHelper {
         String value = "";
         String parseString = "";
         int parsePosition = 1;
-        boolean phaseA = false;
+        boolean totalColumn = false;
         
         switch (dataType) {
             case CB_PHASEA_BEFORE:
@@ -381,7 +381,6 @@ public class UpdaterHelper {
             case CB_PHASEA_BEFORE:
             case CB_PHASEA_PERCENTCHANGE:
             case CB_PHASEA_AFTER: {
-                phaseA = true;
                 parsePosition = 1;
                 break;
             }
@@ -401,6 +400,7 @@ public class UpdaterHelper {
             case CB_BEFORE_TOTAL:
             case CB_AFTER_TOTAL:
             case CB_PERCENTCHANGE_TOTAL: {
+                totalColumn = true;
                 parsePosition = 4;
                 break;
             }
@@ -422,7 +422,7 @@ public class UpdaterHelper {
             } catch (NoSuchElementException e) {
                 return "";
             }
-        } else if (phaseA) {
+        } else if (totalColumn) {
             value = parseString;
         }
         

@@ -24,6 +24,8 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
+import com.cannontech.message.capcontrol.streamable.Feeder;
+import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.capcontrol.models.CapBankAssignment;
 import com.cannontech.web.capcontrol.models.ViewableCapBank;
@@ -89,11 +91,12 @@ public class FeederServiceImpl implements FeederService {
 
         List<ViewableCapBank> viewableCapBanks = new ArrayList<ViewableCapBank>();
         try {
-            ccCache.getFeeder(feederId);
+            Feeder feeder = ccCache.getFeeder(feederId);
+            SubBus subBus = ccCache.getParentSubBus(feederId);
             List<CapBankDevice> capBanks = ccCache.getCapBanksByFeeder(feederId);
             Collections.sort(capBanks, CapControlUtils.BANK_CONTROL_ORDER_COMPARATOR);
             viewableCapBanks = ccWebUtilsService.createViewableCapBank(capBanks);
-
+            viewableCapBanks.forEach(capBank -> capBank.setUserPerPhaseData(feeder.getUsePhaseData() || subBus.getUsePhaseData()));
         } catch (NotFoundException e) {
              //Feeder is an orphan, we must manually retrieve its cap banks) 
             CapControlFeeder feeder = get(feederId);
@@ -117,7 +120,10 @@ public class FeederServiceImpl implements FeederService {
                     }
                 })
             .collect(Collectors.toList());
+            viewableCapBanks.forEach(capBank -> capBank.setUserPerPhaseData(feeder.getCapControlFeeder().getUsePhaseDataBoolean()));
         }
+        
+
 
         return viewableCapBanks;
     }
