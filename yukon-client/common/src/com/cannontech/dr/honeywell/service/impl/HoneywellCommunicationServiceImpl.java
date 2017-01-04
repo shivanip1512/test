@@ -403,23 +403,26 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     @Override
     public List<HoneywellDREvent> getDREventsForDevice(Integer thermostatId, String userId) {
         log.debug("Get DR events for device " + thermostatId);
-        
+
         List<HoneywellDREvent> drEvents = new ArrayList<HoneywellDREvent>();
         try {
-            String url = getUrlBase() + drEventsForDeviceUrlPart + thermostatId ;
+            String url = getUrlBase() + drEventsForDeviceUrlPart + thermostatId;
             HttpHeaders newheaders = getHttpHeaders(url, HttpMethod.GET, null);
             newheaders.add("UserId", userId);
             HttpEntity<?> requestEntity = new HttpEntity<Object>(newheaders);
 
-            UriComponentsBuilder builder =
-                UriComponentsBuilder.fromHttpUrl(url);
+            UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
             ResponseEntity<List<HoneywellDREvent>> response =
-                    restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity, new ParameterizedTypeReference<List<HoneywellDREvent>>() {});
+                restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.GET, requestEntity,
+                    new ParameterizedTypeReference<List<HoneywellDREvent>>() {
+                    });
             log.debug(response);
             drEvents = response.getBody();
         } catch (RestClientException ex) {
-            log.error("Get DR event details of the devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
-            throw new HoneywellCommunicationException("Unable to get DR event details for the device. Message: \"" + ex.getMessage() + "\".");
+            log.error("Get DR event details of the devices for Honeywell failed with message: \"" + ex.getMessage()
+                + "\".");
+            throw new HoneywellCommunicationException("Unable to get DR event details for the device. Message: \""
+                + ex.getMessage() + "\".");
         }
         return drEvents;
     }
