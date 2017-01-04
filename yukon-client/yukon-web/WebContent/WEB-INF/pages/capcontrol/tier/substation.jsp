@@ -80,7 +80,7 @@ $(function() {
 <div class="dn" data-pao-id="${substationId}"></div>
 
 <div class="column-14-10">
-
+<div class="column one">
 <cti:url var="action" value="/capcontrol/substations"/>
 <cti:displayForPageEditModes modes="CREATE">
     <c:if test="${not empty parent}">
@@ -90,10 +90,8 @@ $(function() {
 <form:form commandName="substation" action="${action}" method="POST">
     <form:hidden path="id"/>
     <cti:csrfToken/>
-    <div class="column one">
-        <cti:tabs>
                 <cti:msg2 var="infoTab" key=".infoTab"/>
-                <cti:tab title="${infoTab}">
+                <tags:sectionContainer title="${infoTab}">
             <div class="column-12-12 clearfix">
                 <div class="column one">
                     <tags:nameValueContainer2 tableClass="name-collapse">
@@ -160,8 +158,8 @@ $(function() {
                 </div>
             </div>
             <capTags:warningImg paoId="${substationId}" type="SUBSTATION" alertBox="true"/>
-        </cti:tab>
-        </cti:tabs>
+        
+        </tags:sectionContainer>
     </div>
     
 <cti:displayForPageEditModes modes="EDIT,VIEW">
