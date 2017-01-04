@@ -22,7 +22,6 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Arrays;
 
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -30,6 +29,7 @@ import org.joda.time.Instant;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.RSAKeyfileService;
+import com.cannontech.encryption.SecurityKeyPair;
 
 public class RSAKeyfileServiceImpl implements RSAKeyfileService {
     private final int daysToExpire = 7;
@@ -157,7 +157,7 @@ public class RSAKeyfileServiceImpl implements RSAKeyfileService {
     }
     
     @Override
-    public Pair<String, String> getKeyPair(String keyString) throws IOException, NoSuchAlgorithmException,
+    public SecurityKeyPair getKeyPair(String keyString) throws IOException, NoSuchAlgorithmException,
             InvalidKeySpecException {
         Security.addProvider(new BouncyCastleProvider());
         StringBuilder pkcs8Lines = new StringBuilder();
@@ -193,7 +193,7 @@ public class RSAKeyfileServiceImpl implements RSAKeyfileService {
         byte[] publicKeyEncoded64 = Base64.encodeBase64(publicKeyEncoded);
         String publicKeyString = new String(publicKeyEncoded64);
 
-        Pair<String, String> pair = Pair.of(privateKeyString, publicKeyString);
+        SecurityKeyPair pair = new SecurityKeyPair(privateKeyString, publicKeyString);
         return pair;
     }
 }

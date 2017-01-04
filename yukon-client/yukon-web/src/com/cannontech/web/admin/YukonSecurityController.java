@@ -19,7 +19,6 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.jdom2.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +45,7 @@ import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.EncryptedRouteDao;
 import com.cannontech.encryption.EncryptionKeyType;
 import com.cannontech.encryption.RSAKeyfileService;
+import com.cannontech.encryption.SecurityKeyPair;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
@@ -490,10 +490,10 @@ public class YukonSecurityController {
             AESPasswordBasedCrypto encrypter = new AESPasswordBasedCrypto(password);
             byte[] privatekeyBytes = fileImportBindingBean.getFile().getBytes();
 
-            Pair<String, String> keyPair = rsaKeyfileService.getKeyPair(new String(privatekeyBytes));
+            SecurityKeyPair keyPair = rsaKeyfileService.getKeyPair(new String(privatekeyBytes));
 
-            String encryptedPublicKey = new String(Hex.encodeHex(encrypter.encrypt(keyPair.getValue().getBytes())));
-            String encryptedPrivateKey = new String(Hex.encodeHex(encrypter.encrypt(keyPair.getKey().getBytes())));
+            String encryptedPublicKey = new String(Hex.encodeHex(encrypter.encrypt(keyPair.getPublicKey().getBytes())));
+            String encryptedPrivateKey = new String(Hex.encodeHex(encrypter.encrypt(keyPair.getPrivateKey().getBytes())));
 
             encryptedRouteDao.saveNewHoneywellEncryptionKey(encryptedPrivateKey, encryptedPublicKey);
             flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".fileUploadSuccess", "Honeywell"));
