@@ -2062,6 +2062,7 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                     case TYPECBC6510:
                     case TYPECBC7020:
                     case TYPECBC8020:
+                    case TYPECBCDNP:
                     case TYPE_PAGING_RECEIVER:
                     case TYPE_TNPP:
                     case TYPE_MODBUS:
