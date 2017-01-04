@@ -112,7 +112,7 @@
                     <c:set var="method" value="PUT"/>
                 </c:if>
                 <c:if test="${mode == 'CREATE'}">
-                    <cti:url var="action" value="/admin/config/themes/"/>
+                    <cti:url var="action" value="/admin/config/themes"/>
                     <c:set var="method" value="POST"/>
                 </c:if>
                 
