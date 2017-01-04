@@ -3,6 +3,8 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
+
 
 <cti:msgScope paths="deviceGroups.editor">
 <%-- User must have DEVICE_GROUP_MODIFY to remove devices from group. Set once for use in loop. --%>
@@ -21,7 +23,7 @@
                 <div class="error stacked">${membersErrorMessage}</div>
             </c:if>
             <c:if test="${limted}">
-                <div class="warning stacked"><i:inline key="yukon.web.deviceGroups.editor.membersContainer.showDevicesLimitText" arguments="${maxGetDevicesSize}"/></div>
+                <div class="warning stacked"><i:inline key=".membersContainer.showDevicesLimitText" arguments="${maxGetDevicesSize}"/></div>
             </c:if>
         </div>
         <div class="scroll-sm">
@@ -57,15 +59,16 @@
         <c:if test="${hasModifyRoleProperty && group.modifiable}">
             <cti:msg2 var="removeAllDevicesFromGroupLabel" key=".membersContainer.removeAllDevicesFromGroupLabel"/>
             <cti:msg2 var="removeAllDevicesFromGroupDescription" key=".membersContainer.removeAllDevicesFromGroupDescription"/>
-            <cti:msg2 var="confirmRemoveText" key=".membersContainer.confirmRemoveText" javaScriptEscape="true"/>
             <div class="action-area stacked">
-                <button id="removeAllDevicesButton" onclick="removeAllDevices('${confirmRemoveText}')" value="${removeAllDevicesFromGroupLabel}" title="${removeAllDevicesFromGroupDescription}">
+                <button id="removeAllDevicesButton" onclick="yukon.tools.group.editor.removeAllDevices('${group.fullName}')" value="${removeAllDevicesFromGroupLabel}" title="${removeAllDevicesFromGroupDescription}">
                     <i class="icon icon-cross"></i><span class="b-label">${removeAllDevicesFromGroupLabel}</span>
                 </button>
+                <d:confirm on="#removeAllDevicesButton" nameKey="membersContainer.confirmRemove"/>
                 <img id="removeAllDevicesWaitImg" src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>" style="display:none;">
             </div>       
         </c:if>
     </c:when>
-    <c:otherwise><i:inline key="yukon.web.deviceGroups.editor.membersContainer.noDevices"/></c:otherwise>
+    <c:otherwise><i:inline key=".membersContainer.noDevices"/></c:otherwise>
 </c:choose>
+
 </cti:msgScope>

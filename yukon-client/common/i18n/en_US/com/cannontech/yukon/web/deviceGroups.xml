@@ -29,9 +29,6 @@
 <entry key="yukon.web.deviceGroups.editor.title">Device Groups</entry>
 <entry key="yukon.web.deviceGroups.editor.groupsContainer.title">Groups</entry>
 
-<entry key="yukon.web.deviceGroups.editor.memberContainer.subGroups">Subgroups</entry>
-<entry key="yukon.web.deviceGroups.editor.memberContainer.groupMembers">Group Members</entry>
-
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.title">Operations</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.topLevelLabel">Top Level</entry>
 
@@ -39,13 +36,12 @@
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameText">Edit Group Name</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameText">New Name</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameSaveText">Change Name</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.invalidGroupNameError"><![CDATA[
-Group names may not be blank or contain slashes.
-]]></entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.invalidGroupNameError">Group names may not be blank or contain slashes.</entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup">Delete Group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.title">Click to delete this group</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.areYouSure">Are you sure you want to permanently remove this group and all of its subgroups?  You will not be able to undo this removal.</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.areYouSure.title">Remove Group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.areYouSure.message">Are you sure you want to permanently remove this group and all of its subgroups?  You will not be able to undo this removal.</entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup">Move Group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup.title">Click to move this group</entry>
@@ -99,14 +95,19 @@ Group names may not be blank or contain slashes.
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.removeFromGroupLabel">Remove Devices From Another Group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.removeFromGroupDescription">Remove devices in this group from a another Device Group.</entry>
 
+
+<entry key="yukon.web.deviceGroups.editor.membersContainer.subGroups">Subgroups</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.groupMembers">Group Members</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.membersLabel">Members:</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.noChildGroups">No subgroups</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.noDevices">No devices</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.devices">devices</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.cannotDeleteGroupLinkTitle">Cannot Delete Group</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.groupContainsCountLabel">This group contains {0} devices.</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.showDeviceslabel">Show Devices</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.showDevicesLimitText">Limited to {0} devices.</entry>
-<entry key="yukon.web.deviceGroups.editor.membersContainer.confirmRemoveText">Are you sure you want to remove all the devices from this group?</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.confirmRemove.title">Remove All Devices</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.confirmRemove.message">Are you sure you want to remove all the devices from this group?</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupLabel">Remove All Devices</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupDescription">Remove All Devices From This Group</entry>
 

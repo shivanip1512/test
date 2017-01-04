@@ -15,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -79,70 +80,66 @@ public class GroupEditorController {
             throws Exception, ServletException {
 
         ModelAndView mav = new ModelAndView("home.jsp");
+        
+        populateModelWithGroup(request, mav.getModelMap());
+
+        return mav;
+    }
+    
+    private void populateModelWithGroup(HttpServletRequest request, ModelMap model) throws ServletRequestBindingException, JsonProcessingException {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
-
         DeviceGroup group = null;
+
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
-        mav.addObject("rootGroup", rootGroup);
+        model.addAttribute("rootGroup", rootGroup);
 
-        if (!StringUtils.isEmpty(groupName)) {
-        	
-        	try {
-        		group = deviceGroupService.resolveGroupName(groupName);
-        	} catch (NotFoundException e) {
-        		mav.setViewName("redirect:/group/editor/home");
-        		mav.addObject("errorMessage", e.getMessage());
-        		return mav;
-        	}
-            
-        } else {
-            group = rootGroup;
-        }
-        mav.addObject("group", group);
-        mav.addObject("groupFullName", group.getFullName());
-        
-        // sub groups (child groups)
-        List<DeviceGroup> childGroups = deviceGroupDao.getChildGroups(group);
-
-        Map<DeviceGroup,String> subGroupMap = new TreeMap<>();
-        
-        for (DeviceGroup childGroup : childGroups) {
-            if(!childGroup.isHidden()){
-                subGroupMap.put(childGroup, childGroup.getFullName());
-            }
-        }
-        
-        mav.addObject("subGroupMap",subGroupMap);
-        Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices", false);
-        mav.addObject("showDevices", showDevices);
-        
-        // check the size of the group
-        int childDeviceCount = deviceGroupDao.getChildDeviceCount(group);
-        mav.addObject("childDeviceCount", childDeviceCount);
-        
-        // check the size of the group (recursive)
-        int deviceCount = deviceGroupDao.getDeviceCount(group);
-        mav.addObject("deviceCount", deviceCount);
-        
-        boolean groupModifiable = group.isModifiable() && group.getParent() != null;
-        mav.addObject("groupModifiable", groupModifiable);
-        
-        boolean isComposedGroup = group.getType().equals(DeviceGroupType.COMPOSED);
-        mav.addObject("isComposedGroup", isComposedGroup);
-        
-        boolean showImmediately = childDeviceCount <= maxToShowImmediately;
-        mav.addObject("showImmediately", showImmediately);
-        mav.addObject("maxGetDevicesSize", maxGetDevicesSize);
-        if (showImmediately || showDevices) {
-            addMaxDevicesToMav(mav, group);
-        }
-        
         // ALL GROUPS HIERARCHY
         DeviceGroupHierarchy everythingHierarchy = deviceGroupUiService.getDeviceGroupHierarchy(rootGroup, new NullPredicate<DeviceGroup>());
         
         DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupUiService.getFilteredDeviceGroupHierarchy(everythingHierarchy, new NonHiddenDeviceGroupPredicate());
+
+        if (!StringUtils.isEmpty(groupName)) {
+            
+            try {
+                group = deviceGroupService.resolveGroupName(groupName);
+            } catch (NotFoundException e) {
+                model.addAttribute("errorMessage", e.getMessage());
+                String groupsLabel = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage("yukon.web.deviceGroups.widget.groupTree.rootName");
+                
+                // ALL GROUPS TREE JSON
+                HighlightSelectedGroupNodeAttributeSettingCallback callback = new HighlightSelectedGroupNodeAttributeSettingCallback(rootGroup);
+                JsTreeNode allGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(allGroupsGroupHierarchy, groupsLabel, callback);
+                
+                // selected node Ext path
+                String extSelectedNodePath = callback.getJsTreeSelectedNodePath();
+                model.addAttribute("extSelectedNodePath", extSelectedNodePath);
+                
+                String allGroupsDataJson = JsonUtils.toJson(allGroupsRoot.toMap());
+                model.addAttribute("allGroupsDataJson", allGroupsDataJson);
+                return;
+            }
+            
+        } else {
+            group = rootGroup;
+        }
+        
+        model.addAttribute("group", group);
+        model.addAttribute("groupFullName", group.getFullName());
+        
+        // sub groups (child groups)
+        List<DeviceGroup> childGroups = deviceGroupDao.getChildGroups(group);
+        
+        Map<DeviceGroup,Integer> subGroupMap = new TreeMap<>();
+        
+        for (DeviceGroup childGroup : childGroups) {
+            if(!childGroup.isHidden()){
+                int deviceCount = deviceGroupDao.getDeviceCount(childGroup);
+                subGroupMap.put(childGroup, deviceCount);
+            }
+        }
+
         
         // NodeAttributeSettingCallback to highlight node for selected group
         // This one has been given an additional responsibility of recording the node path of the selected node,
@@ -157,10 +154,42 @@ public class GroupEditorController {
         
         // selected node Ext path
         String extSelectedNodePath = callback.getJsTreeSelectedNodePath();
-        mav.addObject("extSelectedNodePath", extSelectedNodePath);
+        model.addAttribute("extSelectedNodePath", extSelectedNodePath);
         
         String allGroupsDataJson = JsonUtils.toJson(allGroupsRoot.toMap());
-        mav.addObject("allGroupsDataJson", allGroupsDataJson);
+        model.addAttribute("allGroupsDataJson", allGroupsDataJson);
+        
+        model.addAttribute("subGroupMap",subGroupMap);
+        Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices", false);
+        model.addAttribute("showDevices", showDevices);
+        
+        // check the size of the group
+        int childDeviceCount = deviceGroupDao.getChildDeviceCount(group);
+        model.addAttribute("childDeviceCount", childDeviceCount);
+        
+        // check the size of the group (recursive)
+        int deviceCount = deviceGroupDao.getDeviceCount(group);
+        model.addAttribute("deviceCount", deviceCount);
+        
+        boolean groupModifiable = group.isModifiable() && group.getParent() != null;
+        model.addAttribute("groupModifiable", groupModifiable);
+        
+        boolean isComposedGroup = group.getType().equals(DeviceGroupType.COMPOSED);
+        model.addAttribute("isComposedGroup", isComposedGroup);
+        
+        boolean showImmediately = childDeviceCount <= maxToShowImmediately;
+        model.addAttribute("showImmediately", showImmediately);
+        model.addAttribute("maxGetDevicesSize", maxGetDevicesSize);
+        if (showImmediately || showDevices) {
+            List<DisplayablePao> deviceList = deviceGroupUiService.getChildDevicesByGroup(group, maxGetDevicesSize + 1);
+            if (deviceList.size() > maxGetDevicesSize) {
+                model.addAttribute("limted", true);
+                deviceList = deviceList.subList(0, maxGetDevicesSize);
+            }
+            
+            model.addAttribute("deviceList", deviceList);
+            model.addAttribute("maxGetDevicesSize", maxGetDevicesSize);
+        }
         
         // MOVE GROUPS TREE JSON
         Predicate<DeviceGroup> canMoveUnderPredicate = deviceGroupDao.getGroupCanMovePredicate(selectedDeviceGroup);
@@ -168,7 +197,7 @@ public class GroupEditorController {
         JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, groupsLabel, Collections.emptySet());
         
         String moveGroupJson = JsonUtils.toJson(moveGroupRoot.toMap());
-        mav.addObject("moveGroupDataJson", moveGroupJson); 
+        model.addAttribute("moveGroupDataJson", moveGroupJson); 
         
         // COPY GROUPS TREE JSON
         Predicate<DeviceGroup> canCopyIntoPredicate = new Predicate<DeviceGroup>() {
@@ -181,14 +210,21 @@ public class GroupEditorController {
         JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, groupsLabel, Collections.emptySet());
         
         String copyGroupJson = JsonUtils.toJson(copyExtRoot.toMap());
-        mav.addObject("copyGroupDataJson", copyGroupJson); 
+        model.addAttribute("copyGroupDataJson", copyGroupJson); 
         
         // DEVICE COLLECTION
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(selectedDeviceGroup);
-        mav.addObject("deviceCollection", deviceCollection);
+        model.addAttribute("deviceCollection", deviceCollection);
         
-        mav.addObject("addGroupDataJson", getJsonForGroup(group, userContext));
-
+        model.addAttribute("addGroupDataJson", getJsonForGroup(group, userContext));
+    }
+    
+    @RequestMapping("selectedDeviceGroup")
+    public ModelAndView selectedDeviceGroup(HttpServletRequest request, HttpServletResponse response)
+            throws Exception, ServletException {
+        
+        ModelAndView mav = new ModelAndView("selectedDeviceGroup.jsp");
+        populateModelWithGroup(request, mav.getModelMap());
         return mav;
     }
     
@@ -375,8 +411,8 @@ public class GroupEditorController {
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
         mav.addObject("groupName", groupName);
         try {
-        	DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
-        	deviceCollectionDeviceGroupHelper.addCollectionToGroup(groupName, deviceCollection);
+            DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
+            deviceCollectionDeviceGroupHelper.addCollectionToGroup(groupName, deviceCollection);
         } catch (DeviceCollectionCreationException e) {
             mav.addObject("errorMessage", e.getMessage());
             return mav;
