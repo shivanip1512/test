@@ -56,7 +56,7 @@
                 <cti:msg2 var="infoTab" key=".infoTab"/>
                 <cti:tab title="${infoTab}">
                     <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".name" valueClass="wbba">
+                        <tags:nameValue2 nameKey=".name">
                             <tags:switchButton path="capControlSubstationBus.multiMonitorControlBoolean" classes="dn"/>
                             <form:hidden path="pAOStatistics"/>
                             <form:hidden path="id"/>
@@ -66,10 +66,10 @@
                             <tags:switchButton path="disabled" inverse="${true}"
                                 offNameKey=".disabled.label" onNameKey=".enabled.label" />
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".geoName" valueClass="wbba">
+                        <tags:nameValue2 nameKey=".geoName">
                             <tags:input path="geoAreaName" maxlength="60"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".mapLocationID" valueClass="wbba">
+                        <tags:nameValue2 nameKey=".mapLocationID">
                             <tags:input path="capControlSubstationBus.mapLocationID" maxlength="64"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".parent">

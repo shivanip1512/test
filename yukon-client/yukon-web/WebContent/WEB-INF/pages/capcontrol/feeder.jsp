@@ -57,7 +57,7 @@
                 <cti:msg2 var="infoTab" key=".infoTab"/>
                 <cti:tab title="${infoTab}">
                     <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".name" valueClass="wbba">
+                        <tags:nameValue2 nameKey=".name">
                             <form:hidden path="pAOStatistics"/>
                             <form:hidden path="id"/>
                             <tags:input path="name" maxlength="60" autofocus="autofocus"/>
@@ -66,7 +66,7 @@
                             <tags:switchButton path="disabled" inverse="${true}"
                                 offNameKey=".disabled.label" onNameKey=".enabled.label" />
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".mapLocationID" valueClass="wbba">
+                        <tags:nameValue2 nameKey=".mapLocationID">
                             <tags:input path="capControlFeeder.mapLocationID" maxlength="64"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".parent">

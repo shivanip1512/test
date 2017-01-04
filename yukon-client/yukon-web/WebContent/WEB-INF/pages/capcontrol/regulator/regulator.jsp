@@ -81,11 +81,11 @@
                 </cti:displayForPageEditModes>
                 <tags:nameValueContainer2 tableClass="natural-width ${clazz}">
                     
-                    <tags:nameValue2 nameKey=".name" valueClass="wbba">
+                    <tags:nameValue2 nameKey=".name">
                         <tags:input path="name" maxlength="60"/>
                     </tags:nameValue2>
                     
-                    <tags:nameValue2 nameKey=".description" valueClass="wbba">
+                    <tags:nameValue2 nameKey=".description">
                         <tags:input path="description" maxlength="60"/>
                     </tags:nameValue2>
                     

@@ -32,7 +32,7 @@
                             <div><strong><em><i:inline key=".currentlySelected"/></em></strong></div>
                         </c:if>
                         <tags:nameValueContainer2 naturalWidth="false">
-                            <tags:nameValue2 nameKey=".name" valueClass="js-name-value wbba">${fn:escapeXml(pickerImage.image.imageName)}</tags:nameValue2>
+                            <tags:nameValue2 nameKey=".name" valueClass="js-name-value">${fn:escapeXml(pickerImage.image.imageName)}</tags:nameValue2>
                             <tags:nameValue2 nameKey=".category" valueClass="js-category-value">${fn:escapeXml(pickerImage.image.imageCategory)}</tags:nameValue2>
                             <tags:nameValue2 nameKey=".size" valueClass="js-size-value">
                                 <i:inline key="yukon.common.prefixedByteValue.kibi" arguments="${fn:length(pickerImage.image.imageValue) * .001}"/>

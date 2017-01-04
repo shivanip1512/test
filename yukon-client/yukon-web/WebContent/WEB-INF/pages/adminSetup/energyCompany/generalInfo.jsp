@@ -36,7 +36,7 @@ $(function() {
                 <form:hidden path="ecId"/>
                 
                 <tags:nameValueContainer2>
-                    <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="60" valueClass="wbba"/>
+                    <tags:inputNameValue nameKey=".name" path="name" size="35" maxlength="60"/>
                     
                     <cti:displayForPageEditModes modes="EDIT">
                         <tags:inputNameValue nameKey=".streetAddress1" path="address.locationAddress1" size="35" 

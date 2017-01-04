@@ -56,7 +56,7 @@
                     <cti:msg2 var="infoTab" key=".infoTab"/>
                     <cti:tab title="${infoTab}">
                         <tags:nameValueContainer2 tableClass="natural-width">
-                            <tags:nameValue2 nameKey=".name" valueClass="wbba">
+                            <tags:nameValue2 nameKey=".name">
                                 <tags:input path="name" size="25" maxlength="60" autofocus="autofocus"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".status">
@@ -106,7 +106,7 @@
                                 <tags:nameValue2 nameKey=".address">
                                     <tags:input path="location"/>
                                 </tags:nameValue2>
-                                <tags:nameValue2 nameKey=".mapLocationID" valueClass="wbba">
+                                <tags:nameValue2 nameKey=".mapLocationID">
                                     <tags:input path="CapBank.mapLocationID" maxlength="64"/>
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".parent">

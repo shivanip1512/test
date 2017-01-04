@@ -97,13 +97,13 @@ $(function() {
             <div class="column-12-12 clearfix">
                 <div class="column one">
                     <tags:nameValueContainer2 tableClass="name-collapse">
-                        <tags:nameValue2 nameKey=".name" valueClass="wbba">
+                        <tags:nameValue2 nameKey=".name">
                             <tags:input path="name" maxlength="50" autofocus="autofocus"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".geoName" valueClass="wbba">
+                        <tags:nameValue2 nameKey=".geoName">
                             <tags:input path="geoAreaName" maxlength="60"/>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".mapLocationId" valueClass="wbba">
+                        <tags:nameValue2 nameKey=".mapLocationId">
                             <tags:input path="CapControlSubstation.mapLocationID" maxlength="64"/>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".specialArea">

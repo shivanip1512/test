@@ -91,10 +91,10 @@
                 <cti:tab title="${infoTab}">
                  <cti:displayForPageEditModes modes="VIEW">
                     <tags:nameValueContainer2>
-                        <tags:nameValue2 nameKey=".name" valueClass="wbba">
+                        <tags:nameValue2 nameKey=".name">
                             <span>${fn:escapeXml(areaName)}</span>
                         </tags:nameValue2>
-                        <tags:nameValue2 nameKey=".geoName" valueClass="wbba">
+                        <tags:nameValue2 nameKey=".geoName">
                             <span>${fn:escapeXml(description)}</span>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".state" rowClass="wsnw">
