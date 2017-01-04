@@ -150,84 +150,85 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
     if ( ! device_ids.empty() )
     {
         sql += " AND " + Cti::Database::createIdInClause( "PPR", "paobjectid", device_ids.size() );
-    }
 
-    Cti::Database::DatabaseConnection connection;
-    Cti::Database::DatabaseReader rdr(connection, sql);
+        Cti::Database::DatabaseConnection connection;
+        Cti::Database::DatabaseReader rdr(connection, sql);
 
-    if ( ! device_ids.empty() )
-    {
         rdr << device_ids;
-    }
 
-    rdr.execute();
+        rdr.execute();
 
-    if( ! rdr.isValid() )
-    {
-        CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
-    }
-    else if( DebugLevel & 0x00020000 )
-    {
-        CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
-    }
-
-    if(rdr.isValid())
-    {
-        map<long, unsigned short> tmp_ports;
-        map<long, string>         tmp_ip_addresses;
-
-        while( rdr() )
+        if( ! rdr.isValid() )
         {
-            Database::Tables::PaoPropertyTable paoProperty(rdr);
+            CTILOG_ERROR(dout, "DB read failed for SQL query: "<< rdr.asString());
+        }
+        else if( DebugLevel & 0x00020000 )
+        {
+            CTILOG_DEBUG(dout, "DB read for SQL query: "<< rdr.asString());
+        }
 
-            if( paoProperty.getPropertyName() == "TcpPort" )
+        if(rdr.isValid())
+        {
+            map<long, unsigned short> tmp_ports;
+            map<long, string>         tmp_ip_addresses;
+
+            while( rdr() )
             {
-                auto port = paoProperty.getPropertyValue();
+                Database::Tables::PaoPropertyTable paoProperty(rdr);
 
-                if( ! ciStringEqual(port, "(none)") )
+                if( paoProperty.getPropertyName() == "TcpPort" )
                 {
-                    tmp_ports[paoProperty.getPaoId()] = atoi(port.c_str());
+                    auto port = paoProperty.getPropertyValue();
+
+                    if( ! ciStringEqual(port, "(none)") )
+                    {
+                        tmp_ports[paoProperty.getPaoId()] = atoi(port.c_str());
+                    }
+                }
+                else if( paoProperty.getPropertyName() == "TcpIpAddress" )
+                {
+                    auto address = paoProperty.getPropertyValue();
+
+                    if( ! ciStringEqual(address, "(none)") )
+                    {
+                        tmp_ip_addresses[paoProperty.getPaoId()] = address;
+                    }
                 }
             }
-            else if( paoProperty.getPropertyName() == "TcpIpAddress" )
-            {
-                auto address = paoProperty.getPropertyValue();
 
-                if( ! ciStringEqual(address, "(none)") )
+            map<long, unsigned short>::iterator port_itr = tmp_ports.begin();
+            map<long, string>::iterator         ip_itr   = tmp_ip_addresses.begin();
+
+            while( port_itr != tmp_ports.end() &&
+                   ip_itr   != tmp_ip_addresses.end() )
+            {
+                if( port_itr->first == ip_itr->first )
                 {
-                    tmp_ip_addresses[paoProperty.getPaoId()] = address;
+                    _connectionManager.connect(port_itr->first, Connections::SocketAddress(ip_itr->second, port_itr->second));
+                    ++port_itr;
+                    ++ip_itr;
+                }
+                else if( port_itr->first < ip_itr->first )
+                {
+                    CTILOG_WARN(dout, "orphan port record ("<< port_itr->first <<","<< port_itr->second <<") found");
+                    ++port_itr;
+                }
+                else
+                {
+                    CTILOG_WARN(dout, "orphan IP record ("<< port_itr->first <<","<< port_itr->second <<") found");
+                    ++ip_itr;
                 }
             }
         }
-
-        map<long, unsigned short>::iterator port_itr = tmp_ports.begin();
-        map<long, string>::iterator         ip_itr   = tmp_ip_addresses.begin();
-
-        while( port_itr != tmp_ports.end() &&
-               ip_itr   != tmp_ip_addresses.end() )
-        {
-            if( port_itr->first == ip_itr->first )
-            {
-                _connectionManager.connect(port_itr->first, Connections::SocketAddress(ip_itr->second, port_itr->second));
-                ++port_itr;
-                ++ip_itr;
-            }
-            else if( port_itr->first < ip_itr->first )
-            {
-                CTILOG_WARN(dout, "orphan port record ("<< port_itr->first <<","<< port_itr->second <<") found");
-                ++port_itr;
-            }
-            else
-            {
-                CTILOG_WARN(dout, "orphan IP record ("<< port_itr->first <<","<< port_itr->second <<") found");
-                ++ip_itr;
-            }
-        }
+    }
+    else 
+    {
+        CTILOG_WARN(dout, "No devices found using TCP ports or TCP IP addresses");
     }
 
     if(DebugLevel & 0x00020000)
     {
-        CTILOG_DEBUG(dout, "Done looking for Dynamic PAO Info");
+        CTILOG_DEBUG(dout, "Done looking for PAO Properties");
     }
 }
 
