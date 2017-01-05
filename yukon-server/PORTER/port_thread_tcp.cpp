@@ -223,7 +223,7 @@ void TcpPortHandler::loadDeviceTcpProperties(const set<long> &device_ids)
     }
     else 
     {
-        CTILOG_WARN(dout, "No devices found using TCP ports or TCP IP addresses");
+        CTILOG_WARN(dout, "No devices on port ID " << _tcp_port->getPortID());
     }
 
     if(DebugLevel & 0x00020000)
