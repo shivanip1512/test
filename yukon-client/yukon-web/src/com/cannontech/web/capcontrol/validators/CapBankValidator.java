@@ -37,11 +37,15 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
         if (!capbank.getCcMonitorBankList().isEmpty()) {
             validateCcMonitorBankList(capbank.getCcMonitorBankList(), errors);
         }
+
+        if (capbank.getId() != null) {
+        YukonValidationUtils.checkExceedsMaxLength(errors, "location", capbank.getLocation(), 60);
         YukonValidationUtils.checkExceedsMaxLength(errors, "CapBank.mapLocationID", capbank.getCapBank().getMapLocationID(), 64);
         YukonValidationUtils.checkIsPositiveInt(errors, "CapBank.bankSizeCustom", capbank.getCapBank().getBankSize());
         YukonValidationUtils.checkIsPositiveInt(errors, "CapBank.maxDailyOps", capbank.getCapBank().getMaxDailyOps());
 
         validateAdditionalInfo(capbank, errors);
+        }
     }
 
     private void validateCcMonitorBankList(List<CCMonitorBankList> ccMonitorBankLists, Errors errors) {
@@ -77,6 +81,7 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
             errors.rejectValue("name", "yukon.web.error.valuesCannotBeSame");
             errors.rejectValue("cbcControllerName", "yukon.web.error.valuesCannotBeSame");
         }
+        YukonValidationUtils.checkExceedsMaxLength(errors, "cbcControllerName", capbank.getCbcControllerName(), 60);
     }
     
     private void checkForNameConflicts(CapBank capbank, Errors errors, boolean checkCBCName) {
@@ -121,6 +126,9 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
             errors.rejectValue("capbankAdditionalInfo.poleNumber", "yukon.web.error.isNotPositiveInt");
         }
 
+        YukonValidationUtils.checkExceedsMaxLength(errors, "capbankAdditionalInfo.commMediumCustom",
+            capbank.getCapbankAdditionalInfo().getCommMediumCustom(), 20);
+
         if (capbank.getCapbankAdditionalInfo().getCommStrengh() == null) {
             errors.rejectValue("capbankAdditionalInfo.commStrengh", "yukon.web.error.isBlank");
         } else if (capbank.getCapbankAdditionalInfo().getCommStrengh() < 0) {
@@ -140,5 +148,12 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
             YukonValidationUtils.checkRange(errors, "capbankAdditionalInfo.longtit",
                 capbank.getCapbankAdditionalInfo().getLongtit(), -180.0, 180.0, true);
         }
+
+        YukonValidationUtils.checkExceedsMaxLength(errors, "capbankAdditionalInfo.otherComments",
+            capbank.getCapbankAdditionalInfo().getOtherComments(), 150);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "capbankAdditionalInfo.opTeamComments",
+            capbank.getCapbankAdditionalInfo().getOpTeamComments(), 150);
+        YukonValidationUtils.checkExceedsMaxLength(errors, "capbankAdditionalInfo.driveDir",
+            capbank.getCapbankAdditionalInfo().getDriveDir(), 120);
     }
 }

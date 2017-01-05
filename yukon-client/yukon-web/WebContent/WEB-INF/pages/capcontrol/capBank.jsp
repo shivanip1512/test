@@ -83,7 +83,7 @@
                                         <tags:switchButton path="createCBC" classes="js-create-cbc" offNameKey=".no.label" onNameKey=".yes.label" toggleGroup="newCBC" toggleAction="hide" />
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".cbcControllerName" data-toggle-group="newCBC">
-                                        <tags:input path="cbcControllerName" size="25" />
+                                        <tags:input path="cbcControllerName" size="25" maxlength="60"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".cbcType" data-toggle-group="newCBC">
                                         <tags:selectWithItems id="pao-type" items="${cbcTypes}" path="cbcType"/>
@@ -104,7 +104,7 @@
                         <cti:displayForPageEditModes modes="EDIT,VIEW">   
                             <tags:nameValueContainer2 tableClass="natural-width">
                                 <tags:nameValue2 nameKey=".address">
-                                    <tags:input path="location"/>
+                                    <tags:input path="location" maxlength="60"/>
                                 </tags:nameValue2>
                                 <tags:nameValue2 nameKey=".mapLocationID">
                                     <tags:input path="CapBank.mapLocationID" maxlength="64"/>
@@ -300,7 +300,7 @@
                                     <tags:nameValue2 nameKey=".cbAddInfo.medium">
                                         <tags:selectWithItems id="commMedium" path="capbankAdditionalInfo.commMedium" 
                                         items="${communicationMediumList}" itemValue="displayName"/>
-                                        <tags:input id="customCommMedium" path="capbankAdditionalInfo.commMediumCustom" inputClass="dn"/>
+                                        <tags:input id="customCommMedium" path="capbankAdditionalInfo.commMediumCustom" inputClass="dn" maxlength="20"/>
                                         <i:inline key=".custom"/><input id="customMediumCheckbox" type="checkbox" class="js-custom-medium" <c:if test="${capbank.capbankAdditionalInfo.customCommMedium}">checked="checked"</c:if> <c:if test="${mode == 'VIEW'}"> disabled="disabled"</c:if>>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".cbAddInfo.commStrength">
@@ -340,16 +340,16 @@
                                         <tags:switchButton path="capbankAdditionalInfo.reqPend" offNameKey=".no.label" onNameKey=".yes.label"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".cbAddInfo.otherComments">
-                                        <tags:input path="capbankAdditionalInfo.otherComments" size="40"/>
+                                        <tags:input path="capbankAdditionalInfo.otherComments" size="40" maxlength="150"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".cbAddInfo.opTeamComments">
-                                        <tags:input path="capbankAdditionalInfo.opTeamComments" size="40"/>
+                                        <tags:input path="capbankAdditionalInfo.opTeamComments" size="40" maxlength="150"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".cbAddInfo.cbcInstallDate">
                                         <dt:dateTime path="capbankAdditionalInfo.cbcBattInstallDate"/>
                                     </tags:nameValue2>
                                     <tags:nameValue2 nameKey=".cbAddInfo.drivingDirections">
-                                        <tags:input path="capbankAdditionalInfo.driveDir" size="40" />
+                                        <tags:input path="capbankAdditionalInfo.driveDir" size="40" maxlength="120"/>
                                     </tags:nameValue2>
                                 </tags:nameValueContainer2>
                             </tags:sectionContainer2>
