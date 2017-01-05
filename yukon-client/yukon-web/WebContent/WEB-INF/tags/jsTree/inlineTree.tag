@@ -78,6 +78,7 @@
                 if (initially_select) {
                     this.selectKey(initially_select);
                     this.getNodeByKey(initially_select).makeVisible();
+                    this.activateKey(initially_select);
                 //or open all of the first level children
                 } else {
                     var root = this.getRoot();

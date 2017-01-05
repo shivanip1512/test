@@ -9,6 +9,8 @@
 <cti:msgScope paths="deviceGroups.editor.operationsContainer,deviceGroups.editor.membersContainer,modules.tools.deviceGroups">
 
 <cti:msg2 var="invalidGroupNameError" key="yukon.web.deviceGroups.editor.operationsContainer.invalidGroupNameError" javaScriptEscape="true"/>
+ 
+ <input id="selectedGroup" type="hidden" value="${extSelectedNodePath}"/>
 
     <%-- OPERATIONS BOX --%>
     <cti:msg2 key=".title" var="operationsTitle"/>
@@ -291,7 +293,7 @@
                                             <td>
                                                 <cti:url var="homeUrl" value="/group/editor/home"><cti:param name="groupName" value="${subGroup.key.fullName}" /></cti:url>
                                                 <span title="${fn:escapeXml(subGroup.key.fullName)}">
-                                                    <a href="${homeUrl}"><c:out value="${fn:escapeXml(subGroup.key.name)}"/></a>
+                                                    <a href="javascript:void(0);" onclick="yukon.tools.group.editor.retrieveGroupDetails('${subGroup.key.fullName}');"><c:out value="${fn:escapeXml(subGroup.key.name)}"/></a>
                                                 </span>
                                                 <span class="fr">${subGroup.value} <cti:msg2 key=".devices"/></span>
                                             </td>
