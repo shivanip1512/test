@@ -20,6 +20,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.amr.MonitorEvaluatorStatus;
@@ -159,7 +160,7 @@ public class PorterResponseMonitorController {
         return "porterResponseMonitor/edit.jsp";
     }
 
-    @RequestMapping("createPage")
+    @RequestMapping(method=RequestMethod.GET, value="createPage")
     public String createPage(ModelMap model) {
 
         setupCreatePageModelMap(model);
@@ -167,7 +168,7 @@ public class PorterResponseMonitorController {
         return "porterResponseMonitor/create.jsp";
     }
 
-    @RequestMapping("create")
+    @RequestMapping(method=RequestMethod.POST, value="create")
     public String create(@ModelAttribute("monitor") PorterResponseMonitor monitor, BindingResult bindingResult, ModelMap modelMap,
             YukonUserContext userContext, FlashScope flashScope) {
 

@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -75,7 +76,7 @@ public class FdrTranslationManagerController {
         return "fdrTranslationManager/home.jsp";
     }
     
-    @RequestMapping("report")
+    @RequestMapping(method = RequestMethod.POST, value = "report")
     public String report(HttpServletResponse response, String reportInterface) throws IOException {
         List<String> formattedHeaders = Lists.newArrayList();
         fdrTranslationManagerCsvHelper.addDefaultExportColumnsToList(formattedHeaders);

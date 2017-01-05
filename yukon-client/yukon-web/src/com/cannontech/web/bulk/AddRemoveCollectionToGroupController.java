@@ -10,6 +10,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -38,7 +39,7 @@ public class AddRemoveCollectionToGroupController {
         return "group/selectGroup.jsp";
     }
     
-    @RequestMapping("addToGroup")
+    @RequestMapping(method = RequestMethod.POST, value = "addToGroup")
     public String addToGroup(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // get groupNmae and deviceCollection from request
@@ -53,7 +54,7 @@ public class AddRemoveCollectionToGroupController {
         return "redirect:/group/editor/home";
     }
     
-    @RequestMapping("removeFromGroup")
+    @RequestMapping(method = RequestMethod.POST, value = "removeFromGroup")
     public String removeFromGroup(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // get groupNmae and deviceCollection from request

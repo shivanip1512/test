@@ -18,6 +18,7 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
@@ -256,7 +257,7 @@ public class InventoryController {
         model.addAttribute("showInstallNotes", false);
     }
 
-    @RequestMapping("create")
+    @RequestMapping(method = RequestMethod.POST, value = "create")
     public String create(@ModelAttribute Hardware hardware, BindingResult result, ModelMap model,
             YukonUserContext userContext, HttpSession session, String cancel, FlashScope flash) {
 

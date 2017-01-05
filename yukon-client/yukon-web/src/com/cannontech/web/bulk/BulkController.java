@@ -24,6 +24,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.bulk.callbackResult.BackgroundProcessResultHolder;
@@ -366,7 +367,7 @@ public class BulkController {
     }
     
 
-    @RequestMapping("downloadResult")
+    @RequestMapping(method = RequestMethod.POST, value = "downloadResult")
     public String downloadResult(@RequestParam(value = "deviceErrors", required = false) Set<String> errors,
             @RequestParam(value = "uploadFileName", required = false) String errorFileName,
             @RequestParam(value = "header", required = false) String header,

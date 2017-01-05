@@ -25,6 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -514,7 +515,7 @@ public class ScheduledGroupRequestExecutionController {
 		return mav;
 	}
 	
-	@RequestMapping("toggleJobEnabled")
+	@RequestMapping(method=RequestMethod.POST, value="toggleJobEnabled")
     public ModelAndView toggleJobEnabled(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         ModelAndView mav = new ModelAndView("redirect:home");
@@ -632,7 +633,7 @@ public class ScheduledGroupRequestExecutionController {
     /**
      *  (not really a hard delete, but set Job.Disabled = 'D' to hide it)
      */
-	@RequestMapping("deleteJob")
+	@RequestMapping(method=RequestMethod.POST, value="deleteJob")
     public ModelAndView deleteJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         ModelAndView mav = new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/jobs");

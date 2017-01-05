@@ -18,6 +18,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
@@ -547,7 +548,7 @@ public class GroupEditorController {
         return mav;
     }
     
-    @RequestMapping("removeGroup")
+    @RequestMapping(method = RequestMethod.POST, value = "removeGroup")
     public ModelAndView removeGroup(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
