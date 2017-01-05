@@ -59,38 +59,88 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
         try {
             int groupId = 0;
             int honeywellGroupId = 0;
+            HoneywellWifiThermostat honeywellThermostat = null;
             ArrayList<Integer> honeywellThermostatIds = new ArrayList<Integer>();
             switch (command.getType()) {
-            case IN_SERVICE:
-                break;
-            case OUT_OF_SERVICE:
-                    int grpId = (int) command.getParams().get(LmHardwareCommandParam.GROUP_ID);
-                    honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(grpId);
-                    honeywellThermostatIds.add(getHoneywellDeviceIds(device.getDeviceID()).getThermostatId());
-                    honeywellCommunicationService.removeDeviceFromDRGroup(honeywellThermostatIds, honeywellGroupId);
-                    break;
-            case TEMP_OUT_OF_SERVICE:
-                    // Remove device from current group in honeywell, not in Yukon
+            case IN_SERVICE: // IS command
+                // Resend config IS invoked - cleanup the past enrollments
+                unEnrollDeviceFromPastEnrolledGroups(device.getLiteID(), honeywellThermostatIds);
+                try {
                     groupId = getGroupId(device.getInventoryID());
                     honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
-                    HoneywellWifiThermostat honeywellThermostat = getHoneywellDeviceIds(device.getDeviceID());
-                    honeywellThermostatIds.add(honeywellThermostat.getThermostatId());
-                    honeywellCommunicationService.removeDeviceFromDRGroup(honeywellThermostatIds, honeywellGroupId);
-                    // Get current events for this device from Honeywell
-                    List<HoneywellDREvent> drEventResponses =
-                        honeywellCommunicationService.getDREventsForDevice(honeywellThermostat.getThermostatId(),
-                            honeywellThermostat.getDeviceVendorUserId().toString());
-                    for (HoneywellDREvent event : drEventResponses) {
-                        honeywellCommunicationService.cancelDREventForDevices(honeywellThermostatIds, event.getEventId(),
-                            false);
-                    }
+                    honeywellThermostatIds.add(getHoneywellDeviceIds(device.getDeviceID()).getThermostatId());
+                    // Add device to honeywell group, if already configured/enrolled with a group in Yukon
+                    honeywellCommunicationService.addDevicesToGroup(honeywellThermostatIds, honeywellGroupId);
+                } catch (BadConfigurationException bce) {
+                    log.debug("Honeywell device is not enrolled, hence cannot add the device to a honeywell group");
+                }
                 break;
-            case CANCEL_TEMP_OUT_OF_SERVICE:
-                // Add device to group in honeywell
-                groupId = getGroupId(device.getInventoryID());
-                honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
-                honeywellThermostatIds.add(getHoneywellDeviceIds(device.getDeviceID()).getThermostatId());
-                honeywellCommunicationService.addDevicesToGroup(honeywellThermostatIds, honeywellGroupId);
+            case OUT_OF_SERVICE: // OOS command
+                honeywellThermostat = getHoneywellDeviceIds(device.getDeviceID());
+                honeywellThermostatIds.add(honeywellThermostat.getThermostatId());
+                try {
+                    // Command Param GROUP_ID is set when OOS is invoked from Enrollment edit -unenroll
+                    // Command Param GROUP_ID is NOT set when OOS is invoked from resend config
+                    groupId =
+                        (command.getParams().get(LmHardwareCommandParam.GROUP_ID) != null)
+                            ? ((int) command.getParams().get(LmHardwareCommandParam.GROUP_ID))
+                            : getGroupId(device.getInventoryID());
+                    honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
+                    // Remove device from current group in honeywell, not in Yukon
+                    honeywellCommunicationService.removeDeviceFromDRGroup(honeywellThermostatIds, honeywellGroupId);
+                } catch (BadConfigurationException bce) {
+                    log.debug("Honeywell device is not enrolled, hence cannot remove the device from a group");
+                }
+                if (command.getParams().get(LmHardwareCommandParam.GROUP_ID) == null) { 
+                    // Resend config OOS invoked - cleanup the past enrollments
+                    unEnrollDeviceFromPastEnrolledGroups(device.getLiteID(), honeywellThermostatIds);
+                }
+                // Get current events for this device from Honeywell and send cancellation
+                List<HoneywellDREvent> drEventResponseList =
+                    honeywellCommunicationService.getDREventsForDevice(honeywellThermostat.getThermostatId(),
+                        honeywellThermostat.getDeviceVendorUserId().toString());
+                for (HoneywellDREvent event : drEventResponseList) {
+                    // For devices which do not have any events, eventId is returned as null
+                    if (event.getEventId() != null) { 
+                        honeywellCommunicationService.cancelDREventForDevices(honeywellThermostatIds,
+                            event.getEventId(), false);
+                    }
+                }
+                break;
+            case TEMP_OUT_OF_SERVICE: // For Opt-Outs only
+                honeywellThermostat = getHoneywellDeviceIds(device.getDeviceID());
+                honeywellThermostatIds.add(honeywellThermostat.getThermostatId());
+                try {
+                    groupId = getGroupId(device.getInventoryID());
+                    honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
+                    // Remove device from current group in honeywell, not in Yukon
+                    honeywellCommunicationService.removeDeviceFromDRGroup(honeywellThermostatIds, honeywellGroupId);
+                } catch (BadConfigurationException bce) {
+                    log.debug("Honeywell device is not enrolled, hence cannot remove the device from a group");
+                }
+                // Get current events for this device from Honeywell
+                List<HoneywellDREvent> drEventResponses =
+                    honeywellCommunicationService.getDREventsForDevice(honeywellThermostat.getThermostatId(),
+                        honeywellThermostat.getDeviceVendorUserId().toString());
+                for (HoneywellDREvent event : drEventResponses) {
+                    // For devices which do not have any events, eventId is returned as null
+                    if (event.getEventId() != null) {
+                        honeywellCommunicationService.cancelDREventForDevices(honeywellThermostatIds,
+                            event.getEventId(), false);
+                    }
+                }
+                break;
+            case CANCEL_TEMP_OUT_OF_SERVICE: // Cancels opt-outs for honeywell device, however DR events cannot be re-subscribed to,
+                // as no honeywell API exists for this. We just Add device to honeywell group
+                try {
+                    groupId = getGroupId(device.getInventoryID());
+                    honeywellGroupId = honeywellWifiThermostatDao.getHoneywellGroupId(groupId);
+                    honeywellThermostatIds.add(getHoneywellDeviceIds(device.getDeviceID()).getThermostatId());
+                    // Add device to honeywell group, if already configured/enrolled with a group in Yukon
+                    honeywellCommunicationService.addDevicesToGroup(honeywellThermostatIds, honeywellGroupId);
+                } catch (BadConfigurationException bce) {
+                    log.debug("Honeywell device is not enrolled, hence cannot add the device to a honeywell group");
+                }
                 break;
             case CONFIG:
                 // In case of enrollment the BULK parameter will not be sent, in case of CONFIG, it will be set to true
