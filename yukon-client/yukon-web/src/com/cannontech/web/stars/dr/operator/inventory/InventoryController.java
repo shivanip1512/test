@@ -257,7 +257,7 @@ public class InventoryController {
         model.addAttribute("showInstallNotes", false);
     }
 
-    @RequestMapping(method = RequestMethod.POST, value = "create")
+    @RequestMapping(value = "create", method = RequestMethod.POST)
     public String create(@ModelAttribute Hardware hardware, BindingResult result, ModelMap model,
             YukonUserContext userContext, HttpSession session, String cancel, FlashScope flash) {
 

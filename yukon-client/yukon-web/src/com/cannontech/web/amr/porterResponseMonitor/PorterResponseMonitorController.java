@@ -160,7 +160,7 @@ public class PorterResponseMonitorController {
         return "porterResponseMonitor/edit.jsp";
     }
 
-    @RequestMapping(method=RequestMethod.GET, value="createPage")
+    @RequestMapping(value="createPage", method=RequestMethod.GET)
     public String createPage(ModelMap model) {
 
         setupCreatePageModelMap(model);
@@ -168,7 +168,7 @@ public class PorterResponseMonitorController {
         return "porterResponseMonitor/create.jsp";
     }
 
-    @RequestMapping(method=RequestMethod.POST, value="create")
+    @RequestMapping( value="create", method=RequestMethod.POST)
     public String create(@ModelAttribute("monitor") PorterResponseMonitor monitor, BindingResult bindingResult, ModelMap modelMap,
             YukonUserContext userContext, FlashScope flashScope) {
 

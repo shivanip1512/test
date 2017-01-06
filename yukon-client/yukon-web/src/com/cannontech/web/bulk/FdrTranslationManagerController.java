@@ -76,7 +76,7 @@ public class FdrTranslationManagerController {
         return "fdrTranslationManager/home.jsp";
     }
     
-    @RequestMapping(method = RequestMethod.POST, value = "report")
+    @RequestMapping(value = "report", method = RequestMethod.POST)
     public String report(HttpServletResponse response, String reportInterface) throws IOException {
         List<String> formattedHeaders = Lists.newArrayList();
         fdrTranslationManagerCsvHelper.addDefaultExportColumnsToList(formattedHeaders);

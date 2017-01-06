@@ -367,7 +367,7 @@ public class BulkController {
     }
     
 
-    @RequestMapping(method = RequestMethod.POST, value = "downloadResult")
+    @RequestMapping(value = "downloadResult", method = RequestMethod.POST)
     public String downloadResult(@RequestParam(value = "deviceErrors", required = false) Set<String> errors,
             @RequestParam(value = "uploadFileName", required = false) String errorFileName,
             @RequestParam(value = "header", required = false) String header,

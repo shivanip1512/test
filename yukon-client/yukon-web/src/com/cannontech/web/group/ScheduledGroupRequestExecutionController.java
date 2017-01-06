@@ -515,7 +515,7 @@ public class ScheduledGroupRequestExecutionController {
 		return mav;
 	}
 	
-	@RequestMapping(method=RequestMethod.POST, value="toggleJobEnabled")
+	@RequestMapping(value="toggleJobEnabled", method=RequestMethod.POST)
     public ModelAndView toggleJobEnabled(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         ModelAndView mav = new ModelAndView("redirect:home");
@@ -633,7 +633,7 @@ public class ScheduledGroupRequestExecutionController {
     /**
      *  (not really a hard delete, but set Job.Disabled = 'D' to hide it)
      */
-	@RequestMapping(method=RequestMethod.POST, value="deleteJob")
+	@RequestMapping(value="deleteJob", method=RequestMethod.POST)
     public ModelAndView deleteJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         ModelAndView mav = new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/jobs");

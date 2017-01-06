@@ -39,7 +39,7 @@ public class AddRemoveCollectionToGroupController {
         return "group/selectGroup.jsp";
     }
     
-    @RequestMapping(method = RequestMethod.POST, value = "addToGroup")
+    @RequestMapping(value = "addToGroup", method = RequestMethod.POST)
     public String addToGroup(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // get groupNmae and deviceCollection from request
@@ -54,7 +54,7 @@ public class AddRemoveCollectionToGroupController {
         return "redirect:/group/editor/home";
     }
     
-    @RequestMapping(method = RequestMethod.POST, value = "removeFromGroup")
+    @RequestMapping(value = "removeFromGroup", method = RequestMethod.POST)
     public String removeFromGroup(ModelMap model, HttpServletRequest request) throws ServletRequestBindingException {
         
         // get groupNmae and deviceCollection from request

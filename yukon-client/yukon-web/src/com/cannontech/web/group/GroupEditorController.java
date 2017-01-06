@@ -548,7 +548,7 @@ public class GroupEditorController {
         return mav;
     }
     
-    @RequestMapping(method = RequestMethod.POST, value = "removeGroup")
+    @RequestMapping(value = "removeGroup", method = RequestMethod.POST)
     public ModelAndView removeGroup(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
