@@ -267,6 +267,12 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
         quality = NonUpdatedQuality;
     }
 
+    // If this flag is 1, REFERENCE_ERR will be associated with the point
+    if (_flags.refcheck)
+    {
+        quality = QuestionableQuality;
+    }
+
     if( gDNPVerbose )
     {
         CTILOG_INFO(dout, "Analog input, value "<< val);
