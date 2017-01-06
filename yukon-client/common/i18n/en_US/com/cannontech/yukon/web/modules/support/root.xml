@@ -44,7 +44,6 @@
     <entry key="yukon.web.modules.support.system.pageName">System Info</entry>
     <entry key="yukon.web.modules.support.system.versionDetails">Version Details</entry>
     <entry key="yukon.web.modules.support.system.buildInformation">Build Information</entry>
-    <entry key="yukon.web.modules.support.system.systemInformation">System Information</entry>
 
     <entry key="yukon.web.modules.support.logLanding.pageName">Logs</entry>
 

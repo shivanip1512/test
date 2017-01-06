@@ -82,7 +82,6 @@ public class SupportController {
 
     @RequestMapping(value="info")
     public String info(ModelMap model){
-        model.addAttribute("systemInformation", CtiUtilities.getSystemInfoString());
         model.addAttribute("buildInfo", VersionTools.getBuildInfo());
         model.addAttribute("versionDetails", VersionTools.getYukonDetails());
         return "info.jsp";

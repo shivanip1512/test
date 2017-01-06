@@ -93,16 +93,11 @@ public class ScriptTemplate {
     
     private void init(){
         String yukonPath = "";
-        String jwsYukonBase = System.getProperty("jnlp.yukon.server.base");
-        if (jwsYukonBase != null) {
-            yukonPath = jwsYukonBase;
+        String yukonBaseProperty = CtiUtilities.getYukonBase();
+        if (yukonBaseProperty != null) {
+            yukonPath = yukonBaseProperty;
         } else {
-            String yukonBaseProperty = CtiUtilities.getYukonBase();
-            if(yukonBaseProperty != null) {
-                yukonPath = yukonBaseProperty;
-            }else {
-                yukonPath = "C:/Yukon";
-            }
+            yukonPath = "C:/Yukon";
         }
         
         String path = StringUtils.replace(yukonPath, "\\", "/"); 

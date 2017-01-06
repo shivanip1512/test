@@ -13,6 +13,4 @@
             </c:forEach>
         </ul>
     </div>
-    <div><strong><i:inline key=".systemInformation"/></strong></div>
-    <pre>${systemInformation}</pre>
 </cti:standardPage>
