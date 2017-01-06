@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.log4j.Logger;
@@ -23,6 +24,8 @@ import com.cannontech.dr.honeywell.HoneywellCommunicationException;
 import com.cannontech.dr.honeywell.message.TokenResponse;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 
 public class HoneywellRestProxyFactory {
     private static final Logger log = YukonLogManager.getLogger(HoneywellRestProxyFactory.class);
@@ -33,7 +36,11 @@ public class HoneywellRestProxyFactory {
 
     private final RestTemplate proxiedTemplate;
 
-    private String authToken = null;
+    private String authTokenKey = "authTokenKey";
+    private String authTokenValue = null;
+    
+    private final Cache<String,String> tokenCache =
+            CacheBuilder.newBuilder().expireAfterWrite(29, TimeUnit.MINUTES).build();
 
     public HoneywellRestProxyFactory(RestTemplate proxiedTemplate) {
         this.proxiedTemplate = proxiedTemplate;
@@ -87,9 +94,19 @@ public class HoneywellRestProxyFactory {
     }
 
     private String getAuthenticationToken() {
-        if (authToken != null) {
-            return authToken;
+        authTokenValue = tokenCache.getIfPresent(authTokenKey);
+        if (authTokenValue == null) {
+            synchronized (this) {
+                if (authTokenValue == null) {
+                    authTokenValue = generateAuthenticationToken();
+                }
+            }
         }
+        return authTokenValue;
+    }
+    
+    private String generateAuthenticationToken() {
+        
         MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
         // TODO: Code cleanup required here will be done when we can get fully connected
         body.add("grant_type", "client_credentials");
@@ -114,8 +131,10 @@ public class HoneywellRestProxyFactory {
         } catch (RestClientException e) {
             throw new HoneywellCommunicationException("Unable to communicate with Honeywell API.", e);
         }
-        authToken = response.getAccessToken();
 
-        return authToken;
+        authTokenValue = response.getAccessToken();
+        tokenCache.put(authTokenKey, authTokenValue);
+
+        return authTokenValue;
     }
 }
