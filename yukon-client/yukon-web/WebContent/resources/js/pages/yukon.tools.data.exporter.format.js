@@ -35,6 +35,8 @@ yukon.tools.dataExporterFormat = (function () {
                 $.each(data.body, function (idx, line) {
                     $('[preview-body]').append($('<div>').text(line));
                 });
+                $('[preview-measure]').empty();
+                $('[preview-measure]').text(data.measure);
             }
         });
     },

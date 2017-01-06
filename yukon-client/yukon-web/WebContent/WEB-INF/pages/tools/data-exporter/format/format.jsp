@@ -83,6 +83,7 @@
                 
                 <tags:inputNameValue nameKey=".header" path="header" size="100" maxlength="255" inputClass="js-header"/>
                 <tags:inputNameValue nameKey=".footer" path="footer" size="100" maxlength="255" inputClass="js-footer"/>
+                
 
                 <tags:nameValue2 nameKey=".timeZoneFormat">
                     <form:select id="date-timezone-format" path="dateTimeZoneFormat">
@@ -216,8 +217,8 @@
             </div>
         </tags:sectionContainer2>
         
-        <h3><i:inline key=".preview.title"/></h3>
-        <pre><div preview-header>${fn:escapeXml(preview.header)}</div><div preview-body><c:forEach items="${preview.body}" var="line">${fn:escapeXml(line)}<br></c:forEach></div><div preview-footer>${fn:escapeXml(preview.footer)}</div></pre>
+        <h3><i:inline key=".preview.title"/><tags:helpInfoPopup nameKey=".preview.measure"/></h3>
+        <pre><div preview-measure>${fn:escapeXml(preview.measure)}</div><div preview-header>${fn:escapeXml(preview.header)}</div><div preview-body><c:forEach items="${preview.body}" var="line">${fn:escapeXml(line)}<br></c:forEach></div><div preview-footer>${fn:escapeXml(preview.footer)}</div></pre>
             
         <div class="page-action-area">
             <cti:button type="submit" nameKey="save" classes="primary action" busy="true"/>

@@ -96,8 +96,8 @@
         </tags:sectionContainer2>
 
         <c:if test="${not empty allFormats}">
-            <h3><i:inline key=".preview.title"/></h3>
-            <pre><div preview-header>${fn:escapeXml(preview.header)}</div><div preview-body><c:forEach items="${preview.body}" var="line">${fn:escapeXml(line)}<br></c:forEach></div><div preview-footer>${fn:escapeXml(preview.footer)}</div></pre>
+            <h3><i:inline key=".preview.title"/><tags:helpInfoPopup nameKey=".preview.measure"/></h3>
+            <pre><div preview-measure>${fn:escapeXml(preview.measure)}</div><div preview-header>${fn:escapeXml(preview.header)}</div><div preview-body><c:forEach items="${preview.body}" var="line">${fn:escapeXml(line)}<br></c:forEach></div><div preview-footer>${fn:escapeXml(preview.footer)}</div></pre>
         </c:if>
 
         <%@ include file="scheduledJobsTable.jsp" %>

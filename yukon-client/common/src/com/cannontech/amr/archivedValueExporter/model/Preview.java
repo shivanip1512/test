@@ -5,32 +5,41 @@ import java.util.List;
 
 public class Preview {
 
+    private String measure = "";
     private String header = "";
     private List<String> body = new ArrayList<>();
     private String footer = "";
-    
+
     public String getHeader() {
         return header;
     }
-    
+
     public void setHeader(String header) {
         this.header = header;
     }
-    
+
     public List<String> getBody() {
         return body;
     }
-    
+
     public void setBody(List<String> body) {
         this.body = body;
     }
-    
+
     public String getFooter() {
         return footer;
     }
-    
+
     public void setFooter(String footer) {
         this.footer = footer;
     }
-    
+
+    public String getMeasure() {
+        return measure;
+    }
+
+    public void setMeasure(String measure) {
+        this.measure = measure;
+    }
+
 }
