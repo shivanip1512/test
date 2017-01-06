@@ -107,7 +107,7 @@ public class GroupMeterReadController {
 		return mav;
 	}
 	
-	@RequestMapping(value = "readGroup", method = RequestMethod.POST)
+	@RequestMapping(value="readGroup", method=RequestMethod.POST)
 	public ModelAndView readGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 		
 		String errorPage = "homeGroup";
