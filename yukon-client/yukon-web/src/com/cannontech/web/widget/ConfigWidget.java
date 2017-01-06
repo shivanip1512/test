@@ -28,7 +28,9 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
@@ -48,6 +50,7 @@ public class ConfigWidget extends WidgetControllerBase {
     @Autowired private DeviceConfigurationService deviceConfigurationService;
     @Autowired private DeviceConfigEventLogService eventLogService;
     @Autowired private DataStreamingService dataStreamingService;
+    @Autowired private ServerDatabaseCache serverDatabaseCache;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     
     @Autowired
@@ -103,18 +106,24 @@ public class ConfigWidget extends WidgetControllerBase {
         return deviceDao.getYukonDevice(deviceId);
     }
     
+    private LiteYukonPAObject getLiteYukonPAObject(HttpServletRequest request) throws ServletRequestBindingException {
+        int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
+        return serverDatabaseCache.getAllPaosMap().get(deviceId);
+    }
+    
     @RequestMapping("assignConfig")
     public ModelAndView assignConfig(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException, InvalidDeviceTypeException {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         YukonDevice device = getYukonDevice(request);
+        String deviceName = getLiteYukonPAObject(request).getPaoName();
         
         final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration");
         if (configId > -1) {
             DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(configId);
-            eventLogService.assignConfigInitiated(configuration.getName(), 1, userContext.getYukonUser());
+            eventLogService.assignConfigToDeviceInitiated(configuration.getName(), deviceName, userContext.getYukonUser());
             deviceConfigurationService.assignConfigToDevice(configuration, device);
         } else {
-            eventLogService.unassignConfigInitiated(1, userContext.getYukonUser());
+            eventLogService.unassignConfigFromDeviceInitiated(deviceName, userContext.getYukonUser());
             deviceConfigurationService.unassignConfig(device);
         }
         
@@ -127,7 +136,8 @@ public class ConfigWidget extends WidgetControllerBase {
     public ModelAndView unassignConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         YukonDevice device = getYukonDevice(request);
-        eventLogService.unassignConfigInitiated(1, userContext.getYukonUser());
+        String deviceName = getLiteYukonPAObject(request).getPaoName();
+        eventLogService.unassignConfigFromDeviceInitiated(deviceName, userContext.getYukonUser());
         deviceConfigurationService.unassignConfig(device);
         
         ModelAndView mav = getConfigModelAndView(request);
@@ -139,14 +149,10 @@ public class ConfigWidget extends WidgetControllerBase {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
         YukonDevice device = getYukonDevice(request);
+        String deviceName = getLiteYukonPAObject(request).getPaoName();
+        eventLogService.sendConfigToDeviceinitiated(deviceName, userContext.getYukonUser());
         CommandResultHolder resultHolder = deviceConfigService.sendConfig(device, userContext.getYukonUser());
         
-        eventLogService.sendConfigCompleted((resultHolder.isErrorsExist()? 0:1),
-                                                    (resultHolder.isErrorsExist()? 1:0),
-                                                    0,
-                                                    resultHolder.getExceptionReason(),
-                                                    "");
-
         mav.addObject("sendResult", resultHolder);
         return mav;
     }
@@ -156,14 +162,10 @@ public class ConfigWidget extends WidgetControllerBase {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
         YukonDevice device = getYukonDevice(request);
+        String deviceName = getLiteYukonPAObject(request).getPaoName();
+        eventLogService.readConfigFromDeviceInitiated(deviceName, userContext.getYukonUser());
         CommandResultHolder resultHolder = deviceConfigService.readConfig(device, userContext.getYukonUser());
         
-        eventLogService.readConfigCompleted((resultHolder.isErrorsExist()? 0:1),
-                                                    (resultHolder.isErrorsExist()? 1:0),
-                                                    0,
-                                                    resultHolder.getExceptionReason(),
-                                                    "");
-
         mav.addObject("readResult", resultHolder);
         return mav;
     }
@@ -173,12 +175,10 @@ public class ConfigWidget extends WidgetControllerBase {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
         YukonDevice device = getYukonDevice(request);
+        String deviceName = getLiteYukonPAObject(request).getPaoName();
+        eventLogService.verifyConfigFromDeviceInitiated(deviceName, userContext.getYukonUser());
         VerifyResult verifyResult = deviceConfigService.verifyConfig(device, userContext.getYukonUser());
         
-        eventLogService.verifyConfigCompleted((verifyResult.isSynced() ? 1:0),
-                                                      (verifyResult.isSynced() ? 0:1),
-                                                      0, null);
-
         mav.addObject("verifyResult", verifyResult);
         return mav;
     }
