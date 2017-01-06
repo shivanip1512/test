@@ -80,10 +80,10 @@ public class HoneywellWifiThermostatDaoImpl implements HoneywellWifiThermostatDa
     public List<Integer> getPastEnrolledHoneywellGroupsByInventoryId(final Integer inventoryId) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT hg.HoneywellGroupId OldEnrolledGroupId ");
+        sql.append("SELECT DISTINCT hg.HoneywellGroupId OldEnrolledGroupId ");
         sql.append(" FROM LMHardwareControlGroup hcg JOIN LMGroupHoneywellWifi hg on hg.DeviceId=hcg.LMGroupId ");
         sql.append(" WHERE hcg.InventoryId").eq(inventoryId);
-        sql.append(" AND hcg.Type").eq(LMHardwareControlGroup.ENROLLMENT_ENTRY);
+        sql.append(" AND hcg.Type").eq_k(LMHardwareControlGroup.ENROLLMENT_ENTRY);
         sql.append(" AND hcg.GroupEnrollStop IS NOT NULL ");
        
         return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
