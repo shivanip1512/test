@@ -29,7 +29,8 @@
 
 <div class="column-10-14">
     <div class="column one">
-        <tags:sectionContainer2 nameKey="details">
+        <c:set var="cogs"><cti:icon icon="icon-cog" classes="fr"/></c:set>
+        <tags:sectionContainer2 nameKey="details" controls="${cogs}">
         
             <table class="compact-results-table has-alerts has-actions">
                 <thead></thead>
