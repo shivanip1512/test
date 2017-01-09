@@ -4,7 +4,7 @@
 
 <cti:standardPage module="tools" page="bulk.collectionActions">
 
-    <tags:bulkActionContainer   key="yukon.common.device.bulk.collectionActions" deviceCollection="${deviceCollection}">
+    <tags:bulkActionContainer key="yukon.common.device.bulk.collectionActions" deviceCollection="${deviceCollection}">
 
         <%-- LABELS AND DESCRIPTIONS --%>
         <cti:msg var="headerGroupMgt" key="yukon.common.device.bulk.collectionActions.header.groupManagement"/>
@@ -66,36 +66,6 @@
         <cti:msg var="updatePointsDescription" key="yukon.common.device.bulk.collectionActions.updatePointsDescription"/>
         <cti:msg var="removePointsLabel" key="yukon.common.device.bulk.collectionActions.removePointsLabel"/>
         <cti:msg var="removePointsDescription" key="yukon.common.device.bulk.collectionActions.removePointsDescription"/>
-
-        <%-- URLS --%>
-        <cti:url var="selectGroupUrl" value="/bulk/group/selectGroup"/>
-        
-        <cti:url var="massChangeUrl" value="/bulk/massChange/massChangeSelect"/>
-        <cti:url var="changeDeviceTypeUrl" value="/bulk/changeDeviceType/chooseDeviceType"/>
-        <cti:url var="massDeleteUrl" value="/bulk/massDelete/massDelete"/>
-        
-        <cti:url var="sendCommandUrl" value="/group/commander/collectionProcessing"/>
-        <cti:url var="readAttributeUrl" value="/group/groupMeterRead/homeCollection"/>
-        <cti:url var="routeLocateUrl" value="/bulk/routeLocate/home"/>
-        <cti:url var="disconnectUrl" value="/bulk/disconnect/home"/>
-        <cti:url var="demandResetUrl" value="/bulk/demand-reset/action"/>
-        
-        <cti:url var="assignConfigUrl" value="/bulk/config/assignConfig"/>
-        <cti:url var="unassignConfigUrl" value="/bulk/config/unassignConfig"/>
-        <cti:url var="sendConfigUrl" value="/bulk/config/sendConfig"/>
-        <cti:url var="readConfigUrl" value="/bulk/config/readConfig"/>
-        <cti:url var="verifyConfigUrl" value="/bulk/config/verifyConfig"/>
-        <cti:url var="configureDataStreamingUrl" value="/bulk/dataStreaming/configure"/>
-        <cti:url var="removeDataStreamingUrl" value="/bulk/dataStreaming/remove"/>
-        
-        <cti:url var="deviceCollectionReportUrl" value="/bulk/deviceCollectionReport"/>
-        <cti:url var="dataAnalysisUrl" value="/bulk/archiveDataAnalysis/home/setup"/>
-        <cti:url var="archivedValueDataExporterUrl" value="/tools/data-exporter/view"/>
-        <cti:url var="deviceCollectionMapUrl" value="/tools/map"/>
-        
-        <cti:url var="addPointsUrl" value="/bulk/addPoints/home"/>
-        <cti:url var="updatePointsUrl" value="/bulk/updatePoints/home"/>
-        <cti:url var="removePointsUrl" value="/bulk/removePoints/home"/>
         
         <%-- THE GRID --%>
         <cti:dataGrid cols="2" tableClasses="collectionActionAlignment collectionActionCellPadding">
@@ -107,13 +77,13 @@
                                 <%-- ADD TO GROUP --%>
                                 <cti:checkRolesAndProperties value="DEVICE_GROUP_MODIFY">
                                     <tags:collectionActionTr inputValue="ADD" buttonValue="${addToGroupLabel}" inputName="addRemove" 
-                                        description="${addToGroupDescription}" action="${selectGroupUrl}" deviceCollection="${deviceCollection}"/>
+                                        description="${addToGroupDescription}" action="/bulk/group/selectGroup" deviceCollection="${deviceCollection}"/>
                                 </cti:checkRolesAndProperties>
                                 
                                 <%-- REMOVE FROM GROUP --%>
                                 <cti:checkRolesAndProperties value="DEVICE_GROUP_MODIFY">
 	                                <tags:collectionActionTr inputValue="REMOVE" buttonValue="${removeFromGroupLabel}" inputName="addRemove" 
-                                        description="${removeFromGroupDescription}" action="${selectGroupUrl}" deviceCollection="${deviceCollection}"/>
+                                        description="${removeFromGroupDescription}" action="/bulk/group/selectGroup" deviceCollection="${deviceCollection}"/>
                                 </cti:checkRolesAndProperties>
                             </table>
                         </tags:sectionContainer>
@@ -127,17 +97,17 @@
                                 <cti:checkRolesAndProperties value="MASS_CHANGE">
                                     <%-- MASS CHANGE --%>
                                     <tags:collectionActionTr buttonValue="${massChangeLabel}" description="${massChangeDescription}"
-                                        action="${massChangeUrl}" deviceCollection="${deviceCollection}"/>
+                                        action="/bulk/massChange/massChangeSelect" deviceCollection="${deviceCollection}"/>
                                     
                                     <%-- CHANGE TYPE --%>
                                     <tags:collectionActionTr buttonValue="${changeDeviceTypeLabel}" description="${changeDeviceTypeDescription}"
-                                        action="${changeDeviceTypeUrl}" deviceCollection="${deviceCollection}"/>
+                                        action="/bulk/changeDeviceType/chooseDeviceType" deviceCollection="${deviceCollection}"/>
                                 </cti:checkRolesAndProperties>
                                 
                                 <cti:checkRolesAndProperties value="MASS_DELETE">
                                     <%-- MASS DELETE --%>
                                     <tags:collectionActionTr buttonValue="${massDeleteLabel}" description="${massDeleteDescription}"
-                                        action="${massDeleteUrl}" deviceCollection="${deviceCollection}"/>
+                                        action="/bulk/massDelete/massDelete" deviceCollection="${deviceCollection}"/>
                                 </cti:checkRolesAndProperties>
                             </table>
                         </tags:sectionContainer>
@@ -150,30 +120,30 @@
                             <cti:checkRolesAndProperties value="GROUP_COMMANDER">
                                 <%-- GROUP COMMANDER --%>
                                 <tags:collectionActionTr buttonValue="${sendCommandLabel}" description="${sendCommandDescription}"
-                                    action="${sendCommandUrl}" deviceCollection="${deviceCollection}"/>
+                                    action="/group/commander/collectionProcessing" deviceCollection="${deviceCollection}"/>
                             </cti:checkRolesAndProperties>
                             
                             <%-- GROUP ATTRIBUTE READ --%>
                             <tags:collectionActionTr buttonValue="${readAttributeLabel}" description="${readAttributeDescription}"
-                                    action="${readAttributeUrl}" deviceCollection="${deviceCollection}"/>
+                                    action="/group/groupMeterRead/homeCollection" deviceCollection="${deviceCollection}"/>
                             
                             <cti:checkRolesAndProperties value="LOCATE_ROUTE">
                                 <%-- LOCATE ROUTE --%>
                                 <tags:collectionActionTr buttonValue="${routeLocateLabel}" description="${routeLocateDescription}"
-                                    action="${routeLocateUrl}" deviceCollection="${deviceCollection}"/>
+                                    action="/bulk/routeLocate/home" deviceCollection="${deviceCollection}"/>
                             </cti:checkRolesAndProperties>
 
                             <%-- DISCONNECT --%>
                             <cti:checkRolesAndProperties value="GROUP_DISCONNECT_CONTROL">
                                 <tags:collectionActionTr buttonValue="${disconnectLabel}"
-                                    description="${disconnectDescription}" action="${disconnectUrl}"
+                                    description="${disconnectDescription}" action="/bulk/disconnect/home"
                                     deviceCollection="${deviceCollection}" />
                             </cti:checkRolesAndProperties>
                             
                             <%-- DEMAND RESET--%>
                             <cti:checkRolesAndProperties value="GROUP_DEMAND_RESET">
                                 <tags:collectionActionTr buttonValue="${demandResetLabel}"
-                                    description="${demandResetDescription}" action="${demandResetUrl}"
+                                    description="${demandResetDescription}" action="/bulk/demand-reset/action"
                                     deviceCollection="${deviceCollection}" />
                             </cti:checkRolesAndProperties>
  
@@ -187,39 +157,39 @@
                             <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
                                 <%-- ASSIGN CONFIG --%>
                                 <tags:collectionActionTr buttonValue="${assignConfigLabel}" description="${assignConfigDescription}"
-                                    action="${assignConfigUrl}" deviceCollection="${deviceCollection}"/>
+                                    action="/bulk/config/assignConfig" deviceCollection="${deviceCollection}"/>
                             </cti:checkRolesAndProperties>
                             
                             <cti:checkRolesAndProperties value="ASSIGN_CONFIG">
                                 <%-- UNASSIGN CONFIG --%>
                                 <tags:collectionActionTr buttonValue="${unassignConfigLabel}" description="${unassignConfigDescription}"
-                                    action="${unassignConfigUrl}" deviceCollection="${deviceCollection}"/>
+                                    action="/bulk/config/unassignConfig" deviceCollection="${deviceCollection}"/>
                             </cti:checkRolesAndProperties>
                             
                             <cti:checkRolesAndProperties value="SEND_READ_CONFIG">
                                 <%-- SEND CONFIG --%>
                                 <tags:collectionActionTr buttonValue="${sendConfigLabel}" description="${sendConfigDescription}"
-                                    action="${sendConfigUrl}" deviceCollection="${deviceCollection}"/>
+                                    action="/bulk/config/sendConfig" deviceCollection="${deviceCollection}"/>
                             
                                 <%-- READ CONFIG --%>
                                 <tags:collectionActionTr buttonValue="${readConfigLabel}" description="${readConfigDescription}"
-                                    action="${readConfigUrl}" deviceCollection="${deviceCollection}"/>
+                                    action="/bulk/config/readConfig" deviceCollection="${deviceCollection}"/>
                             </cti:checkRolesAndProperties>
                             
                             <%-- VERIFY CONFIG --%>
                             <tags:collectionActionTr buttonValue="${verifyConfigLabel}" description="${verifyConfigDescription}"
-                                action="${verifyConfigUrl}" deviceCollection="${deviceCollection}"/>
+                                action="/bulk/config/verifyConfig" deviceCollection="${deviceCollection}"/>
                                 
                             <%--DATA STREAMING - check for CPARM and ROLE PROPERTY--%>
                             <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
                                 <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
                                     <%-- CONFIGURE DATA STREAMING --%>
                                     <tags:collectionActionTr buttonValue="${configureDataStreamingLabel}" description="${configureDataStreamingDescription}"
-                                        action="${configureDataStreamingUrl}" deviceCollection="${deviceCollection}"/>
+                                        action="/bulk/dataStreaming/configure" deviceCollection="${deviceCollection}"/>
                                         
                                     <%-- REMOVE DATA STREAMING --%>
                                     <tags:collectionActionTr buttonValue="${removeDataStreamingLabel}" description="${removeDataStreamingDescription}"
-                                        action="${removeDataStreamingUrl}" deviceCollection="${deviceCollection}"/>
+                                        action="/bulk/dataStreaming/remove" deviceCollection="${deviceCollection}"/>
                                 </cti:checkRolesAndProperties>
                             </cti:checkRolesAndProperties>
                             
@@ -232,23 +202,23 @@
                     <table>
                         <%-- DEVICE REPORT --%>
                         <tags:collectionActionTr buttonValue="${deviceCollectionReportLabel}" description="${deviceCollectionReportDescription}"
-                            action="${deviceCollectionReportUrl}" deviceCollection="${deviceCollection}"/>
+                            action="/bulk/deviceCollectionReport" deviceCollection="${deviceCollection}"/>
                         
                         <cti:checkRolesAndProperties value="ARCHIVED_DATA_ANALYSIS">
                             <%-- DATA ANALYSIS --%>
                             <tags:collectionActionTr buttonValue="${dataAnalysisLabel}" description="${dataAnalysisDiscription}"
-                                action="${dataAnalysisUrl}" deviceCollection="${deviceCollection}"/>
+                                action="/bulk/archiveDataAnalysis/home/setup" deviceCollection="${deviceCollection}"/>
                         </cti:checkRolesAndProperties>        
                         
                         <cti:checkRolesAndProperties value="ARCHIVED_DATA_EXPORT">
                             <%-- ARCHIVED DATA EXPORT --%>
                             <tags:collectionActionTr buttonValue="${archivedValueDataExporterLabel}" description="${archivedValueDataExporterDescription}"
-                                action="${archivedValueDataExporterUrl}" deviceCollection="${deviceCollection}"/>
+                                action="/tools/data-exporter/view" deviceCollection="${deviceCollection}"/>
                         </cti:checkRolesAndProperties>
                         
                         <%-- MAP DEVICES --%>
                         <tags:collectionActionTr buttonValue="${deviceCollectionMapLabel}" description="${deviceCollectionMapDescription}"
-                            action="${deviceCollectionMapUrl}" deviceCollection="${deviceCollection}"/>
+                            action="/tools/map" deviceCollection="${deviceCollection}"/>
                     </table>
                 </tags:sectionContainer>
             </cti:dataGridCell>
@@ -259,15 +229,15 @@
                         <table>
                             <%-- ADD POINTS --%>
                             <tags:collectionActionTr buttonValue="${addPointsLabel}" description="${addPointsDescription}"
-                                action="${addPointsUrl}" deviceCollection="${deviceCollection}"/>
+                                action="/bulk/addPoints/home" deviceCollection="${deviceCollection}"/>
                             
                             <%-- UPDATE POINTS --%>
                             <tags:collectionActionTr buttonValue="${updatePointsLabel}" description="${updatePointsDescription}"
-                                action="${updatePointsUrl}" deviceCollection="${deviceCollection}"/>
+                                action="/bulk/updatePoints/home" deviceCollection="${deviceCollection}"/>
                             
                             <%-- REMOVE POINTS --%>
                             <tags:collectionActionTr buttonValue="${removePointsLabel}" description="${removePointsDescription}"
-                                action="${removePointsUrl}" deviceCollection="${deviceCollection}"/>
+                                action="/bulk/removePoints/home" deviceCollection="${deviceCollection}"/>
                         </table>
                     </tags:sectionContainer>
                 </cti:dataGridCell>

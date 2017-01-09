@@ -12,12 +12,12 @@
 
  <tr>
     <td style="vertical-align: top;padding-right: 10px;padding-bottom: 10px;">
-        <form method="get" action="${action}" id="${thisId}">
-        	<input type="hidden" name="errorDevices" value="${deviceCollection.errorDevices}" />
-            <input type="hidden" name="${pageScope.inputName}" value="${pageScope.inputValue}" />
-            <cti:deviceCollection deviceCollection="${deviceCollection}" />
-            <a href="javascript:$('#${thisId}').submit();" class="wsnw">${fn:escapeXml(buttonValue)}</a>
-        </form>
+        <cti:url var="actionUrl" value="${action}">
+            <cti:param name="errorDevices" value="${deviceCollection.errorDevices}"/>
+            <cti:param name="${pageScope.inputName}" value="${pageScope.inputValue}"/>
+            <cti:mapParam value="${deviceCollection.collectionParameters}" />
+        </cti:url>
+        <a href="${actionUrl}" class="wsnw">${fn:escapeXml(buttonValue)}</a>
     </td>
     <td style="vertical-align: top;padding-right: 1px;padding-bottom: 10px;">${description}</td>
 </tr>
