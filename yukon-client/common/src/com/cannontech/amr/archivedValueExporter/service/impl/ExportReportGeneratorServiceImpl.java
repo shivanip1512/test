@@ -161,27 +161,25 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
     private String createMeasure(ExportFormat format) {
 
         String createdMeasure = "";
+        int total = 0;
         for (ExportField ex: format.getFields()) {
             if (!ex.getField().isPlainTextType() && 
                     (ex.getMaxLength() == 0 || ex.getPadSide().equals(PadSide.NONE))) {
                 return ""; //No Measure if padding or length are missing (implies non-static width table)
             }
+
             int fieldLength = ((ex.getField().isPlainTextType() && 
                     (ex.getMaxLength() == 0 || 
                     ex.getMaxLength() >= ex.getPattern().length() ))
                     ? ex.getPattern().length() : ex.getMaxLength());
-            for (int i = 0; i < fieldLength + format.getDelimiter().length(); i++) {
-                if (createdMeasure.length() >= 135) {
-                    break;
-                }
-                if (createdMeasure.length() % 10 == 0) {
-                    createdMeasure+="|";
-                } else if ( createdMeasure.length() % 5 == 0) {
-                    createdMeasure+=":";
-                } else {
-                    createdMeasure+=".";
-                }
-            }
+            total+= fieldLength + format.getDelimiter().length();
+        }
+
+        while (createdMeasure.length() < total && createdMeasure.length() < 130) {
+            createdMeasure+="....:....|";
+        }
+        if(createdMeasure.length() < total) {
+            createdMeasure+="....:";
         }
         return createdMeasure;
     }
