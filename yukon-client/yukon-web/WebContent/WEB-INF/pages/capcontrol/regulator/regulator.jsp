@@ -142,7 +142,12 @@
                     </div>
                     <div class="scroll-md dn js-ivvc-events-holder stacked-md clear">
                         <table id="regulator-events" class="has-alerts full-width dashed stacked striped">
-                            <thead></thead>
+                            <thead>
+                                <th></th>
+                                <th><i:inline key=".ivvc.busView.eventMessage"/></th>
+                                <th><i:inline key=".ivvc.busView.user"/></th>
+                                <th><span class="fr"><i:inline key=".ivvc.busView.timestamp"/></span></th>
+                            </thead>
                             <tfoot></tfoot>
                             <tbody>
                             </tbody>
