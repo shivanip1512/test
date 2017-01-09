@@ -267,7 +267,7 @@ CtiPointDataMsg *AnalogInput::getPoint( const TimeCTO *cto ) const
         quality = NonUpdatedQuality;
     }
 
-    // If this flag is 1, REFERENCE_ERR will be associated with the point
+    // If this flag is set, REFERENCE_ERR has been indicated for the value, so it needs to have Questionable quality.
     if (_flags.refcheck)
     {
         quality = QuestionableQuality;
