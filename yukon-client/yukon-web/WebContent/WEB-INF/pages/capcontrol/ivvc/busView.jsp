@@ -40,6 +40,8 @@
     }
 
 </script>
+
+<cti:toJson object="${hours}" id="range-hours"/>
     
 <cti:checkRolesAndProperties value="ALLOW_SUBBUS_CONTROLS">
     <script type="text/javascript">
@@ -218,6 +220,12 @@
 
 <div class="clear">
     <tags:sectionContainer2 nameKey="ivvcEvents">
+        <tags:stepper id="ivvc-events-range" key=".events.shown" classes="fr stacked">
+            <c:forEach var="range" items="${ranges}">
+                <c:set var="selected" value="${range eq lastRange ? 'selected' : ''}"/>
+                <option value="${range}" ${selected}><cti:msg2 key="${range}"/></option>
+            </c:forEach>
+        </tags:stepper>
         <input type="hidden" value="0" id="ivvc-events-last-update">
         <input type="hidden" value="${subBusId}" id="ivvc-bus-id">
         <div class="empty-list js-ivvc-events-empty">

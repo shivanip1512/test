@@ -1,8 +1,12 @@
 package com.cannontech.web.capcontrol.ivvc;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -24,6 +28,7 @@ import com.cannontech.cbc.cache.FilterCacheFactory;
 import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.util.TimeRange;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LitePoint;
@@ -37,6 +42,8 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.common.chart.service.FlotChartService;
+import com.cannontech.web.util.WebUtilityService;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -53,16 +60,20 @@ public class BusViewController {
     @Autowired private VoltageFlatnessGraphService voltageFlatness;
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     @Autowired private FlotChartService flotChartService;
+    @Autowired private WebUtilityService webUtil;
+    
+    private static final TypeReference<TimeRange> rangeRef = new TypeReference<TimeRange>() {};
+
     
     @RequestMapping(value="detail", method = RequestMethod.GET)
-    public String detail(ModelMap model, YukonUserContext userContext, int subBusId) {
+    public String detail(ModelMap model, YukonUserContext userContext, int subBusId, HttpServletRequest req) throws IOException {
         
-        setupDetails(model, userContext, subBusId);
+        setupDetails(model, userContext, subBusId, req);
         
         return "ivvc/busView.jsp";
     }
     
-    private void setupDetails(ModelMap model, YukonUserContext userContext, int subBusId) {
+    private void setupDetails(ModelMap model, YukonUserContext userContext, int subBusId, HttpServletRequest req) throws IOException {
         
         LiteYukonUser user = userContext.getYukonUser();
         model.addAttribute("subBusId", subBusId);
@@ -85,6 +96,17 @@ public class BusViewController {
         model.addAttribute("gangOperatedZone", ZoneType.GANG_OPERATED);
         model.addAttribute("threePhaseOperatedZone", ZoneType.THREE_PHASE);
         model.addAttribute("singlePhaseZone", ZoneType.SINGLE_PHASE);
+        
+        model.addAttribute("ranges", TimeRange.values());
+        TimeRange lastRange = webUtil.getYukonCookieValue(req, "ivvc-regualtor", "last-event-range", TimeRange.DAY_1, rangeRef);
+        model.addAttribute("lastRange", lastRange);
+        
+        Map<String, Integer> hours = new HashMap<>();
+        for (TimeRange range : TimeRange.values()) {
+            hours.put(range.name(), range.getHours());
+        }
+        model.put("hours", hours);
+
     }
     
     @RequestMapping(value="chart", method = RequestMethod.GET)

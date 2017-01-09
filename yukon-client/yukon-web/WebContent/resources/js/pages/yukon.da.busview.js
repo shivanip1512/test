@@ -13,11 +13,17 @@ yukon.da.busview = (function () {
    
     var _initialized = false;
     var initializedTimelines = {};
+    
+    /** @type {Object} - A hash of TimeRange enum entry to hours it represents. */
+    var _range_hours = {};
+    
+    /** @type {string} - Events updater timeout reference. */
+    var _events_token = null;
 
     var _updateRecentEvents = function () {
+    
+    var range = $('#ivvc-events-range').val();
 
-    // Range Defaulted to 24 hours
-    var range = 'DAY_1';
         $(".js-events-timeline").each(function () {
             
             var _id = $(this).data('zoneId');
@@ -26,7 +32,6 @@ yukon.da.busview = (function () {
                 data : {
                     'range' : range
                 }
-            //data: { 'range': 'DAY_1' }
             }).done(function (events) {
 
                 var timeline = $('.js-events-timeline[data-zone-id="' + _id + '"]');
@@ -34,8 +39,7 @@ yukon.da.busview = (function () {
                 var options = {};
                 options.end = new Date().getTime();
                 var now = new Date();
-                //added 24 to get last day events.
-                var hoursAgo = 24;
+                var hoursAgo = _range_hours[range];
                 var begin = new Date(now.getTime() - (1000 * 60 * 60 * hoursAgo));
                 options.begin = begin.getTime();
 
@@ -43,38 +47,29 @@ yukon.da.busview = (function () {
                 events.reverse().forEach(function (event) {
                     toAdd.push(event);
                 });
-                if (toAdd.length) {
-                    timeline.timeline(options);
-                    timeline.timeline('addEvents', toAdd);
-                    initializedTimelines[_id] = true;
-                }
-                if (initializedTimelines[_id] === undefined) {
-                    timeline.timeline(options);
-                    initializedTimelines[_id] = true;
-                }
+                timeline.timeline(options);
+                timeline.timeline('addEvents', toAdd);
+                initializedTimelines[_id] = true;
                 timeline.timeline('draw');
 
             });
 
         });
-        setTimeout(_updateRecentEvents, yg.rp.updater_delay);
+        _events_token = setTimeout(_updateRecentEvents, yg.rp.updater_delay);
 
     };
 
     var _updateRecentEventsTable = function () {
         /** @type {string} - Events updater timeout reference. */
-        
-        /** @type {Object} - A hash of TimeRange enum entry to hours it represents. */
-        var _range_hours = {};
-        // Range Defaulted to 24 hours
-        var range = 'DAY_1';            
+   
+        var range = $('#ivvc-events-range').val();
+
             var _id = $('#ivvc-bus-id').val();
             $.ajax({
                 url : yukon.url('/capcontrol/buses/' + _id + '/events'),
                 data : {
                     'range' : range
                 }
-            //data: { 'range': 'DAY_1' }
             }).done(function (events) {
                 
                 var body = $('#ivvc-events').find('tbody');
@@ -150,6 +145,16 @@ yukon.da.busview = (function () {
 
             if (_initialized)
                 return;
+            
+            _range_hours = yukon.fromJson('#range-hours');
+            
+            /** User changed the events time range. Cancel updating timeout and restart. */
+            $('#ivvc-events-range').on('change', function () {
+                yukon.cookie.set('ivvc-regualtor', 'last-event-range', $(this).val());
+                clearTimeout(_events_token);
+                _updateRecentEvents();
+                _updateRecentEventsTable();
+            });
 
             _updateRecentEvents();
             _updateRecentEventsTable();
