@@ -34,7 +34,7 @@ public interface HoneywellWifiThermostatDao {
      * Gets the honey well groupIds with which the inventory was enrolled in the past.
      * 
      * @param inventoryId
-     * @return List of past enrolled honeywell group ids list, this may have duplicate ids.
+     * @return List of past enrolled honeywell group ids list
      */
     List<Integer> getPastEnrolledHoneywellGroupsByInventoryId(Integer inventoryId);
 }
