@@ -8,6 +8,28 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="adminSetup" page="config.category">
+<script type="text/javascript">
+function toggle_password(target) {
+	 var d = document;
+	    var sensitiveField = d.getElementById(target);
+	    var showHideField = d.getElementById("showhide_"+target);
+		var showHideCheckBox = d.getElementById("showHideChkbox_"+target);
+	    if (showHideField.innerHTML == 'Show'){
+	    	showHideField.className = "";
+	    	showHideField.className = "icon icon-eye-closed";
+		    sensitiveField.setAttribute('type', 'text');   
+		    showHideField.innerHTML = 'Hide';
+		    showHideCheckBox.checked = true;
+	    } else {
+	    	showHideField.className = "";
+	    	showHideField.className = "icon icon-eye";
+	        sensitiveField.setAttribute('type', 'password');   
+	        showHideField.innerHTML = 'Show';
+	        showHideCheckBox.checked = false;
+	    }
+
+}
+</script>
 
 <div class="dashboard">
     <cti:url var="updateUrl" value="/admin/config/update"/>
@@ -52,8 +74,23 @@
                             </div>
                             <div class="value-description">
                                 <div class="value">
-                                    <tags:simpleInputType id="${setting.extra.type}" input="${setting.valueType}" path="${setting.path}"/>
+                                     <c:choose>
+    						<c:when test="${setting.extra.sensitiveInformation}">
+    						<form:password path="${setting.path}" id="${setting.extra.type}" showPassword="true"/>
+                                 <div class="dib">
+                                     <a href="#" onclick="toggle_password('${setting.extra.type}');"><i class="icon icon-eye" id="showhide_${setting.extra.type}">Show</i></a>
+                                     <label>
+										<input id="showHideChkbox_${setting.extra.type}" type="checkbox" onclick="toggle_password('${setting.extra.type}');"/>Show Password
+									 </label>
+
+                                 </div>
+    						</c:when>
+    	                    <c:otherwise>
+    	             			<tags:simpleInputType id="${setting.extra.type}" input="${setting.valueType}" path="${setting.path}"/>
+    		               	</c:otherwise>
+    	             </c:choose> 	
                                 </div>
+                                
                                 <div class="description detail">
                                     <p>
                                         <i:inline key="yukon.common.setting.${setting.extra.type}.description"/>

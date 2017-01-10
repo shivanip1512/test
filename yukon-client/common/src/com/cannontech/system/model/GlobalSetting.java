@@ -71,4 +71,8 @@ public class GlobalSetting {
         }
         return !value.equals(type.getDefaultValue());
     }
+
+    public boolean isSensitiveInformation() {
+        return type.isSensitiveInformation();
+    }
 }
