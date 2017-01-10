@@ -125,7 +125,7 @@
             <i:inline key=".events.emptylist"/>
         </div>
         <div class="scroll-md dn js-ivvc-events-holder stacked-md clear">
-            <table id="ivvc-events" class="has-alerts full-width dashed stacked striped">
+            <table id="ivvc-events" class="compact-results-table has-alerts full-width dashed stacked striped">
                 <thead>
                     <th></th>
                     <th><i:inline key=".ivvc.busView.deviceName"/></th>
