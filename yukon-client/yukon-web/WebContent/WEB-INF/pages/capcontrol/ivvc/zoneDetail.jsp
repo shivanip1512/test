@@ -131,7 +131,7 @@
                     <th><i:inline key=".ivvc.busView.deviceName"/></th>
                     <th><i:inline key=".ivvc.busView.eventMessage"/></th>
                     <th><i:inline key=".ivvc.busView.user"/></th>
-                    <th><span class="fr"><i:inline key=".ivvc.busView.timestamp"/></span></th></thead>
+                    <th><i:inline key=".ivvc.busView.timestamp"/></th></thead>
                 <tfoot></tfoot>
                 <tbody>
                 </tbody>
@@ -150,7 +150,7 @@
             <div class="js-message"></div>
         </td>
         <td class="js-user"></td>
-        <td class="tar js-timestamp"></td>
+        <td class="js-timestamp"></td>
     </tr>
 </table>
 

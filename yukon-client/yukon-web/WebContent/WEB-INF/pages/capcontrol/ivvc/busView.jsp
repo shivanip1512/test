@@ -232,13 +232,13 @@
             <i:inline key=".events.emptylist"/>
         </div>
         <div class="scroll-lg dn js-ivvc-events-holder stacked-md clear">
-            <table id="ivvc-events" class="has-alerts full-width dashed stacked striped">
+            <table id="ivvc-events" class="compact-results-table has-alerts full-width dashed stacked striped">
                 <thead>
                     <th></th>
                     <th><i:inline key=".ivvc.busView.deviceName"/></th>
                     <th><i:inline key=".ivvc.busView.eventMessage"/></th>
                     <th><i:inline key=".ivvc.busView.user"/></th>
-                    <th><span class="fr"><i:inline key=".ivvc.busView.timestamp"/></span></th>
+                    <th><i:inline key=".ivvc.busView.timestamp"/></th>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
@@ -258,7 +258,7 @@
             <div class="js-message"></div>
         </td>
         <td class="js-user"></td>
-        <td class="tar js-timestamp"></td>
+        <td class="js-timestamp"></td>
     </tr>
 </table>
 </cti:standardPage>

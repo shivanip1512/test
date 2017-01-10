@@ -141,12 +141,12 @@
                         <i:inline key=".events.emptylist"/>
                     </div>
                     <div class="scroll-md dn js-ivvc-events-holder stacked-md clear">
-                        <table id="regulator-events" class="has-alerts full-width dashed stacked striped">
+                        <table id="regulator-events" class="compact-results-table has-alerts full-width dashed stacked striped">
                             <thead>
                                 <th></th>
                                 <th><i:inline key=".ivvc.busView.eventMessage"/></th>
                                 <th><i:inline key=".ivvc.busView.user"/></th>
-                                <th><span class="fr"><i:inline key=".ivvc.busView.timestamp"/></span></th>
+                                <th><i:inline key=".ivvc.busView.timestamp"/></th>
                             </thead>
                             <tfoot></tfoot>
                             <tbody>
@@ -210,7 +210,7 @@
         <td><cti:icon icon="js-event-icon"/></td>
         <td class="js-message"></td>
         <td class="js-user"></td>
-        <td class="tar js-timestamp"></td>
+        <td class="js-timestamp"></td>
     </tr>
 </table>
 
