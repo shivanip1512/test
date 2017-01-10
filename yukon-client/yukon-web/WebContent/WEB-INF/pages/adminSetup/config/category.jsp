@@ -76,13 +76,14 @@ function toggle_password(target) {
                                 <div class="value">
                                      <c:choose>
     						<c:when test="${setting.extra.sensitiveInformation}">
-    						<form:password path="${setting.path}" id="${setting.extra.type}" showPassword="true"/>
+                                <div class="dib M0">
+        						  <form:password path="${setting.path}" id="${setting.extra.type}" showPassword="true"/>
+                                 <tags:check name="test" classes="fr M0 disabled"><a href="#" onclick="toggle_password('${setting.extra.type}');"><i class="icon icon-eye" id="showhide_${setting.extra.type}">Show</i></a></tags:check>                       
+                                 </div>
                                  <div class="dib">
-                                     <a href="#" onclick="toggle_password('${setting.extra.type}');"><i class="icon icon-eye" id="showhide_${setting.extra.type}">Show</i></a>
                                      <label>
-										<input id="showHideChkbox_${setting.extra.type}" type="checkbox" onclick="toggle_password('${setting.extra.type}');"/>Show Password
+										<input id="showHideChkbox_${setting.extra.type}" type="checkbox" onclick="toggle_password('${setting.extra.type}');"/><i:inline key="yukon.web.modules.adminSetup.config.dr.showHideSensitiveData"/>
 									 </label>
-
                                  </div>
     						</c:when>
     	                    <c:otherwise>
