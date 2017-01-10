@@ -39,12 +39,15 @@ public class CapBankValidator extends SimpleValidator<CapBank> {
         }
 
         if (capbank.getId() != null) {
-        YukonValidationUtils.checkExceedsMaxLength(errors, "location", capbank.getLocation(), 60);
-        YukonValidationUtils.checkExceedsMaxLength(errors, "CapBank.mapLocationID", capbank.getCapBank().getMapLocationID(), 64);
-        YukonValidationUtils.checkIsPositiveInt(errors, "CapBank.bankSizeCustom", capbank.getCapBank().getBankSize());
-        YukonValidationUtils.checkIsPositiveInt(errors, "CapBank.maxDailyOps", capbank.getCapBank().getMaxDailyOps());
+            YukonValidationUtils.checkExceedsMaxLength(errors, "location", capbank.getLocation(), 60);
+            YukonValidationUtils.checkExceedsMaxLength(errors, "CapBank.mapLocationID",
+                capbank.getCapBank().getMapLocationID(), 64);
+            YukonValidationUtils.checkIsPositiveInt(errors, "CapBank.bankSizeCustom",
+                capbank.getCapBank().getBankSize());
+            YukonValidationUtils.checkIsPositiveInt(errors, "CapBank.maxDailyOps",
+                capbank.getCapBank().getMaxDailyOps());
 
-        validateAdditionalInfo(capbank, errors);
+            validateAdditionalInfo(capbank, errors);
         }
     }
 
