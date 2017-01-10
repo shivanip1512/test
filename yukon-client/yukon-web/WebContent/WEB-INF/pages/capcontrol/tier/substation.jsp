@@ -157,8 +157,9 @@ $(function() {
                     </tags:nameValueContainer2>
                 </div>
             </div>
-            <capTags:warningImg paoId="${substationId}" type="SUBSTATION" alertBox="true"/>
-        
+            <cti:displayForPageEditModes modes="EDIT,VIEW">
+                <capTags:warningImg paoId="${substationId}" type="SUBSTATION" alertBox="true"/>
+            </cti:displayForPageEditModes>
         </tags:sectionContainer>
     </div>
     
