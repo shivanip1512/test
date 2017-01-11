@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -22,6 +23,8 @@ import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -86,7 +89,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     }
    
     @Override
-    public DeviceDataStreamingConfigRequest buildVerificationRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds) {
+    public DeviceDataStreamingConfigRequest buildVerificationRequest(Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds) {
         
         DeviceDataStreamingConfigRequest request = buildRequest(configToDeviceIds, 
                                                                 DeviceDataStreamingConfigRequestType.ASSESS,
@@ -95,7 +98,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     }
     
     @Override
-    public DeviceDataStreamingConfigRequest buildConfigRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds,
+    public DeviceDataStreamingConfigRequest buildConfigRequest(Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds,
             DeviceDataStreamingConfigRequestType type, int requestSeqNumber) {
 
         DeviceDataStreamingConfigRequest request = buildRequest(configToDeviceIds, type, requestSeqNumber);
@@ -103,7 +106,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     }
     
     @Override
-    public DeviceDataStreamingConfigRequest buildSyncRequest(ReportedDataStreamingConfig reportedConfig, int deviceId,
+    public DeviceDataStreamingConfigRequest buildSyncRequest(ReportedDataStreamingConfig reportedConfig, SimpleDevice device,
                                                              int requestSeqNumber) {
         
         DeviceDataStreamingConfig config = new DeviceDataStreamingConfig();
@@ -114,7 +117,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         reportedConfig.getConfiguredMetrics().stream().collect(Collectors.toMap(
                           attribute -> {
                               BuiltInAttribute attr = BuiltInAttribute.valueOf(attribute.getAttribute());
-                              return rfnDeviceAttributeDao.getMetricIdForAttribute(attr);
+                              return rfnDeviceAttributeDao.getMetricIdForAttribute(attr, device.getDeviceType());
                           },
                           attribute -> {
                               MetricConfig metricConfig = new MetricConfig();
@@ -128,7 +131,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         DeviceDataStreamingConfigRequest request = new DeviceDataStreamingConfigRequest();
         request.setConfigs(new DeviceDataStreamingConfig[]{config});
         
-        RfnIdentifier rfnId = rfnDeviceDao.getDeviceForId(deviceId).getRfnIdentifier();
+        RfnIdentifier rfnId = rfnDeviceDao.getDeviceForId(device.getDeviceId()).getRfnIdentifier();
         Map<RfnIdentifier, Integer> devices = new HashMap<>();
         devices.put(rfnId, 0); // Only one config to map to, at index 0
         request.setDevices(devices);
@@ -209,7 +212,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     /**
      * Builds a DeviceDataStreamingConfigRequest with all the specified configs and devices.
      */
-    private DeviceDataStreamingConfigRequest buildRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds, 
+    private DeviceDataStreamingConfigRequest buildRequest(Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds, 
                                                           DeviceDataStreamingConfigRequestType requestType,
                                                           int requestSeqNumber) {
         
@@ -222,12 +225,11 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         Map<RfnIdentifier, Integer> deviceToConfigIdMap = new HashMap<>();
         
         int i = 0;
-        for (DataStreamingConfig config: configToDeviceIds.keySet()) {
-            //Convert the config into the NM config request object and add to the config array
-            configs[i] = buildDeviceDataStreamingConfig(config);
+        for (Entry<DeviceDataStreamingConfig, Collection<Integer>> configAssignments : configToDeviceIds.asMap().entrySet()) {
+            configs[i] = configAssignments.getKey();
             
             //Get the devices using this config
-            Collection<Integer> deviceIds = configToDeviceIds.get(config);
+            Collection<Integer> deviceIds = configAssignments.getValue();
             List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(deviceIds); //TODO performance
             
             //Create a map of the devices' RfnIdentifiers to the config's index in the config array
@@ -253,10 +255,8 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
         return request;
     }
     
-    /**
-     * Build a DeviceDataStreamingConfig (the NM messaging object) from a DataStreamingConfig (the Yukon model object).
-     */
-    private DeviceDataStreamingConfig buildDeviceDataStreamingConfig(DataStreamingConfig config) {
+    @Override
+    public DeviceDataStreamingConfig buildDeviceDataStreamingConfig(DataStreamingConfig config, PaoType type) {
         DeviceDataStreamingConfig nmConfig = new DeviceDataStreamingConfig();
         
         if (config == null) {
@@ -266,7 +266,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
             
             Map<Integer, MetricConfig> metrics = config.getAttributes().stream()
                 .collect(Collectors.toMap(
-                    dsAttribute -> rfnDeviceAttributeDao.getMetricIdForAttribute(dsAttribute.getAttribute()),
+                    dsAttribute -> rfnDeviceAttributeDao.getMetricIdForAttribute(dsAttribute.getAttribute(), type),
                     dsAttribute -> {
                         MetricConfig metricConfig = new MetricConfig();
                         metricConfig.setEnabled(dsAttribute.getAttributeOn());

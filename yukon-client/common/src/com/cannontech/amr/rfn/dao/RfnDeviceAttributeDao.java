@@ -20,7 +20,7 @@ public interface RfnDeviceAttributeDao {
     Collection<BuiltInAttribute> getAttributesForPaoTypes(Set<PaoType> paoTypes);
     
     /**
-     * @return The metricId corresponding to the specified attribute.
+     * @return The metricId corresponding to the specified attribute for the given device type.
      */
-    Integer getMetricIdForAttribute(BuiltInAttribute attribute);
+    Integer getMetricIdForAttribute(BuiltInAttribute attribute, PaoType deviceType);
 }

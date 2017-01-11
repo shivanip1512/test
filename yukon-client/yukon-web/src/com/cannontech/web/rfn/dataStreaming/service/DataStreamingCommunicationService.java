@@ -2,8 +2,11 @@ package com.cannontech.web.rfn.dataStreaming.service;
 
 import java.util.Collection;
 
+import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
+import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfig;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequest;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequestType;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
@@ -20,6 +23,11 @@ import com.google.common.collect.Multimap;
 public interface DataStreamingCommunicationService {
     
     /**
+     * Build a DeviceDataStreamingConfig (the NM messaging object) from a DataStreamingConfig (the Yukon model object).
+     */
+    public DeviceDataStreamingConfig buildDeviceDataStreamingConfig(DataStreamingConfig config, PaoType type);
+    
+    /**
      * Build a data streaming configuration request intended to "test" a possible configuration. Network Manager will
      * approve the request if it has no significant errors and doesn't exceed gateway loading limits.
      * 
@@ -27,21 +35,21 @@ public interface DataStreamingCommunicationService {
      * potential configuration has been verified, use <code>buildConfigRequest</code> to actually update the
      * configurations.
      */
-    DeviceDataStreamingConfigRequest buildVerificationRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds);
+    DeviceDataStreamingConfigRequest buildVerificationRequest(Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds);
     
     /**
      * Build a data streaming configuration request intended to update actual configurations. Network Manager will
      * approve the request if it has no significant errors and doesn't exceed gateway loading limits. A "verification"
      * request should be sent first to minimize the risk of rejection.
      */
-    DeviceDataStreamingConfigRequest buildConfigRequest(Multimap<DataStreamingConfig, Integer> configToDeviceIds,
+    DeviceDataStreamingConfigRequest buildConfigRequest(Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds,
             DeviceDataStreamingConfigRequestType type, int requestSeqNumber);
     
     /**
      * Build a data streaming sync request intended to notify Network Manager of the device's response to data streaming
      * configuration.
      */
-    DeviceDataStreamingConfigRequest buildSyncRequest(ReportedDataStreamingConfig reportedConfig, int deviceId,
+    DeviceDataStreamingConfigRequest buildSyncRequest(ReportedDataStreamingConfig reportedConfig, SimpleDevice device,
             int requestSeqNumber);
     
     /**

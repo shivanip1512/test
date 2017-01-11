@@ -466,7 +466,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
         // Create multiple configurations for different device types if necessary
         // (Some devices may only support some of the configured attributes)
-        Multimap<DataStreamingConfig, Integer> configToDeviceIds = splitConfigForDevices(config, deviceIds, configInfo);
+        Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds = splitConfigForDevices(config, deviceIds, configInfo);
 
         // Build verification message for NM
         DeviceDataStreamingConfigRequest verificationRequest =
@@ -588,7 +588,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return unsupportedDeviceIds;
     }
 
-    private Multimap<DataStreamingConfig, Integer> splitConfigForDevices(DataStreamingConfig config,
+    private Multimap<DeviceDataStreamingConfig, Integer> splitConfigForDevices(DataStreamingConfig config,
             List<Integer> deviceIds, DataStreamingConfigInfo configInfo) {
         // sort devices by type
         Multimap<PaoType, Integer> paoTypeToDeviceIds = getPaoTypeToDeviceIds(deviceIds);
@@ -597,28 +597,31 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         Multimap<Set<BuiltInAttribute>, PaoType> unsupportedAttributesToTypes =
             getUnsupportedAttributesToTypes(config, paoTypeToDeviceIds.keySet());
 
-        Multimap<DataStreamingConfig, Integer> newConfigToDevices = ArrayListMultimap.create();
+        Multimap<DeviceDataStreamingConfig, Integer> newConfigToDevices = ArrayListMultimap.create();
 
-        // create a new config for each unique set of unsupported attributes
-        for (Set<BuiltInAttribute> unsupportedAttributes : unsupportedAttributesToTypes.keySet()) {
+        // create a new config for each paoType that has unsupported attributes
+        for (Entry<Set<BuiltInAttribute>, Collection<PaoType>> unsupportedAttributeTypes : unsupportedAttributesToTypes.asMap().entrySet()) {
             DataStreamingConfig newConfig = config.clone();
+            Set<BuiltInAttribute> unsupportedAttributes = unsupportedAttributeTypes.getKey();
             removeUnsupportedAttributes(newConfig, unsupportedAttributes);
-
-            // Get devices whose types support this new config
-            List<Integer> deviceIdsForNewConfig = new ArrayList<>();
-            for (PaoType type : unsupportedAttributesToTypes.get(unsupportedAttributes)) {
+            for (PaoType type : unsupportedAttributeTypes.getValue()) {
+                // Get devices whose types support this new config
+                List<Integer> deviceIdsForNewConfig = new ArrayList<>();
                 deviceIdsForNewConfig.addAll(paoTypeToDeviceIds.get(type));
-                deviceIds.removeAll(deviceIdsForNewConfig);
                 if (configInfo != null) {
                     configInfo.addDeviceUnsupported(Lists.newArrayList(unsupportedAttributes), deviceIdsForNewConfig);
                 }
+                DeviceDataStreamingConfig ddsConfig = dataStreamingCommService.buildDeviceDataStreamingConfig(newConfig, type);
+                newConfigToDevices.putAll(ddsConfig, deviceIdsForNewConfig);
+                paoTypeToDeviceIds.removeAll(type);
             }
-
-            newConfigToDevices.putAll(newConfig, deviceIdsForNewConfig);
         }
 
-        // all the deviceIds that haven't been mapped to a new config can use the original config
-        newConfigToDevices.putAll(config, deviceIds);
+        // all the deviceIds that haven't been mapped to a new config can use their version of the original config
+        for (Entry<PaoType, Collection<Integer>> devicesPerType : paoTypeToDeviceIds.asMap().entrySet()) {
+            DeviceDataStreamingConfig ddsConfig = dataStreamingCommService.buildDeviceDataStreamingConfig(config, devicesPerType.getKey());
+            newConfigToDevices.putAll(ddsConfig, devicesPerType.getValue());
+        }
 
         return newConfigToDevices;
     }
@@ -702,10 +705,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
         if (isValidPorterConnection()) {
             Map<Integer, BehaviorReport> deviceIdToBehaviorReport = initPendingReports(deviceIds);
-            Multimap<DataStreamingConfig, Integer> configToDeviceIds = HashMultimap.create();
-            for (int deviceId : deviceIdToBehaviorReport.keySet()) {
-                DataStreamingConfig config = convertBehaviorToConfig(deviceIdToBehaviorReport.get(deviceId));
-                configToDeviceIds.put(config, deviceId);
+            Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds = HashMultimap.create();
+            for (Entry<Integer, BehaviorReport> deviceReport : deviceIdToBehaviorReport.entrySet()) {
+                Integer deviceId = deviceReport.getKey();
+                BehaviorReport report = deviceReport.getValue();
+                PaoType paoType = serverDatabaseCache.getAllPaosMap().get(deviceId).getPaoType();
+                DataStreamingConfig config = convertBehaviorToConfig(report);
+                DeviceDataStreamingConfig ddsConfig = dataStreamingCommService.buildDeviceDataStreamingConfig(config, paoType);
+                configToDeviceIds.put(ddsConfig, deviceId);
             }
             int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
             ConfigResponseResult configResponseResult = sendNmConfiguration(configToDeviceIds, requestSeqNumber,
@@ -1012,7 +1019,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         porterConn.cancel(result, user);
     }
 
-    private ConfigResponseResult sendNmConfiguration(Multimap<DataStreamingConfig, Integer> configToDeviceIds, int requestSeqNumber,
+    private ConfigResponseResult sendNmConfiguration(Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds, int requestSeqNumber,
             DeviceDataStreamingConfigRequestType type) throws DataStreamingConfigException {
         // If only called on "re-send", we can assume that all devices support data streaming. If called
         // from
@@ -1034,8 +1041,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         removeDataStreamingUnsupportedDevices(deviceIds);
 
         // Create multiple configurations for different device types if necessary
-        // (Some devices may only support some of the configured attributes)
-        Multimap<DataStreamingConfig, Integer> configToDeviceIds = splitConfigForDevices(config, deviceIds, null);
+        // (Some devices may only support some of the configured attributes, and some use different metric IDs for the same attribute)
+        Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds = splitConfigForDevices(config, deviceIds, null);
 
         sendNmConfiguration(configToDeviceIds, requestSeqNumber, DeviceDataStreamingConfigRequestType.UPDATE);
     }
@@ -1471,7 +1478,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
             // Send sync to NM
             DeviceDataStreamingConfigRequest request =
-                dataStreamingCommService.buildSyncRequest(config, device.getDeviceId(), requestSeqNumber);
+                dataStreamingCommService.buildSyncRequest(config, device, requestSeqNumber);
             try {
                 dataStreamingCommService.sendConfigRequest(request);
             } catch (DataStreamingConfigException e) {

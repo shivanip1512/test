@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
@@ -131,8 +132,12 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
     }
     
     @Override
-    public Integer getMetricIdForAttribute(BuiltInAttribute attribute) {
-        Integer metricId = attributeLookup.inverse().get(attribute);
+    public Integer getMetricIdForAttribute(BuiltInAttribute attribute, PaoType type) {
+        Integer metricId = 
+                Optional.ofNullable(paoAttributes.get(type))
+                        .map(m -> m.inverse().get(attribute))
+                        .orElse(attributeLookup.inverse().get(attribute));
+        
         if (metricId == null) {
             throw new IllegalStateException("No metricId found for attribute " + attribute);
         }
