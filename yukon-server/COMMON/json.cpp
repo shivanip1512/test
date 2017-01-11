@@ -12,6 +12,8 @@ namespace Cti {
 
 using namespace std::string_literals;
 
+void parseMetricMappings(const json::Array& metricMappings);
+
 void parseJsonFiles()
 {
     DataBuffer raw = loadResourceFromLibrary( Resource_MetricIdToAttributeMapping, "JSON", "yukon-resource.dll" );
@@ -28,57 +30,47 @@ void parseJsonFiles()
     {
     }
 
-    struct MappingPopulator : json::ConstVisitor
+    parseMetricMappings(root["metricMapping"]);
+}
+
+void parseMetricMappings(const json::Array& metricMappings)
+{
+    for( auto metricItr = metricMappings.Begin(); metricItr != metricMappings.End(); ++metricItr )
     {
-        virtual void Visit(const json::Null    &obj)  {}
-        virtual void Visit(const json::Boolean &obj)  {}
-        virtual void Visit(const json::String  &obj)  {}
-        virtual void Visit(const json::Number  &obj)  {}
-        virtual void Visit(const json::Array   &obj)  {}
-        virtual void Visit(const json::Object  &obj)
+        const json::Object& obj = *metricItr;
+
+        try
         {
+            json::String attributeName = obj["attribute"];
+            json::Number metricId      = obj["metricId"];
+            int attributeMagnitude = 0;
+
+            auto itr = obj.Find("attributeMagnitude");
+
+            if( itr != obj.End() )
+            {
+                json::Number magnitude = itr->element;
+
+                attributeMagnitude = magnitude;
+            }
+
             try
             {
-                json::String attributeName = obj["attribute"];
-                json::Number metricId      = obj["metricId"];
-                int attributeMagnitude = 0;
+                const Attribute &attribute = Attribute::Lookup(attributeName.Value());
 
-                auto itr = obj.Find("attributeMagnitude");
-
-                if( itr != obj.End() )
-                {
-                    json::Number magnitude = itr->element;
-
-                    attributeMagnitude = magnitude;
-                }
-
-                try
-                {
-                    const Attribute &attribute = Attribute::Lookup(attributeName.Value());
-
-                    //  Yukon's attributes have implicit scaling (DEMAND is kW instead of W, for example).  
-                    //    attributeMagnitude describes the attribute's implicit scaling in powers of 10.
-                    MetricIdLookup::AddMetricForAttribute({attribute, attributeMagnitude}, metricId.Value());
-                }
-                catch (const AttributeNotFound&)
-                {
-                    MetricIdLookup::AddUnknownAttribute(attributeName.Value());
-                }
+                //  Yukon's attributes have implicit scaling (DEMAND is kW instead of W, for example).  
+                //    attributeMagnitude describes the attribute's implicit scaling in powers of 10.
+                MetricIdLookup::AddMetricForAttribute({attribute, attributeMagnitude}, metricId.Value());
             }
-            catch (const json::Exception& e)
+            catch (const AttributeNotFound&)
             {
-                std::cout << "Caught json::Exception: " << e.what() << std::endl << std::endl;
+                MetricIdLookup::AddUnknownAttribute(attributeName.Value());
             }
         }
-    };
-
-    json::Array &mapping = root["metricMapping"];
-
-    json::Array::const_iterator itr = mapping.Begin();
-
-    for( ; itr != mapping.End(); ++itr )
-    {
-        itr->Accept(MappingPopulator());
+        catch (const json::Exception& e)
+        {
+            std::cout << "Caught json::Exception: " << e.what() << std::endl << std::endl;
+        }
     }
 }
 

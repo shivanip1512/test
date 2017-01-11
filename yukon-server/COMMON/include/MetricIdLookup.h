@@ -19,15 +19,14 @@ public:
     };
 
     static void AddMetricForAttribute(const AttributeDescriptor & attribute, const MetricId metric);
-    static void AddUnknownAttribute(const std::string & attributeName);
+    static void AddUnknownAttribute (const AttributeNotFound & ex);  //  Attribute lookup failed during load
 
-    static MetricId  GetForAttribute (const Attribute &attrib);
-    static MetricIds GetForAttributes(const std::set<Attribute> & attribs);
+    static MetricId  GetMetricId (const Attribute &attrib);
 
-    static Attribute getAttribute(const MetricId metric);
-    static AttributeDescriptor getAttributeDescription(const MetricId metric);
+    static Attribute GetAttribute(const MetricId metric);
+    static AttributeDescriptor GetAttributeDescription(const MetricId metric);
 
-    static std::set<std::string> getUnknownAttributes();
+    static std::vector<AttributeNotFound> getUnknownAttributes();
 
 private:
     using attribute_bimap = boost::bimap< Attribute, MetricId >;
@@ -35,14 +34,15 @@ private:
 
     static attribute_bimap attributes;
     static std::map< Attribute, int > attributeMagnitudes;
-    static std::set<std::string> unknownAttributes;
+    static std::vector<AttributeNotFound> unknownAttributes;
 };
 
-struct IM_EX_CTIBASE MetricIdNotFound : std::exception
+struct IM_EX_CTIBASE MetricMappingNotFound : std::exception
 {
     std::string detail;
+    const Attribute& attribute;
 
-    MetricIdNotFound(const Attribute &attrib);
+    MetricMappingNotFound(const Attribute &attrib);
 
     const char* what() const override;
 };
@@ -50,8 +50,9 @@ struct IM_EX_CTIBASE MetricIdNotFound : std::exception
 struct IM_EX_CTIBASE AttributeMappingNotFound : std::exception
 {
     std::string detail;
+    const unsigned short metricId;
 
-    AttributeMappingNotFound(const unsigned short metricId);
+    AttributeMappingNotFound(const unsigned short metric);
 
     const char* what() const override;
 };

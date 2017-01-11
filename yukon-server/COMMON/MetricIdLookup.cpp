@@ -10,7 +10,7 @@ namespace Cti {
 
 MetricIdLookup::attribute_bimap MetricIdLookup::attributes;
 std::map< Attribute, int > MetricIdLookup::attributeMagnitudes;
-std::set<std::string> MetricIdLookup::unknownAttributes;
+std::vector<AttributeNotFound> MetricIdLookup::unknownAttributes;
 
 void MetricIdLookup::AddMetricForAttribute(const AttributeDescriptor &attributeDescriptor, const MetricId metric)
 {
@@ -18,12 +18,12 @@ void MetricIdLookup::AddMetricForAttribute(const AttributeDescriptor &attributeD
     attributeMagnitudes.emplace(attributeDescriptor.attrib, attributeDescriptor.magnitude);
 }
 
-void MetricIdLookup::AddUnknownAttribute(const std::string& attributeName)
+void MetricIdLookup::AddUnknownAttribute(const AttributeNotFound& ex)
 {
-    unknownAttributes.insert(attributeName);
+    unknownAttributes.push_back(ex);
 }
 
-MetricIdLookup::MetricId MetricIdLookup::GetForAttribute(const Attribute &attrib)
+MetricIdLookup::MetricId MetricIdLookup::GetMetricId(const Attribute &attrib)
 {
     try
     {
@@ -31,11 +31,11 @@ MetricIdLookup::MetricId MetricIdLookup::GetForAttribute(const Attribute &attrib
     }
     catch( std::out_of_range )
     {
-        throw MetricIdNotFound(attrib);
+        throw MetricMappingNotFound(attrib);
     }
 }
 
-Attribute MetricIdLookup::getAttribute(const MetricId metric)
+Attribute MetricIdLookup::GetAttribute(const MetricId metric)
 {
     try
     {
@@ -47,38 +47,34 @@ Attribute MetricIdLookup::getAttribute(const MetricId metric)
     }
 }
 
-auto MetricIdLookup::getAttributeDescription(const MetricId metric) -> AttributeDescriptor
+auto MetricIdLookup::GetAttributeDescription(const MetricId metric) -> AttributeDescriptor
 {
-    const auto attrib = getAttribute(metric);
+    const auto attrib = GetAttribute(metric);
     return { attrib, attributeMagnitudes[attrib] };
 }
 
-std::set<std::string> MetricIdLookup::getUnknownAttributes()
+std::vector<AttributeNotFound> MetricIdLookup::getUnknownAttributes()
 {
     return unknownAttributes;
 }
 
-MetricIdLookup::MetricIds MetricIdLookup::GetForAttributes(const std::set<Attribute> & attribs)
-{
-    return boost::copy_range<MetricIds>(
-                attribs | boost::adaptors::transformed(&GetForAttribute));
-}
 
-
-MetricIdNotFound::MetricIdNotFound(const Attribute &attrib)
+MetricMappingNotFound::MetricMappingNotFound(const Attribute &attrib)
+    :   attribute(attrib)
 {
     detail = "Metric ID not found for attribute " + attrib.getName();
 }
 
-const char* MetricIdNotFound::what() const
+const char* MetricMappingNotFound::what() const
 {
     return detail.c_str();
 }
 
 
-AttributeMappingNotFound::AttributeMappingNotFound(const unsigned short metricId)
+AttributeMappingNotFound::AttributeMappingNotFound(const unsigned short metric)
+    :   metricId(metric)
 {
-    detail = "Attribute mapping not found for metric ID " + std::to_string(metricId);
+    detail = "Attribute mapping not found for metric ID " + std::to_string(metric);
 }
 
 const char* AttributeMappingNotFound::what() const
