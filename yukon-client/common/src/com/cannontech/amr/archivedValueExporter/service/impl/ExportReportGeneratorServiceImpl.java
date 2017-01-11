@@ -136,6 +136,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         preview.setHeader(format.getHeader());
         preview.setFooter(format.getFooter());
         preview.setMeasure(createMeasure(format));
+        preview.setNumbers(getNumbers(preview.getMeasure().length()));
 
         try (
                 ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -158,6 +159,20 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         return preview;
     }
 
+    private String getNumbers(int length) {
+        String numberMarkers = "";
+        int count = 1;
+        while (numberMarkers.length() < length - 5) { //length always increasing by 10 except at the end of line
+            numberMarkers+="       ";
+            if (count < 10) {
+                numberMarkers+=" ";
+            }
+            numberMarkers+= count + "0";
+            count++;
+        }
+        return numberMarkers;
+    }
+
     private String createMeasure(ExportFormat format) {
 
         String createdMeasure = "";
@@ -178,7 +193,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         while (createdMeasure.length() < total && createdMeasure.length() < 130) {
             createdMeasure+="....:....|";
         }
-        if(createdMeasure.length() < total) {
+        if (createdMeasure.length() < total) {
             createdMeasure+="....:";
         }
         return createdMeasure;

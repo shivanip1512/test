@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Preview {
 
+    private String numbers = "";
     private String measure = "";
     private String header = "";
     private List<String> body = new ArrayList<>();
@@ -40,6 +41,14 @@ public class Preview {
 
     public void setMeasure(String measure) {
         this.measure = measure;
+    }
+
+    public String getNumbers() {
+        return numbers;
+    }
+
+    public void setNumbers(String numbers) {
+        this.numbers = numbers;
     }
 
 }

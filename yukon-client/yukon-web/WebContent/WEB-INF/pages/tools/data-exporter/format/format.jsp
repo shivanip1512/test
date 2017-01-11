@@ -218,7 +218,7 @@
         </tags:sectionContainer2>
         
         <h3><i:inline key=".preview.title"/><tags:helpInfoPopup nameKey=".preview.information"/></h3>
-        <pre><div preview-measure>${fn:escapeXml(preview.measure)}</div><div preview-header>${fn:escapeXml(preview.header)}</div><div preview-body><c:forEach items="${preview.body}" var="line">${fn:escapeXml(line)}<br></c:forEach></div><div preview-footer>${fn:escapeXml(preview.footer)}</div></pre>
+        <pre><div preview-numbers>${fn:escapeXml(preview.numbers)}</div><div preview-measure>${fn:escapeXml(preview.measure)}</div><div preview-header>${fn:escapeXml(preview.header)}</div><div preview-body><c:forEach items="${preview.body}" var="line">${fn:escapeXml(line)}<br></c:forEach></div><div preview-footer>${fn:escapeXml(preview.footer)}</div></pre>
             
         <div class="page-action-area">
             <cti:button type="submit" nameKey="save" classes="primary action" busy="true"/>

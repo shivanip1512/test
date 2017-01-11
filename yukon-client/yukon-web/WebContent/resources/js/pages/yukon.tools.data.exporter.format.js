@@ -37,6 +37,8 @@ yukon.tools.dataExporterFormat = (function () {
                 });
                 $('[preview-measure]').empty();
                 $('[preview-measure]').text(data.measure);
+                $('[preview-numbers]').empty();
+                $('[preview-numbers]').text(data.numbers);
             }
         });
     },
