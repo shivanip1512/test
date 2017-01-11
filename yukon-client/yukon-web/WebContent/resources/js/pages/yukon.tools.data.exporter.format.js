@@ -35,10 +35,6 @@ yukon.tools.dataExporterFormat = (function () {
                 $.each(data.body, function (idx, line) {
                     $('[preview-body]').append($('<div>').text(line));
                 });
-                $('[preview-measure]').empty();
-                $('[preview-measure]').text(data.measure);
-                $('[preview-numbers]').empty();
-                $('[preview-numbers]').text(data.numbers);
             }
         });
     },
@@ -89,7 +85,7 @@ yukon.tools.dataExporterFormat = (function () {
                 showField = delimiters.find('option:selected').is('[type=CUSTOM]'),
                 lastHeaderValue = $('.js-header').val(),
                 lastFooterValue = $('.js-footer').val();
-            
+            var showRuler = false;
             /** Hide delimiter text field initially if it's not custom. */
             if (showField) delimiter.show(); else delimiter.hide();
             

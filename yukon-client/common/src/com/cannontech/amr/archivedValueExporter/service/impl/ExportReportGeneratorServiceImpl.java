@@ -135,8 +135,7 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         Preview preview = new Preview();
         preview.setHeader(format.getHeader());
         preview.setFooter(format.getFooter());
-        preview.setMeasure(createMeasure(format));
-        preview.setNumbers(getNumbers(preview.getMeasure().length()));
+        preview.setIsStatic(checkStatic(format));
 
         try (
                 ByteArrayOutputStream output = new ByteArrayOutputStream();
@@ -159,44 +158,14 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         return preview;
     }
 
-    private String getNumbers(int length) {
-        String numberMarkers = "";
-        int count = 1;
-        while (numberMarkers.length() < length - 5) { //length always increasing by 10 except at the end of line
-            numberMarkers+="       ";
-            if (count < 10) {
-                numberMarkers+=" ";
-            }
-            numberMarkers+= count + "0";
-            count++;
-        }
-        return numberMarkers;
-    }
-
-    private String createMeasure(ExportFormat format) {
-
-        String createdMeasure = "";
-        int total = 0;
+    private boolean checkStatic(ExportFormat format) {
         for (ExportField ex: format.getFields()) {
-            if (!ex.getField().isPlainTextType() && 
-                    (ex.getMaxLength() == 0 || ex.getPadSide().equals(PadSide.NONE))) {
-                return ""; //No Measure if padding or length are missing (implies non-static width table)
+            if(!ex.getField().isPlainTextType() && 
+                    (ex.getMaxLength() == 0 || ex.getPadSide().equals(PadSide.NONE))){
+                return false;
             }
-
-            int fieldLength = ((ex.getField().isPlainTextType() && 
-                    (ex.getMaxLength() == 0 || 
-                    ex.getMaxLength() >= ex.getPattern().length() ))
-                    ? ex.getPattern().length() : ex.getMaxLength());
-            total+= fieldLength + format.getDelimiter().length();
         }
-
-        while (createdMeasure.length() < total && createdMeasure.length() < 130) {
-            createdMeasure+="....:....|";
-        }
-        if (createdMeasure.length() < total) {
-            createdMeasure+="....:";
-        }
-        return createdMeasure;
+        return true;
     }
 
     @Override

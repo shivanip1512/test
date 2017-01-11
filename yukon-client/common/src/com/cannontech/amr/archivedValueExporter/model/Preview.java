@@ -5,8 +5,7 @@ import java.util.List;
 
 public class Preview {
 
-    private String numbers = "";
-    private String measure = "";
+    private boolean isStatic = false;
     private String header = "";
     private List<String> body = new ArrayList<>();
     private String footer = "";
@@ -35,20 +34,12 @@ public class Preview {
         this.footer = footer;
     }
 
-    public String getMeasure() {
-        return measure;
+    public boolean getIsStatic() {
+        return isStatic;
     }
 
-    public void setMeasure(String measure) {
-        this.measure = measure;
-    }
-
-    public String getNumbers() {
-        return numbers;
-    }
-
-    public void setNumbers(String numbers) {
-        this.numbers = numbers;
+    public void setIsStatic(boolean isStatic) {
+        this.isStatic = isStatic;
     }
 
 }
