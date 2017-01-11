@@ -1851,7 +1851,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13 );
             BOOST_CHECK_EQUAL( om->Request.CommandStr, "" );
 
-            const unsigned char expected_message[] = { 0x7f, 0x01, 0x1d, 0x00, 0x13, 0x00, 0x00, 0x02, 0x19, 0x00, 0x13, 0x00, 0x00 };
+            const unsigned char expected_message[] = { 0x7f, 0x01, 0x19, 0x00, 0x13, 0x00, 0x00, 0x02, 0x15, 0x00, 0x13, 0x00, 0x00 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 om->Buffer.BSt.Message,
@@ -1879,7 +1879,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13 );
             BOOST_CHECK_EQUAL( om->Request.CommandStr, "" );
 
-            const unsigned char expected_message[] = { 0x7f, 0x03, 0x14, 0x00, 0x00, 0x00, 0x00, 0x04, 0x10, 0x00, 0x00, 0x00, 0x00 };
+            const unsigned char expected_message[] = { 0x7f, 0x03, 0x10, 0x00, 0x00, 0x00, 0x00, 0x04, 0x0c, 0x00, 0x00, 0x00, 0x00 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 om->Buffer.BSt.Message,
@@ -2409,7 +2409,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13 );
             BOOST_CHECK_EQUAL( om->Request.CommandStr, "" );
 
-            const unsigned char expected_message[] = { 0x7f, 0x01, 0x1d, 0x00, 0x13, 0x00, 0x00, 0x02, 0x19, 0x00, 0x13, 0x00, 0x00 };
+            const unsigned char expected_message[] = { 0x7f, 0x01, 0x19, 0x00, 0x13, 0x00, 0x00, 0x02, 0x15, 0x00, 0x13, 0x00, 0x00 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 om->Buffer.BSt.Message,
@@ -2437,7 +2437,7 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, beginExecuteRequest_helper)
             BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   13 );
             BOOST_CHECK_EQUAL( om->Request.CommandStr, "" );
 
-            const unsigned char expected_message[] = { 0x7f, 0x03, 0x14, 0x00, 0x00, 0x00, 0x00, 0x04, 0x10, 0x00, 0x00, 0x00, 0x00 };
+            const unsigned char expected_message[] = { 0x7f, 0x03, 0x10, 0x00, 0x00, 0x00, 0x00, 0x04, 0x0c, 0x00, 0x00, 0x00, 0x00 };
 
             BOOST_CHECK_EQUAL_COLLECTIONS(
                 om->Buffer.BSt.Message,

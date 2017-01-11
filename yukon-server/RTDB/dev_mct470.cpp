@@ -3126,8 +3126,8 @@ YukonError_t Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pRe
             {
                 unsigned ratio1, kRatio1, ratio2, kRatio2;
 
-                const long channel1 = ( ( *channel1physical & 0x0f ) << 2 ) | ( *channel1type & 0x03 );
-                const long channel2 = ( ( *channel2physical & 0x0f ) << 2 ) | ( *channel2type & 0x03 );
+                const long channel1 = ( ( ( *channel1physical - 1 ) & 0x0f ) << 2 ) | ( *channel1type & 0x03 );
+                const long channel2 = ( ( ( *channel2physical - 1 ) & 0x0f ) << 2 ) | ( *channel2type & 0x03 );
 
                 const double multiplier1 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier1);
                 const double multiplier2 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier2);
@@ -3218,8 +3218,8 @@ YukonError_t Mct470Device::executePutConfigLoadProfileChannel(CtiRequestMsg *pRe
             {
                 unsigned ratio3, kRatio3, ratio4, kRatio4;
 
-                const long channel3 = ( ( *channel3physical & 0x0f ) << 2 ) | ( *channel3type & 0x03 );
-                const long channel4 = ( ( *channel4physical & 0x0f ) << 2 ) | ( *channel4type & 0x03 );
+                const long channel3 = ( ( ( *channel3physical - 1 ) & 0x0f ) << 2 ) | ( *channel3type & 0x03 );
+                const long channel4 = ( ( ( *channel4physical - 1 ) & 0x0f ) << 2 ) | ( *channel4type & 0x03 );
 
                 const double multiplier3 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier3);
                 const double multiplier4 = deviceConfig->getFloatValueFromKey(MCTStrings::ChannelMultiplier4);
