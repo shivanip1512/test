@@ -92,7 +92,7 @@ public class PointValidator extends SimpleValidator<PointModel> {
         List<LitePoint> pointsOnPao = pointDao.getLitePointsByPaObjectId(parentId);
         
         for (LitePoint pointOnPao : pointsOnPao) {
-            if (pointOnPao.getPointName().equals(base.getPoint().getPointName().trim())) {
+            if (pointOnPao.getPointName().trim().equalsIgnoreCase(base.getPoint().getPointName().trim())) {
                 if (pointOnPao.getPointID() != base.getPoint().getPointID()) {
                     errors.rejectValue("pointBase.point.pointName", "yukon.web.error.nameConflict");
                 }
