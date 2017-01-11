@@ -33,16 +33,28 @@ BOOST_AUTO_TEST_CASE(test_overrideFailures)
 
 BOOST_AUTO_TEST_CASE(test_GetMetricId_success)
 {
-    const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::DeliveredkWh);
+    {
+        const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::DeliveredkWh, TYPE_RFN420CL);
 
-    BOOST_CHECK_EQUAL(metricId, 1);
+        BOOST_CHECK_EQUAL(metricId, 1);
+    }
+    {
+        const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::Demand, TYPE_RFN420CL);
+
+        BOOST_CHECK_EQUAL(metricId, 5);
+    }
+    {
+        const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::Demand, TYPE_RFN430SL0);
+
+        BOOST_CHECK_EQUAL(metricId, 200);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(test_GetForAttribute_failure)
 {
     try
     {
-        Cti::MetricIdLookup::GetMetricId(Attribute::CalcCpuUtilization);
+        Cti::MetricIdLookup::GetMetricId(Attribute::CalcCpuUtilization, TYPE_RFN420CL);
         BOOST_FAIL("Did not throw");
     }
     catch( const Cti::MetricMappingNotFound& ex )
@@ -53,17 +65,43 @@ BOOST_AUTO_TEST_CASE(test_GetForAttribute_failure)
 
 BOOST_AUTO_TEST_CASE(test_getAttribute_success)
 {
-    const auto attrib = Cti::MetricIdLookup::GetAttribute(1);
+    const auto attrib = Cti::MetricIdLookup::GetAttribute(1, TYPE_RFN420CL);
 
     BOOST_CHECK(attrib == Attribute::DeliveredkWh);
     BOOST_CHECK_EQUAL(attrib.getName(), "DELIVERED_KWH");
+}
+
+BOOST_AUTO_TEST_CASE(test_getAttribute_override)
+{
+    {
+        const auto attrib = Cti::MetricIdLookup::GetAttribute(5, TYPE_RFN420CL);
+
+        BOOST_CHECK(attrib == Attribute::Demand);
+        BOOST_CHECK_EQUAL(attrib.getName(), "DEMAND");
+    }
+
+    {
+        const auto attrib = Cti::MetricIdLookup::GetAttribute(200, TYPE_RFN430SL0);
+
+        BOOST_CHECK(attrib == Attribute::Demand);
+        BOOST_CHECK_EQUAL(attrib.getName(), "DEMAND");
+    }
 }
 
 BOOST_AUTO_TEST_CASE(test_getAttribute_failure)
 {
     try
     {
-        Cti::MetricIdLookup::GetAttribute(-1);
+        Cti::MetricIdLookup::GetAttribute(-1, TYPE_RFN420CL);
+    }
+    catch( const Cti::AttributeMappingNotFound& ex )
+    {
+        BOOST_CHECK_EQUAL( ex.detail, "Attribute mapping not found for metric ID 65535" );
+    }
+
+    try
+    {
+        Cti::MetricIdLookup::GetAttribute(-1, TYPE_RFN430SL0);
     }
     catch( const Cti::AttributeMappingNotFound& ex )
     {
@@ -74,14 +112,14 @@ BOOST_AUTO_TEST_CASE(test_getAttribute_failure)
 BOOST_AUTO_TEST_CASE(test_GetAttributeDescription_success)
 {
     {
-        const auto attribDesc = Cti::MetricIdLookup::GetAttributeDescription(1);
+        const auto attribDesc = Cti::MetricIdLookup::GetAttributeDescription(1, TYPE_RFN420CL);
 
         BOOST_CHECK(attribDesc.attrib == Attribute::DeliveredkWh);
         BOOST_CHECK_EQUAL(attribDesc.attrib.getName(), "DELIVERED_KWH");
         BOOST_CHECK_EQUAL(attribDesc.magnitude, 3);
     }
     {
-        const auto attribDesc = Cti::MetricIdLookup::GetAttributeDescription(80);
+        const auto attribDesc = Cti::MetricIdLookup::GetAttributeDescription(80, TYPE_RFN420CL);
 
         BOOST_CHECK(attribDesc.attrib == Attribute::PowerFactor);
         BOOST_CHECK_EQUAL(attribDesc.attrib.getName(), "POWER_FACTOR");
@@ -93,7 +131,7 @@ BOOST_AUTO_TEST_CASE(test_GetAttributeDescription_failure)
 {
     try
     {
-        Cti::MetricIdLookup::GetAttributeDescription(-1);
+        Cti::MetricIdLookup::GetAttributeDescription(-1, TYPE_RFN420CL);
     }
     catch( const Cti::AttributeMappingNotFound& ex )
     {
