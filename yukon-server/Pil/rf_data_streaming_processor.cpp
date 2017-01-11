@@ -181,28 +181,11 @@ auto RfDataStreamingProcessor::processPacket(const Packet &p) -> DeviceReport
         const auto modifier  = get_uint8 (payload.begin() + offset + 6);
         const auto dataValue = get_uint32(payload.begin() + offset + 7);
 
-        try
-        {
-            const auto attributeDescriptor = MetricIdLookup::getAttributeDescription(metricId);
-
-            auto scaledValue = dataValue * scaling(modifier / 16);
-
-            if( attributeDescriptor.magnitude )
-            {
-                scaledValue /= std::pow(10, attributeDescriptor.magnitude);  //  Adjust from Watts to kiloWatts, etc, if necessary
-            }
-
-            dr.values.emplace_back(Value{
-                attributeDescriptor.attrib,
-                DataStreamingEpoch + std::chrono::seconds(timestamp),
-                scaledValue,
-                convertQuality(modifier % 16)});
-        }
-        catch( AttributeMappingNotFound &ex )
-        {
-            //  Exclude it from the response, but log loudly.
-            CTILOG_EXCEPTION_ERROR(dout, ex);
-        }
+        dr.values.emplace_back(Value{
+            metricId,
+            DataStreamingEpoch + std::chrono::seconds(timestamp),
+            dataValue * scaling(modifier / 16),
+            convertQuality(modifier % 16)});
     }
     return dr;
 }
@@ -211,7 +194,7 @@ StreamBufferSink& operator<<(StreamBufferSink& s, const RfDataStreamingProcessor
 {
     FormattedList l;
 
-    l.add("Attribute") << v.attribute.getName();
+    l.add("MetricId")  << v.metricId;
     l.add("Timestamp") << v.timestamp;
     l.add("Value")     << v.value;
     l.add("Quality")   << v.quality;
@@ -237,7 +220,7 @@ StreamBufferSink& operator<<(StreamBufferSink& s, const RfDataStreamingProcessor
     return s << l;
 }
 
-std::map<long, std::map<Attribute, size_t>> stats;
+std::map<long, std::map<uint16_t, size_t>> stats;
 
 auto RfDataStreamingProcessor::processDeviceReport(const DeviceReport& deviceReport) -> std::vector<std::unique_ptr<CtiPointDataMsg>>
 {
@@ -251,59 +234,74 @@ auto RfDataStreamingProcessor::processDeviceReport(const DeviceReport& deviceRep
 
         for( const auto& drValue : deviceReport.values )
         {
-            if( const auto pointOffset = DeviceAttributeLookup::Lookup(device->getDeviceType(), drValue.attribute) )
+            try
             {
-                if( const auto point = _pointManager->getOffsetTypeEqual(device->getID(), pointOffset->offset, pointOffset->type) )
+                const auto attributeDescriptor = MetricIdLookup::GetAttributeDescription(drValue.metricId);
+
+                double value = drValue.value;
+
+                if( attributeDescriptor.magnitude )
                 {
-                    double value = drValue.value;
+                    value /= std::pow(10, attributeDescriptor.magnitude);  //  Adjust from Watts to kiloWatts, etc, if necessary
+                }
 
-                    if( point->isNumeric() )
+                if( const auto pointOffset = DeviceAttributeLookup::Lookup(device->getDeviceType(), attributeDescriptor.attrib) )
+                {
+                    if( const auto point = _pointManager->getOffsetTypeEqual(device->getID(), pointOffset->offset, pointOffset->type) )
                     {
-                        auto& numeric = static_cast<CtiPointNumeric&>(*point);
+                        if( point->isNumeric() )
+                        {
+                            auto& numeric = static_cast<CtiPointNumeric&>(*point);
 
-                        value = numeric.computeValueForUOM(value);
-                    }
+                            value = numeric.computeValueForUOM(value);
+                        }
 
-                    CtiTime timestamp { drValue.timestamp };
+                        CtiTime timestamp { drValue.timestamp };
 
-                    auto pdata =                         
+                        auto pdata =                         
                             std::make_unique<CtiPointDataMsg>(
-                                    point->getID(),
-                                    value,
-                                    drValue.quality,
-                                    point->getType(),
-                                    device->getName() + " / " + point->getName() + " = " + std::to_string(value) + " @ " + timestamp.asString());
+                                point->getID(),
+                                value,
+                                drValue.quality,
+                                point->getType(),
+                                device->getName() + " / " + point->getName() + " = " + std::to_string(value) + " @ " + timestamp.asString());
 
-                    pdata->setTime(timestamp);
+                        pdata->setTime(timestamp);
 
-                    pointdata.emplace_back(std::move(pdata));
+                        pointdata.emplace_back(std::move(pdata));
+                    }
+                    else
+                    {
+                        FormattedList l;
+
+                        l << "Point not found for offset+type";
+                        l.add("Device ID")   << device->getID();
+                        l.add("Device name") << device->getName();
+                        l.add("Device type") << device->getDeviceType();
+                        l.add("Offset") << pointOffset->offset;
+                        l.add("Type")   << pointOffset->type;
+                        l << drValue;
+
+                        CTILOG_WARN(dout, l);
+                    }
                 }
                 else
                 {
                     FormattedList l;
 
-                    l << "Point not found for offset+type";
+                    l << "Attribute mapping not found";
                     l.add("Device ID")   << device->getID();
                     l.add("Device name") << device->getName();
                     l.add("Device type") << device->getDeviceType();
-                    l.add("Offset") << pointOffset->offset;
-                    l.add("Type")   << pointOffset->type;
                     l << drValue;
 
                     CTILOG_WARN(dout, l);
                 }
             }
-            else
+            catch( AttributeMappingNotFound &ex )
             {
-                FormattedList l;
-
-                l << "Attribute mapping not found";
-                l.add("Device ID")   << device->getID();
-                l.add("Device name") << device->getName();
-                l.add("Device type") << device->getDeviceType();
-                l << drValue;
-
-                CTILOG_WARN(dout, l);
+                //  Exclude it from the response, but log loudly.
+                CTILOG_EXCEPTION_ERROR(dout, ex);
             }
         }
     }
@@ -315,7 +313,7 @@ auto RfDataStreamingProcessor::processDeviceReport(const DeviceReport& deviceRep
     //  Increment data streaming stats for each received attribute
     for( auto &dv : deviceReport.values )
     {
-        stats[deviceId][dv.attribute]++;
+        stats[deviceId][dv.metricId]++;
     }
 
     return pointdata;
@@ -333,7 +331,7 @@ void RfDataStreamingProcessor::handleStatistics()
         report.setHorizontalBorders(FormattedTable::Borders_Outside_Bottom, 0);
         report.setVerticalBorders  (FormattedTable::Borders_Inside);
 
-        std::map<Attribute, size_t> attributeColumns;
+        std::map<uint16_t, size_t> metricColumns;
 
         size_t row {}, maxCol {};
 
@@ -343,22 +341,25 @@ void RfDataStreamingProcessor::handleStatistics()
         {
              report.setCell(row, maxCol) << dev.first;
 
-             for( const auto& attribCounts : dev.second )
+             for( const auto& metricCounts : dev.second )
              {
-                 auto indexItr = attributeColumns.find(attribCounts.first);
-                 if( indexItr == attributeColumns.end() )
+                 //  Look to see if we've already got a column for this metric ID
+                 auto indexItr = metricColumns.find(metricCounts.first);
+                 //  If not, insert it
+                 if( indexItr == metricColumns.end() )
                  {
-                     indexItr = attributeColumns.emplace(attribCounts.first, maxCol++).first;
+                     indexItr = metricColumns.emplace(metricCounts.first, maxCol++).first;
                  }
-                 report.setCell(row, indexItr->second) << attribCounts.second;
+                 //  Use indexItr->second to get the column number
+                 report.setCell(row, indexItr->second) << metricCounts.second;
              }
              row++;
         }
 
+        stats.clear();
+
         CTILOG_INFO(dout, "RFN data streaming statistics report:" << report);
     }
-
-    stats.clear();
 }
 
 }

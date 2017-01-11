@@ -28,7 +28,7 @@ protected:
 
     struct Value
     {
-        Attribute attribute;
+        uint16_t metricId;
         std::chrono::system_clock::time_point timestamp;
         double value;
         PointQuality_t quality;

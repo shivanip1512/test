@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_CASE( test_processPacket_no_points )
     BOOST_CHECK( report.values.empty() );
 }
 
-BOOST_AUTO_TEST_CASE( test_processPacket_bad_attribute )
+BOOST_AUTO_TEST_CASE( test_processPacket_large_metricid )
 {
     test_RfDataStreamingProcessor::Packet p;
 
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE( test_processPacket_bad_attribute )
     p.payload = { 
         0x01, 
         0x01, 
-        0xf0, 0x0f,  //  invalid metric ID
+        0xf0, 0x0f,
         0x00, 0x00, 0x00, 0x00, 
         0x00, 
         0x00, 0x00, 0x01, 0x01 };
@@ -176,7 +176,14 @@ BOOST_AUTO_TEST_CASE( test_processPacket_bad_attribute )
     BOOST_CHECK_EQUAL( report.rfnId.model,        "JOHNS" );
     BOOST_CHECK_EQUAL( report.rfnId.serialNumber, "GARGANTUAN" );
 
-    BOOST_CHECK( report.values.empty() );
+    BOOST_REQUIRE_EQUAL( report.values.size(), 1 );
+
+    const auto& reportValue = report.values[0];
+
+    BOOST_CHECK_EQUAL( reportValue.metricId, 61455 );
+    BOOST_CHECK_EQUAL( reportValue.quality, NormalQuality );
+    BOOST_CHECK_EQUAL( reportValue.timestamp, make_time_point(2016, 1, 1, 0, 0, 0) );
+    BOOST_CHECK_CLOSE( reportValue.value, 257, 1e-8 );
 }
 
 BOOST_AUTO_TEST_CASE( test_processPacket_one_point_start_of_epoch )
@@ -203,10 +210,10 @@ BOOST_AUTO_TEST_CASE( test_processPacket_one_point_start_of_epoch )
 
     const auto& reportValue = report.values[0];
 
-    BOOST_CHECK_EQUAL( reportValue.attribute, Attribute::Demand );
+    BOOST_CHECK_EQUAL( reportValue.metricId, 5 );
     BOOST_CHECK_EQUAL( reportValue.quality, NormalQuality );
     BOOST_CHECK_EQUAL( reportValue.timestamp, make_time_point(2016, 1, 1, 0, 0, 0) );
-    BOOST_CHECK_CLOSE( reportValue.value, 0.257, 1e-8 );
+    BOOST_CHECK_CLOSE( reportValue.value, 257, 1e-8 );
 }
 
 BOOST_AUTO_TEST_CASE( test_processPacket_three_points )
@@ -244,16 +251,16 @@ BOOST_AUTO_TEST_CASE( test_processPacket_three_points )
     {
         const auto& reportValue = *report_itr++;
 
-        BOOST_CHECK_EQUAL( reportValue.attribute, Attribute::Demand );
+        BOOST_CHECK_EQUAL( reportValue.metricId, 5 );
         BOOST_CHECK_EQUAL( reportValue.quality, AbnormalQuality );
         BOOST_CHECK_EQUAL( reportValue.timestamp, make_time_point(2016, 7, 12, 22, 13, 18) );
-        BOOST_CHECK_CLOSE( reportValue.value, 0.003735928559, 1e-8 );
+        BOOST_CHECK_CLOSE( reportValue.value, 3.735928559, 1e-8 );
     }
 
     {
         const auto& reportValue = *report_itr++;
 
-        BOOST_CHECK_EQUAL( reportValue.attribute, Attribute::Voltage );
+        BOOST_CHECK_EQUAL( reportValue.metricId, 115 );
         BOOST_CHECK_EQUAL( reportValue.quality, InvalidQuality );
         BOOST_CHECK_EQUAL( reportValue.timestamp, make_time_point(2016, 7, 12, 22, 13, 17) );
         BOOST_CHECK_CLOSE( reportValue.value, 245.678, 1e-8 );
@@ -262,7 +269,7 @@ BOOST_AUTO_TEST_CASE( test_processPacket_three_points )
     {
         const auto& reportValue = *report_itr++;
 
-        BOOST_CHECK_EQUAL( reportValue.attribute, Attribute::PowerFactor );
+        BOOST_CHECK_EQUAL( reportValue.metricId, 80 );
         BOOST_CHECK_EQUAL( reportValue.quality, UnknownQuality );
         BOOST_CHECK_EQUAL( reportValue.timestamp, make_time_point(2152, 2, 7, 6, 28, 15) );
         BOOST_CHECK_CLOSE( reportValue.value, 4.294967295e+18, 1e-8 );
@@ -282,15 +289,15 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
         test_RfDataStreamingProcessor::DeviceReport r {
             { "JIMMY", "JOHNS", "GARGANTUAN" },
             {   
-                {   Attribute::Demand,
+                {   5,
                     make_time_point(2016, 7, 12, 22, 13, 18),  //  GMT
                     3.735928559,
                     AbnormalQuality },
-                {   Attribute::Voltage,
+                {   115,
                     make_time_point(2016, 7, 12, 22, 13, 17),  //  GMT
                     245.678,
                     InvalidQuality },
-                {   Attribute::PowerFactor,
+                {   80,
                     make_time_point(2152, 2, 7, 6, 28, 15),    //  GMT
                     4.294967295e+18,
                     UnknownQuality } } };
@@ -304,11 +311,11 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
         {
             auto& pdatum = *pdata_itr++;
 
-            BOOST_CHECK_CLOSE(pdatum->getValue(), 3.735928559, 1e-8);
+            BOOST_CHECK_CLOSE(pdatum->getValue(), 0.003735928559, 1e-8);
             BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 12, 7, 2016 ), 18, 13, 18 ));
             BOOST_CHECK_EQUAL(pdatum->getId(), 123101);  //  device ID 123, point offset 101
             BOOST_CHECK_EQUAL(pdatum->getType(), 1);  //  Analog
-            BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS GARGANTUAN (123) / Analog101 = 3.735929 @ 07/12/2016 18:13:18");
+            BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS GARGANTUAN (123) / Analog101 = 0.003736 @ 07/12/2016 18:13:18");
         }
         {
             auto& pdatum = *pdata_itr++;
@@ -324,7 +331,7 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
         test_RfDataStreamingProcessor::DeviceReport r {
             { "JIMMY", "JOHNS", "VITO" },
             {   
-                {   Attribute::Demand,
+                {   5,
                     make_time_point(2016, 7, 12, 22, 13, 18),
                     3.735928559,
                     AbnormalQuality } } };
@@ -337,15 +344,15 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
         test_RfDataStreamingProcessor::DeviceReport r {
             { "JIMMY", "JOHNS", "TURKEY TOM" },
             {   
-                {   Attribute::PowerFactor,
+                {   80,
                     make_time_point(2016, 7, 12, 22, 13, 18),
                     3.735928559,
                     AbnormalQuality },
-                {   Attribute::VoltagePhaseA,
+                {   100,
                     make_time_point(2016, 7, 12, 22, 13, 17),
                     245.678,
                     InvalidQuality },
-                {   Attribute::CurrentPhaseA,
+                {   103,
                     make_time_point(2152, 2, 7, 6, 28, 15),
                     4.294967295e+18,
                     UnknownQuality } } };
@@ -388,15 +395,15 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
         test_RfDataStreamingProcessor::DeviceReport r {
             { "BANANA", "BOAT", "DAY-O" },
             {   
-                {   Attribute::Demand,
+                {   5,
                     make_time_point(2016, 7, 12, 22, 13, 18),
                     3.735928559,
                     AbnormalQuality },
-                {   Attribute::Voltage,
+                {   115,
                     make_time_point(2016, 7, 12, 22, 13, 17),
                     245.678,
                     InvalidQuality },
-                {   Attribute::PowerFactor,
+                {   80,
                     make_time_point(2152, 2, 7, 6, 28, 15),
                     4.294967295e+18,
                     UnknownQuality } } };

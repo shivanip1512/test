@@ -98,7 +98,7 @@ std::string RfnDataStreamingConfigurationCommand::createJson(const ConfigRespons
     {
         try
         {
-            const auto attribute = MetricIdLookup::getAttribute(metric.metricId);
+            const auto attribute = MetricIdLookup::GetAttribute(metric.metricId);
 
             std::string statusString;
 

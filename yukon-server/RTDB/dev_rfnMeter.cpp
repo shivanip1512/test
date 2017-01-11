@@ -169,11 +169,11 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(ReturnMsgL
     using namespace std::chrono_literals;
 
     const auto channelToEnabledMetric = transformed([](const Channel &channel) {
-            return MetricState { MetricIdLookup::GetForAttribute(channel.attribute),
+            return MetricState { MetricIdLookup::GetMetricId(channel.attribute),
                                  static_cast<unsigned char>(channel.interval.count()) }; });
 
     const auto attributeToDisabledMetric = transformed([](const Attribute &attrib) {
-            return MetricState { MetricIdLookup::GetForAttribute(attrib), 0 }; });
+            return MetricState { MetricIdLookup::GetMetricId(attrib), 0 }; });
 
     auto behavior    = BehaviorManager::getBehaviorForPao   <RfnDataStreamingBehavior>(getID());
     auto deviceState = BehaviorManager::getDeviceStateForPao<RfnDataStreamingBehavior>(getID());
@@ -515,7 +515,7 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
                 }
 
                 MetricIdLookup::MetricId metric =
-                        MetricIdLookup::GetForAttribute(attr);
+                        MetricIdLookup::GetMetricId(attr);
 
                 switch( mode )
                 {
@@ -639,7 +639,7 @@ YukonError_t RfnMeterDevice::compareChannels(
     {
         /* If we have device/config channels mismatched */
 
-        auto metric_to_string = [](const MetricIdLookup::MetricId i) { return MetricIdLookup::getAttribute(i).getName(); };
+        auto metric_to_string = [](const MetricIdLookup::MetricId i) { return MetricIdLookup::GetAttribute(i).getName(); };
 
         PaoMetricIds cfgOnly, meterOnly;
 
