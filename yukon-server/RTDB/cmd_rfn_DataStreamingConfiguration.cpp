@@ -27,6 +27,10 @@ std::array<std::string, 8> statusStrings {
 };
 
 
+RfnDataStreamingConfigurationCommand::RfnDataStreamingConfigurationCommand(const DeviceTypes paoType)
+    :   _paoType { paoType }
+{}
+
 unsigned char RfnDataStreamingConfigurationCommand::getOperation() const
 { 
     return {};  //  unused
@@ -78,7 +82,7 @@ auto RfnDataStreamingConfigurationCommand::decodeConfigResponse(const RfnRespons
 }
 
 
-std::string RfnDataStreamingConfigurationCommand::createJson(const ConfigResponse& response)
+std::string RfnDataStreamingConfigurationCommand::createJson(const ConfigResponse& response, const DeviceTypes paoType)
 {
     StreamBuffer metricDescription;
 
@@ -98,7 +102,7 @@ std::string RfnDataStreamingConfigurationCommand::createJson(const ConfigRespons
     {
         try
         {
-            const auto attribute = MetricIdLookup::GetAttribute(metric.metricId);
+            const auto attribute = MetricIdLookup::GetAttribute(metric.metricId, paoType);
 
             std::string statusString;
 
@@ -157,6 +161,10 @@ std::string RfnDataStreamingConfigurationCommand::createJson(const ConfigRespons
 
 
 
+RfnDataStreamingGetMetricsListCommand::RfnDataStreamingGetMetricsListCommand(const DeviceTypes paoType)
+    :   RfnDataStreamingConfigurationCommand(paoType)
+{}
+
 unsigned char RfnDataStreamingGetMetricsListCommand::getCommandCode() const 
 { 
     return CommandCode_Request; 
@@ -176,17 +184,20 @@ RfnCommandResult RfnDataStreamingGetMetricsListCommand::decodeCommand(const CtiT
 {
     const auto cr = decodeConfigResponse(response);
 
-    return createJson(cr);
+    return createJson(cr, _paoType);
 }
 
 
-RfnDataStreamingSetMetricsCommand::RfnDataStreamingSetMetricsCommand(StreamingState enabled) 
-    :   _enabled(enabled) 
+RfnDataStreamingSetMetricsCommand::RfnDataStreamingSetMetricsCommand(const DeviceTypes paoType, StreamingState enabled)
+    :   RfnDataStreamingConfigurationCommand(paoType),
+        _enabled(enabled) 
 {}
 
-RfnDataStreamingSetMetricsCommand::RfnDataStreamingSetMetricsCommand(MetricList&& states) 
-    :   _enabled(StreamingEnabled), 
-        _states(std::move(states)) {}
+RfnDataStreamingSetMetricsCommand::RfnDataStreamingSetMetricsCommand(const DeviceTypes paoType, MetricList&& states) 
+    :   RfnDataStreamingConfigurationCommand(paoType),
+        _enabled(StreamingEnabled), 
+        _states(std::move(states)) 
+{}
 
 
 unsigned char RfnDataStreamingSetMetricsCommand::getCommandCode() const 
@@ -222,7 +233,7 @@ RfnCommandResult RfnDataStreamingSetMetricsCommand::decodeCommand(const CtiTime 
 {
     const auto cr = decodeConfigResponse(response);
 
-    auto json = createJson(cr);
+    auto json = createJson(cr, _paoType);
 
     //  If we've gotten this far, all of the enabled channels have an a MetricStatus of OK.
     if( _enabled != cr.streamingEnabled )

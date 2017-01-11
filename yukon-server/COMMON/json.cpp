@@ -107,7 +107,7 @@ void parseAttributeOverrides(const json::Array& attributeOverrides)
                 const Attribute &attribute = Attribute::Lookup(attributeName.Value());
 
                 //  Check to make sure the attribute has been added in the global list
-                const auto globalMetricId = MetricIdLookup::GetMetricId(attribute);
+                const auto globalMetricId = MetricIdLookup::GetMetricId(attribute, TYPE_NONE);
 
                 //  Add the override for each of the pao types
                 for( auto paoType : paoTypes )

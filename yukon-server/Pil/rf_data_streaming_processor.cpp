@@ -236,7 +236,7 @@ auto RfDataStreamingProcessor::processDeviceReport(const DeviceReport& deviceRep
         {
             try
             {
-                const auto attributeDescriptor = MetricIdLookup::GetAttributeDescription(drValue.metricId);
+                const auto attributeDescriptor = MetricIdLookup::GetAttributeDescription(drValue.metricId, device->getDeviceType());
 
                 double value = drValue.value;
 

@@ -130,7 +130,7 @@ YukonError_t RfnMeterDevice::executeGetConfigBehavior(CtiRequestMsg *pReq, CtiCo
     {
         if( *behaviorType == "rfndatastreaming" )
         {
-            rfnRequests.push_back(boost::make_shared<Commands::RfnDataStreamingGetMetricsListCommand>());
+            rfnRequests.push_back(boost::make_shared<Commands::RfnDataStreamingGetMetricsListCommand>(getDeviceType()));
 
             return ClientErrors::None;
         }
@@ -168,12 +168,12 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(ReturnMsgL
 
     using namespace std::chrono_literals;
 
-    const auto channelToEnabledMetric = transformed([](const Channel &channel) {
-            return MetricState { MetricIdLookup::GetMetricId(channel.attribute),
+    const auto channelToEnabledMetric = transformed([this](const Channel &channel) {
+            return MetricState { MetricIdLookup::GetMetricId(channel.attribute, getDeviceType()),
                                  static_cast<unsigned char>(channel.interval.count()) }; });
 
-    const auto attributeToDisabledMetric = transformed([](const Attribute &attrib) {
-            return MetricState { MetricIdLookup::GetMetricId(attrib), 0 }; });
+    const auto attributeToDisabledMetric = transformed([this](const Attribute &attrib) {
+            return MetricState { MetricIdLookup::GetMetricId(attrib, getDeviceType()), 0 }; });
 
     auto behavior    = BehaviorManager::getBehaviorForPao   <RfnDataStreamingBehavior>(getID());
     auto deviceState = BehaviorManager::getDeviceStateForPao<RfnDataStreamingBehavior>(getID());
@@ -183,6 +183,7 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(ReturnMsgL
         //  No assigned behavior, disable on the device.
         rfnRequests.push_back(
                 boost::make_shared<RfnDataStreamingSetMetricsCommand>(
+                        getDeviceType(), 
                         RfnDataStreamingSetMetricsCommand::StreamingDisabled));
     }
     else if( behavior->channels.empty() )
@@ -196,6 +197,7 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(ReturnMsgL
         //  We have an assigned behavior, but we have no device state - so just enable the requested channels as a best-effort attempt.
         rfnRequests.push_back(
                 boost::make_shared<RfnDataStreamingSetMetricsCommand>(
+                        getDeviceType(), 
                         boost::copy_range<MetricList>(
                                 behavior->channels | channelToEnabledMetric)));
     }
@@ -272,6 +274,7 @@ YukonError_t RfnMeterDevice::executePutConfigBehaviorRfnDataStreaming(ReturnMsgL
 
         rfnRequests.push_back(
                 boost::make_shared<RfnDataStreamingSetMetricsCommand>(
+                        getDeviceType(), 
                         std::move(metrics)));
     }
 
@@ -515,7 +518,7 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
                 }
 
                 MetricIdLookup::MetricId metric =
-                        MetricIdLookup::GetMetricId(attr);
+                        MetricIdLookup::GetMetricId(attr, getDeviceType());
 
                 switch( mode )
                 {
@@ -639,7 +642,7 @@ YukonError_t RfnMeterDevice::compareChannels(
     {
         /* If we have device/config channels mismatched */
 
-        auto metric_to_string = [](const MetricIdLookup::MetricId i) { return MetricIdLookup::GetAttribute(i).getName(); };
+        auto metric_to_string = [this](const MetricIdLookup::MetricId i) { return MetricIdLookup::GetAttribute(i, getDeviceType()).getName(); };
 
         PaoMetricIds cfgOnly, meterOnly;
 

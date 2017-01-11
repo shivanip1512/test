@@ -43,8 +43,15 @@ void MetricIdLookup::AddUnmappedAttribute(const MetricMappingNotFound& ex)
     unmappedAttributes.push_back(ex);
 }
 
-MetricIdLookup::MetricId MetricIdLookup::GetMetricId(const Attribute &attrib)
+MetricIdLookup::MetricId MetricIdLookup::GetMetricId(const Attribute &attrib, const DeviceTypes type)
 {
+    //  First, look for the pao-specific override
+    if( auto metricId = mapFind(paoMetrics, {type, attrib}) )
+    {
+        return *metricId;
+    }
+
+    //  Then look for a global instance
     try
     {
         return attributes.left.at(attrib);
@@ -55,8 +62,15 @@ MetricIdLookup::MetricId MetricIdLookup::GetMetricId(const Attribute &attrib)
     }
 }
 
-Attribute MetricIdLookup::GetAttribute(const MetricId metric)
+Attribute MetricIdLookup::GetAttribute(const MetricId metric, const DeviceTypes type)
 {
+    //  First, look for the pao-specific override
+    if( auto attribute = mapFind(paoAttributes, {type, metric}) )
+    {
+        return *attribute;
+    }
+
+    //  Then look for a global instance
     try
     {
         return attributes.right.at(metric);
@@ -67,9 +81,9 @@ Attribute MetricIdLookup::GetAttribute(const MetricId metric)
     }
 }
 
-auto MetricIdLookup::GetAttributeDescription(const MetricId metric) -> AttributeDescriptor
+auto MetricIdLookup::GetAttributeDescription(const MetricId metric, const DeviceTypes type) -> AttributeDescriptor
 {
-    const auto attrib = GetAttribute(metric);
+    const auto attrib = GetAttribute(metric, type);
     return { attrib, attributeMagnitudes[attrib] };
 }
 

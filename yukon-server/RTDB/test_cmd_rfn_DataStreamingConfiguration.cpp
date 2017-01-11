@@ -13,7 +13,7 @@ static const CtiTime execute_time{ CtiDate{ 24, 6, 2016 }, 12, 34, 56 };
 
 BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand)
 {
-    RfnDataStreamingGetMetricsListCommand cmd;
+    RfnDataStreamingGetMetricsListCommand cmd { TYPE_RFN420CL };
 
     // execute
     {
@@ -77,9 +77,75 @@ R"SQUID(json{
 }
 
 
+BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_430Sentinel)
+{
+    RfnDataStreamingGetMetricsListCommand cmd { TYPE_RFN430SL0 };
+
+    // execute
+    {
+        RfnCommand::RfnRequestPayload rcv = cmd.executeCommand(execute_time);
+        RfnCommand::RfnRequestPayload exp{ 
+            0x84,  //  command code
+        };
+
+        BOOST_CHECK_EQUAL_RANGES(rcv, exp);
+    }
+
+    // decode
+    {
+        const std::vector<unsigned char> response{
+        0x85,       //  command code
+            0x03,  //  number of metrics
+            0x01,  //  data streaming on/off
+            0x00, 0xc8,  //  metric ID 1
+            0x01,          //  metric ID 1 enable/disable
+            0x05,          //  metric ID 1 interval
+            0x00,          //  metric ID 1 status
+            0x00, 0x73,  //  metric ID 2
+            0x00,          //  metric ID 2 enable/disable
+            0x0f,          //  metric ID 2 interval
+            0x01,          //  metric ID 2 status
+            0x00, 0x50,  //  metric ID 3
+            0x01,          //  metric ID 3 enable/disable
+            0x1e,          //  metric ID 3 interval
+            0x02,          //  metric ID 3 status
+            0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
+
+        RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
+
+        const std::string desc_exp =
+R"SQUID(json{
+"streamingEnabled" : true,
+"configuredMetrics" : [
+  {
+    "attribute" : "DEMAND",
+    "interval" : 5,
+    "enabled" : true,
+    "status" : "OK"
+  },
+  {
+    "attribute" : "VOLTAGE",
+    "interval" : 15,
+    "enabled" : false,
+    "status" : "METER_ACCESS_ERROR"
+  },
+  {
+    "attribute" : "POWER_FACTOR",
+    "interval" : 30,
+    "enabled" : true,
+    "status" : "METER_OR_NODE_BUSY"
+  }],
+"sequence" : 3735928559
+})SQUID";
+
+        BOOST_CHECK_EQUAL(rcv.description, desc_exp);
+    }
+}
+
+
 BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_globally_disabled)
 {
-    RfnDataStreamingGetMetricsListCommand cmd;
+    RfnDataStreamingGetMetricsListCommand cmd { TYPE_RFN420CL };
 
     // execute
     {
@@ -151,7 +217,7 @@ R"SQUID(json{
 
 BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_invalid_metric_id)
 {
-    RfnDataStreamingGetMetricsListCommand cmd;
+    RfnDataStreamingGetMetricsListCommand cmd { TYPE_RFN420CL };
 
     // execute
     {
@@ -211,7 +277,7 @@ R"SQUID(json{
 
 BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_enable)
 {
-    RfnDataStreamingSetMetricsCommand cmd{ RfnDataStreamingConfigurationCommand::StreamingEnabled };
+    RfnDataStreamingSetMetricsCommand cmd{ TYPE_RFN420CL, RfnDataStreamingConfigurationCommand::StreamingEnabled };
 
     {
         RfnCommand::RfnRequestPayload rcv = cmd.executeCommand(execute_time);
@@ -276,7 +342,7 @@ R"SQUID(json{
 
 BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_disable)
 {
-    RfnDataStreamingSetMetricsCommand cmd{ RfnDataStreamingConfigurationCommand::StreamingDisabled };
+    RfnDataStreamingSetMetricsCommand cmd{ TYPE_RFN420CL, RfnDataStreamingConfigurationCommand::StreamingDisabled };
 
     // execute
     {
@@ -345,7 +411,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_one)
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ { MetricState{ 5, 5 } } };
+    RfnDataStreamingSetMetricsCommand cmd{ TYPE_RFN420CL, { MetricState{ 5, 5 } } };
 
     // execute
     {
@@ -398,7 +464,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_disable_one)
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ { MetricState{ 80, 0 } } };
+    RfnDataStreamingSetMetricsCommand cmd{ TYPE_RFN420CL, { MetricState{ 80, 0 } } };
 
     // execute
     {
@@ -451,7 +517,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_two)
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ { 
+    RfnDataStreamingSetMetricsCommand cmd{ TYPE_RFN420CL, { 
             MetricState{ 5, 5 }, 
             MetricState{ 80, 15 } } };
 
@@ -479,7 +545,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_one_disable_o
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ { 
+    RfnDataStreamingSetMetricsCommand cmd{ TYPE_RFN420CL, { 
             MetricState{ 5, 5 }, 
             MetricState{ 80, 0 } } };
 
@@ -507,7 +573,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_enable_f
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ RfnDataStreamingSetMetricsCommand::StreamingEnabled };
+    RfnDataStreamingSetMetricsCommand cmd{ TYPE_RFN420CL, RfnDataStreamingSetMetricsCommand::StreamingEnabled };
 
     // execute
     {
@@ -564,7 +630,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_disable_
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ RfnDataStreamingSetMetricsCommand::StreamingDisabled };
+    RfnDataStreamingSetMetricsCommand cmd{ TYPE_RFN420CL, RfnDataStreamingSetMetricsCommand::StreamingDisabled };
 
     // execute
     {
@@ -621,7 +687,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_channel_
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ { 
+    RfnDataStreamingSetMetricsCommand cmd{ TYPE_RFN420CL, { 
             MetricState{ 5, 5 }, 
             MetricState{ 80, 0 } } };
 
@@ -696,7 +762,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_channel_
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ { 
+    RfnDataStreamingSetMetricsCommand cmd{ TYPE_RFN420CL, { 
             MetricState{ 5, 5 }, 
             MetricState{ 80, 0 } } };
 
@@ -771,7 +837,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_channel_
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ { 
+    RfnDataStreamingSetMetricsCommand cmd{ TYPE_RFN420CL, { 
             MetricState{ 5, 5 } } };
 
     // execute
@@ -832,7 +898,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_interval
 {
     using MetricState = RfnDataStreamingSetMetricsCommand::MetricState;
 
-    RfnDataStreamingSetMetricsCommand cmd{ { 
+    RfnDataStreamingSetMetricsCommand cmd{ TYPE_RFN420CL, { 
             MetricState{ 5, 5 } } };
 
     // execute

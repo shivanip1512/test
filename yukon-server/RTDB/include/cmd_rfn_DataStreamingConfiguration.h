@@ -26,6 +26,8 @@ public:
 
 protected:
 
+    RfnDataStreamingConfigurationCommand(const DeviceTypes paoType);
+
     struct ConfigResponse
     {
         bool streamingEnabled;
@@ -41,9 +43,11 @@ protected:
     };
     
     ConfigResponse decodeConfigResponse(const RfnResponsePayload & response) const;
-    static std::string createJson(const ConfigResponse& response);
+    static std::string createJson(const ConfigResponse& response, const DeviceTypes paoType);
 
     virtual unsigned char getResponseCode() const = 0;
+
+    const DeviceTypes _paoType;
 
     MetricList _deviceMetrics;
     StreamingState _deviceStreamingState;
@@ -57,6 +61,8 @@ private:
 class IM_EX_DEVDB RfnDataStreamingGetMetricsListCommand : public RfnDataStreamingConfigurationCommand, NoResultHandler
 {
 public:
+    RfnDataStreamingGetMetricsListCommand(const DeviceTypes paoType);
+
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
 
 private:
@@ -76,8 +82,8 @@ private:
 class IM_EX_DEVDB RfnDataStreamingSetMetricsCommand : public RfnDataStreamingConfigurationCommand, NoResultHandler
 {
 public:
-    RfnDataStreamingSetMetricsCommand(StreamingState enabled);
-    RfnDataStreamingSetMetricsCommand(MetricList&& states);
+    RfnDataStreamingSetMetricsCommand(const DeviceTypes paoType, StreamingState enabled);
+    RfnDataStreamingSetMetricsCommand(const DeviceTypes paoType, MetricList&& states);
 
     RfnCommandResult decodeCommand(const CtiTime now, const RfnResponsePayload & response) override;
 

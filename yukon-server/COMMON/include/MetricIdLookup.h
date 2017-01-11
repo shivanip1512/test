@@ -27,10 +27,10 @@ public:
     static void AddUnknownAttribute (const AttributeNotFound & ex);  //  Attribute lookup failed during load
     static void AddUnmappedAttribute(const MetricMappingNotFound & ex);  //  Metric lookup for override failed during load
 
-    static MetricId  GetMetricId (const Attribute &attrib);
+    static MetricId  GetMetricId (const Attribute &attrib, const DeviceTypes type);
 
-    static Attribute GetAttribute(const MetricId metric);
-    static AttributeDescriptor GetAttributeDescription(const MetricId metric);
+    static Attribute GetAttribute(const MetricId metric, const DeviceTypes type);
+    static AttributeDescriptor GetAttributeDescription(const MetricId metric, const DeviceTypes type);
 
     static std::vector<AttributeNotFound> getUnknownAttributes();
     static std::vector<MetricMappingNotFound>  getUnmappedAttributes();
