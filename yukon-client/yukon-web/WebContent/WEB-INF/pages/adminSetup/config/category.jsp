@@ -71,7 +71,7 @@ function showHideData(id, showData) {
                                                 <div class="dib M0">
                                                     <form:password path="${setting.path}" id="sensitiveField_${setting.extra.type}" showPassword="true" />
                                                     <tags:check id="${setting.extra.type}" name="showHideButton_${setting.extra.type}" classes="fr M0 js-eye-icon">
-                                                        <i class="icon icon-eye" id="showhide_${setting.extra.type}"></i>
+                                                        <i title="<i:inline key="yukon.web.modules.adminSetup.config.showHideData"/>" class="icon icon-eye" id="showhide_${setting.extra.type}"></i>
                                                     </tags:check>
                                                 </div>
                                             </c:when>
