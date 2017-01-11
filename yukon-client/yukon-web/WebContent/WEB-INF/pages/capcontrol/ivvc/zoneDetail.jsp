@@ -29,8 +29,7 @@
 
 <div class="column-10-14">
     <div class="column one">
-        <c:set var="cogs"><cti:icon icon="icon-cog" classes="fr"/></c:set>
-        <tags:sectionContainer2 nameKey="details" controls="${cogs}">
+        <tags:sectionContainer2 nameKey="details">
         
             <table class="compact-results-table has-alerts has-actions">
                 <thead></thead>
@@ -62,7 +61,7 @@
 
                             <a href="${regulatorUrl}">${fn:escapeXml(regulatorNameMap[phaseKey])}</a>
                             
-                            <cm:dropdown data-pao-id="${regulatorIdMap[phaseKey]}" triggerClasses="fr">
+                            <cm:dropdown data-pao-id="${regulatorIdMap[phaseKey]}" triggerClasses="fr vv">
                                 <cm:dropdownOption key=".scan.label" icon="icon-transmit-blue" classes="js-command-button" 
                                     data-pao-id="${regulatorIdMap[phaseKey]}" data-command-id="${scanCommandHolder.commandId}" />
                                 <cm:dropdownOption key=".up.label" icon="icon-arrow-up-green" classes="js-command-button" 
