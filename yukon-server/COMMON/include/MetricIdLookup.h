@@ -1,11 +1,15 @@
 #pragma once
 
 #include "PointAttribute.h"
+#include "devicetypes.h"
 
 #include <set>
 
 namespace Cti {
 
+//  forward declaration
+struct IM_EX_CTIBASE MetricMappingNotFound;
+        
 class IM_EX_CTIBASE MetricIdLookup
 {
 public:
@@ -19,7 +23,9 @@ public:
     };
 
     static void AddMetricForAttribute(const AttributeDescriptor & attribute, const MetricId metric);
+    static void AddAttributeOverride (const Attribute & attribute, const MetricId metric, const DeviceTypes type);
     static void AddUnknownAttribute (const AttributeNotFound & ex);  //  Attribute lookup failed during load
+    static void AddUnmappedAttribute(const MetricMappingNotFound & ex);  //  Metric lookup for override failed during load
 
     static MetricId  GetMetricId (const Attribute &attrib);
 
@@ -27,14 +33,23 @@ public:
     static AttributeDescriptor GetAttributeDescription(const MetricId metric);
 
     static std::vector<AttributeNotFound> getUnknownAttributes();
+    static std::vector<MetricMappingNotFound>  getUnmappedAttributes();
 
 private:
     using attribute_bimap = boost::bimap< Attribute, MetricId >;
     using position = attribute_bimap::value_type;
 
     static attribute_bimap attributes;
+
+    using pao_attributes = std::map< std::pair< DeviceTypes, MetricId >, Attribute >;
+    using pao_metrics    = std::map< std::pair< DeviceTypes, Attribute >, MetricId >;
+
+    static pao_attributes paoAttributes;
+    static pao_metrics    paoMetrics;
+
     static std::map< Attribute, int > attributeMagnitudes;
     static std::vector<AttributeNotFound> unknownAttributes;
+    static std::vector<MetricMappingNotFound>  unmappedAttributes;
 };
 
 struct IM_EX_CTIBASE MetricMappingNotFound : std::exception

@@ -112,6 +112,9 @@
                 { "metricId" : 4029, "attributeMagnitude" : 3, "attribute" : "NET_DELIVERED_KVARH_RATE_D" },
                 { "metricId" : 4030, "attributeMagnitude" : 3, "attribute" : "NET_RECEIVED_KVARH_RATE_D" },
                 { "metricId" : 4034, "attributeMagnitude" : 3, "attribute" : "PEAK_KVAR_RATE_D" }
+        ],
+        "attributeOverrides" : [
+                { "attribute" : "DEMAND", "metricId" : 200, "paoTypes" : [ "rfn-430sl0", "rfn-430sl1", "rfn-430sl2", "rfn-430sl3", "rfn-430sl4" ] }
         ]
 }
 

@@ -4,6 +4,8 @@
 
 #include "resource_helper.h"
 
+#include "resolvers.h"
+
 #include "cajun/reader.h"
 
 #include <sstream>
@@ -12,7 +14,8 @@ namespace Cti {
 
 using namespace std::string_literals;
 
-void parseMetricMappings(const json::Array& metricMappings);
+void parseMetricMappings    (const json::Array& metricMappings);
+void parseAttributeOverrides(const json::Array& attributeOverrides);
 
 void parseJsonFiles()
 {
@@ -30,7 +33,8 @@ void parseJsonFiles()
     {
     }
 
-    parseMetricMappings(root["metricMapping"]);
+    parseMetricMappings    (root["metricMapping"]);
+    parseAttributeOverrides(root["attributeOverrides"]);
 }
 
 void parseMetricMappings(const json::Array& metricMappings)
@@ -65,6 +69,59 @@ void parseMetricMappings(const json::Array& metricMappings)
             catch (const AttributeNotFound&)
             {
                 MetricIdLookup::AddUnknownAttribute(attributeName.Value());
+            }
+        }
+        catch (const json::Exception& e)
+        {
+            std::cout << "Caught json::Exception: " << e.what() << std::endl << std::endl;
+        }
+    }
+}
+
+void parseAttributeOverrides(const json::Array& attributeOverrides)
+{
+    for( auto itr = attributeOverrides.Begin(); itr != attributeOverrides.End(); ++itr )
+    {
+        const json::Object& obj = *itr;
+
+        try
+        {
+            json::String attributeName  = obj["attribute"];
+            json::Number metricId       = obj["metricId"];
+            json::Array  paoTypeStrings = obj["paoTypes"];
+
+            std::set<DeviceTypes> paoTypes;
+
+            for( auto paoTypeItr = paoTypeStrings.Begin(); paoTypeItr != paoTypeStrings.End(); ++paoTypeItr )
+            {
+                const auto paoType = resolveDeviceType(static_cast<const json::String&>(*paoTypeItr));
+
+                if( paoType != TYPE_NONE )
+                {
+                    paoTypes.insert(paoType);
+                }
+            }
+
+            try
+            {
+                const Attribute &attribute = Attribute::Lookup(attributeName.Value());
+
+                //  Check to make sure the attribute has been added in the global list
+                const auto globalMetricId = MetricIdLookup::GetMetricId(attribute);
+
+                //  Add the override for each of the pao types
+                for( auto paoType : paoTypes )
+                {
+                    MetricIdLookup::AddAttributeOverride(attribute, metricId.Value(), paoType);
+                }
+            }
+            catch (const AttributeNotFound& ex)
+            {
+                MetricIdLookup::AddUnknownAttribute(ex);
+            }
+            catch (const MetricMappingNotFound& ex)
+            {
+                MetricIdLookup::AddUnmappedAttribute(ex);
             }
         }
         catch (const json::Exception& e)

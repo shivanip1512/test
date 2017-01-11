@@ -11,6 +11,10 @@ namespace Cti {
 MetricIdLookup::attribute_bimap MetricIdLookup::attributes;
 std::map< Attribute, int > MetricIdLookup::attributeMagnitudes;
 std::vector<AttributeNotFound> MetricIdLookup::unknownAttributes;
+std::vector<MetricMappingNotFound> MetricIdLookup::unmappedAttributes;
+
+MetricIdLookup::pao_attributes MetricIdLookup::paoAttributes;
+MetricIdLookup::pao_metrics    MetricIdLookup::paoMetrics;
 
 void MetricIdLookup::AddMetricForAttribute(const AttributeDescriptor &attributeDescriptor, const MetricId metric)
 {
@@ -18,9 +22,25 @@ void MetricIdLookup::AddMetricForAttribute(const AttributeDescriptor &attributeD
     attributeMagnitudes.emplace(attributeDescriptor.attrib, attributeDescriptor.magnitude);
 }
 
+void MetricIdLookup::AddAttributeOverride(const Attribute& attribute, const MetricId metric, const DeviceTypes type)
+{
+    if( ! attributes.left.count(attribute) )
+    {
+        throw MetricMappingNotFound(attribute);
+    }
+
+    paoAttributes.emplace(std::make_pair(type, metric), attribute);
+    paoMetrics.emplace(std::make_pair(type, attribute), metric);
+}
+
 void MetricIdLookup::AddUnknownAttribute(const AttributeNotFound& ex)
 {
     unknownAttributes.push_back(ex);
+}
+
+void MetricIdLookup::AddUnmappedAttribute(const MetricMappingNotFound& ex)
+{
+    unmappedAttributes.push_back(ex);
 }
 
 MetricIdLookup::MetricId MetricIdLookup::GetMetricId(const Attribute &attrib)
@@ -58,6 +78,10 @@ std::vector<AttributeNotFound> MetricIdLookup::getUnknownAttributes()
     return unknownAttributes;
 }
 
+std::vector<MetricMappingNotFound> MetricIdLookup::getUnmappedAttributes()
+{
+    return unmappedAttributes;
+}
 
 MetricMappingNotFound::MetricMappingNotFound(const Attribute &attrib)
     :   attribute(attrib)

@@ -20,6 +20,17 @@ BOOST_AUTO_TEST_CASE(test_unknownAttributes)
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_overrideFailures)
+{
+    const auto unmapped = Cti::MetricIdLookup::getUnmappedAttributes();
+
+    for( const auto& metricIdNotFound : unmapped )
+    {
+        BOOST_ERROR( "Attribute override mapping has unmapped attribute " + metricIdNotFound.attribute.getName() + 
+            " - attributes must be added to metricMapping before they can be overridden in attributeOverrides" );
+    }
+}
+
 BOOST_AUTO_TEST_CASE(test_GetMetricId_success)
 {
     const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::DeliveredkWh);
