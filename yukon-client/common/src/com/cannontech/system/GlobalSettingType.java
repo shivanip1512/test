@@ -195,7 +195,9 @@ public enum GlobalSettingType implements DisplayableEnum {
                this == RFN_FIRMWARE_UPDATE_SERVER_USER || 
                this == RFN_FIRMWARE_UPDATE_SERVER_PASSWORD ||
                this == HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING ||
-               this == HONEYWELL_WIFI_SERVICE_BUS_QUEUE;
+               this == HONEYWELL_WIFI_SERVICE_BUS_QUEUE ||
+               this == HONEYWELL_CLIENTID ||
+               this == HONEYWELL_SECRET;
     }
 
     public Object getDefaultValue() {
