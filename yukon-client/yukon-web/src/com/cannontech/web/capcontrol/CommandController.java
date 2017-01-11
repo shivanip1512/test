@@ -28,6 +28,8 @@ import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.cbc.service.CapControlCommentService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -36,6 +38,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.capcontrol.model.BankMove;
 import com.cannontech.message.capcontrol.model.CapControlCommand;
 import com.cannontech.message.capcontrol.model.CapControlServerResponse;
@@ -48,6 +51,7 @@ import com.cannontech.message.capcontrol.model.VerifySelectedBank;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.StreamableCapObject;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -67,6 +71,7 @@ public class CommandController {
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PaoDao paoDao;
     @Autowired private CapControlCommentService capControlCommentService;
+    @Autowired private DbChangeManager dbChangeManager;
     
     private static final Logger log = YukonLogManager.getLogger(CommandController.class);
 
@@ -375,7 +380,12 @@ public class CommandController {
         } catch (CommandExecutionException e) {
             success = false;
         }
-        
+        // Added a dbChangemsg for YUK-15684 as the statistics values were not being dynamically updated on the page
+        // as our current cap control cache does not get updated unless we receive specific messages.
+        int substationId =
+            cache.getSubBus(cache.getFeeder(cache.getCapBankDevice(paoId).getParentID()).getParentID()).getParentID();
+        dbChangeManager.processPaoDbChange(PaoIdentifier.of(substationId, PaoType.CAP_CONTROL_SUBSTATION),
+            DbChangeType.UPDATE);
         return sendStatusResponse(response, accessor, CommandType.MANUAL_ENTRY, bankName, model, success);
     }
     
