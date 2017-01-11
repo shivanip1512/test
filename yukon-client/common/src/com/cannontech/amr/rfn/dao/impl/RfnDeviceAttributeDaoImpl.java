@@ -80,6 +80,9 @@ public class RfnDeviceAttributeDaoImpl implements RfnDeviceAttributeDao {
         public void setMetricMapping(List<MetricIdAttribute> map) {
             metricMapping = map;
         }
+        public void setAttributeOverrides(List<AttributeOverride> overrides) {
+            attributeOverrides = overrides;
+        }
     }
 
     @PostConstruct
