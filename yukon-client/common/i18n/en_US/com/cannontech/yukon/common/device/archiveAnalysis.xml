@@ -211,10 +211,6 @@
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.fieldSize">Field Size</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.padding">Padding</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.preview.title">Preview</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.preview.information.title">Preview Info</entry>
-    <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.preview.information"><![CDATA[ Exports that have static width will show a ruler at the top. 
-            <br> Check padding and Max length values if it does not show.
-            <br> <br> Ruler has markings at 5 and 10 characters.]]></entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.preview.rulerNumbers">         10        20        30        40        50        60        70        80        90        100       110       120       130</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.preview.rulerMarks"  >....:....|....:....|....:....|....:....|....:....|....:....|....:....|....:....|....:....|....:....|....:....|....:....|....:....|....:</entry>
     <entry key="yukon.web.modules.tools.bulk.archivedValueExporter.editAttribute.title">Edit Attribute</entry>

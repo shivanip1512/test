@@ -5,7 +5,6 @@ import java.util.List;
 
 public class Preview {
 
-    private boolean isStatic = false;
     private String header = "";
     private List<String> body = new ArrayList<>();
     private String footer = "";
@@ -34,12 +33,5 @@ public class Preview {
         this.footer = footer;
     }
 
-    public boolean getIsStatic() {
-        return isStatic;
-    }
-
-    public void setIsStatic(boolean isStatic) {
-        this.isStatic = isStatic;
-    }
 
 }

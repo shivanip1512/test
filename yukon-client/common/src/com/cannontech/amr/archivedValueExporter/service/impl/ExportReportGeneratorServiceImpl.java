@@ -135,7 +135,6 @@ public class ExportReportGeneratorServiceImpl implements ExportReportGeneratorSe
         Preview preview = new Preview();
         preview.setHeader(format.getHeader());
         preview.setFooter(format.getFooter());
-        preview.setIsStatic(checkStatic(format));
 
         try (
                 ByteArrayOutputStream output = new ByteArrayOutputStream();
