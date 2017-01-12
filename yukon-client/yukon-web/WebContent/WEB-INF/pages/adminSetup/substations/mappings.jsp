@@ -117,7 +117,7 @@
                <c:choose>
                  <c:when test="${substationRouteMapping.avList!=null}">
                     <div style="height:200px;">
-                     <form:select path="selectedRoutes" multiple="true" size="11" cssStyle="min-width: 370px;width: auto;">
+                     <form:select path="selectedRoutes" multiple="true" size="11" cssStyle="width:370px;">
                        <form:options class="selectedRoutes" id="routes" items="${substationRouteMapping.avList}" itemValue="id" title="name" itemLabel="name"/> 
                        <form:options items="${avList}" itemValue="id" title="name" itemLabel="name"/>
                      </form:select> 
