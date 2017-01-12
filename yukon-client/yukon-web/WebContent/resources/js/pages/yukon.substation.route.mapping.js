@@ -86,9 +86,7 @@ yukon.admin.substations = (function () {
 	                        method: 'post',
 	                        data: { routeIds: routeIds, substationId: substationId}
 	                    }).done(function () {
-	                    	$("div.user-message").remove();
-	                    	$('#saveStatusMessage').addMessage({message:'Changes Saved Successfully', messageClass:'success'}).show();
-	                    	yukon.ui.unbusy('#saveAllRoutes');
+	                    	window.location.reload();
 	                    });
 
 	                });

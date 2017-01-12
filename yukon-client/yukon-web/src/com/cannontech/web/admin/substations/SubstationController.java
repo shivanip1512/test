@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -80,17 +81,14 @@ public class SubstationController {
     }
 
     @RequestMapping(value = "/routeMapping/save", method = RequestMethod.POST)
-    public String saveRoutes(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext,
+    public void saveRoutes(HttpServletRequest request, HttpServletResponse response, YukonUserContext userContext,
             FlashScope flashScope, ModelMap modelMap,
             @RequestParam(value = "routeIds[]", required = false, defaultValue = "") List<Integer> routeIds,
             @RequestParam(value = "substationId", required = false, defaultValue = "") Integer substationId) {
-        if (substationId == null) {
-            return "redirect:view";
-        }
         List<Integer> routeIdList = routeIds;
         strmDao.update(substationId, routeIdList);
         flashScope.setConfirm(new YukonMessageSourceResolvable(BASE_KEY + "routesUpdated"));
-        return "redirect:view";
+        response.setStatus(HttpStatus.NO_CONTENT.value());
     }
 
     @RequestMapping(value = "routeMapping/save", params = "addSubstation", method = RequestMethod.POST)
