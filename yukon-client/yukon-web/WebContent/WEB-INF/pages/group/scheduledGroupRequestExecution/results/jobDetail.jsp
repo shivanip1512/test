@@ -36,6 +36,7 @@
 <cti:msg var="queuedRetryCountText" key="yukon.common.device.schedules.home.retry.queuedRetryCount"/>
 <cti:msg var="nonQueuedRetryCountText" key="yukon.common.device.schedules.home.retry.nonQueuedRetryCount"/>
 <cti:msg var="maxTotalRunTimeHoursText" key="yukon.common.device.schedules.home.retry.maxTotalRunTimeHours"/>
+<cti:msg var="notApplicable" key="yukon.common.na"/>
 
 <cti:msg var="take20" argument="20px" />
 
@@ -43,8 +44,8 @@
     function toggleLastRunLink() {
       //assumes data is of type Hash
         return function(data) {
-            var creCount = data.value;
-            if (creCount > 0) {
+            var lastRunDate = data.value;
+            if (lastRunDate !== "${notApplicable}") {
                 $('#noLastRunSpan').hide();
                 $('#hasLastRunSpan').show();
             } else {
@@ -163,7 +164,7 @@
         <tags:nameValue name="${lastRunText}">
         
             <cti:dataUpdaterCallback function="toggleLastRunLink()"
-                value="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/CRE_COUNT_FOR_JOB"/>
+                value="SCHEDULED_GROUP_REQUEST_EXECUTION/${jobWrapper.job.id}/LAST_RUN_DATE"/>
             
             <c:choose>
                 <c:when test="${empty jobWrapper.lastRun}">
