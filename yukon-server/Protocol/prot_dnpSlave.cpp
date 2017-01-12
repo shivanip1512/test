@@ -101,7 +101,7 @@ auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) ->
 
     auto application_payload = transport_packet.payload();
 
-    if( application_payload.size() <= ApplicationLayer::ReqHeaderSize )
+    if( application_payload.size() < ApplicationLayer::ReqHeaderSize )
     {
         return Invalid;
     }
@@ -115,7 +115,7 @@ auto DnpSlaveProtocol::identifyRequest( const char* data, unsigned int size ) ->
     {
         default:
         {
-            return Invalid;
+            return { Commands::Unsupported, nullptr };
         }
         case ApplicationLayer::RequestDisableUnsolicited:
         {
@@ -369,6 +369,18 @@ void DnpSlaveProtocol::setAnalogOutputCommand( const DnpSlave::analog_output_req
 
     //  finalize the request
     _application.initForSlaveOutput();
+}
+
+
+void DnpSlaveProtocol::setUnsupportedCommand()
+{
+    _command = Commands::Unsupported;
+
+    _application.setCommand(ApplicationLayer::ResponseResponse);
+
+    _application.initForSlaveOutput();
+
+    _application.setInternalIndications_FunctionCodeUnsupported();
 }
 
 

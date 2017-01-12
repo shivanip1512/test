@@ -286,6 +286,10 @@ int DnpSlave::processMessageFromForeignSystem (ServerConnection& connection,
 
     const std::map<Cmd, std::pair<std::string, std::function<int ()>>> commandFunctions
     {
+        { Cmd::Unsupported,
+            { "an unsupported DNP request",
+                [&] { return processUnsupportedRequest(connection); }}},
+
         { Cmd::LinkStatus,
             { "a DNP data link status request",
                 [&] { return processDataLinkConfirmationRequest(connection); }}},
@@ -388,6 +392,13 @@ int DnpSlave::processDataLinkReset(ServerConnection& connection)
     connection.queueMessage(bufForConnection, buf.size(), MAXPRIORITY - 1);
 
     return 0;
+}
+
+int DnpSlave::processUnsupportedRequest(ServerConnection& connection)
+{
+    _dnpSlave.setUnsupportedCommand();
+
+    return doComms(connection, "unsupported");
 }
 
 int DnpSlave::processUnsolicitedDisableRequest(ServerConnection& connection)

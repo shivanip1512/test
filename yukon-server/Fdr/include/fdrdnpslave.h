@@ -97,6 +97,7 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         int processAnalogOutputRequest        (ServerConnection &connection, const Protocols::DNP::ObjectBlock &control, const Protocols::DnpSlave::ControlAction);
         int processDataLinkConfirmationRequest(ServerConnection &connection);
         int processDataLinkReset              (ServerConnection &connection);
+        int processUnsupportedRequest         (ServerConnection &connection);
         int processUnsolicitedDisableRequest  (ServerConnection &connection);
         int processUnsolicitedEnableRequest   (ServerConnection &connection);
 

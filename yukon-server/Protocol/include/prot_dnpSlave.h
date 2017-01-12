@@ -36,6 +36,7 @@ public:
         LinkStatus,
         ResetLink,
         Complete,
+        Unsupported,
         Invalid
     };
 
@@ -46,6 +47,7 @@ public:
     void setScanCommand( std::vector<std::unique_ptr<DnpSlave::output_point>> outputPoints );
     void setControlCommand( const DnpSlave::control_request &control );
     void setAnalogOutputCommand( const DnpSlave::analog_output_request &analog );
+    void setUnsupportedCommand();
     void setUnsolicitedDisableCommand();
     void setUnsolicitedEnableCommand();
 
