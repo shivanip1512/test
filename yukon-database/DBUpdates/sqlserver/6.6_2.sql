@@ -2,7 +2,11 @@
 /**** SQL Server DBupdates             ****/
 /******************************************/
 
-/* No Updates */
+/* Start YUK-16106 */
+UPDATE state SET foregroundcolor = 1 WHERE stategroupid = -28 AND rawstate = 0;
+UPDATE state SET foregroundcolor = 4 WHERE stategroupid = -28 AND rawstate = 1;
+UPDATE state SET foregroundcolor = 9 WHERE stategroupid = -28 AND rawstate = 2;
+/* End YUK-16106 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
