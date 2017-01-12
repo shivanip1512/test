@@ -20,6 +20,12 @@ private:
    mutable CtiMutex _classMutex;
 
 public:
+
+   enum class DebugLogging {
+       False,
+       True
+   };
+
    CtiPointConnection();
    CtiPointConnection(const CtiPointConnection& aRef);
    virtual ~CtiPointConnection();

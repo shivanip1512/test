@@ -524,6 +524,8 @@ std::set<long> CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_typ
 
     CTILOG_DEBUG(dout, CM->getClientName() << " " << reinterpret_cast<size_t>(CM.get()) << " use_count=" << CM.use_count());
 
+    std::set<long> inserted, existing;
+
     for( const auto ptId : aReg.getPointList() )
     {
         /*
@@ -571,13 +573,19 @@ std::set<long> CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_typ
 
                 if( conIter != _conMgrPointMap.end() )
                 {
-                    CTILOG_DEBUG(dout, "Adding point " << ptId
-                        << " to _conMgrPointMap(" << hex << CM->hash(*CM.get()) << ") = 0x" << hex << &conIter->second);
+                    if(debugprint == DebugPrint::True)
+                    {
+                        CTILOG_DEBUG(dout, "Adding point " << ptId
+                            << " to _conMgrPointMap(" << hex << CM->hash(*CM.get()) << ") = 0x" << hex << &conIter->second);
+                    }
 
                     const auto was = conIter->second.insert(ptId);
 
-                    CTILOG_DEBUG(dout, "_conMgrPointMap(" << hex << CM->hash(*CM.get()) << ") has " << dec 
-                        << conIter->second.size() << " entries.  Insert return was " << was.second);
+                    if(debugprint == DebugPrint::True)
+                    {
+                        CTILOG_DEBUG(dout, "_conMgrPointMap(" << hex << CM->hash(*CM.get()) << ") has " << dec 
+                            << conIter->second.size() << " entries.  Insert return was " << was.second);
+                    }
                 }
             }
         }
