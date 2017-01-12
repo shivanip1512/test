@@ -486,8 +486,8 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                /*Watts*/                         //metric 200
+                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
+                BuiltInAttribute.DEMAND           //metric 200
                 /*Var*/                           //metric 201
                 /*VA*/                            //metric 202
                 ),
@@ -502,8 +502,8 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                /*Watts*/                         //metric 200
+                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
+                BuiltInAttribute.DEMAND           //metric 200
                 /*Var*/                           //metric 201
                 /*VA*/                            //metric 202
                 ),
@@ -518,8 +518,8 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                /*Watts*/                         //metric 200
+                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
+                BuiltInAttribute.DEMAND           //metric 200
                 /*Var*/                           //metric 201
                 /*VA*/                            //metric 202
                 ),
@@ -534,8 +534,8 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                /*Watts*/                         //metric 200
+                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
+                BuiltInAttribute.DEMAND           //metric 200
                 /*Var*/                           //metric 201
                 /*VA*/                            //metric 202
                 ),
@@ -550,8 +550,8 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                /*Watts*/                         //metric 200
+                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
+                BuiltInAttribute.DEMAND           //metric 200
                 /*Var*/                           //metric 201
                 /*VA*/                            //metric 202
                 )
