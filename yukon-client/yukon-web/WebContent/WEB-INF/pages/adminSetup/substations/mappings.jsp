@@ -7,6 +7,7 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 <cti:url var="routeUrl" value="/admin/substations/routeMapping/viewRoute" />
 <cti:standardPage page="substationToRouteMapping" module="adminSetup">
+<cti:msg2 var="removeRouteTitle" key="yukon.web.modules.adminSetup.substationToRouteMapping.removeRoutes"/>
     <div id="saveStatusMessage"></div>
     <div id="route-template" class="dn">
         <table>
@@ -14,7 +15,8 @@
                 <td><input name="routeList[?]"  type="hidden" value="${route.id}" class="routeId"></td>
                 <td>
                     <div class="button-group fr wsnw oh">
-                                    <cti:button icon="icon-cross" id="removeRouteBtn_${route.id}" name="removeRoute" value="${route.id}" type="submit" renderMode="buttonImage" />
+                                    <cti:button icon="icon-cross" id="removeRouteBtn_${route.id}" name="removeRoute" value="${route.id}" type="submit" 
+                                    title="${removeRouteTitle}" renderMode="buttonImage" disabled="true"/>
                                     <c:set var="disableUp" value="${row.first}" />
                                     <c:set var="disableDown" value="${row.last}" />
                                     <cti:button icon="icon-bullet-go-up" classes="js-up right M0"
