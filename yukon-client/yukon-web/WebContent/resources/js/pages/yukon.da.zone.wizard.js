@@ -132,10 +132,10 @@ yukon.da.zone.wizard = (function () {
         },
         
         addBankHandler : function (selectedPaoInfo, picker) {
-            var args = buildArgs(yukon.url('/capcontrol/ivvc/wizard/addCapBank'));
+            var args = mod.buildArgs(yukon.url('/capcontrol/ivvc/wizard/addCapBank'));
             
             for(var i = 0; i < selectedPaoInfo.length; i++) {
-                var request = buildRequest(selectedPaoInfo[i].paoId);
+                var request = mod.buildRequest(selectedPaoInfo[i].paoId);
                 picker.excludeIds.push(selectedPaoInfo[i].paoId);
                 args.requests[i] = request;
             }
@@ -144,11 +144,11 @@ yukon.da.zone.wizard = (function () {
         },
         
         addPointHandler : function(selectedPointInfo, picker) {
-            var args = buildArgs(yukon.url('/capcontrol/ivvc/wizard/addVoltagePoint'));
+            var args = mod.buildArgs(yukon.url('/capcontrol/ivvc/wizard/addVoltagePoint'));
             var zoneType = $('#zoneType').val();
             var regulatorPhase = $('#regulatorPhase').val();
             for(var i = 0; i < selectedPointInfo.length; i++) {
-                var request = buildRequest(selectedPointInfo[i].pointId);
+                var request = mod.buildRequest(selectedPointInfo[i].pointId);
                 if (zoneType != 'THREE_PHASE' && regulatorPhase != null) {
                     request.extraParameters.phase = regulatorPhase;
                 }
