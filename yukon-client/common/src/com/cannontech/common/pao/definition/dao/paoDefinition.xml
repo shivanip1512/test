@@ -1718,7 +1718,7 @@
         <points>
             <point type="Analog" offset="100">
                 <init>true</init>
-                <name>Outage Log</name>
+                <name>Outages</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Seconds" />
                 <decimalplaces value="3" />
@@ -2086,7 +2086,7 @@
                 <basicLookup point="Forward Inductive kVArh" />
             </attribute>
             <attribute name="OUTAGE_LOG">
-                <basicLookup point="Outage Log" />
+                <basicLookup point="Outages" />
             </attribute>
             <attribute name="BLINK_COUNT">
                 <basicLookup point="Blink Count" />
@@ -3171,8 +3171,8 @@
                 <stategroup value="SystemState" />
             </point>
             <point type="Status" offset="10">
-                <name>Power Fail Flag</name>
-                <stategroup value="SystemState" />
+                <name>Power Fail</name>
+                <stategroup value="TrueFalse" />
             </point>
             <point type="Status" offset="11">
                 <name>Short Power Fail Flag</name>
@@ -3621,8 +3621,8 @@
                 <stategroup value="SystemState" />
             </point>
             <point type="Status" offset="10">
-                <name>Power Fail Flag</name>
-                <stategroup value="SystemState" />
+                <name>Power Fail</name>
+                <stategroup value="TrueFalse" />
             </point>
             <point type="Status" offset="11">
                 <name>Short Power Fail Flag</name>
@@ -3745,8 +3745,8 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Status" offset="10">
-                <name>Power Fail Flag</name>
-                <stategroup value="SystemState" />
+                <name>Power Fail</name>
+                <stategroup value="TrueFalse" />
             </point>
             <point type="Status" offset="11">
                 <name>Short Power Fail Flag</name>
@@ -4018,8 +4018,8 @@
                 <stategroup value="SystemState" />
             </point>
             <point type="Status" offset="10">
-                <name>Power Fail Flag</name>
-                <stategroup value="SystemState" />
+                <name>Power Fail</name>
+                <stategroup value="TrueFalse" />
             </point>
             <point type="Status" offset="11">
                 <name>Short Power Fail Flag</name>
@@ -4141,8 +4141,8 @@
             </point>
 
             <point type="Status" offset="10">
-                <name>Power Fail Flag</name>
-                <stategroup value="SystemState" />
+                <name>Power Fail</name>
+                <stategroup value="TrueFalse" />
             </point>
             <point type="Status" offset="12">
                 <name>Over Flow Flag</name>
@@ -4310,8 +4310,8 @@
                 <stategroup value="SystemState" />
             </point>
             <point type="Status" offset="10">
-                <name>Power Fail Flag</name>
-                <stategroup value="SystemState" />
+                <name>Power Fail</name>
+                <stategroup value="TrueFalse" />
             </point>
             <point type="Status" offset="11">
                 <name>Short Power Fail Flag</name>
@@ -4395,8 +4395,8 @@
                 <stategroup value="SystemState" />
             </point>
             <point type="Status" offset="10">
-                <name>Power Fail Flag</name>
-                <stategroup value="SystemState" />
+                <name>Power Fail</name>
+                <stategroup value="TrueFalse" />
             </point>
             <point type="Status" offset="11">
                 <name>Short Power Fail Flag</name>
