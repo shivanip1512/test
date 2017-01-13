@@ -57,7 +57,7 @@ var yg = {
         confirm: '<cti:msg2 key="yukon.web.components.button.confirm.label"/>',
         confirmQuestion: '<cti:msg2 key="yukon.common.confirm"/>',
         complete: '<cti:msg2 key="yukon.common.complete"/>',
-        'delete': '<cti:msg2 key="yukon.web.components.button.delete.label"/>',
+        deleteButton: '<cti:msg2 key="yukon.web.components.button.delete.label"/>',
         edit: '<cti:msg2 key="yukon.web.components.button.edit.label"/>',
         failed: '<cti:msg2 key="yukon.common.failed"/>',
         filter: '<cti:msg2 key="yukon.web.components.button.filter.label"/>',
@@ -70,7 +70,11 @@ var yg = {
         successful: '<cti:msg2 key="yukon.common.successful"/>',
         view: '<cti:msg2 key="yukon.web.components.button.view.label"/>',
         yes: '<cti:msg2 key="yukon.common.yes"/>',
-        ajaxError: '<cti:msg2 key="yukon.web.error.genericMainMessage"/>'
+        ajaxError: '<cti:msg2 key="yukon.web.error.genericMainMessage"/>',
+        next: '<cti:msg2 key="yukon.web.components.button.next.label"/>',
+        back: '<cti:msg2 key="yukon.web.components.button.back.label"/>',
+        create: '<cti:msg2 key="yukon.web.components.button.create.label"/>'
+
     },
     
     timezone: jstz.determine().name(),

@@ -8,16 +8,6 @@
 
 <tags:standardPopup pageName="ivvc" module="capcontrol" popupName="zoneWizard">
 
-<script type="text/javascript">
-    submitParentSelect = function() {
-        submitFormViaAjax('zoneWizardPopup', 'zoneParentForm');
-    }
-    
-    cancelZoneWizard = function() {
-        $('#zoneWizardPopup').dialog('close');
-    }
-</script>
-
 <cti:url var="selectedParentUrl" value="/capcontrol/ivvc/wizard/wizardParentSelected" />
 <form:form id="zoneParentForm" commandName="zoneDto" action="${selectedParentUrl}">
     <cti:csrfToken/>
@@ -41,10 +31,6 @@
             </form:select>
         </tags:nameValue2>
     </tags:nameValueContainer2>
-    <div class="action-area">
-        <cti:button nameKey="next" onclick="submitParentSelect()" classes="primary action"/>
-        <cti:button nameKey="cancel" onclick="cancelZoneWizard()"/>
-    </div>
 
 </form:form>
 

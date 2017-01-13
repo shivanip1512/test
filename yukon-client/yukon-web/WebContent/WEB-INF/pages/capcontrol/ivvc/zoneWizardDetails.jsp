@@ -8,74 +8,6 @@
 
 <tags:standardPopup pageName="ivvc" module="capcontrol" popupName="zoneWizard">
 
-<script type="text/javascript">
-    buildArgs = function(url) {
-        return { 'url' : url, 'requests' : [] };
-    };
-    
-    buildRequest = function(id) {
-        return { 'extraParameters' : { 'id' : id } };
-    };
-    
-    addBankHandler = function (selectedPaoInfo, picker) {
-        var args = buildArgs(yukon.url('/capcontrol/ivvc/wizard/addCapBank'));
-        
-        for(var i = 0; i < selectedPaoInfo.length; i++) {
-            var request = buildRequest(selectedPaoInfo[i].paoId);
-            picker.excludeIds.push(selectedPaoInfo[i].paoId);
-            args.requests[i] = request;
-        }
-        bankTable.addItems(args);
-        picker.clearEntireSelection.call(picker);
-    };
-    
-    addPointHandler = function(selectedPointInfo, picker) {
-        var args = buildArgs(yukon.url('/capcontrol/ivvc/wizard/addVoltagePoint'));
-        
-        for(var i = 0; i < selectedPointInfo.length; i++) {
-            var request = buildRequest(selectedPointInfo[i].pointId);
-            <c:if test="${zoneDto.zoneType !=  threePhase && !empty zoneDto.regulator.phase}">
-                request.extraParameters.phase = '${zoneDto.regulator.phase}';
-            </c:if>
-            picker.excludeIds.push(selectedPointInfo[i].pointId);
-            args.requests[i] = request;
-        }
-        pointTable.addItems(args);
-        picker.clearEntireSelection.call(picker);
-    };
-    
-    updateRegPickerExcludes = function(selectedItems, picker) {
-        if (picker != voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A) {
-            if (voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A.getSelected.call(voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A) == selectedItems[0].paoId) {
-                voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A.clearSelected.call(voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A);
-            }
-        }
-        if (picker != voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B) {
-            if (voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B.getSelected.call(voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B) == selectedItems[0].paoId) {
-                voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B.clearSelected.call(voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B);
-            }
-        }
-        if (picker != voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C) {
-            if (voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C.getSelected.call(voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C) == selectedItems[0].paoId) {
-                voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C.clearSelected.call(voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C);
-            }
-        }
-    };
-    
-    cancelZoneWizard = function() {
-        $("#zoneWizardPopup").dialog("close");
-    };
-    
-    backToTypeSelect = function() {
-        submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', yukon.url('/capcontrol/ivvc/wizard/wizardParentSelected'));
-    };
-
-    zoneSubmit = function() {
-        submitFormViaAjax('zoneWizardPopup', 'zoneDetailsForm', null);
-    };
-
-</script>
-
 <tags:setFormEditMode mode="${mode}"/>
 
 <cti:displayForPageEditModes modes="EDIT">
@@ -90,7 +22,10 @@
     <form:hidden path="zoneId"/>
     <form:hidden path="parentId"/>
     <form:hidden path="substationBusId" id="selectedBusId"/>
-    <input type="hidden" name="zoneType" value="${zoneDto.zoneType}"/>
+    <input type="hidden" id="zoneType" name="zoneType" value="${zoneDto.zoneType}"/>
+    <c:if test="${zoneDto.zoneType != 'THREE_PHASE'}">
+        <input type="hidden" id="regulatorPhase" value="${zoneDto.regulator.phase}"/>
+    </c:if>
 
     <tags:nameValueContainer2 tableClass="stacked">
         <%-- Zone Name --%>
@@ -169,7 +104,8 @@
                                 useInitialIdsIfEmpty="true"
                                 multiSelectMode="false"
                                 immediateSelectMode="true" 
-                                allowEmptySelection="true"/>
+                                allowEmptySelection="true"
+                                endAction="yukon.da.zone.wizard.updateRegPickerExcludes"/>
                         </tags:bind>
                     </tags:nameValue2>
                 </c:forEach>
@@ -244,7 +180,7 @@
                         </table>
                     </div>
                 </tags:dynamicTable>
-                <tags:pickerDialog endAction="addBankHandler"
+                <tags:pickerDialog endAction="yukon.da.zone.wizard.addBankHandler"
                     extraArgs="${zoneDto.substationBusId}"
                     id="bankPicker" 
                     multiSelectMode="true"
@@ -316,45 +252,15 @@
                     </table>
                 </div>
             </tags:dynamicTable>
-            <tags:pickerDialog endAction="addPointHandler"
+            <tags:pickerDialog endAction="yukon.da.zone.wizard.addPointHandler"
                 id="pointPicker" 
                 multiSelectMode="true"
                 type="voltPointPicker"
-                linkType="none"/>
-            <script type="text/javascript">
-                pointPicker.excludeIds = [
-                    <c:forEach var="pointId" varStatus="status" items="${usedPointIds}">
-                        ${pointId}<c:if test="${!status.last}">,</c:if>
-                    </c:forEach> ];
-            </script>
+                linkType="none"
+                excludeIds="${usedPointIds}"/>
         </tags:sectionContainer2>
-    </div>
-
-    <div class="action-area clear">
-        <cti:displayForPageEditModes modes="EDIT">
-            <cti:button nameKey="save" onclick="zoneSubmit()" classes="primary action"/>
-            <cti:button nameKey="cancel" onclick="cancelZoneWizard()"/>
-
-            <cti:url var="zoneDeleteUrl" value="/capcontrol/ivvc/wizard/deleteZone">
-                <cti:param name="zoneId" value="${zoneDto.zoneId}"/>
-            </cti:url>
-
-            <cti:button nameKey="delete" href="${zoneDeleteUrl}" classes="action delete"/>
-        </cti:displayForPageEditModes>
-        <cti:displayForPageEditModes modes="CREATE">
-            <cti:button nameKey="create" onclick="zoneSubmit()" classes="primary action"/>
-            <cti:button nameKey="back" onclick="backToTypeSelect()"/>
-        </cti:displayForPageEditModes>
     </div>
     
 </form:form>
-
-<c:if test="${zoneDto.zoneType ==  threePhase}">
-    <script type="text/javascript">
-        voltageThreePhaseRegulatorPicker${zoneDto.zoneId}A.endAction = updateRegPickerExcludes;
-        voltageThreePhaseRegulatorPicker${zoneDto.zoneId}B.endAction = updateRegPickerExcludes;
-        voltageThreePhaseRegulatorPicker${zoneDto.zoneId}C.endAction = updateRegPickerExcludes;
-    </script>
-</c:if>
 
 </tags:standardPopup>

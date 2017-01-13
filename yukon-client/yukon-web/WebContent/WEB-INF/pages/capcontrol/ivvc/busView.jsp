@@ -11,6 +11,7 @@
     
 <cti:includeScript link="/resources/js/common/yukon.table.dynamic.js"/>
 <cti:includeScript link="/resources/js/pages/yukon.da.busview.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.da.zone.wizard.js"/>
 
 <%@ include file="/capcontrol/capcontrolHeader.jspf" %>
 
@@ -23,23 +24,6 @@
 
 <!-- Zone Wizard Dialog -->
 <tags:simpleDialog id="zoneWizardPopup"/>
-
-<script type="text/javascript">
-    function showZoneCreationWizard(url) {
-        openSimpleDialog('zoneWizardPopup', url, "${zoneCreationWizardTitle}", null, 'get');
-    }
-    
-    function showZoneEditorWizard(url) {
-        openSimpleDialog('zoneWizardPopup', url, "${zoneEditorWizardTitle}", null, 'get');
-    }
-    
-    function selectZone(event) {
-        var span = event.target;
-        $('.selectedZone').removeClass('selectedZone');
-        $(span).addClass('selectedZone');
-    }
-
-</script>
 
 <cti:toJson object="${hours}" id="range-hours"/>
     
@@ -76,7 +60,7 @@
         
         <tags:sectionContainer2 nameKey="busDetail">
             
-            <table class="full-width striped">
+            <table class="compact-results-table full-width striped">
                 <%-- KVAR --%>
                 <tr>
                     <td><i:inline key=".busDetail.table.kvar"/></td>
@@ -119,7 +103,7 @@
                 <cti:url var="url" value="/capcontrol/strategies/${strategyId}" />
                 <i:inline key=".strategyDetails.link"/><a href="${url}">${fn:escapeXml(strategyName)}</a>
             </c:if>
-            <table class="full-width striped" >
+            <table class="compact-results-table full-width striped" >
                 <thead>
                     <tr>
                         <th></th>
@@ -188,7 +172,7 @@
 </div>
 
 <tags:sectionContainer2 nameKey="zones">
-    <table class="full-width">
+    <table class="compact-results-table full-width">
         <tfoot></tfoot>
         <tbody>
             <cti:navigableHierarchy var="zone" depth="depth" hierarchy="${zones}">
@@ -212,7 +196,7 @@
             <c:if test="${unassignedBanksCount > 0}">
                 <span class="warning fl"><i:inline key=".zoneList.unassignedBanksCount" arguments="${unassignedBanksCount}"/></span>
             </c:if>            
-            <cti:button nameKey="add" onclick="javascript:showZoneCreationWizard('${zoneCreatorUrl}');" icon="icon-add"/>
+            <cti:button nameKey="create" onclick="yukon.da.zone.wizard.showZoneCreationWizard('${zoneCreatorUrl}', '${zoneCreationWizardTitle}');" icon="icon-add"/>
         </div>
     </c:if>
     
@@ -248,7 +232,7 @@
     </tags:sectionContainer2>
 </div>
 
-<table class="dn">
+<table class="compact-results-table dn">
     <tr data-event-id="?" class="js-event-template">
         <td><cti:icon icon="js-event-icon"/></td>
         <td>

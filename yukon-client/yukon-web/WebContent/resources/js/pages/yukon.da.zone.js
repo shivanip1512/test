@@ -137,13 +137,6 @@ yukon.da.zone = (function () {
                 clearTimeout(_events_token);
                 _updateRecentEvents();
             });
-            
-            $('.js-zone-editor').click(function () {
-                var info = $('#zone-editor-info'),
-                    url = info.data('editorUrl'),
-                    title = info.data('editorTitle');
-                openSimpleDialog('zoneWizardPopup', url, title, null, 'get');
-            });
 
             $(document).on('click', '.js-command-button', function (event) {
                 var button = $(this),

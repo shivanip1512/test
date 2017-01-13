@@ -8,22 +8,6 @@
 
 <tags:standardPageFragment module="capcontrol" pageName="ivvc" fragmentName="selectZoneType">
 
-<script type="text/javascript">
-    zoneTypeChange = function(zoneType) {
-        if (zoneType == 'SINGLE_PHASE') {
-            $('#phaseSelector').removeClass('dn');
-        } else {
-            $('#phaseSelector').addClass('dn');
-        }
-    };
-    backToParentSelect = function() {
-        submitFormViaAjax('zoneWizardPopup', 'zoneTypeForm', '/capcontrol/ivvc/wizard/wizardSelectParent');
-    };
-    submitTypeSelect = function() {
-        submitFormViaAjax('zoneWizardPopup', 'zoneTypeForm', null);
-    };
-</script>
-
 <cti:url var="selectedTypeUrl" value="/capcontrol/ivvc/wizard/wizardTypeSelected"/>
 <form:form id="zoneTypeForm" commandName="zoneDto" action="${selectedTypeUrl}" >
     <cti:csrfToken/>
@@ -32,7 +16,7 @@
 
     <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".label.zoneType">
-            <form:select path="zoneType" onchange="zoneTypeChange(this.options[this.selectedIndex].value)">
+            <form:select path="zoneType" onchange="yukon.da.zone.wizard.zoneTypeChange(this.options[this.selectedIndex].value)">
                 <c:forEach var="availableZoneType" items="${availableZoneTypes}">
                     <form:option value="${availableZoneType}">
                         <i:inline key="${availableZoneType}" />
@@ -62,11 +46,7 @@
             <span id="selectedParentZoneIdInType" class="disabledRow">${fn:escapeXml(parentZoneName)}</span>
         </tags:nameValue2>
     </tags:nameValueContainer2>
-
-    <div class="action-area">
-        <cti:button nameKey="next" onclick="submitTypeSelect()" classes="primary action"/>
-        <cti:button nameKey="back" onclick="backToParentSelect()"/>
-    </div>
+    
 </form:form>
 
 </tags:standardPageFragment>
