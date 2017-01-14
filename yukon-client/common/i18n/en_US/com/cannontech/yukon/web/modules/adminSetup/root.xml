@@ -275,5 +275,6 @@
     <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.allSubstationDeleted">All Substations deleted successfully</entry>
     <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.routeDeleted">Route deleted successfully</entry>
     <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.routesUpdated">Routes updated successfully</entry>
+    <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.removeRoutes">Routes cannot be deleted unless they are saved.</entry>
     
 </properties>
