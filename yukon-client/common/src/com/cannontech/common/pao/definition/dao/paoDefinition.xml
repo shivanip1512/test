@@ -516,7 +516,7 @@
                 <name>kW</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="DemandAccumulator" offset="2">
                 <name>kW (Channel 2)</name>
@@ -2180,15 +2180,14 @@
                 <unitofmeasure value="Volts" />
                 <decimalplaces value="3" />
             </point>
-            <point type="Analog" offset="811">
+            <point type="Analog" offset="824">
                 <init>true</init>
-                <name>Current</name>
+                <name>Current Primary</name>
                 <multiplier value="0.1" />
                 <unitofmeasure value="Amps" />
                 <decimalplaces value="3" />
             </point>
-            <point type="Analog" offset="821">
-                <init>true</init>
+            <point type="Analog" offset="133">
                 <name>Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
@@ -2210,7 +2209,7 @@
                 <basicLookup point="Voltage" />
             </attribute>
             <attribute name="CURRENT">
-                <basicLookup point="Current" />
+                <basicLookup point="Current Primary" />
             </attribute>
             <attribute name="POWER_FACTOR">
                 <basicLookup point="Power Factor" />
@@ -8032,7 +8031,7 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="133">
-                <name>Avg Power Factor</name>
+                <name>Power Factor</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="PF" />
                 <decimalplaces value="3" />
