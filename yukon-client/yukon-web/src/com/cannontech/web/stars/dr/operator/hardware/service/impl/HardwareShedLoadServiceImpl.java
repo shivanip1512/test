@@ -60,11 +60,10 @@ public class HardwareShedLoadServiceImpl implements HardwareShedLoadService {
             } else {
                 // For one way LCRs if this route is 0, the Porter executor uses the EC route
                 routeId = lmhb.getRouteID();
-            }
-            // For one way or two way LCRs if this route is 0, set the default EC route
-            if (routeId == 0) {
-                EnergyCompany ec = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
-                routeId = defaultRouteService.getDefaultRouteId(ec);
+                if (routeId == 0) {
+                    EnergyCompany ec = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
+                    routeId = defaultRouteService.getDefaultRouteId(ec);
+                }
             }
         }
 
