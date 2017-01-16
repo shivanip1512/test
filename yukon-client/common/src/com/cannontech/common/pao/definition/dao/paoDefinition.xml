@@ -3171,6 +3171,7 @@
                 <stategroup value="SystemState" />
             </point>
             <point type="Status" offset="10">
+                <init>true</init>
                 <name>Power Fail</name>
                 <stategroup value="TrueFalse" />
             </point>
@@ -3621,6 +3622,7 @@
                 <stategroup value="SystemState" />
             </point>
             <point type="Status" offset="10">
+                <init>true</init>
                 <name>Power Fail</name>
                 <stategroup value="TrueFalse" />
             </point>
@@ -3745,6 +3747,7 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Status" offset="10">
+                <init>true</init>
                 <name>Power Fail</name>
                 <stategroup value="TrueFalse" />
             </point>
@@ -4018,6 +4021,7 @@
                 <stategroup value="SystemState" />
             </point>
             <point type="Status" offset="10">
+                <init>true</init>
                 <name>Power Fail</name>
                 <stategroup value="TrueFalse" />
             </point>
@@ -4141,6 +4145,7 @@
             </point>
 
             <point type="Status" offset="10">
+                <init>true</init>
                 <name>Power Fail</name>
                 <stategroup value="TrueFalse" />
             </point>
@@ -4310,6 +4315,7 @@
                 <stategroup value="SystemState" />
             </point>
             <point type="Status" offset="10">
+                <init>true</init>
                 <name>Power Fail</name>
                 <stategroup value="TrueFalse" />
             </point>
@@ -4395,6 +4401,7 @@
                 <stategroup value="SystemState" />
             </point>
             <point type="Status" offset="10">
+                <init>true</init>
                 <name>Power Fail</name>
                 <stategroup value="TrueFalse" />
             </point>
