@@ -20,6 +20,7 @@ import org.springframework.web.client.RestOperations;
 import org.springframework.web.client.RestTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.dr.honeywell.HoneywellCommunicationException;
 import com.cannontech.dr.honeywell.message.TokenResponse;
 import com.cannontech.system.GlobalSettingType;
@@ -31,6 +32,7 @@ public class HoneywellRestProxyFactory {
     private static final Logger log = YukonLogManager.getLogger(HoneywellRestProxyFactory.class);
 
     private static final String authUrlPart = "Auth/Oauth/token";
+    private static final int tokenExpirationBuffer = 60;
 
     @Autowired private GlobalSettingDao settingDao;
 
@@ -38,9 +40,7 @@ public class HoneywellRestProxyFactory {
 
     private String authTokenKey = "authTokenKey";
     private String authTokenValue = null;
-    
-    private final Cache<String,String> tokenCache =
-            CacheBuilder.newBuilder().expireAfterWrite(29, TimeUnit.MINUTES).build();
+    private Cache<String,String> tokenCache;
 
     public HoneywellRestProxyFactory(RestTemplate proxiedTemplate) {
         this.proxiedTemplate = proxiedTemplate;
@@ -94,10 +94,9 @@ public class HoneywellRestProxyFactory {
     }
 
     private String getAuthenticationToken() {
-        authTokenValue = tokenCache.getIfPresent(authTokenKey);
-        if (authTokenValue == null) {
+        if (tokenCache == null || tokenCache.getIfPresent(authTokenKey) == null) {
             synchronized (this) {
-                if (authTokenValue == null) {
+                if (tokenCache == null || tokenCache.getIfPresent(authTokenKey) == null) {
                     authTokenValue = generateAuthenticationToken();
                 }
             }
@@ -110,8 +109,7 @@ public class HoneywellRestProxyFactory {
         MultiValueMap<String, String> body = new LinkedMultiValueMap<String, String>();
         // TODO: Code cleanup required here will be done when we can get fully connected
         body.add("grant_type", "client_credentials");
-        System.setProperty("proxyHost", "proxy.etn.com");
-        System.setProperty("proxyPort", "8080");
+        YukonHttpProxy.fromGlobalSetting(settingDao).ifPresent(proxy -> proxy.setAsSystemProxy());
         String urlBase = settingDao.getString(GlobalSettingType.HONEYWELL_SERVER_URL);
         String plainClientId = settingDao.getString(GlobalSettingType.HONEYWELL_CLIENTID);
         String plainSecret = settingDao.getString(GlobalSettingType.HONEYWELL_SECRET);
@@ -133,6 +131,8 @@ public class HoneywellRestProxyFactory {
         }
 
         authTokenValue = response.getAccessToken();
+        Long expiresIn = response.getExpiresIn() - tokenExpirationBuffer;
+        tokenCache = CacheBuilder.newBuilder().expireAfterWrite(expiresIn, TimeUnit.SECONDS).build();
         tokenCache.put(authTokenKey, authTokenValue);
 
         return authTokenValue;
