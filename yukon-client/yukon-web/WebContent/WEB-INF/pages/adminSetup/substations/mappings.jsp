@@ -12,7 +12,7 @@
     <div id="route-template" class="dn">
         <table>
             <tr>
-                <td><input name="routeList[?]"  type="hidden" value="${route.id}" class="routeId"></td>
+                <td><input type="hidden" value="${route.id}" class="routeId"></td>
                 <td>
                     <div class="button-group fr wsnw oh">
                                     <cti:button icon="icon-cross" id="removeRouteBtn_${route.id}" name="removeRoute" value="${route.id}" type="submit" 
