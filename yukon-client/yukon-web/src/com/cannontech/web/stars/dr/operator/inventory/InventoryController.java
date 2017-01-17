@@ -162,7 +162,7 @@ public class InventoryController {
         return "operator/inventory/inventory.jsp";
     }
 
-    @RequestMapping("creationPage")
+    @RequestMapping(value="creationPage", method=RequestMethod.POST)
     public String creationPage(ModelMap model, YukonUserContext userContext, int hardwareTypeId) {
 
         model.addAttribute("mode", PageEditMode.CREATE);
