@@ -3670,56 +3670,6 @@
     <!-- MCT 318L -->
     <pao id="MCT318L" inherits="MCT_318_BASE, SUPPORTS_LOAD_PROFILE_TAG">
         <displayName>MCT-318L</displayName>
-        <points>
-
-            <!-- DEMAND ACCUMULATOR overrides unitofmeasure -->
-            <point type="DemandAccumulator" offset="1">
-                <init>true</init>
-                <multiplier value="1.0" />
-                <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="DemandAccumulator" offset="2">
-                <multiplier value="1.0" />
-                <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="DemandAccumulator" offset="3">
-                <multiplier value="1.0" />
-                <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="DemandAccumulator" offset="10">
-                <multiplier value="1.0" />
-                <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="DemandAccumulator" offset="11">
-                <multiplier value="1.0" />
-                <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="DemandAccumulator" offset="12">
-                <multiplier value="1.0" />
-                <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="DemandAccumulator" offset="13">
-                <multiplier value="1.0" />
-                <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="DemandAccumulator" offset="14">
-                <multiplier value="1.0" />
-                <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="DemandAccumulator" offset="15">
-                <multiplier value="1.0" />
-                <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
-            </point>
-        </points>
     </pao>
 
     <!-- MCT 318 -->
