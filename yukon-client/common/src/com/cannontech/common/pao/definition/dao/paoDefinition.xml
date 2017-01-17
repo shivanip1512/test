@@ -2175,14 +2175,14 @@
         <points>
             <point type="Analog" offset="801">
                 <init>true</init>
-                <name>Voltage</name>
+                <name>Voltage Phase A</name> <!--  for MCT440_2131B this is the single phase "Voltage" point  -->
                 <multiplier value="0.1" />
                 <unitofmeasure value="Volts" />
                 <decimalplaces value="3" />
             </point>
-            <point type="Analog" offset="824">
+            <point type="Analog" offset="811">
                 <init>true</init>
-                <name>Current Primary</name>
+                <name>Current Phase A</name> <!--  for MCT440_2131B this is the single phase "Current" point  -->
                 <multiplier value="0.1" />
                 <unitofmeasure value="Amps" />
                 <decimalplaces value="3" />
@@ -2206,10 +2206,10 @@
         </commands>
         <attributes>
             <attribute name="VOLTAGE">
-                <basicLookup point="Voltage" />
+                <basicLookup point="Voltage Phase A" />
             </attribute>
             <attribute name="CURRENT">
-                <basicLookup point="Current Primary" />
+                <basicLookup point="Current Phase A" />
             </attribute>
             <attribute name="POWER_FACTOR">
                 <basicLookup point="Power Factor" />
