@@ -49,7 +49,7 @@
                             <tags:sort column="${typeColumn}"/>
                             <tags:sort column="${usageColumn}"/>
                             <tags:sort column="${dateColumn}"/>
-                            <th><cti:icon icon="icon-cog" classes="fr"/></th>
+                            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -67,7 +67,7 @@
                                 <td><tags:paoType yukonPao="${row.meter}"/></td>
                                 <td><cti:pointValueFormatter value="${row.pointValueHolder}" format="VALUE"/></td>
                                 <td><cti:formatDate type="BOTH" value="${row.pointValueHolder.pointDataTimeStamp}"/></td>
-                                <td><cm:singleDeviceMenu deviceId="${row.meter.paoIdentifier.paoId}" triggerClasses="fr"/></td>
+                                <td><cm:singleDeviceMenu deviceId="${row.meter.paoIdentifier.paoId}"/></td>
                             </tr>
                         </c:forEach>
                     </tbody>

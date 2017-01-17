@@ -49,7 +49,8 @@
                 <th><i:inline key=".timestamp"/></th>
                 <th><i:inline key=".pfactorEstimated"/></th>
                 <th><i:inline key=".kwVolts"/></th>
-                <th><i:inline key=".dailyMax"/><cti:icon icon="icon-cog" classes="fr"/></th>
+                <th><i:inline key=".dailyMax"/></th>
+                <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
             </tr>
         </thead>
 
@@ -165,11 +166,13 @@
                 <%-- Daily / Max Ops --%>
                 <td>
                     <span id="dailyMaxOps_${subbusId}"><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="DAILY_MAX_OPS"/></span>
+                </td>
+                <td>
 
                 <%-- Actions --%>
                     <cti:msg2 var="busAddInfoTitle" key=".busAddInfoTitle" arguments="${viewableSubBus.ccName}"/>
 
-                    <cm:dropdown icon="icon-cog" triggerClasses="fr">
+                    <cm:dropdown icon="icon-cog">
                          <cti:checkRolesAndProperties value="ALLOW_SUBBUS_CONTROLS">
                             <li>
                                 <a id="subbusState_${subbusId}" href="javascript:void(0)" class="clearfix">

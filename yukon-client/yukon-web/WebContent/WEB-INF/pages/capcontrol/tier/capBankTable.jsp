@@ -29,7 +29,8 @@
                 <th><i:inline key=".timestamp"/></th>
                 <th class="tar"><i:inline key=".bankSize"/></th>
                 <th><i:inline key=".parentFeeder"/></th>
-                <th><i:inline key=".dailyMaxTotal"/><cti:icon icon="icon-cog" classes="fr"/></th>
+                <th><i:inline key=".dailyMaxTotal"/></th>
+                <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
             </tr>
         </thead>
 
@@ -144,12 +145,13 @@
                 <%-- Daily/Max/Total Ops --%>
                 <td>
                     <cti:capControlValue paoId="${bankId}" type="CAPBANK" format="DAILY_MAX_OPS"/>
-
+                </td>
+                <td>
                     <cti:url var="collectionsUrl" value="/bulk/collectionActions">
                         <cti:param name="collectionType" value="group"/>
                         <cti:param name="group.name" value="/System/Device Configs/${config.name}"/>
                     </cti:url>
-                    <cm:dropdown icon="icon-cog" triggerClasses="fr">
+                    <cm:dropdown icon="icon-cog">
                         <cti:checkRolesAndProperties value="ALLOW_CAPBANK_CONTROLS">
                             <cm:dropdownOption key=".capBank.actions" icon="icon-cog" href="javascript:void(0);" classes="js-bank-command" />
                             <cm:dropdownOption key=".capBank.state" icon="icon-pencil" href="javascript:void(0);" classes="js-bank-state" />

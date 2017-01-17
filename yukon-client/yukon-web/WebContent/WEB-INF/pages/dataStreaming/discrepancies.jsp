@@ -23,7 +23,7 @@
                     <tags:sort column="${actualAttributes}" />
                     <tags:sort column="${status}" />
                     <tags:sort column="${lastCommunicated}" />
-                    <th><cti:checkRolesAndProperties value="RF_DATA_STREAMING"><cti:icon icon="icon-cog"/></cti:checkRolesAndProperties></th>
+                    <th class="action-column"><cti:checkRolesAndProperties value="RF_DATA_STREAMING"><cti:icon icon="icon-cog" classes="M0"/></cti:checkRolesAndProperties></th>
                 </tr>
             </thead>
             <tbody>

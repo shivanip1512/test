@@ -59,7 +59,7 @@
                 </cti:url>
                 <span class="dn js-monitor-group"><input type="hidden" value="${fn:escapeXml(monitor.groupName)}"></span>
                 <a href="${deviceGroupUrl}">${fn:escapeXml(monitor.groupName)}</a>
-                <cm:dropdown triggerClasses="fr vv">
+                <cm:dropdown triggerClasses="vv">
                     <cm:dropdownOption icon="icon-folder-explore" key=".view.label" href="${deviceGrouphtmlReportUrl}"/>
                     <cti:url var="mapUrl" value="/tools/map/dynamic">
                         <cti:param name="collectionType" value="group"/>
@@ -75,7 +75,7 @@
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".violationsGroup">
                 ${violationsGroup}
-                <cm:dropdown triggerClasses="fr vv">
+                <cm:dropdown triggerClasses="vv">
                     <cm:dropdownOption icon="icon-folder-explore" key=".view.label" href="${htmlReportUrl}"/>
                     <cti:url var="mapUrl" value="/tools/map/dynamic">
                         <cti:param name="collectionType" value="group"/>

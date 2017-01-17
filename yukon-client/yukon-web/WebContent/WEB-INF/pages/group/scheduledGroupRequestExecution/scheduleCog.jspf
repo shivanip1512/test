@@ -1,4 +1,4 @@
-<cm:dropdown icon="icon-cog" triggerClasses="fr">
+<cm:dropdown icon="icon-cog">
         <c:choose>                     
             <c:when test="${jobWrapper.tagState.cronTagStyleType == 'ONETIME'}"> 
                 <cm:dropdownOption id="startScheduleButton-${jobId}" key="yukon.common.start" data-job-id="${jobId}" icon="icon-bullet-go" data-popup="#startScheduleDialog-${jobId}"/>

@@ -99,7 +99,8 @@
             <th><i:inline key=".ipaddress"/></th>
             <th><i:inline key=".firmwareVersion"/></th>
             <th><i:inline key=".lastComms"/></th>
-            <th colspan="2"><i:inline key=".detail.dataCollection.title"/></th>
+            <th><i:inline key=".detail.dataCollection.title"/></th>
+            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
         </tr>
     </thead>
     <tfoot></tfoot>
@@ -171,7 +172,7 @@
                                 <fmt:formatNumber pattern="###.##%" value="${gateway.totalCompletionPercentage / 100}"/>
                             </span>
                         </td>
-                        <td class="action-column">
+                        <td>
                             <cm:dropdown data-name="${fn:escapeXml(gateway.name)}" data-id="${gateway.paoIdentifier.paoId}">
                                 <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
                                     <cm:dropdownOption icon="icon-connect" key=".connect" classes="js-gw-connect"/>

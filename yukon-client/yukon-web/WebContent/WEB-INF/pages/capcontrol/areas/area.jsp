@@ -240,7 +240,8 @@
                     <th class="tar"><i:inline key=".unavailableKvars"/></th>
                     <th class="tar"><i:inline key=".closedKvars"/></th>
                     <th class="tar"><i:inline key=".trippedKvars"/></th>
-                    <th class="tar"><i:inline key=".pfactorEstimatedOps"/><cti:icon icon="icon-cog" classes="fr"/></th>
+                    <th class="tar"><i:inline key=".pfactorEstimatedOps"/></th>
+                    <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                 </tr>
             </thead>
             
@@ -297,8 +298,10 @@
                     <%-- POWER FACTOR --%>
                     <td class="tar">
                         <span style="margin-right:10px;"><cti:capControlValue paoId="${substationId}" type="SUBSTATION" format="PFACTOR" initialize="false"/>
+                    </td>
+                    <td>
                         <cti:checkRolesAndProperties value="ALLOW_SUBSTATION_CONTROLS">
-                            <cm:dropdown icon="icon-cog" triggerClasses="fr">
+                            <cm:dropdown icon="icon-cog">
                                 <li>
                                     <a id="substationState_${substationId}" href="javascript:void(0)" class="clearfix">
                                         <cti:icon icon="icon-cog" /><span class="dib"><i:inline key=".substation.actions"/></span>

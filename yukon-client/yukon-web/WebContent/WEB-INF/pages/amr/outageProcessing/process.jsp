@@ -47,7 +47,7 @@
                             <cti:param name="groupName">${fn:escapeXml(outageMonitor.groupName)}</cti:param>
                         </cti:url>
                         <a href="${deviceGroupUrl}">${fn:escapeXml(outageMonitor.groupName)}</a>
-                        <cm:dropdown triggerClasses="fr vv">
+                        <cm:dropdown triggerClasses="vv">
                             <cti:url var="outagesGroupReportUrl" value="/amr/reports/groupDevicesReport">
                                 <cti:param name="groupName" value="${outageMonitor.groupName}"/>
                             </cti:url>
@@ -70,7 +70,7 @@
                             <cti:param name="groupName">${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}</cti:param>
                         </cti:url>
                         <a href="${outageGroupUrl}">${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}</a>
-                        <cm:dropdown triggerClasses="fr vv">
+                        <cm:dropdown triggerClasses="vv">
                             <cti:url var="outagesGroupReportUrl" value="/amr/reports/groupDevicesReport">
                                 <cti:param name="groupName" value="${outageGroupBase}${fn:escapeXml(outageMonitor.outageMonitorName)}"/>
                             </cti:url>

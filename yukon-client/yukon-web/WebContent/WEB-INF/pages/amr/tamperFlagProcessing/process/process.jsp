@@ -36,7 +36,7 @@
                             <cti:param name="groupName">${tamperFlagMonitor.groupName}</cti:param>
                         </cti:url>
                         <a href="${deviceGroupUrl}">${fn:escapeXml(tamperFlagMonitor.groupName)}</a>
-                        <cm:dropdown triggerClasses="fr vv">
+                        <cm:dropdown triggerClasses="vv">
                             <cti:url var="tamperFlagGroupReportUrl" value="/amr/reports/groupDevicesReport">
                                 <cti:param name="groupName" value="${tamperFlagMonitor.groupName}"/>
                             </cti:url>
@@ -59,7 +59,7 @@
                             <cti:param name="groupName">${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</cti:param>
                         </cti:url>
                         <a href="${tamperFlagGroupUrl}">${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}</a>
-                        <cm:dropdown triggerClasses="fr vv">
+                        <cm:dropdown triggerClasses="vv">
                             <cti:url var="tamperFlagGroupReportUrl" value="/amr/reports/groupDevicesReport">
                                 <cti:param name="groupName" value="${tamperFlagGroupBase}${fn:escapeXml(tamperFlagMonitor.tamperFlagMonitorName)}"/>
                             </cti:url>

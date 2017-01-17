@@ -32,7 +32,7 @@
                         <tags:sort column="${dateColumn}"/>
                         <tags:sort column="${eventColumn}"/>
                         <tags:sort column="${valueColumn}"/>
-                        <th><cti:icon icon="icon-cog"/></th>
+                        <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                     </tr>
                 </thead>
                 <tfoot></tfoot>
@@ -62,10 +62,10 @@
                             <td>
                                 <c:choose>
                                     <c:when test="${event.getPaoIdentifier().getPaoType().isRfRelay()}">
-                                        <cm:singleDeviceMenu deviceId="${event.paoIdentifier.paoId}" menuBeanId="relayMenuSingleDevice" triggerClasses="fr"/>
+                                        <cm:singleDeviceMenu deviceId="${event.paoIdentifier.paoId}" menuBeanId="relayMenuSingleDevice"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <cm:singleDeviceMenu deviceId="${event.paoIdentifier.paoId}" menuBeanId="meterMenuSingleDevice" triggerClasses="fr"/>
+                                        <cm:singleDeviceMenu deviceId="${event.paoIdentifier.paoId}" menuBeanId="meterMenuSingleDevice"/>
                                     </c:otherwise>
                                 </c:choose>
                             </td>

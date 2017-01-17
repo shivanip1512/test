@@ -19,8 +19,8 @@
                             <th><i:inline key=".nameHeader"/></th>
                             <th><i:inline key=".scheduleHeader"/></th>
                             <th><i:inline key=".nextRunHeader"/></th>
-                            <th><i:inline key=".jobStatus"/><cti:icon icon="icon-cog" classes="fr"/></th>
-                            
+                            <th><i:inline key=".jobStatus"/></th>
+                            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                         </thead>
                         <tfoot></tfoot>
                         <tbody>
@@ -52,8 +52,10 @@
                                             <cti:classUpdater type="JOB" identifier="${job.id}/JOB_STATUS_CLASS">
                                                 <cti:dataUpdaterValue type="JOB" identifier="${job.id}/JOB_STATE_TEXT" />
                                             </cti:classUpdater>
-                                        </c:if> <cm:dropdown
-                                            triggerClasses="fr">
+                                        </c:if> 
+                                    </td>
+                                    <td>
+                                        <cm:dropdown>
                                             <cm:dropdownOption key="yukon.web.components.button.history.label" href="${historyUrl}"
                                                 icon="icon-script" />
                                             <c:choose>

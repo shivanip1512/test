@@ -12,7 +12,7 @@
 <c:set var="paoId" value="${pao.paoIdentifier.paoId}"/>
 
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
-    <cm:dropdown triggerClasses="fr">
+    <cm:dropdown>
         <div data-start-action="off" data-pao-id="${paoId}" class="dn">
             <cm:dropdownOption icon="icon-control-play-blue" disabled="true">
                 <cti:msg2 key=".controlAreaDetail.actions.start"/>
@@ -50,7 +50,7 @@
 
 <cti:msg2 var="noControlAreaControl" key=".controlAreaDetail.noControl"/>
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}" invert="true">
-    <cm:dropdown triggerClasses="fr">
+    <cm:dropdown>
         <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${noControlAreaControl}">
             <cti:msg2 key=".controlAreaDetail.actions.start"/>
         </cm:dropdownOption>

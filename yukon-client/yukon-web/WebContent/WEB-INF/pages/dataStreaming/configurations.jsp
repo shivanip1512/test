@@ -27,7 +27,7 @@
                 <tags:sort column="${attributes}"/>
                 <tags:sort column="${interval}"/>    
                 <tags:sort column="${numberOfDevices}"/>
-                <th><cti:icon icon="icon-cog"/></th>
+                <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
             </tr>
         </thead>
         <tbody>

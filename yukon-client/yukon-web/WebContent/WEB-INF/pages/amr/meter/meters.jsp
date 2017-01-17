@@ -52,7 +52,7 @@
                             <tags:sort column="${typeColumn}"/>
                             <tags:sort column="${addressColumn}"/>
                             <tags:sort column="${routeColumn}"/>
-                           <th><cti:icon icon="icon-cog"/></th>
+                            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>

@@ -98,7 +98,7 @@
                         <tags:sort column="${SCHED_DESC}"/>
                         <tags:sort column="${NEXT_RUN}"/>
                         <tags:sort column="${ENABLED_STATUS}"/>
-                        <th><cti:checkRolesAndProperties value="MANAGE_SCHEDULES"><cti:icon icon="icon-cog"/></cti:checkRolesAndProperties></th>
+                        <th class="action-column"><cti:checkRolesAndProperties value="MANAGE_SCHEDULES"><cti:icon icon="icon-cog" classes="M0"/></cti:checkRolesAndProperties></th>
                     </thead>
                     <tfoot>
                     </tfoot>

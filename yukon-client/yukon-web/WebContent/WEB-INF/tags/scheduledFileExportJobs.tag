@@ -29,6 +29,7 @@
                         <th><i:inline key=".nameHeader"/></th>
                         <th><i:inline key=".scheduleHeader"/></th>
                         <th><i:inline key=".nextRunHeader"/></th>
+                        <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                     </thead>
                     <tfoot></tfoot>
                     <tbody>
@@ -38,12 +39,14 @@
                                 <td>${job.cronString}</td>
                                 <td>
                                     <cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/>
+                                </td>
+                                <td>
                                     <cti:url var="historyUrl" value="/support/fileExportHistory/list">
                                         <cti:param name="jobName" value="${job.name}"/>
                                         <cti:param name="jobGroupId" value="${job.jobGroupId}"/>
                                         <cti:param name="exportType" value="${jobType}"/>
                                     </cti:url>
-                                    <cm:dropdown triggerClasses="fr">
+                                    <cm:dropdown>
                                         <cm:dropdownOption classes="js-edit-job" data-job-id="${job.id}" icon="icon-pencil" key="components.button.edit.label"/>
                                         <cm:dropdownOption classes="js-view-job" icon="icon-script" key="components.button.history.label" href="${historyUrl}"/>
                                         <cm:dropdownOption classes="js-delete-job" id="delete-job-${job.id}" data-job-id="${job.id}" icon="icon-cross" key="components.button.delete.label" data-ok-event="yukon.job.delete"/>

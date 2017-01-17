@@ -11,7 +11,7 @@
             <c:forEach var="column" items="${columns}">
                 <tags:sort column="${column}" />
             </c:forEach>
-            <th><cti:icon icon="icon-cog"/></th>
+            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
         </tr>
     </thead>
     <tfoot></tfoot>

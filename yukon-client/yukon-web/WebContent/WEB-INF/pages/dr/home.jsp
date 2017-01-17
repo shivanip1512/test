@@ -38,6 +38,7 @@
                                 <th><i:inline key=".name"/></th>
                                 <th><i:inline key=".type"/></th>
                                 <th><i:inline key=".state"/></th>
+                                <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                             </tr>
                         </thead>
                         <tfoot></tfoot>
@@ -63,6 +64,8 @@
                                 </td>
                                 <td>
                                     <span class="fl"><dr:stateText pao="${pao}"/></span>
+                                </td>
+                                <td>
                                     <dr:listActions pao="${pao}"/>
                                 </td>
                             </tr>
@@ -200,7 +203,7 @@
                             <th><i:inline key=".name"/></th>
                             <th><i:inline key=".type"/></th>
                             <th><i:inline key=".state"/></th>
-                            <th class="action-column"><cti:icon icon="icon-cog"/></th>
+                            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                         </tr>
                         </thead>
                         <tfoot></tfoot>

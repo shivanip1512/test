@@ -22,8 +22,8 @@
                     <th><i:inline key=".device"/></th>
                     <th><i:inline key=".lastRunTime"/></th>
                     <th><i:inline key=".nextRunTime"/></th>
-                    <th><i:inline key=".scheduleAssignments.command"/><cti:icon icon="icon-cog" classes="fr"/></th>
-                    
+                    <th><i:inline key=".scheduleAssignments.command"/></th>
+                    <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                 </tr>
             </thead>
             
@@ -42,8 +42,9 @@
                     <td><cti:formatDate value="${item.nextRunTime}" type="DATEHM" /></td>
 
                     <!-- Command -->
-                    <td>${fn:escapeXml(item.commandName)}
-                        <cm:dropdown triggerClasses="fr">
+                    <td>${fn:escapeXml(item.commandName)}</td>
+                    <td>
+                        <cm:dropdown>
                             <c:choose>
                                 <c:when test="${hasActionRoles == true}">
                                     <cm:dropdownOption classes="run-schedule" data-device-name="${fn:escapeXml(item.deviceName)}" 

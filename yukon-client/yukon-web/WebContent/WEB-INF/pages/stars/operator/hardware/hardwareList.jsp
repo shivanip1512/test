@@ -346,7 +346,8 @@
                         <tr>
                             <th><i:inline key=".serialNumber"/></th>
                             <th><i:inline key=".displayType.SWITCH"/></th>
-                            <th><i:inline key=".label"/><cti:icon icon="icon-cog"/></th>
+                            <th><i:inline key=".label"/></th>
+                            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -359,7 +360,9 @@
                                 <td>${fn:escapeXml(hwSwitch.displayType)}</td>
                                 <td>
                                     ${fn:escapeXml(hwSwitch.displayLabel)}
-                                    <cm:dropdown triggerClasses="fr">
+                                </td>
+                                <td>
+                                    <cm:dropdown>
                                         <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editConfigUrl}${hwSwitch.inventoryId}" />
                                         <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                             <c:if test="${inventoryChecking}">
@@ -430,7 +433,8 @@
                         <tr>
                             <th><i:inline key=".serialNumber"/></th>
                             <th><i:inline key=".displayType.THERMOSTAT"/></th>
-                            <th><i:inline key=".label"/><cti:icon icon="icon-cog"/></th>
+                            <th><i:inline key=".label"/></th>
+                            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -445,7 +449,9 @@
                                 <td>${fn:escapeXml(thermostat.displayType)}</td>
                                 <td>
                                     ${fn:escapeXml(thermostat.displayLabel)}
-                                    <cm:dropdown triggerClasses="fr">
+                                </td>
+                                <td>
+                                    <cm:dropdown>
                                         <cm:dropdownOption key=".editConfig.label" icon="icon-cog-edit" href="${editConfigUrl}${thermostat.inventoryId}" />
                                         <cti:checkRolesAndProperties value="OPERATOR_CONSUMER_INFO_HARDWARES_THERMOSTAT">
                                             <c:if test="${thermostat.hardwareType.supportsSchedules}">
@@ -546,7 +552,8 @@
                             <c:if test="${not starsMeters}">
                                 <th><i:inline key=".displayType.METER"/></th>
                             </c:if>
-                            <th><i:inline key=".label"/><cti:icon icon="icon-cog"/></th>
+                            <th><i:inline key=".label"/></th>
+                            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -567,7 +574,9 @@
                                     <td>${fn:escapeXml(meter.displayType)}</td>
                                     <td>
                                         ${fn:escapeXml(meter.displayLabel)}
-                                        <cm:dropdown triggerClasses="fr">
+                                    </td>
+                                    <td>
+                                        <cm:dropdown>
                                             <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                                 <c:if test="${inventoryChecking}">
                                                     <li>
@@ -645,7 +654,14 @@
                         <tr>
                             <th><i:inline key=".displayName"/></th>
                             <th><i:inline key=".displayType.GATEWAY"/></th>
-                            <th><i:inline key=".gateways.commStatus"/><cti:icon icon="icon-cog"/></th>
+                            <th><i:inline key=".gateways.commStatus"/></th>
+                            <th class="action-column">
+                                <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
+                                    <c:if test="${inventoryChecking}">
+                                        <cti:icon icon="icon-cog" classes="M0"/>
+                                    </c:if>
+                                </cti:checkRolesAndProperties>
+                            </th>
                         </tr>
                     </thead>
                     <tfoot></tfoot>
@@ -661,9 +677,11 @@
                                 <td class="pointStateColumn">
                                     <cti:pointStatus pointId="${gateway.commissionedId}"/>&nbsp;
                                     <cti:pointValue pointId="${gateway.commissionedId}" format="VALUE"/>
+                                </td>
+                                <td>
                                     <cti:checkRolesAndProperties value="OPERATOR_ALLOW_ACCOUNT_EDITING">
                                         <c:if test="${inventoryChecking}">
-                                            <cm:dropdown triggerClasses="fr">
+                                            <cm:dropdown>
                                                 <li>
                                                     <tags:pickerDialog extraArgs="${energyCompanyId}" 
                                                             id="availableGatewayPicker${gateway.inventoryId}" 

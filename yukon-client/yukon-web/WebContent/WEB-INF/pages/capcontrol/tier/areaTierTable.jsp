@@ -28,7 +28,8 @@
                 <th class="tar"><i:inline key=".unavailableKvars"/></th>
                 <th class="tar"><i:inline key=".closedKvars"/></th>
                 <th class="tar"><i:inline key=".trippedKvars"/></th>
-                <th class="tar"><i:inline key=".pfactorEstimatedOps"/><cti:icon icon="icon-cog" classes="fr"/></th>
+                <th class="tar"><i:inline key=".pfactorEstimatedOps"/></th>
+                <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
             </tr>
         </thead>
         <tfoot></tfoot>
@@ -60,7 +61,9 @@
                     <td class="tar"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="KVARS_TRIPPED" initialize="false"/></td>
                     <td class="tar">
                         <span style="margin-right:10px;"><cti:capControlValue paoId="${areaId}" type="${areaType.updaterType}" format="PFACTOR"/></span>
-                        <cm:dropdown icon="icon-cog" triggerClasses="fr">
+                    </td>
+                    <td>
+                        <cm:dropdown icon="icon-cog">
                             <cti:checkRolesAndProperties value="ALLOW_AREA_CONTROLS">
                                 <li>
                                     <a id="areaState_${areaId}" href="javascript:void(0)" class="clearfix">

@@ -18,7 +18,7 @@
             <tags:sort column="${typeColumn}"/>
             <tags:sort column="${rateColumn}"/>
             <c:if test="${hasVendorId}"><th><i:inline key=".tableHeader.cisDetails"/></th></c:if>
-            <th><cti:icon icon="icon-cog" classes="fr"/></th>
+            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
         </tr>
     </thead>
     <tfoot></tfoot>
@@ -47,7 +47,7 @@
                     </td>
                 </c:if>
                 <td>
-                    <cm:singleDeviceMenu deviceId="${paoId}" triggerClasses="fr"/>
+                    <cm:singleDeviceMenu deviceId="${paoId}"/>
                 </td>
             </tr>
         </c:forEach>

@@ -22,6 +22,7 @@
                         <th><i:inline key=".nameHeader"/></th>
                         <th><i:inline key=".scheduleHeader"/></th>
                         <th><i:inline key=".nextRunHeader"/></th>
+                        <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
                     </thead>
                     <tfoot></tfoot>
                     <tbody>
@@ -44,7 +45,9 @@
                                 <td>${job.cronString}</td>
                                 <td>
                                     <cti:dataUpdaterValue type="JOB" identifier="${job.id}/NEXT_RUN_DATE"/>
-                                    <cm:dropdown triggerClasses="fr vv">
+                                </td>
+                                <td>
+                                    <cm:dropdown>
                                         <cm:dropdownOption key="components.button.history.label" 
                                             href="${historyUrl}" icon="icon-script"/>
                                         <cm:dropdownOption key="components.button.delete.label"

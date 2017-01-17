@@ -22,7 +22,8 @@
             <th><i:inline key=".timestamp"/></th>
             <th><i:inline key=".pfactorEstimated"/></th>
             <th><i:inline key=".kwVolts"/></th>
-            <th><i:inline key=".dailyMax"/><cti:icon icon="icon-cog" classes="fr"/></th>
+            <th><i:inline key=".dailyMax"/></th>
+            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
          </tr>
     </thead>
     <c:forEach var="viewfeeder" items="${feederList}">
@@ -139,7 +140,9 @@
                 <span id="dailyMaxOps_${feederId}">
                     <cti:capControlValue paoId="${feederId}" type="FEEDER" format="DAILY_MAX_OPS"/>
                 </span>
-                <cm:dropdown icon="icon-cog" triggerClasses="fr">
+            </td>
+            <td>
+                <cm:dropdown icon="icon-cog">
                     <cti:checkRolesAndProperties value="ALLOW_FEEDER_CONTROLS">
                         <li>
                             <a id="feederState_${feederId}" href="javascript:void(0)" class="clearfix">

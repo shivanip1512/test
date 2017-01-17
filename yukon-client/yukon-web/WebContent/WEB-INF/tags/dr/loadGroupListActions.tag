@@ -24,7 +24,7 @@
 
 <%-- perhaps we should display "macro groups not controllable" or some such nonsense --%>
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}">
-    <cm:dropdown triggerClasses="fr">
+    <cm:dropdown>
         <tags:dynamicChoose updaterString="DR_LOADGROUP/${paoId}/SHOW_ACTION" suffix="${paoId}">
     
             <tags:dynamicChooseOption optionId="unknown">
@@ -76,7 +76,7 @@
 </cti:checkPaoAuthorization>
 
 <cti:checkPaoAuthorization permission="CONTROL_COMMAND" pao="${pao}" invert="true">
-    <cm:dropdown triggerClasses="fr">
+    <cm:dropdown>
         <c:if test="${allowShed}">
             <cm:dropdownOption icon="icon-control-play-blue" disabled="true" title="${loadGroupDisabled}">
                 ${startAction}
