@@ -3495,13 +3495,13 @@
                 <decimalplaces value="1" />
             </point>
             <point type="PulseAccumulator" offset="2">
-                <name>Pulse Input #2 (Current)</name>
+                <name>kWh (Channel 2)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
                 <decimalplaces value="3" />
             </point>
             <point type="PulseAccumulator" offset="3">
-                <name>Pulse Input #3 (Current)</name>
+                <name>kWh (Channel 3)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
                 <decimalplaces value="3" />
@@ -3819,13 +3819,13 @@
         <displayName>MCT-310IL</displayName>
         <points>
             <point type="PulseAccumulator" offset="2">
-                <name>Pulse Input #2 (Current)</name>
+                <name>kWh (Channel 2)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
                 <decimalplaces value="3" />
             </point>
             <point type="PulseAccumulator" offset="3">
-                <name>Pulse Input #3 (Current)</name>
+                <name>kWh (Channel 3)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
                 <decimalplaces value="3" />
@@ -3884,13 +3884,13 @@
         <displayName>MCT-310IM</displayName>
         <points>
             <point type="PulseAccumulator" offset="2">
-                <name>Pulse Input #2 (Current)</name>
+                <name>kWh (Channel 2)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
                 <decimalplaces value="3" />
             </point>
             <point type="PulseAccumulator" offset="3">
-                <name>Pulse Input #3 (Current)</name>
+                <name>kWh (Channel 3)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
                 <decimalplaces value="3" />
