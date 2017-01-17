@@ -522,7 +522,7 @@
                 <name>kW (Channel 2)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
             <point type="DemandAccumulator" offset="3">
                 <name>kW (Channel 3)</name>
@@ -3540,7 +3540,7 @@
                 <decimalplaces value="3" />
             </point>
             <point type="DemandAccumulator" offset="2">
-                <name>Pulse Input #2 - Demand</name>
+                <name>kW (Channel 2)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
                 <decimalplaces value="3" />
@@ -3857,7 +3857,7 @@
                 <decimalplaces value="3" />
             </point>
             <point type="DemandAccumulator" offset="2">
-                <name>Pulse Input #2 - Demand</name>
+                <name>kW (Channel 2)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
                 <decimalplaces value="3" />
@@ -3914,7 +3914,7 @@
                 <decimalplaces value="3" />
             </point>
             <point type="DemandAccumulator" offset="2">
-                <name>Pulse Input #2 - Demand</name>
+                <name>kW (Channel 2)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kW" />
                 <decimalplaces value="3" />
