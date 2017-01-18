@@ -1417,7 +1417,7 @@
                 <name>Blink Count</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
-                <decimalplaces value="4" />
+                <decimalplaces value="3" />
             </point>
         </points>
         <commands>
@@ -4029,13 +4029,6 @@
     <pao id="MCT250" inherits="MCT_240_248_250_BASE" creatable="false">
         <displayName>MCT-250</displayName>
         <points>
-            <point type="PulseAccumulator" offset="20">
-                <init>true</init>
-                <name>Power Fail Count</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="Undefined" />
-                <decimalplaces value="3" />
-            </point>
             <point type="Status" offset="1">
                 <name>Status Input 1</name>
                 <stategroup value="SystemState" />
@@ -8117,7 +8110,7 @@
                 <basicLookup point="Coincident kVA" />
             </attribute>
             <attribute name="POWER_FACTOR">
-                <basicLookup point="Avg Power Factor" />
+                <basicLookup point="Power Factor" />
             </attribute>
             <attribute name="POWER_FACTOR_COIN">
                 <basicLookup point="Coincident Power Factor" />
