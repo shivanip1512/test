@@ -385,6 +385,12 @@ struct ClientErrors
         UnknownWaterNode,
         UnknownGateway,
         WaterNodeFailure,
+
+        // DNP IIN bit errors
+        FunctionCodeNotImplemented,
+        UnknownObject,
+        ParameterError,
+        OperationAlreadyExecuting,
     };
 };
 

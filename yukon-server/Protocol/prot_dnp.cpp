@@ -653,6 +653,12 @@ YukonError_t DnpProtocol::decode( CtiXfer &xfer, YukonError_t status )
         }
         else
         {
+            // if we have an error code set in the IIN bits, push it to our return code
+            YukonError_t iin_error_code = _app_layer.getIINErrorCode();
+            if ( iin_error_code != ClientErrors::None ) 
+            {
+                retVal = iin_error_code;
+            }
             _string_results.push_back(_app_layer.getInternalIndications());
 
             switch( _command )

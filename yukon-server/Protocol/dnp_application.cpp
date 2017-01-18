@@ -297,6 +297,15 @@ string ApplicationLayer::getInternalIndications( void ) const
     return iin;
 }
 
+YukonError_t ApplicationLayer::getIINErrorCode() const
+{
+    if( _iin.no_func_code_support ) return ClientErrors::FunctionCodeNotImplemented;
+    if( _iin.object_unknown )       return ClientErrors::UnknownObject;
+    if( _iin.parameter_error )      return ClientErrors::ParameterError;
+    if( _iin.already_executing )    return ClientErrors::OperationAlreadyExecuting;
+
+    return ClientErrors::None;
+}
 
 bool ApplicationLayer::hasDeviceRestarted() const
 {

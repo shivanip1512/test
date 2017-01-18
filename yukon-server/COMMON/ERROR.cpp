@@ -166,6 +166,10 @@ static const std::map<YukonError_t, error_info> CtiErrors = {
         { ClientErrors::UnknownWaterNode,            ei{ ERRTYPESYSTEM,   "Unknown water node."                         } },
         { ClientErrors::UnknownGateway,              ei{ ERRTYPESYSTEM,   "Unknown gateway."                            } },
         { ClientErrors::WaterNodeFailure,            ei{ ERRTYPESYSTEM,   "Unspecified water node failure."             } },
+        { ClientErrors::FunctionCodeNotImplemented,  ei{ ERRTYPEPROTOCOL, "Function code not supported." } },
+        { ClientErrors::UnknownObject,               ei{ ERRTYPEPROTOCOL, "Unknown object." } },
+        { ClientErrors::ParameterError,              ei{ ERRTYPEPROTOCOL, "Parameter error, not all points in the index range or object index prefixes exist." } },
+        { ClientErrors::OperationAlreadyExecuting,   ei{ ERRTYPEPROTOCOL, "Requested operation is already executing." } },
     };
 
 }

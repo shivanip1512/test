@@ -160,6 +160,8 @@ public:
     //  post-completion processing
     void getObjects( object_block_queue &object_queue );
     std::string getInternalIndications( void ) const;
+    YukonError_t getIINErrorCode() const;
+
     bool hasDeviceRestarted() const;
     bool needsTime() const;
 
