@@ -3235,37 +3235,37 @@
                 <init>true</init>
                 <name>kWh</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KWH" />
+                <unitofmeasure value="kWH" />
                 <decimalplaces value="1" />
             </point>
             <point type="PulseAccumulator" offset="2">
                 <name>>kWh (Channel 2)</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KWH" />
+                <unitofmeasure value="kWH" />
                 <decimalplaces value="3" />
             </point>
             <point type="PulseAccumulator" offset="3">
                 <name>kWh (Channel 3)</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KWH" />
+                <unitofmeasure value="kWH" />
                 <decimalplaces value="3" />
             </point>
             <point type="PulseAccumulator" offset="4">
                 <name>Pulse Input #1 (Frozen)</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KWH" />
+                <unitofmeasure value="kWH" />
                 <decimalplaces value="3" />
             </point>
             <point type="PulseAccumulator" offset="5">
                 <name>Pulse Input #2 (Frozen)</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KWH" />
+                <unitofmeasure value="kWH" />
                 <decimalplaces value="3" />
             </point>
             <point type="PulseAccumulator" offset="6">
                 <name>Pulse Input #3 (Frozen)</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KWH" />
+                <unitofmeasure value="kWH" />
                 <decimalplaces value="3" />
             </point>
             <point type="PulseAccumulator" offset="20">
@@ -3279,55 +3279,55 @@
                 <init>true</init>
                 <name>kW</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
                 <decimalplaces value="3" />
             </point>
             <point type="DemandAccumulator" offset="2">
                 <name>kW (Channel 2)</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
                 <decimalplaces value="3" />
             </point>
             <point type="DemandAccumulator" offset="3">
                 <name>kW (Channel 3)</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
                 <decimalplaces value="3" />
             </point>
             <point type="DemandAccumulator" offset="10">
                 <name>Max OR Off Peak Demand (Pulse Input 1)</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KW"/>
+                <unitofmeasure value="kW"/>
                 <decimalplaces value="3" />
             </point>
             <point type="DemandAccumulator" offset="11">
                 <name>Min OR On Peak Demand (Pulse Input 1)</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KW" />
+                <unitofmeasure value="kW" />
                 <decimalplaces value="3" />
             </point>
             <point type="DemandAccumulator" offset="12">
                 <name>Max OR Off Peak Demand (Pulse Input 2)</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KW" />
+                <unitofmeasure value="kW" />
                 <decimalplaces value="3" />
             </point>
             <point type="DemandAccumulator" offset="13">
                 <name>Min OR On Peak Demand (Pulse Input 2)</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KW" />
+                <unitofmeasure value="kW" />
                 <decimalplaces value="3" />
             </point>
             <point type="DemandAccumulator" offset="14">
                 <name>Max OR Off Peak Demand (Pulse Input 3)</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KW" />
+                <unitofmeasure value="kW" />
                 <decimalplaces value="3" />
             </point>
             <point type="DemandAccumulator" offset="15">
                 <name>Min OR On Peak Demand (Pulse Input 3)</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="KW" />
+                <unitofmeasure value="kW" />
                 <decimalplaces value="3" />
             </point>
 
@@ -3410,7 +3410,7 @@
             <point type="PulseAccumulator" offset="3">
                 <name>kWh</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="kWH" />
+                <unitofmeasure value="kW" />
                 <decimalplaces value="3" />
             </point>
 
