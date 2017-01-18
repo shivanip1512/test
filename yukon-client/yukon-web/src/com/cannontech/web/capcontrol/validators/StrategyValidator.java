@@ -42,7 +42,8 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
             strategy.getMinConfirmPercent(), 0, 100, true);
         YukonValidationUtils.checkRange(errors, "failurePercent", 
             strategy.getMinConfirmPercent(), 0, 100, true);
-        
+        YukonValidationUtils.checkIsPositiveInt(errors,"controlSendRetries", strategy.getControlSendRetries());
+        YukonValidationUtils.checkIsPositiveInt(errors,"maxDailyOperation", strategy.getMaxDailyOperation());
         validatePeakTimes(strategy, errors);
         
         if (strategy.isIvvc()) {

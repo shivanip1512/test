@@ -137,15 +137,7 @@ public class StrategyController {
                 peakDays.put(day, false);
             }
         }
-        if (strategy.getControlSendRetries() == null) {
-            strategy.setControlSendRetries(0);
-        }
-        if (strategy.getControlSendRetries() == null) {
-            strategy.setControlSendRetries(0);
-        }
-        if (strategy.getMaxDailyOperation() == null) {
-            strategy.setMaxDailyOperation(0);
-        }
+        
         validator.validate(strategy, result);
         
         if (result.hasErrors()) {
