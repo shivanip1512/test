@@ -21,18 +21,18 @@ public class CapControlStrategy {
     private Integer id = null;
     private String name = null;
     private ControlMethod controlMethod = ControlMethod.INDIVIDUAL_FEEDER;
-    private int maxDailyOperation = 0;
+    private Integer maxDailyOperation = 0;
     private boolean maxOperationEnabled = false;
     private LocalTime peakStartTime = LocalTime.MIDNIGHT;
     private LocalTime peakStopTime = MAX_TIME;
     private int controlInterval = Minutes.minutes(15).toStandardSeconds().getSeconds();
     private int minResponseTime = Minutes.minutes(15).toStandardSeconds().getSeconds();
-    private int minConfirmPercent = 75;
-    private int failurePercent = 25;
+    private Integer minConfirmPercent = 75;
+    private Integer failurePercent = 25;
     
     private ControlAlgorithm algorithm = ControlAlgorithm.KVAR;
     private int controlDelayTime = 0;
-    private int controlSendRetries = 0;
+    private Integer controlSendRetries = 0;
     private boolean integrateFlag = false;
     private int integratePeriod = 0;
     private boolean likeDayFallBack = false;
