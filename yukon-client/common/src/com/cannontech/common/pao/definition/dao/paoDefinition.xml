@@ -3410,14 +3410,14 @@
             <point type="PulseAccumulator" offset="3">
                 <name>kWh</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="kW" />
+                <unitofmeasure value="kWh" />
                 <decimalplaces value="3" />
             </point>
-
+            <!--  TODO why is this offset 3? --> 
             <point type="DemandAccumulator" offset="3">
                 <name>kW</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="Undefined" />
+                <unitofmeasure value="kW" />
                 <decimalplaces value="3" />
             </point>
 
