@@ -46,6 +46,7 @@ import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.group.GroupCommandCompletionAlert;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -68,6 +69,7 @@ public class DeviceConfigController {
     @Autowired private AlertService alertService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
+    @Autowired private ServerDatabaseCache dbCache;
     
     @RequestMapping("assignConfig")
     public String assignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
@@ -108,6 +110,10 @@ public class DeviceConfigController {
         final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration"); 
         DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(configId);
         eventLogService.assignConfigInitiated(configuration.getName(), deviceCollection.getDeviceCount(), userContext.getYukonUser());
+        for(SimpleDevice device: deviceCollection) {
+            String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+            eventLogService.assignConfigToDeviceInitiated(configuration.getName(), deviceName, userContext.getYukonUser());
+        }
         Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
         
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
@@ -167,7 +173,10 @@ public class DeviceConfigController {
         
         // PROCESS
         eventLogService.unassignConfigInitiated(deviceCollection.getDeviceCount(), userContext.getYukonUser());
-        
+        for(SimpleDevice device: deviceCollection) {
+            String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+            eventLogService.unassignConfigFromDeviceInitiated(deviceName, userContext.getYukonUser());
+        }
         Processor<SimpleDevice> processor = processorFactory.createUnassignConfigurationToYukonDeviceProcessor();
         
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
@@ -265,6 +274,10 @@ public class DeviceConfigController {
         model.addAttribute("deviceCollection", deviceCollection);
         
         // DO VERIFY
+        for(SimpleDevice device: deviceCollection) {
+            String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+            eventLogService.verifyConfigFromDeviceInitiated(deviceName, user);
+        }
         VerifyConfigCommandResult result = deviceConfigService.verifyConfigs(deviceCollection, user);
         eventLogService.verifyConfigCompleted(result.getSuccessList().size(), 
                                                       result.getFailureList().size(),
@@ -321,6 +334,11 @@ public class DeviceConfigController {
             
         };
         
+        for(SimpleDevice device: deviceCollection) {
+            String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+            eventLogService.readConfigFromDeviceInitiated(deviceName, user);
+        }
+        
         String key = deviceConfigService.readConfigs(deviceCollection, callback, user);
         model.addAttribute("resultKey", key);
         return "redirect:/group/commander/resultDetail";
@@ -352,7 +370,10 @@ public class DeviceConfigController {
             }
             
         };
-        
+        for(SimpleDevice device: deviceCollection) {
+            String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+            eventLogService.sendConfigToDeviceInitiated(deviceName, user);
+        }
         String key = deviceConfigService.sendConfigs(deviceCollection, method, callback, user);
         model.addAttribute("resultKey", key);
         return "redirect:/group/commander/resultDetail";

@@ -31,7 +31,7 @@ public interface DeviceConfigEventLogService {
                                     @Arg(ArgEnum.username) LiteYukonUser yukonUser);
     
     @YukonEventLog(category = "device.configuration")
-    public void sendConfigToDeviceinitiated(@Arg(ArgEnum.deviceName) String deviceName,
+    public void sendConfigToDeviceInitiated(@Arg(ArgEnum.deviceName) String deviceName,
                                             @Arg(ArgEnum.username) LiteYukonUser yukonUser);
     
     
@@ -41,6 +41,10 @@ public interface DeviceConfigEventLogService {
                                     @Arg(ArgEnum.unsupportedCount) Integer numUnsupported,
                                     @Arg(ArgEnum.message) String exceptionMessage,
                                     @Arg(ArgEnum.resultKey) String resultKey);
+    
+    @YukonEventLog(category = "device.configuration")
+    public void sendConfigToDeviceCompleted(@Arg(ArgEnum.deviceName) String deviceName,
+                                                @Arg(ArgEnum.username) LiteYukonUser yukonUser);
     
     @YukonEventLog(category = "device.configuration")
     public void readConfigInitiated(@Arg(ArgEnum.totalCount) Integer numDevices,
@@ -59,6 +63,10 @@ public interface DeviceConfigEventLogService {
                                               @Arg(ArgEnum.username) LiteYukonUser yukonUser);
     
     @YukonEventLog(category = "device.configuration")
+    public void readConfigFromDeviceCompleted(@Arg(ArgEnum.deviceName) String deviceName,
+                                                @Arg(ArgEnum.username) LiteYukonUser yukonUser);
+    
+    @YukonEventLog(category = "device.configuration")
     public void verifyConfigInitiated(@Arg(ArgEnum.totalCount) Integer numDevices,
                                       @Arg(ArgEnum.username) LiteYukonUser yukonUser);
     
@@ -72,4 +80,7 @@ public interface DeviceConfigEventLogService {
     public void verifyConfigFromDeviceInitiated(@Arg(ArgEnum.deviceName) String deviceName,
                                                 @Arg(ArgEnum.username) LiteYukonUser yukonUser);
     
+    @YukonEventLog(category = "device.configuration")
+    public void verifyConfigFromDeviceCompleted(@Arg(ArgEnum.deviceName) String deviceName,
+                                                @Arg(ArgEnum.username) LiteYukonUser yukonUser);
 }

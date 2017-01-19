@@ -44,6 +44,8 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 
 public class DeviceConfigServiceImpl implements DeviceConfigService {
@@ -59,7 +61,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     @Autowired private PaoLoadingService paoLoadingService;
     @Autowired private TemporaryDeviceGroupService temporaryDeviceGroupService;
     @Autowired private WaitableCommandCompletionCallbackFactory waitableCommandCompletionCallbackFactory;
-
+    @Autowired private IDatabaseCache dbCache;
+    
     private String sendConfigCommand(DeviceCollection deviceCollection, SimpleCallback<GroupCommandResult> callback,
             String command, DeviceRequestType type, LiteYukonUser user) {
         List<SimpleDevice> unsupportedDevices = new ArrayList<SimpleDevice>();
@@ -85,7 +88,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         deviceGroupMemberEditorDao.addDevices(supportedGroup, supportedDevices);
         DeviceCollection unsupportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(unsupportedGroup);
         DeviceCollection supportedCollection = deviceGroupCollectionHelper.buildDeviceCollection(supportedGroup);
-
+        
         String key = groupCommandExecutor.execute(supportedCollection, command, type, callback, user);
         GroupCommandResult result = groupCommandExecutor.getResult(key);
         result.setHandleUnsupported(true);
@@ -104,6 +107,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         String resultKey = sendConfigCommand(deviceCollection, callback, commandString, 
                                              DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
         eventLogService.sendConfigInitiated(1, commandString, resultKey, user);    //after the execute so we can have the key
+        for(SimpleDevice device: deviceCollection){
+            String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
+            eventLogService.sendConfigToDeviceCompleted(deviceName, user);
+        }
         return resultKey;
     }
 
@@ -114,6 +121,10 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
         String resultKey = sendConfigCommand(deviceCollection, callback, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_READ, user);
         eventLogService.readConfigInitiated(deviceCollection.getDeviceCount(), resultKey, user);    // after execute call so we can get the key.
+        for(SimpleDevice device: deviceCollection){
+            String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
+            eventLogService.readConfigFromDeviceCompleted(deviceName, YukonUserContext.system.getYukonUser());
+        }
         return resultKey;
     }
 
@@ -152,6 +163,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                     result.getUnsupportedList().add(new SimpleDevice(device));
                 }
             }
+            String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+            eventLogService.verifyConfigFromDeviceCompleted(deviceName, YukonUserContext.system.getYukonUser());
         }
 
         List<CommandRequestDevice> requests =
@@ -225,6 +238,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         String commandString = "getconfig install all";
         CommandResultHolder resultHolder =
             commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_READ, user);
+        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+        eventLogService.readConfigFromDeviceCompleted(deviceName, YukonUserContext.system.getYukonUser());
         return resultHolder;
     }
 
@@ -235,6 +250,9 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         eventLogService.sendConfigInitiated(1, commandString, "", user);
         CommandResultHolder resultHolder =
             commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
+        
+        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+        eventLogService.sendConfigToDeviceCompleted(deviceName, YukonUserContext.system.getYukonUser());;
         return resultHolder;
     }
 

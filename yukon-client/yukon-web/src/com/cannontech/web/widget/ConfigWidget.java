@@ -150,7 +150,7 @@ public class ConfigWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("configWidget/configWidgetResult.jsp");
         YukonDevice device = getYukonDevice(request);
         String deviceName = getLiteYukonPAObject(request).getPaoName();
-        eventLogService.sendConfigToDeviceinitiated(deviceName, userContext.getYukonUser());
+        eventLogService.sendConfigToDeviceInitiated(deviceName, userContext.getYukonUser());
         CommandResultHolder resultHolder = deviceConfigService.sendConfig(device, userContext.getYukonUser());
         
         mav.addObject("sendResult", resultHolder);
