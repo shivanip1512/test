@@ -743,10 +743,17 @@ DELETE FROM DeviceTypeCommand WHERE DeviceCommandID IN (-1045, -1051, -1057, -10
 /* End YUK-15711 */
 
 /* Start YUK-15746 */
-INSERT INTO YukonListEntry VALUES (2030, 1005, 0, 'Honeywell Wi-Fi 9000', 1332);
-INSERT INTO YukonListEntry VALUES (2031, 1005, 0, 'Honeywell Wi-Fi VisionPRO 8000', 1333);
-INSERT INTO YukonListEntry VALUES (2032, 1005, 0, 'Honeywell Wi-Fi FocusPRO', 1334);
-INSERT INTO YukonListEntry VALUES (2033, 1005, 0, 'Honeywell Wi-Fi Thermostat', 1335);
+IF((SELECT COUNT(*) FROM YukonListEntry WHERE EntryText = 'Honeywell Wi-Fi 9000') = 0)
+INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'Honeywell Wi-Fi 9000', 1332);
+
+IF((SELECT COUNT(*) FROM YukonListEntry WHERE EntryText = 'Honeywell Wi-Fi VisionPRO 8000') = 0)
+INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'Honeywell Wi-Fi VisionPRO 8000', 1333);
+
+IF((SELECT COUNT(*) FROM YukonListEntry WHERE EntryText = 'Honeywell Wi-Fi FocusPRO') = 0)
+INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'Honeywell Wi-Fi FocusPRO', 1334);
+
+IF((SELECT COUNT(*) FROM YukonListEntry WHERE EntryText = 'Honeywell Wi-Fi Thermostat') = 0)
+INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'Honeywell Wi-Fi Thermostat', 1335);
 /* End YUK-15746 */
 
 /* Start YUK-15836 */
