@@ -2018,7 +2018,7 @@
                 <cmd text="getvalue outage 5" />
                 <cmd text="getvalue outage 7" />
                 <cmd text="getvalue outage 9" />
-                <pointRef name="Outage Log" />
+                <pointRef name="Outages" />
             </command>
             <command id="READ_TOU_RATE_A">
                 <name>Read TOU Rate A</name>
@@ -2199,8 +2199,8 @@
             <command id="READ_INSTANT_LINE_DATA">
                 <name>Read Instant Line Data</name>
                 <cmd text="getvalue instant line data" />
-                <pointRef name="Voltage" />
-                <pointRef name="Current" />
+                <pointRef name="Voltage Phase A" />
+                <pointRef name="Current Phase A" />
                 <pointRef name="Power Factor" />
             </command>
         </commands>
