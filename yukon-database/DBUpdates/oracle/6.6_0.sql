@@ -658,32 +658,6 @@ SELECT
     WHERE NOT EXISTS (SELECT * FROM YukonListEntry WHERE EntryText = 'Honeywell Wi-Fi Thermostat');
 /* End YUK-15746 */
 
-/* Start YUK-15746 */
-INSERT INTO YukonListEntry
-SELECT 
-   (SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'Honeywell Wi-Fi 9000', 1332
-    FROM dual
-    WHERE NOT EXISTS (SELECT * FROM YukonListEntry WHERE EntryText = 'Honeywell Wi-Fi 9000');
-
-INSERT INTO YukonListEntry
-SELECT 
-   (SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'Honeywell Wi-Fi VisionPRO 8000', 1333
-    FROM dual
-    WHERE NOT EXISTS (SELECT * FROM YukonListEntry WHERE EntryText = 'Honeywell Wi-Fi VisionPRO 8000');
-
-INSERT INTO YukonListEntry
-SELECT 
-   (SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'Honeywell Wi-Fi FocusPRO', 1334
-    FROM dual
-    WHERE NOT EXISTS (SELECT * FROM YukonListEntry WHERE EntryText = 'Honeywell Wi-Fi FocusPRO');
-
-INSERT INTO YukonListEntry
-SELECT 
-   (SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'Honeywell Wi-Fi Thermostat', 1335
-    FROM dual
-    WHERE NOT EXISTS (SELECT * FROM YukonListEntry WHERE EntryText = 'Honeywell Wi-Fi Thermostat');
-/* End YUK-15746 */
-
 /* Start YUK-15836 */
 INSERT INTO YukonServices VALUES (22, 'HoneywellWifiDataListener', 'classpath:com/cannontech/services/honeywellWifiListener/honeywellWifiMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 /* End YUK-15836 */
