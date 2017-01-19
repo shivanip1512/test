@@ -202,7 +202,7 @@
     
                             <tags:nameValue2 nameKey=".points.usePerPhaseVarData">
                                 <tags:switchButton id="perPhaseChecked" path="capControlSubstationBus.usePhaseDataBoolean" 
-                                    toggleGroup="perPhase" toggleAction="hide" classes="js-per-phase"/>
+                                    toggleGroup="perPhase" toggleAction="hide" inputClass="js-per-phase"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".points.useTotalizedValues" data-toggle-group="perPhase">
                                 <tags:switchButton path="capControlSubstationBus.controlFlagBoolean"/>
@@ -326,7 +326,7 @@
                     <cti:tab title="${dualBusTab}">
                         <tags:nameValueContainer2>
                             <tags:nameValue2 nameKey=".bus.enableDualBus">
-                                <tags:switchButton path="capControlSubstationBus.dualBusEnabledBoolean" toggleGroup="dualBus" toggleAction="hide" classes="js-dual-bus"/>
+                                <tags:switchButton path="capControlSubstationBus.dualBusEnabledBoolean" toggleGroup="dualBus" toggleAction="hide" inputClass="js-dual-bus"/>
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".bus.alternateBus" data-toggle-group="dualBus">
                                 <form:hidden id="switch-alt-bus-input" path="capControlSubstationBus.altSubPAOId"/>
