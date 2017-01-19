@@ -3239,7 +3239,7 @@
                 <decimalplaces value="1" />
             </point>
             <point type="PulseAccumulator" offset="2">
-                <name>>kWh (Channel 2)</name>
+                <name>kWh (Channel 2)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kWH" />
                 <decimalplaces value="3" />
