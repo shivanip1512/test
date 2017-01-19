@@ -136,29 +136,34 @@ end;
 //-------------------------------------------------------
 export prototype BOOL IsInstalledVersionGreater(STRING);
 function BOOL IsInstalledVersionGreater(version)
-string sOldVersion, sTemp, sTemp1;
+string sOldVersion, sTemp;
 number nV1, nV2, nV3, nVer1, nVer2, nVer3;
+LIST listID1, listID2;
 begin
-	sOldVersion = IFX_INSTALLED_VERSION;
+    sOldVersion = IFX_INSTALLED_VERSION;
+    listID1 = ListCreate(STRINGLIST);
+    listID2 = ListCreate(STRINGLIST);
     //split version into three version components
-    StrSub(sTemp, sOldVersion, 0, 1);
+    StrGetTokens(listID1, sOldVersion, ".");
+    ListGetFirstString(listID1, sTemp);
     StrToNum(nV1, sTemp);
-    StrSub(sTemp, sOldVersion, 2, 2);
+    ListGetNextString(listID1, sTemp);
     StrToNum(nV2, sTemp);
-    StrSub(sTemp, sOldVersion, 5, 3);
+    ListGetNextString(listID1, sTemp);
     StrToNum(nV3, sTemp);
     
-    StrSub(sTemp, version, 0, 1);
+    StrGetTokens(listID2, version, ".");
+    ListGetFirstString(listID2, sTemp);
     StrToNum(nVer1, sTemp);
-    StrSub(sTemp, version, 2, 2);
+    ListGetNextString(listID2, sTemp);
     StrToNum(nVer2, sTemp);
-    StrSub(sTemp, version, 5, 3);
+    ListGetNextString(listID2, sTemp);
     StrToNum(nVer3, sTemp);
     
-    if(nV1 < nVer1) then  	
+    if(nV1 < nVer1) then
         return FALSE;
     elseif(nV1 > nVer1) then
-    	return TRUE;
+        return TRUE;
     endif;
 
     if(nV2 < nVer2) then
