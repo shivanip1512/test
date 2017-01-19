@@ -12,4 +12,4 @@ UPDATE state SET foregroundcolor = 9 WHERE stategroupid = -28 AND rawstate = 2;
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-INSERT INTO CTIDatabase VALUES ('6.6', '17-JAN-2017', 'Latest Update', 2, GETDATE());
+INSERT INTO CTIDatabase VALUES ('6.6', '19-JAN-2017', 'Latest Update', 2, GETDATE());
