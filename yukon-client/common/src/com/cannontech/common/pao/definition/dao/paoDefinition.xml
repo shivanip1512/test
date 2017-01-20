@@ -4029,10 +4029,6 @@
     <pao id="MCT250" inherits="MCT_240_248_250_BASE" creatable="false">
         <displayName>MCT-250</displayName>
         <points>
-            <point type="Status" offset="1">
-                <name>Status Input 1</name>
-                <stategroup value="SystemState" />
-            </point>
             <point type="Status" offset="2">
                 <name>Status Input 2</name>
                 <stategroup value="SystemState" />
@@ -4049,12 +4045,6 @@
     </pao>
     <pao id="MCT248" inherits="MCT_240_248_250_BASE" creatable="false">
         <displayName>MCT-248</displayName>
-        <points>
-            <point type="Status" offset="1">
-                <name>Control Point</name>
-                <stategroup value="SystemState" />
-            </point>
-        </points>
     </pao>
     <pao id="MCT240" inherits="MCT_240_248_250_BASE" creatable="false">
         <displayName>MCT-240</displayName>
