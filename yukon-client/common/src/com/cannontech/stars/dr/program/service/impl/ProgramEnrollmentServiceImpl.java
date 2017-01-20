@@ -186,20 +186,10 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                             lmHardwareCommandService.sendInServiceCommand(command);
                         }
                     } else {
-                        int grpId = 0;
-                        if (!previouslyEnrolledPrograms.isEmpty()) {
-                            if (previouslyEnrolledPrograms.get(0) != null) {
-                                grpId = previouslyEnrolledPrograms.get(0).getGroupID();
-                            }
-                        }
                       LmHardwareCommand command = new LmHardwareCommand();
                         command.setDevice(liteHw);
                         command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
                         command.setUser(user);
-                        Map<LmHardwareCommandParam, Object> params = new HashMap<LmHardwareCommandParam, Object>();
-                        params.put(LmHardwareCommandParam.GROUP_ID, grpId);
-                        command.setParams(params);
-
                         lmHardwareCommandService.sendOutOfServiceCommand(command);
                     }
                 }

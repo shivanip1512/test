@@ -216,7 +216,7 @@ public class OperatorEnrollmentController {
         model.addAttribute("assignedProgram", assignedProgram);
 
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> conflictingEnrollments =
-            getConflictingEnrollments(account.getAccountId(), assignedProgramId, account.getEnergyCompanyId(),
+            getConflictingEnrollments(account.getAccountId(), assignedProgram, account.getEnergyCompanyId(),
                 programEnrollment);
 
         // For confirmation, we just need a list of conflicting programs.
@@ -266,7 +266,7 @@ public class OperatorEnrollmentController {
         programEnrollments.addAll(programEnrollment.makeProgramEnrollments(assignedProgram.getApplianceCategoryId(),
                                                                            assignedProgramId));
         programEnrollments.addAll(getConflictingEnrollments(accountInfoFragment.getAccountId(),
-                                                            assignedProgramId,
+                                                            assignedProgram,
                                                             accountInfoFragment.getEnergyCompanyId(), programEnrollment));
         try {
             enrollmentHelper.updateProgramEnrollments(programEnrollments, accountInfoFragment.getAccountId(), userContext);
@@ -326,34 +326,49 @@ public class OperatorEnrollmentController {
         resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
 
+    /**
+     * For the chosen enrollment operations finds the conflicting enrollments in Yukon DB 
+     * @param accountId denotes the account Identifier
+     * @param selectedProgram contains the selected program on UI
+     * @param ecId Energy company Identifier
+     * @param programEnrollment Contains the enrollment details chosen on UI
+     * @returns List of conflicting program enrollments
+     */
     private List<com.cannontech.stars.dr.program.service.ProgramEnrollment> getConflictingEnrollments(int accountId,
-            int assignedProgramId, int ecId, ProgramEnrollment programEnrollment) {
+            AssignedProgram selectedProgram, int ecId, ProgramEnrollment programEnrollment) {
 
-        boolean multiplePerCategory =
-            isThermostatOfHoneywellWifi(programEnrollment) ? false : ecSettingDao.getBoolean(
-                EnergyCompanySettingType.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, ecId);
-        
         List<com.cannontech.stars.dr.program.service.ProgramEnrollment> conflictingEnrollments = Lists.newArrayList();
-        if (!multiplePerCategory) {
-            // Only one program per appliance category is allowed.  Find other
-            // programs in the same appliance category and make sure they
-            // aren't enrolled.
-            conflictingEnrollments = enrollmentDao.findConflictingEnrollments(accountId, assignedProgramId);
+        List<Integer> inventoryIds = Lists.newArrayList();
+        boolean isStrictUnenrollForHoneywell = false;
+        boolean isMultipleProgramsPerCategoryAllowed =
+            ecSettingDao.getBoolean(EnergyCompanySettingType.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY, ecId);
+        
+        for (InventoryEnrollment inventoryEnrollment : programEnrollment.getInventoryEnrollments()) {
+            if (inventoryEnrollment.isEnrolled()) {
+                int inventoryId = inventoryEnrollment.getInventoryId();
+                if (isStrictUnenrollForHoneywell || inventoryDao.getYukonInventory(inventoryId).getHardwareType().isHoneywell()) {
+                    isMultipleProgramsPerCategoryAllowed = false;
+                    isStrictUnenrollForHoneywell = true;
+                    inventoryIds.add(inventoryId);
+                }
+            }
         }
 
-        return conflictingEnrollments;
-    }
+        if (!isMultipleProgramsPerCategoryAllowed) {
+            // Find other conflicting enrollments
 
-    private boolean isThermostatOfHoneywellWifi(ProgramEnrollment programEnrollment) {
-        List<InventoryEnrollment> inventoryEnrollments = programEnrollment.getInventoryEnrollments();
-        InventoryEnrollment inventEnrollment = inventoryEnrollments.get(0);
-        InventoryIdentifier inventory = inventoryDao.getYukonInventory(inventEnrollment.getInventoryId());
-        return inventory.getHardwareType().isHoneywell();
+            conflictingEnrollments =
+                enrollmentDao.findConflictingEnrollments(accountId, selectedProgram.getAssignedProgramId());
+            if (isStrictUnenrollForHoneywell) {
+                conflictingEnrollments.addAll(enrollmentDao.findOtherApplianceConflictingEnrollments(accountId,
+                    selectedProgram.getAssignedProgramId(), inventoryIds, selectedProgram.getApplianceCategoryId()));
+            }
+        }
+        return conflictingEnrollments;
     }
 
     private void validateAccountEditing(LiteYukonUser user) {
         boolean allowEditing = rolePropertyDao.checkProperty(YukonRoleProperty.OPERATOR_ALLOW_ACCOUNT_EDITING, user);
         Validate.isTrue(allowEditing, "Account editing not allowed by this user.");
     }
-
 }

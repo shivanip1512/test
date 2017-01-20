@@ -168,6 +168,25 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         return retVal;
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProgramEnrollment> findOtherApplianceConflictingEnrollments(int accountId, int assignedProgramId,
+            List<Integer> inventoryIds, int assignedProgramCategoryId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(enrollmentSQLHeader);
+        sql.append("WHERE lmhcg.AccountId").eq(accountId);
+        // Same device enrollment in different appliance category, leads to conflict
+        sql.append(" AND ab.ApplianceCategoryId").neq(assignedProgramCategoryId);
+        sql.append(" AND lmhc.InventoryID ").in(inventoryIds);
+        sql.append(" AND lmhcg.GroupEnrollStart IS NOT NULL AND lmhcg.GroupEnrollStop IS NULL ");
+        List<ProgramEnrollment> retVal = null;
+        retVal = yukonJdbcTemplate.query(sql, enrollmentRowMapper);
+        for (ProgramEnrollment programEnrollment : retVal) {
+            programEnrollment.setEnroll(false);
+        }
+        return retVal;
+    }
+    
 	@Override
 	public List<Program> getEnrolledProgramIdsByInventory(Integer inventoryId, Date startTime, Date stopTime) {
 
