@@ -12,6 +12,7 @@
 #include "mgr_device.h"
 #include "mgr_point.h"
 #include "pt_numeric.h"
+#include "desolvers.h"
 
 #include <boost/range/adaptor/transformed.hpp>
 #include <boost/range/algorithm/count_if.hpp>
@@ -277,9 +278,9 @@ auto RfDataStreamingProcessor::processDeviceReport(const DeviceReport& deviceRep
                         l << "Point not found for offset+type";
                         l.add("Device ID")   << device->getID();
                         l.add("Device name") << device->getName();
-                        l.add("Device type") << device->getDeviceType();
+                        l.add("Device type") << desolveDeviceType(device->getDeviceType());
                         l.add("Offset") << pointOffset->offset;
-                        l.add("Type")   << pointOffset->type;
+                        l.add("Type")   << desolvePointType(pointOffset->type);
                         l << drValue;
 
                         CTILOG_WARN(dout, l);
@@ -292,7 +293,7 @@ auto RfDataStreamingProcessor::processDeviceReport(const DeviceReport& deviceRep
                     l << "Attribute mapping not found";
                     l.add("Device ID")   << device->getID();
                     l.add("Device name") << device->getName();
-                    l.add("Device type") << device->getDeviceType();
+                    l.add("Device type") << desolveDeviceType(device->getDeviceType());
                     l << drValue;
 
                     CTILOG_WARN(dout, l);
