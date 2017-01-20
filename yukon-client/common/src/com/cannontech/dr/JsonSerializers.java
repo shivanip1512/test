@@ -19,6 +19,7 @@ import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.cannontech.dr.honeywellWifi.azure.event.ConnectionStatus;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatus;
+import com.cannontech.dr.honeywellWifi.azure.event.EventPhase;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
@@ -36,6 +37,9 @@ public interface JsonSerializers {
     
     public static final DateTimeFormatter HONEYWELL_DATE_TIME = 
             ISODateTimeFormat.dateTimeNoMillis(); //yyyy-MM-dd'T'HH:mm:ssZZ
+    
+    public static final DateTimeFormatter HONEYWELL_DATE_TIME_WITH_MILLIS = 
+            ISODateTimeFormat.dateTime(); //yyyy-MM-dd'T'HH:mm:ss.SSSZZ
     
     public static final DateTimeFormatter HONEYWELL_WRAPPER_DATE_TIME = 
             DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss").withZoneUTC();
@@ -86,7 +90,15 @@ public interface JsonSerializers {
         @Override
         public Instant deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
                 throws IOException, JsonProcessingException {
-            return HONEYWELL_DATE_TIME.parseDateTime(paramJsonParser.getValueAsString()).toInstant();
+            Instant result;
+            try {
+                //first, try to parse without millis
+                result = HONEYWELL_DATE_TIME.parseDateTime(paramJsonParser.getValueAsString()).toInstant();
+            } catch (IllegalArgumentException e) {
+                //try to parse with millis
+                result = HONEYWELL_DATE_TIME_WITH_MILLIS.parseDateTime(paramJsonParser.getValueAsString()).toInstant();
+            }
+            return result;
         }
     }
     
@@ -142,6 +154,22 @@ public interface JsonSerializers {
         public void serialize(ConnectionStatus status, JsonGenerator jsonGenerator, SerializerProvider notUsed)
                 throws IOException, JsonProcessingException {
             jsonGenerator.writeString(status.getJsonString());
+        }
+    }
+    
+    class FROM_PHASE extends JsonDeserializer<EventPhase> {
+        @Override
+        public EventPhase deserialize(JsonParser paramJsonParser, DeserializationContext paramDeserializationContext)
+                throws IOException, JsonProcessingException {
+            return EventPhase.of(paramJsonParser.getValueAsString());
+        }
+    }
+    
+    class TO_PHASE extends JsonSerializer<EventPhase> {
+        @Override
+        public void serialize(EventPhase phase, JsonGenerator jsonGenerator, SerializerProvider notUsed)
+                throws IOException, JsonProcessingException {
+            jsonGenerator.writeString(phase.getJsonString());
         }
     }
     

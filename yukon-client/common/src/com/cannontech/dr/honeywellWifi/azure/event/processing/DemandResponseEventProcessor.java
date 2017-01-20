@@ -1,13 +1,17 @@
 package com.cannontech.dr.honeywellWifi.azure.event.processing;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.cannontech.dr.honeywellWifi.azure.event.DemandResponseEvent;
 import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
 
-public class DemandResponseEventProcessor implements HoneywellWifiDataProcessor {
+public class DemandResponseEventProcessor extends AbstractHoneywellWifiDataProcessor {
     private static final Logger log = YukonLogManager.getLogger(DemandResponseEventProcessor.class);
     
     @Override
@@ -24,7 +28,17 @@ public class DemandResponseEventProcessor implements HoneywellWifiDataProcessor 
         
         DemandResponseEvent event = (DemandResponseEvent) data;
         
-        //TODO
+        double stateValue = event.getPhase().getStateValue();
+        Instant eventTime = event.getMessageWrapper().getDate();
+        
+        try {
+            PaoIdentifier thermostat = getThermostatByMacId(event.getMacId());
+            
+            //Send point data to dispatch
+            inputPointValue(thermostat, BuiltInAttribute.CONTROL_STATUS, eventTime, stateValue);
+        } catch (NotFoundException e) {
+            log.info("Honeywell demand response message received for unknown device with MAC ID " + event.getMacId());
+        }
     }
 
 }

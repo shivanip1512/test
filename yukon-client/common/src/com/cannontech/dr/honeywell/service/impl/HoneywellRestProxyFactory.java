@@ -57,7 +57,7 @@ public class HoneywellRestProxyFactory {
                     return responseObj;
                 } catch (RestClientException | IllegalAccessException | IllegalArgumentException
                     | InvocationTargetException e) {
-                    throw new HoneywellCommunicationException("Unable to communicate with Honeywell API", e);
+                    throw new HoneywellCommunicationException("Error communicating with Honeywell API", e);
                 }
             }
         };

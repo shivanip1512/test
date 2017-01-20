@@ -135,16 +135,14 @@ public class HoneywellWifiDataListener {
     }
     
     private void initAzureService() {
-        Configuration config = new Configuration();
-        config = ServiceBusConfiguration.configureWithConnectionString(null, config, connectionString);
+        Configuration config = ServiceBusConfiguration.configureWithConnectionString(null, new Configuration(), connectionString);
 
-        Optional<YukonHttpProxy> oProxy = YukonHttpProxy.fromGlobalSetting(settingDao);
-        if (oProxy.isPresent()) {
-            YukonHttpProxy proxy = oProxy.get();
-            log.debug("Set Azure service bus proxy: " + proxy.getHost() + ":" + proxy.getPortString());
-            config.setProperty(Configuration.PROPERTY_HTTP_PROXY_HOST, proxy.getHost());
-            config.setProperty(Configuration.PROPERTY_HTTP_PROXY_PORT, proxy.getPort());
-        }
+        YukonHttpProxy.fromGlobalSetting(settingDao)              
+                      .ifPresent(proxy -> {
+                          log.debug("Set Azure service bus proxy: " + proxy.getHost() + ":" + proxy.getPortString());
+                          config.setProperty(Configuration.PROPERTY_HTTP_PROXY_HOST, proxy.getHost());
+                          config.setProperty(Configuration.PROPERTY_HTTP_PROXY_PORT, proxy.getPort());
+                      });
         
         azureService = ServiceBusService.create(config);
     }
