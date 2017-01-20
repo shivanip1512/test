@@ -346,7 +346,8 @@ public class OperatorEnrollmentController {
         for (InventoryEnrollment inventoryEnrollment : programEnrollment.getInventoryEnrollments()) {
             if (inventoryEnrollment.isEnrolled()) {
                 int inventoryId = inventoryEnrollment.getInventoryId();
-                if (isStrictUnenrollForHoneywell || inventoryDao.getYukonInventory(inventoryId).getHardwareType().isHoneywell()) {
+                if (isStrictUnenrollForHoneywell || 
+                        inventoryDao.getYukonInventory(inventoryId).getHardwareType().isHoneywell()) {
                     isMultipleProgramsPerCategoryAllowed = false;
                     isStrictUnenrollForHoneywell = true;
                     inventoryIds.add(inventoryId);
