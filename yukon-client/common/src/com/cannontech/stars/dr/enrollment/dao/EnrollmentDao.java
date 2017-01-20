@@ -115,7 +115,7 @@ public interface EnrollmentDao {
      * @param assignedProgramId
      * @param inventoryIds
      * @param assignedProgramCategoryId
-     * @return
+     * @returns list of conflicting programs having same devices enrolled
      */
     List<ProgramEnrollment> findOtherApplianceConflictingEnrollments(int accountId, int assignedProgramId,
             List<Integer> inventoryIds , int assignedProgramCategoryId);
