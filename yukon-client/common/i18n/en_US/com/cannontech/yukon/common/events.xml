@@ -321,7 +321,7 @@
     <entry key="yukon.common.events.device.configuration.readConfigInitiated">Read device configuration from {7} device(s) initiated by {2}. Key: {1}</entry>
     <entry key="yukon.common.events.device.configuration.readConfigFromDeviceInitiated">Read device configuration from {1} device initiated by {2}.</entry>
     <entry key="yukon.common.events.device.configuration.readConfigCompleted">Read device configuration completed: Success:{7} Failure:{8} Unsupported:{9}. ExceptionMessage:{1}; Key: {2}</entry>
-    <entry key="yukon.common.events.device.configuration.readConfigFromDeviceInitiated">Read device configuration from {1} device initiated by {2}.</entry>
+    <entry key="yukon.common.events.device.configuration.readConfigFromDeviceCompleted">Read device configuration from {1} device completed by {2}.</entry>
     <entry key="yukon.common.events.device.configuration.verifyConfigInitiated">Verify device configuration on {7} device(s) initiated by {1}.</entry>
     <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceInitiated">Verify device configuration on {1} device initiated by {2}.</entry>
     <entry key="yukon.common.events.device.configuration.verifyConfigCompleted">Verify device configuration completed: Success:{7} Failure:{8} Unsupported:{9}. ExceptionMessage:{1}</entry>
