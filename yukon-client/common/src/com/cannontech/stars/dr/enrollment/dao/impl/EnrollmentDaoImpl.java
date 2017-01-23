@@ -176,9 +176,9 @@ public class EnrollmentDaoImpl implements EnrollmentDao {
         sql.append(enrollmentSQLHeader);
         sql.append("WHERE lmhcg.AccountId").eq(accountId);
         // Same device enrollment in different appliance category, leads to conflict
-        sql.append(" AND ab.ApplianceCategoryId").neq(assignedProgramCategoryId);
-        sql.append(" AND lmhc.InventoryID ").in(inventoryIds);
-        sql.append(" AND lmhcg.GroupEnrollStart IS NOT NULL AND lmhcg.GroupEnrollStop IS NULL ");
+        sql.append("AND ab.ApplianceCategoryId").neq(assignedProgramCategoryId);
+        sql.append("AND lmhc.InventoryID ").in(inventoryIds);
+        sql.append("AND lmhcg.GroupEnrollStart IS NOT NULL AND lmhcg.GroupEnrollStop IS NULL");
         List<ProgramEnrollment> retVal = null;
         retVal = yukonJdbcTemplate.query(sql, enrollmentRowMapper);
         for (ProgramEnrollment programEnrollment : retVal) {

@@ -111,10 +111,10 @@ public interface EnrollmentDao {
      * Get a list of current enrollments in the different appliance category but for same devices selected
      * This method is used to get the programs which will need to be unenrolled to complete the given program
      * enrollment.
-     * @param accountId
-     * @param assignedProgramId
-     * @param inventoryIds
-     * @param assignedProgramCategoryId
+     * @param accountId Id of account to check enroll
+     * @param assignedProgramId Id of the program to be enrolled with
+     * @param inventoryIds list of the device Ids to be enrolled
+     * @param assignedProgramCategoryId Id of the the appliance category of the Program
      * @returns list of conflicting programs having same devices enrolled
      */
     List<ProgramEnrollment> findOtherApplianceConflictingEnrollments(int accountId, int assignedProgramId,
