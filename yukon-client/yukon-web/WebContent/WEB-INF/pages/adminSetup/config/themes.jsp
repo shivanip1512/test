@@ -304,8 +304,12 @@
                             <c:if test="${mode == 'EDIT' and !command.currentTheme}">
                                 <cti:button id="b-delete" nameKey="delete" classes="delete"/>
                             </c:if>
-                            
-                            <cti:url value="/admin/config/themes/${cancelId}" var="cancelUrl"/>
+                            <c:if test="${mode == 'CREATE'}">
+                                <cti:url value="javascript:window.history.back()" var="cancelUrl"/>
+                            </c:if>
+                            <c:if test="${mode == 'EDIT'}">
+                                <cti:url value="/admin/config/themes/${command.themeId}" var="cancelUrl"/>
+                            </c:if>
                             <cti:button nameKey="cancel" href="${cancelUrl}"/>
                         </c:if>
                         
