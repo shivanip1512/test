@@ -21,6 +21,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.common.bulk.model.AnalogPointUpdateType;
 import com.cannontech.common.bulk.model.StatusPointUpdateType;
+import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.fdr.FdrDirection;
 import com.cannontech.common.fdr.FdrInterfaceType;
@@ -29,6 +30,7 @@ import com.cannontech.core.dao.AlarmCatDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateGroupDao;
 import com.cannontech.core.dao.UnitMeasureDao;
+import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -52,9 +54,12 @@ import com.cannontech.database.data.point.SystemPoint;
 import com.cannontech.database.db.point.Point;
 import com.cannontech.database.db.point.PointAlarming;
 import com.cannontech.database.db.point.PointAlarming.AlarmNotificationTypes;
+import com.cannontech.database.db.point.calculation.CalcComponent;
+import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.TimeIntervals;
@@ -80,6 +85,7 @@ public class PointController {
     @Autowired private AlarmCatDao alarmCatDao;
     @Autowired private UnitMeasureDao unitMeasureDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
+    @Autowired private YukonListDao listDao;
 
     private static final String baseKey = "yukon.web.modules.tools.point";
 
@@ -152,7 +158,8 @@ public class PointController {
 
         model.addAttribute("isScalarType", base instanceof ScalarPoint);
         model.addAttribute("isStatusType", base instanceof StatusPoint);
-        model.addAttribute("isCalcType", base instanceof CalcStatusPoint || base instanceof CalculatedPoint);
+        boolean isCalcType = base instanceof CalcStatusPoint || base instanceof CalculatedPoint;
+        model.addAttribute("isCalcType", isCalcType);
         model.addAttribute("isCalcStatusPoint", base instanceof CalcStatusPoint);
         model.addAttribute("isStatusPoint", base instanceof StatusPoint && !(base instanceof CalcStatusPoint));
         model.addAttribute("isAnalogPoint", base instanceof AnalogPoint);
@@ -199,6 +206,13 @@ public class PointController {
 
         model.addAttribute("fdrProperties", fdrProperties);
         model.addAttribute("attachment", pointEditorService.getAttachmentStatus(base.getPoint().getPointID()));
+        
+        //get info needed for Calculation Tab
+        if (isCalcType) {
+            model.addAttribute("types", new ArrayList<>(Arrays.asList("Operation", "Constant", "Function")));
+            model.addAttribute("operators", new ArrayList<>(Arrays.asList("+", "-", "*", "/", "PUSH")));
+            model.addAttribute("functionOperators", listDao.getYukonSelectionList(CalcComponentTypes.CALC_FUNCTION_LIST_ID));
+        }
 
         return "point/point.jsp";
     }
@@ -209,6 +223,37 @@ public class PointController {
 
     }
 
+    @RequestMapping("/calculationRow/add")
+    public String addCalculationRow(@RequestParam("nextIndex") int nextIndex, @RequestParam("pointId") int pointId, ModelMap model) {
+        
+        model.addAttribute("types", new ArrayList<>(Arrays.asList("Operation", "Constant", "Function")));
+        model.addAttribute("operators", new ArrayList<>(Arrays.asList("+", "-", "*", "/", "PUSH")));
+        model.addAttribute("functionOperators", listDao.getYukonSelectionList(CalcComponentTypes.CALC_FUNCTION_LIST_ID));
+        model.addAttribute("nextIndex", nextIndex);
+        PointModel pointModel = pointEditorService.getModelForId(pointId);
+        //check if there is a current calc component for this index (it was previously removed)
+        CalcComponent comp = null;
+        PointBase base = pointModel.getPointBase();
+        if (base instanceof CalcStatusPoint) {
+            CalcStatusPoint calcStatus = (CalcStatusPoint) base;
+            if (calcStatus.getCalcComponents().size() > nextIndex) {
+                comp = calcStatus.getCalcComponents().get(nextIndex);
+            }
+        } else if (base instanceof CalculatedPoint) {
+            CalculatedPoint calcPoint = (CalculatedPoint) base;
+            if (calcPoint.getCalcComponents().size() > nextIndex) {
+                comp = calcPoint.getCalcComponents().get(nextIndex);
+            }
+        }
+        //if there is currently a calc component for this index, set the point id back to 0
+        if (comp != null) {
+            comp.setComponentPointID(0);
+        }
+        model.addAttribute("pointModel", pointModel);
+
+        return "point/calculationRow.jsp";
+    }
+    
     @RequestMapping("/fdr/{type}")
     public @ResponseBody Map<String, Object> fdrInterfaceInfo(@PathVariable("type") FdrInterfaceType interfaceType,
             @RequestParam("point-type") String pointType) {

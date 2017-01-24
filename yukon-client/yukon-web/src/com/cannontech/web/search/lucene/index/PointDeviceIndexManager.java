@@ -12,10 +12,10 @@ import org.apache.lucene.index.Term;
 import com.cannontech.common.pao.PaoCategory;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.google.common.collect.ImmutableList;
 
 /**
  * Class which manages point device lucene index creation and update.
@@ -47,9 +47,9 @@ public class PointDeviceIndexManager extends SimpleIndexManager {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("from point p");
         sql.append("join yukonpaobject ypo on (ypo.paobjectid = p.paobjectid)");
-        sql.append("join device d on (d.deviceid = ypo.paobjectid)");
+        sql.append("left join device d on (d.deviceid = ypo.paobjectid)");
         sql.append("left join pointunit pu on p.pointid = pu.pointid");
-        sql.append("where ypo.category").eq_k(PaoCategory.DEVICE);
+        sql.append("where ypo.category").in(ImmutableList.of(PaoCategory.DEVICE, PaoCategory.CAPCONTROL));
         return sql;
     }
     
@@ -98,7 +98,8 @@ public class PointDeviceIndexManager extends SimpleIndexManager {
 
     @Override
     protected IndexUpdateInfo processDBChange(DbChangeType dbChangeType, int id, int database, String category) {
-        if (database == DBChangeMsg.CHANGE_PAO_DB && PAOGroups.STRING_CAT_DEVICE.equalsIgnoreCase(category)) {
+        if (database == DBChangeMsg.CHANGE_PAO_DB && (PaoCategory.DEVICE.getDbString().equalsIgnoreCase(category) 
+                || PaoCategory.CAPCONTROL.getDbString().equalsIgnoreCase(category))) {
             // Device change msg
             
             if(id == 0) {

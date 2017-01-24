@@ -578,6 +578,81 @@
                 </div>
                 </cti:displayForPageEditModes>
             </cti:tab>
+            <c:if test="${isCalcType}">
+                <cti:msg2 var="calcTab" key=".tab.calculation"/>
+                <cti:tab title="${calcTab}">
+                    <tags:nameValueContainer2 tableClass="${nameValueClass} stacked-md">
+                    <table id="calculationTable" class="compact-results row-highlighting">
+                        <thead>
+                            <tr>
+                                <th><i:inline key=".calculation.type"/></th>
+                                <th><i:inline key=".calculation.operand"/></th>
+                                <th><i:inline key=".calculation.operation"/></th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <c:forEach var="calcComponent" items="${pointModel.pointBase.calcComponents}" varStatus="status">
+                                <tr data-point-picker-id="calcPoint${status.index}Picker">
+                                    <form:hidden path="pointBase.calcComponents[${status.index}].componentOrder" class="js-component-order"/>
+                                    <form:hidden path="pointBase.calcComponents[${status.index}].pointID" class="js-point-id"/>
+                                    <td>
+                                        <tags:selectWithItems path="pointBase.calcComponents[${status.index}].componentType" items="${types}" inputClass="js-component-type" />
+                                    </td>
+                                    <td>
+                                        <c:set var="functionDefaultValue" value=""/>
+                                        <c:set var="operationDefaultValue" value=""/>
+                                        <c:if test="${calcComponent.componentType == 'Function'}">
+                                            <c:set var="operationDefaultValue" value="(none)"/>
+                                        </c:if>
+                                        <c:if test="${calcComponent.componentType != 'Function'}">
+                                            <c:set var="functionDefaultValue" value="(none)"/>
+                                        </c:if>
+                                        <span class="js-constant <c:if test="${calcComponent.componentType != 'Constant'}"> dn</c:if>"><tags:input path="pointBase.calcComponents[${status.index}].constant" inputClass="js-constant-value"/></span>
+                                        <span class="js-point-picker <c:if test="${calcComponent.componentType == 'Constant'}"> dn</c:if>">
+                                            <form:hidden id="calc-component-point-${status.index}-input"
+                                                path="pointBase.calcComponents[${status.index}].componentPointID" />
+                                            <tags:pickerDialog
+                                                id="calcPoint${status.index}Picker"
+                                                type="pointPicker"
+                                                linkType="selectionLabel"
+                                                selectionProperty="paoPoint"
+                                                buttonStyleClass="M0"
+                                                excludeIds="0"
+                                                destinationFieldId="calc-component-point-${status.index}-input"
+                                                viewOnlyMode="${mode == 'VIEW'}"
+                                                allowEmptySelection="${true}"
+                                                includeRemoveButton="${true}"
+                                                removeValue="0" />
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="js-function-operations <c:if test="${calcComponent.componentType != 'Function'}"> dn</c:if>"><tags:selectWithItems path="pointBase.calcComponents[${status.index}].functionName" items="${functionOperators.yukonListEntries}" inputClass="js-function-options" defaultItemValue="${functionDefaultValue}" defaultItemLabel="${functionDefaultValue}"/></span>
+                                        <span class="js-operations <c:if test="${calcComponent.componentType == 'Function'}"> dn</c:if>"><tags:selectWithItems path="pointBase.calcComponents[${status.index}].operation" items="${operators}" inputClass="js-operation-options" defaultItemValue="${operationDefaultValue}" defaultItemLabel="${operationDefaultValue}"/></span>
+                                    </td>
+                                    <td>
+                                    <cti:displayForPageEditModes modes="EDIT,CREATE">
+                                        <div class="button-group fr wsnw oh">
+                                            <cti:button icon="icon-cross" renderMode="buttonImage" classes="js-remove-calc"/>
+                                            <c:set var="disabled" value="${status.first}"/>
+                                            <cti:button icon="icon-bullet-go-up" renderMode="buttonImage" classes="js-up" disabled="${disabled}"/>
+                                            <c:set var="disabled" value="${status.last}"/>
+                                            <cti:button icon="icon-bullet-go-down" renderMode="buttonImage" classes="js-down" disabled="${disabled}"/>
+                                        </div>      
+                                        </cti:displayForPageEditModes> 
+                                    </td>
+                                </tr>
+                            </c:forEach>
+                        </tbody>
+                        </table>
+                        <cti:displayForPageEditModes modes="EDIT,CREATE">
+                            <div class="page-action-area stacked-md">
+                                <cti:button nameKey="add" icon="icon-add" classes="js-add-calc"/>
+                            </div>
+                        </cti:displayForPageEditModes>
+                        </tags:nameValueContainer2>
+                </cti:tab>
+            </c:if>
         </cti:tabs>
 
         <div class="page-action-area">

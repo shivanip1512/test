@@ -285,6 +285,87 @@ yukon.tools.point = (function () {
             $('.js-fdr-empty').removeClass('dn');
         }
     };
+    
+    var addCalc = function () {
+        var calcTable = $('#calculationTable'),
+            rows = calcTable.find('tr').length - 1,
+            pointId = calcTable.find('.js-point-id').val();
+
+        $.ajax(yukon.url('/tools/calculationRow/add?nextIndex=' + rows + '&pointId=' + pointId))
+        .done(function (data) {
+            calcTable.find('tbody').append(data);
+            var newRow = calcTable.find('.js-add-calc-row');
+            newRow.find('.js-component-type').on('change', changeCalcType);
+            newRow.find('.js-remove-calc').on('click', removeCalc);
+            newRow.find('.js-component-type').val("Operation");
+            newRow.find('.js-component-type').trigger("change");
+            var pointPickerId = newRow.data("pointPickerId");
+            yukon.pickers[pointPickerId].removeEvent();
+            newRow.removeClass('js-add-calc-row');
+            yukon.ui.reindexInputs(calcTable);
+        });
+    };
+    
+    var updateComponentOrders = function () {
+        var calcTable = $('#calculationTable'),
+            rows = calcTable.find('tbody tr');
+        
+        rows.each(function (idx, row) {
+            row = $(row);
+            var order = idx + 1;
+            row.find('.js-component-order').val(order);
+        });
+    };
+    
+    /**
+     * Remove a row from the Calc table
+     */
+    var removeCalc = function () {
+        var row = $(this).closest('tr'),
+        calcTable = row.closest('table');
+        
+        var pointPickerId = row.data("pointPickerId");
+        yukon.pickers[pointPickerId].removeEvent();
+        row.remove();
+        yukon.ui.reindexInputs(calcTable);
+        updateComponentOrders();
+    };
+    
+    /**
+     * Calc Type was changed
+     */
+    var changeCalcType = function () {
+        var newValue = $(this).val();
+        var row = $(this).closest('tr');
+        if (newValue == 'Constant') {
+            row.find(".js-constant").removeClass('dn');
+            var pointPickerId = row.data("pointPickerId");
+            yukon.pickers[pointPickerId].removeEvent();
+            row.find(".js-point-picker").addClass('dn');
+        } else {
+            row.find(".js-constant").addClass('dn');
+            row.find(".js-point-picker").removeClass('dn');
+            row.find(".js-constant-value").val(0);
+        }
+        if (newValue == 'Function') {
+            row.find(".js-function-options option[value='(none)']").remove();
+            row.find(".js-function-operations").removeClass('dn');
+            row.find(".js-operations").addClass('dn');
+            row.find(".js-operation-options option[value='(none)']").add();
+            row.find(".js-operation-options").val('(none)');
+            var firstValue = row.find(".js-function-options option:first").val();
+            row.find(".js-function-options").val(firstValue);
+        } else {
+            row.find(".js-operation-options option[value='(none)']").remove();
+            row.find(".js-function-operations").addClass('dn');
+            row.find(".js-operations").removeClass('dn');
+            row.find(".js-function-options option[value='(none)']").add();
+            row.find(".js-function-options").val('(none)');
+            var firstValue = row.find(".js-operation-options option:first").val();
+            row.find(".js-operation-options").val(firstValue);
+        }
+        
+    };
 
     var mod = {
 
@@ -321,8 +402,14 @@ yukon.tools.point = (function () {
             $('.js-use-offset').on('change', updatePointOffset);
 
             $('.js-add-fdr').on('click', addFdr);
-
+            
             $('.js-remove-fdr').on('click', removeFdr);
+            
+            $('.js-add-calc').on('click', addCalc);
+            
+            $('.js-remove-calc').on('click', removeCalc);
+            
+            $('.js-component-type').on('change', changeCalcType);
 
             $('.js-fdr-interface').on('change', function () {
 
@@ -342,6 +429,26 @@ yukon.tools.point = (function () {
                     elem.attr('size', currentSize + 5);
                 }
                 makeTranslation(number);
+            });
+            
+            /** Move row up. */
+            $(document).on('click','.js-up', function (ev) {
+                var row = $(this).closest('tr'),
+                    prevRow = row.prev();
+                
+                row.insertBefore(prevRow);
+                yukon.ui.reindexInputs(row.closest('table'));
+                updateComponentOrders();
+            });
+            
+            /** Move row down. */
+            $(document).on('click','.js-down', function (ev) {
+                var row = $(this).closest('tr'),
+                    nextRow = row.next();
+                
+                row.insertAfter(nextRow);
+                yukon.ui.reindexInputs(row.closest('table'));
+                updateComponentOrders();
             });
             
             yukon.ui.highlightErrorTabs();
