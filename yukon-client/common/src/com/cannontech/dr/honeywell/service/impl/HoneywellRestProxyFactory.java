@@ -38,7 +38,7 @@ public class HoneywellRestProxyFactory {
 
     private final RestTemplate proxiedTemplate;
 
-    private String authTokenKey = "authTokenKey";
+    private final String authTokenKey = "authTokenKey";
     private String authTokenValue = null;
     private Cache<String,String> tokenCache;
 
