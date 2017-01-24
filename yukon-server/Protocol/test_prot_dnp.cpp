@@ -512,6 +512,9 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_with_unsolicited_enable)
     }
 }
 
+// the following tests are identical to the one at the top except they have a IIN error
+//  bit set - some of the testing boilerplate has been removed and only relevant details
+//  remain.
 BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_parameter_error)
 {
     DnpProtocol dnp;
@@ -526,197 +529,77 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_parameter_error)
 
     dnp.setConfigData( 2, DNP::TimeOffset::Utc, false, false, false, false, false, false );
 
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
-
-        const byte_str expected(
-                "05 64 08 C4 04 00 03 00 B4 B8 "
-                "C0 C1 01 23 0B");
-
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
-    }
+    dnp.generate(xfer);
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+        const byte_str response(
+                "05 64 0A 44 03 00 04 00 7C AE");
 
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+        xfer.setInCountActual(response.size());
     }
+
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+        const byte_str response(
+                "C1 C1 81 90 04 0D 14");
 
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
-        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+        xfer.setInCountActual(response.size());
     }
+
+    BOOST_CHECK_EQUAL(ClientErrors::ParameterError, dnp.decode(xfer, ClientErrors::None)); 
+
+    dnp.generate(xfer);
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        {
-            const byte_str response(
-                    "05 64 0A 44 03 00 04 00 7C AE");
+        const byte_str response(
+                "05 64 0A 44 03 00 04 00 7C AE");
 
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
-            xfer.setInCountActual(response.size());
-        }
-
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        xfer.setInCountActual(response.size());
     }
+
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+        const byte_str response(
+                "C2 C2 81 10 00 11 b9");
 
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
-        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
+        xfer.setInCountActual(response.size());
     }
 
-    {
-        {
-            const byte_str response(
-                    "C1 C1 81 90 04 0D 14");
+    dnp.decode(xfer, ClientErrors::None);
 
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+    auto string_list = dnp.getInboundStrings();
 
-            xfer.setInCountActual(response.size());
-        }
+    BOOST_REQUIRE_EQUAL(4, string_list.size());
 
-        BOOST_CHECK_EQUAL(ClientErrors::ParameterError, dnp.decode(xfer, ClientErrors::None)); 
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
-
-        const byte_str expected(
-                "05 64 0E C4 04 00 03 00 6D D3 "
-                "C0 C2 02 50 01 00 07 07 00 08 "
-                "65");
-
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
-    }
-
-    {
-        {
-            const byte_str response(
-                    "05 64 0A 44 03 00 04 00 7C AE");
-
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
-
-            xfer.setInCountActual(response.size());
-        }
-
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
-    }
-
-    {
-        {
-            const byte_str response(
-                    "C2 C2 81 10 00 11 b9");
-
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
-
-            xfer.setInCountActual(response.size());
-        }
-
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
-
-        pointlist_t point_list;
-
-        dnp.getInboundPoints(point_list);
-
-        BOOST_CHECK_EQUAL(2, point_list.size());
-
-        {
-            CtiPointDataMsg *pd = point_list[0];
-
-            BOOST_CHECK_EQUAL(pd->getValue(), 1);
-
-            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
-
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
-        }
-
-        {
-            CtiPointDataMsg *pd = point_list[1];
-
-            BOOST_CHECK_EQUAL(pd->getValue(), 0);
-
-            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
-
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
-        }
-
-        auto string_list = dnp.getInboundStrings();
-
-        BOOST_REQUIRE_EQUAL(4, string_list.size());
-
-        BOOST_CHECK_EQUAL(string_list[0],
-            "Loopback successful");
-        BOOST_CHECK_EQUAL(string_list[1],
-            "Internal indications:\n"
-            "Time synchronization needed\n"
-            "Device restart\n"
-            "Parameter error\n");
-        BOOST_CHECK_EQUAL(string_list[2],
-            "Attempting to clear Device Restart bit");
-        BOOST_CHECK_EQUAL(string_list[3],
-            "Internal indications:\n"
-            "Time synchronization needed\n");
-
-        delete_container(point_list);
-    }
+    BOOST_CHECK_EQUAL(string_list[1],
+        "Internal indications:\n"
+        "Time synchronization needed\n"
+        "Device restart\n"
+        "Parameter error\n");
 }
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_invalid_function_code)
@@ -733,197 +616,77 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_invalid_function_code)
 
     dnp.setConfigData( 2, DNP::TimeOffset::Utc, false, false, false, false, false, false );
 
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
-
-        const byte_str expected(
-                "05 64 08 C4 04 00 03 00 B4 B8 "
-                "C0 C1 01 23 0B");
-
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
-    }
+    dnp.generate(xfer);
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+        const byte_str response(
+                "05 64 0A 44 03 00 04 00 7C AE");
 
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+        xfer.setInCountActual(response.size());
     }
+
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+        const byte_str response(
+                "C1 C1 81 90 01 2B FB");
 
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
-        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+        xfer.setInCountActual(response.size());
     }
+
+    BOOST_CHECK_EQUAL(ClientErrors::FunctionCodeNotImplemented, dnp.decode(xfer, ClientErrors::None)); 
+
+    dnp.generate(xfer);
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        {
-            const byte_str response(
-                    "05 64 0A 44 03 00 04 00 7C AE");
+        const byte_str response(
+                "05 64 0A 44 03 00 04 00 7C AE");
 
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
-            xfer.setInCountActual(response.size());
-        }
-
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        xfer.setInCountActual(response.size());
     }
+
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+        const byte_str response(
+                "C2 C2 81 10 00 11 b9");
 
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
-        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
+        xfer.setInCountActual(response.size());
     }
 
-    {
-        {
-            const byte_str response(
-                    "C1 C1 81 90 01 2B FB");
+    dnp.decode(xfer, ClientErrors::None);
 
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+    auto string_list = dnp.getInboundStrings();
 
-            xfer.setInCountActual(response.size());
-        }
+    BOOST_REQUIRE_EQUAL(4, string_list.size());
 
-        BOOST_CHECK_EQUAL(ClientErrors::FunctionCodeNotImplemented, dnp.decode(xfer, ClientErrors::None)); 
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
-
-        const byte_str expected(
-                "05 64 0E C4 04 00 03 00 6D D3 "
-                "C0 C2 02 50 01 00 07 07 00 08 "
-                "65");
-
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
-    }
-
-    {
-        {
-            const byte_str response(
-                    "05 64 0A 44 03 00 04 00 7C AE");
-
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
-
-            xfer.setInCountActual(response.size());
-        }
-
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
-    }
-
-    {
-        {
-            const byte_str response(
-                    "C2 C2 81 10 00 11 b9");
-
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
-
-            xfer.setInCountActual(response.size());
-        }
-
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
-
-        pointlist_t point_list;
-
-        dnp.getInboundPoints(point_list);
-
-        BOOST_CHECK_EQUAL(2, point_list.size());
-
-        {
-            CtiPointDataMsg *pd = point_list[0];
-
-            BOOST_CHECK_EQUAL(pd->getValue(), 1);
-
-            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
-
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
-        }
-
-        {
-            CtiPointDataMsg *pd = point_list[1];
-
-            BOOST_CHECK_EQUAL(pd->getValue(), 0);
-
-            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
-
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
-        }
-
-        auto string_list = dnp.getInboundStrings();
-
-        BOOST_REQUIRE_EQUAL(4, string_list.size());
-
-        BOOST_CHECK_EQUAL(string_list[0],
-            "Loopback successful");
-        BOOST_CHECK_EQUAL(string_list[1],
-            "Internal indications:\n"
-            "Time synchronization needed\n"
-            "Device restart\n"
-            "Function code not implemented\n");
-        BOOST_CHECK_EQUAL(string_list[2],
-            "Attempting to clear Device Restart bit");
-        BOOST_CHECK_EQUAL(string_list[3],
-            "Internal indications:\n"
-            "Time synchronization needed\n");
-
-        delete_container(point_list);
-    }
+    BOOST_CHECK_EQUAL(string_list[1],
+        "Internal indications:\n"
+        "Time synchronization needed\n"
+        "Device restart\n"
+        "Function code not implemented\n");
 }
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_unknown_object)
@@ -940,197 +703,77 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_unknown_object)
 
     dnp.setConfigData( 2, DNP::TimeOffset::Utc, false, false, false, false, false, false );
 
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
-
-        const byte_str expected(
-                "05 64 08 C4 04 00 03 00 B4 B8 "
-                "C0 C1 01 23 0B");
-
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
-    }
+    dnp.generate(xfer);
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+        const byte_str response(
+                "05 64 0A 44 03 00 04 00 7C AE");
 
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+        xfer.setInCountActual(response.size());
     }
+
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+        const byte_str response(
+                "C1 C1 81 90 02 C9 A1");
 
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
-        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+        xfer.setInCountActual(response.size());
     }
+
+    BOOST_CHECK_EQUAL(ClientErrors::UnknownObject, dnp.decode(xfer, ClientErrors::None)); 
+
+    dnp.generate(xfer);
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        {
-            const byte_str response(
-                    "05 64 0A 44 03 00 04 00 7C AE");
+        const byte_str response(
+                "05 64 0A 44 03 00 04 00 7C AE");
 
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
-            xfer.setInCountActual(response.size());
-        }
-
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        xfer.setInCountActual(response.size());
     }
+
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+        const byte_str response(
+                "C2 C2 81 10 00 11 b9");
 
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
-        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
+        xfer.setInCountActual(response.size());
     }
 
-    {
-        {
-            const byte_str response(
-                    "C1 C1 81 90 02 C9 A1");
+    dnp.decode(xfer, ClientErrors::None);
 
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+    auto string_list = dnp.getInboundStrings();
 
-            xfer.setInCountActual(response.size());
-        }
+    BOOST_REQUIRE_EQUAL(4, string_list.size());
 
-        BOOST_CHECK_EQUAL(ClientErrors::UnknownObject, dnp.decode(xfer, ClientErrors::None)); 
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
-
-        const byte_str expected(
-                "05 64 0E C4 04 00 03 00 6D D3 "
-                "C0 C2 02 50 01 00 07 07 00 08 "
-                "65");
-
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
-    }
-
-    {
-        {
-            const byte_str response(
-                    "05 64 0A 44 03 00 04 00 7C AE");
-
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
-
-            xfer.setInCountActual(response.size());
-        }
-
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
-    }
-
-    {
-        {
-            const byte_str response(
-                    "C2 C2 81 10 00 11 b9");
-
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
-
-            xfer.setInCountActual(response.size());
-        }
-
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
-
-        pointlist_t point_list;
-
-        dnp.getInboundPoints(point_list);
-
-        BOOST_CHECK_EQUAL(2, point_list.size());
-
-        {
-            CtiPointDataMsg *pd = point_list[0];
-
-            BOOST_CHECK_EQUAL(pd->getValue(), 1);
-
-            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
-
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
-        }
-
-        {
-            CtiPointDataMsg *pd = point_list[1];
-
-            BOOST_CHECK_EQUAL(pd->getValue(), 0);
-
-            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
-
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
-        }
-
-        auto string_list = dnp.getInboundStrings();
-
-        BOOST_REQUIRE_EQUAL(4, string_list.size());
-
-        BOOST_CHECK_EQUAL(string_list[0],
-            "Loopback successful");
-        BOOST_CHECK_EQUAL(string_list[1],
-            "Internal indications:\n"
-            "Time synchronization needed\n"
-            "Device restart\n"
-            "Requested objects unknown\n");
-        BOOST_CHECK_EQUAL(string_list[2],
-            "Attempting to clear Device Restart bit");
-        BOOST_CHECK_EQUAL(string_list[3],
-            "Internal indications:\n"
-            "Time synchronization needed\n");
-
-        delete_container(point_list);
-    }
+    BOOST_CHECK_EQUAL(string_list[1],
+        "Internal indications:\n"
+        "Time synchronization needed\n"
+        "Device restart\n"
+        "Requested objects unknown\n");
 }
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_operation_already_executing)
@@ -1147,197 +790,77 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_operation_already_execut
 
     dnp.setConfigData( 2, DNP::TimeOffset::Utc, false, false, false, false, false, false );
 
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
-
-        const byte_str expected(
-                "05 64 08 C4 04 00 03 00 B4 B8 "
-                "C0 C1 01 23 0B");
-
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
-    }
+    dnp.generate(xfer);
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
+        const byte_str response(
+                "05 64 0A 44 03 00 04 00 7C AE");
 
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+
+        xfer.setInCountActual(response.size());
     }
+
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+        const byte_str response(
+                "C1 C1 81 90 10 1E 7F");
 
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
-        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
+        xfer.setInCountActual(response.size());
     }
+
+    BOOST_CHECK_EQUAL(ClientErrors::OperationAlreadyExecuting, dnp.decode(xfer, ClientErrors::None)); 
+
+    dnp.generate(xfer);
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        {
-            const byte_str response(
-                    "05 64 0A 44 03 00 04 00 7C AE");
+        const byte_str response(
+                "05 64 0A 44 03 00 04 00 7C AE");
 
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
-            xfer.setInCountActual(response.size());
-        }
-
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        xfer.setInCountActual(response.size());
     }
+
+    dnp.decode(xfer, ClientErrors::None);
+    dnp.generate(xfer);
 
     {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
+        const byte_str response(
+                "C2 C2 81 10 00 11 b9");
 
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
+        //  make sure we don't copy more than they expect
+        std::copy(response.begin(), response.end(), 
+                stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
 
-        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
+        xfer.setInCountActual(response.size());
     }
 
-    {
-        {
-            const byte_str response(
-                    "C1 C1 81 90 10 1E 7F");
+    dnp.decode(xfer, ClientErrors::None);
 
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
+    auto string_list = dnp.getInboundStrings();
 
-            xfer.setInCountActual(response.size());
-        }
+    BOOST_REQUIRE_EQUAL(4, string_list.size());
 
-        BOOST_CHECK_EQUAL(ClientErrors::OperationAlreadyExecuting, dnp.decode(xfer, ClientErrors::None)); 
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(0, xfer.getInCountExpected());
-
-        const byte_str expected(
-                "05 64 0E C4 04 00 03 00 6D D3 "
-                "C0 C2 02 50 01 00 07 07 00 08 "
-                "65");
-
-        //  copy them into int vectors so they display nicely
-        const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
-
-        BOOST_CHECK_EQUAL_RANGES(expected, output);
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(10, xfer.getInCountExpected());
-    }
-
-    {
-        {
-            const byte_str response(
-                    "05 64 0A 44 03 00 04 00 7C AE");
-
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
-
-            xfer.setInCountActual(response.size());
-        }
-
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-    }
-
-    {
-        BOOST_CHECK_EQUAL(0, dnp.generate(xfer));
-
-        BOOST_CHECK_EQUAL(false, dnp.isTransactionComplete());
-
-        BOOST_CHECK_EQUAL(7, xfer.getInCountExpected());
-    }
-
-    {
-        {
-            const byte_str response(
-                    "C2 C2 81 10 00 11 b9");
-
-            //  make sure we don't copy more than they expect
-            std::copy(response.begin(), response.end(), 
-                    stdext::make_checked_array_iterator(xfer.getInBuffer(), xfer.getInCountExpected()));
-
-            xfer.setInCountActual(response.size());
-        }
-
-        BOOST_CHECK_EQUAL(0, dnp.decode(xfer, ClientErrors::None));
-
-        BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
-
-        pointlist_t point_list;
-
-        dnp.getInboundPoints(point_list);
-
-        BOOST_CHECK_EQUAL(2, point_list.size());
-
-        {
-            CtiPointDataMsg *pd = point_list[0];
-
-            BOOST_CHECK_EQUAL(pd->getValue(), 1);
-
-            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
-
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
-        }
-
-        {
-            CtiPointDataMsg *pd = point_list[1];
-
-            BOOST_CHECK_EQUAL(pd->getValue(), 0);
-
-            BOOST_CHECK_EQUAL(pd->getType(), StatusPointType);
-
-            BOOST_CHECK_EQUAL(pd->getId(), 2001);
-        }
-
-        auto string_list = dnp.getInboundStrings();
-
-        BOOST_REQUIRE_EQUAL(4, string_list.size());
-
-        BOOST_CHECK_EQUAL(string_list[0],
-            "Loopback successful");
-        BOOST_CHECK_EQUAL(string_list[1],
-            "Internal indications:\n"
-            "Time synchronization needed\n"
-            "Device restart\n"
-            "Request already executing\n");
-        BOOST_CHECK_EQUAL(string_list[2],
-            "Attempting to clear Device Restart bit");
-        BOOST_CHECK_EQUAL(string_list[3],
-            "Internal indications:\n"
-            "Time synchronization needed\n");
-
-        delete_container(point_list);
-    }
+    BOOST_CHECK_EQUAL(string_list[1],
+        "Internal indications:\n"
+        "Time synchronization needed\n"
+        "Device restart\n"
+        "Request already executing\n");
 }
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
