@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -43,6 +44,27 @@ public interface JsonSerializers {
     
     public static final DateTimeFormatter HONEYWELL_WRAPPER_DATE_TIME = 
             DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss").withZoneUTC();
+    
+    class TO_DURATION extends JsonSerializer<Duration> {
+        @Override
+        public void serialize(Duration duration, JsonGenerator jsonGenerator, SerializerProvider notUsed)
+                throws IOException, JsonProcessingException {
+            jsonGenerator.writeString(Long.toString(duration.getStandardSeconds()));
+        }
+    }
+    
+    class FROM_DURATION extends JsonDeserializer<Duration> {
+        @Override
+        public Duration deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) 
+                throws IOException, JsonProcessingException {
+            Double durationSeconds = jsonParser.getValueAsDouble();
+            if (durationSeconds == null) {
+                return null;
+            }
+            //This is potentially losing a fraction of a second converting double to long, but I don't think we care.
+            return Duration.standardSeconds(durationSeconds.longValue());
+        }
+    }
     
     class TO_TEMPERATURE_UNIT extends JsonSerializer<TemperatureUnit> {
         @Override

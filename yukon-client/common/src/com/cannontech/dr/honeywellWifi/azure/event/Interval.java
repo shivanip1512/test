@@ -2,9 +2,13 @@ package com.cannontech.dr.honeywellWifi.azure.event;
 
 import org.joda.time.Duration;
 
+import com.cannontech.dr.JsonSerializers.FROM_DURATION;
+import com.cannontech.dr.JsonSerializers.TO_DURATION;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @JsonIgnoreProperties(ignoreUnknown=true)
 public class Interval {
@@ -23,7 +27,7 @@ public class Interval {
                     @JsonProperty("heatDeltaC") Double heatDeltaC,
                     @JsonProperty("coolDeltaC") Double coolDeltaC,
                     @JsonProperty("load") Double load,
-                    @JsonProperty("durationSeconds") Duration durationSeconds) {
+                    @JsonDeserialize(using=FROM_DURATION.class) @JsonProperty("durationSeconds") Duration durationSeconds) {
         
         this.sequenceNumber = sequenceNumber;
         this.heatSetpointC = heatSetpointC;
@@ -57,7 +61,8 @@ public class Interval {
     public Double getLoad() {
         return load;
     }
-
+    
+    @JsonSerialize(using=TO_DURATION.class)
     public Duration getDurationSeconds() {
         return durationSeconds;
     }
