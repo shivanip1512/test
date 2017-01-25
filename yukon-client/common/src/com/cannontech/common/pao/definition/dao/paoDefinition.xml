@@ -217,10 +217,15 @@
         <points>
             <point type="Status" offset="47">
                 <init>true</init>
-                <name>Reverse Power</name>
+                <name>Reverse Power Alarm</name>
                 <stategroup value="TrueFalse" />
             </point>
         </points>
+        <attributes>
+            <attribute name="REVERSE_POWER_FLAG">
+                <basicLookup point="Reverse Power Alarm" />
+            </attribute>
+        </attributes>
     </pao>
 
     <pao id="REVERSE_POWER_EVENT" abstract="true">
@@ -231,8 +236,13 @@
                 <stategroup value="TrueFalse" />
             </point>
         </points>
+        <attributes>
+            <attribute name="REVERSE_POWER_FLAG">
+                <basicLookup point="Reverse Power" />
+            </attribute>
+        </attributes>
     </pao>
-
+    
     <pao id="OUTAGE_STATUS_BASE" abstract="true">
         <points>
             <point type="Status" offset="1000">
@@ -1688,8 +1698,7 @@
     </pao>
 
     <!-- MCT 420 BASE -->
-    <pao id="MCT_420_BASE" abstract="true"
-        inherits="MCT_410_BASE, REVERSE_POWER_EVENT" />
+    <pao id="MCT_420_BASE" abstract="true" inherits="MCT_410_BASE, REVERSE_POWER_ALARM" />
 
     <!-- MCT 420s -->
     <pao id="MCT420FL" inherits="MCT_420_BASE, SUPPORTS_MCT_DISCONNECT">
@@ -2791,7 +2800,7 @@
                 <pointRef name="Power Fail" />
                 <pointRef name="Tamper Flag Set" />
                 <pointRef name="Zero Usage (24 Hours)" />
-                <pointRef name="Reverse Power" />
+              <!--  <pointRef name="Reverse Power" /> -->
             </command>
             <command id="READ_PHASE_DETECT">
                 <name>Detect Phase</name>
@@ -2890,9 +2899,6 @@
             </attribute>
             <attribute name="ZERO_USAGE_FLAG">
                 <basicLookup point="Zero Usage (24 Hours)" />
-            </attribute>
-            <attribute name="REVERSE_POWER_FLAG">
-                <basicLookup point="Reverse Power" />
             </attribute>
         </attributes>
     </pao>
@@ -3589,10 +3595,6 @@
                 <decimalplaces value="3" />
             </point>
 
-            <point type="Status" offset="1">
-                <name>Status Input #1</name>
-                <stategroup value="SystemState" />
-            </point>
             <point type="Status" offset="2">
                 <name>Status Input #2</name>
                 <stategroup value="SystemState" />
@@ -3603,14 +3605,6 @@
             </point>
             <point type="Status" offset="4">
                 <name>Status Input #4</name>
-                <stategroup value="SystemState" />
-            </point>
-            <point type="Status" offset="5">
-                <name>Status Input #5</name>
-                <stategroup value="SystemState" />
-            </point>
-            <point type="Status" offset="6">
-                <name>Status Input #6</name>
                 <stategroup value="SystemState" />
             </point>
             <point type="Status" offset="7">
