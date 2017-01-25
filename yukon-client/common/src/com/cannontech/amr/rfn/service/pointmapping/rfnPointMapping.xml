@@ -946,7 +946,7 @@
                 <modifier>Harmonic</modifier>
             </modifiers>
         </point>
-        <point name="kVAh Delivered">
+        <point name="Delivered kVAh">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -956,7 +956,7 @@
                 <modifier>Harmonic</modifier>
             </modifiers>
         </point>
-        <point name="kVAh Received">
+        <point name="Received kVAh">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -1420,7 +1420,7 @@
                 <modifier>Net Flow</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Rate A kVArh">
+        <point name="Delivered kVArh (Rate A kVArh)">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -1430,7 +1430,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Rate B kVArh"> 
+        <point name="Delivered kVArh (Rate B kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -1440,7 +1440,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Rate C kVArh"> 
+        <point name="Delivered kVArh (Rate C kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -1450,7 +1450,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Rate D kVArh"> 
+        <point name="Delivered kVArh (Rate D kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2774,7 +2774,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Rate A kVArh">
+        <point name="Delivered kVArh (Rate A kVArh)">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2794,7 +2794,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Rate B kVArh"> 
+        <point name="Delivered kVArh (Rate B kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2814,7 +2814,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Rate C kVArh"> 
+        <point name="Delivered kVArh (Rate C kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2834,7 +2834,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Delivered Rate D kVArh"> 
+        <point name="Delivered kVArh (Rate D kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -3065,7 +3065,7 @@
         <paoType value="RFN420CL" />
         <paoType value="RFN420CD" />
 
-        <point name="kVAh Delivered">
+        <point name="Delivered kVAh">
             <uom>VAh</uom>
             <multiplier value=".001" />
             <parseSiPrefix />
@@ -3074,7 +3074,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="kVAh Received">
+        <point name="Received kVAh">
             <uom>VAh</uom>
             <multiplier value=".001" />
             <parseSiPrefix />

@@ -7941,13 +7941,13 @@
             </point>
 
             <point type="Analog" offset="150">
-                <name>kVAh Delivered</name>
+                <name>Delivered kVAh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVAh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="151">
-                <name>kVAh Received</name>
+                <name>Received kVAh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVAh" />
                 <decimalplaces value="3" />
@@ -8079,10 +8079,10 @@
         </points>
         <attributes>
             <attribute name="KVAH">
-                <basicLookup point="kVAh Delivered" />
+                <basicLookup point="Delivered kVAh" />
             </attribute>
             <attribute name="RECEIVED_KVAH">
-                <basicLookup point="kVAh Received" />
+                <basicLookup point="Received kVAh" />
             </attribute>
             <attribute name="SUM_KVAH">
                 <basicLookup point="kVAh Sum" />
@@ -8173,28 +8173,28 @@
 
             <point type="Analog" offset="161">
                 <init>true</init>
-                <name>Delivered Rate A kVArh</name>
+                <name>Delivered kVArh (Rate A kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="162">
                 <init>true</init>
-                <name>Delivered Rate B kVArh</name>
+                <name>Delivered kVArh (Rate B kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="163">
                 <init>true</init>
-                <name>Delivered Rate C kVArh</name>
+                <name>Delivered kVArh (Rate C kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="164">
                 <init>true</init>
-                <name>Delivered Rate D kVArh</name>
+                <name>Delivered kVArh (Rate D kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
@@ -8496,9 +8496,9 @@
                 <unitofmeasure value="Counts" />
                 <decimalplaces value="0" />
             </point>
-            <point type="Analog" offset="24">
+            <point type="Analog" offset="100">
                 <init>true</init>
-                <name>Outage Log</name>
+                <name>Outages</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
                 <decimalplaces value="0" />
@@ -8666,7 +8666,7 @@
                 <basicLookup point="Outage Restore Count" />
             </attribute>
             <attribute name="OUTAGE_LOG">
-                <basicLookup point="Outage Log" />
+                <basicLookup point="Outages" />
             </attribute>
 
             <attribute name="USAGE_RATE_A">
@@ -9749,25 +9749,25 @@
             </point>
             <point type="Analog" offset="161">
                 <init>true</init>
-                <name>Delivered Rate A kVArh</name>
+                <name>Delivered kVArh (Rate A kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="162">
-                <name>Delivered Rate B kVArh</name>
+                <name>Delivered kVArh (Rate B kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="163">
-                <name>Delivered Rate C kVArh</name>
+                <name>Delivered kVArh (Rate C kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="164">
-                <name>Delivered Rate D kVArh</name>
+                <name>Delivered kVArh (Rate D kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
@@ -9819,16 +9819,16 @@
                 <basicLookup point="Delivered kVArh" />
             </attribute>
             <attribute name="KVARH_RATE_A">
-                <basicLookup point="Delivered Rate A kVArh" />
+                <basicLookup point="Delivered kVArh (Rate A kVArh)" />
             </attribute>
             <attribute name="KVARH_RATE_B">
-                <basicLookup point="Delivered Rate B kVArh" />
+                <basicLookup point="Delivered kVArh (Rate B kVArh)" />
             </attribute>
             <attribute name="KVARH_RATE_C">
-                <basicLookup point="Delivered Rate C kVArh" />
+                <basicLookup point="Delivered kVArh (Rate C kVArh)" />
             </attribute>
             <attribute name="KVARH_RATE_D">
-                <basicLookup point="Delivered Rate D kVArh" />
+                <basicLookup point="Delivered kVArh (Rate D kVArh)" />
             </attribute>
             <attribute name="RECEIVED_KVARH">
                 <basicLookup point="Received kVArh" />
@@ -14419,13 +14419,13 @@
     <pao id="RFN_CENTRON_420_KVAH_KVA" abstract="true">
         <points>
             <point type="Analog" offset="150">
-                <name>kVAh Delivered</name>
+                <name>Delivered kVAh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVah" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="151">
-                <name>kVAh Received</name>
+                <name>Received kVAh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVah" />
                 <decimalplaces value="3" />
@@ -14445,10 +14445,10 @@
         </points>
         <attributes>
             <attribute name="KVAH">
-                <basicLookup point="kVAh Delivered" />
+                <basicLookup point="Delivered kVAh" />
             </attribute>
             <attribute name="RECEIVED_KVAH">
-                <basicLookup point="kVAh Received" />
+                <basicLookup point="Received kVAh" />
             </attribute>
             <attribute name="DELIVERED_KVA">
                 <basicLookup point="Delivered kVA"/>
