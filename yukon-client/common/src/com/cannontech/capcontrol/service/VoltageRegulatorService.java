@@ -66,13 +66,13 @@ public class VoltageRegulatorService {
 
     public Map<RegulatorPointMapping, Integer> sortMappings(Map<RegulatorPointMapping, Integer> mappings, YukonUserContext context) {
 
-        List<RegulatorPointMapping> keys = new ArrayList<RegulatorPointMapping>(mappings.keySet());
+        List<RegulatorPointMapping> keys = new ArrayList<>(mappings.keySet());
         return sortWithKeys(mappings, keys, context);
     }
 
     public Map<RegulatorPointMapping, Integer> sortMappingsAllKeys(Map<RegulatorPointMapping, Integer> mappings, YukonUserContext context) {
 
-        List<RegulatorPointMapping> keys = new ArrayList<RegulatorPointMapping>(Arrays.asList(RegulatorPointMapping.values()));
+        List<RegulatorPointMapping> keys = new ArrayList<>(Arrays.asList(RegulatorPointMapping.values()));
         return sortWithKeys(mappings, keys, context);
     }
 
@@ -106,7 +106,7 @@ public class VoltageRegulatorService {
         SimpleDevice device = new SimpleDevice(completeRegulator);
         LightDeviceConfiguration config = new LightDeviceConfiguration(regulator.getConfigId(), null, null);
 
-        deviceConfigurationService.assignConfigToDevice(config, device);
+        deviceConfigurationService.assignConfigToDevice(config, device, YukonUserContext.system.getYukonUser());
 
         //Point Mappings
 

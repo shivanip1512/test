@@ -404,11 +404,8 @@ public class DevEventLogCreationService {
             public void execute(DevEventLog devEventLog) {
                 LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
                 
-                String deviceConfig= devEventLog.getIndicatorString() + "DeviceConfig";
                 String resultKey = "12345!@#$%";
                 
-                deviceConfigEventLogService.assignConfigInitiated(deviceConfig, 20, yukonUser);
-                deviceConfigEventLogService.unassignConfigInitiated(20, yukonUser);
                 deviceConfigEventLogService.readConfigInitiated(20, resultKey, yukonUser);
                 deviceConfigEventLogService.readConfigCompleted(15, 2, 3, "exceptionMessage", resultKey);
                 deviceConfigEventLogService.sendConfigInitiated(20, "putconfig emetcon install all force", resultKey, yukonUser);

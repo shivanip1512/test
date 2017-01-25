@@ -35,6 +35,7 @@ import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.VerifyResult;
 import com.cannontech.common.device.config.service.DeviceConfigService;
+import com.cannontech.common.device.config.service.DeviceConfigService.LogAction;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
@@ -46,7 +47,6 @@ import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.group.GroupCommandCompletionAlert;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -69,7 +69,7 @@ public class DeviceConfigController {
     @Autowired private AlertService alertService;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
-    @Autowired private ServerDatabaseCache dbCache;
+
     
     @RequestMapping("assignConfig")
     public String assignConfig(DeviceCollection deviceCollection, ModelMap model, YukonUserContext userContext) throws ServletException {
@@ -109,12 +109,7 @@ public class DeviceConfigController {
         // PROCESS
         final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration"); 
         DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(configId);
-        eventLogService.assignConfigInitiated(configuration.getName(), deviceCollection.getDeviceCount(), userContext.getYukonUser());
-        for(SimpleDevice device: deviceCollection) {
-            String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
-            eventLogService.assignConfigToDeviceInitiated(configuration.getName(), deviceName, userContext.getYukonUser());
-        }
-        Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
+        Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration, userContext.getYukonUser());
         
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
@@ -171,13 +166,7 @@ public class DeviceConfigController {
         // CACHE
         recentResultsCache.addResult(resultsId, callbackResult);
         
-        // PROCESS
-        eventLogService.unassignConfigInitiated(deviceCollection.getDeviceCount(), userContext.getYukonUser());
-        for(SimpleDevice device: deviceCollection) {
-            String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
-            eventLogService.unassignConfigFromDeviceInitiated(deviceName, userContext.getYukonUser());
-        }
-        Processor<SimpleDevice> processor = processorFactory.createUnassignConfigurationToYukonDeviceProcessor();
+        Processor<SimpleDevice> processor = processorFactory.createUnassignConfigurationToYukonDeviceProcessor(userContext.getYukonUser());
         
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
         bulkProcessor.backgroundBulkProcess(deviceCollection.iterator(), mapper, processor, callbackResult);
@@ -273,17 +262,13 @@ public class DeviceConfigController {
     public String doVerifyConfigs(DeviceCollection deviceCollection, LiteYukonUser user, ModelMap model) {
         model.addAttribute("deviceCollection", deviceCollection);
         
-        // DO VERIFY
-        for(SimpleDevice device: deviceCollection) {
-            String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
-            eventLogService.verifyConfigFromDeviceInitiated(deviceName, user);
-        }
         VerifyConfigCommandResult result = deviceConfigService.verifyConfigs(deviceCollection, user);
+        String reason =  result.getExceptionReason() == null? "": result.getExceptionReason();
         eventLogService.verifyConfigCompleted(result.getSuccessList().size(), 
                                                       result.getFailureList().size(),
                                                       result.getUnsupportedList().size(),
-                                                      result.getExceptionReason());
-
+                                                      reason);
+        
         StoredDeviceGroup successGroup = temporaryDeviceGroupService.createTempGroup();
         StoredDeviceGroup failureGroup = temporaryDeviceGroupService.createTempGroup();
         StoredDeviceGroup unsupportedGroup = temporaryDeviceGroupService.createTempGroup();
@@ -322,23 +307,20 @@ public class DeviceConfigController {
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
             public void handle(GroupCommandResult result) {
+                deviceConfigService.logCompleted(result.getSuccessCollection().getDeviceList(), LogAction.READ, true);
+                deviceConfigService.logCompleted(result.getFailureCollection().getDeviceList(), LogAction.READ, false);
+                String reason =  result.getExceptionReason() == null? "": result.getExceptionReason();
                 eventLogService.readConfigCompleted(result.getSuccessCollection().getDeviceCount(),
                                                             result.getFailureCollection().getDeviceCount(),
                                                             result.getUnsupportedCollection().getDeviceCount(),
-                                                            result.getExceptionReason(), 
+                                                            reason, 
                                                             result.getKey());
-
                 GroupCommandCompletionAlert commandCompletionAlert = new GroupCommandCompletionAlert(new Date(), result);
                 alertService.add(commandCompletionAlert);
             }
             
         };
-        
-        for(SimpleDevice device: deviceCollection) {
-            String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
-            eventLogService.readConfigFromDeviceInitiated(deviceName, user);
-        }
-        
+                
         String key = deviceConfigService.readConfigs(deviceCollection, callback, user);
         model.addAttribute("resultKey", key);
         return "redirect:/group/commander/resultDetail";
@@ -360,20 +342,19 @@ public class DeviceConfigController {
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
             public void handle(GroupCommandResult result) {
+                deviceConfigService.logCompleted(result.getSuccessCollection().getDeviceList(), LogAction.SEND, true);
+                deviceConfigService.logCompleted(result.getFailureCollection().getDeviceList(), LogAction.SEND, false);
+                String reason =  result.getExceptionReason() == null? "": result.getExceptionReason();
                 eventLogService.sendConfigCompleted(result.getSuccessCollection().getDeviceCount(),
                                                             result.getFailureCollection().getDeviceCount(),
                                                             result.getUnsupportedCollection().getDeviceCount(),
-                                                            result.getExceptionReason(),
+                                                            reason,
                                                             result.getKey());
                 GroupCommandCompletionAlert commandCompletionAlert = new GroupCommandCompletionAlert(new Date(), result);
                 alertService.add(commandCompletionAlert);
             }
             
         };
-        for(SimpleDevice device: deviceCollection) {
-            String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
-            eventLogService.sendConfigToDeviceInitiated(deviceName, user);
-        }
         String key = deviceConfigService.sendConfigs(deviceCollection, method, callback, user);
         model.addAttribute("resultKey", key);
         return "redirect:/group/commander/resultDetail";

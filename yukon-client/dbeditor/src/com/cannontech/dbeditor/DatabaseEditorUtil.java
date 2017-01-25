@@ -41,6 +41,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 
 public final class DatabaseEditorUtil {
     private static final Executor threadExecutor = YukonSpringHook.getBean("globalScheduledExecutor", Executor.class);
@@ -68,7 +69,7 @@ public final class DatabaseEditorUtil {
         LightDeviceConfiguration config = configurationDao.findConfigurationForDevice(device);
         if(config != null) {
             if (!configurationDao.isTypeSupportedByConfiguration(config, device.getPaoIdentifier().getPaoType())) {
-                configurationService.unassignConfig(device);
+                configurationService.unassignConfig(device, YukonUserContext.system.getYukonUser());
                 return true;
             }
         }
@@ -92,7 +93,9 @@ public final class DatabaseEditorUtil {
                 JCheckBox checkBox = DatabaseEditorUtil.findJComponent(c, "JCheckBoxEnableDisconnect", JCheckBox.class);
                 JTextField textField = DatabaseEditorUtil.findJComponent(c, "JTextFieldDisconnectAddress", JTextField.class);
                 
-                if (checkBox == null || textField == null) return;
+                if (checkBox == null || textField == null) {
+                    return;
+                }
                 
                 final YukonPAObject paoObject = (YukonPAObject) object;
                 SimpleDevice device = deviceDao.getYukonDevice(paoObject.getPAObjectID());
@@ -152,10 +155,14 @@ public final class DatabaseEditorUtil {
             JComponent comp = (JComponent) c.getComponent(x);
             if ((comp instanceof JPanel) || (comp instanceof JTabbedPane)) {
                 E result = findJComponent(comp, name, expectedType);
-                if (result != null) return result;
+                if (result != null) {
+                    return result;
+                }
             }
             E result = matchJComponent(comp, name, expectedType);
-            if (result != null) return result;
+            if (result != null) {
+                return result;
+            }
         }
         return null;
     }
@@ -180,7 +187,9 @@ public final class DatabaseEditorUtil {
                 int id = paoObj.getPAObjectID();
                 String oldName = paoDao.getLiteYukonPAO(id).getPaoName();
 
-                if (oldName.equals(paoObj.getPAOName())) return;
+                if (oldName.equals(paoObj.getPAOName())) {
+                    return;
+                }
                 
                 try {
                     final LiteYukonPAObject liteRoutePAObject = paoDao.findUnique(oldName, PaoType.ROUTE_CCU);

@@ -11,11 +11,14 @@ import com.cannontech.common.device.config.model.DeviceConfigCategory;
 import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.device.config.model.jaxb.CategoryType;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
+import com.cannontech.common.events.loggers.DeviceConfigEventLogService;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class DeviceConfigurationServiceImpl implements DeviceConfigurationService {
     private static final String CONFIG_OBJECT_TYPE = "config";
@@ -24,6 +27,8 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
 
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private IDatabaseCache dbCache;
+    @Autowired private DeviceConfigEventLogService eventLogService;
     
     @Override
     public int saveConfigurationBase(Integer deviceConfigurationId, String name, String description) {
@@ -79,10 +84,20 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
     }
     
     @Override
-    public void assignConfigToDevice(LightDeviceConfiguration configuration, YukonDevice device)
+    public void assignConfigToDevice(LightDeviceConfiguration configuration, YukonDevice device, LiteYukonUser user)
             throws InvalidDeviceTypeException {
-        deviceConfigurationDao.assignConfigToDevice(configuration, device);
         
+        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+        eventLogService.assignConfigToDeviceInitiated(configuration.getName(), deviceName, user);
+        try {
+            deviceConfigurationDao.assignConfigToDevice(configuration, device);
+            eventLogService.assignConfigToDeviceSucceeded(configuration.getName(), deviceName);
+        } catch (InvalidDeviceTypeException e) {
+            eventLogService.assignConfigToDeviceFailed(configuration.getName(), deviceName);
+            throw e;
+        }
+      
+   
         boolean isConfigUpdate = deviceConfigurationDao.findConfigurationForDevice(device) != null;
         
         dbChangeManager.processDbChange(device.getPaoIdentifier().getPaoId(),
@@ -93,9 +108,17 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
     }
 
     @Override
-    public void unassignConfig(YukonDevice device) throws InvalidDeviceTypeException {
-        deviceConfigurationDao.unassignConfig(device);
-        
+    public void unassignConfig(YukonDevice device, LiteYukonUser user) throws InvalidDeviceTypeException {
+        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+        eventLogService.unassignConfigFromDeviceInitiated(deviceName, user);
+        try{
+            deviceConfigurationDao.unassignConfig(device);
+            eventLogService.unassignConfigFromDeviceSucceeded(deviceName, user);
+        }catch(InvalidDeviceTypeException e){
+            eventLogService.unassignConfigFromDeviceFailed(deviceName, user);
+            throw e;
+        }
+
         dbChangeManager.processDbChange(device.getPaoIdentifier().getPaoId(),
                                         DBChangeMsg.CHANGE_CONFIG_DB,
                                         DBChangeMsg.CAT_DEVICE_CONFIG,

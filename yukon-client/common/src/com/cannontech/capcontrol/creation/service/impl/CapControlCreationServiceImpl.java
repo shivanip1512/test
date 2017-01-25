@@ -22,6 +22,7 @@ import com.cannontech.common.pao.model.CompleteRegulator;
 import com.cannontech.common.pao.model.CompleteTwoWayCbc;
 import com.cannontech.common.pao.model.CompleteYukonPao;
 import com.cannontech.common.pao.service.PaoPersistenceService;
+import com.cannontech.user.YukonUserContext;
 
 public class CapControlCreationServiceImpl implements CapControlCreationService {
     private static final Logger log = YukonLogManager.getLogger(CapControlCreationServiceImpl.class);
@@ -61,7 +62,7 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
             
             SimpleDevice device = new SimpleDevice(pao.getPaoIdentifier());
             try {
-                deviceConfigurationService.assignConfigToDevice(config, device);
+                deviceConfigurationService.assignConfigToDevice(config, device, YukonUserContext.system.getYukonUser());
             } catch (InvalidDeviceTypeException e) {
                 /*
                  *  This only happens if config is null for a DNP CBC or if we try to assign a

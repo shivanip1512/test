@@ -43,6 +43,7 @@ import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.DeviceCBC;
 import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.service.CbcService;
 import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.web.util.CBCCopyUtils;
@@ -290,7 +291,7 @@ public class CbcServiceImpl implements CbcService {
         LightDeviceConfiguration config = configurationDao.getLightConfigurationById(cbc.getDnpConfigId());
 
         try {
-            deviceConfigService.assignConfigToDevice(config, device);
+            deviceConfigService.assignConfigToDevice(config, device, YukonUserContext.system.getYukonUser());
         } catch (InvalidDeviceTypeException e) {
             /*
              * This should have already been validated. 
@@ -302,6 +303,7 @@ public class CbcServiceImpl implements CbcService {
         }
     }
 
+    @Override
     public int create(CapControlCBC cbc) {
         CompleteCbcBase completeCbc = null;
         if (cbc.isTwoWay()) {

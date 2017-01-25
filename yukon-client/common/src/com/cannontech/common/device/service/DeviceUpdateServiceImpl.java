@@ -77,6 +77,7 @@ import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
@@ -205,7 +206,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                 deviceConfigurationDao.isTypeSupportedByConfiguration(config, device.getPaoIdentifier().getPaoType());
             if (!configSupported) {
                 try {
-                    deviceConfigurationService.unassignConfig(device);
+                    deviceConfigurationService.unassignConfig(device, YukonUserContext.system.getYukonUser());
                 } catch (InvalidDeviceTypeException e) {
                     log.error("Unable to remove device config on type change.", e);
                 }
@@ -626,7 +627,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private void addPoints(Set<PointTemplate> pointsToAdd, DeviceBase oldDevice) throws PersistenceException {
 
         if (!pointsToAdd.isEmpty()) {
-            List<PointTemplate> templates = new ArrayList<PointTemplate>(pointsToAdd);
+            List<PointTemplate> templates = new ArrayList<>(pointsToAdd);
             Collections.sort(templates , new OrderCalcLast2());
 
             log.debug("Points to add-----------------------");
@@ -680,7 +681,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private void changePointType(Map<Integer, PointToTemplate> pointsToUpdate) throws PersistenceException {
 
         if (!pointsToUpdate.isEmpty()) {
-            List<PointToTemplate> points = new ArrayList<PointToTemplate>(pointsToUpdate.values());
+            List<PointToTemplate> points = new ArrayList<>(pointsToUpdate.values());
             Collections.sort(points , new OrderCalcLast1());
             log.debug("Points to update-----------------------");
             // Change point type

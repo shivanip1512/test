@@ -57,6 +57,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PaoPropertyDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 
@@ -243,7 +244,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             DeviceConfiguration config = deviceConfigurationDao.getDefaultDNPConfiguration();
             try {
                 SimpleDevice device = new SimpleDevice(pao.getPaoIdentifier());
-                deviceConfigurationService.assignConfigToDevice(config, device);
+                deviceConfigurationService.assignConfigToDevice(config, device, YukonUserContext.system.getYukonUser());
             } catch (InvalidDeviceTypeException e) {
                 /*
                  *  This can only happen if there wasn't a default configuration in the database.
@@ -357,7 +358,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
             YukonDevice newDevice = new SimpleDevice(template.getPaoIdentifier());
             try {
-                deviceConfigurationService.assignConfigToDevice(config, newDevice);
+                deviceConfigurationService.assignConfigToDevice(config, newDevice, YukonUserContext.system.getYukonUser());
             } catch (InvalidDeviceTypeException e) {
                 log.error("An error occurred attempting to assign a DNP configuration to CBC '" +
                           template.getPaoName() + "'. Please assign this device a configuration manually.", e);
