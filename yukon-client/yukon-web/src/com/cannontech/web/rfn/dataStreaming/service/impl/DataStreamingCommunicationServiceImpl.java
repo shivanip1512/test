@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -193,12 +194,11 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
 
             for (GatewayDataStreamingInfo info : response.getGatewayDataStreamingInfos().values()) {
                 RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(info.getGatewayRfnIdentifier());
+                double streamingCount = Optional.ofNullable(info.getDeviceRfnIdentifiers()).map(Map::size).orElse(0);
                 generatePointDataForDataStreaming(gateway, BuiltInAttribute.DATA_STREAMING_LOAD, info.getDataStreamingLoadingPercent(),
                     shouldArchive);
-                generatePointDataForDataStreaming(gateway, BuiltInAttribute.STREAMING_DEVICE_COUNT,
-                    info.getDeviceRfnIdentifiers().size(), shouldArchive);
-                generatePointDataForDataStreaming(gateway, BuiltInAttribute.CONNECTED_DEVICE_COUNT,
-                    info.getDeviceRfnIdentifiers().size(), shouldArchive);
+                generatePointDataForDataStreaming(gateway, BuiltInAttribute.STREAMING_DEVICE_COUNT, streamingCount, shouldArchive);
+                generatePointDataForDataStreaming(gateway, BuiltInAttribute.CONNECTED_DEVICE_COUNT, streamingCount, shouldArchive);
             }
         } catch (ExecutionException e) {
             String errorMessage =

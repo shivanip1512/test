@@ -10,8 +10,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -70,6 +72,7 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -247,12 +250,21 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             dataStreamingCommService.getGatewayInfo(rfnGatewayService.getAllGateways(), false);
 
         for (GatewayDataStreamingInfo gatewayInfo : gatewayInfos) {
-            for (RfnIdentifier identifier : gatewayInfo.getDeviceRfnIdentifiers().keySet()) {
-                DeviceInfo deviceToGateway = new DeviceInfo();
-                // Identifiers are cached
-                deviceToGateway.device = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
-                deviceToGateway.gatewayRfnIdentifier = gatewayInfo.getGatewayRfnIdentifier();
-                deviceIdToDeviceInfo.put(deviceToGateway.device.getPaoIdentifier().getPaoId(), deviceToGateway);
+            Map<RfnIdentifier, Double> rfnIdentifiers = gatewayInfo.getDeviceRfnIdentifiers();
+            if (rfnIdentifiers != null) {
+                for (RfnIdentifier identifier : rfnIdentifiers.keySet()) {
+                    DeviceInfo deviceToGateway = new DeviceInfo();
+                    // Identifiers are cached
+                    try {
+                        deviceToGateway.device = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
+                        deviceToGateway.gatewayRfnIdentifier = gatewayInfo.getGatewayRfnIdentifier();
+                        deviceIdToDeviceInfo.put(deviceToGateway.device.getPaoIdentifier().getPaoId(), deviceToGateway);
+                    } 
+                    catch (NotFoundException ex) {
+                        //  NM included a node in the gateway device list that Yukon doesn't know about, so ignore it
+                        log.warn(ex);
+                    }
+                }
             }
         }
         Integer selectedConfigId = criteria.isConfigSelected() ? criteria.getSelectedConfiguration() : null;
@@ -499,15 +511,13 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             checkForDeviceErrors(response, result);
             break;
         case CONFIG_ERROR:
-            boolean gatewaysOverloaded = false;
-            Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways = response.getAffectedGateways();
-            for (RfnIdentifier rfnId : affectedGateways.keySet()) {
-                GatewayDataStreamingInfo info = affectedGateways.get(rfnId);
-                if ((info.getResultLoading() / info.getMaxCapacity()) > 1) {
-                    gatewaysOverloaded = true;
-                    break;
-                }
-            }
+            boolean gatewaysOverloaded = 
+                    Optional.ofNullable(response.getAffectedGateways())
+                            .map(Map::values)
+                            .map(Collection::stream)
+                            .map(s -> s.filter(info -> (info.getResultLoading() / info.getMaxCapacity()) > 1))
+                            .map(Stream::findAny)
+                            .isPresent();
 
             if (gatewaysOverloaded) {
                 log.debug("Data streaming config response - gateways oversubscribed.");
@@ -1062,7 +1072,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 Collectors.toMap(rfnId -> rfnId, rfnId -> 0));
 
         DeviceDataStreamingConfigRequest configRequest = new DeviceDataStreamingConfigRequest();
-        configRequest.setRequestType(DeviceDataStreamingConfigRequestType.UPDATE);
+        configRequest.setRequestType(DeviceDataStreamingConfigRequestType.UPDATE_WITH_FORCE);
         configRequest.setRequestExpiration(DateTimeConstants.MINUTES_PER_DAY);
         configRequest.setConfigs(new DeviceDataStreamingConfig[] { config });
         configRequest.setDevices(deviceToConfigId);
