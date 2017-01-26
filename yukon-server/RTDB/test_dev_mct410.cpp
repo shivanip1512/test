@@ -817,6 +817,14 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         BOOST_CHECK_EQUAL(        0, om->Buffer.BSt.Length );
     }
 
+    BOOST_AUTO_TEST_CASE(test_dev_mct410_putconfig_timezone)
+    {
+        CtiCommandParser parse( "putconfig emetcon timezone ct" );
+
+        BOOST_CHECK_EQUAL( ClientErrors::NoConfigData, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL(        0, om->Buffer.BSt.Length );
+    }
+
     BOOST_AUTO_TEST_CASE(test_dev_mct410_getconfig_address_unique)
     {
         CtiCommandParser parse( "getconfig address unique" );
@@ -2607,6 +2615,27 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         // This validates the read-after-write behavior... write message has higher priority
 
         BOOST_CHECK( writeMsgPriority > readMsgPriority );
+
+        // Timezone message
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x3f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            const std::vector<unsigned> expected = {
+                0xe8 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+        }
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_all_alternate)
     {
@@ -2721,6 +2750,27 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
         // This validates the read-after-write behavior... write message has higher priority
 
         BOOST_CHECK( writeMsgPriority > readMsgPriority );
+
+        // Timezone message
+        // Write message
+        {
+            const OUTMESS *om = *om_itr++;
+
+            BOOST_REQUIRE(om);
+
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,          0 );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x3f );
+            BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,      1 );
+
+            const std::vector<unsigned> expected = {
+                0xe8 };
+
+            BOOST_CHECK_EQUAL_COLLECTIONS(
+                expected.begin(),
+                expected.end(),
+                om->Buffer.BSt.Message,
+                om->Buffer.BSt.Message + om->Buffer.BSt.Length );
+        }
     }
     BOOST_AUTO_TEST_CASE(test_putconfig_install_disconnect_demand_threshold)
     {
