@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-<!-- RF Devices: highest Analog OFFSET=353 @ 2016-08-12 -->
+<!-- RF Devices: highest Analog OFFSET=357 @ 2016-08-12 -->
 <!-- RF Devices: highest Status OFFSET=89 @ 2014-04-30T -->
 
 <!--  Point Name naming convention: 
@@ -8513,8 +8513,8 @@
                 <init>true</init>
                 <name>Outages</name>
                 <multiplier value="1.0" />
-                <unitofmeasure value="Counts" />
-                <decimalplaces value="0" />
+                <unitofmeasure value="Seconds" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="Analog" offset="25">
@@ -10336,7 +10336,7 @@
         
     <pao id="RFN500_FOCUS_SINGLEPHASE" abstract="true">
         <points>
-            <point type="Analog" offset="327">
+            <point type="Analog" offset="354">
                 <name>Voltage (Single Phase)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
@@ -10348,19 +10348,19 @@
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3" />
             </point>
-            <point type="Analog" offset="330">
+            <point type="Analog" offset="355">
                 <name>Min Voltage</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3" />
             </point>
-            <point type="Analog" offset="333">
+            <point type="Analog" offset="356">
                 <name>Max Voltage</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3" />
             </point>
-            <point type="Analog" offset="336">
+            <point type="Analog" offset="357">
                 <name>Current</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
@@ -10967,7 +10967,7 @@
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3" />
             </point>
-            <point type="Analog" offset="308">
+            <point type="Analog" offset="244">
                 <name>Delivered kVAh (Rate D kVAh)</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="kVah"/>
