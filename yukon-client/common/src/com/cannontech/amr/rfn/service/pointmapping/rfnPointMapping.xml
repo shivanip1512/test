@@ -2499,7 +2499,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="kVAh Rate A">
+        <point name="Delivered kVAh (Rate A kVAh)">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2509,7 +2509,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="kVAh Rate B">
+        <point name="Delivered kVAh (Rate B kVAh)">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2519,7 +2519,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="kVAh Rate C">
+        <point name="Delivered kVAh (Rate C kVAh)">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2529,7 +2529,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="kVAh Rate D">
+        <point name="Delivered kVAh (Rate D kVAh)">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2603,7 +2603,7 @@
                 <modifier>Max</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVA Rate A">
+        <point name="Delivered Peak kVA (Rate A kVA)">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2614,7 +2614,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVA Rate B">
+        <point name="Delivered Peak kVA (Rate B kVA)">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2625,7 +2625,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVA Rate C">
+        <point name="Delivered Peak kVA (Rate C kVA)">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2636,7 +2636,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Peak kVA Rate D">
+        <point name="Delivered Peak kVA (Rate D kVA)">
             <uom>VA</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
