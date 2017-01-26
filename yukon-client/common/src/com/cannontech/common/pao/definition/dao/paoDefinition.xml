@@ -7860,7 +7860,7 @@
     <pao id="RFN_L4_ELSTER_KRV" abstract="true"
         inherits="RFN_L3_ELSTER_TKRV, RFN_PTCALC__ELSTER_KRV">
         <points>
-            <point type="Analog" offset="149">
+            <point type="Analog" offset="250">
                 <name>Peak kVA</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVA" />
@@ -8140,7 +8140,7 @@
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
             </point>
-            <point type="Analog" offset="165">
+            <point type="Analog" offset="215">
                 <name>Sum kVArh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
@@ -8627,11 +8627,10 @@
             </point>
 
             <point type="Analog" offset="226">
-                <init>true</init>
                 <name>Current Angle Phase A</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Degrees" />
-                <decimalplaces value="1" />
+                <decimalplaces value="3" />
             </point>
 
             <point type="CalcAnalog" offset="0">
