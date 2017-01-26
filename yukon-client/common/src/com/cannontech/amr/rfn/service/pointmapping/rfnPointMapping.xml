@@ -2880,7 +2880,7 @@
                 <modifier>Net Flow</modifier>
             </modifiers>
         </point>
-        <point name="Rate A Net Delivered kVARh"> 
+        <point name="Net Delivered kVArh (Rate A kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2902,7 +2902,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Rate B Net Delivered kVARh"> 
+        <point name="Net Delivered kVArh (Rate B kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2924,7 +2924,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Rate C Net Delivered kVARh"> 
+        <point name="Net Delivered kVArh (Rate C kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2946,7 +2946,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Rate D Net Delivered kVARh"> 
+        <point name="Net Delivered kVArh (Rate D kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
