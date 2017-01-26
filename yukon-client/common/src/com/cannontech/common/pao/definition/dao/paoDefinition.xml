@@ -221,6 +221,17 @@
                 <stategroup value="TrueFalse" />
             </point>
         </points>
+        <commands>
+            <command id="READ_INTERNAL_STATUS">
+                <name>Read General Info</name>
+                <cmd text="getstatus internal" />
+                <pointRef name="General Alarm" />
+                <pointRef name="Power Fail" />
+                <pointRef name="Tamper Flag Set" />
+                <pointRef name="Zero Usage (24 Hours)" />
+                <pointRef name="Reverse Power Alarm" />
+            </command>
+        </commands>
         <attributes>
             <attribute name="REVERSE_POWER_FLAG">
                 <basicLookup point="Reverse Power Alarm" />
@@ -3535,7 +3546,7 @@
             </point>
             <point type="PulseAccumulator" offset="20">
                 <init>true</init>
-                <name>Power Fail Count</name>
+                <name>Blink Count</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Counts" />
                 <decimalplaces value="3" />
@@ -3635,7 +3646,7 @@
             <command id="READ_BLINK_COUNT">
                 <name>Read Blink Count</name>
                 <cmd text="getvalue powerfail" />
-                <pointRef name="Power Fail Count" />
+                <pointRef name="Blink Count" />
             </command>
             <command id="READ_USAGE">
                 <name>Read Usage</name>
@@ -3656,7 +3667,7 @@
                 <basicLookup point="kW" />
             </attribute>
             <attribute name="BLINK_COUNT">
-                <basicLookup point="Power Fail Count" />
+                <basicLookup point="Blink Count" />
             </attribute>
             <attribute name="PEAK_DEMAND">
                 <basicLookup point="Max OR Off Peak Demand (Pulse Input 1)" />
