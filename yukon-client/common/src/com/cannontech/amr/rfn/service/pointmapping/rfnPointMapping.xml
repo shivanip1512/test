@@ -1460,7 +1460,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Received Rate A kVArh">
+        <point name="Received kVArh (Rate A kVArh)">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -1470,7 +1470,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Received Rate B kVArh"> 
+        <point name="Received kVArh (Rate B kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -1480,7 +1480,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Received Rate C kVArh"> 
+        <point name="Received kVArh (Rate C kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -1490,7 +1490,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Received Rate D kVArh"> 
+        <point name="Received kVArh (Rate D kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -1906,7 +1906,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Total kVArh">
+        <point name="Sum kVArh">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2784,7 +2784,7 @@
                 <modifier>TOU Rate A</modifier>
             </modifiers>
         </point>
-        <point name="Received Rate A kVArh">
+        <point name="Received kVArh (Rate A kVArh)">
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2804,7 +2804,7 @@
                 <modifier>TOU Rate B</modifier>
             </modifiers>
         </point>
-        <point name="Received Rate B kVArh"> 
+        <point name="Received kVArh (Rate B kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2824,7 +2824,7 @@
                 <modifier>TOU Rate C</modifier>
             </modifiers>
         </point>
-        <point name="Received Rate C kVArh"> 
+        <point name="Received kVArh (Rate C kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
@@ -2844,7 +2844,7 @@
                 <modifier>TOU Rate D</modifier>
             </modifiers>
         </point>
-        <point name="Received Rate D kVArh"> 
+        <point name="Received kVArh (Rate D kVArh)"> 
             <uom>Varh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

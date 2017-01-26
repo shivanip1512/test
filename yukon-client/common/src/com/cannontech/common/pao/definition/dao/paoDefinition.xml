@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
-<!-- RF Devices: highest Analog OFFSET=348 @ 2016-08-12 -->
+<!-- RF Devices: highest Analog OFFSET=349 @ 2016-08-12 -->
 <!-- RF Devices: highest Status OFFSET=89 @ 2014-04-30T -->
 
 <!--  Point Name naming convention: 
@@ -5647,7 +5647,7 @@
 
             <point type="Analog" offset="21">
                 <init>true</init>
-                <name>Total kVArh</name>
+                <name>Sum kVArh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
@@ -5900,7 +5900,7 @@
                 <name>General Scan</name>
                 <cmd text="scan general" />
                 <pointRef name="Total kWh" />
-                <pointRef name="Total kVArh" />
+                <pointRef name="Sum kVArh" />
             </command>
         </commands>
         <attributes>
@@ -6053,7 +6053,7 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="21">
-                <name>Total kVArh</name>
+                <name>Sum kVArh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
@@ -6122,7 +6122,7 @@
                 <name>General Scan</name>
                 <cmd text="scan general" />
                 <pointRef name="Total kWh" />
-                <pointRef name="Total kVArh" />
+                <pointRef name="Sum kVArh" />
                 <pointRef name="Total Pulses for Channel 1" />
                 <pointRef name="Load Profile for Channel 1" />
             </command>
@@ -6193,7 +6193,7 @@
                 <name>General Scan</name>
                 <cmd text="scan general" />
                 <pointRef name="Total kWh" />
-                <pointRef name="Total kVArh" />
+                <pointRef name="Sum kVArh" />
                 <pointRef name="Peak kW (Rate A kW)" />
                 <pointRef name="Last Interval kW" />
             </command>
@@ -8266,25 +8266,25 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="202">
-                <name>Received Rate A kVArh</name>
+                <name>Received kVArh (Rate A kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="203">
-                <name>Received Rate B kVArh</name>
+                <name>Received kVArh (Rate B kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="204">
-                <name>Received Rate C kVArh</name>
+                <name>Received kVArh (Rate C kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="205">
-                <name>Received Rate D kVArh</name>
+                <name>Received kVArh (Rate D kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
@@ -8319,16 +8319,16 @@
                 <basicLookup point="Rate D Peak kVAr" />
             </attribute>
             <attribute name="RECEIVED_KVARH_RATE_A">
-                <basicLookup point="Received Rate A kVArh" />
+                <basicLookup point="Received kVArh (Rate A kVArh)" />
             </attribute>
             <attribute name="RECEIVED_KVARH_RATE_B">
-                <basicLookup point="Received Rate B kVArh" />
+                <basicLookup point="Received kVArh (Rate B kVArh)" />
             </attribute>
             <attribute name="RECEIVED_KVARH_RATE_C">
-                <basicLookup point="Received Rate C kVArh" />
+                <basicLookup point="Received kVArh (Rate C kVArh)" />
             </attribute>
             <attribute name="RECEIVED_KVARH_RATE_D">
-                <basicLookup point="Received Rate D kVArh" />
+                <basicLookup point="Received kVArh (Rate D kVArh)" />
             </attribute>
         </attributes>
     </pao>
@@ -8344,7 +8344,7 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="215">
-                <name>Total kVArh</name>
+                <name>Sum kVArh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
@@ -8748,11 +8748,10 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="227">
-                <init>true</init>
                 <name>Current Angle Phase B</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Degrees" />
-                <decimalplaces value="1" />
+                <decimalplaces value="3" />
             </point>
             <!-- <point type="Analog" offset="131"> <init>true</init> <name>Phase 
                 B Power Factor</name> <multiplier value="1.0"/> <unitofmeasure value="PF"/> 
@@ -8794,11 +8793,10 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="228">
-                <init>true</init>
                 <name>Current Angle Phase C</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="Degrees" />
-                <decimalplaces value="1" />
+                <decimalplaces value="3" />
             </point>
             <!-- <point type="Analog" offset="132"> <init>true</init> <name>Phase 
                 C Power Factor</name> <multiplier value="1.0"/> <unitofmeasure value="PF"/> 
@@ -9782,25 +9780,25 @@
             </point>
             <point type="Analog" offset="202">
                 <init>true</init>
-                <name>Received Rate A kVArh</name>
+                <name>Received kVArh (Rate A kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="203">
-                <name>Received Rate B kVArh</name>
+                <name>Received kVArh (Rate B kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="204">
-                <name>Received Rate C kVArh</name>
+                <name>Received kVArh (Rate C kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="205">
-                <name>Received Rate D kVArh</name>
+                <name>Received kVArh (Rate D kVArh)</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
@@ -9834,16 +9832,16 @@
                 <basicLookup point="Received kVArh" />
             </attribute>
             <attribute name="RECEIVED_KVARH_RATE_A">
-                <basicLookup point="Received Rate A kVArh" />
+                <basicLookup point="Received kVArh (Rate A kVArh)" />
             </attribute>
             <attribute name="RECEIVED_KVARH_RATE_B">
-                <basicLookup point="Received Rate B kVArh" />
+                <basicLookup point="Received kVArh (Rate B kVArh)" />
             </attribute>
             <attribute name="RECEIVED_KVARH_RATE_C">
-                <basicLookup point="Received Rate C kVArh" />
+                <basicLookup point="Received kVArh (Rate C kVArh)" />
             </attribute>
             <attribute name="RECEIVED_KVARH_RATE_D">
-                <basicLookup point="Received Rate D kVArh" />
+                <basicLookup point="Received kVArh (Rate D kVArh)" />
             </attribute>
             <attribute name="DELIVERED_KVAR_LOAD_PROFILE">
                 <basicLookup point="Delivered kVAr Load Profile"/>
@@ -10356,7 +10354,7 @@
                 <unitofmeasure value="Amps"/>
                 <decimalplaces value="3" />
             </point>
-            <point type="Analog" offset="226">
+            <point type="Analog" offset="349">
                 <name>Current Angle</name>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Degrees"/>
