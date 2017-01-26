@@ -6,11 +6,14 @@ import org.joda.time.Instant;
 
 import com.cannontech.dr.JsonSerializers.FROM_DATE_HONEYWELL;
 import com.cannontech.dr.JsonSerializers.FROM_PHASE;
+import com.cannontech.dr.JsonSerializers.TO_DATE_HONEYWELL;
+import com.cannontech.dr.JsonSerializers.TO_PHASE;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 /**
  * Honeywell Azure service bus demand response event. Contains info about what the device is doing in a DR event.
@@ -58,6 +61,7 @@ public class DemandResponseEvent extends AbstractHoneywellWifiData {
         return demandResponseId;
     }
 
+    @JsonSerialize(using=TO_PHASE.class)
     public EventPhase getPhase() {
         return phase;
     }
@@ -78,6 +82,7 @@ public class DemandResponseEvent extends AbstractHoneywellWifiData {
         return intervals;
     }
 
+    @JsonSerialize(using=TO_DATE_HONEYWELL.class)
     public Instant getStartTime() {
         return startTime;
     }
