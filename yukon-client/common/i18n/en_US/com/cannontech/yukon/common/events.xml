@@ -206,7 +206,7 @@
     <entry key="yukon.common.events.stars.account.thermostat.thermostatScheduleNameChanged.3">New Schedule Name</entry>
     
     <!-- AMR -->
-    <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for deviceId={7} by {1}.</entry>
+    <entry key="yukon.common.events.amr.meterReading.readNowPushedForReadingsWidget">Read Now button pressed for meterNumber={2} by {1}.</entry>
     
     <entry key="yukon.common.events.amr.schedules.scheduleDeleted">User {1} deleted schedule {2}.</entry>
     

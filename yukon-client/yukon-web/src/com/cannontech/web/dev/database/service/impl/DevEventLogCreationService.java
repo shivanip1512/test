@@ -503,7 +503,8 @@ public class DevEventLogCreationService {
                 LiteYukonUser user = new LiteYukonUser(0, devEventLog.getUsername());
                 String scheduleName = devEventLog.getIndicatorString() + "ScheduleName";
                 int paoId = 123;
-
+                
+                String deviceName = devEventLog.getIndicatorString() + "aDeviceName";
                 String deviceRequestType = DeviceRequestType.GROUP_ATTRIBUTE_READ.getShortName();
                 String deviceGroup = "/Meters/Collection/Cycle 1";
                 Instant start = Instant.now().minus(Duration.standardDays(1));
@@ -516,7 +517,7 @@ public class DevEventLogCreationService {
                 int contextId = 56789;
                 int commands = 2;
                 
-                meteringEventLogService.readNowPushedForReadingsWidget(user, paoId);
+                meteringEventLogService.readNowPushedForReadingsWidget(user, deviceName);
                 meteringEventLogService.scheduleDeleted(user, scheduleName);
                 meteringEventLogService.jobStarted(deviceRequestType, scheduleName, deviceGroup, retry, user, jobId);
                 meteringEventLogService.jobCompleted(deviceRequestType, scheduleName, jobId, contextId);

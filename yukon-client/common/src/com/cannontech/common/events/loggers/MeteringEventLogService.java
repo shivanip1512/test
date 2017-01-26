@@ -11,7 +11,7 @@ public interface MeteringEventLogService {
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.meterReading")
     public void readNowPushedForReadingsWidget(@Arg(ArgEnum.username) LiteYukonUser user,
-            @Arg(ArgEnum.paoId) long paoId);
+            @Arg(ArgEnum.meterNumber) String meterNumber);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.schedules")
     public void scheduleDeleted(@Arg(ArgEnum.username) LiteYukonUser user,

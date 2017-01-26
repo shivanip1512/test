@@ -137,7 +137,7 @@ public class MeterReadingsWidget extends AdvancedWidgetControllerBase {
 		YukonMeter meter = meterDao.getForId(deviceId);
 		Set<Attribute> attributes = attributeService.getExistingAttributes(meter, Sets.newHashSet(attributesToShow));
 
-		meteringEventLogService.readNowPushedForReadingsWidget(userContext.getYukonUser(), meter.getDeviceId());
+		meteringEventLogService.readNowPushedForReadingsWidget(userContext.getYukonUser(), meter.getMeterNumber());
 
 		DeviceReadResult result = deviceAttributeReadService.initiateReadAndWait(meter, attributes,
 				DeviceRequestType.METER_READINGS_WIDGET_ATTRIBUTE_READ, userContext.getYukonUser());
