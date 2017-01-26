@@ -821,8 +821,11 @@ BOOST_FIXTURE_TEST_SUITE(command_executions, mctExecute_helper)
     {
         CtiCommandParser parse( "putconfig emetcon timezone ct" );
 
-        BOOST_CHECK_EQUAL( ClientErrors::NoConfigData, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
-        BOOST_CHECK_EQUAL(        0, om->Buffer.BSt.Length );
+        BOOST_CHECK_EQUAL( ClientErrors::None, mct410.executePutConfig(&request, parse, om, vgList, retList, outList) );
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.IO,       Cti::Protocols::EmetconProtocol::IO_Write);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Function, 0x3f);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Length,   1);
+        BOOST_CHECK_EQUAL( om->Buffer.BSt.Message[0], 0xe8);  //  Sent in 15 minute increments, so -6 * 4 = -24 = 0xff - 23 = 0xff - 0x17 = 0xe8
     }
 
     BOOST_AUTO_TEST_CASE(test_dev_mct410_getconfig_address_unique)

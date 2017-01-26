@@ -1502,11 +1502,6 @@ YukonError_t Mct410Device::executePutConfig( CtiRequestMsg              *pReq,
             }
         }
     }
-    else if (parse.isKeyValid("timezone_offset") ||
-             parse.isKeyValid("timezone_name"))
-    {
-        nRet = executePutConfigInstallTimezone(pReq, parse, OutMessage, vgList, retList, outList);
-    }
     else
     {
         nRet = Parent::executePutConfig(pReq, parse, OutMessage, vgList, retList, outList);
