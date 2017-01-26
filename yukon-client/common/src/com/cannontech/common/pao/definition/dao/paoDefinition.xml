@@ -5649,7 +5649,7 @@
 
             <point type="Analog" offset="21">
                 <init>true</init>
-                <name>Sum kVArh</name>
+                <name>Total kVArh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
@@ -5902,7 +5902,7 @@
                 <name>General Scan</name>
                 <cmd text="scan general" />
                 <pointRef name="Total kWh" />
-                <pointRef name="Sum kVArh" />
+                <pointRef name="Total kVArh" />
             </command>
         </commands>
         <attributes>
@@ -6055,7 +6055,7 @@
                 <decimalplaces value="3" />
             </point>
             <point type="Analog" offset="21">
-                <name>Sum kVArh</name>
+                <name>Total kVArh</name>
                 <multiplier value="1.0" />
                 <unitofmeasure value="kVArh" />
                 <decimalplaces value="3" />
@@ -6124,7 +6124,7 @@
                 <name>General Scan</name>
                 <cmd text="scan general" />
                 <pointRef name="Total kWh" />
-                <pointRef name="Sum kVArh" />
+                <pointRef name="Total kVArh" />
                 <pointRef name="Total Pulses for Channel 1" />
                 <pointRef name="Load Profile for Channel 1" />
             </command>
@@ -6195,7 +6195,7 @@
                 <name>General Scan</name>
                 <cmd text="scan general" />
                 <pointRef name="Total kWh" />
-                <pointRef name="Sum kVArh" />
+                <pointRef name="Total kVArh" />
                 <pointRef name="Peak kW (Rate A kW)" />
                 <pointRef name="Last Interval kW" />
             </command>
