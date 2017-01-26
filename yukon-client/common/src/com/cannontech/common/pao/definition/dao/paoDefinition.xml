@@ -236,6 +236,17 @@
                 <stategroup value="TrueFalse" />
             </point>
         </points>
+        <commands>
+            <command id="READ_INTERNAL_STATUS">
+                <name>Read General Info</name>
+                <cmd text="getstatus internal" />
+                <pointRef name="General Alarm" />
+                <pointRef name="Power Fail" />
+                <pointRef name="Tamper Flag Set" />
+                <pointRef name="Zero Usage (24 Hours)" />
+                <pointRef name="Reverse Power" />
+            </command>
+        </commands>
         <attributes>
             <attribute name="REVERSE_POWER_FLAG">
                 <basicLookup point="Reverse Power" />
@@ -1698,7 +1709,7 @@
     </pao>
 
     <!-- MCT 420 BASE -->
-    <pao id="MCT_420_BASE" abstract="true" inherits="MCT_410_BASE, REVERSE_POWER_ALARM" />
+    <pao id="MCT_420_BASE" abstract="true" inherits="MCT_410_BASE, REVERSE_POWER_EVENT" />
 
     <!-- MCT 420s -->
     <pao id="MCT420FL" inherits="MCT_420_BASE, SUPPORTS_MCT_DISCONNECT">
@@ -2792,15 +2803,6 @@
                 id="READ_RATES_FOR_DEMAND_LP_VOLTAGEDEMAND_VOLTAGEPROFILE">
                 <name>Read rates for Demand, LP, Volt Demand, and Volt Profile</name>
                 <cmd text="getconfig intervals" />
-            </command>
-            <command id="READ_INTERNAL_STATUS">
-                <name>Read General Info</name>
-                <cmd text="getstatus internal" />
-                <pointRef name="General Alarm" />
-                <pointRef name="Power Fail" />
-                <pointRef name="Tamper Flag Set" />
-                <pointRef name="Zero Usage (24 Hours)" />
-              <!--  <pointRef name="Reverse Power" /> -->
             </command>
             <command id="READ_PHASE_DETECT">
                 <name>Detect Phase</name>
