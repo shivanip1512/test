@@ -595,11 +595,18 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_parameter_error)
 
     BOOST_REQUIRE_EQUAL(4, string_list.size());
 
+    BOOST_CHECK_EQUAL(string_list[0],
+        "Loopback successful");
     BOOST_CHECK_EQUAL(string_list[1],
         "Internal indications:\n"
         "Time synchronization needed\n"
         "Device restart\n"
         "Parameter error\n");
+    BOOST_CHECK_EQUAL(string_list[2],
+        "Attempting to clear Device Restart bit");
+    BOOST_CHECK_EQUAL(string_list[3],
+        "Internal indications:\n"
+        "Time synchronization needed\n");
 }
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_invalid_function_code)
@@ -682,11 +689,18 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_invalid_function_code)
 
     BOOST_REQUIRE_EQUAL(4, string_list.size());
 
+    BOOST_CHECK_EQUAL(string_list[0],
+        "Loopback successful");
     BOOST_CHECK_EQUAL(string_list[1],
         "Internal indications:\n"
         "Time synchronization needed\n"
         "Device restart\n"
         "Function code not implemented\n");
+    BOOST_CHECK_EQUAL(string_list[2],
+        "Attempting to clear Device Restart bit");
+    BOOST_CHECK_EQUAL(string_list[3],
+        "Internal indications:\n"
+        "Time synchronization needed\n");
 }
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_unknown_object)
@@ -769,11 +783,18 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_unknown_object)
 
     BOOST_REQUIRE_EQUAL(4, string_list.size());
 
+    BOOST_CHECK_EQUAL(string_list[0],
+        "Loopback successful");
     BOOST_CHECK_EQUAL(string_list[1],
         "Internal indications:\n"
         "Time synchronization needed\n"
         "Device restart\n"
         "Requested objects unknown\n");
+    BOOST_CHECK_EQUAL(string_list[2],
+        "Attempting to clear Device Restart bit");
+    BOOST_CHECK_EQUAL(string_list[3],
+        "Internal indications:\n"
+        "Time synchronization needed\n");
 }
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_operation_already_executing)
@@ -856,11 +877,18 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_operation_already_execut
 
     BOOST_REQUIRE_EQUAL(4, string_list.size());
 
+    BOOST_CHECK_EQUAL(string_list[0],
+        "Loopback successful");
     BOOST_CHECK_EQUAL(string_list[1],
         "Internal indications:\n"
         "Time synchronization needed\n"
         "Device restart\n"
         "Request already executing\n");
+    BOOST_CHECK_EQUAL(string_list[2],
+        "Attempting to clear Device Restart bit");
+    BOOST_CHECK_EQUAL(string_list[3],
+        "Internal indications:\n"
+        "Time synchronization needed\n");
 }
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
