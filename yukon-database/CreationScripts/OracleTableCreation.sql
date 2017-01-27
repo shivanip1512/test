@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/12/2017 10:48:15 AM                        */
+/* Created on:     1/26/2017 9:47:52 AM                         */
 /*==============================================================*/
 
 
@@ -6783,13 +6783,18 @@ create table MCTConfigMapping  (
 create table MSPInterface  (
    VendorID             NUMBER                          not null,
    Interface            VARCHAR2(12)                    not null,
-   Endpoint             VARCHAR2(32)                    not null,
-   constraint PK_MSPINTERFACE primary key (VendorID, Interface, Endpoint)
+   Endpoint             VARCHAR2(255)                   not null,
+   Version              NUMBER(10,1)                    not null,
+   constraint PK_MSPINTERFACE primary key (VendorID, Interface, Version)
 );
 
-INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'MR_ServerSoap');
-INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'OD_ServerSoap');
-INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'CD_ServerSoap');
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/soap/MR_ServerSoap', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/soap/OD_ServerSoap', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/soap/CD_ServerSoap', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v5/MR_Server', '5.0');
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v5/OD_Server', '5.0');
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v5/CD_Server', '5.0');
+INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v5/NOT_Server', '5.0');
 
 /*==============================================================*/
 /* Table: MSPVendor                                             */
@@ -6799,7 +6804,6 @@ create table MSPVendor  (
    CompanyName          VARCHAR2(64)                    not null,
    UserName             VARCHAR2(64)                    not null,
    Password             VARCHAR2(64)                    not null,
-   URL                  VARCHAR2(120)                   not null,
    AppName              VARCHAR2(64)                    not null,
    OutUserName          VARCHAR2(64)                    not null,
    OutPassword          VARCHAR2(64)                    not null,
@@ -6810,7 +6814,7 @@ create table MSPVendor  (
    constraint PK_MSPVENDOR primary key (VendorID)
 );
 
-insert into MSPVendor values (1, 'Cannon', '(none)', '(none)', 'http://127.0.0.1:8080/soap/', 'Yukon', ' ', ' ',10000,120000,15,'*Default Template');
+INSERT INTO MSPVendor VALUES (1, 'Cannon', ' ', ' ', 'Yukon', ' ', ' ', 10000, 120000, 15, ' ');
 
 /*==============================================================*/
 /* Index: INDEX_1                                               */

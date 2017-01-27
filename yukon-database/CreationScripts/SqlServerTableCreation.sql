@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/12/2017 10:46:42 AM                        */
+/* Created on:     1/26/2017 9:48:48 AM                         */
 /*==============================================================*/
 
 
@@ -7180,14 +7180,19 @@ go
 create table MSPInterface (
    VendorID             numeric              not null,
    Interface            varchar(12)          not null,
-   Endpoint             varchar(32)          not null,
-   constraint PK_MSPINTERFACE primary key (VendorID, Interface, Endpoint)
+   Endpoint             varchar(255)         not null,
+   Version              numeric(10,1)        not null,
+   constraint PK_MSPINTERFACE primary key (VendorID, Interface, Version)
 )
 go
 
-INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'MR_ServerSoap');
-INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'OD_ServerSoap');
-INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'CD_ServerSoap');
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/soap/MR_ServerSoap', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/soap/OD_ServerSoap', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/soap/CD_ServerSoap', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v5/MR_Server', '5.0');
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v5/OD_Server', '5.0');
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v5/CD_Server', '5.0');
+INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v5/NOT_Server', '5.0');
 
 /*==============================================================*/
 /* Table: MSPVendor                                             */
@@ -7197,7 +7202,6 @@ create table MSPVendor (
    CompanyName          varchar(64)          not null,
    UserName             varchar(64)          not null,
    Password             varchar(64)          not null,
-   URL                  varchar(120)         not null,
    AppName              varchar(64)          not null,
    OutUserName          varchar(64)          not null,
    OutPassword          varchar(64)          not null,
@@ -7209,7 +7213,7 @@ create table MSPVendor (
 )
 go
 
-insert into MSPVendor values (1, 'Cannon', '(none)', '(none)', 'http://127.0.0.1:8080/soap/', 'Yukon', ' ', ' ',10000,120000,15,'*Default Template');
+INSERT INTO MSPVendor VALUES (1, 'Cannon', ' ', ' ', 'Yukon', ' ', ' ', 10000, 120000, 15, ' ');
 
 /*==============================================================*/
 /* Index: INDEX_1                                               */
