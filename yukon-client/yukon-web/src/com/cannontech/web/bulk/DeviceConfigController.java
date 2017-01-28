@@ -109,6 +109,7 @@ public class DeviceConfigController {
         // PROCESS
         final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration"); 
         DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(configId);
+        eventLogService.assignConfigInitiated(configuration.getName(), deviceCollection.getDeviceCount(), userContext.getYukonUser());
         Processor<SimpleDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration, userContext.getYukonUser());
         
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
@@ -166,6 +167,7 @@ public class DeviceConfigController {
         // CACHE
         recentResultsCache.addResult(resultsId, callbackResult);
         
+        eventLogService.unassignConfigInitiated(deviceCollection.getDeviceCount(), userContext.getYukonUser());
         Processor<SimpleDevice> processor = processorFactory.createUnassignConfigurationToYukonDeviceProcessor(userContext.getYukonUser());
         
         ObjectMapper<SimpleDevice, SimpleDevice> mapper = new PassThroughMapper<>();
@@ -307,6 +309,8 @@ public class DeviceConfigController {
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
             public void handle(GroupCommandResult result) {
+                
+                //It would be nice to log these as they individually complete, but that would require rearchitecture of the callback.
                 deviceConfigService.logCompleted(result.getSuccessCollection().getDeviceList(), LogAction.READ, true);
                 deviceConfigService.logCompleted(result.getFailureCollection().getDeviceList(), LogAction.READ, false);
                 String reason =  result.getExceptionReason() == null? "": result.getExceptionReason();
@@ -342,6 +346,7 @@ public class DeviceConfigController {
         SimpleCallback<GroupCommandResult> callback = new SimpleCallback<GroupCommandResult>() {
             @Override
             public void handle(GroupCommandResult result) {
+                // It would be nice to log these as they individually complete, but that would require rearchitecture of the callback.
                 deviceConfigService.logCompleted(result.getSuccessCollection().getDeviceList(), LogAction.SEND, true);
                 deviceConfigService.logCompleted(result.getFailureCollection().getDeviceList(), LogAction.SEND, false);
                 String reason =  result.getExceptionReason() == null? "": result.getExceptionReason();

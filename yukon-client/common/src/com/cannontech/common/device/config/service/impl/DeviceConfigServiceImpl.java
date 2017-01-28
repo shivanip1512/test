@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,6 +47,7 @@ import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.IDatabaseCache;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 
 public class DeviceConfigServiceImpl implements DeviceConfigService {
@@ -112,8 +114,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         if (method.equalsIgnoreCase("force")) {
             commandString += " force";
         }
-        String resultKey = sendConfigCommand(deviceCollection, callback, commandString, 
-                                             DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
+        String resultKey = sendConfigCommand(deviceCollection, callback, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
+        eventLogService.sendConfigInitiated(deviceCollection.getDeviceCount(), commandString, resultKey, user);    //after the execute so we can have the key
         return resultKey;
     }
 
@@ -122,33 +124,24 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
             LiteYukonUser user) {
         String commandString = "getconfig install all";
         String resultKey = sendConfigCommand(deviceCollection, callback, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_READ, user);
+        eventLogService.readConfigInitiated(deviceCollection.getDeviceCount(), resultKey, user);    // after execute call so we can get the key.
         return resultKey;
     }
-        
+
     @Override
-    public void logCompleted(List<SimpleDevice> devices, LogAction action, boolean isSuccessful){
-        for(SimpleDevice device: devices){
+    public void logCompleted(List<SimpleDevice> devices, LogAction action, boolean isSuccessful) {
+        
+        int status = BooleanUtils.toInteger(isSuccessful);
+        for (SimpleDevice device : devices) {
             String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
             if (action == LogAction.READ) {
-                if (isSuccessful) {
-                    eventLogService.readConfigFromDeviceSucceeded(deviceName);
-                } else {
-                    eventLogService.readConfigFromDeviceFailed(deviceName);
-                }
+                eventLogService.readConfigFromDeviceCompleted(deviceName, status);
             } else if (action == LogAction.VERIFY) {
-                if (isSuccessful) {
-                    eventLogService.verifyConfigFromDeviceSucceeded(deviceName);
-                } else {
-                    eventLogService.verifyConfigFromDeviceFailed(deviceName);
-                }
+                eventLogService.verifyConfigFromDeviceCompleted(deviceName, status);
             } else if (action == LogAction.SEND) {
-                if (isSuccessful) {
-                    eventLogService.sendConfigToDeviceSucceeded(deviceName);
-                } else {
-                    eventLogService.sendConfigToDeviceFailed(deviceName);
-                }
+                eventLogService.sendConfigToDeviceCompleted(deviceName, status);
             }
-        }   
+        }
     }
     
     /**
@@ -169,7 +162,12 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
 
     @Override
-    public VerifyConfigCommandResult verifyConfigs(Iterable<? extends YukonDevice> devices, LiteYukonUser user) {              
+    public VerifyConfigCommandResult verifyConfigs(Iterable<? extends YukonDevice> devices, LiteYukonUser user) {
+        eventLogService.verifyConfigInitiated(Iterables.size(devices), user);
+        return doVerifyConfigs(devices, user);
+    }
+
+    private VerifyConfigCommandResult doVerifyConfigs(Iterable<? extends YukonDevice> devices, LiteYukonUser user) {   
         final VerifyConfigCommandResult result = new VerifyConfigCommandResult();
         final String commandString = "putconfig emetcon install all verify";
         List<YukonDevice> deviceList = Lists.newArrayList(devices);
@@ -225,18 +223,23 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
                 @Override
                 public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
                     SimpleDevice device = command.getDevice();
+                    String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
                     result.addError(device, error.getPorter());
                     result.handleFailure(device);
+                    eventLogService.verifyConfigFromDeviceCompleted(deviceName, 0);
                 }
 
                 @Override
                 public void receivedLastResultString(CommandRequestDevice command, String value) {
                     SimpleDevice device = command.getDevice();
+                    String deviceName = dbCache.getAllPaosMap().get(device.getDeviceId()).getPaoName();
                     result.addResultString(device, value);
                     if (result.getVerifyResultsMap().get(device).getDiscrepancies().isEmpty()) {
                         result.handleSuccess(device);
+                        eventLogService.verifyConfigFromDeviceCompleted(deviceName, 1);
                     } else {
                         result.handleFailure(device);
+                        eventLogService.verifyConfigFromDeviceCompleted(deviceName, 0);
                     }
                 }
 
@@ -271,23 +274,23 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
 
     @Override
     public VerifyResult verifyConfig(YukonDevice device, LiteYukonUser user) {
-        VerifyConfigCommandResult verifyConfigResult = verifyConfigs(Collections.singleton(device), user);
+        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+        eventLogService.verifyConfigFromDeviceInitiated(deviceName, user);
+
+        VerifyConfigCommandResult verifyConfigResult = doVerifyConfigs(Collections.singleton(device), user);
         return verifyConfigResult.getVerifyResultsMap().get(new SimpleDevice(device));
     }
 
     @Override
     public CommandResultHolder readConfig(YukonDevice device, LiteYukonUser user) throws Exception {
         String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
-        eventLogService.readConfigInitiated(1, "", user);
         eventLogService.readConfigFromDeviceInitiated(deviceName, user);
         String commandString = "getconfig install all";
         CommandResultHolder resultHolder =
             commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_READ, user);
-        if (resultHolder.isErrorsExist()) {
-            eventLogService.readConfigFromDeviceFailed(deviceName);
-        } else {
-            eventLogService.readConfigFromDeviceSucceeded(deviceName);
-        }
+        
+        int status = BooleanUtils.toInteger(!resultHolder.isErrorsExist());
+        eventLogService.readConfigFromDeviceCompleted(deviceName, status);
         return resultHolder;
     }
 
@@ -295,16 +298,13 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
     public CommandResultHolder sendConfig(YukonDevice device, LiteYukonUser user) throws Exception {
         String commandString = "putconfig emetcon install all";
         
-        eventLogService.sendConfigInitiated(1, commandString, "", user);
         String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
         eventLogService.sendConfigToDeviceInitiated(deviceName, user);
         CommandResultHolder resultHolder =
-            commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user); 
-        if (resultHolder.isErrorsExist()) {
-            eventLogService.sendConfigToDeviceFailed(deviceName);
-        } else {
-            eventLogService.sendConfigToDeviceSucceeded(deviceName);
-        }
+            commandRequestExecutor.execute(device, commandString, DeviceRequestType.GROUP_DEVICE_CONFIG_SEND, user);
+        
+        int status = BooleanUtils.toInteger(!resultHolder.isErrorsExist());
+        eventLogService.sendConfigToDeviceCompleted(deviceName, status);
         return resultHolder;
     }
 

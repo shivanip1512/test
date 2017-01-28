@@ -88,12 +88,11 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
             throws InvalidDeviceTypeException {
         
         String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
-        eventLogService.assignConfigToDeviceInitiated(configuration.getName(), deviceName, user);
         try {
             deviceConfigurationDao.assignConfigToDevice(configuration, device);
-            eventLogService.assignConfigToDeviceSucceeded(configuration.getName(), deviceName);
+            eventLogService.assignConfigToDeviceCompleted(configuration.getName(), deviceName, user, 1);
         } catch (InvalidDeviceTypeException e) {
-            eventLogService.assignConfigToDeviceFailed(configuration.getName(), deviceName);
+            eventLogService.assignConfigToDeviceCompleted(configuration.getName(), deviceName, user, 0);
             throw e;
         }
       
@@ -110,12 +109,11 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
     @Override
     public void unassignConfig(YukonDevice device, LiteYukonUser user) throws InvalidDeviceTypeException {
         String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
-        eventLogService.unassignConfigFromDeviceInitiated(deviceName, user);
-        try{
+        try {
             deviceConfigurationDao.unassignConfig(device);
-            eventLogService.unassignConfigFromDeviceSucceeded(deviceName, user);
-        }catch(InvalidDeviceTypeException e){
-            eventLogService.unassignConfigFromDeviceFailed(deviceName, user);
+            eventLogService.unassignConfigFromDeviceCompleted(deviceName, user, 1);
+        } catch (InvalidDeviceTypeException e) {
+            eventLogService.unassignConfigFromDeviceCompleted(deviceName, user, 0);
             throw e;
         }
 

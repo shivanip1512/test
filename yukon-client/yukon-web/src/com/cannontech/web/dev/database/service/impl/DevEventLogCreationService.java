@@ -405,13 +405,28 @@ public class DevEventLogCreationService {
                 LiteYukonUser yukonUser = new LiteYukonUser(0, devEventLog.getUsername());
                 
                 String resultKey = "12345!@#$%";
+                String deviceConfig = "My Device Config";
+                String deviceName = "Device Name 123456";
+                
+                deviceConfigEventLogService.assignConfigInitiated(deviceConfig, 50, yukonUser);
+                deviceConfigEventLogService.assignConfigToDeviceCompleted(deviceConfig, deviceName, yukonUser, 1);
+                deviceConfigEventLogService.unassignConfigInitiated(50, yukonUser);
+                deviceConfigEventLogService.unassignConfigFromDeviceCompleted(deviceName, yukonUser, 0);
                 
                 deviceConfigEventLogService.readConfigInitiated(20, resultKey, yukonUser);
+                deviceConfigEventLogService.readConfigFromDeviceInitiated(deviceName, yukonUser);
                 deviceConfigEventLogService.readConfigCompleted(15, 2, 3, "exceptionMessage", resultKey);
+                deviceConfigEventLogService.readConfigFromDeviceCompleted(deviceName, 1);
+                
                 deviceConfigEventLogService.sendConfigInitiated(20, "putconfig emetcon install all force", resultKey, yukonUser);
+                deviceConfigEventLogService.sendConfigToDeviceInitiated(deviceName, yukonUser);
                 deviceConfigEventLogService.sendConfigCompleted(15, 2, 3, "exceptionMessage", resultKey);
+                deviceConfigEventLogService.sendConfigToDeviceCompleted(deviceName, 0);
+                
                 deviceConfigEventLogService.verifyConfigInitiated(20, yukonUser);
+                deviceConfigEventLogService.verifyConfigFromDeviceInitiated(deviceName, yukonUser);
                 deviceConfigEventLogService.verifyConfigCompleted(20, 2, 3, "exceptionMessage");
+                deviceConfigEventLogService.verifyConfigFromDeviceCompleted(deviceName, 1);
             }
         });
         executables.put(LogType.DISCONNECT, new DevEventLogExecutable() {

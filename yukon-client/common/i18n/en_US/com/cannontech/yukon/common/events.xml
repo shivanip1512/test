@@ -310,30 +310,32 @@
     <entry key="yukon.common.events.amr.disconnect.groupActionCompleted">{2} command collection action initiated on {7} device(s) by {1}. (Success:{8} Failure:{9} Not Attempted:{10})</entry>
     
     <!--  Device Config -->
+    <entry key="yukon.common.events.device.configuration.assignConfigInitiated">Assign device configuration {1} to {7} device(s) initiated by {2}.</entry>
+	<entry key="yukon.common.events.device.configuration.unassignConfigInitiated">Unassign device configuration from {7} device(s) initiated by {1}.</entry>
     <entry key="yukon.common.events.device.configuration.assignConfigToDeviceInitiated">Assign device configuration {1} to {2} initiated by {3}.</entry>
-    <entry key="yukon.common.events.device.configuration.assignConfigToDeviceSucceeded">Assign device configuration {1} to {2} succeeded.</entry>
-    <entry key="yukon.common.events.device.configuration.assignConfigToDeviceFailed">Assign device configuration {1} to {2} failed.</entry>
+    <entry key="yukon.common.events.device.configuration.assignConfigToDeviceCompleted">Assign device configuration {1} to {2} by {3} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.assignConfigToDeviceCompleted.7">Success(1)/Fail(0)</entry>
     
     <entry key="yukon.common.events.device.configuration.unassignConfigFromDeviceInitiated">Unassign device configuration from {1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.device.configuration.unassignConfigFromDeviceSucceeded">Unassign device configuration from {1} succeeded.</entry>
-    <entry key="yukon.common.events.device.configuration.unassignConfigFromDeviceFailed">Unassign device configuration from {1} failed.</entry>
+    <entry key="yukon.common.events.device.configuration.unassignConfigFromDeviceCompleted">Unassign device configuration from {1} by {2} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.unassignConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>    
     
     <entry key="yukon.common.events.device.configuration.sendConfigInitiated">Send device configuration command ''{1}'' to {7} device(s) initiated by {3}. Key: {2}</entry>
     <entry key="yukon.common.events.device.configuration.sendConfigToDeviceInitiated">Send device configuration to device {1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.device.configuration.sendConfigToDeviceSucceeded">Send device configuration to device {1} succeeded.</entry>
-    <entry key="yukon.common.events.device.configuration.sendConfigToDeviceFailed">Send device configuration to device {1} failed.</entry>
+    <entry key="yukon.common.events.device.configuration.sendConfigToDeviceCompleted">Send device configuration to device {1} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.sendConfigToDeviceCompleted.7">Success(1)/Fail(0)</entry>
     <entry key="yukon.common.events.device.configuration.sendConfigCompleted">Send device configuration completed: Success:{7} Failure:{8} Unsupported:{9}. ExceptionMessage:{1}; Key: {2}</entry>
    
     <entry key="yukon.common.events.device.configuration.readConfigInitiated">Read device configuration from {7} device(s) initiated by {2}. Key: {1}</entry>
     <entry key="yukon.common.events.device.configuration.readConfigFromDeviceInitiated">Read device configuration from device {1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.device.configuration.readConfigFromDeviceSucceeded">Read device configuration from device {1} succeeded.</entry>
-    <entry key="yukon.common.events.device.configuration.readConfigFromDeviceFailed">Read device configuration from device {1} failed.</entry>
+    <entry key="yukon.common.events.device.configuration.readConfigFromDeviceCompleted">Read device configuration from device {1} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.readConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>
     <entry key="yukon.common.events.device.configuration.readConfigCompleted">Read device configuration completed: Success:{7} Failure:{8} Unsupported:{9}. ExceptionMessage:{1}; Key: {2}</entry>
 
     <entry key="yukon.common.events.device.configuration.verifyConfigInitiated">Verify device configuration on {7} device(s) initiated by {1}.</entry>
     <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceInitiated">Verify device configuration on device {1} initiated by {2}.</entry>
-    <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceSucceeded">Verify device configuration on device {1} succeeded.</entry>
-    <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceFailed">Verify device configuration on device {1} failed.</entry>
+    <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceCompleted">Verify device configuration on device {1} {7,choice,0#failed|1#succeeded}.</entry>
+    <entry key="yukon.common.events.device.configuration.verifyConfigFromDeviceCompleted.7">Success(1)/Fail(0)</entry>
     <entry key="yukon.common.events.device.configuration.verifyConfigCompleted">Verify device configuration completed: Success:{7} Failure:{8} Unsupported:{9}. ExceptionMessage:{1}</entry>
     
     <!-- Demand Reset-->
