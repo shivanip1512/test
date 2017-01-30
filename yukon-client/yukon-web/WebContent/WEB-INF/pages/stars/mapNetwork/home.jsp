@@ -41,6 +41,7 @@
     </div>  
     
     <input type="hidden" class="js-device-status" value="${deviceStatus}"/>
+    <input type="hidden" class="js-device-id" value="${deviceId}"/>
     
     <c:if test="${not empty geojson}"><cti:toJson id="geojson" object="${geojson}"/></c:if>
     
@@ -59,8 +60,26 @@
             </c:choose>
         </div>
         <div class="column two nogutter">
-        <tags:sectionContainer2 nameKey="location">
-            <div id="map-network-container" class="${empty geojson.features ? 'dn' : ''}">
+        <cti:msg2 var="locationHelp" key=".location.helpText"/>
+        <tags:sectionContainer2 nameKey="location" helpText="${locationHelp}">
+            <cti:msg2 var="latitudeLabel" key=".location.latitude"/>
+            <cti:msg2 var="longitudeLabel" key=".location.longitude"/>
+            <div class="dib js-view-display" style="padding-bottom:10px;">
+                <span style="padding-right:15px;">${latitudeLabel}:  <c:choose><c:when test="${coordinates.latitude != null}">${coordinates.latitude}</c:when><c:otherwise><cti:msg2 key=".location.notSet"/></c:otherwise></c:choose> </span>
+                <span>${longitudeLabel}:  <c:choose><c:when test="${coordinates.longitude != null}">${coordinates.longitude}</c:when><c:otherwise><cti:msg2 key=".location.notSet"/></c:otherwise></c:choose> </span>
+                <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="UPDATE">
+                    <cti:button renderMode="buttonImage" icon="icon-pencil" classes="fr js-edit-coordinates"/><br/>
+                </cti:checkRolesAndProperties>
+            </div>
+            <div class="dib js-edit-display dn" style="padding-bottom:10px;">
+                <span>${latitudeLabel}:  <tags:input path="coordinates.latitude" maxlength="10" size="10" inputClass="js-latitude-input" placeholder="${latitudeLabel}"/></span>
+                ${longitudeLabel}:  <tags:input path="coordinates.longitude" maxlength="11" size="11" inputClass="js-longitude-input" placeholder="${longitudeLabel}"/>
+                <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="UPDATE">
+                    <cti:button nameKey="save" classes="primary action fr js-save-coordinates dn js-edit-display"/><br/>
+                </cti:checkRolesAndProperties>
+                <div class="js-location-error error"></div>
+            </div>
+        <div id="map-network-container" class="${empty geojson.features ? 'dn' : ''}">
                 <div id="device-location" class="map" data-has-location="${not empty geojson.features}"></div>
                 <div class="buffered">
                     <c:set var="groupClass" value=""/>
@@ -106,6 +125,11 @@
     
     <div id="gateway-templates" class="dn"><cti:toJson object="${text}" id="gateway-text"/></div>
     
+    <div id="change-coordinates-confirm" data-dialog title="<cti:msg2 key=".location.changeCoordinates.title"/>" class="dn">
+        <cti:msg2 key=".location.changeCoordinates.confirmation"/>
+        <cti:msg2 key=".location.latitude"/><span class="js-latitude" style="padding-left:20px;"></span><br/>
+        <cti:msg2 key=".location.longitude"/><span class="js-longitude" style="padding-left:20px;"></span>
+    </div>
     
     <cti:includeScript link="OPEN_LAYERS"/>
     <cti:includeCss link="/resources/js/lib/open-layers/ol.css"/>

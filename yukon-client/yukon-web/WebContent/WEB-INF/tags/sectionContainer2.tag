@@ -13,6 +13,8 @@
 <%@ attribute name="helpWidth" %>
 <%@ attribute name="infoWidth" %>
 <%@ attribute name="controls" %>
+<%@ attribute name="helpText" %>
+
 
 <cti:msgScope paths=".${nameKey},">
     <cti:msg2 var="title" key=".title" arguments="${arguments}"/>

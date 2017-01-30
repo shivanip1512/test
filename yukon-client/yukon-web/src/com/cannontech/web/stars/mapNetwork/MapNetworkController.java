@@ -8,10 +8,13 @@ import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.geojson.FeatureCollection;
+import org.geojson.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -31,9 +34,15 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnDeviceMetadataService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.tools.mapping.model.Neighbor;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.model.Parent;
@@ -62,6 +71,14 @@ public class MapNetworkController {
     public String home(ModelMap model, @RequestParam("deviceId") int deviceId, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         FeatureCollection geojson = paoLocationService.getLocationsAsGeoJson(Arrays.asList(device));
+        Coordinates coordinates = new Coordinates();
+        
+        if (geojson.getFeatures().size() > 0) {
+            Point point = (Point) geojson.getFeatures().get(0).getGeometry();
+            coordinates.setLatitude(point.getCoordinates().getLatitude());
+            coordinates.setLongitude(point.getCoordinates().getLongitude());
+        }
+        model.addAttribute("coordinates", coordinates);
         
         model.addAttribute("geojson", geojson);
         model.addAttribute("deviceId", deviceId);
@@ -107,6 +124,51 @@ public class MapNetworkController {
         }
 
         return "mapNetwork/home.jsp";
+    }
+    
+    @RequestMapping(value="saveCoordinates")
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
+    public String saveCoordinates(HttpServletResponse resp, @RequestParam("deviceId") int deviceId, @RequestParam("latitude") Double latitude, 
+                  @RequestParam("longitude") Double longitude, FlashScope flash, YukonUserContext userContext) throws ServletException {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        Map<String, Object> json = new HashMap<>();
+        boolean errorFound = false;
+        List<String> errorMessages = new ArrayList<>();
+        if (latitude != null || longitude != null) {
+            if (latitude != null) {
+                if (latitude > 90 || latitude < -90) {
+                    errorMessages.add(accessor.getMessage(nameKey + "latitude.invalid"));
+                    errorFound = true;
+                }
+            } else {
+                errorMessages.add(accessor.getMessage(nameKey + "latitude.required", "latitude"));
+                errorFound = true;
+            }
+            if (longitude != null) {
+                if (longitude > 180 || longitude < -180) {
+                    errorMessages.add(accessor.getMessage(nameKey + "longitude.invalid"));
+                    errorFound = true;
+                }
+            } else {
+                errorMessages.add(accessor.getMessage(nameKey + "longitude.required", "longitude"));
+                errorFound = true;
+            }
+        }
+        
+        if (!errorFound) {
+            if (latitude == null && longitude == null) {
+                paoLocationService.deleteLocationForPaoId(deviceId);
+            } else {
+                paoLocationService.saveLocationForPaoId(deviceId, latitude, longitude);
+            }
+            flash.setConfirm(new YukonMessageSourceResolvable(nameKey + "location.update.successful"));
+            json.put("success", true);
+        } else {
+            json.put("error",  true);
+            json.put("errorMessages",  StringUtils.join(errorMessages, " "));
+        }
+
+        return JsonUtils.writeResponse(resp, json);    
     }
     
     @RequestMapping("parentNode")
@@ -160,6 +222,24 @@ public class MapNetworkController {
             json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
         }
         return json;
+    }
+    
+    public class Coordinates {
+        private Double latitude;
+        private Double longitude;
+        
+        public Double getLatitude() {
+            return latitude;
+        }
+        public void setLatitude(Double latitude) {
+            this.latitude = latitude;
+        }
+        public Double getLongitude() {
+            return longitude;
+        }
+        public void setLongitude(Double longitude) {
+            this.longitude = longitude;
+        }
     }
     
 }

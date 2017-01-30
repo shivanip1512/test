@@ -41,6 +41,7 @@ yukon.map.network = (function () {
     _primaryRouteLines = [],
     _primaryRouteIconLayer,
     _primaryRoutePreviousPoints,
+    _deviceDragInteraction,
     
     /** @type {string} - The default projection code of our map tiles. */
     _destProjection = 'EPSG:3857',
@@ -103,6 +104,49 @@ yukon.map.network = (function () {
             var coord = ol.proj.transform(feature.geometry.coordinates, src_projection, _destProjection);
             icon.setGeometry(new ol.geom.Point(coord));
         }
+        
+        // Drag and drop feature
+        _deviceDragInteraction = new ol.interaction.Modify({
+            features: new ol.Collection([icon]),
+            style: style,
+            pixelTolerance: 40
+        });
+        
+     // Add the event to the drag and drop feature
+        _deviceDragInteraction.on('modifyend',function(e){
+            var feature = e.features.getArray()[0];
+            var coord = ol.proj.transform(feature.getGeometry().getCoordinates(), _destProjection, src_projection);
+            var latitude = coord[1].toFixed(6);
+            var longitude = coord[0].toFixed(6);
+            var changeCoordinatesDialog = $('#change-coordinates-confirm');
+            changeCoordinatesDialog.find('.js-latitude').html(latitude);
+            changeCoordinatesDialog.find('.js-longitude').html(longitude);
+            //confirmation
+            changeCoordinatesDialog.dialog({
+                'buttons': 
+                    [{
+                         text: yg.text.cancel, 
+                         click: function() {
+                             $(this).dialog('close');
+                             window.location.reload();
+                         }
+                    }, 
+                    {
+                         text: yg.text.ok, 
+                         click: function() {
+                             $.ajax({
+                                 url: yukon.url('/stars/mapNetwork/saveCoordinates?' + $.param({ deviceId: feature.get('pao').paoId, latitude: latitude, longitude: longitude })),
+                                 success: function(results) {
+                                     window.location.reload();
+                                 }
+                             });
+                         },
+                         'class': 'primary action'
+                    }]
+                 });
+        },icon);
+
+        //_map.addInteraction(dragInteraction);
         
         _devicePoints = icon.getGeometry().getCoordinates();
         
@@ -361,7 +405,9 @@ yukon.map.network = (function () {
                 /** Display marker info popup on marker clicks. */
                 var _overlay = new ol.Overlay({ element: document.getElementById('marker-info'), positioning: 'bottom-center', stopEvent: false });
                 _map.addOverlay(_overlay);
+                //_map.on('pointermove', function(ev) {
                 _map.on('click', function(ev) {
+
                     var feature = _map.forEachFeatureAtPixel(ev.pixel, function(feature, layer) { 
                         var featureProperties = feature.getProperties();
                         if (featureProperties.name != 'Line') {
@@ -399,6 +445,8 @@ yukon.map.network = (function () {
                             $('#device-info').hide();
                             $('#route-info').hide();
                             $('#parent-info').show();
+                            $('#marker-info').show();
+                            _overlay.setPosition(coord);
                         } else if (neighbor != null) {
                             var neighborData = neighbor.data;
                             $('.js-device-display').toggleClass('dn', neighbor.device.name == null);
@@ -429,6 +477,8 @@ yukon.map.network = (function () {
                             $('#device-info').hide();
                             $('#route-info').hide();
                             $('#neighbor-info').show();
+                            $('#marker-info').show();
+                            _overlay.setPosition(coord);
                         } else if (routeInfo != null) {
                             $('.js-device-display').toggleClass('dn', routeInfo.device.name == null);
                             $('.js-device').text(routeInfo.device.name);
@@ -458,21 +508,24 @@ yukon.map.network = (function () {
                             $('#neighbor-info').hide();
                             $('#device-info').hide();
                             $('#route-info').show();
+                            $('#marker-info').show();
+                            _overlay.setPosition(coord);
                         } else {
                             $('#parent-info').hide();
                             $('#neighbor-info').hide();
                             $('#route-info').hide();
-                            url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
-                            $('#device-info').load(url, function() {
-                                var deviceStatus = $('.js-device-status').val();
-                                $('.js-status').text(deviceStatus);
-                                $('.js-status-display').show();
-                                $('#device-info').show();
-                            });
+                            if (feature.get('pao') != null) {
+                                url = yukon.url('/tools/map/device/' + feature.get('pao').paoId + '/info');
+                                $('#device-info').load(url, function() {
+                                    var deviceStatus = $('.js-device-status').val();
+                                    $('.js-status').text(deviceStatus);
+                                    $('.js-status-display').show();
+                                    $('#device-info').show();
+                                    $('#marker-info').show();
+                                    _overlay.setPosition(coord);
+                                });
+                            }
                         }
-                        $('#marker-info').show();
-                        _overlay.setPosition(coord);
-
                     } else {
                         $('#marker-info').hide();
                     }
@@ -675,7 +728,30 @@ yukon.map.network = (function () {
                     }
 
                 });
+
             }
+            
+            $(document).on('click', '.js-save-coordinates', function() {
+                var deviceId = $('.js-device-id').val(),
+                latitude = $('.js-latitude-input').val(),
+                longitude = $('.js-longitude-input').val();
+                $.ajax({
+                    url: yukon.url('/stars/mapNetwork/saveCoordinates?' + $.param({ deviceId: deviceId, latitude: latitude, longitude: longitude })),
+                    success: function(results) {
+                        if (results.error) {
+                            $('.js-location-error').html(results.errorMessages);
+                        } else {
+                            window.location.reload();
+                        }
+                    }
+                });
+            });
+            
+            $(document).on('click', '.js-edit-coordinates', function() {
+                $('.js-view-display').addClass('dn');
+                $('.js-edit-display').removeClass('dn');
+                _map.addInteraction(_deviceDragInteraction);
+            });
 
             _initialized = true;
         },

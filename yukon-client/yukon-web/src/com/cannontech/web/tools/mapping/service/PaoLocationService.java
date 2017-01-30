@@ -59,4 +59,8 @@ public interface PaoLocationService {
      * Delete the location information for the specified pao.
      */
     public void deleteLocationForPaoId(int paoId);
+    /**
+     * Save the location information for the specified pao.
+     */
+    void saveLocationForPaoId(int paoId, double latitude, double longitude);
 }

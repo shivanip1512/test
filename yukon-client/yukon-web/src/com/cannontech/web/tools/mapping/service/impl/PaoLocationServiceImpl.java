@@ -19,12 +19,15 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.Maps;
 
 public class PaoLocationServiceImpl implements PaoLocationService {
     
     @Autowired private PaoLocationDao paoLocationDao;
+    @Autowired private ServerDatabaseCache cache;
     
     public static Map<PaoType, Icon> icons;
     
@@ -98,5 +101,11 @@ public class PaoLocationServiceImpl implements PaoLocationService {
     @Override
     public void deleteLocationForPaoId(int paoId) {
         paoLocationDao.delete(paoId);
+    }
+    
+    @Override
+    public void saveLocationForPaoId(int paoId, double latitude, double longitude) {
+        LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
+        paoLocationDao.save(new PaoLocation(pao.getPaoIdentifier(), latitude, longitude));
     }
 }
