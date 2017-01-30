@@ -221,7 +221,13 @@
                         <td>
                             <c:out value="${mspPossibleInterface}"/>
                         </td>
-                    
+                        <td>
+                            <select title="Multispeak Version" name="mspVersions">
+                                <c:forEach var="mspVersion" items="${mspVersionList}">
+                                    <option <c:if test="${interfacesMap[mspPossibleInterface].version == mspVersion}">selected</c:if> value='<c:out value="${mspVersion}"/>'> <c:out value="${mspVersion}"/></option>
+                                </c:forEach>
+                            </select>
+                        </td>
                         <%-- endpoint --%>
                         <td>
                               <input id="mspEndpoint<c:out value="${mspPossibleInterface}"/>" type="text" name="mspEndpoint" size="30" 

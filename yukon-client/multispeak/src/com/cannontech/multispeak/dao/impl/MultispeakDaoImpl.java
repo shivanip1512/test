@@ -125,7 +125,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
     public List<MultispeakInterface> getMultispeakInterfaces(int vendorID) {
         try {
             String sql =
-                "SELECT VENDORID, INTERFACE, ENDPOINT " + " FROM " + MSPINTERFACE_TABLENAME + " WHERE VENDORID = ? ";
+                "SELECT VENDORID, INTERFACE, ENDPOINT, VERSION " + " FROM " + MSPINTERFACE_TABLENAME + " WHERE VENDORID = ? ";
 
             List<MultispeakInterface> mspInterfaces = jdbcTemplate.query(sql, mspInterfaceRowMapper, vendorID);
             return mspInterfaces;
@@ -185,11 +185,11 @@ public final class MultispeakDaoImpl implements MultispeakDao {
     @Override
     public synchronized int addMultispeakInterfaces(MultispeakInterface mspInterface) {
         try {
-            String sql = "INSERT INTO " + MSPINTERFACE_TABLENAME + " VALUES (?, ?, ?)";
+            String sql = "INSERT INTO " + MSPINTERFACE_TABLENAME + " VALUES (?, ?, ?, ?)";
 
             int numAdded =
                 jdbcTemplate.update(sql, new Object[] { mspInterface.getVendorID(), mspInterface.getMspInterface(),
-                    mspInterface.getMspEndpoint() });
+                    mspInterface.getMspEndpoint(), mspInterface.getVersion() });
             clearMultispeakVendorCache();
             return numAdded;
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -339,8 +339,9 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         Integer vendorID = new Integer(rset.getInt(1));
         String interfaceStr = rset.getString(2).trim();
         String endpoint = rset.getString(3).trim();
+        String version = rset.getString(4).trim();
 
-        MultispeakInterface mspInterface = new MultispeakInterface(vendorID, interfaceStr, endpoint);
+        MultispeakInterface mspInterface = new MultispeakInterface(vendorID, interfaceStr, endpoint, version);
         return mspInterface;
     }
 }

@@ -17,7 +17,7 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 public class MDMClient implements IMDMClient {
     private WebServiceTemplate webServiceTemplate;
     private HttpComponentsMessageSender messageSender;
-
+    @Autowired private CustomWebServiceMsgCallback customWebServiceMsgCallback;
     /**
      * MDMClient Constructor
      * 
@@ -36,7 +36,7 @@ public class MDMClient implements IMDMClient {
         try {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -49,7 +49,7 @@ public class MDMClient implements IMDMClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

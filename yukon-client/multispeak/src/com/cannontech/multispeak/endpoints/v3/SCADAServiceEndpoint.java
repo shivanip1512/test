@@ -99,7 +99,7 @@ import com.cannontech.msp.beans.v3.UnregisterForServiceResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
-import com.cannontech.multispeak.service.SCADA_Server;
+import com.cannontech.multispeak.service.v3.SCADA_Server;
 
 /*
  * This class is the SCADA Service endpoint all requests will be processed from
@@ -179,7 +179,6 @@ public class SCADAServiceEndpoint {
             throws MultispeakWebServiceException {
         multispeakFuncs.init();
         throw new MultispeakWebServiceException("Method is NOT supported.");
-
     }
 
     @PayloadRoot(localPart = "UnregisterForService", namespace = MultispeakDefines.NAMESPACE_v3)

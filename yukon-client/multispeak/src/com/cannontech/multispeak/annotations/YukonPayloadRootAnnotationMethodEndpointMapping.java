@@ -44,7 +44,7 @@ public class YukonPayloadRootAnnotationMethodEndpointMapping extends AbstractAnn
     }
 
     private enum EndPointMapping {
-        
+        // MSP Version 3.0 support
         MR_CBSoap("MR_CBSoap", "/soap/MR_ServerSoap"),
         OD_OASoap("OD_OASoap", "/soap/OD_ServerSoap"),
         CD_CBSoap("CD_CBSoap", "/soap/CD_ServerSoap"),
@@ -53,7 +53,16 @@ public class YukonPayloadRootAnnotationMethodEndpointMapping extends AbstractAnn
         CD_ServerSoap("CD_ServerSoap", "/soap/CD_ServerSoap"),
         SCADA_ServerSoap("SCADA_ServerSoap", "/soap/SCADA_ServerSoap"),
         OD_ServerSoap("OD_ServerSoap", "/soap/OD_ServerSoap"),
-        LM_ServerSoap("LM_ServerSoap", "/soap/LM_ServerSoap");
+        LM_ServerSoap("LM_ServerSoap", "/soap/LM_ServerSoap"),
+        
+        // MSP Version 5.0 support
+        CD_ServerSoap_v5("CD_ServerSoap_v5", "/soap/CD_ServerSoap_v5"),
+        NOT_ServerSoap_v5("NOT_ServerSoap_v5", "/soap/NOT_ServerSoap_v5"),
+        DR_ServerSoap_v5("DR_ServerSoap_v5", "/soap/DR_ServerSoap_v5"),
+        SCADA_ServerSoap_v5("SCADA_ServerSoap_v5", "/soap/SCADA_ServerSoap_v5"),
+        OD_ServerSoap_v5("OD_ServerSoap_v5", "/soap/OD_ServerSoap_v5"),
+        MR_ServerSoap_v5("MR_ServerSoap_v5", "/soap/MR_ServerSoap_v5");
+
         
         private static final ImmutableMap<String, String> endPointMappingMap;
         private final String url;

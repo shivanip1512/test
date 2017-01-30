@@ -2,6 +2,8 @@
 package com.cannontech.multispeak.endpoints.v3;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -72,17 +74,16 @@ import com.cannontech.msp.beans.v3.UnregisterForServiceResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
-import com.cannontech.multispeak.service.CD_Server;
+import com.cannontech.multispeak.service.v3.CD_Server;
 
 /**
  * Endpoint class to service the requests for CD_Server wsdl methods
  * 
   */
 
-@Endpoint
+@Endpoint("CDServiceEndpointV3")
 @RequestMapping("/soap/CD_ServerSoap")
 public class CDServiceEndpoint {
-
     @Autowired private CD_Server cd_server;
     @Autowired private ObjectFactory objectFactory;
     @Autowired private MultispeakFuncs multispeakFuncs;

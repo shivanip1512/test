@@ -21,7 +21,7 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 public class LMClient implements ILMClient {
     private WebServiceTemplate webServiceTemplate;
     private HttpComponentsMessageSender messageSender;
-
+    @Autowired private CustomWebServiceMsgCallback customWebServiceMsgCallback;
     /**
      * LM Client Constructor
      * 
@@ -41,7 +41,7 @@ public class LMClient implements ILMClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -54,7 +54,7 @@ public class LMClient implements ILMClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -69,7 +69,7 @@ public class LMClient implements ILMClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (GetAllSubstationLoadControlStatusesResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                getAllSubstationLoadControlStatuses, new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                getAllSubstationLoadControlStatuses, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -84,7 +84,7 @@ public class LMClient implements ILMClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (InitiateLoadManagementEventResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                initiateLoadManagementEvent, new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                initiateLoadManagementEvent, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

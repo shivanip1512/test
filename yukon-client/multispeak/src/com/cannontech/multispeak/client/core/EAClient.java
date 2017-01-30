@@ -18,7 +18,7 @@ public class EAClient implements IEAClient {
 
     private WebServiceTemplate webServiceTemplate;
     private HttpComponentsMessageSender messageSender;
-
+    @Autowired private CustomWebServiceMsgCallback customWebServiceMsgCallback;
     /**
      * EAClient Constructor
      * 
@@ -38,7 +38,7 @@ public class EAClient implements IEAClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -51,7 +51,7 @@ public class EAClient implements IEAClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

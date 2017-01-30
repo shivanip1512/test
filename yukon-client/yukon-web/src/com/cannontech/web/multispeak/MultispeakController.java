@@ -27,6 +27,7 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.msp.beans.v3.ErrorObject;
+import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -39,7 +40,8 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.amr.meter.service.MspMeterSearchService;
+import com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImplV3;
+import com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImplV5;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ServletRequestEnumUtils;
@@ -52,7 +54,8 @@ public class MultispeakController {
     @Autowired private MultispeakDao multispeakDao;
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MspObjectDao mspObjectDao;
-    @Autowired private MspMeterSearchService mspMeterSearchService;
+    @Autowired private MspMeterSearchServiceImplV3 mspMeterSearchServiceV3;
+    @Autowired private MspMeterSearchServiceImplV5 mspMeterSearchServiceV5;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private GlobalSettingUpdateDao globalSettingUpdateDao;
     
@@ -197,8 +200,13 @@ public class MultispeakController {
         }
         
         // If we called getMethods on the primary CIS vendor, we should reload the search fields
-        if( multispeakFuncs.isPrimaryCIS(mspVendor)) {
-            mspMeterSearchService.loadMspSearchFields(vendorId);            
+        if (multispeakFuncs.isPrimaryCIS(mspVendor)) {
+            if (mspVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR).getVersion().equals(
+                MultiSpeakVersion.V3.getVersion())) {
+                mspMeterSearchServiceV3.loadMspSearchFields(vendorId);
+            } else {
+                mspMeterSearchServiceV5.loadMspSearchFields(vendorId);
+            }
         }
         
         map.addAttribute("mspVendorId", vendorId);
@@ -228,6 +236,7 @@ public class MultispeakController {
         String outUsername = ServletRequestUtils.getStringParameter(request, "outUserName");
         String[] mspInterfaces = ServletRequestUtils.getStringParameters(request, "mspInterface");
         String[] mspEndpoints = ServletRequestUtils.getStringParameters(request, "mspEndpoint");
+        String[] versions = ServletRequestUtils.getStringParameters(request, "mspVersions");
         String mspURL = ServletRequestUtils.getStringParameter(request, "mspURL", "");
         if( !mspURL.endsWith("/")) {
             mspURL += "/";
@@ -243,7 +252,7 @@ public class MultispeakController {
         if( mspInterfaces != null && mspEndpoints != null) {
             for (int i = 0; i < mspInterfaces.length; i++ )
             {
-                MultispeakInterface mspInterface = new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[i]);
+                MultispeakInterface mspInterface = new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[i], versions[i]);
                 mspInterfaceList.add(mspInterface);
             }
         }
@@ -370,7 +379,13 @@ public class MultispeakController {
                 }
             
                 //reload the search field methods since primaryCIS has changed
-                mspMeterSearchService.loadMspSearchFields(mspPrimaryCIS);
+                MultispeakVendor mspPrimaryCISVendor = multispeakDao.getMultispeakVendor(mspPrimaryCIS);
+                if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR).getVersion().equals(
+                    MultiSpeakVersion.V3.getVersion())) {
+                    mspMeterSearchServiceV3.loadMspSearchFields(mspPrimaryCIS);
+                } else {
+                    mspMeterSearchServiceV5.loadMspSearchFields(mspPrimaryCIS);
+                }
             }
             if (oldMspPaoNameAliasExtension != mspPaoNameAliasExtension) {
                 // update PaoName Alias Extension field name
@@ -422,6 +437,8 @@ public class MultispeakController {
 
         MultispeakMeterLookupFieldEnum mspMeterLookupField = ServletRequestEnumUtils.getEnumParameter(request, MultispeakMeterLookupFieldEnum.class, "mspMeterLookupField", multispeakFuncs.getMeterLookupField());
         map.addAttribute("meterLookupField", mspMeterLookupField);
+
+        map.addAttribute("mspVersionList",  MultiSpeakVersion.getSupportedMspVersions());
 
         String resultMsg = ServletRequestUtils.getStringParameter(request, MultispeakDefines.MSP_RESULT_MSG, null);
         if (resultMsg != null) {

@@ -14,25 +14,13 @@ import com.cannontech.msp.beans.v3.MultiSpeakMsgHeader;
  *         Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class YukonMultispeakMsgHeader extends MultiSpeakMsgHeader {
-
-    public YukonMultispeakMsgHeader() {
-        super();
-        setVersion("3.0"); // The Multispeak version?
-        setUserID(""); // TODO change to Multispeak webservice username?
-        setPwd(""); // TODO change to Multispeak webservice password?
-        setAppName("Yukon");
-        setAppVersion(VersionTools.getYUKON_VERSION());
-        setCompany("Cannon");
-        setCSUnits(MessageHeaderCSUnits.FEET);
-    }
-
     /**
      * @param outUsername
      * @param outPassword
      */
-    public YukonMultispeakMsgHeader(String outUsername, String outPassword) {
+    public YukonMultispeakMsgHeader(String outUsername, String outPassword, String version) {
         super();
-        setVersion("3.0"); // The Multispeak version?
+        setVersion(version); // The Multispeak version?
         setUserID(outUsername);
         setPwd(outPassword);
         setAppName("Yukon");
@@ -40,5 +28,4 @@ public class YukonMultispeakMsgHeader extends MultiSpeakMsgHeader {
         setCompany("Cannon");
         setCSUnits(MessageHeaderCSUnits.FEET);
     }
-
 }

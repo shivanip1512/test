@@ -49,8 +49,8 @@ import com.google.common.collect.Maps;
 
 public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 {
-	private final Logger log = YukonLogManager.getLogger(MspRawPointHistoryDaoImpl.class);
-	
+    private final Logger log = YukonLogManager.getLogger(MspRawPointHistoryDaoImpl.class);
+    
     @Autowired private AttributeService attributeService;
     @Autowired private MeterReadProcessingService meterReadProcessingService;
     @Autowired private MeterRowMapper meterRowMapper;
@@ -61,20 +61,20 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
     @Autowired private ScadaAnalogProcessingServiceImpl scadaAnalogProcessingServiceImpl;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 
-	@Override
-	public MspMeterReadReturnList retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, 
-	                                      Date endDate, String lastReceived, int maxRecords) {
+    @Override
+    public MspMeterReadReturnList retrieveMeterReads(ReadBy readBy, String readByValue, Date startDate, 
+                                          Date endDate, String lastReceived, int maxRecords) {
 
-	    List<YukonMeter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
-	    
-	    final Date timerStart = new Date();
-	    EnumMap<BuiltInAttribute, ListMultimap<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
+        List<YukonMeter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);
+        
+        final Date timerStart = new Date();
+        EnumMap<BuiltInAttribute, ListMultimap<PaoIdentifier, PointValueQualityHolder>> resultsPerAttribute = Maps.newEnumMap(BuiltInAttribute.class);
 
-	    int estimatedSize = 0;
+        int estimatedSize = 0;
 
-	    EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
-	    Range<Date> dateRange = new Range<Date>(startDate, true, endDate, true);
-	    // load up results for each attribute
+        EnumSet<BuiltInAttribute> attributesToLoad = EnumSet.of(BuiltInAttribute.USAGE, BuiltInAttribute.PEAK_DEMAND);
+        Range<Date> dateRange = new Range<Date>(startDate, true, endDate, true);
+        // load up results for each attribute
         for (BuiltInAttribute attribute : attributesToLoad) {
             ListMultimap<PaoIdentifier, PointValueQualityHolder> resultsForAttribute =
                 rawPointHistoryDao.getAttributeData(meters, attribute, false,
@@ -82,13 +82,12 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
             resultsPerAttribute.put(attribute, resultsForAttribute);
             estimatedSize += resultsForAttribute.size();
-	    }
+        }
 
-	    // build the actual MeterRead objects in the order they are to be output getPaoList returns the meters in
-	    List<MeterRead> meterReads = Lists.newArrayListWithExpectedSize(estimatedSize);
-	    
+        // build the actual MeterRead objects in the order they are to be output getPaoList returns the meters in
+        List<MeterRead> meterReads = Lists.newArrayListWithExpectedSize(estimatedSize);
 
-	    // loop over meters, results will be returned in whatever order getPaoList returns the meters in
+        // loop over meters, results will be returned in whatever order getPaoList returns the meters in
         for (YukonMeter meter : meters) { 
             for (BuiltInAttribute attribute : attributesToLoad) { 
                 List<PointValueQualityHolder> rawValues =  
@@ -107,10 +106,10 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 
         log.debug("Retrieved " + meterReads.size() + " MeterReads. (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
         
-	    return mspMeterReadReturn;
-	}
+        return mspMeterReadReturn;
+    }
 
-	@Override
+    @Override
     public MspMeterReadReturnList retrieveLatestMeterReads(ReadBy readBy, String readByValue, String lastReceived, int maxRecords) {
 
         List<YukonMeter> meters = getPaoList(readBy, readByValue, lastReceived, maxRecords);

@@ -103,16 +103,35 @@ public class MultispeakFuncs {
     public void loadResponseHeader() throws MultispeakWebServiceException {
         SoapEnvelope env;
         try {
-            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
-                MultispeakDefines.MSP_APPNAME_YUKON);
             env = getResponseMessageSOAPEnvelope();
             SoapHeader header = env.getHeader();
-            mspVendor.getHeader(header);
+            getHeader(header, null);
         } catch (NotFoundException | SOAPException e) {
             throw new MultispeakWebServiceException(e.getMessage());
         }
     }
 
+    public SoapHeaderElement getHeader(SoapHeader header, MultiSpeakVersion version) throws SOAPException {
+
+        MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
+                MultispeakDefines.MSP_APPNAME_YUKON);
+        if (version == null) {
+            version = getMSPVersion();
+        }
+        YukonMultispeakMsgHeader yukonMspMsgHeader = new YukonMultispeakMsgHeader(mspVendor.getOutUserName(),
+        		mspVendor.getOutPassword(), version.getVersion());
+        QName qname = new QName(version.namespace, "MultiSpeakMsgHeader");
+        SoapHeaderElement headerElement = header.addHeaderElement(qname);
+        headerElement.addAttribute(new QName("Version"), yukonMspMsgHeader.getVersion());
+        headerElement.addAttribute(new QName("UserID"), yukonMspMsgHeader.getUserID());
+        headerElement.addAttribute(new QName("Pwd"), yukonMspMsgHeader.getPwd());
+        headerElement.addAttribute(new QName("AppName"), yukonMspMsgHeader.getAppName());
+        headerElement.addAttribute(new QName("AppVersion"), yukonMspMsgHeader.getAppVersion());
+        headerElement.addAttribute(new QName("Company"), yukonMspMsgHeader.getCompany());
+        headerElement.addAttribute(new QName("CSUnits"), yukonMspMsgHeader.getCSUnits().value());
+        return headerElement;
+    }
+    
     public SoapHeaderElement getResponseHeaderElement() throws MultispeakWebServiceException {
         SoapEnvelope env;
         try {
@@ -156,8 +175,41 @@ public class MultispeakFuncs {
         }
 
         return soapEnvelop;
+	}
+
+    /**
+     * gets Version from the request header
+     * 
+     * @return
+     * @throws SOAPException
+     */
+    public MultiSpeakVersion getMSPVersion() throws SOAPException {
+
+        MessageContext ctx = MessageContextHolder.getMessageContext();
+        
+        WebServiceMessage webServiceRequestMessage = ctx.getRequest();
+        SaajSoapMessage saajSoapRequestMessage = (SaajSoapMessage) webServiceRequestMessage;
+        Node nxtNode = saajSoapRequestMessage.getSaajMessage().getSOAPPart().getEnvelope().getBody().getFirstChild();
+        return getMSPVersion(nxtNode);
     }
 
+    public MultiSpeakVersion getMSPVersion(Node nxtNode) {
+        if (nxtNode != null && nxtNode.getNamespaceURI() == null) {
+            nxtNode = nxtNode.getNextSibling();
+        }
+        String soapAction = "";
+        if (nxtNode != null) {
+            soapAction  = nxtNode.getNamespaceURI() + "/" + nxtNode.getLocalName();
+        } else {
+            log.warn("Namespace and method not identified. SOAPAction not set.");
+        }
+        if (soapAction.contains(MultiSpeakVersion.V3.version)) {
+            return MultiSpeakVersion.V3;
+        } else if (soapAction.contains(MultiSpeakVersion.V5.version)) {
+            return MultiSpeakVersion.V5;
+        }
+        return MultiSpeakVersion.V3;
+    }
     /**
      * This method should be called by every multispeak function!!!
      */
@@ -626,5 +678,16 @@ public class MultispeakFuncs {
             formattedPhone += phone;
         }
         return formattedPhone;
+    }
+
+    /**
+     * @return Returns version of mspInterface.
+     * @param vendorId
+     * @param mspInterface
+     */
+    public String getEndPointInterfaceVersion(int vendorId, String mspInterface) {
+        MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
+        return mspVendor.getMspInterfaceMap().get(mspInterface).getVersion();
+
     }
 }

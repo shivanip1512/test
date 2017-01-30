@@ -16,7 +16,13 @@ public interface MultispeakEventLogService {
     public void returnObjects(int numReturned, int objectsRemaining, String type, String lastSent,
             @Arg(ArgEnum.mspMethod) String mspMethod, 
             @Arg(ArgEnum.mspVendor) String mspVendor);
-
+    
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="multispeak")
+    public void returnObject(String type, 
+            @Arg(ArgEnum.totalCount) int mspMeterCount,
+            @Arg(ArgEnum.mspMethod) String mspMethod, 
+            @Arg(ArgEnum.mspVendor) String mspVendor);
+    
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="multispeak")
     public void returnObject(String type, 
             @Arg(ArgEnum.meterNumber) String meterNumber,
@@ -186,6 +192,12 @@ public interface MultispeakEventLogService {
             @Arg(ArgEnum.mspMethod) String mspMethod,
             @Arg(ArgEnum.mspVendor) String mspVendor);
 
+    @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="multispeak")
+    public void removeDevice(@Arg(ArgEnum.meterNumber) String meterNumber,
+            @Arg(ArgEnum.meterDescription) YukonMeter meter,
+            @Arg(ArgEnum.mspMethod) String mspMethod,
+            @Arg(ArgEnum.mspVendor) String mspVendor);
+    
     @YukonEventLog(transactionality=ExecutorTransactionality.FORCED, category="multispeak")
     public void notificationResponse(@Arg(ArgEnum.mspMethod) String mspMethod,
             String transactionID, 

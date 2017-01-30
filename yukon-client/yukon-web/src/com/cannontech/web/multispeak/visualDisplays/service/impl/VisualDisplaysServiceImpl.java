@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.common.fdr.FdrInterfaceType;
 import com.cannontech.common.fdr.FdrTranslation;
 import com.cannontech.core.dao.FdrTranslationDao;
-import com.cannontech.multispeak.service.MultispeakLMService;
+import com.cannontech.multispeak.service.v3.MultispeakLMService;
 import com.cannontech.web.multispeak.visualDisplays.model.PowerSuppliersEnum;
 import com.cannontech.web.multispeak.visualDisplays.service.VisualDisplaysService;
 

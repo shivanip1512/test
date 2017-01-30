@@ -19,7 +19,7 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 public class OAClient implements IOAClient {
     private WebServiceTemplate webServiceTemplate;
     private HttpComponentsMessageSender messageSender;
-
+    @Autowired private CustomWebServiceMsgCallback customWebServiceMsgCallback;
     /**
      * OAClient Constructor
      * 
@@ -40,7 +40,7 @@ public class OAClient implements IOAClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -53,7 +53,7 @@ public class OAClient implements IOAClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -74,7 +74,7 @@ public class OAClient implements IOAClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (ODEventNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri, odEventNotification,
-                new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

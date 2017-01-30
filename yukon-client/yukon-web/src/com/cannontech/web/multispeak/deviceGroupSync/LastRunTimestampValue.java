@@ -2,8 +2,8 @@ package com.cannontech.web.multispeak.deviceGroupSync;
 
 import org.joda.time.Instant;
 
-import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
-import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
+import com.cannontech.multispeak.service.v3.MultispeakDeviceGroupSyncProgress;
+import com.cannontech.multispeak.service.v3.MultispeakDeviceGroupSyncTypeProcessorType;
 
 public class LastRunTimestampValue {
 	

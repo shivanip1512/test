@@ -7,7 +7,7 @@ import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
-import com.cannontech.multispeak.service.MspIdentifiablePaoService;
+import com.cannontech.multispeak.service.v3.MspIdentifiablePaoService;
 import com.cannontech.yukon.IDatabaseCache;
 
 public class MspIdentifiablePaoServiceImpl implements MspIdentifiablePaoService {

@@ -31,6 +31,7 @@ public class CDClient implements ICDClient {
 
     private WebServiceTemplate webServiceTemplate;
     private HttpComponentsMessageSender messageSender;
+    @Autowired private CustomWebServiceMsgCallback customWebServiceMsgCallback;
 
     /**
      * CD Client Constructor
@@ -52,7 +53,7 @@ public class CDClient implements ICDClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (PingURLResponse) webServiceTemplate.marshalSendAndReceive(uri, pingURL,
-                new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -65,7 +66,7 @@ public class CDClient implements ICDClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (GetMethodsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMethods,
-                new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -78,7 +79,7 @@ public class CDClient implements ICDClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (GetCDSupportedMetersResponse) webServiceTemplate.marshalSendAndReceive(uri, getCDSupportedMeters,
-                new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -91,7 +92,7 @@ public class CDClient implements ICDClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (InitiateConnectDisconnectResponse) webServiceTemplate.marshalSendAndReceive(uri,
-                initiateConnectDisconnect, new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                initiateConnectDisconnect, customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -104,7 +105,7 @@ public class CDClient implements ICDClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (GetCDMeterStateResponse) webServiceTemplate.marshalSendAndReceive(uri, getCDMeterState,
-                new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }
@@ -117,7 +118,7 @@ public class CDClient implements ICDClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
 
             return (CDDeviceAddNotificationResponse) webServiceTemplate.marshalSendAndReceive(uri, cdDeviceAddNotification,
-                new CustomWebServiceMsgCallback().addRequestHeader(mspVendor));
+                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException ex) {
             throw new MultispeakWebServiceClientException(ex.getMessage());
         }

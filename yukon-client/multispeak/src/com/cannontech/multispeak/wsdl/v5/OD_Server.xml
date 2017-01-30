@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<jaxb:bindings version="2.0" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb"
+	xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:inheritance="http://jaxb2-commons.dev.java.net/basic/inheritance">
+
+	<!-- Use below jaxb:bindings for CXF -->
+	<jaxb:bindings schemaLocation="OD_Server.xsd" node="/xs:schema">
+		<jaxb:bindings>
+			<jaxb:globalBindings typesafeEnumMaxMembers="2000"
+				typesafeEnumMemberName="generateName" />
+		</jaxb:bindings>
+	</jaxb:bindings>
+</jaxb:bindings>

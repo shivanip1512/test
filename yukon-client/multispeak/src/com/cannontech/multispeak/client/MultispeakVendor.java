@@ -4,11 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.xml.namespace.QName;
-
-import org.springframework.ws.soap.SoapHeader;
-import org.springframework.ws.soap.SoapHeaderElement;
-
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.multispeak.db.MultispeakInterface;
@@ -37,7 +32,6 @@ public class MultispeakVendor {
     private String url = "http://127.0.0.1:8080/soap/"; // some default url
                                                         // string for formatting
                                                         // example
-
     private List<MultispeakInterface> mspInterfaces = Lists.newArrayList();
 
     public MultispeakVendor() {
@@ -48,7 +42,6 @@ public class MultispeakVendor {
             String outUserName, String outPassword, int maxReturnRecords, long requestMessageTimeout,
             long maxInitiateRequestObjects, String templateNameDefault, String url) {
         super();
-        // TODO Auto-generated constructor stub
         this.vendorID = vendorID;
         this.companyName = companyName;
         this.appName = appName;
@@ -190,21 +183,7 @@ public class MultispeakVendor {
         return meterLookupFields;
     }
 
-    public SoapHeaderElement getHeader(SoapHeader header) {
-        YukonMultispeakMsgHeader yukonMspMsgHeader = new YukonMultispeakMsgHeader(getOutUserName(), getOutPassword());
-        QName qname = new QName("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader");
-        SoapHeaderElement headerElement = header.addHeaderElement(qname);
-        headerElement.addAttribute(new QName("Version"), yukonMspMsgHeader.getVersion());
-        headerElement.addAttribute(new QName("UserID"), yukonMspMsgHeader.getUserID());
-        headerElement.addAttribute(new QName("Pwd"), yukonMspMsgHeader.getPwd());
-        headerElement.addAttribute(new QName("AppName"), yukonMspMsgHeader.getAppName());
-        headerElement.addAttribute(new QName("AppVersion"), yukonMspMsgHeader.getAppVersion());
-        headerElement.addAttribute(new QName("Company"), yukonMspMsgHeader.getCompany());
-        headerElement.addAttribute(new QName("CSUnits"), yukonMspMsgHeader.getCSUnits().value());
-        return headerElement;
-    }
-
-    public long getMaxInitiateRequestObjects() {
+	public long getMaxInitiateRequestObjects() {
         return maxInitiateRequestObjects;
     }
 

@@ -910,7 +910,8 @@
     <bean id="attributeSelectorHelperService" class="com.cannontech.web.util.AttributeSelectorHelperServiceImpl"/>
 
     <!-- MULTISPEAK -->
-    <bean id="mspMeterSearchService" class="com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImpl"/>
+    <bean id="mspMeterSearchService" class="com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImplV3"/>
+    <bean id="mspMeterSearchServiceV5" class="com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImplV5"/>
 
     <bean id="serviceLocationMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.ServiceLocationMspMeterSearchMethodResultProvider"/>
     <bean id="eaLocationMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.EaLocationMspMeterSearchMethodResultProvider"/>
@@ -918,6 +919,13 @@
     <bean id="accountNumberMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.AccountNumberMspMeterSearchMethodResultProvider"/>
     <bean id="custIdMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.CustIdMspMeterSearchMethodResultProvider"/>
     <bean id="cisSearchMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.CisSearchMspMeterSearchMethodResultProvider"/>
+    
+    <bean id="serviceLocationMspMeterSearchMethodResultProviderV5" class="com.cannontech.web.amr.meter.service.impl.ServiceLocationMspMeterSearchMethodResultProviderV5"/>
+    <bean id="eaLocationMspMeterSearchMethodResultProviderV5" class="com.cannontech.web.amr.meter.service.impl.EaLocationMspMeterSearchMethodResultProviderV5"/>
+    <bean id="facilityIdMspMeterSearchMethodResultProviderV5" class="com.cannontech.web.amr.meter.service.impl.FacilityIdMspMeterSearchMethodResultProviderV5"/>
+    <bean id="accountNumberMspMeterSearchMethodResultProviderV5" class="com.cannontech.web.amr.meter.service.impl.AccountNumberMspMeterSearchMethodResultProviderV5"/>
+    <bean id="custIdMspMeterSearchMethodResultProviderV5" class="com.cannontech.web.amr.meter.service.impl.CustIdMspMeterSearchMethodResultProviderV5"/>
+    <bean id="cisSearchMspMeterSearchMethodResultProviderV5" class="com.cannontech.web.amr.meter.service.impl.CisSearchMspMeterSearchMethodResultProviderV5"/>
     
     <bean id="multispeakDeviceGroupSyncBackingService" class="com.cannontech.web.updater.multispeak.deviceGroupSync.MultispeakDeviceGroupSyncBackingService"/>
 

@@ -62,7 +62,7 @@ import com.cannontech.multispeak.db.MspLmMapping;
 import com.cannontech.multispeak.db.MspLmMappingColumn;
 import com.cannontech.multispeak.db.MspLmMappingComparator;
 import com.cannontech.multispeak.db.MspLoadControl;
-import com.cannontech.multispeak.service.MultispeakLMService;
+import com.cannontech.multispeak.service.v3.MultispeakLMService;
 import com.cannontech.stars.dr.enrollment.dao.EnrollmentDao;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;

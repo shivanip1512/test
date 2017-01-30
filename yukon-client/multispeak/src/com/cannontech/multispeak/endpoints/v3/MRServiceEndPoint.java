@@ -16,7 +16,7 @@ import com.cannontech.msp.beans.v3.*;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
-import com.cannontech.multispeak.service.MR_Server;
+import com.cannontech.multispeak.service.v3.MR_Server;
 
 /*
  * This class is the MR Service endpoint all requests will be processed from

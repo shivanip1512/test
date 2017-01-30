@@ -149,7 +149,7 @@ import com.cannontech.multispeak.event.MeterReadEvent;
 import com.cannontech.multispeak.event.MultispeakEvent;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
-import com.cannontech.multispeak.service.MultispeakMeterService;
+import com.cannontech.multispeak.service.v3.MultispeakMeterService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.UserUtils;

@@ -21,7 +21,7 @@ import com.cannontech.multispeak.dao.FormattedBlockProcessingService;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
-import com.cannontech.multispeak.service.MspValidationService;
+import com.cannontech.multispeak.service.v3.MspValidationService;
 
 public class MspValidationServiceImpl implements MspValidationService {
     @Autowired private MspMeterDao mspMeterDao;

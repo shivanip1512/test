@@ -8,7 +8,7 @@ import com.cannontech.msp.beans.v3.ContactInfo;
 import com.cannontech.msp.beans.v3.Customer;
 import com.cannontech.msp.beans.v3.EMailAddress;
 import com.cannontech.msp.beans.v3.PhoneNumber;
-import com.cannontech.multispeak.service.MultispeakCustomerInfoService;
+import com.cannontech.multispeak.service.v3.MultispeakCustomerInfoService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 

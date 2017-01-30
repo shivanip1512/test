@@ -40,7 +40,7 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
-import com.cannontech.multispeak.service.MultispeakCustomerInfoService;
+import com.cannontech.multispeak.service.v3.MultispeakCustomerInfoService;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;

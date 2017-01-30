@@ -74,7 +74,7 @@ import com.cannontech.msp.beans.v3.UnregisterForServiceResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
-import com.cannontech.multispeak.service.OD_Server;
+import com.cannontech.multispeak.service.v3.OD_Server;
 
 /*
  * This class is the OD Service endpoint all requests will be processed from
