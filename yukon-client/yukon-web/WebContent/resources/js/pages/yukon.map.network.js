@@ -145,8 +145,6 @@ yukon.map.network = (function () {
                     }]
                  });
         },icon);
-
-        //_map.addInteraction(dragInteraction);
         
         _devicePoints = icon.getGeometry().getCoordinates();
         
@@ -405,7 +403,6 @@ yukon.map.network = (function () {
                 /** Display marker info popup on marker clicks. */
                 var _overlay = new ol.Overlay({ element: document.getElementById('marker-info'), positioning: 'bottom-center', stopEvent: false });
                 _map.addOverlay(_overlay);
-                //_map.on('pointermove', function(ev) {
                 _map.on('click', function(ev) {
 
                     var feature = _map.forEachFeatureAtPixel(ev.pixel, function(feature, layer) { 
