@@ -2,7 +2,6 @@ package com.cannontech.web.common.chart.service.impl;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -10,8 +9,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.TimeZone;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.chart.model.ChartColorsEnum;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
@@ -23,7 +24,6 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
@@ -36,13 +36,12 @@ import com.cannontech.web.common.chart.service.ChartService;
  */
 public class ChartServiceImpl implements ChartService {
 
+    private Logger log = YukonLogManager.getLogger(ChartServiceImpl.class);
+    
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private PointDao pointDao;
     @Autowired private UnitMeasureDao unitMeasureDao;
-    @Autowired private DateFormattingService dateFormattingService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
-
-    private SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
 
     @Override
     public List<Graph<ChartValue<Double>>> getGraphs(Set<Integer> pointIds, Date startDate, Date stopDate,
@@ -90,9 +89,8 @@ public class ChartServiceImpl implements ChartService {
                 chartValue.setId(timeStamp);
                 chartValue.setTime(timeStamp); // x-axis
                 chartValue.setValue(data.getValue()); // y-axis
-                chartValue.setDescription("<div>" + units + "</div><div>"
-                        + timeFormat.format(data.getPointDataTimeStamp()) + "</div><div>" + lPoint.getPointName()
-                        + "</div>");
+                chartValue.setUnits(units);
+                chartValue.setPointName(lPoint.getPointName());
                 chartValue.setFormattedValue(pointValueFormat.format(data.getValue()));
 
                 chartData.add(chartValue);
@@ -172,7 +170,16 @@ public class ChartServiceImpl implements ChartService {
                 currentInterval = thisInterval;
             } else if (thisValue.getValue() > currentMax.getValue()
                 || (currentMax.getValue() == thisValue.getValue() && thisValue.getTime() > currentMax.getTime())) {
-                currentMax = thisValue;
+                
+                /* Need to modify thisValue (which will eventually be added to maxChartValues) 
+                 * to have a time that is also normalized/modified down to interval, instead of it's actual time.
+                 * This should only affect the graph'd data and not any raw data exports
+                 * */
+                ChartValue<Double> modifiedDownToInterval = new ChartValue<>(thisValue);
+                modifiedDownToInterval.setTime(thisInterval);   //override from actual time to modified time
+                log.debug("Changed chartValue interval due to interval normalization from " + thisValue.toString()+ " to " + modifiedDownToInterval.toString());
+                
+                currentMax = modifiedDownToInterval;
             }
         }
         // Don't forget the last one

@@ -1,15 +1,20 @@
 package com.cannontech.common.chart.model;
 
+import java.text.SimpleDateFormat;
+
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 
-
 public class ChartValue<T> {
+    private static SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
+
     private long id = 0;
     private T value = null;
-    private String formattedValue = null;
-    private String description = null;
     private long time = 0;
+    private String formattedValue = null;
+    private String units = null;
+    private String pointName = null;
+    private String optionalData = null;
 
     public ChartValue() {
     }
@@ -19,6 +24,16 @@ public class ChartValue<T> {
         this.value = value;
     }
 
+    public ChartValue(ChartValue<T> copyFrom) {
+        this.id = copyFrom.id;
+        this.value = copyFrom.value;
+        this.time = copyFrom.time;
+        this.formattedValue = copyFrom.formattedValue;
+        this.units = copyFrom.units;
+        this.pointName = copyFrom.pointName;
+        this.optionalData =  copyFrom.optionalData;
+    }
+    
     public long getId() {
         return id;
     }
@@ -35,28 +50,6 @@ public class ChartValue<T> {
         this.value = value;
     }
 
-    /**
-     * Returns the description as set by setDescription with formattedValue prepended.
-     */
-    public String getDescription() {
-        return "<div>" + formattedValue + "</div>" + description;
-    }
-
-    /**
-     * Returns the description as set by setDescription.
-     */
-    public String getDescriptionWithoutFormattedVal() {
-        return  description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getFormattedValue() {
-        return formattedValue;
-    }
-
     public long getTime() {
         return time;
     }
@@ -65,13 +58,56 @@ public class ChartValue<T> {
         this.time = time;
     }
 
-	public void setFormattedValue(String formattedValue) {
-		this.formattedValue = formattedValue;
-	}
-	
-	@Override
-	public String toString() {
-		return "(Value:" + formattedValue + ", Time:" + new DateTime(time).toString(DateTimeFormat.mediumDateTime()) + ")";
-	}
+    public String getFormattedValue() {
+        return formattedValue;
+    }
 
+    public void setFormattedValue(String formattedValue) {
+        this.formattedValue = formattedValue;
+    }
+
+    /**
+     * @param units  will be used as part of description:
+     * {@code <div>units</div><div>time</div><div>pointName</div>optionalData}
+     */
+    public void setUnits(String units) {
+        this.units = units;
+    }
+
+    /**
+     * @param pointName will be used as part of description:
+     * {@code <div>units</div><div>time</div><div>pointName</div>optionalData}
+     */
+    public void setPointName(String pointName) {
+        this.pointName = pointName;
+    }
+
+    /**
+     * @param optionalData will be used as part of description:
+     * {@code <div>units</div><div>time</div><div>pointName</div>optionalData}
+     */
+    public void setOptionalData(String optionalData) {
+        this.optionalData = optionalData;
+    }
+
+    /**
+     * Returns the html formatted description with formattedValue prepended.
+     */
+    public String getDescription() {
+        return "<div>" + formattedValue + "</div>" + getDescriptionWithoutFormattedVal();
+    }
+
+    /**
+     * Returns the html formatted description using chartValue meta-data.
+     * {@code <div>units</div><div>time</div><div>pointName</div>optionalData}
+     */
+    public String getDescriptionWithoutFormattedVal() {
+        return "<div>" + units + "</div><div>" + timeFormat.format(time) + "</div><div>" + pointName + "</div>" +
+                (optionalData != null ? optionalData : "");
+    }
+
+    @Override
+    public String toString() {
+        return "(Value:" + formattedValue + ", Time:" + new DateTime(time).toString(DateTimeFormat.mediumDateTime()) + ")";
+    }
 }

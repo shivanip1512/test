@@ -32,7 +32,7 @@ public class ChartPowerFactorDataConverter implements ChartDataConverter {
 
             chartValue.setValue(val);
             chartValue.setFormattedValue(new Double(val).toString());
-            chartValue.setDescription(chartValue.getDescriptionWithoutFormattedVal() + "\nRaw Value: " + origVal.toString());
+            chartValue.setOptionalData("\nRaw Value: " + origVal.toString());
         }
 
         return chartValuesCopy;
