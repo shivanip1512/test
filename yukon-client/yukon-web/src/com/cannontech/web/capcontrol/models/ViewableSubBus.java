@@ -11,6 +11,7 @@ public class ViewableSubBus {
     private boolean usePhaseData;
     private boolean busControlled;
     private boolean ivvcControlled;
+    private boolean multiVoltVarControlled;
     private boolean showTargetTooltip;
     private int alternateAreaId;
     private int alternateStationId;
@@ -22,6 +23,7 @@ public class ViewableSubBus {
         ControlMethod controlMethod = bus.getControlMethod();
         busControlled = controlMethod != null ? controlMethod.isBusControlled() : false;
         ivvcControlled = bus.getAlgorithm() == ControlAlgorithm.INTEGRATED_VOLT_VAR;
+        setMultiVoltVarControlled(bus.getAlgorithm() == ControlAlgorithm.MULTI_VOLT_VAR);
     }
     
     public void setCcId(int ccId) {
@@ -78,5 +80,13 @@ public class ViewableSubBus {
 
     public void setAlternateStationId(int alternateStationId) {
         this.alternateStationId = alternateStationId;
+    }
+
+    public boolean isMultiVoltVarControlled() {
+        return multiVoltVarControlled;
+    }
+
+    public void setMultiVoltVarControlled(boolean multiVoltVarControlled) {
+        this.multiVoltVarControlled = multiVoltVarControlled;
     }
 }

@@ -13,6 +13,7 @@ public class ViewableFeeder {
     private boolean showTargetTooltip = true;
     private boolean individualFeederControlled;
     private boolean usePhaseData;
+    private boolean multiVoltVarControlled = false;
 
     public void setFeederInfo(Feeder feeder) {
         ccId = feeder.getCcId();
@@ -21,6 +22,7 @@ public class ViewableFeeder {
         ivvcControlled = feeder.getAlgorithm() == ControlAlgorithm.INTEGRATED_VOLT_VAR;
         individualFeederControlled = feeder.getControlmethod() == ControlMethod.INDIVIDUAL_FEEDER;
         usePhaseData = feeder.getUsePhaseData();
+        setMultiVoltVarControlled(feeder.getAlgorithm() == ControlAlgorithm.MULTI_VOLT_VAR);
     }
 
     public void setCcId(int id) {
@@ -77,5 +79,13 @@ public class ViewableFeeder {
 
     public void setShowTargetTooltip(boolean showTargetTooltip) {
         this.showTargetTooltip = showTargetTooltip;
+    }
+
+    public boolean isMultiVoltVarControlled() {
+        return multiVoltVarControlled;
+    }
+
+    public void setMultiVoltVarControlled(boolean multiVoltVarControlled) {
+        this.multiVoltVarControlled = multiVoltVarControlled;
     }
 }

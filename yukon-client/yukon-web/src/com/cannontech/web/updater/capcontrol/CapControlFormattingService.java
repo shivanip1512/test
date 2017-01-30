@@ -40,6 +40,7 @@ public interface CapControlFormattingService<E> {
         TARGET_PEAKLEAD,
         TARGET_CLOSEOPENPERCENT,
         TARGET_MESSAGE,
+        TARGET_KVAR,
         KVAR_LOAD,
         KVAR_LOAD_EST,
         KVAR_LOAD_QUALITY,

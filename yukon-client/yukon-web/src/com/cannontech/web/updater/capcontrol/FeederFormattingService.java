@@ -62,6 +62,12 @@ public class FeederFormattingService extends AbstractFormattingService<Feeder> {
     }
     
     @Override
+    protected String getTargetKVar(final Feeder latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String value = (String) updaterHelper.getFeederValueAt(latestValue, UpdaterHelper.UpdaterDataType.FDR_TARGET_KVAR, context);
+        return value;    
+    }
+    
+    @Override
     protected String getKVarLoad(final Feeder latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
         String value = (String) updaterHelper.getFeederValueAt(latestValue, UpdaterHelper.UpdaterDataType.FDR_VAR_LOAD_COLUMN, context);
         return value;    

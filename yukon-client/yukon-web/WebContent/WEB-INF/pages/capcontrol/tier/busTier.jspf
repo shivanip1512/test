@@ -110,6 +110,11 @@
                                         <span class="ivvcTargetLabel"><i:inline key=".ivvcPowerFactor"/></span>
                                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_CLOSEOPENPERCENT"/>
                                     </c:when>
+                                    <c:when test="${viewableSubBus.multiVoltVarControlled}">
+                                        <cti:msg2 key=".volts"/><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET"/>
+                                        <br/>
+                                        <cti:msg2 key=".kvars"/><cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET_KVAR"/>
+                                    </c:when>
                                     <c:otherwise>
                                         <cti:capControlValue paoId="${subbusId}" type="SUBBUS" format="TARGET"/>
                                     </c:otherwise>

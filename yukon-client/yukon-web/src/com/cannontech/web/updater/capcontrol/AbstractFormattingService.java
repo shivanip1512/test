@@ -226,6 +226,11 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
                 break;    
             }
             
+            case TARGET_KVAR : {
+                value = getTargetKVar(latestValue, updaterHelper, context);
+                break;    
+            }
+            
             case WARNING_FLAG : {
                 boolean response = getWarningFlag(latestValue, updaterHelper, context);
                 value = jsonPayloadFrom(latestValue, response);
@@ -474,6 +479,10 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
     }
     
     protected String getTargetMessage(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
+    protected String getTargetKVar(E latestValue, UpdaterHelper updaterHelper, YukonUserContext context) {
         throw new UnsupportedOperationException("Not supported at this level");
     }
     

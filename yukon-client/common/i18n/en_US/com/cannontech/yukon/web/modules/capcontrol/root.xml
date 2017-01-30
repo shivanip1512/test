@@ -55,6 +55,8 @@
     <entry key="yukon.web.modules.capcontrol.dailyOps">{0} / {1}</entry>
     <entry key="yukon.web.modules.capcontrol.dailyMaxTotalOps">{0} / {1} / {2}</entry>
     <entry key="yukon.web.modules.capcontrol.pfEstPf">{0} / {1}</entry>
+    <entry key="yukon.web.modules.capcontrol.volts">Volts:</entry>
+    <entry key="yukon.web.modules.capcontrol.kvars">kVArs:</entry>
     
     <entry key="yukon.web.modules.capcontrol.attributes.voltage">Voltage</entry>
     <entry key="yukon.web.modules.capcontrol.attributes.tapPosition">Tap Position</entry>

@@ -60,6 +60,12 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
     }
     
     @Override
+    protected String getTargetKVar(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
+        String target = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_TARGET_KVAR, context);
+        return target;
+    }
+    
+    @Override
     protected String getDailyMaxOps(final SubBus latestValue, final UpdaterHelper updaterHelper, YukonUserContext context) {
         String value = (String) updaterHelper.getSubBusValueAt(latestValue, UpdaterHelper.UpdaterDataType.SUB_DAILY_OPERATIONS_COLUMN, context);
         return value;

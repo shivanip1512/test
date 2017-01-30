@@ -55,7 +55,7 @@
             <%-- Target --%>
             <td>
                 <c:choose>
-                    <c:when test="${viewfeeder.individualFeederControlled || viewfeeder.ivvcControlled}">
+                    <c:when test="${viewfeeder.individualFeederControlled || viewfeeder.ivvcControlled || viewfeeder.multiVoltVarControlled}">
                         <c:if test="${viewfeeder.showTargetTooltip}">
                             <div id="feeder-target-msg-${feederId}" class="dn">
                                 <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_MESSAGE"/>
@@ -71,6 +71,11 @@
                                     <br>
                                     <span class="ivvcTargetLabel"><i:inline key=".ivvcPowerFactor"/></span>
                                     <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_CLOSEOPENPERCENT"/>
+                                </c:when>
+                                <c:when test="${viewfeeder.multiVoltVarControlled}">
+                                    <cti:msg2 key=".volts"/><cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET" />
+                                    <br/>
+                                    <cti:msg2 key=".kvars"/><cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET_KVAR" />
                                 </c:when>
                                 <c:otherwise>
                                     <cti:capControlValue paoId="${feederId}" type="FEEDER" format="TARGET" />

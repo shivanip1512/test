@@ -11,6 +11,7 @@ import java.util.StringTokenizer;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.YukonLogManager;
@@ -101,6 +102,7 @@ public class UpdaterHelper {
         FDR_TARGET_COLUMN_PEAKLEAD,
         FDR_TARGET_COLUMN_PEAKLAG,
         FDR_TARGET_COLUMN_CLOSEOPENPERCENT,
+        FDR_TARGET_KVAR,
         FDR_VAR_LOAD_QUALITY,
         FDR_WATT_QUALITY,
         FDR_VOLT_QUALITY,
@@ -130,6 +132,7 @@ public class UpdaterHelper {
         SUB_TARGET_COLUMN_PEAKLEAD,
         SUB_TARGET_COLUMN_PEAKLAG,
         SUB_TARGET_COLUMN_CLOSEOPENPERCENT,
+        SUB_TARGET_KVAR,
         SUB_VAR_LOAD_QUALITY,
         SUB_WATT_QUALITY,
         SUB_VOLT_QUALITY,
@@ -662,6 +665,28 @@ public class UpdaterHelper {
 
             return accessor.getMessage(keyPrefix + "targetVar", num.format(subBus.getTargetvarvalue()));
         }
+        
+        case SUB_TARGET_KVAR: {
+            NumberFormat num = NumberFormat.getNumberInstance();
+            num.setMaximumFractionDigits(1);
+            num.setMinimumFractionDigits(1);
+            
+            if (subBus.getControlMethod() == ControlMethod.TIME_OF_DAY) {
+                return accessor.getMessage(keyPrefix + "tod");
+            } else if (subBus.getControlMethod() == null) {
+                return accessor.getMessage("yukon.common.none.choice");
+            } 
+            
+            //Decided to re-use these fields from the Cap Control Message so we did not need to add additional fields
+            String lead = num.format(subBus.getPeakPFSetPoint());
+            String lag = num.format(subBus.getOffpeakPFSetPoint());
+            
+            if (subBus.getPeakTimeFlag()) {
+                return accessor.getMessage(keyPrefix + "peakLeadLag", lead, lag);
+            } else {
+                return accessor.getMessage(keyPrefix + "offPeakLeadLag", lead, lag);
+            }
+        }
 
         case SUB_VAR_LOAD_POPUP: {
             NumberFormat num = NumberFormat.getNumberInstance();
@@ -885,7 +910,6 @@ public class UpdaterHelper {
             } 
 
             if (feeder.getPeakTimeFlag()) {
-                
                 if (feeder.isPowerFactorControlled()) {
                     String close = CommonUtils.formatDecimalPlaces(feeder.getPeakLag(), 0); 
                     String target = num.format(feeder.getPeakPFSetPoint()); 
@@ -920,6 +944,28 @@ public class UpdaterHelper {
             num.setMinimumFractionDigits(0);
             
             return accessor.getMessage(keyPrefix + "targetVar", num.format(feeder.getTargetvarvalue()));
+        }
+        
+        case FDR_TARGET_KVAR: {
+            NumberFormat num = NumberFormat.getNumberInstance();
+            num.setMaximumFractionDigits(1);
+            num.setMinimumFractionDigits(1);
+            
+            if (feeder.getAlgorithm() == ControlAlgorithm.TIME_OF_DAY) {
+                return accessor.getMessage(keyPrefix + "tod");
+            } else if (feeder.getAlgorithm() == null) {
+                return accessor.getMessage("yukon.common.none.choice");
+            } 
+            
+            //Decided to re-use these fields from the Cap Control Message so we did not need to add additional fields
+            String lead = num.format(feeder.getPeakPFSetPoint());
+            String lag = num.format(feeder.getOffpeakPFSetPoint());
+
+            if (feeder.getPeakTimeFlag()) {
+                return accessor.getMessage(keyPrefix + "peakLeadLag", lead, lag);
+            } else {
+                return accessor.getMessage(keyPrefix + "offPeakLeadLag", lead, lag);
+            }
         }
         
         case FDR_VAR_LOAD_POPUP: {
