@@ -4104,7 +4104,7 @@ void CtiVanGogh::loadDeviceLites(LONG id)
         DeviceBaseLite dLite;
         dLite.DecodeDatabaseReader(rdr);
 
-        _deviceLites[id] = dLite;
+        _deviceLites[dLite.getID()] = dLite;
     }
 
     if(DebugLevel & 0x00010000)
