@@ -703,6 +703,10 @@ public class DevEventLogCreationService {
                 int rowsDeleted = 10;
 
                 systemEventLogService.globalSettingChanged(user, GlobalSettingType.ACCT_PORT, "abc");
+                systemEventLogService.sensitiveGlobalSettingChanged(user, GlobalSettingType.ACCT_PORT);
+                systemEventLogService.importedHoneywellKeyFile(user);
+                systemEventLogService.honeywellKeyFileImportFailed(user);
+                systemEventLogService.newHoneywellPublicKeyGenerated(user);
                 systemEventLogService.loginChangeAttempted(user, username, devEventLog.getEventSource());
                 systemEventLogService.loginWebFailed(user.getUsername(), username, Type.DISABLED_USER);
                 systemEventLogService.loginWebFailed(user.getUsername(), username, Type.INVALID_PASSWORD);

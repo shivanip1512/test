@@ -144,7 +144,12 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
                 if (user == null) {
                     user = UserUtils.getYukonUser();
                 }
-                systemEventLogService.globalSettingChanged(user, setting.getType(), value == null ? "" : value.toString());
+                if (setting.isSensitiveInformation()) {
+                    systemEventLogService.sensitiveGlobalSettingChanged(user, setting.getType());
+                } else {
+                    systemEventLogService.globalSettingChanged(user, setting.getType(),
+                        value == null ? "" : value.toString());
+                }
             }
             if (isChangedComments) {
                 log.debug("Comments for " + setting.getType() + " updated");

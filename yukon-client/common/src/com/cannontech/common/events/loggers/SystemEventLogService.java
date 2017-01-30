@@ -96,4 +96,18 @@ public interface SystemEventLogService {
     /* Configuration */
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
     public void globalSettingChanged(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.globalSettingType) GlobalSettingType type, @Arg(ArgEnum.globalSettingValue) String value);
+
+    @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
+    public void sensitiveGlobalSettingChanged(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.globalSettingType) GlobalSettingType type);
+    
+    /* Security */
+    /* Honeywell Key Configuration */
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
+    public void importedHoneywellKeyFile(@Arg(ArgEnum.username) LiteYukonUser user);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
+    public void honeywellKeyFileImportFailed(@Arg(ArgEnum.username) LiteYukonUser user);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
+    public void newHoneywellPublicKeyGenerated(@Arg(ArgEnum.username) LiteYukonUser user);
 }

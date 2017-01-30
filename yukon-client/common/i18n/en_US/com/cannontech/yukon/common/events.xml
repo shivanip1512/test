@@ -586,6 +586,12 @@
     <!--  System Administration -->
     <!-- Configuration -->
     <entry key="yukon.common.events.system.configuration.globalSettingChanged">Global Setting {2} changed to {3} by {1}.</entry>
+    <entry key="yukon.common.events.system.configuration.sensitiveGlobalSettingChanged">Global Setting {2} changed by {1}.</entry>
+    
+    <!-- Honeywell Key Configuration -->
+    <entry key="yukon.common.events.system.configuration.importedHoneywellKeyFile">User {1} imported Honeywell Key file.</entry>
+    <entry key="yukon.common.events.system.configuration.honeywellKeyFileImportFailed">User {1} failed to import Honeywell Key file.</entry>
+    <entry key="yukon.common.events.system.configuration.newHoneywellPublicKeyGenerated">User {1} generated new Honeywell Public Key.</entry>
 
 <!--  Monitors -->
     <!-- Status Point Monitor -->

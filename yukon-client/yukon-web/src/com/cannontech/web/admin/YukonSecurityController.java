@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.SystemEventLogService;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -63,6 +64,7 @@ public class YukonSecurityController {
     @Autowired private RSAKeyfileService rsaKeyfileService;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private CsrfTokenService csrfTokenService;
+    @Autowired private SystemEventLogService systemEventLogService;
 
     private static final int KEYNAME_MAX_LENGTH = 50;
     private static final int KEYHEX_DIGITS_LENGTH = 32;
@@ -364,7 +366,7 @@ public class YukonSecurityController {
 
     @RequestMapping(method = RequestMethod.GET, value = "/config/security/getHoneywellPublicKey")
     @ResponseBody
-    public Map<String, Object> getHoneywellPublicKey() throws CryptoException {
+    public Map<String, Object> getHoneywellPublicKey(YukonUserContext userContext) throws CryptoException {
         Map<String, Object> json = new HashMap<>();
 
         try {
@@ -392,6 +394,7 @@ public class YukonSecurityController {
             String encryptedPrivateKeyValue = new String(Hex.encodeHex(encrypter.encrypt(privateStringKey.getBytes())));
 
             encryptedRouteDao.saveNewHoneywellEncryptionKey(encryptedPrivateKeyValue, encryptedpublicKeyValue);
+            systemEventLogService.newHoneywellPublicKeyGenerated(userContext.getYukonUser());
             json.put("honeywellPublicKey", publicStringKey);
 
         } catch (Exception ex) {
@@ -476,7 +479,10 @@ public class YukonSecurityController {
         boolean success = handleHoneywellUploadedFile(honeywellFileImportBindingBean, flashScope);
         if (!success) {
             log.info("Import for Honeywell Key file failed.");
+            systemEventLogService.honeywellKeyFileImportFailed(userContext.getYukonUser());
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
+        } else {
+            systemEventLogService.importedHoneywellKeyFile(userContext.getYukonUser());
         }
         return "redirect:view";
     }
