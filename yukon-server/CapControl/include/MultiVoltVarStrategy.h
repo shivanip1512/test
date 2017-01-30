@@ -27,6 +27,8 @@ public:
     virtual double getOffPeakVARLag() const;
     virtual double getPeakVARLead() const;
     virtual double getOffPeakVARLead() const;
+    virtual double getPeakPFSetPoint() const;
+    virtual double getOffPeakPFSetPoint() const;
 
     virtual void setPeakLag(const double value);
     virtual void setOffPeakLag(const double value);

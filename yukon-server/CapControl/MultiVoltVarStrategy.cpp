@@ -126,6 +126,18 @@ double MultiVoltVarStrategy::getOffPeakVARLead() const
 }
 
 
+double MultiVoltVarStrategy::getPeakPFSetPoint() const
+{
+    return getPeakTimeFlag() ? getPeakVARLead() : getOffPeakVARLead();
+}
+
+
+double MultiVoltVarStrategy::getOffPeakPFSetPoint() const
+{
+    return getPeakTimeFlag() ? getPeakVARLag() : getOffPeakVARLag();;
+}
+
+
 void MultiVoltVarStrategy::setPeakLag(const double value)
 {
     _peakLowerVoltLimit = value;
