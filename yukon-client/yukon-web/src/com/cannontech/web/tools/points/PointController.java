@@ -349,7 +349,7 @@ public class PointController {
         return "redirect:/tools/points/" + pointModel.getId() + "/edit";
     }
 
-    @RequestMapping(value = "/points/{id}", method = RequestMethod.DELETE)
+    @RequestMapping(value = "/points/{id}", method = RequestMethod.POST)
     public String delete(@PathVariable int id, FlashScope flashScope, YukonUserContext userContext) {
 
         verifyRoles(userContext.getYukonUser());

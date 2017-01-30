@@ -29,7 +29,7 @@ function taskFinished() {
 <div class="column-12-12 clearfix">
     <div class="column one">
         <tags:sectionContainer2 nameKey="settings">
-            <form:form action="do" commandName="abr">
+            <form:form action="do" method= "GET" commandName="abr">
                 <cti:csrfToken/>
                 <tags:hidden path="hardwareTypeId"/>
                 <tags:nameValueContainer2>
@@ -85,7 +85,7 @@ function taskFinished() {
     </div>
     <div class="column two nogutter">
         <cti:displayForPageEditModes modes="VIEW">
-            <form action="do" method="post">
+            <form action="do" method="GET">
                 <cti:csrfToken/>
                 <input type="hidden" name="taskId" value="${task.taskId}">
                 <tags:sectionContainer2 nameKey="progress">

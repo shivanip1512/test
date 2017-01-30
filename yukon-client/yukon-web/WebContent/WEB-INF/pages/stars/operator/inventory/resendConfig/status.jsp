@@ -14,7 +14,7 @@
 </div>
     
 <c:if test="${empty task}">
-    <form action="do">
+    <form action="do" method="GET">
         
         <cti:inventoryCollection inventoryCollection="${inventoryCollection}"/>
         

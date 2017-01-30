@@ -165,7 +165,7 @@ public class InventoryActionsController {
     }
     
     /** Inventory Actions */
-    @RequestMapping("inventoryActions")
+    @RequestMapping(value="inventoryActions", method = RequestMethod.GET)
     public String inventoryActions(HttpServletRequest req, ModelMap model, YukonUserContext userContext) {
         
         InventoryCollection collection = collectionFactory.createCollection(req);

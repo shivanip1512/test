@@ -12,6 +12,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.bulk.collection.inventory.InventoryCollection;
 import com.cannontech.common.constants.YukonListEntry;
@@ -104,7 +105,7 @@ public class AddHardwareByRangeController {
         }
     }
     
-    @RequestMapping("view")
+    @RequestMapping(value="view", method = RequestMethod.GET)
     public String view(ModelMap model, YukonUserContext userContext, int hardwareTypeId, String taskId) {
         
         YukonListEntry entry = listDao.getYukonListEntry(hardwareTypeId); 

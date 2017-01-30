@@ -689,7 +689,7 @@
     </c:if>
 
     <cti:url var="deleteUrl" value="/tools/points/${pointModel.id}" />
-    <form:form id="delete-point" action="${deleteUrl}" method="DELETE">
+    <form:form id="delete-point" action="${deleteUrl}" method="POST">
         <cti:csrfToken/>
     </form:form>
 
