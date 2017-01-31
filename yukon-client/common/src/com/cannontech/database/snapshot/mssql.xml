@@ -8061,6 +8061,20 @@
         <i__foreignKeys/>
         <i__indexes>
           <entry>
+            <string>AK_HONEYWELLWIFITHERMOSTAT_MAC</string>
+            <com.cariboulake.db.schemacompare.business.domain.db.Index>
+              <indexSegments>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>HoneywellWifiThermostat</i__tableName>
+                  <i__ordinalPosition>1</i__ordinalPosition>
+                  <i__columnName>MacAddress</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+              </indexSegments>
+              <indexName>AK_HONEYWELLWIFITHERMOSTAT_MAC</indexName>
+            </com.cariboulake.db.schemacompare.business.domain.db.Index>
+          </entry>
+          <entry>
             <string>PK_HONEYWELLWIFITHERMOSTAT</string>
             <com.cariboulake.db.schemacompare.business.domain.db.Index>
               <indexSegments>
