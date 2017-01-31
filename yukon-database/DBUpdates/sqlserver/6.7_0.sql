@@ -45,6 +45,14 @@ INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispe
 INSERT INTO MSPInterface VALUES (1, 'NOT_Server', 'http://127.0.0.1:8080/multispeak/v5/NOT_Server', '5.0');
 /* End YUK-16173 */
 
+/* Start YUK-16225 */
+/* @error ignore-begin */
+ALTER TABLE HoneywellWifiThermostat
+   ADD CONSTRAINT AK_HONEYWELLWIFITHERMOSTAT_MAC UNIQUE (MacAddress);
+GO
+/* @error ignore-end */
+/* End YUK-16225 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

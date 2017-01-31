@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/26/2017 9:47:52 AM                         */
+/* Created on:     1/31/2017 10:19:55 AM                        */
 /*==============================================================*/
 
 
@@ -5560,6 +5560,9 @@ create table HoneywellWifiThermostat  (
    UserId               NUMBER                          not null,
    constraint PK_HONEYWELLWIFITHERMOSTAT primary key (DeviceId)
 );
+
+alter table HoneywellWifiThermostat
+   add constraint AK_HONEYWELLWIFITHERMOSTAT_MAC unique (MacAddress);
 
 /*==============================================================*/
 /* Table: ImportData                                            */

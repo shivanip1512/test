@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/26/2017 9:48:48 AM                         */
+/* Created on:     1/31/2017 10:20:45 AM                        */
 /*==============================================================*/
 
 
@@ -5855,6 +5855,10 @@ create table HoneywellWifiThermostat (
    UserId               numeric              not null,
    constraint PK_HONEYWELLWIFITHERMOSTAT primary key (DeviceId)
 )
+go
+
+alter table HoneywellWifiThermostat
+   add constraint AK_HONEYWELLWIFITHERMOSTAT_MAC unique (MacAddress)
 go
 
 /*==============================================================*/

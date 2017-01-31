@@ -2,7 +2,11 @@
 /**** SQL Server DBupdates             ****/
 /******************************************/
 
-/* No Updates */
+/* Start YUK-16225 */
+ALTER TABLE HoneywellWifiThermostat
+   ADD CONSTRAINT AK_HONEYWELLWIFITHERMOSTAT_MAC UNIQUE (MacAddress);
+GO
+/* End YUK-16225 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
