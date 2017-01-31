@@ -621,6 +621,8 @@ public class UpdaterHelper {
             
             if (subBus.getControlMethod() == ControlMethod.TIME_OF_DAY) {
                 return accessor.getMessage(keyPrefix + "tod");
+            } else if (subBus.getControlMethod() == ControlMethod.MANUAL_ONLY) {
+                return accessor.getMessage(keyPrefix + "manual");
             } else if (subBus.getControlMethod() == null) {
                 return accessor.getMessage("yukon.common.none.choice");
             } 
@@ -905,6 +907,8 @@ public class UpdaterHelper {
             
             if (feeder.getControlmethod() == ControlMethod.TIME_OF_DAY) {
                 return accessor.getMessage(keyPrefix + "tod");
+            } else if (feeder.getControlmethod() == ControlMethod.MANUAL_ONLY) {
+                return accessor.getMessage(keyPrefix + "manual");  
             } else if (feeder.getControlmethod() == null) {
                 return accessor.getMessage("yukon.common.none.choice");
             } 
