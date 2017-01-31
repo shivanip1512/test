@@ -43,7 +43,7 @@
     </div>
     <div class="stacked clearfix">
         <form action="abr/view" method="GET">
-            <cti:csrfToken/>
+            
             <cti:button nameKey="addHardwareByRange" id="addHardwareByRangeBtn" type="submit"/>
             <select name="hardwareTypeId">
                 <c:forEach items="${addHardwareByRangeTypes}" var="deviceType">
@@ -82,7 +82,7 @@
                             <td>
                                 <cti:url value="/stars/operator/inventory/inventoryActions" var="inventoryPickerUrl"/>
                                 <form id="select-individually-form" action="${inventoryPickerUrl}" method="GET">
-                                    <cti:csrfToken/>
+                                    
                                     <input type="hidden" name="collectionType" value="idList"/>
                                     <input type="hidden" name="idList.ids" id="inventoryIds"/>
                                     <tags:pickerDialog type="lmHardwareBasePicker" 

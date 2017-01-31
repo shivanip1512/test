@@ -164,7 +164,7 @@ public class AddHardwareByRangeController {
         model.addAttribute("none", accessor.getMessage("yukon.common.none.choice"));
     }
     
-    @RequestMapping(value="do", params="start")
+    @RequestMapping(value="do", params="start", method = RequestMethod.GET)
     public String startTask(ModelMap model, YukonUserContext userContext, @ModelAttribute("abr") AddByRange abr,
             BindingResult result, FlashScope flash) {
         
@@ -190,7 +190,7 @@ public class AddHardwareByRangeController {
         return "redirect:view";
     }
     
-    @RequestMapping(value="do", params="cancel")
+    @RequestMapping(value="do", params="cancel", method = RequestMethod.GET)
     public String cancel(FlashScope flash, String taskId) {
         
         if (StringUtils.isNotBlank(taskId)) {
