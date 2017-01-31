@@ -209,8 +209,8 @@ public class PointController {
         
         //get info needed for Calculation Tab
         if (isCalcType) {
-            model.addAttribute("types", new ArrayList<>(Arrays.asList("Operation", "Constant", "Function")));
-            model.addAttribute("operators", new ArrayList<>(Arrays.asList("+", "-", "*", "/", "PUSH")));
+            model.addAttribute("operators", CalcComponentTypes.CALC_OPERATIONS);
+            model.addAttribute("types", CalcComponentTypes.CALC_TYPES);
             model.addAttribute("functionOperators", listDao.getYukonSelectionList(CalcComponentTypes.CALC_FUNCTION_LIST_ID));
         }
 
@@ -226,8 +226,8 @@ public class PointController {
     @RequestMapping("/calculationRow/add")
     public String addCalculationRow(@RequestParam("nextIndex") int nextIndex, @RequestParam("pointId") int pointId, ModelMap model) {
         
-        model.addAttribute("types", new ArrayList<>(Arrays.asList("Operation", "Constant", "Function")));
-        model.addAttribute("operators", new ArrayList<>(Arrays.asList("+", "-", "*", "/", "PUSH")));
+        model.addAttribute("operators", CalcComponentTypes.CALC_OPERATIONS);
+        model.addAttribute("types", CalcComponentTypes.CALC_TYPES);
         model.addAttribute("functionOperators", listDao.getYukonSelectionList(CalcComponentTypes.CALC_FUNCTION_LIST_ID));
         model.addAttribute("nextIndex", nextIndex);
         PointModel pointModel = pointEditorService.getModelForId(pointId);

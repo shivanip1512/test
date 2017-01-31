@@ -116,4 +116,11 @@ public class CalcComponentTypes
 		PUSH_OPERATION
 	};
 	
+	public static String[] CALC_TYPES = 
+	{
+	    OPERATION_COMP_TYPE,
+	    CONSTANT_COMP_TYPE,
+	    FUNCTION_COMP_TYPE
+	};
+	
 }
