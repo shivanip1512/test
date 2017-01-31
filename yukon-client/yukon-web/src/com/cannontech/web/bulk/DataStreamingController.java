@@ -74,6 +74,7 @@ public class DataStreamingController {
 
         DataStreamingConfig newConfig = new DataStreamingConfig();
         newConfig.setAccessor(accessor);
+        newConfig.setSelectedInterval(5);
         attributes.forEach(a -> {
             DataStreamingAttribute attribute = new DataStreamingAttribute();
             attribute.setAttribute(a);
