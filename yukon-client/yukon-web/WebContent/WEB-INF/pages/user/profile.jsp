@@ -161,22 +161,28 @@ $(document).ready(function(){
                                                 <c:when test="${iconOnly}">
                                                     <c:set var="title" value="${prefText}"/>
                                                     <c:set var="renderMode" value="buttonImage"/>
+                                                    <c:set var="optMap" value="${prefDisplayOptMap.get('iconONLY')}"/>
+                                                    <c:set var="icon" value="${optMap.get(prefOption.value)}"/>
                                                 </c:when>
                                                 <c:otherwise>
                                                     <c:set var="title" value=""/>
                                                     <c:set var="renderMode" value="button"/>
+                                                    <c:set var="icon" value=""/>
                                                 </c:otherwise>
                                             </c:choose>
-                                            <c:choose>
-                                                <c:when test="${iconOnly}">
-                                                    <c:set var="optMap" value="${prefDisplayOptMap.get('iconONLY')}"/>
-                                                    <c:set var="icon" value="${optMap.get(prefOption.value)}"/>
-                                                </c:when>
-                                                <c:otherwise><c:set var="icon" value=""/></c:otherwise>
-                                            </c:choose>
-                                            <cti:button classes="${classes}" title="${title}" renderMode="${renderMode}" 
-                                                label="${prefText}" icon="${icon}" data-value="${prefOption.value}"/>
+                                            <c:if test="${prefName ne 'DISPLAY_EVENT_RANGE'}">
+	                                            <cti:button id="meter-trends-alerts-pref" classes="${classes}" title="${title}" renderMode="${renderMode}" 
+	                                            label="${prefText}" icon="${icon}" data-value="${prefOption.value}"/>
+                                            </c:if>
                                         </c:forEach>
+                                        <c:if test="${prefName eq 'DISPLAY_EVENT_RANGE'}">
+                                            <tags:stepper id="events-range-pref" classes="fr stacked">
+                                                <c:forEach var="range" items="${ranges}">
+                                                    <c:set var="selected" value="${range eq lastRange ? 'selected' : ''}"/>
+                                                    <option value="${range}" ${selected}><cti:msg2 key="${range}"/></option>
+                                                </c:forEach>
+                                            </tags:stepper>
+                                       </c:if>
                                     </div>
                                 </td>
                             </tr>

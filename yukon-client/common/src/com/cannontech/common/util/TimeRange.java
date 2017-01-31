@@ -23,7 +23,10 @@ public enum TimeRange implements DisplayableEnum {
     
     @Override
     public String getFormatKey() {
-        return "yukon.common.time.range." + name();
+        return "yukon.web.modules.user.preferences.DISPLAY_EVENT_RANGE." + name();
     }
     
+    public static TimeRange getDefault() {
+        return DAY_1;
+    }
 }

@@ -25,7 +25,19 @@ yukon.userProfile = (function () {
                 prefName: row.data('type'),
                 prefValue: btn.data('value')
             };
+        $.ajax({ type: 'post', url: url, data: params });
+    },
+    
+    _setEventRangeEnumPreference = function (ev) {
         
+        var btn = $(this),
+            row = btn.closest('tr'),
+            url = yukon.url('/user/updatePreference.json'),
+            params = {
+                userId: $('#user-id').val(),
+                prefName: row.data('type'),
+                prefValue: $('#events-range-pref').val()
+            };
         $.ajax({ type: 'post', url: url, data: params });
     },
     
@@ -53,9 +65,13 @@ yukon.userProfile = (function () {
         .done(function (json) {
             // Go through the data and turn on enums
             json.preferences.forEach(function (preference, index, fullarray) {
-                var row = table.find('tr[data-type=' + preference.name + ']');
-                row.find('.button').removeClass('on');
-                row.find('.button-group [data-value='+ preference.defaultVal +']').addClass('on');
+                if (preference.name === 'DISPLAY_EVENT_RANGE') {
+                    $('#events-range-pref').val(preference.defaultVal);
+                } else {
+                    var row = table.find('tr[data-type=' + preference.name + ']');
+                    row.find('.button').removeClass('on');
+                    row.find('.button-group [data-value='+ preference.defaultVal +']').addClass('on');
+                }
             });
         });
     },
@@ -114,7 +130,8 @@ yukon.userProfile = (function () {
             
             if (_initialized) return;
             
-            $(document).on('click', '#preferences-table .js-pref-options .button-group .button', _setEnumPreference);
+            $(document).on('click', '#meter-trends-alerts-pref', _setEnumPreference);
+            $(document).on('change', '#events-range-pref', _setEventRangeEnumPreference);
             $(document).on('click', '#preferences-table .js-pref-options .js-pref-default', _restoreDefault);
             $(document).on('click', '#add-notif-btn', _addNotification);
             $(document).on('click', '#contact-notif-table td .js-remove', _removeNotification);

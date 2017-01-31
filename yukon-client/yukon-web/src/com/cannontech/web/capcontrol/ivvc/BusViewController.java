@@ -31,6 +31,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.TimeRange;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -42,8 +43,8 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.common.chart.service.FlotChartService;
+import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.util.WebUtilityService;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -61,9 +62,7 @@ public class BusViewController {
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     @Autowired private FlotChartService flotChartService;
     @Autowired private WebUtilityService webUtil;
-    
-    private static final TypeReference<TimeRange> rangeRef = new TypeReference<TimeRange>() {};
-
+    @Autowired private UserPreferenceService prefService;
     
     @RequestMapping(value="detail", method = RequestMethod.GET)
     public String detail(ModelMap model, YukonUserContext userContext, int subBusId, HttpServletRequest req) throws IOException {
@@ -98,7 +97,8 @@ public class BusViewController {
         model.addAttribute("singlePhaseZone", ZoneType.SINGLE_PHASE);
         
         model.addAttribute("ranges", TimeRange.values());
-        TimeRange lastRange = webUtil.getYukonCookieValue(req, "ivvc-regualtor", "last-event-range", TimeRange.DAY_1, rangeRef);
+        TimeRange lastRange =
+            TimeRange.valueOf(prefService.getPreference(user, UserPreferenceName.DISPLAY_EVENT_RANGE));
         model.addAttribute("lastRange", lastRange);
         
         Map<String, Integer> hours = new HashMap<>();

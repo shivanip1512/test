@@ -1,6 +1,7 @@
 package com.cannontech.core.users.model;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.common.util.TimeRange;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.system.OnOff;
@@ -22,7 +23,9 @@ public enum UserPreferenceName implements DisplayableEnum {
     ALERT_FLASH(InputTypeFactory.enumType(OnOff.class),
             OnOff.ON.name()),
     ALERT_SOUND(InputTypeFactory.enumType(OnOff.class),
-            OnOff.OFF.name());
+            OnOff.OFF.name()),
+    DISPLAY_EVENT_RANGE(InputTypeFactory.enumType(TimeRange.class),
+        TimeRange.getDefault().name()),    ;
 
 
     final private InputType<?> valueType;
