@@ -338,31 +338,31 @@ yukon.tools.point = (function () {
         var newValue = $(this).val();
         var row = $(this).closest('tr');
         if (newValue == 'Constant') {
-            row.find(".js-constant").removeClass('dn');
+            row.find('.js-constant').removeClass('dn');
             var pointPickerId = row.data("pointPickerId");
             yukon.pickers[pointPickerId].removeEvent();
-            row.find(".js-point-picker").addClass('dn');
+            row.find('.js-point-picker').addClass('dn');
         } else {
-            row.find(".js-constant").addClass('dn');
-            row.find(".js-point-picker").removeClass('dn');
-            row.find(".js-constant-value").val(0);
+            row.find('.js-constant').addClass('dn');
+            row.find('.js-point-picker').removeClass('dn');
+            row.find('.js-constant-value').val(0);
         }
         if (newValue == 'Function') {
-            row.find(".js-function-options option[value='(none)']").remove();
-            row.find(".js-function-operations").removeClass('dn');
-            row.find(".js-operations").addClass('dn');
-            row.find(".js-operation-options option[value='(none)']").add();
-            row.find(".js-operation-options").val('(none)');
-            var firstValue = row.find(".js-function-options option:first").val();
-            row.find(".js-function-options").val(firstValue);
+            row.find('.js-function-options option[value="(none)"]').remove();
+            row.find('.js-function-operations').removeClass('dn');
+            row.find('.js-operations').addClass('dn');
+            row.find('.js-operation-options').append('<option value="(none)"/>');
+            row.find('.js-operation-options').val('(none)');
+            var firstValue = row.find('.js-function-options option:first').val();
+            row.find('.js-function-options').val(firstValue);
         } else {
-            row.find(".js-operation-options option[value='(none)']").remove();
-            row.find(".js-function-operations").addClass('dn');
-            row.find(".js-operations").removeClass('dn');
-            row.find(".js-function-options option[value='(none)']").add();
-            row.find(".js-function-options").val('(none)');
-            var firstValue = row.find(".js-operation-options option:first").val();
-            row.find(".js-operation-options").val(firstValue);
+            row.find('.js-operation-options option[value="(none)"]').remove();
+            row.find('.js-function-operations').addClass('dn');
+            row.find('.js-operations').removeClass('dn');
+            row.find('.js-function-options').append('<option value="(none)"/>');
+            row.find('.js-function-options').val('(none)');
+            var firstValue = row.find('.js-operation-options option:first').val();
+            row.find('.js-operation-options').val(firstValue);
         }
         
     };

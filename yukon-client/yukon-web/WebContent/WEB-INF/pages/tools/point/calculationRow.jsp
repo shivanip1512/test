@@ -17,14 +17,12 @@
                     path="pointModel.pointBase.calcComponents[${nextIndex}].componentPointID" />
                 <tags:pickerDialog
                     id="calcPoint${nextIndex}Picker"
-                    type="pointPicker"
+                    type="notSystemPointPicker"
                     linkType="selectionLabel"
                     selectionProperty="paoPoint"
                     buttonStyleClass="M0"
-                    excludeIds="0"
                     destinationFieldId="calc-component-point-${nextIndex}-input"
                     viewOnlyMode="${false}"
-                    allowEmptySelection="${true}"
                     includeRemoveButton="${true}"
                     removeValue="0" />
             </span>

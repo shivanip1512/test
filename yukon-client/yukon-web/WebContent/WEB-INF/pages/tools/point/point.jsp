@@ -614,16 +614,19 @@
                                                 path="pointBase.calcComponents[${status.index}].componentPointID" />
                                             <tags:pickerDialog
                                                 id="calcPoint${status.index}Picker"
-                                                type="pointPicker"
+                                                type="notSystemPointPicker"
                                                 linkType="selectionLabel"
                                                 selectionProperty="paoPoint"
                                                 buttonStyleClass="M0"
-                                                excludeIds="0"
                                                 destinationFieldId="calc-component-point-${status.index}-input"
                                                 viewOnlyMode="${mode == 'VIEW'}"
-                                                allowEmptySelection="${true}"
                                                 includeRemoveButton="${true}"
                                                 removeValue="0" />
+                                            <cti:displayForPageEditModes modes="VIEW">
+                                                <c:if test="${calcComponent.componentPointID == 0}">
+                                                    <span class="empty-list"><i:inline key="yukon.web.components.button.selectionPicker.label"/></span>
+                                                </c:if>
+                                            </cti:displayForPageEditModes>
                                         </span>
                                     </td>
                                     <td>
