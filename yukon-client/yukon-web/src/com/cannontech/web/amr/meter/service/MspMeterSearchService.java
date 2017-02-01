@@ -7,5 +7,9 @@ import com.cannontech.web.amr.meter.MspFilterBy;
 public interface MspMeterSearchService {
 
     public List<MspFilterBy> getMspFilterByList();
+    /**
+     * Load the Msp Search Fields based on the vendorId.
+     */
+    void loadMspSearchFields(int vendorId);
 
 }

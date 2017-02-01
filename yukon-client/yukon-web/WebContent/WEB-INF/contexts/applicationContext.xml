@@ -910,8 +910,9 @@
     <bean id="attributeSelectorHelperService" class="com.cannontech.web.util.AttributeSelectorHelperServiceImpl"/>
 
     <!-- MULTISPEAK -->
-    <bean id="mspMeterSearchService" class="com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImplV3"/>
-    <bean id="mspMeterSearchServiceV5" class="com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImplV5"/>
+    <bean id="mspMeterSearchService" class="com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImpl"/>
+    <bean id="mspSearchFieldsProviderV3" class="com.cannontech.web.amr.meter.service.impl.MspSearchFieldsProviderV3"/>
+    <bean id="mspSearchFieldsProviderV5" class="com.cannontech.web.amr.meter.service.impl.MspSearchFieldsProviderV5"/>
 
     <bean id="serviceLocationMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.ServiceLocationMspMeterSearchMethodResultProvider"/>
     <bean id="eaLocationMspMeterSearchMethodResultProvider" class="com.cannontech.web.amr.meter.service.impl.EaLocationMspMeterSearchMethodResultProvider"/>

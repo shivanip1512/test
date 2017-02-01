@@ -65,7 +65,7 @@ public class PayloadTransformingInterceptor extends TransformerObjectSupport imp
             }
 
         }
-        return false;
+        return true;
     }
 
     @Override

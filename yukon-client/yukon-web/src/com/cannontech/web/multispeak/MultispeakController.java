@@ -40,8 +40,7 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImplV3;
-import com.cannontech.web.amr.meter.service.impl.MspMeterSearchServiceImplV5;
+import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.ServletRequestEnumUtils;
@@ -54,8 +53,7 @@ public class MultispeakController {
     @Autowired private MultispeakDao multispeakDao;
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MspObjectDao mspObjectDao;
-    @Autowired private MspMeterSearchServiceImplV3 mspMeterSearchServiceV3;
-    @Autowired private MspMeterSearchServiceImplV5 mspMeterSearchServiceV5;
+    @Autowired private MspMeterSearchService mspMeterSearchService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private GlobalSettingUpdateDao globalSettingUpdateDao;
     
@@ -200,13 +198,8 @@ public class MultispeakController {
         }
         
         // If we called getMethods on the primary CIS vendor, we should reload the search fields
-        if (multispeakFuncs.isPrimaryCIS(mspVendor)) {
-            if (mspVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR).getVersion().equals(
-                MultiSpeakVersion.V3.getVersion())) {
-                mspMeterSearchServiceV3.loadMspSearchFields(vendorId);
-            } else {
-                mspMeterSearchServiceV5.loadMspSearchFields(vendorId);
-            }
+        if( multispeakFuncs.isPrimaryCIS(mspVendor)) {
+            mspMeterSearchService.loadMspSearchFields(vendorId);
         }
         
         map.addAttribute("mspVendorId", vendorId);
@@ -379,13 +372,7 @@ public class MultispeakController {
                 }
             
                 //reload the search field methods since primaryCIS has changed
-                MultispeakVendor mspPrimaryCISVendor = multispeakDao.getMultispeakVendor(mspPrimaryCIS);
-                if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR).getVersion().equals(
-                    MultiSpeakVersion.V3.getVersion())) {
-                    mspMeterSearchServiceV3.loadMspSearchFields(mspPrimaryCIS);
-                } else {
-                    mspMeterSearchServiceV5.loadMspSearchFields(mspPrimaryCIS);
-                }
+                mspMeterSearchService.loadMspSearchFields(mspPrimaryCIS);
             }
             if (oldMspPaoNameAliasExtension != mspPaoNameAliasExtension) {
                 // update PaoName Alias Extension field name
