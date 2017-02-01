@@ -186,6 +186,8 @@ protected:
     Conductor( const Conductor & condutor ) = default;
     Conductor & operator=( const Conductor & rhs ) = delete;
 
+    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) override;
+
 private:
 
     void restoreStaticData( Cti::RowReader & rdr );

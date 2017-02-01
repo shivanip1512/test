@@ -209,7 +209,7 @@ public:
 
     void checkAndUpdateRecentlyControlledFlag();
 
-    void addAllSubPointsToMsg(std::set<long>& pointAddMsg);
+    void getSpecializedPointRegistrationIds( std::set<long> & registrationIDs ) override;
     void verifyControlledStatusFlags();
     long getNextTODStartTime();
 

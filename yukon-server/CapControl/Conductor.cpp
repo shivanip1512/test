@@ -281,6 +281,19 @@ void Conductor::updateRegression( CtiRegression & regression, const std::string 
     }
 }
 
+void Conductor::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
+{
+    insertPointRegistration( registrationIDs, getCurrentVarLoadPointId() );
+    insertPointRegistration( registrationIDs, getCurrentWattLoadPointId() );
+    insertPointRegistration( registrationIDs, getCurrentVoltLoadPointId() );
+    insertPointRegistration( registrationIDs, getEstimatedVarLoadPointId() );
+    insertPointRegistration( registrationIDs, getDailyOperationsAnalogPointId() );
+    insertPointRegistration( registrationIDs, getPowerFactorPointId() );
+    insertPointRegistration( registrationIDs, getEstimatedPowerFactorPointId() );
+    insertPointRegistration( registrationIDs, getPhaseBId() );
+    insertPointRegistration( registrationIDs, getPhaseCId() );
+}
+
 // VAr
 
 long Conductor::getCurrentVarLoadPointId() const

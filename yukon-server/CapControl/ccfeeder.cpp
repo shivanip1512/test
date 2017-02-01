@@ -4370,37 +4370,9 @@ bool CtiCCFeeder::scanAllMonitorPoints()
     return retVal;
 }
 
-void CtiCCFeeder::addAllFeederPointsToMsg(std::set<long>& pointAddMsg)
+void CtiCCFeeder::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
 {
-
-    if( getCurrentVarLoadPointId() > 0 )
-    {
-        pointAddMsg.insert(getCurrentVarLoadPointId());
-    }
-    if( getCurrentWattLoadPointId() > 0 )
-    {
-        pointAddMsg.insert(getCurrentWattLoadPointId());
-    }
-    if (getCurrentVoltLoadPointId() > 0)
-    {
-        pointAddMsg.insert(getCurrentVoltLoadPointId());
-    }
-    if (getEstimatedVarLoadPointId() > 0)
-    {
-        pointAddMsg.insert(getEstimatedVarLoadPointId());
-    }
-    if (getDailyOperationsAnalogPointId() > 0)
-    {
-        pointAddMsg.insert(getDailyOperationsAnalogPointId());
-    }
-    if (getPowerFactorPointId() > 0)
-    {
-        pointAddMsg.insert(getPowerFactorPointId());
-    }
-    if (getEstimatedPowerFactorPointId() > 0)
-    {
-        pointAddMsg.insert(getEstimatedPowerFactorPointId());
-    }
+    Conductor::getSpecializedPointRegistrationIds( registrationIDs );
 }
 
 /*---------------------------------------------------------------------------

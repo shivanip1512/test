@@ -1469,84 +1469,12 @@ void CtiCapController::registerForPoints( const RegistrationMethod m )
         {
             CtiCCSubstationBusPtr currentSubstationBus = busIter->second;
 
-            if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
-            {
-                registrationIds.insert(currentSubstationBus->getCurrentVarLoadPointId());
-            }
-            if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
-            {
-                registrationIds.insert(currentSubstationBus->getCurrentWattLoadPointId());
-            }
-            if (currentSubstationBus->getCurrentVoltLoadPointId() > 0)
-            {
-                registrationIds.insert(currentSubstationBus->getCurrentVoltLoadPointId());
-            }
-            if (currentSubstationBus->getEstimatedVarLoadPointId() > 0)
-            {
-                registrationIds.insert(currentSubstationBus->getEstimatedVarLoadPointId());
-            }
-            if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
-            {
-                registrationIds.insert(currentSubstationBus->getDailyOperationsAnalogPointId());
-            }
-            if (currentSubstationBus->getPowerFactorPointId() > 0)
-            {
-                registrationIds.insert(currentSubstationBus->getPowerFactorPointId());
-            }
-            if (currentSubstationBus->getEstimatedPowerFactorPointId() > 0)
-            {
-                registrationIds.insert(currentSubstationBus->getEstimatedPowerFactorPointId());
-            }
-            if (currentSubstationBus->getSwitchOverPointId() > 0)
-            {
-                registrationIds.insert(currentSubstationBus->getSwitchOverPointId());
-            }
-            if (currentSubstationBus->getPhaseBId() > 0)
-            {
-                registrationIds.insert(currentSubstationBus->getPhaseBId());
-            }
-            if (currentSubstationBus->getPhaseCId() > 0)
-            {
-                registrationIds.insert(currentSubstationBus->getPhaseCId());
-            }
-            if (currentSubstationBus->getVoltReductionControlId() > 0 )
-            {
-                registrationIds.insert(currentSubstationBus->getVoltReductionControlId());
-            }
-            if (currentSubstationBus->getDisableBusPointId() > 0 )
-            {
-                registrationIds.insert(currentSubstationBus->getDisableBusPointId());
-            }
-            if (currentSubstationBus->getCommsStatePointId() > 0 )
-            {
-                registrationIds.insert(currentSubstationBus->getCommsStatePointId());
-            }
-            if( currentSubstationBus->getDisabledStatePointId() > 0 )
-            {
-                registrationIds.insert(currentSubstationBus->getDisabledStatePointId());
-            }
-            if ( currentSubstationBus->getOperationStats().getUserDefOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentSubstationBus->getOperationStats().getUserDefOpSuccessPercentId());
-            }
-            if ( currentSubstationBus->getOperationStats().getDailyOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentSubstationBus->getOperationStats().getDailyOpSuccessPercentId());
-            }
-            if ( currentSubstationBus->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentSubstationBus->getOperationStats().getWeeklyOpSuccessPercentId());
-            }
-            if ( currentSubstationBus->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
-            {
-                registrationIds.insert(currentSubstationBus->getOperationStats().getMonthlyOpSuccessPercentId());
-            }
+            currentSubstationBus->getPointRegistrationIds( registrationIds );
 
             for each (long pointId in currentSubstationBus->getAllMonitorPointIds())
             {
                 registrationIds.insert(pointId);
             }
-
 
             CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
 
@@ -1554,63 +1482,7 @@ void CtiCapController::registerForPoints( const RegistrationMethod m )
             {
                 CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)(ccFeeders.at(j));
 
-                if( currentFeeder->getCurrentVarLoadPointId() > 0 )
-                {
-                    registrationIds.insert(currentFeeder->getCurrentVarLoadPointId());
-                }
-                if( currentFeeder->getCurrentWattLoadPointId() > 0 )
-                {
-                    registrationIds.insert(currentFeeder->getCurrentWattLoadPointId());
-                }
-                if ( currentFeeder->getCurrentVoltLoadPointId() > 0)
-                {
-                    registrationIds.insert(currentFeeder->getCurrentVoltLoadPointId());
-                }
-                if (currentFeeder->getEstimatedVarLoadPointId() > 0)
-                {
-                    registrationIds.insert(currentFeeder->getEstimatedVarLoadPointId());
-                }
-                if (currentFeeder->getDailyOperationsAnalogPointId() > 0)
-                {
-                    registrationIds.insert(currentFeeder->getDailyOperationsAnalogPointId());
-                }
-                if (currentFeeder->getPowerFactorPointId() > 0)
-                {
-                    registrationIds.insert(currentFeeder->getPowerFactorPointId());
-                }
-                if (currentFeeder->getEstimatedPowerFactorPointId() > 0)
-                {
-                    registrationIds.insert(currentFeeder->getEstimatedPowerFactorPointId());
-                }
-
-                if (currentFeeder->getPhaseBId() > 0)
-                {
-                    registrationIds.insert(currentFeeder->getPhaseBId());
-                }
-                if (currentFeeder->getPhaseCId() > 0)
-                {
-                    registrationIds.insert(currentFeeder->getPhaseCId());
-                }
-                if( currentFeeder->getDisabledStatePointId() > 0 )
-                {
-                    registrationIds.insert(currentFeeder->getDisabledStatePointId());
-                }
-                if ( currentFeeder->getOperationStats().getUserDefOpSuccessPercentId() > 0)
-                {
-                    registrationIds.insert(currentFeeder->getOperationStats().getUserDefOpSuccessPercentId());
-                }
-                if ( currentFeeder->getOperationStats().getDailyOpSuccessPercentId() > 0)
-                {
-                    registrationIds.insert(currentFeeder->getOperationStats().getDailyOpSuccessPercentId());
-                }
-                if ( currentFeeder->getOperationStats().getWeeklyOpSuccessPercentId() > 0)
-                {
-                    registrationIds.insert(currentFeeder->getOperationStats().getWeeklyOpSuccessPercentId());
-                }
-                if ( currentFeeder->getOperationStats().getMonthlyOpSuccessPercentId() > 0)
-                {
-                    registrationIds.insert(currentFeeder->getOperationStats().getMonthlyOpSuccessPercentId());
-                }
+                currentFeeder->getPointRegistrationIds( registrationIds );
 
                 CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
 

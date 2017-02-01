@@ -7292,79 +7292,15 @@ void CtiCCSubstationBus::verifyControlledStatusFlags()
     }
 }
 
-void CtiCCSubstationBus::addAllSubPointsToMsg(std::set<long>& pointAddMsg)
+void CtiCCSubstationBus::getSpecializedPointRegistrationIds( std::set<long> & registrationIDs )
 {
+    Conductor::getSpecializedPointRegistrationIds( registrationIDs );
 
-    if( getCurrentVarLoadPointId() > 0 )
-    {
-        pointAddMsg.insert(getCurrentVarLoadPointId());
-    }
-    if( getCurrentWattLoadPointId() > 0 )
-    {
-        pointAddMsg.insert(getCurrentWattLoadPointId());
-    }
-    if (getCurrentVoltLoadPointId() > 0)
-    {
-        pointAddMsg.insert(getCurrentVoltLoadPointId());
-    }
-    if (getEstimatedVarLoadPointId() > 0)
-    {
-        pointAddMsg.insert(getEstimatedVarLoadPointId());
-    }
-    if (getDailyOperationsAnalogPointId() > 0)
-    {
-        pointAddMsg.insert(getDailyOperationsAnalogPointId());
-    }
-    if (getPowerFactorPointId() > 0)
-    {
-        pointAddMsg.insert(getPowerFactorPointId());
-    }
-    if (getEstimatedPowerFactorPointId() > 0)
-    {
-        pointAddMsg.insert(getEstimatedPowerFactorPointId());
-    }
-    if (getSwitchOverPointId() > 0)
-    {
-        pointAddMsg.insert(getSwitchOverPointId());
-    }
-    if (getPhaseBId() > 0)
-    {
-        pointAddMsg.insert(getPhaseBId());
-    }
-    if (getPhaseCId() > 0)
-    {
-        pointAddMsg.insert(getPhaseCId());
-    }
-    if (getVoltReductionControlId() > 0)
-    {
-        pointAddMsg.insert(getVoltReductionControlId());
-    }
-    if (getDisableBusPointId() > 0)
-    {
-        pointAddMsg.insert(getDisableBusPointId());
-    }
-    if (getCommsStatePointId() > 0)
-    {
-        pointAddMsg.insert(getCommsStatePointId());
-    }
-    if (getOperationStats().getUserDefOpSuccessPercentId() > 0)
-    {
-        pointAddMsg.insert(getOperationStats().getUserDefOpSuccessPercentId());
-    }
-    if (getOperationStats().getDailyOpSuccessPercentId() > 0)
-    {
-        pointAddMsg.insert(getOperationStats().getDailyOpSuccessPercentId());
-    }
-    if (getOperationStats().getWeeklyOpSuccessPercentId() > 0)
-    {
-        pointAddMsg.insert(getOperationStats().getWeeklyOpSuccessPercentId());
-    }
-    if (getOperationStats().getMonthlyOpSuccessPercentId() > 0)
-    {
-        pointAddMsg.insert(getOperationStats().getMonthlyOpSuccessPercentId());
-    }
+    insertPointRegistration( registrationIDs, getSwitchOverPointId() );
+    insertPointRegistration( registrationIDs, getVoltReductionControlId() );
+    insertPointRegistration( registrationIDs, getDisableBusPointId() );
+    insertPointRegistration( registrationIDs, getCommsStatePointId() );
 }
-
 
 int CtiCCSubstationBus::getAlterateBusIdForPrimary() const
 {

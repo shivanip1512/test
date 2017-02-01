@@ -7855,12 +7855,12 @@ void CtiCCSubstationBusStore::registerForAdditionalPoints(PaoIdSet &modifiedBusI
            {
                continue;
            }
-           sub->addAllSubPointsToMsg(pointList);
+           sub->getPointRegistrationIds(pointList);
            CtiFeeder_vec& feeds = sub->getCCFeeders();
            for (long j = 0; j < feeds.size(); j++)
            {
                CtiCCFeederPtr feed = (CtiCCFeederPtr)feeds[j];
-               feed->addAllFeederPointsToMsg(pointList);
+               feed->getPointRegistrationIds(pointList);
                CtiCCCapBank_SVector& caps = feed->getCCCapBanks();
                for (long k = 0; k < caps.size(); k++)
                {
