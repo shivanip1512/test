@@ -127,7 +127,7 @@ public class MapNetworkController {
     }
     
     @RequestMapping(value="saveCoordinates")
-    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.UPDATE)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public String saveCoordinates(HttpServletResponse resp, @RequestParam("deviceId") int deviceId, @RequestParam("latitude") Double latitude, 
                   @RequestParam("longitude") Double longitude, FlashScope flash, YukonUserContext userContext) throws ServletException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
