@@ -9,10 +9,9 @@ public class NotSystemPointCriteria extends YukonObjectCriteriaHelper {
     public NotSystemPointCriteria() {
         super();
         for (PointType type : PointType.values()) {
-            if (type != PointType.System) {
-                addCriteria("pointtype", type.getPointTypeString(), BooleanClause.Occur.SHOULD);
-            }
+            addCriteria("pointtype", type.getPointTypeString(), BooleanClause.Occur.SHOULD);
         }
+        addCriteria("pointid", 0, BooleanClause.Occur.MUST_NOT);
     }
     
 }
