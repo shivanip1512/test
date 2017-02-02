@@ -74,10 +74,10 @@ public class PendingProfilesWidget extends WidgetControllerBase {
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
 
         // stop request
-        long stopRequestId = ServletRequestUtils.getLongParameter(request, "stopRequestId", 0);
+        long profileRequestId = ServletRequestUtils.getLongParameter(request, "profileRequestId", 0);
         LiteYukonPAObject device = databaseCache.getAllPaosMap().get(deviceId);
-        if (stopRequestId != 0) {
-            loadProfileService.removePendingLoadProfileRequest(device, stopRequestId, userContext);
+        if (profileRequestId != 0) {
+            loadProfileService.removePendingLoadProfileRequest(device, profileRequestId, userContext);
         }
         
         // re-get pending

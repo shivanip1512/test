@@ -4,6 +4,8 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%-- THE LIST OF ONGOING/PENDING PROFILE REQUESTS --%>
+<cti:msg2 key=".cancel.profile.request.tooltip" var="cancelRequest"/>
+<cti:msg2 key=".acknowledge.profile.request.completion.tooltip" var="ackRequest"/>
 <div id="${divId}">
 <c:choose>
     <c:when test="${not empty pendingRequests}">
@@ -24,19 +26,28 @@
                                         <td><tags:pendingProfileProgressBar requestId="${pendingRequest.requestId}" percentDone="${pendingRequest.percentDone}" lastReturnMsg="${lastReturnMsg}"/></td>
                                     </c:if>
                                     <c:if test="${isRfn}">
-                                    <td>
-                                        <c:if test="${empty pendingRequest.percentDone}">
-                                            <div class="error"><i:inline key="yukon.common.requestFailed"/></div><div>${pageScope.lastReturnMsg}</div><div class="error">${pendingRequest.requestFailureMessage}</div>
-                                        </c:if>
-                                        <c:if test="${pendingRequest.percentDone >= 100.0}">
-                                           <div class="success"><i:inline key="yukon.common.completed"/></div>
-                                        </c:if>
-                                        <c:if test="${pendingRequest.percentDone <= 0.0}">
-                                            <div><i:inline key="yukon.common.inProgress"/></div>
-                                        </c:if>
-                                     </td>   
-                                    </c:if>
-                                    <td><cti:button onclick="javascript:cancelLoadProfile(${pendingRequest.requestId});" icon="icon-cross" renderMode="buttonImage"/></td>
+                                        <td>
+	                                        <c:if test="${empty pendingRequest.percentDone}">
+	                                            <div class="error"><i:inline key="yukon.common.requestFailed"/></div><div>${pageScope.lastReturnMsg}</div><div class="error">${pendingRequest.requestFailureMessage}</div>
+	                                        </c:if>
+	                                        <c:if test="${pendingRequest.percentDone >= 100.0}">
+	                                           <div class="success"><i:inline key="yukon.common.completed"/></div>
+	                                        </c:if>
+	                                        <c:if test="${pendingRequest.percentDone <= 0.0}">
+	                                            <div><i:inline key="yukon.common.inProgress"/></div>
+	                                        </c:if>
+                                        </td>
+                                     </c:if>
+                                     <td>
+                                        <c:choose>
+                                            <c:when test="${pendingRequest.percentDone <= 0.0}">
+	                                            <td><cti:button title="${cancelRequest}" onclick="javascript:cancelLoadProfileOrAcknowledgeResults(${pendingRequest.requestId});" icon="icon-cross" renderMode="buttonImage"/></td>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <td><cti:button title="${ackRequest}" onclick="javascript:cancelLoadProfileOrAcknowledgeResults(${pendingRequest.requestId});" icon="icon-tick" renderMode="buttonImage"/></td>
+                                            </c:otherwise>
+                                        </c:choose>   
+                                    </td>
                                 </tr>
                             </table>
                         </tags:nameValue2>

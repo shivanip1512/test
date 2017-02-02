@@ -16,9 +16,9 @@
     var refresher = ${widgetParameters.jsWidget}.doPeriodicRefresh(refreshCmd, refreshParams, refreshPeriod);
     
     // CANCEL FUNCTION
-    function cancelLoadProfile(requestId) {
+    function cancelLoadProfileOrAcknowledgeResults(requestId) {
         // stop - send request to refreshPending() with a stopRequestId parameter
-        ${widgetParameters.jsWidget}.setParameter('stopRequestId', requestId);
+        ${widgetParameters.jsWidget}.setParameter('profileRequestId', requestId);
         ${widgetParameters.jsWidget}.doDirectActionRefresh('refreshPending');
     }
 </script>

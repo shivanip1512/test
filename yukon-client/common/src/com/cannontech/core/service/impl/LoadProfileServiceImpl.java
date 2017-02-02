@@ -553,6 +553,8 @@ public class LoadProfileServiceImpl implements LoadProfileService {
             for (ProfileRequestInfo request : requests) {
                 if (request.requestId == requestId) {
                     requests.remove(request);
+                    removed = true;
+                    break;
                 }
             }
         }
@@ -746,6 +748,7 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         for (ProfileRequestInfo info : requests){
             if (info.requestId == requestId){
                 info.requestFailureMessage = errorDescription;
+                break;
             }
         }
     }
