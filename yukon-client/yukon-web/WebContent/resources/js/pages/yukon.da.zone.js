@@ -133,6 +133,7 @@ yukon.da.zone = (function () {
             
             /** User changed the events time range. Cancel updating timeout and restart. */
             $('#ivvc-events-range').on('change', function () {
+                yukon.cookie.set('ivvc-regualtor', 'last-event-range', $(this).val());
                 clearTimeout(_events_token);
                 _updateRecentEvents();
             });

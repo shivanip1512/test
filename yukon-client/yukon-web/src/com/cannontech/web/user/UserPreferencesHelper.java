@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.ui.ModelMap;
 
-import com.cannontech.common.util.TimeRange;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
 import com.cannontech.core.users.model.UserPreference;
 import com.cannontech.core.users.model.UserPreferenceName;
@@ -35,10 +34,6 @@ public class UserPreferencesHelper {
         }
         model.addAttribute("userPreferenceMap", prefMap);
         model.addAttribute("allPreferenceNames", UserPreferenceName.values());
-        model.addAttribute("ranges", TimeRange.values());
-        TimeRange lastRange =
-                TimeRange.valueOf(prefService.getPreference(user, UserPreferenceName.DISPLAY_EVENT_RANGE));
-        model.addAttribute("lastRange", lastRange);
     }
 
     /**
