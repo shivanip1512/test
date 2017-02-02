@@ -79,8 +79,34 @@ public class MultispeakController {
                 mspVendor = multispeakDao.getMultispeakVendor(vendorId);
             }
         }
+        map.addAttribute("defaultMspVendor", defaultMspVendor);
         addSystemModelAndViewObjects(request, map, mspVendor);
         return "setup/msp_setup.jsp";
+    }
+    
+ // HOME
+    @RequestMapping("vendorHome")
+    public String vendorHome(HttpServletRequest request, ModelMap map) throws Exception {
+
+        MultispeakVendor mspVendor = null;
+        
+        // Look for "New" button, if found a new MultispeakVendor object will need to be used.
+        String newButton = ServletRequestUtils.getStringParameter(request, "New");
+        if(newButton != null) {
+            mspVendor = new MultispeakVendor();
+            map.addAttribute("isCreateNew", true);  //flag for altering form fields for create vs edit/view
+        } else {
+            
+            Integer vendorId = ServletRequestUtils.getIntParameter(request, "mspVendorId");
+            if( vendorId != null) {
+                mspVendor = multispeakDao.getMultispeakVendor(vendorId);
+            }
+        }
+        if (multispeakDao.getMultispeakVendors() != null && multispeakDao.getMultispeakVendors().size() > 0) {
+            mspVendor = multispeakDao.getMultispeakVendors().get(0);
+        }
+        addSystemModelAndViewObjects(request, map, mspVendor);
+        return "setup/vendor_setup.jsp";
     }
 
     // CANCEL
@@ -96,7 +122,9 @@ public class MultispeakController {
         MultispeakVendor mspVendor = buildMspVendor(request);
         
         //Validate the request parameters before continuing on.
-        boolean isValid = isValidMspRequest(request, flashScope);
+        boolean isValid =
+            (mspVendor.getAppName() == MultispeakDefines.MSP_APPNAME_YUKON) ? isValidMspRequest(request, flashScope)
+                : true;
         if (isValid) {
             try {
                 boolean isCreateNew = ServletRequestUtils.getBooleanParameter(request, "isCreateNew", false);
@@ -169,6 +197,7 @@ public class MultispeakController {
         return "redirect:home";
     }
 
+    
     // GETMETHODS
     @RequestMapping("getMethods")
     public String getMethods(HttpServletRequest request, ModelMap map) throws Exception {
@@ -229,7 +258,6 @@ public class MultispeakController {
         String outUsername = ServletRequestUtils.getStringParameter(request, "outUserName");
         String[] mspInterfaces = ServletRequestUtils.getStringParameters(request, "mspInterface");
         String[] mspEndpoints = ServletRequestUtils.getStringParameters(request, "mspEndpoint");
-        String[] versions = ServletRequestUtils.getStringParameters(request, "mspVersions");
         String mspURL = ServletRequestUtils.getStringParameter(request, "mspURL", "");
         if( !mspURL.endsWith("/")) {
             mspURL += "/";
@@ -238,15 +266,17 @@ public class MultispeakController {
         MultispeakVendor mspVendor = new MultispeakVendor(vendorId,companyName, appName, 
                                                           username, password, outUsername, outPassword, 
                                                           maxReturnRecords, requestMessageTimeout,
-                                                          maxInitiateRequestObjects, templateNameDefault, 
-                                                          mspURL);
+                                                          maxInitiateRequestObjects, templateNameDefault);
         
         List<MultispeakInterface> mspInterfaceList = new ArrayList<MultispeakInterface>();
-        if( mspInterfaces != null && mspEndpoints != null) {
-            for (int i = 0; i < mspInterfaces.length; i++ )
-            {
-                MultispeakInterface mspInterface = new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[i], versions[i]);
+        if (mspInterfaces != null && mspEndpoints != null) {
+            for (int i = 0, j = 0; i < mspInterfaces.length; i++, j = j + 2) {
+                MultispeakInterface mspInterface =
+                    new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[j], 3.0);
                 mspInterfaceList.add(mspInterface);
+                MultispeakInterface mspInterfaceV5 =
+                    new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[j + 1], 5.0);
+                mspInterfaceList.add(mspInterfaceV5);
             }
         }
         mspVendor.setMspInterfaces(mspInterfaceList);

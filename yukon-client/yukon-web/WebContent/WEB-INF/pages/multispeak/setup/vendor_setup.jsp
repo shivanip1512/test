@@ -10,11 +10,11 @@
 <cti:msg2 var="getMethods" key=".getMethods"/>
 <cti:includeScript link="/resources/js/pages/yukon.admin.multispeak.js" />
 <cti:linkTabbedContainer mode="section" id="page_header_tab_container">
-    <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.modules.adminSetup.interfaces.home.tab.title" initiallySelected="${true}">
+    <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.modules.adminSetup.interfaces.home.tab.title">
         <c:url value="/multispeak/setup/home" />
     </cti:linkTab>
     
-    <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.interfaces.vendor.tab.title">
+    <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.interfaces.vendor.tab.title" initiallySelected="${true}">
         <c:url value="/multispeak/setup/vendorHome" />
     </cti:linkTab>
 
@@ -41,7 +41,7 @@
         <tags:sectionContainer2 nameKey="mspSetup">
             <div class="column-12-12 clearfix">
                 <div class="column one">
-                    <tags:nameValueContainer2>
+                    <tags:nameValueContainer>
                     
                         <c:choose>
                             <c:when test="${isCreateNew}">
@@ -52,65 +52,52 @@
                             </c:when>
                             
                             <c:otherwise>
-                                <%-- <tags:nameValue name="Company Name">
+                                <tags:nameValue name="Company Name">
                                     <input type="hidden" name="mspCompanyName" value="${mspVendor.companyName}">
                                     <select title="Select vendor" name="mspVendorId" onChange="vendorChanged();">
                                         <c:forEach var="mspVendorEntry" items="${mspVendorList}">
                                             <option <c:if test="${mspVendorEntry.vendorID == mspVendor.vendorID}">selected</c:if> value='<c:out value="${mspVendorEntry.vendorID}"/>'> <spring:escapeBody htmlEscape="true">${mspVendorEntry.companyName}</spring:escapeBody></option>
                                         </c:forEach>
                                     </select>
-                                </tags:nameValue> --%>
-                                <tags:nameValue2 nameKey=".appName">
-                                   <span>${fn:escapeXml(defaultMspVendor.appName)}</span>
-                                </tags:nameValue2>
-                                <input type="hidden" name="mspVendorId" value="${defaultMspVendor.vendorID}">
-                                <input type="hidden" name="mspUserName" value="${defaultMspVendor.userName}">
-                                <input type="hidden" name="mspPassword" value="${defaultMspVendor.password}">
-                                <input type="hidden" name="mspAppName" value="${defaultMspVendor.appName}">
-                                <input type="hidden" name="outUserName" value="${defaultMspVendor.outUserName}">
-                                <input type="hidden" name="outPassword" value="${defaultMspVendor.outPassword}">
-                                <tags:nameValue2 nameKey=".companyName">
-                                    <input type="hidden" name="mspCompanyName" value="${defaultMspVendor.companyName}">
-                                        <span>${fn:escapeXml(defaultMspVendor.companyName)}</span>
-                                </tags:nameValue2>
+                                </tags:nameValue>
                             </c:otherwise>
                         </c:choose>
                         
-                        <%-- <tags:nameValue2 name="App Name">
+                        <tags:nameValue name="App Name">
                           <input title="Enter the Application Name" type="text" name="mspAppName" value='<spring:escapeBody htmlEscape="true">${mspVendor.appName}</spring:escapeBody>'>
-                        </tags:nameValue2>
+                        </tags:nameValue>
                         
-                        <tags:nameValue2 name="MSP UserName">
+                        <tags:nameValue name="MSP UserName">
                           <input title="Enter the Username" type="text" name="mspUserName" value='<spring:escapeBody htmlEscape="true">${mspVendor.userName}</spring:escapeBody>'>
-                        </tags:nameValue2>
+                        </tags:nameValue>
                         
-                        <tags:nameValue2 name="MSP Password">
+                        <tags:nameValue name="MSP Password">
                           <input title="Enter the Password" type="text" name="mspPassword" value='<spring:escapeBody htmlEscape="true">${mspVendor.password}</spring:escapeBody>'>
-                        </tags:nameValue2>
+                        </tags:nameValue>
                         
-                        <tags:nameValue2 name="MSP Max Return Records*">
+                        <tags:nameValue name="MSP Max Return Records*">
                           <input title="Enter the Max Return Records" type="text" name="mspMaxReturnRecords" value='<spring:escapeBody htmlEscape="true">${mspVendor.maxReturnRecords}</spring:escapeBody>'>
-                        </tags:nameValue2>
+                        </tags:nameValue>
                         
-                        <tags:nameValue2 name="MSP Request Message Timeout*">
+                        <tags:nameValue name="MSP Request Message Timeout*">
                           <input title="Enter the Request Message Timeout" type="text" name="mspRequestMessageTimeout" value='<spring:escapeBody htmlEscape="true">${mspVendor.requestMessageTimeout}</spring:escapeBody>'>
-                        </tags:nameValue2>
+                        </tags:nameValue>
                         
-                        <tags:nameValue2 name="MSP Max Initiate Request Objects*">
+                        <tags:nameValue name="MSP Max Initiate Request Objects*">
                           <input title="Enter the Max Initiate Request Objects" type="text" name="mspMaxInitiateRequestObjects" value='<spring:escapeBody htmlEscape="true">${mspVendor.maxInitiateRequestObjects}</spring:escapeBody>'>
-                        </tags:nameValue2>
+                        </tags:nameValue>
                         
-                        <tags:nameValue2 name="MSP Template Name Default">
+                        <tags:nameValue name="MSP Template Name Default">
                           <input title="Enter the Template Name Default" type="text" name="mspTemplateNameDefault" value='<spring:escapeBody htmlEscape="true">${mspVendor.templateNameDefault}</spring:escapeBody>'>
-                        </tags:nameValue2> --%>
+                        </tags:nameValue>
                         
-                    </tags:nameValueContainer2>
+                    </tags:nameValueContainer>
                     <div class="smallText">* required</div>
                 
                 </div>
                 <div class="column two nogutter">
                 
-                    <%-- <h5>Response Message Login</h5>
+                    <h5>Response Message Login</h5>
                     <tags:nameValueContainer>
                         <tags:nameValue name="UserName">
                           <input title="Enter the Username for Outgoing Yukon messages" type="text" name="outUserName" value='<spring:escapeBody htmlEscape="true">${mspVendor.outUserName}</spring:escapeBody>'>
@@ -155,52 +142,7 @@
                                 </select>
                             </tags:nameValue>
                         </c:if>
-                    </tags:nameValueContainer> --%>
-                    <tags:nameValueContainer2>
-                        <c:if test="${isCreateNew }">
-                                <tags:nameValue2 nameKey=".userName">
-                            		<input name="outUserName">
-                        		</tags:nameValue2>
-                        		<tags:nameValue2 nameKey=".password">
-                            		<input name="outPassword">
-                        		</tags:nameValue2>
-                        </c:if>
-                        <c:if test="${showRoleProperties}">
-                            <tags:nameValue2 nameKey=".primaryCIS">
-                                <select title="Select the Primary CIS vendor" name="mspPrimaryCIS">
-                                    <option selected value='0'>(none)</option>
-                                    <c:forEach var="mspVendorEntry" items="${mspCISVendorList}">
-                                        <option <c:if test="${mspVendorEntry.vendorID == primaryCIS}">selected</c:if> value='<c:out value="${mspVendorEntry.vendorID}"/>'> 
-                                            <c:out value="${mspVendorEntry.companyName}"/> <c:if test="${mspVendorEntry.appName != ''}">(<c:out value="${mspVendorEntry.appName}"/>)</c:if>
-                                        </option>
-                                    </c:forEach>
-                                  </select>
-                            </tags:nameValue2>
-                            
-                            <tags:nameValue2 nameKey=".deviceNameAlias">
-                                <select title="Select the DeviceName Alias field" name="mspPaoNameAlias">
-                                    <c:forEach var="mspPaoNameAliasEntry" items="${mspVendor.paoNameAliases}" varStatus="status">
-                                        <option <c:if test="${mspPaoNameAliasEntry == paoNameAlias}">selected</c:if> value='<c:out value="${mspPaoNameAliasEntry}"/>'> <c:out value="${mspPaoNameAliasEntry}"/></option>
-                                    </c:forEach>
-                                </select>
-                            </tags:nameValue2>
-                            
-                            <tags:nameValue2 nameKey=".useExtension">
-                                <input id="mspPaoNameUsesExtension" type="checkbox" <c:if test="${paoNameUsesExtension}">checked</c:if> name='mspPaoNameUsesExtension' value='true' onclick='yukon.admin.multispeak.enableExtension(this.checked);'>
-                                <tags:nameValue2 nameKey=".extensionName">
-                                    <input id="mspPaoNameAliasExtension" title="Enter the name of the Extension to append to DevicName" type="text" <c:if test="${!paoNameUsesExtension}">disabled</c:if> name="mspPaoNameAliasExtension" value="${paoNameAliasExtension}">
-                                </tags:nameValue2>
-                            </tags:nameValue2>
-                            
-                            <tags:nameValue2 nameKey=".meterLookupField">
-                                <select title="Select the Meter Lookup field" name="mspMeterLookupField">
-                                    <c:forEach var="mspMeterLookupFieldEntry" items="${mspVendor.meterLookupFields}">
-                                        <option <c:if test="${mspMeterLookupFieldEntry == meterLookupField}">selected</c:if> value='<c:out value="${mspMeterLookupFieldEntry}"/>'> <c:out value="${mspMeterLookupFieldEntry}"/></option>
-                                    </c:forEach>
-                                </select>
-                            </tags:nameValue2>
-                        </c:if>
-                    </tags:nameValueContainer2>
+                    </tags:nameValueContainer>
                 
                 </div>
             </div>
@@ -257,8 +199,8 @@
                             <td>       
                                 <c:choose>
                                     <c:when test="${disabled}">
-                                        <cti:button icon="icon-ping" id="${mspPossibleInterface}" name="pingURL" renderMode="buttonImage" disabled="true" title="${pingTitle}"/>
-                                        <cti:button icon="icon-application-view-columns" id="${mspPossibleInterface}" name="getMethods" renderMode="buttonImage" disabled="true" title="${getMethods}"/>
+                                        <cti:button icon="icon-ping" id="${mspPossibleInterface}" name="pingURLv5" renderMode="buttonImage" disabled="true" title="${pingTitle}" classes="m0"/>
+                                        <cti:button icon="icon-application-view-columns" id="${mspPossibleInterface}" name="getMethodsv5" renderMode="buttonImage" disabled="true" title="${getMethods}" classes="m0"/>
                                     </c:when>
                                     <c:otherwise>
                                         <cti:button icon="icon-ping" id="${mspPossibleInterface}" name="pingURLv5" renderMode="buttonImage" title="${pingTitle}"
@@ -376,9 +318,9 @@
                                         <cti:button icon="icon-application-view-columns" id="${mspPossibleInterface}" name="getMethodsv5" renderMode="buttonImage" disabled="true" title="${getMethods}" classes="m0"/>
                                     </c:when>
                                     <c:otherwise>
-                                        <cti:button icon="icon-ping" id="${mspPossibleInterface}" name="pingURLv5" renderMode="buttonImage" title="${pingTitle}" disabled="true"
+                                        <cti:button icon="icon-ping" id="${mspPossibleInterface}" name="pingURLv5" renderMode="buttonImage" title="${pingTitle}"
                                         onclick="yukon.admin.multispeak.executeRequest(this.id,this.name);"/>
-                                    <cti:button icon="icon-application-view-columns" id="${mspPossibleInterface}" name="getMethodsv5" renderMode="buttonImage" title="${getMethods}" disabled="true"
+                                    <cti:button icon="icon-application-view-columns" id="${mspPossibleInterface}" name="getMethodsv5" renderMode="buttonImage" title="${getMethods}"
                                     onclick="yukon.admin.multispeak.executeRequest(this.id,this.name);"/>
                                     </c:otherwise>
                                 </c:choose>  

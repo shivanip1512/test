@@ -579,7 +579,7 @@ public class MultispeakFuncs {
             for (String service : services) {
                 MultispeakInterface mspInterface = mspVendor.getMspInterfaceMap().get(service);
                 if (mspInterface != null) {
-                    return mspVendor.getUrl() + mspInterface.getMspEndpoint();
+                    return mspInterface.getMspEndpoint();
                 }
             }
         }
@@ -685,7 +685,7 @@ public class MultispeakFuncs {
      * @param vendorId
      * @param mspInterface
      */
-    public String getEndPointInterfaceVersion(int vendorId, String mspInterface) {
+    public Double getEndPointInterfaceVersion(int vendorId, String mspInterface) {
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
         return mspVendor.getMspInterfaceMap().get(mspInterface).getVersion();
 

@@ -36,7 +36,7 @@ public class SEDC_Test {
 
 	// private static String endpointURL = "http://127.0.0.1:8088/MR_CBSoap";
 	private static String endpointURL = "http://127.0.0.1:8088/mockMR_ServerSoap";
-	private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12, null, endpointURL);
+	private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100, 120, 12, null);
 	private static MRClient instance;
 	private static ObjectFactory objectFactory;
 

@@ -10,6 +10,10 @@
     <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.modules.adminSetup.interfaces.home.tab.title">
         <c:url value="/multispeak/setup/home" />
     </cti:linkTab>
+    
+    <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.interfaces.vendor.tab.title">
+        <c:url value="/multispeak/setup/vendorHome" />
+    </cti:linkTab>
 
     <cti:checkGlobalSetting setting="MSP_LM_MAPPING_SETUP">
         <cti:linkTab tabId="loadMgtTab" selectorKey="yukon.web.modules.adminSetup.lmMappings.tab.title">

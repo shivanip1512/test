@@ -7,9 +7,8 @@ public class MultispeakInterface
     private Integer vendorID = null;
     private String mspInterface = null;
     private String mspEndpoint = null;
-    private String version;
-    
-    public MultispeakInterface(Integer vendorID, String mspInterface, String mspEndpoint, String version)
+    private Double version = null;
+    public MultispeakInterface(Integer vendorID, String mspInterface, String mspEndpoint, Double version)
     {
         super();
         this.vendorID = vendorID;
@@ -43,12 +42,14 @@ public class MultispeakInterface
         this.vendorID = vendorID;
     }
 
-    public String getVersion() {
+    public Double getVersion() {
         return version;
     }
 
-    public void setVersion(String version) {
+    public void setVersion(Double version) {
         this.version = version;
     }
 
+    
+    
 }

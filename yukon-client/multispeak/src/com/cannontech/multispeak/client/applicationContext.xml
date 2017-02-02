@@ -266,6 +266,7 @@
     <bean id="eaClientV5" class="com.cannontech.multispeak.client.core.v5.EAClient" />
     <bean id="mdmClientV5" class="com.cannontech.multispeak.client.core.v5.MDMClient" />
     <bean id="oaClientV5" class="com.cannontech.multispeak.client.core.v5.OAClient" />
+    <bean id="mrClientV5" class="com.cannontech.multispeak.client.core.v5.MRClient" />
     <!-- Multispeak Clients Ends -->
 
 </beans>

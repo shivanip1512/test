@@ -40,7 +40,7 @@ public class MultispeakVendor {
 
     public MultispeakVendor(Integer vendorID, String companyName, String appName, String userName, String password,
             String outUserName, String outPassword, int maxReturnRecords, long requestMessageTimeout,
-            long maxInitiateRequestObjects, String templateNameDefault, String url) {
+            long maxInitiateRequestObjects, String templateNameDefault) {
         super();
         this.vendorID = vendorID;
         this.companyName = companyName;
@@ -53,7 +53,6 @@ public class MultispeakVendor {
         this.requestMessageTimeout = requestMessageTimeout;
         this.maxInitiateRequestObjects = maxInitiateRequestObjects;
         this.templateNameDefault = templateNameDefault;
-        this.url = url;
     }
 
     /**
@@ -82,8 +81,12 @@ public class MultispeakVendor {
      */
     public Map<String, MultispeakInterface> getMspInterfaceMap() {
         Map<String, MultispeakInterface> mspInterfaceMap = new HashMap<String, MultispeakInterface>();
-        for (MultispeakInterface mspInterface : getMspInterfaces())
-            mspInterfaceMap.put(mspInterface.getMspInterface(), mspInterface);
+        String mspVersion = null;
+        for (MultispeakInterface mspInterface : getMspInterfaces()) {
+            mspVersion =
+                mspInterface.getVersion() == 5 ? mspInterface.getMspInterface() + 5 : mspInterface.getMspInterface();
+            mspInterfaceMap.put(mspVersion, mspInterface);
+        }
 
         return mspInterfaceMap;
     }

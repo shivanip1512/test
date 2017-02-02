@@ -42,7 +42,7 @@ public class MR_Groups_Test {
     private static ObjectFactory objectFactory;
 
     private static MultispeakVendor mspVendor = new MultispeakVendor(23213, "Cannon", "Yukon", "pwd", "sadsad", "", "", 100,
-        120, 12, null, endpointURL);
+        120, 12, null);
 
     public static void main(String[] args) {
         List<ErrorObject> objects = new ArrayList<ErrorObject>();

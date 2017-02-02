@@ -11,6 +11,10 @@
         <c:url value="/multispeak/setup/home" />
     </cti:linkTab>
 
+    <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.interfaces.vendor.tab.title">
+        <c:url value="/multispeak/setup/vendorHome" />
+    </cti:linkTab>
+    
     <cti:linkTab tabId="loadMgtTab" selectorKey="yukon.web.modules.adminSetup.lmMappings.tab.title" initiallySelected="${true}">
         <c:url value="/multispeak/setup/lmMappings/home" />
     </cti:linkTab>

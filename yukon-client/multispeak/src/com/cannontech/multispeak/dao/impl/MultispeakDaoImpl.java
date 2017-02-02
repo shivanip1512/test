@@ -79,7 +79,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
 
         String upperVendorName = vendorName.toUpperCase();
         String sql =
-            "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, URL, "
+            "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, "
                 + " APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT, "
                 + " MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT " + " FROM " + MSPVENDOR_TABLENAME
                 + " WHERE UPPER(COMPANYNAME) = ? " + " ORDER BY COMPANYNAME, APPNAME ";
@@ -109,7 +109,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
     public MultispeakVendor getMultispeakVendor(int vendorID) {
         try {
             String sql =
-                "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, URL, "
+                "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, "
                     + " APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT,"
                     + " MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT " + " FROM " + MSPVENDOR_TABLENAME
                     + " WHERE VENDORID = ? ";
@@ -138,7 +138,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
     public List<MultispeakVendor> getMultispeakVendors() {
         try {
             String sql =
-                "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, URL, "
+                "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, "
                     + " APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT,"
                     + " MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT " + " FROM " + MSPVENDOR_TABLENAME;
 
@@ -154,7 +154,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
     public List<MultispeakVendor> getMultispeakCISVendors() {
         try {
             String sql =
-                "SELECT V.VENDORID, COMPANYNAME, USERNAME, PASSWORD, URL, "
+                "SELECT V.VENDORID, COMPANYNAME, USERNAME, PASSWORD, "
                     + " APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT,"
                     + " MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT "
                     + " FROM MSPVENDOR V JOIN MSPINTERFACE I on V.VENDORID = I.VENDORID "
@@ -205,7 +205,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                 try {
                     String sql =
                         "UPDATE " + MSPVENDOR_TABLENAME + " SET VENDORID = ?, " + " COMPANYNAME = ?, "
-                            + " USERNAME = ?, " + " PASSWORD = ?, " + " URL = ?, " + " APPNAME = ?, "
+                            + " USERNAME = ?, " + " PASSWORD = ?, " + " APPNAME = ?, "
                             + " OUTUSERNAME = ?, " + " OUTPASSWORD = ?, " + " MAXRETURNRECORDS = ?, "
                             + " REQUESTMESSAGETIMEOUT = ?, " + " MAXINITIATEREQUESTOBJECTS = ?, "
                             + " TEMPLATENAMEDEFAULT = ? " + " WHERE VENDORID = ? ";
@@ -214,7 +214,6 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                         new Object[] { mspVendor.getVendorID(), mspVendor.getCompanyName(),
                             SqlUtils.convertStringToDbValue(mspVendor.getUserName()),
                             SqlUtils.convertStringToDbValue(mspVendor.getPassword()),
-                            SqlUtils.convertStringToDbValue(mspVendor.getUrl()),
                             SqlUtils.convertStringToDbValue(mspVendor.getAppName()),
                             SqlUtils.convertStringToDbValue(mspVendor.getOutUserName()),
                             SqlUtils.convertStringToDbValue(mspVendor.getOutPassword()),
@@ -250,15 +249,14 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                     String sql =
                         "INSERT INTO "
                             + MSPVENDOR_TABLENAME
-                            + " (VendorID, CompanyName, UserName, Password, URL, AppName, OutUserName, OutPassword, "
+                            + " (VendorID, CompanyName, UserName, Password, AppName, OutUserName, OutPassword, "
                             + " MaxReturnRecords, RequestMessageTimeout, MaxInitiateRequestObjects, TemplateNameDefault) "
-                            + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                            + " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
                     Object[] args =
                         new Object[] { mspVendor.getVendorID(), mspVendor.getCompanyName(),
                             SqlUtils.convertStringToDbValue(mspVendor.getUserName()),
                             SqlUtils.convertStringToDbValue(mspVendor.getPassword()),
-                            SqlUtils.convertStringToDbValue(mspVendor.getUrl()),
                             SqlUtils.convertStringToDbValue(mspVendor.getAppName()),
                             SqlUtils.convertStringToDbValue(mspVendor.getOutUserName()),
                             SqlUtils.convertStringToDbValue(mspVendor.getOutPassword()),
@@ -315,18 +313,17 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         String companyName = rset.getString(2).trim();
         String userName = rset.getString(3).trim();
         String password = rset.getString(4).trim();
-        String url = rset.getString(5).trim();
-        String appName = rset.getString(6).trim();
-        String outUserName = rset.getString(7).trim();
-        String outPassword = rset.getString(8).trim();
-        int maxReturnRecords = rset.getInt(9);
-        long requestMessageTimeout = rset.getLong(10);
-        long maxInitiateRequestObjects = rset.getLong(11);
-        String templateNameDefault = rset.getString(12).trim();
+        String appName = rset.getString(5).trim();
+        String outUserName = rset.getString(6).trim();
+        String outPassword = rset.getString(7).trim();
+        int maxReturnRecords = rset.getInt(8);
+        long requestMessageTimeout = rset.getLong(9);
+        long maxInitiateRequestObjects = rset.getLong(10);
+        String templateNameDefault = rset.getString(11).trim();
 
         MultispeakVendor mspVendor =
             new MultispeakVendor(vendorID, companyName, appName, userName, password, outUserName, outPassword,
-                maxReturnRecords, requestMessageTimeout, maxInitiateRequestObjects, templateNameDefault, url);
+                maxReturnRecords, requestMessageTimeout, maxInitiateRequestObjects, templateNameDefault);
 
         List<MultispeakInterface> multispeakInterfaces = getMultispeakInterfaces(vendorID);
         mspVendor.setMspInterfaces(multispeakInterfaces);
@@ -339,8 +336,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         Integer vendorID = new Integer(rset.getInt(1));
         String interfaceStr = rset.getString(2).trim();
         String endpoint = rset.getString(3).trim();
-        String version = rset.getString(4).trim();
-
+        Double version = new Double(rset.getInt(4));
         MultispeakInterface mspInterface = new MultispeakInterface(vendorID, interfaceStr, endpoint, version);
         return mspInterface;
     }
