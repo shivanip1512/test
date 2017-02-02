@@ -45,24 +45,30 @@ public class YukonPayloadRootAnnotationMethodEndpointMapping extends AbstractAnn
 
     private enum EndPointMapping {
         // MSP Version 3.0 support
-        MR_CBSoap("MR_CBSoap", "/soap/MR_ServerSoap"),
-        OD_OASoap("OD_OASoap", "/soap/OD_ServerSoap"),
-        CD_CBSoap("CD_CBSoap", "/soap/CD_ServerSoap"),
-        MR_EASoap("MR_EASoap", "/soap/MR_ServerSoap"),
-        MR_ServerSoap("MR_ServerSoap", "/soap/MR_ServerSoap"),
-        CD_ServerSoap("CD_ServerSoap", "/soap/CD_ServerSoap"),
-        SCADA_ServerSoap("SCADA_ServerSoap", "/soap/SCADA_ServerSoap"),
-        OD_ServerSoap("OD_ServerSoap", "/soap/OD_ServerSoap"),
-        LM_ServerSoap("LM_ServerSoap", "/soap/LM_ServerSoap"),
+        MR_CBSoap("MR_CBSoap", "/multispeak/v3/MR_Server"),
+        OD_OASoap("OD_OASoap", "/multispeak/v3/OD_Server"),
+        CD_CBSoap("CD_CBSoap", "/multispeak/v3/CD_Server"),
+        MR_EASoap("MR_EASoap", "/multispeak/v3/MR_Server"),
+        MR_ServerSoap("MR_ServerSoap", "/multispeak/v3/MR_Server"),
+        CD_ServerSoap("CD_ServerSoap", "/multispeak/v3/CD_Server"),
+        SCADA_ServerSoap("SCADA_ServerSoap", "/multispeak/v3/SCADA_Server"),
+        OD_ServerSoap("OD_ServerSoap", "/multispeak/v3/OD_Server"),
+        LM_ServerSoap("LM_ServerSoap", "/multispeak/v3/LM_Server"),
+        
+        // MSP Version 3.0 support to redirect new url to old url
+        MR_ServerSoap_v3("v3/MR_Server", "/multispeak/v3/MR_Server"),
+        CD_ServerSoap_v3("v3/CD_Server", "/multispeak/v3/CD_Server"),
+        SCADA_ServerSoap_v3("v3/SCADA_Server", "/multispeak/v3/SCADA_Server"),
+        OD_ServerSoap_v3("v3/OD_Server", "/multispeak/v3/OD_Server"),
+        LM_ServerSoap_v3("v3/LM_Server", "/multispeak/v3/LM_Server"),
         
         // MSP Version 5.0 support
-        CD_ServerSoap_v5("CD_ServerSoap_v5", "/soap/CD_ServerSoap_v5"),
-        NOT_ServerSoap_v5("NOT_ServerSoap_v5", "/soap/NOT_ServerSoap_v5"),
-        DR_ServerSoap_v5("DR_ServerSoap_v5", "/soap/DR_ServerSoap_v5"),
-        SCADA_ServerSoap_v5("SCADA_ServerSoap_v5", "/soap/SCADA_ServerSoap_v5"),
-        OD_ServerSoap_v5("OD_ServerSoap_v5", "/soap/OD_ServerSoap_v5"),
-        MR_ServerSoap_v5("MR_ServerSoap_v5", "/soap/MR_ServerSoap_v5");
-
+        CD_ServerSoap_v5("v5/CD_Server", "/multispeak/v5/CD_Server"),
+        NOT_ServerSoap_v5("v5/NOT_Server", "/multispeak/v5/NOT_Server"),
+        DR_ServerSoap_v5("v5/DR_Server", "/multispeak/v5/DR_Server"),
+        SCADA_ServerSoap_v5("v5/SCADA_Server", "/multispeak/v5/SCADA_Server"),
+        OD_ServerSoap_v5("v5/OD_Server", "/multispeak/v5/OD_Server"),
+        MR_ServerSoap_v5("v5/MR_Server", "/multispeak/v5/MR_Server");
         
         private static final ImmutableMap<String, String> endPointMappingMap;
         private final String url;
@@ -97,8 +103,8 @@ public class YukonPayloadRootAnnotationMethodEndpointMapping extends AbstractAnn
             if (connection != null && connection instanceof HttpServletConnection) {
                 String requestURI = ((HttpServletConnection) connection).getHttpServletRequest().getRequestURI();
                 String contextPath = ((HttpServletConnection) connection).getHttpServletRequest().getContextPath();
-                String orginalUrlPart = requestURI.substring(contextPath.length());
-                urlPart = EndPointMapping.getLocationForEndPoint(orginalUrlPart.substring(orginalUrlPart.lastIndexOf("/")+1));
+                String orginalUrlPart = requestURI.substring(contextPath.length() + 1);
+                urlPart = EndPointMapping.getLocationForEndPoint(orginalUrlPart.substring(orginalUrlPart.indexOf("/") + 1));
             }
         }
 

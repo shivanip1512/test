@@ -42,7 +42,7 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v5.OD_Server;
 
 @Endpoint("ODServiceEndpointV5")
-@RequestMapping("/soap/OD_ServerSoap_v5")
+@RequestMapping("/multispeak/v5/OD_Server")
 public class ODServiceEndpoint {
     @Autowired private OD_Server od_Server;
     @Autowired private ObjectFactory odObjectFactory;

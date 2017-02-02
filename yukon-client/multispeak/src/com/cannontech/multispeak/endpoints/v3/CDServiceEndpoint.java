@@ -82,7 +82,7 @@ import com.cannontech.multispeak.service.v3.CD_Server;
   */
 
 @Endpoint("CDServiceEndpointV3")
-@RequestMapping("/soap/CD_ServerSoap")
+@RequestMapping("/multispeak/v3/CD_Server")
 public class CDServiceEndpoint {
     @Autowired private CD_Server cd_server;
     @Autowired private ObjectFactory objectFactory;

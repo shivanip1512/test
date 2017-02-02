@@ -63,7 +63,7 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v5.CD_Server;
 
 @Endpoint("CDServiceEndpointV5")
-@RequestMapping("/soap/CD_ServerSoap_v5")
+@RequestMapping("/multispeak/v5/CD_Server")
 public class CDServiceEndpoint {
 
     @Autowired private ObjectFactory objectFactory;

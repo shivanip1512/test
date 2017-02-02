@@ -106,7 +106,7 @@ import com.cannontech.multispeak.service.v3.SCADA_Server;
  * here.
  */
 @Endpoint
-@RequestMapping("/soap/SCADA_ServerSoap")
+@RequestMapping("/multispeak/v3/SCADA_Server")
 public class SCADAServiceEndpoint {
     @Autowired private SCADA_Server scada_Server;
     @Autowired private ObjectFactory objectFactory;

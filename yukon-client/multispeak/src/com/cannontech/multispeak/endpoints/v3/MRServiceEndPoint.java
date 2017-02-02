@@ -24,7 +24,7 @@ import com.cannontech.multispeak.service.v3.MR_Server;
  */
 
 @Endpoint
-@RequestMapping("/soap/MR_ServerSoap")
+@RequestMapping("/multispeak/v3/MR_Server")
 public class MRServiceEndPoint {
 
     @Autowired private MR_Server mr_server;

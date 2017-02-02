@@ -100,7 +100,7 @@ import com.cannontech.multispeak.service.v3.LM_Server;
  * here.
  */
 @Endpoint
-@RequestMapping("/soap/LM_ServerSoap")
+@RequestMapping("/multispeak/v3/LM_Server")
 public class LMServiceEndpoint {
     @Autowired private LM_Server lm_Server;
     @Autowired private ObjectFactory objectFactory;

@@ -22,7 +22,7 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v5.NOT_Server;
 
 @Endpoint("NOTServiceEndPointV5")
-@RequestMapping("/soap/NOT_ServerSoap_v5")
+@RequestMapping("/multispeak/v5/NOT_Server")
 public class NOTServiceEndPoint {
 
     @Autowired private ObjectFactory notObjectFactory;

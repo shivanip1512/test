@@ -44,7 +44,7 @@ import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v5.DR_Server;
 
 @Endpoint("DRServiceEndPointV5")
-@RequestMapping("/soap/DR_ServerSoap_v5")
+@RequestMapping("/multispeak/v5/DR_Server")
 public class DRServiceEndpoint {
     @Autowired private DR_Server dr_Server;
     @Autowired private ObjectFactory objectFactory;

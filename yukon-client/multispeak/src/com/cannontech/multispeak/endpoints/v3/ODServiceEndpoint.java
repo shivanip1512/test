@@ -81,7 +81,7 @@ import com.cannontech.multispeak.service.v3.OD_Server;
  * here.
  */
 @Endpoint
-@RequestMapping("/soap/OD_ServerSoap")
+@RequestMapping("/multispeak/v3/OD_Server")
 public class ODServiceEndpoint {
 
     @Autowired private OD_Server od_server;
