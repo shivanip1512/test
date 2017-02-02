@@ -1261,9 +1261,14 @@
                     </page>
                 </pages>
             </page>
-            <page name="relayDetail" type="DETAIL">
-                <link>/stars/relay/home?deviceId=${deviceId}</link>
-                <labelArgument>${deviceName}</labelArgument>
+            <page name="relays.list" type="BASIC" hideSearch="true">
+                <link>/stars/relay</link>
+                <pages>
+                    <page name="relayDetail" type="DETAIL">
+                        <link>/stars/relay/home?deviceId=${deviceId}</link>
+                        <labelArgument>${deviceName}</labelArgument>
+                    </page>
+                </pages>
             </page>
             <page name="home" type="LANDING" hideSearch="true">
                 <link>/stars/operator/home</link>

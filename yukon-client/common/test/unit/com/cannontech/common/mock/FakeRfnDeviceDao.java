@@ -9,6 +9,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.core.dao.NotFoundException;
 
@@ -73,6 +74,11 @@ public class FakeRfnDeviceDao implements RfnDeviceDao {
 
     @Override
     public RfnDevice updateGatewayType(RfnDevice device) {
+        throw new MethodNotImplementedException();
+    }
+
+    @Override
+    public List<RfnDevice> searchDevicesByPaoTypes(Iterable<PaoType> paoTypes, RfnDeviceSearchCriteria criteria) {
         throw new MethodNotImplementedException();
     }
 

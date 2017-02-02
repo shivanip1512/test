@@ -171,6 +171,17 @@
         </permissions>
         <link>/stars/gateways</link>
       </option>
+      <option name="relays">
+        <permissions>
+          <or>
+            <roleProperty name="INFRASTRUCTURE_CREATE_AND_UPDATE"/>
+            <roleProperty name="INFRASTRUCTURE_DELETE"/>
+            <roleProperty name="INFRASTRUCTURE_ADMIN"/>
+            <roleProperty name="INFRASTRUCTURE_VIEW"/>
+          </or>
+        </permissions>
+        <link>/stars/relay</link>
+      </option>
       <option name="optouts">
         <permissions>
           <or>

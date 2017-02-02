@@ -21,6 +21,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
@@ -305,6 +306,26 @@ public class RfnDeviceDaoImpl implements RfnDeviceDao {
         sql.append(  "join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
         sql.append("where ypo.Type").in(paoTypes);
 
+        return jdbcTemplate.query(sql, rfnDeviceRowMapper);
+    }
+    
+    @Override
+    public List<RfnDevice> searchDevicesByPaoTypes(Iterable<PaoType> paoTypes, RfnDeviceSearchCriteria criteria) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select ypo.PaoName, ypo.PAObjectID, ypo.Type, rfn.SerialNumber, rfn.Manufacturer, rfn.Model");
+        sql.append("from YukonPaObject ypo");
+        sql.append(  "join RfnAddress rfn on ypo.PAObjectID = rfn.DeviceId");
+        sql.append("where ypo.Type").in(paoTypes);
+        if (criteria.getName() != null) {
+            sql.append("AND UPPER(ypo.PAOName) LIKE UPPER (");
+            sql.appendArgument(criteria.getName() + "%");
+            sql.append(")");
+        }
+        if (criteria.getSerialNumber() != null) {
+            sql.append("AND UPPER(rfn.SerialNumber) LIKE UPPER (");
+            sql.appendArgument(criteria.getSerialNumber() + "%");
+            sql.append(")");
+        }
         return jdbcTemplate.query(sql, rfnDeviceRowMapper);
     }
     

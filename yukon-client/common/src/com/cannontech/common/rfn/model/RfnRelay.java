@@ -1,4 +1,4 @@
-package com.cannontech.web.widget.relayInfo.model;
+package com.cannontech.common.rfn.model;
 
 import com.cannontech.common.rfn.model.RfnDevice;
 

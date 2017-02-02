@@ -7,6 +7,7 @@ import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
 import com.cannontech.core.dao.NotFoundException;
 
 public interface RfnDeviceDao {
@@ -65,6 +66,12 @@ public interface RfnDeviceDao {
      * of the given PaoTypes exist.
      */
     List<RfnDevice> getDevicesByPaoTypes(Iterable<PaoType> paoTypes);
+    
+    /**
+     * Returns List of RfnDevices of the given PaoTypes and search criteria. An empty list is returned if no RfnDevices
+     * of the given PaoTypes and criteria exist.
+     */
+    List<RfnDevice> searchDevicesByPaoTypes(Iterable<PaoType> paoTypes, RfnDeviceSearchCriteria criteria);
     
     /**
      * Returns a map of paoId to RfnDevice for all devices of the specified PaoType.
