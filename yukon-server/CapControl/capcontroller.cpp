@@ -1572,7 +1572,7 @@ bool CtiCapController::isCbcDbChange(const CtiDBChangeMsg *dbChange)
         return( DeviceType == TYPEVERSACOMCBC || DeviceType == TYPEEXPRESSCOMCBC ||
                 DeviceType == TYPECBC7010 || DeviceType == TYPECBC7020 ||
                 DeviceType == TYPECBC8020 || DeviceType == TYPECBCDNP ||
-                DeviceType == TYPEFISHERPCBC || DeviceType == TYPECBC6510 );
+                DeviceType == TYPEFISHERPCBC );
     }
 }
 

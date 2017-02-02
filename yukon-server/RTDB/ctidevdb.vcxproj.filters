@@ -114,9 +114,6 @@
     <ClCompile Include="dev_cbc.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="dev_cbc6510.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="dev_cbc7020.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -555,9 +552,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\dev_cbc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\dev_cbc6510.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\dev_cbc7020.h">

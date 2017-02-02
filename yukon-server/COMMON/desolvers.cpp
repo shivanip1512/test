@@ -225,7 +225,6 @@ string desolveDeviceType( int aType )
         case TYPEFISHERPCBC:              Ret = "cbc fp-2800";          break;
 
         case TYPECAPBANK:                 Ret = "cap bank";             break;
-        case TYPECBC6510:                 Ret = "cbc 6510";             break;
         case TYPECBC7010:                 Ret = "cbc 7010";             break;
         case TYPECBC7020:                 Ret = "cbc 7020";             break;
         case TYPECBC8020:                 Ret = "cbc 8020";             break;

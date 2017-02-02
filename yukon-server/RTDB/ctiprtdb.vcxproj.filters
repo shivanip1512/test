@@ -65,9 +65,6 @@
     <ClInclude Include="include\cmd_dlc.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\cmd_helper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\cmd_lcr3102.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -180,9 +177,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\dev_cbc.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\dev_cbc6510.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\dev_cbc7020.h">
@@ -402,9 +396,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\dev_rfn420centron.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\dev_rfn420focus_al.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\dev_rfnCommercial.h">

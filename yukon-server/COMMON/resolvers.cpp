@@ -167,7 +167,6 @@ static const std::map<std::string, DeviceTypes> device_lookups
 
     //  --- Capacitor Control ---
     { "cap bank",           TYPECAPBANK },
-    { "cbc 6510",           TYPECBC6510 },
     { "cbc 7010",           TYPECBC7010 },
     { "cbc 7011",           TYPECBC7010 },
     { "cbc 7012",           TYPECBC7010 },
@@ -423,7 +422,8 @@ bool isKnownUnsupportedDevice(const string& typeStr)
         "honeywell wi-fi focuspro",
         "honeywell wi-fi thermostat",
         "honeywell wi-fi visionpro 8000",
-        "rfn relay"
+        "rfn relay",
+        "cbc 6510"
     };
 
     return unsupported_devices.count( sanitizeInput( typeStr ) );
@@ -728,7 +728,6 @@ bool resolveIsDeviceTypeSingle(INT Type)
         TYPE_PHASE_OPERATED_REGULATOR,
         TYPE_MODBUS,
         TYPELMT2,
-        TYPECBC6510,
         TYPECBC7020,
         TYPECBC8020,
         TYPECBCDNP,

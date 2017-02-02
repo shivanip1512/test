@@ -408,7 +408,7 @@ string CtiDeviceCBC::getSQLCoreStatement() const
                                      "CBC.routeid "
                                    "FROM YukonPAObject YP, Device DV, DeviceCBC CBC "
                                    "WHERE YP.paobjectid = CBC.deviceid AND YP.paobjectid = DV.deviceid AND "
-                                     "upper (YP.Type) NOT IN ('CBC 7020', 'CBC 7022', 'CBC 7023', 'CBC 7024', 'CBC DNP', "
+                                     "upper (YP.Type) NOT IN ('CBC 6510', 'CBC 7020', 'CBC 7022', 'CBC 7023', 'CBC 7024', 'CBC DNP', "
                                      "'CBC 8020', 'CBC 8024')";
     return sqlCore;
 }

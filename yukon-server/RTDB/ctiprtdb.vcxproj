@@ -405,7 +405,6 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\dev_base_lite.h" />
     <ClInclude Include="include\dev_carrier.h" />
     <ClInclude Include="include\dev_cbc.h" />
-    <ClInclude Include="include\dev_cbc6510.h" />
     <ClInclude Include="include\dev_cbc7020.h" />
     <ClInclude Include="include\dev_cbc8020.h" />
     <ClInclude Include="include\dev_ccu.h" />

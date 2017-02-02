@@ -3,7 +3,6 @@
 #include "dev_710.h"
 #include "dev_base.h"
 #include "dev_macro.h"
-#include "dev_cbc6510.h"
 #include "dev_cbc.h"
 #include "dev_cbc7020.h"
 #include "dev_cbc8020.h"
@@ -299,7 +298,6 @@ const DeviceLookup deviceFactory {
     { TYPE_LMGROUP_SA305,            MakeDeviceFunc(makeDevice<CtiDeviceGroupSA305>) },
     //  Capacitor bank controllers
     { TYPECBCDNP,        MakeDeviceFunc(makeDevice<DnpDevice>) },
-    { TYPECBC6510,       MakeDeviceFunc(makeDevice<Cbc6510Device>) },
     { TYPECBC7020,       MakeDeviceFunc(makeDevice<Cbc7020Device>) },
     { TYPECBC8020,       MakeDeviceFunc(makeDevice<Cbc8020Device>) },
     { TYPECBC7010,       MakeDeviceFunc(makeDevice<CtiDeviceCBC>) },

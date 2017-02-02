@@ -766,7 +766,7 @@ void DnpDevice::sendDispatchResults(CtiConnection &vg_connection)
 
     _dnp.getInboundPoints(points);
 
-    //  do any device-dependent work on the points (CBC 6510, for example)
+    //  do any device-dependent work on the points
     processPoints(points);
 
     //  then toss them into the return msg

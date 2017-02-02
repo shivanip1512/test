@@ -1209,7 +1209,6 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                     case TYPE_ION7330:
                     case TYPE_ION7700:
                     case TYPE_ION8300:
-                    case TYPECBC6510:
                     case TYPECBC7020:
                     case TYPECBC8020:
                     case TYPECBCDNP:
@@ -2059,7 +2058,6 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                     case TYPE_ION8300:
                     case TYPE_SNPP:
                     case TYPE_RDS:
-                    case TYPECBC6510:
                     case TYPECBC7020:
                     case TYPECBC8020:
                     case TYPECBCDNP:
@@ -2120,7 +2118,6 @@ YukonError_t CommunicateDevice(const CtiPortSPtr &Port, INMESS &InMessage, OUTME
                     case TYPE_CCU700:
                     case TYPE_CCU710:
                     case TYPE_DAVIS:
-                    case TYPECBC6510:
                     case TYPECBC7020:
                     case TYPECBC8020:
                     case TYPECBCDNP:

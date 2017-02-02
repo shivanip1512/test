@@ -402,7 +402,7 @@ void ModbusDevice::sendDispatchResults(CtiConnection &vg_connection)
 
     _modbus.getInboundPoints(points);
 
-    //  do any device-dependent work on the points (CBC 6510, for example)
+    //  do any device-dependent work on the points
     processPoints(points);
 
     //  then toss them into the return msg

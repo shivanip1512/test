@@ -118,7 +118,6 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
 
     //  --- Capacitor Control ---
     BOOST_CHECK_EQUAL(resolveDeviceType("cap bank"),        TYPECAPBANK);
-    BOOST_CHECK_EQUAL(resolveDeviceType("cbc 6510"),        TYPECBC6510);
     BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7010"),        TYPECBC7010);
     BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7011"),        TYPECBC7010);
     BOOST_CHECK_EQUAL(resolveDeviceType("cbc 7012"),        TYPECBC7010);
@@ -350,6 +349,7 @@ BOOST_AUTO_TEST_CASE(test_isKnownUnsupportedDevice)
     BOOST_CHECK(isKnownUnsupportedDevice("honeywell wi-fi thermostat"));
     BOOST_CHECK(isKnownUnsupportedDevice("honeywell wi-fi visionpro 8000"));
     BOOST_CHECK(isKnownUnsupportedDevice("rfn relay"));
+    BOOST_CHECK(isKnownUnsupportedDevice("cbc 6510"));
     // Make sure it doesn't always return true
     BOOST_CHECK( ! isKnownUnsupportedDevice("alpha power plus"));
 }

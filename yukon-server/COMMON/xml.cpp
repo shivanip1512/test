@@ -469,7 +469,6 @@ DeviceTypes resolvePaoIdXmlType( const std::string & type )
 
         //  --- Capacitor Control ---
         ("CAPBANK",                     TYPECAPBANK)
-        ("DNP_CBC_6510",                TYPECBC6510)
         ("CBC_7010",                    TYPECBC7010)
         ("CBC_7011",                    TYPECBC7010)
         ("CBC_7012",                    TYPECBC7010)
