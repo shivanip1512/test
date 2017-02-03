@@ -183,10 +183,12 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sql.append("SELECT Availability, COUNT(Availability) AS count");
         sql.append("FROM (SELECT DISTINCT lmbase.ManufacturerSerialNumber as serial_num,");
         sql.append("(SELECT CASE WHEN inv.DeviceId=0 THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
+        sql.append("ELSE (SELECT CASE WHEN AddressingGroupID IN (SELECT DeviceId FROM LMGroupHoneywellWiFi) THEN").appendArgument_k(
+            AssetAvailabilityCombinedStatus.ACTIVE);
         sql.append("ELSE (SELECT CASE WHEN lmbase.InventoryId IN ");
         sql.append("(SELECT DISTINCT ib.InventoryId FROM InventoryBase ib ");
-        sql.append(  "JOIN OptOutEvent ooe ON ooe.InventoryId = ib.InventoryId WHERE ooe.StartDate").lt(currentTime);
-        sql.append(  "AND ooe.StopDate").gt(currentTime);
+        sql.append("JOIN OptOutEvent ooe ON ooe.InventoryId = ib.InventoryId WHERE ooe.StartDate").lt(currentTime);
+        sql.append("AND ooe.StopDate").gt(currentTime);
         sql.append("AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT).append(") THEN").appendArgument_k(
             AssetAvailabilityCombinedStatus.OPTED_OUT);
         sql.append("WHEN LastNonZeroRuntime").gt(runtimeWindowEnd);
@@ -194,6 +196,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sql.append("WHEN LastCommunication").gt(communicatingWindowEnd);
         sql.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.INACTIVE);
         sql.append("ELSE").appendArgument_k(AssetAvailabilityCombinedStatus.UNAVAILABLE).append("END");
+        sql.append(getTable().getSql()).append(")END");
         sql.append(getTable().getSql());
         sql.append(")END");
         sql.append(getTable().getSql());
@@ -201,8 +204,8 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sql.append("FROM LMHardwareBase lmbase, ApplianceBase appbase,LMHardwareConfiguration hdconf,InventoryBase inv");
         sql.append("LEFT OUTER JOIN DynamicLcrCommunications dynlcr ON (inv.DeviceId=dynlcr.DeviceId) ");
         sql.append("WHERE inv.InventoryID=lmbase.InventoryID AND lmbase.InventoryID=hdconf.InventoryID ");
-        sql.append(  "AND hdconf.ApplianceID=appbase.ApplianceID");
-        sql.append(  "AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
+        sql.append("AND hdconf.ApplianceID=appbase.ApplianceID");
+        sql.append("AND lmbase.InventoryID IN (SELECT DISTINCT InventoryId FROM LMHardwareConfiguration");
         sql.append("WHERE AddressingGroupID").in(loadGroupIds);
         sql.append(") ) outertable GROUP BY availability");
 
