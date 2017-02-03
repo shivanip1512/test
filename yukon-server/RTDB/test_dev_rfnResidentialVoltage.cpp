@@ -436,7 +436,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_devic
             // TOU config
             ( CategoryDefinition(
                 "tou", map_list_of
-                    // Schedule 1
+                    // SCHEDULE_1
                     ( RfnStrings::Schedule1Time0, "00:00" )
                     ( RfnStrings::Schedule1Time1, "00:01" )
                     ( RfnStrings::Schedule1Time2, "10:06" )
@@ -451,7 +451,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_devic
                     ( RfnStrings::Schedule1Rate4, "A" )
                     ( RfnStrings::Schedule1Rate5, "B" )
 
-                    // Schedule 2
+                    // SCHEDULE_2
                     ( RfnStrings::Schedule2Time0, "00:00" )
                     ( RfnStrings::Schedule2Time1, "01:23" )
                     ( RfnStrings::Schedule2Time2, "03:12" )
@@ -466,7 +466,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_devic
                     ( RfnStrings::Schedule2Rate4, "D" )
                     ( RfnStrings::Schedule2Rate5, "A" )
 
-                    // Schedule 3
+                    // SCHEDULE_3
                     ( RfnStrings::Schedule3Time0, "00:00" )
                     ( RfnStrings::Schedule3Time1, "01:02" )
                     ( RfnStrings::Schedule3Time2, "02:03" )
@@ -481,7 +481,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_devic
                     ( RfnStrings::Schedule3Rate4, "C" )
                     ( RfnStrings::Schedule3Rate5, "D" )
 
-                    // Schedule 4
+                    // SCHEDULE_4
                     ( RfnStrings::Schedule4Time0, "00:00" )
                     ( RfnStrings::Schedule4Time1, "00:01" )
                     ( RfnStrings::Schedule4Time2, "08:59" )
@@ -497,14 +497,14 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_devic
                     ( RfnStrings::Schedule4Rate5, "C" )
 
                     // day table
-                    ( RfnStrings::SundaySchedule,    "Schedule 1" )
-                    ( RfnStrings::MondaySchedule,    "Schedule 1" )
-                    ( RfnStrings::TuesdaySchedule,   "Schedule 3" )
-                    ( RfnStrings::WednesdaySchedule, "Schedule 2" )
-                    ( RfnStrings::ThursdaySchedule,  "Schedule 4" )
-                    ( RfnStrings::FridaySchedule,    "Schedule 2" )
-                    ( RfnStrings::SaturdaySchedule,  "Schedule 3" )
-                    ( RfnStrings::HolidaySchedule,   "Schedule 3" )
+                    ( RfnStrings::SundaySchedule,    "SCHEDULE_1" )
+                    ( RfnStrings::MondaySchedule,    "SCHEDULE_1" )
+                    ( RfnStrings::TuesdaySchedule,   "SCHEDULE_3" )
+                    ( RfnStrings::WednesdaySchedule, "SCHEDULE_2" )
+                    ( RfnStrings::ThursdaySchedule,  "SCHEDULE_4" )
+                    ( RfnStrings::FridaySchedule,    "SCHEDULE_2" )
+                    ( RfnStrings::SaturdaySchedule,  "SCHEDULE_3" )
+                    ( RfnStrings::HolidaySchedule,   "SCHEDULE_3" )
 
                     // default rate
                     ( RfnStrings::DefaultTouRate, "B" )
@@ -637,7 +637,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
             // TOU config
             ( CategoryDefinition(
                 "tou", map_list_of
-                    // Schedule 1
+                    // SCHEDULE_1
                     ( RfnStrings::Schedule1Time0, "00:00" )
                     ( RfnStrings::Schedule1Rate0, "A" )
                     ( RfnStrings::Schedule1Time1, "00:01" )
@@ -651,7 +651,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
                     ( RfnStrings::Schedule1Time5, "23:44" )
                     ( RfnStrings::Schedule1Rate5, "B" )
 
-                    // Schedule 2
+                    // SCHEDULE_2
                     ( RfnStrings::Schedule2Time0, "00:00" )
                     ( RfnStrings::Schedule2Rate0, "D" )
                     ( RfnStrings::Schedule2Time1, "01:23" )
@@ -665,7 +665,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
                     ( RfnStrings::Schedule2Time5, "16:28" )
                     ( RfnStrings::Schedule2Rate5, "A" )
 
-                    // Schedule 3
+                    // SCHEDULE_3
                     ( RfnStrings::Schedule3Time0, "00:00" )
                     ( RfnStrings::Schedule3Rate0, "C" )
                     ( RfnStrings::Schedule3Time1, "01:02" )
@@ -679,7 +679,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
                     ( RfnStrings::Schedule3Time5, "06:07" )
                     ( RfnStrings::Schedule3Rate5, "D" )
 
-                    // Schedule 4
+                    // SCHEDULE_4
                     ( RfnStrings::Schedule4Time0, "00:00" )
                     ( RfnStrings::Schedule4Rate0, "B" )
                     ( RfnStrings::Schedule4Time1, "00:01" )
@@ -694,14 +694,14 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
                     ( RfnStrings::Schedule4Rate5, "C" )
 
                     // day table
-                    ( RfnStrings::SundaySchedule,    "Schedule 1" )
-                    ( RfnStrings::MondaySchedule,    "Schedule 1" )
-                    ( RfnStrings::TuesdaySchedule,   "Schedule 3" )
-                    ( RfnStrings::WednesdaySchedule, "Schedule 2" )
-                    ( RfnStrings::ThursdaySchedule,  "Schedule 4" )
-                    ( RfnStrings::FridaySchedule,    "Schedule 2" )
-                    ( RfnStrings::SaturdaySchedule,  "Schedule 3" )
-                    ( RfnStrings::HolidaySchedule,   "Schedule 3" )
+                    ( RfnStrings::SundaySchedule,    "SCHEDULE_1" )
+                    ( RfnStrings::MondaySchedule,    "SCHEDULE_1" )
+                    ( RfnStrings::TuesdaySchedule,   "SCHEDULE_3" )
+                    ( RfnStrings::WednesdaySchedule, "SCHEDULE_2" )
+                    ( RfnStrings::ThursdaySchedule,  "SCHEDULE_4" )
+                    ( RfnStrings::FridaySchedule,    "SCHEDULE_2" )
+                    ( RfnStrings::SaturdaySchedule,  "SCHEDULE_3" )
+                    ( RfnStrings::HolidaySchedule,   "SCHEDULE_3" )
 
                     // default rate
                     ( RfnStrings::DefaultTouRate, "B" )
@@ -793,14 +793,14 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time5, "23:55");
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5, "C");
 
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,    "Schedule 1");
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule,    "Schedule 1");
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule,   "Schedule 3");
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule, "Schedule 2");
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule,  "Schedule 4");
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule,    "Schedule 2");
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule,  "Schedule 3");
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,   "Schedule 3");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,    "SCHEDULE_1");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule,    "SCHEDULE_1");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule,   "SCHEDULE_3");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule, "SCHEDULE_2");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule,  "SCHEDULE_4");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule,    "SCHEDULE_2");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule,  "SCHEDULE_3");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,   "SCHEDULE_3");
 
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate, "B");
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TouEnabled, "1");
@@ -935,7 +935,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
 
             ( CategoryDefinition( // TOU config
                 "tou", map_list_of
-                    // Schedule 1
+                    // SCHEDULE_1
                     ( RfnStrings::Schedule1Time0, "00:00" )
                     ( RfnStrings::Schedule1Time1, "00:01" )
                     ( RfnStrings::Schedule1Time2, "10:06" )
@@ -950,7 +950,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
                     ( RfnStrings::Schedule1Rate4, "A" )
                     ( RfnStrings::Schedule1Rate5, "B" )
 
-                    // Schedule 2
+                    // SCHEDULE_2
                     ( RfnStrings::Schedule2Time0, "00:00" )
                     ( RfnStrings::Schedule2Time1, "01:23" )
                     ( RfnStrings::Schedule2Time2, "03:12" )
@@ -965,7 +965,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
                     ( RfnStrings::Schedule2Rate4, "D" )
                     ( RfnStrings::Schedule2Rate5, "A" )
 
-                    // Schedule 3
+                    // SCHEDULE_3
                     ( RfnStrings::Schedule3Time0, "00:00" )
                     ( RfnStrings::Schedule3Time1, "01:02" )
                     ( RfnStrings::Schedule3Time2, "02:03" )
@@ -980,7 +980,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
                     ( RfnStrings::Schedule3Rate4, "C" )
                     ( RfnStrings::Schedule3Rate5, "D" )
 
-                    // Schedule 4
+                    // SCHEDULE_4
                     ( RfnStrings::Schedule4Time0, "00:00" )
                     ( RfnStrings::Schedule4Time1, "00:01" )
                     ( RfnStrings::Schedule4Time2, "08:59" )
@@ -996,14 +996,14 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_all_disco
                     ( RfnStrings::Schedule4Rate5, "C" )
 
                     // day table
-                    ( RfnStrings::SundaySchedule,    "Schedule 1" )
-                    ( RfnStrings::MondaySchedule,    "Schedule 1" )
-                    ( RfnStrings::TuesdaySchedule,   "Schedule 3" )
-                    ( RfnStrings::WednesdaySchedule, "Schedule 2" )
-                    ( RfnStrings::ThursdaySchedule,  "Schedule 4" )
-                    ( RfnStrings::FridaySchedule,    "Schedule 2" )
-                    ( RfnStrings::SaturdaySchedule,  "Schedule 3" )
-                    ( RfnStrings::HolidaySchedule,   "Schedule 3" )
+                    ( RfnStrings::SundaySchedule,    "SCHEDULE_1" )
+                    ( RfnStrings::MondaySchedule,    "SCHEDULE_1" )
+                    ( RfnStrings::TuesdaySchedule,   "SCHEDULE_3" )
+                    ( RfnStrings::WednesdaySchedule, "SCHEDULE_2" )
+                    ( RfnStrings::ThursdaySchedule,  "SCHEDULE_4" )
+                    ( RfnStrings::FridaySchedule,    "SCHEDULE_2" )
+                    ( RfnStrings::SaturdaySchedule,  "SCHEDULE_3" )
+                    ( RfnStrings::HolidaySchedule,   "SCHEDULE_3" )
 
                     // default rate
                     ( RfnStrings::DefaultTouRate, "B" )

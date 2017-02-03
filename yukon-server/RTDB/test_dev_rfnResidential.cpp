@@ -182,7 +182,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
                                "schedule 4 b/00:00 c/03:01 d/03:02 a/03:03 b/03:04 c/03:05 "
                                "default b");
 
-        std::string exp = "Invalid switch time for Schedule 2 - (01:02, expected > 01:03)";
+        std::string exp = "Invalid switch time for SCHEDULE_2 - (01:02, expected > 01:03)";
 
         BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
@@ -205,7 +205,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
                                "schedule 4 b/00:00 c/03:01 d/03:02 a/03:03 b/03:04 c/03:05 "
                                "default b");
 
-        std::string exp = "Invalid midnight time for Schedule 3 - (00:01, expected 00:00)";
+        std::string exp = "Invalid midnight time for SCHEDULE_3 - (00:01, expected 00:00)";
 
         BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
@@ -228,7 +228,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
                                "schedule 4 b/00:00 c/03:01 d/03:60 a/04:03 b/04:04 c/04:05 " // schedule 4 switch time 2 set to 03:60
                                "default b");
 
-        std::string exp = "Invalid switch time for Schedule 4 - (03:60)";
+        std::string exp = "Invalid switch time for SCHEDULE_4 - (03:60)";
 
         BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
@@ -251,7 +251,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
                                "schedule 4 b/00:00 c/03:01 d/03:02 a/03:03 b/03:04 c/03:05 "
                                "default b");
 
-        std::string exp = "Invalid rate for Schedule 1 - (e)";
+        std::string exp = "Invalid rate for SCHEDULE_1 - (e)";
 
         BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
                                "schedule 4 b/00:00 c/03:01 d/03:02 a/03:03 b/03:04 c/03:05 "
                                "default b");
 
-        std::string exp = "Invalid number of switch time for Schedule 2 - (7, expected 6)";
+        std::string exp = "Invalid number of switch time for SCHEDULE_2 - (7, expected 6)";
 
         BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
@@ -298,7 +298,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule_badparam )
                                "schedule 5 a/00:00 b/04:01 c/04:02 d/04:03 a/04:04 b/04:05 " // unexpected schedule 5
                                "default b");
 
-        std::string exp = "Invalid schedule - (Schedule 5)";
+        std::string exp = "Invalid schedule - (SCHEDULE_5)";
 
         BOOST_CHECK_EQUAL( ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests) );
 
@@ -469,7 +469,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
 
     Cti::Test::test_DeviceConfig &cfg = *fixtureConfig;  //  get a reference to the shared_ptr in the fixture
 
-    // Schedule 1
+    // SCHEDULE_1
     cfg.insertValue( RfnStrings::Schedule1Time1, "00:01" );
     cfg.insertValue( RfnStrings::Schedule1Time2, "10:06" );
     cfg.insertValue( RfnStrings::Schedule1Time3, "12:22" );
@@ -483,7 +483,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
     cfg.insertValue( RfnStrings::Schedule1Rate4, "A" );
     cfg.insertValue( RfnStrings::Schedule1Rate5, "B" );
 
-    // Schedule 2
+    // SCHEDULE_2
     cfg.insertValue( RfnStrings::Schedule2Time1, "01:23" );
     cfg.insertValue( RfnStrings::Schedule2Time2, "03:12" );
     cfg.insertValue( RfnStrings::Schedule2Time3, "04:01" );
@@ -497,7 +497,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
     cfg.insertValue( RfnStrings::Schedule2Rate4, "D" );
     cfg.insertValue( RfnStrings::Schedule2Rate5, "A" );
 
-    // Schedule 3
+    // SCHEDULE_3
     cfg.insertValue( RfnStrings::Schedule3Time1, "01:02" );
     cfg.insertValue( RfnStrings::Schedule3Time2, "02:03" );
     cfg.insertValue( RfnStrings::Schedule3Time3, "04:05" );
@@ -511,7 +511,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
     cfg.insertValue( RfnStrings::Schedule3Rate4, "C" );
     cfg.insertValue( RfnStrings::Schedule3Rate5, "D" );
 
-    // Schedule 4
+    // SCHEDULE_4
     cfg.insertValue( RfnStrings::Schedule4Time1, "00:01" );
     cfg.insertValue( RfnStrings::Schedule4Time2, "08:59" );
     cfg.insertValue( RfnStrings::Schedule4Time3, "12:12" );
@@ -526,14 +526,14 @@ BOOST_AUTO_TEST_CASE( test_putconfig_tou_install )
     cfg.insertValue( RfnStrings::Schedule4Rate5, "C" );
 
     // day table
-    cfg.insertValue( RfnStrings::SundaySchedule,    "Schedule 1" );
-    cfg.insertValue( RfnStrings::MondaySchedule,    "Schedule 1" );
-    cfg.insertValue( RfnStrings::TuesdaySchedule,   "Schedule 3" );
-    cfg.insertValue( RfnStrings::WednesdaySchedule, "Schedule 2" );
-    cfg.insertValue( RfnStrings::ThursdaySchedule,  "Schedule 4" );
-    cfg.insertValue( RfnStrings::FridaySchedule,    "Schedule 2" );
-    cfg.insertValue( RfnStrings::SaturdaySchedule,  "Schedule 3" );
-    cfg.insertValue( RfnStrings::HolidaySchedule,   "Schedule 3" );
+    cfg.insertValue( RfnStrings::SundaySchedule,    "SCHEDULE_1" );
+    cfg.insertValue( RfnStrings::MondaySchedule,    "SCHEDULE_1" );
+    cfg.insertValue( RfnStrings::TuesdaySchedule,   "SCHEDULE_3" );
+    cfg.insertValue( RfnStrings::WednesdaySchedule, "SCHEDULE_2" );
+    cfg.insertValue( RfnStrings::ThursdaySchedule,  "SCHEDULE_4" );
+    cfg.insertValue( RfnStrings::FridaySchedule,    "SCHEDULE_2" );
+    cfg.insertValue( RfnStrings::SaturdaySchedule,  "SCHEDULE_3" );
+    cfg.insertValue( RfnStrings::HolidaySchedule,   "SCHEDULE_3" );
 
     // default rate
     cfg.insertValue( RfnStrings::DefaultTouRate, "B" );
@@ -1734,7 +1734,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device )
             // TOU config
             ( CategoryDefinition(
                 "tou", map_list_of
-                    // Schedule 1
+                    // SCHEDULE_1
                     ( RfnStrings::Schedule1Time0, "00:00" )
                     ( RfnStrings::Schedule1Time1, "00:01" )
                     ( RfnStrings::Schedule1Time2, "10:06" )
@@ -1749,7 +1749,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device )
                     ( RfnStrings::Schedule1Rate4, "A" )
                     ( RfnStrings::Schedule1Rate5, "B" )
 
-                    // Schedule 2
+                    // SCHEDULE_2
                     ( RfnStrings::Schedule2Time0, "00:00" )
                     ( RfnStrings::Schedule2Time1, "01:23" )
                     ( RfnStrings::Schedule2Time2, "03:12" )
@@ -1764,7 +1764,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device )
                     ( RfnStrings::Schedule2Rate4, "D" )
                     ( RfnStrings::Schedule2Rate5, "A" )
 
-                    // Schedule 3
+                    // SCHEDULE_3
                     ( RfnStrings::Schedule3Time0, "00:00" )
                     ( RfnStrings::Schedule3Time1, "01:02" )
                     ( RfnStrings::Schedule3Time2, "02:03" )
@@ -1779,7 +1779,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device )
                     ( RfnStrings::Schedule3Rate4, "C" )
                     ( RfnStrings::Schedule3Rate5, "D" )
 
-                    // Schedule 4
+                    // SCHEDULE_4
                     ( RfnStrings::Schedule4Time0, "00:00" )
                     ( RfnStrings::Schedule4Time1, "00:01" )
                     ( RfnStrings::Schedule4Time2, "08:59" )
@@ -1795,14 +1795,14 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_device )
                     ( RfnStrings::Schedule4Rate5, "C" )
 
                     // day table
-                    ( RfnStrings::SundaySchedule,    "Schedule 1" )
-                    ( RfnStrings::MondaySchedule,    "Schedule 1" )
-                    ( RfnStrings::TuesdaySchedule,   "Schedule 3" )
-                    ( RfnStrings::WednesdaySchedule, "Schedule 2" )
-                    ( RfnStrings::ThursdaySchedule,  "Schedule 4" )
-                    ( RfnStrings::FridaySchedule,    "Schedule 2" )
-                    ( RfnStrings::SaturdaySchedule,  "Schedule 3" )
-                    ( RfnStrings::HolidaySchedule,   "Schedule 3" )
+                    ( RfnStrings::SundaySchedule,    "SCHEDULE_1" )
+                    ( RfnStrings::MondaySchedule,    "SCHEDULE_1" )
+                    ( RfnStrings::TuesdaySchedule,   "SCHEDULE_3" )
+                    ( RfnStrings::WednesdaySchedule, "SCHEDULE_2" )
+                    ( RfnStrings::ThursdaySchedule,  "SCHEDULE_4" )
+                    ( RfnStrings::FridaySchedule,    "SCHEDULE_2" )
+                    ( RfnStrings::SaturdaySchedule,  "SCHEDULE_3" )
+                    ( RfnStrings::HolidaySchedule,   "SCHEDULE_3" )
 
                     // default rate
                     ( RfnStrings::DefaultTouRate, "B" )
@@ -1918,7 +1918,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
             // TOU config
             ( CategoryDefinition(
                 "tou", map_list_of
-                    // Schedule 1
+                    // SCHEDULE_1
                     ( RfnStrings::Schedule1Time0, "00:00" )
                     ( RfnStrings::Schedule1Rate0, "A" )
                     ( RfnStrings::Schedule1Time1, "00:01" )
@@ -1932,7 +1932,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
                     ( RfnStrings::Schedule1Time5, "23:44" )
                     ( RfnStrings::Schedule1Rate5, "B" )
 
-                    // Schedule 2
+                    // SCHEDULE_2
                     ( RfnStrings::Schedule2Time0, "00:00" )
                     ( RfnStrings::Schedule2Rate0, "D" )
                     ( RfnStrings::Schedule2Time1, "01:23" )
@@ -1946,7 +1946,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
                     ( RfnStrings::Schedule2Time5, "16:28" )
                     ( RfnStrings::Schedule2Rate5, "A" )
 
-                    // Schedule 3
+                    // SCHEDULE_3
                     ( RfnStrings::Schedule3Time0, "00:00" )
                     ( RfnStrings::Schedule3Rate0, "C" )
                     ( RfnStrings::Schedule3Time1, "01:02" )
@@ -1960,7 +1960,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
                     ( RfnStrings::Schedule3Time5, "06:07" )
                     ( RfnStrings::Schedule3Rate5, "D" )
 
-                    // Schedule 4
+                    // SCHEDULE_4
                     ( RfnStrings::Schedule4Time0, "00:00" )
                     ( RfnStrings::Schedule4Rate0, "B" )
                     ( RfnStrings::Schedule4Time1, "00:01" )
@@ -1975,14 +1975,14 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
                     ( RfnStrings::Schedule4Rate5, "C" )
 
                     // day table
-                    ( RfnStrings::SundaySchedule,    "Schedule 1" )
-                    ( RfnStrings::MondaySchedule,    "Schedule 1" )
-                    ( RfnStrings::TuesdaySchedule,   "Schedule 3" )
-                    ( RfnStrings::WednesdaySchedule, "Schedule 2" )
-                    ( RfnStrings::ThursdaySchedule,  "Schedule 4" )
-                    ( RfnStrings::FridaySchedule,    "Schedule 2" )
-                    ( RfnStrings::SaturdaySchedule,  "Schedule 3" )
-                    ( RfnStrings::HolidaySchedule,   "Schedule 3" )
+                    ( RfnStrings::SundaySchedule,    "SCHEDULE_1" )
+                    ( RfnStrings::MondaySchedule,    "SCHEDULE_1" )
+                    ( RfnStrings::TuesdaySchedule,   "SCHEDULE_3" )
+                    ( RfnStrings::WednesdaySchedule, "SCHEDULE_2" )
+                    ( RfnStrings::ThursdaySchedule,  "SCHEDULE_4" )
+                    ( RfnStrings::FridaySchedule,    "SCHEDULE_2" )
+                    ( RfnStrings::SaturdaySchedule,  "SCHEDULE_3" )
+                    ( RfnStrings::HolidaySchedule,   "SCHEDULE_3" )
 
                     // default rate
                     ( RfnStrings::DefaultTouRate, "B" )
@@ -2073,14 +2073,14 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_groupMessageCount )
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Time5, "23:55");
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_Schedule4Rate5, "C");
 
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,    "Schedule 1");
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule,    "Schedule 1");
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule,   "Schedule 3");
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule, "Schedule 2");
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule,  "Schedule 4");
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule,    "Schedule 2");
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule,  "Schedule 3");
-    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,   "Schedule 3");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_SundaySchedule,    "SCHEDULE_1");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_MondaySchedule,    "SCHEDULE_1");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TuesdaySchedule,   "SCHEDULE_3");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_WednesdaySchedule, "SCHEDULE_2");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_ThursdaySchedule,  "SCHEDULE_4");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_FridaySchedule,    "SCHEDULE_2");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_SaturdaySchedule,  "SCHEDULE_3");
+    dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_HolidaySchedule,   "SCHEDULE_3");
 
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_DefaultTOURate, "B");
     dut.setDynamicInfo(CtiTableDynamicPaoInfo::Key_RFN_TouEnabled, "1");
@@ -2201,7 +2201,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
 
             ( CategoryDefinition( // TOU config
                 "tou", map_list_of
-                    // Schedule 1
+                    // SCHEDULE_1
                     ( RfnStrings::Schedule1Time0, "00:00" )
                     ( RfnStrings::Schedule1Time1, "00:01" )
                     ( RfnStrings::Schedule1Time2, "10:06" )
@@ -2216,7 +2216,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
                     ( RfnStrings::Schedule1Rate4, "A" )
                     ( RfnStrings::Schedule1Rate5, "B" )
 
-                    // Schedule 2
+                    // SCHEDULE_2
                     ( RfnStrings::Schedule2Time0, "00:00" )
                     ( RfnStrings::Schedule2Time1, "01:23" )
                     ( RfnStrings::Schedule2Time2, "03:12" )
@@ -2231,7 +2231,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
                     ( RfnStrings::Schedule2Rate4, "D" )
                     ( RfnStrings::Schedule2Rate5, "A" )
 
-                    // Schedule 3
+                    // SCHEDULE_3
                     ( RfnStrings::Schedule3Time0, "00:00" )
                     ( RfnStrings::Schedule3Time1, "01:02" )
                     ( RfnStrings::Schedule3Time2, "02:03" )
@@ -2246,7 +2246,7 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
                     ( RfnStrings::Schedule3Rate4, "C" )
                     ( RfnStrings::Schedule3Rate5, "D" )
 
-                    // Schedule 4
+                    // SCHEDULE_4
                     ( RfnStrings::Schedule4Time0, "00:00" )
                     ( RfnStrings::Schedule4Time1, "00:01" )
                     ( RfnStrings::Schedule4Time2, "08:59" )
@@ -2262,14 +2262,14 @@ BOOST_AUTO_TEST_CASE( test_putconfig_install_all_disconnect_meter )
                     ( RfnStrings::Schedule4Rate5, "C" )
 
                     // day table
-                    ( RfnStrings::SundaySchedule,    "Schedule 1" )
-                    ( RfnStrings::MondaySchedule,    "Schedule 1" )
-                    ( RfnStrings::TuesdaySchedule,   "Schedule 3" )
-                    ( RfnStrings::WednesdaySchedule, "Schedule 2" )
-                    ( RfnStrings::ThursdaySchedule,  "Schedule 4" )
-                    ( RfnStrings::FridaySchedule,    "Schedule 2" )
-                    ( RfnStrings::SaturdaySchedule,  "Schedule 3" )
-                    ( RfnStrings::HolidaySchedule,   "Schedule 3" )
+                    ( RfnStrings::SundaySchedule,    "SCHEDULE_1" )
+                    ( RfnStrings::MondaySchedule,    "SCHEDULE_1" )
+                    ( RfnStrings::TuesdaySchedule,   "SCHEDULE_3" )
+                    ( RfnStrings::WednesdaySchedule, "SCHEDULE_2" )
+                    ( RfnStrings::ThursdaySchedule,  "SCHEDULE_4" )
+                    ( RfnStrings::FridaySchedule,    "SCHEDULE_2" )
+                    ( RfnStrings::SaturdaySchedule,  "SCHEDULE_3" )
+                    ( RfnStrings::HolidaySchedule,   "SCHEDULE_3" )
 
                     // default rate
                     ( RfnStrings::DefaultTouRate, "B" )

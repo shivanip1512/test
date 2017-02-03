@@ -17,7 +17,7 @@ namespace Commands {
 //  RFN TOU configuration command base class
 //-----------------------------------------------------------------------------
 
-const std::string RfnTouConfigurationCommand::SchedulePrefix = "Schedule ";
+const std::string RfnTouConfigurationCommand::SchedulePrefix = "SCHEDULE_";
 
 namespace { // anonymous namespace
 
@@ -482,7 +482,7 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleSwitchTimes( RfnCommandRe
 
     DailyTimes times;
 
-    result.description += "Schedule " + CtiNumStr((int)schedule_nbr+1) + " switch times :\n";
+    result.description += "SCHEDULE_" + CtiNumStr((int)schedule_nbr+1) + " switch times :\n";
 
     times.push_back("00:00");
 
@@ -541,7 +541,7 @@ void RfnTouScheduleConfigurationCommand::decodeScheduleRates( RfnCommandResult& 
 
     DailyRates rates;
 
-    result.description += "Schedule " + CtiNumStr((int)schedule_nbr+1) + " rates :\n";
+    result.description += "SCHEDULE_" + CtiNumStr((int)schedule_nbr+1) + " rates :\n";
 
     for( int rate_nbr = 0; rate_nbr < 6; rate_nbr++ )
     {

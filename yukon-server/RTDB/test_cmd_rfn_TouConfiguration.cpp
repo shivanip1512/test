@@ -25,7 +25,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
 {
     RfnTouScheduleConfigurationCommand::Schedule sched;
 
-    // Schedule 1
+    // SCHEDULE_1
     {
         RfnTouScheduleConfigurationCommand::DailyTimes times(6);
 
@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
         sched._rates[RfnTouScheduleConfigurationCommand::Schedule1] = rates;
     }
 
-    // Schedule 2
+    // SCHEDULE_2
     {
         RfnTouScheduleConfigurationCommand::DailyTimes times(6);
 
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
         sched._rates[RfnTouScheduleConfigurationCommand::Schedule2] = rates;
     }
 
-    // Schedule 3
+    // SCHEDULE_3
     {
         RfnTouScheduleConfigurationCommand::DailyTimes times(6);
 
@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
         sched._rates[RfnTouScheduleConfigurationCommand::Schedule3] = rates;
     }
 
-    // Schedule 4
+    // SCHEDULE_4
     {
         RfnTouScheduleConfigurationCommand::DailyTimes times(6);
 
@@ -129,14 +129,14 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
     {
         RfnTouScheduleConfigurationCommand::DayTable dayTable(8);
 
-        dayTable[0] = "Schedule 1";
-        dayTable[1] = "Schedule 3";
-        dayTable[2] = "Schedule 2";
-        dayTable[3] = "Schedule 4";
-        dayTable[4] = "Schedule 2";
-        dayTable[5] = "Schedule 3";
-        dayTable[6] = "Schedule 1";
-        dayTable[7] = "Schedule 3";
+        dayTable[0] = "SCHEDULE_1";
+        dayTable[1] = "SCHEDULE_3";
+        dayTable[2] = "SCHEDULE_2";
+        dayTable[3] = "SCHEDULE_4";
+        dayTable[4] = "SCHEDULE_2";
+        dayTable[5] = "SCHEDULE_3";
+        dayTable[6] = "SCHEDULE_1";
+        dayTable[7] = "SCHEDULE_3";
 
         sched._dayTable = dayTable;
     }
@@ -230,60 +230,60 @@ BOOST_AUTO_TEST_CASE( test_RfnTouScheduleConfigurationCommand )
                 "Additional Status : NO ADDITIONAL STATUS\n"
                 "TOU State : Disabled\n"
                 "Day Table :\n"
-                " Sunday    - Schedule 1\n"
-                " Monday    - Schedule 3\n"
-                " Tuesday   - Schedule 2\n"
-                " Wednesday - Schedule 4\n"
-                " Thursday  - Schedule 2\n"
-                " Friday    - Schedule 3\n"
-                " Saturday  - Schedule 1\n"
-                " Holiday   - Schedule 3\n"
-                "Schedule 1 switch times :\n"
+                " Sunday    - SCHEDULE_1\n"
+                " Monday    - SCHEDULE_3\n"
+                " Tuesday   - SCHEDULE_2\n"
+                " Wednesday - SCHEDULE_4\n"
+                " Thursday  - SCHEDULE_2\n"
+                " Friday    - SCHEDULE_3\n"
+                " Saturday  - SCHEDULE_1\n"
+                " Holiday   - SCHEDULE_3\n"
+                "SCHEDULE_1 switch times :\n"
                 " Switch time 1 - 00:01\n"
                 " Switch time 2 - 10:06\n"
                 " Switch time 3 - 12:22\n"
                 " Switch time 4 - 23:33\n"
                 " Switch time 5 - 23:44\n"
-                "Schedule 2 switch times :\n"
+                "SCHEDULE_2 switch times :\n"
                 " Switch time 1 - 01:23\n"
                 " Switch time 2 - 03:12\n"
                 " Switch time 3 - 04:01\n"
                 " Switch time 4 - 05:23\n"
                 " Switch time 5 - 16:28\n"
-                "Schedule 3 switch times :\n"
+                "SCHEDULE_3 switch times :\n"
                 " Switch time 1 - 01:02\n"
                 " Switch time 2 - 02:03\n"
                 " Switch time 3 - 04:05\n"
                 " Switch time 4 - 05:06\n"
                 " Switch time 5 - 06:07\n"
-                "Schedule 4 switch times :\n"
+                "SCHEDULE_4 switch times :\n"
                 " Switch time 1 - 00:01\n"
                 " Switch time 2 - 08:59\n"
                 " Switch time 3 - 12:12\n"
                 " Switch time 4 - 23:01\n"
                 " Switch time 5 - 23:55\n"
-                "Schedule 1 rates :\n"
+                "SCHEDULE_1 rates :\n"
                 " Midnight rate - A\n"
                 " Switch 1 rate - B\n"
                 " Switch 2 rate - C\n"
                 " Switch 3 rate - D\n"
                 " Switch 4 rate - A\n"
                 " Switch 5 rate - B\n"
-                "Schedule 2 rates :\n"
+                "SCHEDULE_2 rates :\n"
                 " Midnight rate - D\n"
                 " Switch 1 rate - A\n"
                 " Switch 2 rate - B\n"
                 " Switch 3 rate - C\n"
                 " Switch 4 rate - D\n"
                 " Switch 5 rate - A\n"
-                "Schedule 3 rates :\n"
+                "SCHEDULE_3 rates :\n"
                 " Midnight rate - C\n"
                 " Switch 1 rate - D\n"
                 " Switch 2 rate - A\n"
                 " Switch 3 rate - B\n"
                 " Switch 4 rate - C\n"
                 " Switch 5 rate - D\n"
-                "Schedule 4 rates :\n"
+                "SCHEDULE_4 rates :\n"
                 " Midnight rate - B\n"
                 " Switch 1 rate - C\n"
                 " Switch 2 rate - D\n"
