@@ -60,13 +60,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.VOLTAGE,          //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                /*Average Voltage Phase A*/       //metric 119
-                /*Average Voltage Phase B*/       //metric 120
-                /*Average Voltage Phase C*/       //metric 121
+                BuiltInAttribute.VOLTAGE           //metric 115
                 ),
         //TODO Focus AXT?
         //Focus AXR
@@ -74,39 +68,21 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.VOLTAGE,        //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                /*Average Voltage Phase A*/       //metric 119
-                /*Average Voltage Phase B*/       //metric 120
-                /*Average Voltage Phase C*/       //metric 121
+                BuiltInAttribute.VOLTAGE         //metric 115
                 ),
         //Focus AXD-SD and Focus AXR-SD (as 410FD)
         RFN_410FD(PaoType.RFN410FD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.VOLTAGE,         //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                /*Average Voltage Phase A*/       //metric 119
-                /*Average Voltage Phase B*/       //metric 120
-                /*Average Voltage Phase C*/       //metric 121
+                BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //Focus AXR-SD
         RFN_420FD(PaoType.RFN420FD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.VOLTAGE,         //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                /*Average Voltage Phase A*/       //metric 119
-                /*Average Voltage Phase B*/       //metric 120
-                /*Average Voltage Phase C*/       //metric 121
+                BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //FocuskWh (as 410FL)
         RFN_410FL(PaoType.RFN410FL,
