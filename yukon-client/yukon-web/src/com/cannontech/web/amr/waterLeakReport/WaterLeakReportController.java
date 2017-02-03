@@ -397,7 +397,10 @@ public class WaterLeakReportController {
     public String cisDetails(ModelMap model, YukonUserContext userContext, int paoId) {
 
         MultispeakVendor mspPrimaryCISVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-        return mspWaterLeakReportHandler.getCisDetails(model, userContext, paoId, mspPrimaryCISVendor);
+        if (mspPrimaryCISVendor.getVendorID() > 0) {
+            return mspWaterLeakReportHandler.getCisDetails(model, userContext, paoId, mspPrimaryCISVendor);
+        }
+        return "";
     }
 
     @RequestMapping(value="leaks-csv", method = RequestMethod.GET)

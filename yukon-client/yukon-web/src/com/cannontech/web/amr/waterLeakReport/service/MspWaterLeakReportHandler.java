@@ -15,12 +15,16 @@ public class MspWaterLeakReportHandler {
 
     public String getCisDetails(ModelMap model, YukonUserContext userContext, int paoId,
             MultispeakVendor mspPrimaryCISVendor) {
-        
-        if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR).getVersion().equals(
-            MultiSpeakVersion.V3.getVersion())) {
-            return mspWaterLeakReportV3.getCisDetails(model, userContext, paoId, mspPrimaryCISVendor);
-        } else {
-            return mspWaterLeakReportV5.getCisDetails(model, userContext, paoId, mspPrimaryCISVendor);
+
+        if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR) != null) {
+            if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR).getVersion().equals(
+                MultiSpeakVersion.V3.getVersion())) {
+                return mspWaterLeakReportV3.getCisDetails(model, userContext, paoId, mspPrimaryCISVendor);
+            } else {
+                return mspWaterLeakReportV5.getCisDetails(model, userContext, paoId, mspPrimaryCISVendor);
+            }
+
         }
+        return "";
     }
 }

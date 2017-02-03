@@ -16,12 +16,15 @@ public class MspAccountInformationHandler {
     public ModelAndView getMspInformation(YukonMeter meter, MultispeakVendor mspPrimaryCISVendor, ModelAndView mav,
             YukonUserContext userContext) {
 
-        if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR).getVersion().equals(
-            MultiSpeakVersion.V3.getVersion())) {
-            return mspAccountInformationV3.getMspInformation(meter, mspPrimaryCISVendor, mav, userContext);
-        } else {
-            return mspAccountInformationV5.getMspInformation(meter, mspPrimaryCISVendor, mav, userContext);
+        if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR) != null) {
+            if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR).getVersion().equals(
+                MultiSpeakVersion.V3.getVersion())) {
+                return mspAccountInformationV3.getMspInformation(meter, mspPrimaryCISVendor, mav, userContext);
+            } else {
+                return mspAccountInformationV5.getMspInformation(meter, mspPrimaryCISVendor, mav, userContext);
+            }
         }
+        return mav;
     }
 
 }

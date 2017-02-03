@@ -69,7 +69,11 @@ public class AccountInformationWidget extends WidgetControllerBase{
 
         YukonMeter meter = meterDao.getForId(deviceId);
         MultispeakVendor mspPrimaryCISVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-        return mspAccountInfo.getMspInformation(meter, mspPrimaryCISVendor, mav, userContext);
+        
+        if (mspPrimaryCISVendor.getVendorID() > 0) {
+            return mspAccountInfo.getMspInformation(meter, mspPrimaryCISVendor, mav, userContext);
+        }
+        return mav;
     }
     
 
