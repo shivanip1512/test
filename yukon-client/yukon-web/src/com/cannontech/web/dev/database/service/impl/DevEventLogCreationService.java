@@ -57,6 +57,7 @@ import com.cannontech.dr.ecobee.model.EcobeeDiscrepancyType;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.KeyFileType;
 import com.cannontech.web.dev.database.objects.DevEventLog;
 import com.google.common.collect.ImmutableMap;
 
@@ -704,9 +705,9 @@ public class DevEventLogCreationService {
 
                 systemEventLogService.globalSettingChanged(user, GlobalSettingType.ACCT_PORT, "abc");
                 systemEventLogService.sensitiveGlobalSettingChanged(user, GlobalSettingType.ACCT_PORT);
-                systemEventLogService.importedHoneywellKeyFile(user);
-                systemEventLogService.honeywellKeyFileImportFailed(user);
-                systemEventLogService.newHoneywellPublicKeyGenerated(user);
+                systemEventLogService.importedKeyFile(user, KeyFileType.HONEYWELL.getKeyFileType());
+                systemEventLogService.keyFileImportFailed(user, KeyFileType.HONEYWELL.getKeyFileType());
+                systemEventLogService.newPublicKeyGenerated(user, KeyFileType.HONEYWELL.getKeyFileType());
                 systemEventLogService.loginChangeAttempted(user, username, devEventLog.getEventSource());
                 systemEventLogService.loginWebFailed(user.getUsername(), username, Type.DISABLED_USER);
                 systemEventLogService.loginWebFailed(user.getUsername(), username, Type.INVALID_PASSWORD);

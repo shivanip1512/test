@@ -103,11 +103,11 @@ public interface SystemEventLogService {
     /* Security */
     /* Honeywell Key Configuration */
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
-    public void importedHoneywellKeyFile(@Arg(ArgEnum.username) LiteYukonUser user);
+    public void importedKeyFile(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.keyFileType) String keyFileType);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
-    public void honeywellKeyFileImportFailed(@Arg(ArgEnum.username) LiteYukonUser user);
+    public void keyFileImportFailed(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.keyFileType) String keyFileType);
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
-    public void newHoneywellPublicKeyGenerated(@Arg(ArgEnum.username) LiteYukonUser user);
+    public void newPublicKeyGenerated(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.keyFileType) String keyFileType);
 }

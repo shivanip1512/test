@@ -35,6 +35,7 @@ public enum ArgEnum {
     inventoryId,
     ipAddress,
     jobId,
+    keyFileType,
     loadGroupIds,
     loadGroupName,
     message,
