@@ -188,6 +188,13 @@ auto RfDataStreamingProcessor::processPacket(const Packet &p) -> DeviceReport
             dataValue * scaling(modifier / 16),
             convertQuality(modifier % 16)});
     }
+
+    CTILOG_DEBUG(dout, "rfnId, timestamp, metricId, value, quality");
+    for( const Value& value : dr.values )
+    {
+        CTILOG_DEBUG(dout, dr.rfnId << "," << value.timestamp << "," << value.metricId << "," << value.value << "," << value.quality);
+    }
+
     return dr;
 }
 
@@ -330,7 +337,7 @@ void RfDataStreamingProcessor::handleStatistics()
         FormattedTable report;
 
         report.setHorizontalBorders(FormattedTable::Borders_Outside_Bottom, 0);
-        report.setVerticalBorders  (FormattedTable::Borders_Inside);
+        report.setVerticalBorders  (FormattedTable::Borders_All);
 
         std::map<uint16_t, size_t> metricColumns;
 
@@ -340,21 +347,27 @@ void RfDataStreamingProcessor::handleStatistics()
 
         for( const auto& dev : stats )
         {
-             report.setCell(row, maxCol) << dev.first;
+             report.setCell(row, 0) << dev.first;
 
              for( const auto& metricCounts : dev.second )
              {
                  //  Look to see if we've already got a column for this metric ID
-                 auto indexItr = metricColumns.find(metricCounts.first);
+                 auto metricColumn = metricColumns.find(metricCounts.first);
                  //  If not, insert it
-                 if( indexItr == metricColumns.end() )
+                 if( metricColumn == metricColumns.end() )
                  {
-                     indexItr = metricColumns.emplace(metricCounts.first, maxCol++).first;
+                     metricColumn = metricColumns.emplace(metricCounts.first, maxCol++).first;
                  }
-                 //  Use indexItr->second to get the column number
-                 report.setCell(row, indexItr->second) << metricCounts.second;
+                 //  Use metricColumn->second to get the column number
+                 report.setCell(row, metricColumn->second) << metricCounts.second;
              }
              row++;
+        }
+
+        //  Set the headers
+        for( const auto& metricColumn : metricColumns )
+        {
+            report.setCell(0, metricColumn.second) << "ID " << metricColumn.first;
         }
 
         stats.clear();

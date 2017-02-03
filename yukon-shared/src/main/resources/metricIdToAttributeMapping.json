@@ -36,6 +36,7 @@
                 { "metricId" : 41, "attributeMagnitude" : 3, "attribute" : "KVAH" },
                 { "metricId" : 42, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVAH" },
                 { "metricId" : 43, "attributeMagnitude" : 3, "attribute" : "SUM_KVAH" },
+                { "metricId" : 44, "attributeMagnitude" : 3, "attribute" : "NET_KVAH" },
 
                 { "metricId" : 49, "attributeMagnitude" : 3, "attribute" : "DELIVERED_KVA" },
                 { "metricId" : 50, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVA" },
