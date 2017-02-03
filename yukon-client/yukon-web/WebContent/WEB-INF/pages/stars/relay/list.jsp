@@ -35,6 +35,8 @@
 
 <h3><i:inline key=".searchResults.title"/>&nbsp;<span class="badge">${relays.hitCount}</span></h3>
 
+<c:choose>
+<c:when test="${relays.hitCount > 0}">
     <div data-url="${dataUrl}" data-static style="width:60%">
         <table class="compact-results-table row-highlighting">
             <thead>
@@ -56,5 +58,10 @@
         </table>
         <tags:pagingResultsControls result="${relays}" adjustPageCount="true" hundreds="true" />
     </div>
+    </c:when>
+    <c:otherwise>
+        <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound"/></span>
+    </c:otherwise>
+    </c:choose>
     
 </cti:standardPage>
