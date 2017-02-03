@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
@@ -45,7 +44,6 @@ public class GatewayCertificateController {
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
     
     @Autowired private RfnGatewayService rfnGatewayService;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayCertificateUpdateService certificateUpdateService;
     @Autowired private GatewayCertificateUpdateDao certificateUpdateDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
@@ -56,7 +54,7 @@ public class GatewayCertificateController {
     @RequestMapping("/gateways/cert-update/options")
     public String certificate(ModelMap model) {
         
-        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllGateways());
+        List<RfnGateway> gateways = Lists.newArrayList(rfnGatewayService.getAllLegacyGateways());
         Collections.sort(gateways);
         model.addAttribute("gateways", gateways);
         

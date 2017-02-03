@@ -63,6 +63,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
@@ -132,6 +133,14 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     public Set<RfnGateway> getAllGateways() {
         
         List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfGatewayTypes());
+        Set<RfnGateway> gateways = getGatewaysFromDevices(devices);
+        
+        return gateways;
+    }
+    
+    @Override
+    public Set<RfnGateway> getAllLegacyGateways() {
+        List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(Lists.newArrayList(PaoType.RFN_GATEWAY));
         Set<RfnGateway> gateways = getGatewaysFromDevices(devices);
         
         return gateways;
@@ -256,7 +265,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
      */
     private Set<RfnGateway> getGatewaysFromDevices(Iterable<RfnDevice> devices) {
         
-        Set<RfnGateway> gateways = new HashSet<RfnGateway>();
+        Set<RfnGateway> gateways = new HashSet<>();
         for (RfnDevice device : devices) {
             // Get PAO name
             PaoIdentifier paoId = device.getPaoIdentifier();
@@ -278,7 +287,7 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
      */
     private Set<RfnGateway> getGatewaysFromDevicesWithData(Iterable<RfnDevice> devices) throws NmCommunicationException {
         
-        Set<RfnGateway> gateways = new HashSet<RfnGateway>();
+        Set<RfnGateway> gateways = new HashSet<>();
         for (RfnDevice device : devices) {
             // Get PAO name
             PaoIdentifier paoId = device.getPaoIdentifier();

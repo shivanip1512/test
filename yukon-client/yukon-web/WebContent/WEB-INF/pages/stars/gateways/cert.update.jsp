@@ -20,6 +20,10 @@
 </tags:nameValueContainer2>
 
 <h3><i:inline key=".gateways"/></h3>
+<div class="empty-list stacked">
+    <i:inline key=".note"/>
+</div>
+
 <div class="column-12-12 clearfix js-select-all-container scroll-md js-resize-with-dialog">
 <c:forEach var="gateway" items="${gateways}" varStatus="status">
     <c:set var="checked" value="${checkedGateways[gateway.paoIdentifier.paoId]}"/>

@@ -76,6 +76,7 @@
 
     <!-- Gateway Common Words -->
     <entry key="yukon.web.modules.operator.gateways.cert">Certificate</entry>
+    <entry key="yukon.web.modules.operator.gateways.cert.update.note"><![CDATA[Certificate updates are only supported by legacy gateways.<br>For GWY-800 and newer, use firmware updates.]]></entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.more"> and {0} more...</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.gateways">Gateways</entry>
     <entry key="yukon.web.modules.operator.gateways.cert.update.label">Certificate Update</entry>
