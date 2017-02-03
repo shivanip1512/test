@@ -1,6 +1,7 @@
 package com.cannontech.web.rfn.dataStreaming.service.impl;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -194,11 +195,13 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
 
             for (GatewayDataStreamingInfo info : response.getGatewayDataStreamingInfos().values()) {
                 RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(info.getGatewayRfnIdentifier());
-                double streamingCount = Optional.ofNullable(info.getDeviceRfnIdentifiers()).map(Map::size).orElse(0);
+                Collection<Double> streamingRfnDevices = Optional.ofNullable(info.getDeviceRfnIdentifiers()).map(Map::values).orElse(Collections.emptyList());
+                double streamingCount = streamingRfnDevices.stream().filter(load -> load > 0).count();
+                double connectedCount = streamingRfnDevices.size();
                 generatePointDataForDataStreaming(gateway, BuiltInAttribute.DATA_STREAMING_LOAD, info.getDataStreamingLoadingPercent(),
                     shouldArchive);
                 generatePointDataForDataStreaming(gateway, BuiltInAttribute.STREAMING_DEVICE_COUNT, streamingCount, shouldArchive);
-                generatePointDataForDataStreaming(gateway, BuiltInAttribute.CONNECTED_DEVICE_COUNT, streamingCount, shouldArchive);
+                generatePointDataForDataStreaming(gateway, BuiltInAttribute.CONNECTED_DEVICE_COUNT, connectedCount, shouldArchive);
             }
         } catch (ExecutionException e) {
             String errorMessage =
