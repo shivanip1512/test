@@ -159,6 +159,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
 
     @Override
+    public ServiceLocation getMspServiceLocation(SimpleMeter meter, MultispeakVendor mspVendor) {
+        return getMspServiceLocation(meter.getMeterNumber(), mspVendor);
+    }
+
+    @Override
     public ServiceLocation getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor) {
         ServiceLocation mspServiceLocation = new ServiceLocation();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);

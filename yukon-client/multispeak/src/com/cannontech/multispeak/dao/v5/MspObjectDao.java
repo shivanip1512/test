@@ -237,5 +237,15 @@ public interface MspObjectDao {
      * @param mspVendor
      */
     List<String> findMethods(String mspServer, MultispeakVendor mspVendor);
+    
+    /**
+     * Returns multispeak ServiceLocation for the meterNo.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty ServiceLocation object is returned.
+     * @param meter The Meter to get the ServiceLocation information for.
+     * @param mspVendor The Multispeak Vendor to ask for the information from.
+     * @return
+     */
+    ServiceLocation getMspServiceLocation(SimpleMeter meter, MultispeakVendor mspVendor);
 
 }

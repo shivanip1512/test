@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -64,7 +63,6 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
-import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -88,6 +86,7 @@ import com.cannontech.web.amr.util.cronExpressionTag.handler.CustomCronTagStyleH
 import com.cannontech.web.amr.waterLeakReport.model.SortBy;
 import com.cannontech.web.amr.waterLeakReport.model.WaterLeakReportFilter;
 import com.cannontech.web.amr.waterLeakReport.model.WaterMeterLeak;
+import com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportHandler;
 import com.cannontech.web.amr.waterLeakReport.service.WaterMeterLeakService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -99,12 +98,9 @@ import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledWaterLeakFileExportTask;
 import com.cannontech.web.scheduledFileExport.validator.ScheduledFileExportValidator;
-import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.base.Function;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
 import com.google.common.collect.Lists;
@@ -136,22 +132,13 @@ public class WaterLeakReportController {
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private DeviceCollectionService deviceCollectionService;
+    @Autowired private MspWaterLeakReportHandler mspWaterLeakReportHandler;
     
     private ScheduledFileExportValidator scheduledFileExportValidator;
     private final static String baseKey = "yukon.web.modules.amr.waterLeakReport.report";
     private final static Hours water_node_reporting_interval = Hours.hours(24);
     private Map<SortBy, Comparator<WaterMeterLeak>> sorters;
-    private Cache<Integer, MspMeterAccountInfo> mspMeterAccountInfoMap = CacheBuilder.newBuilder()
-        .concurrencyLevel(1).expireAfterWrite(1, TimeUnit.HOURS).build();
-
-    private class MspMeterAccountInfo {
-        com.cannontech.msp.beans.v3.Customer mspCustomer;
-        com.cannontech.msp.beans.v3.ServiceLocation mspServLoc;
-        com.cannontech.msp.beans.v3.Meter mspMeter;
-        String homePhone;
-        String dayPhone;
-    }
-
+    
     @PostConstruct
     public void initialize() {
         Builder<SortBy, Comparator<WaterMeterLeak>> builder = ImmutableMap.builder();
@@ -406,34 +393,11 @@ public class WaterLeakReportController {
         return "waterLeakReport/intervalData.jsp";
     }
 
-    @RequestMapping(value="cisDetails", method = RequestMethod.GET)
+    @RequestMapping(value = "cisDetails", method = RequestMethod.GET)
     public String cisDetails(ModelMap model, YukonUserContext userContext, int paoId) {
-        
-        MspMeterAccountInfo mspMeterAccountInfo = mspMeterAccountInfoMap.getIfPresent(paoId);
-        if (mspMeterAccountInfo == null) {
-            MultispeakVendor mspVendor = getPrimaryCISVendor();
-            if (mspVendor != null) {
-                YukonMeter meter = meterDao.getForId(paoId);
-                mspMeterAccountInfo = new MspMeterAccountInfo();
-                mspMeterAccountInfo.mspCustomer = mspObjectDao.getMspCustomer(meter, mspVendor);
-                mspMeterAccountInfo.mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor);
-                mspMeterAccountInfo.mspMeter = mspObjectDao.getMspMeter(meter, mspVendor);
-                mspMeterAccountInfo.homePhone = 
-                    multispeakFuncs.formatPhone(mspMeterAccountInfo.mspCustomer.getHomeAc(), mspMeterAccountInfo.mspCustomer.getHomePhone());
-                mspMeterAccountInfo.dayPhone =
-                    multispeakFuncs.formatPhone(mspMeterAccountInfo.mspCustomer.getDayAc(), mspMeterAccountInfo.mspCustomer.getDayPhone());
-                mspMeterAccountInfoMap.put(paoId, mspMeterAccountInfo);
-            }
-        }
-        model.addAttribute("homePhone", mspMeterAccountInfo.homePhone);
-        model.addAttribute("dayPhone", mspMeterAccountInfo.dayPhone);
-        model.addAttribute("mspCustomer", mspMeterAccountInfo.mspCustomer);
-        model.addAttribute("mspServLoc", mspMeterAccountInfo.mspServLoc);
-        model.addAttribute("mspMeter", mspMeterAccountInfo.mspMeter);
 
-        setupMspVendorModelInfo(userContext, model);
-
-        return "waterLeakReport/accountInfoAjax.jsp";
+        MultispeakVendor mspPrimaryCISVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
+        return mspWaterLeakReportHandler.getCisDetails(model, userContext, paoId, mspPrimaryCISVendor);
     }
 
     @RequestMapping(value="leaks-csv", method = RequestMethod.GET)
