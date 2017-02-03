@@ -185,6 +185,7 @@ const Attribute Attribute::kVAhRateA                                        = At
 const Attribute Attribute::kVAhRateB                                        = Attribute( "KVAH_RATE_B" );
 const Attribute Attribute::kVAhRateC                                        = Attribute( "KVAH_RATE_C" );
 const Attribute Attribute::kVAhRateD                                        = Attribute( "KVAH_RATE_D" );
+const Attribute Attribute::NetkVAh                                          = Attribute( "NET_KVAH" );
 const Attribute Attribute::NetkVAhRateA                                     = Attribute( "NET_KVAH_RATE_A" );
 const Attribute Attribute::NetkVAhRateB                                     = Attribute( "NET_KVAH_RATE_B" );
 const Attribute Attribute::NetkVAhRateC                                     = Attribute( "NET_KVAH_RATE_C" );

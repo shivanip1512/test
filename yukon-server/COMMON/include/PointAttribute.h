@@ -228,6 +228,7 @@ public:
     static const Attribute  kVAhRateB;
     static const Attribute  kVAhRateC;
     static const Attribute  kVAhRateD;
+    static const Attribute  NetkVAh;
     static const Attribute  NetkVAhRateA;
     static const Attribute  NetkVAhRateB;
     static const Attribute  NetkVAhRateC;
