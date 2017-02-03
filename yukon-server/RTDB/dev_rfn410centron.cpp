@@ -110,7 +110,7 @@ auto Rfn410CentronDevice::getDisplayConfigItems(const Config::DeviceConfigSPtr &
             displayMetricConfigKeys,
             std::back_inserter(config.display_metrics),
             [&](const std::string &configKey) {
-                return getConfigData<long, 0x00, 0xfc>(deviceConfig, configKey);
+                return getConfigDataEnum(deviceConfig, configKey, Cti::Config::displayItemMap);
             });
 
     config.cycle_delay    = getConfigData<long, 0x00, 0x0f>(deviceConfig, Config::RfnStrings::LcdCycleTime);
