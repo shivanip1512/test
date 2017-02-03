@@ -49,7 +49,7 @@ const metrics streaming_focus_kwh = { 1, 2, 5, 115 };
 // 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_410FX(PaoType.RFN410FX,  //FocusAXR
 // 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_420FRD(PaoType.RFN420FRD,  //FocusAXR-SD
 // 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_420FX(PaoType.RFN420FX,  //FocusAXD
-const metrics streaming_focus_ax_400 = { 1, 2, 5, 115, 100, 101, 102, 119, 120, 121 };
+const metrics streaming_focus_ax_400 = { 1, 2, 5, 115 };
 
 // 1, 2, 5, 32, 33, 23, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FRXD_SD(PaoType.RFN520FRXD,  //FocusRXD-SD-500
 // 1, 2, 5, 32, 33, 23, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FRXR(PaoType.RFN520FRX,  //FocusRXR-500
