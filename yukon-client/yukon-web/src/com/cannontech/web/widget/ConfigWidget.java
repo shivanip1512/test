@@ -126,6 +126,7 @@ public class ConfigWidget extends WidgetControllerBase {
         deviceConfigurationService.unassignConfig(device, userContext.getYukonUser());
         
         ModelAndView mav = getConfigModelAndView(request);
+        mav.addObject("configurableDevice", true);
         return mav;
     }
     
