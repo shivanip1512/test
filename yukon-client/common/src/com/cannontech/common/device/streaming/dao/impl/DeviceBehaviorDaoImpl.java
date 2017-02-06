@@ -176,17 +176,14 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     @Override
     public List<Behavior> getAllBehaviorsByType(BehaviorType type) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT BehaviorId");
+        sql.append("SELECT BehaviorId, BehaviorType");
         sql.append("FROM Behavior");
         sql.append("WHERE BehaviorType").eq_k(type);
 
         List<Behavior> behaviors = jdbcTemplate.query(sql, new YukonRowMapper<Behavior>() {
             @Override
-            public Behavior mapRow(YukonResultSet rs) throws SQLException {
-                Behavior behavior = new Behavior();
-                behavior.setId(rs.getInt("BehaviorId"));
-                behavior.setType(type);
-                return behavior;
+            public Behavior mapRow(YukonResultSet rs) throws SQLException {;
+                return getBehaviorFromResultSet(rs);
             }
         });
 
@@ -268,6 +265,181 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         }
     }
     
+    @Override
+    public Iterable<DiscrepancyInfo> findDiscrepancies(BehaviorType type, Integer deviceId) {
+        Map<Integer, DiscrepancyInfo> discrepancyForDeviceId = new HashMap<>();
+        findDiscrepanciesByNoBehavior(type, discrepancyForDeviceId, deviceId);
+        findDiscrepanciesByFailedBehaviorReport(type, discrepancyForDeviceId, deviceId);
+        findDiscrepanciesByComparingChannelsAndIntervals(type, discrepancyForDeviceId, deviceId);
+        addBehaviorValuesToBehaviors(discrepancyForDeviceId.values()
+                                                           .stream()
+                                                           .filter(d -> d.getBehavior() != null)
+                                                           .map(d -> d.getBehavior())
+                                                           .collect(Collectors.toList()));
+        addBehaviorReportValuesToBehaviorReports(discrepancyForDeviceId.values()
+                                                                       .stream()
+                                                                       .filter(d -> d.getBehaviorReport() != null)
+                                                                       .map(d -> d.getBehaviorReport())
+                                                                       .collect(Collectors.toList()));
+        addLastCommunicatedTimeToDiscrepancyInfos(discrepancyForDeviceId);
+        return discrepancyForDeviceId.values();
+    }
+    
+    private void addLastCommunicatedTimeToDiscrepancyInfos(Map<Integer, DiscrepancyInfo> discrepancyForDeviceId) {
+        ChunkingSqlTemplate template = new ChunkingSqlTemplate(jdbcTemplate);
+        SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
+            public SqlFragmentSource generate(List<Integer> subList) {
+                SqlStatementBuilder sql = new SqlStatementBuilder();
+                sql.append("SELECT PAObjectID, max(timestamp) as lastCommunicated");
+                sql.append("FROM POINT p");
+                sql.append("JOIN DYNAMICPOINTDISPATCH dpd on p.POINTID = dpd.POINTID");
+                sql.append("WHERE p.paobjectid").in(subList);
+                sql.append("GROUP BY PAObjectID");
+                return sql;
+            }
+        };
+
+        template.query(sqlGenerator, discrepancyForDeviceId.keySet(), new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                int deviceId = rs.getInt("PAObjectID");
+                DiscrepancyInfo discrepancy = discrepancyForDeviceId.get(deviceId);
+                discrepancy.setLastCommunicated(rs.getInstant("lastCommunicated"));
+            }
+        });
+    }
+
+    /**
+     * Finds discrepancies that do not have behavior, but device is globally enabled AND any channels are enabled.
+     * Populates discrepancyForDeviceId with result.
+     */
+    private void findDiscrepanciesByNoBehavior(BehaviorType type, Map<Integer, DiscrepancyInfo> discrepancyForDeviceId, Integer deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT br.BehaviorReportId, DeviceId, BehaviorType, BehaviorStatus, TimeStamp");
+        sql.append("FROM BehaviorReport br");
+        sql.append("JOIN BehaviorReportValue ge on br.BehaviorReportId=ge.BehaviorReportId and ge.Name='enabled' and ge.Value = 'true'");
+        sql.append("JOIN BehaviorReportValue ce on br.BehaviorReportId=ce.BehaviorReportId and right(ce.Name,8)='.enabled' and ce.Value = 'true'");
+        sql.append("WHERE BehaviorType").eq_k(type);
+        if (deviceId != null) {
+            sql.append("AND br.DeviceId").eq(deviceId);
+        }
+        sql.append("AND NOT exists (");
+        sql.append("    SELECT *");
+        sql.append("    FROM DeviceBehaviorMap dbm");
+        sql.append("    JOIN Behavior b on dbm.BehaviorId = b.BehaviorId");
+        sql.append("    WHERE b.BehaviorType").eq_k(type);
+        sql.append("    AND dbm.DeviceId = br.DeviceId)");
+        
+        System.out.println(sql.getDebugSql());
+                
+        jdbcTemplate.query(sql, new DiscrepancyCallback(discrepancyForDeviceId));
+    }
+    
+    /**
+     * Finds discrepancies that do not have behavior report values.
+     * Has behavior, but device is not globally enabled AND Has behavior, but no reported behavior.
+     * Populates discrepancyForDeviceId map with the result.
+     */
+    private void findDiscrepanciesByFailedBehaviorReport(BehaviorType type, Map<Integer, DiscrepancyInfo> discrepancyForDeviceId, Integer deviceId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT b.BehaviorId, b.BehaviorType, dbm.DeviceId, br.BehaviorReportId, br.BehaviorType, br.BehaviorStatus, br.TimeStamp");
+        sql.append("FROM DeviceBehaviorMap dbm");
+        sql.append("JOIN Behavior b on b.BehaviorId = dbm.BehaviorId");
+        sql.append("AND b.BehaviorType").eq_k(type);
+        if (deviceId != null) {
+            sql.append("AND dbm.DeviceId").eq(deviceId);
+        }
+        sql.append("LEFT JOIN BehaviorReport br on dbm.DeviceId = br.DeviceId");
+        sql.append("WHERE NOT exists (");
+        sql.append("    SELECT *");
+        sql.append("    FROM BehaviorReport br");
+        sql.append("    JOIN BehaviorReportValue brv on br.BehaviorReportId = brv.BehaviorReportId");
+        sql.append("    WHERE br.BehaviorType=b.BehaviorType");
+        sql.append("    AND br.DeviceId=dbm.DeviceId");
+        sql.append("    AND brv.name='enabled'");
+        sql.append("    AND brv.value='true')");
+        jdbcTemplate.query(sql, new DiscrepancyCallback(discrepancyForDeviceId));
+    }
+    
+    /**
+     * Finds discrepancies by comparing channels and intervals.
+     * Populates discrepancyForDeviceId with the result.
+     */
+    private void findDiscrepanciesByComparingChannelsAndIntervals(BehaviorType type, Map<Integer, DiscrepancyInfo> discrepancyForDeviceId, Integer deviceId) {
+        SqlStatementBuilder sql1 = new SqlStatementBuilder();
+        //Has behavior, but an expected channel is disabled OR has a bad status OR its interval does not match.
+        sql1.append("SELECT dbm.DeviceId, b.BehaviorId, b.BehaviorType, br.BehaviorReportId, br.BehaviorType, br.BehaviorStatus, br.TimeStamp");
+        sql1.append("FROM DeviceBehaviorMap dbm");
+        sql1.append("JOIN Behavior b on dbm.BehaviorId = b.BehaviorId");
+        sql1.append("AND b.BehaviorType").eq_k(type);
+        if (deviceId != null) {
+            sql1.append("AND dbm.DeviceId").eq(deviceId);
+        }
+        sql1.append("JOIN behaviorvalue a on b.BehaviorId = a.BehaviorId and right(a.name, 10) = '.attribute'");
+        sql1.append("JOIN behaviorvalue i on b.BehaviorId = i.BehaviorId and right(i.name,  9) = '.interval' and substring(a.name, 1, 11)=substring(i.name, 1, 11)");
+        sql1.append("JOIN BehaviorReport br on dbm.DeviceId=br.DeviceId");
+        sql1.append("JOIN behaviorreportvalue ra on br.BehaviorReportId = ra.BehaviorReportId and right(ra.name, 10) = '.attribute'");
+        sql1.append("JOIN behaviorreportvalue ri on br.BehaviorReportId = ri.BehaviorReportId and right(ri.name,  9) = '.interval' and substring(ra.name, 1, 11)=substring(ri.name, 1, 11)");
+        sql1.append("JOIN behaviorreportvalue re on br.BehaviorReportId = re.BehaviorReportId and right(re.name,  8) = '.enabled'  and substring(ra.name, 1, 11)=substring(re.name, 1, 11)");
+        sql1.append("JOIN behaviorreportvalue rs on br.BehaviorReportId = rs.BehaviorReportId and right(rs.name,  7) = '.status'   and substring(ra.name, 1, 11)=substring(rs.name, 1, 11)");
+        sql1.append("WHERE br.BehaviorType=b.BehaviorType");
+        sql1.append("AND a.value=ra.value");
+        sql1.append("AND (re.value<>'true' OR rs.value<>'OK' OR ri.Value<>i.Value)");
+
+        jdbcTemplate.query(sql1, new DiscrepancyCallback(discrepancyForDeviceId));
+        
+        //Has behavior, but an unexpected channel is enabled.
+        SqlStatementBuilder sql2 = new SqlStatementBuilder();
+        sql2.append("SELECT dbm.DeviceId, b.BehaviorId, b.BehaviorType, br.BehaviorReportId, br.BehaviorType, br.BehaviorStatus, br.TimeStamp");
+        sql2.append("FROM DeviceBehaviorMap dbm");
+        sql2.append("JOIN Behavior b on dbm.BehaviorId = b.BehaviorId");
+        sql2.append("JOIN BehaviorReport br on br.DeviceId = dbm.DeviceId");
+        sql2.append("JOIN behaviorreportvalue ra on br.BehaviorReportId = ra.BehaviorReportId");
+        sql2.append("JOIN behaviorreportvalue re on substring(ra.name, 1, 11)=substring(re.name, 1, 11) and br.BehaviorReportId = re.BehaviorReportId");
+        sql2.append("WHERE b.BehaviorType").eq_k(type);
+        if (deviceId != null) {
+            sql2.append("AND br.DeviceId").eq(deviceId);
+        }
+        sql2.append("AND right(ra.name, 10)='.attribute'");
+        sql2.append("AND right(re.name, 8)='.enabled'");
+        sql2.append("AND re.Value='true'");
+        sql2.append("AND not exists (");
+        sql2.append("   SELECT *");
+        sql2.append("   FROM BehaviorValue");
+        sql2.append("   WHERE behaviorid=b.behaviorid");
+        sql2.append("   AND right(name, 10)='.attribute'");
+        sql2.append("   AND value=ra.value)");
+        
+        jdbcTemplate.query(sql2, new DiscrepancyCallback(discrepancyForDeviceId));
+    }
+
+    private static class DiscrepancyCallback implements YukonRowCallbackHandler {
+        private Map<Integer, DiscrepancyInfo> discrepancyForDeviceId;
+
+        DiscrepancyCallback(Map<Integer, DiscrepancyInfo> discrepancyForDeviceId) {
+            this.discrepancyForDeviceId = discrepancyForDeviceId;
+        }
+
+        @Override
+        public void processRow(YukonResultSet rs) throws SQLException {
+            DiscrepancyInfo discrepancy = new DiscrepancyInfo();
+            discrepancy.setBehaviorReport(getBehaviorReportFromResultSet(rs));
+            if (discrepancy.getBehaviorReport().getStatus() == null) {
+                // behavior report doesn't exist
+                discrepancy.getBehaviorReport().setStatus(BehaviorReportStatus.FAILED);
+            }
+            try {
+                discrepancy.setBehavior(getBehaviorFromResultSet(rs));
+            } catch (SQLException e) {
+                // behavior doesn't exist
+            }
+            int deviceId = rs.getInt("deviceId");
+            discrepancy.setDeviceId(deviceId);
+            discrepancyForDeviceId.put(deviceId, discrepancy);
+        }
+    }
+
     @Override
     public Behavior getBehaviorById(int behaviorId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -448,8 +620,8 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         addBehaviorReportValuesToBehaviorReports(reports);
         return Maps.uniqueIndex(reports, c -> c.getDeviceId());
     }
-    
-    private BehaviorReport getBehaviorReportFromResultSet(YukonResultSet rs) throws SQLException {
+       
+    private static BehaviorReport getBehaviorReportFromResultSet(YukonResultSet rs) throws SQLException {
         BehaviorReport report = new BehaviorReport();
         report.setId(rs.getInt("BehaviorReportId"));
         report.setType(rs.getEnum("BehaviorType", BehaviorType.class));
@@ -457,6 +629,13 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         report.setStatus(rs.getEnum("BehaviorStatus", BehaviorReportStatus.class));
         report.setTimestamp(rs.getInstant("TimeStamp"));
         return report;
+    }
+    
+    private static Behavior getBehaviorFromResultSet(YukonResultSet rs) throws SQLException {
+        Behavior behavior = new Behavior();
+        behavior.setId(rs.getInt("BehaviorId"));
+        behavior.setType(rs.getEnum("BehaviorType", BehaviorType.class));
+        return  behavior;
     }
     
     //populates reports with report values

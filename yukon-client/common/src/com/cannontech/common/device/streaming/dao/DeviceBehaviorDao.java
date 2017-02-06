@@ -3,6 +3,8 @@ package com.cannontech.common.device.streaming.dao;
 import java.util.List;
 import java.util.Map;
 
+import org.joda.time.Instant;
+
 import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorReport;
 import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
@@ -100,5 +102,43 @@ public interface DeviceBehaviorDao {
      * Deletes behavior report
      */
     void deleteBehaviorReport(int behaviorReportId);
+
+    class DiscrepancyInfo{
+        private Behavior behavior;
+        private BehaviorReport behaviorReport;
+        private Instant lastCommunicated;
+        private int deviceId;
+        
+        public BehaviorReport getBehaviorReport() {
+            return behaviorReport;
+        }
+        public void setBehaviorReport(BehaviorReport behaviorReport) {
+            this.behaviorReport = behaviorReport;
+        }
+        public Behavior getBehavior() {
+            return behavior;
+        }
+        public void setBehavior(Behavior behavior) {
+            this.behavior = behavior;
+        }
+        public Instant getLastCommunicated() {
+            return lastCommunicated;
+        }
+        public void setLastCommunicated(Instant lastCommunicated) {
+            this.lastCommunicated = lastCommunicated;
+        }
+        public int getDeviceId() {
+            return deviceId;
+        }
+        public void setDeviceId(int deviceId) {
+            this.deviceId = deviceId;
+        }
+    }
+    
+    /**
+     * Finds discrepancies. If deviceId us NULL return all discrepancies otherwise returns discrepancies for the device
+     * id specified.
+     */
+    Iterable<DiscrepancyInfo> findDiscrepancies(BehaviorType type, Integer deviceId);
 
 }

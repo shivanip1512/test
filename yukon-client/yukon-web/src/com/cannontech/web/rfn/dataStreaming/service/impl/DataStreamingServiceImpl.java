@@ -47,6 +47,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.streaming.dao.DeviceBehaviorDao;
+import com.cannontech.common.device.streaming.dao.DeviceBehaviorDao.DiscrepancyInfo;
 import com.cannontech.common.device.streaming.model.Behavior;
 import com.cannontech.common.device.streaming.model.BehaviorReport;
 import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
@@ -75,7 +76,6 @@ import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -100,7 +100,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
-import com.google.common.collect.Multimaps;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 
@@ -130,8 +129,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
-    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private PointDao pointDao;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DataStreamingEventLogService logService;
     @Autowired private NextValueHelper nextValueHelper;
@@ -308,100 +305,40 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
     @Override
     public List<DiscrepancyResult> findDiscrepancies() {
-
-        // deviceId, config
-        Map<Integer, Behavior> deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByType(TYPE);
-
-        // deviceId, report
-        Map<Integer, BehaviorReport> deviceIdToReport = deviceBehaviorDao.getBehaviorReportsByType(TYPE);
-
-        return findDiscrepancies(deviceIdToBehavior, deviceIdToReport);
+        return findDiscrepancies(null);
     }
 
     @Override
     public DiscrepancyResult findDiscrepancy(int deviceId) {
-
-        // deviceId, config
-        Map<Integer, Behavior> deviceIdToBehavior =
-            deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, Lists.newArrayList(deviceId));
-
-        // deviceId, report
-        Map<Integer, BehaviorReport> deviceIdToReport =
-            deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, Lists.newArrayList(deviceId));
-
-        List<DiscrepancyResult> discrepancies = findDiscrepancies(deviceIdToBehavior, deviceIdToReport);
-        return Iterables.getOnlyElement(discrepancies, null);
+        return Iterables.getOnlyElement(findDiscrepancies(deviceId), null);
     }
 
-    private List<DiscrepancyResult> findDiscrepancies(Map<Integer, Behavior> deviceIdToBehavior,
-            Map<Integer, BehaviorReport> deviceIdToReport) {
+    private List<DiscrepancyResult> findDiscrepancies(Integer deviceId) {
         List<DiscrepancyResult> results = new ArrayList<>();
-
-        Set<Integer> deviceIds = new HashSet<>();
-        deviceIds.addAll(deviceIdToBehavior.keySet());
-        deviceIds.addAll(deviceIdToReport.keySet());
-
-        Multimap<Integer, Integer> deviceIdToPointId = pointDao.getPaoPointMultimap(deviceIds);
-        Multimap<Integer, Integer> pointIdToDeviceId = Multimaps.invertFrom(deviceIdToPointId,  ArrayListMultimap.create());
-        
-        // Gets point values from cache, if the points values are not available in cache, asks dispatch for the point
-        // data
-        Set<? extends PointValueQualityHolder> pointValues =
-            asyncDynamicDataSource.getPointValues(Sets.newHashSet(deviceIdToPointId .values()));
-        Multimap<Integer, PointValueQualityHolder> deviceIdsToPointValues = ArrayListMultimap.create();
-        for(PointValueQualityHolder holder: pointValues){
-            int deviceId = pointIdToDeviceId.get(holder.getId()).iterator().next();
-            deviceIdsToPointValues.put(deviceId, holder);
-        }
-
-        for (int deviceId : deviceIds) {
-            /*
-             * Assume that each device assigned to a behavior has an entry in behavior report table.
-             * There might be an entry in a behavior report table but device might not be assigned to behavior.
-             * Example: device was unassigned, there will be an entry only in behavior report table but not in behavior.
-             * Pending entries should only show up after 24 hours.
-             */
-            BehaviorReport report = deviceIdToReport.get(deviceId);
-            if (checkPending(report)) {
-                Behavior behavior = deviceIdToBehavior.get(deviceId);
-
+        Iterable<DiscrepancyInfo> discrepancies = deviceBehaviorDao.findDiscrepancies(TYPE, deviceId);
+        for (DiscrepancyInfo discrepancy : discrepancies) {
+            if (checkPending(discrepancy.getBehaviorReport())) {
+                DiscrepancyResult result = new DiscrepancyResult();
                 // behavior
-                DataStreamingConfig expectedConfig = convertBehaviorToConfig(behavior);
+                DataStreamingConfig expectedConfig = convertBehaviorToConfig(discrepancy.getBehavior());
                 log.debug("expectedConfig=" + expectedConfig);
                 // behavior report
-                DataStreamingConfig reportedConfig = convertBehaviorToConfig(report);
+                DataStreamingConfig reportedConfig = convertBehaviorToConfig(discrepancy.getBehaviorReport());
                 log.debug("reportedConfig=" + reportedConfig);
-                if (hasDiscrepancy(expectedConfig, reportedConfig)) {
-                    DiscrepancyResult result = new DiscrepancyResult();
-                    result.setActual(reportedConfig);
-                    result.setExpected(expectedConfig);
-                    result.setStatus(report.getStatus());
-                    result.setLastCommunicated(getLastCommunicatedTime(deviceId, deviceIdsToPointValues));
-                    result.setPaoName(serverDatabaseCache.getAllPaosMap().get(deviceId).getPaoName());
-                    result.setDeviceId(deviceId);
-                    DateTime oneWeekAgo = new DateTime().minusWeeks(1);
-                    boolean displayRemove = ignoreTimeCheck || result.getLastCommunicated().isBefore(oneWeekAgo);
-                    result.setDisplayRemove(displayRemove);
-                    results.add(result);
-                }
-                log.debug("\n");
+                result.setActual(reportedConfig);
+                result.setExpected(expectedConfig);
+                result.setStatus(discrepancy.getBehaviorReport().getStatus());
+                result.setLastCommunicated(discrepancy.getLastCommunicated());
+                result.setPaoName(serverDatabaseCache.getAllPaosMap().get(discrepancy.getDeviceId()).getPaoName());
+                result.setDeviceId(discrepancy.getDeviceId());
+                DateTime oneWeekAgo = new DateTime().minusWeeks(1);
+                boolean displayRemove = result.getLastCommunicated() == null || ignoreTimeCheck
+                    || result.getLastCommunicated().isBefore(oneWeekAgo);
+                result.setDisplayRemove(displayRemove);
+                results.add(result);
             }
         }
-
         return results;
-    }
-
-    /**
-     * Finds last communicated time by looking at all the points for the device and getting the latest time.
-     */
-    private Instant getLastCommunicatedTime(Integer deviceId, Multimap<Integer, PointValueQualityHolder> deviceIdsToPointValues) {
-
-        Collection<PointValueQualityHolder> pointValues =deviceIdsToPointValues.get(deviceId);
-        if (!pointValues.isEmpty()) {
-            Date maxDate = pointValues.stream().map(u -> u.getPointDataTimeStamp()).max(Date::compareTo).get();
-            return new Instant(maxDate);
-        }
-        return null;
     }
 
     /**
@@ -419,30 +356,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             }
         }
         return true;
-    }
-
-    /**
-     * Compares 2 configs, returns true if the configs are not equal
-     */
-    private boolean hasDiscrepancy(DataStreamingConfig expectedConfig, DataStreamingConfig reportedConfig) {
-
-        if (expectedConfig == null) {
-            if (reportedConfig.isEnabled()) {
-                if (reportedConfig.getAttributes().isEmpty()) {
-                    // enabled
-                    // all channels.0.enabled = false
-                    // do not display
-                    return false;
-                } else {
-                    return true;
-                }
-            } else {
-                // assign behavior, unassign, porter returns disabled config.
-                return false;
-            }
-        }
-
-        return !compareByAttributesAndInterval(expectedConfig, reportedConfig);
     }
 
     @Override
