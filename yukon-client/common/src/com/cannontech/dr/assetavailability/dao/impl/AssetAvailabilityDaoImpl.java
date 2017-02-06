@@ -101,7 +101,9 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlCommon.append("WHERE EntryID=lmbase.LMHardwareTypeID) AS type,");
         sqlCommon.append("LastCommunication AS last_comm, LastNonZeroRuntime AS last_run,");
         sqlCommon.append("(SELECT CASE WHEN inv.DeviceId=0 THEN").appendArgument_k(
-            AssetAvailabilityCombinedStatus.ACTIVE).append("ELSE");
+            AssetAvailabilityCombinedStatus.ACTIVE);
+        sqlCommon.append("ELSE (SELECT CASE WHEN AddressingGroupID IN (SELECT DeviceId FROM LMGroupHoneywellWiFi) THEN").appendArgument_k(
+            AssetAvailabilityCombinedStatus.ACTIVE);
         sqlCommon.append("(SELECT CASE WHEN lmbase.InventoryId IN");
         sqlCommon.append("(SELECT DISTINCT ib.InventoryId");
         sqlCommon.append("FROM InventoryBase ib ");
@@ -114,6 +116,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlCommon.append("WHEN LastCommunication").gt(communicatingWindowEnd);
         sqlCommon.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.INACTIVE);
         sqlCommon.append("ELSE").appendArgument_k(AssetAvailabilityCombinedStatus.UNAVAILABLE).append("END");
+        sqlCommon.append(getTable().getSql()).append(")END");
         sqlCommon.append(getTable().getSql());
         sqlCommon.append(")END");
         sqlCommon.append(getTable().getSql());
