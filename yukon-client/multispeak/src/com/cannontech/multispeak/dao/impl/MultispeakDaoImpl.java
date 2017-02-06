@@ -135,13 +135,15 @@ public final class MultispeakDaoImpl implements MultispeakDao {
     }
 
     @Override
-    public List<MultispeakVendor> getMultispeakVendors() {
+    public List<MultispeakVendor> getMultispeakVendors(boolean ignoreCannon) {
         try {
             String sql =
                 "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, "
                     + " APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT,"
                     + " MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT " + " FROM " + MSPVENDOR_TABLENAME;
-
+            if (ignoreCannon) {
+                sql += " WHERE VENDORID !=1 ";
+            }
             List<MultispeakVendor> mspVendors = jdbcTemplate.query(sql, mspVendorRowMapper);
 
             return mspVendors;
@@ -154,7 +156,7 @@ public final class MultispeakDaoImpl implements MultispeakDao {
     public List<MultispeakVendor> getMultispeakCISVendors() {
         try {
             String sql =
-                "SELECT V.VENDORID, COMPANYNAME, USERNAME, PASSWORD, "
+                "SELECT DISTINCT V.VENDORID, COMPANYNAME, USERNAME, PASSWORD, "
                     + " APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT,"
                     + " MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT "
                     + " FROM MSPVENDOR V JOIN MSPINTERFACE I on V.VENDORID = I.VENDORID "

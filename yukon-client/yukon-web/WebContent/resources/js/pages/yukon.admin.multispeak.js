@@ -1,8 +1,8 @@
 yukon.namespace('yukon.admin.multispeak');
 
 /**
- * Module that manages the substations and route mapping on the substations page under Admin menu.
- * @module yukon.admin.substations
+ * Module that manages the Yukon Setup and Vendor Setup tabs for multispeak under Admin menu.
+ * @module yukon.admin.multispeak
  * @requires JQUERY
  * @requires JQUERY UI
  * @requires yukon
@@ -14,21 +14,12 @@ yukon.admin.multispeak = (function () {
 	    _initialized = false;
 	    mod = {
 	    		enableEndpointValue : function (isNew, selected, mspInterface) {
-	    			debugger;
-	    			if (!isNew) {
-	    	             if( selected ) {
-	    	                document.getElementById("mspPing"+mspInterface).style.cursor = 'pointer';
-	    	                document.getElementById("mspMethods"+mspInterface).style.cursor = 'pointer';
-	    	                document.getElementById("mspPing"+mspInterface).href = 'JavaScript:serviceSubmit(\"'+mspInterface+'\", \"pingURL\");'
-	    	                document.getElementById("mspMethods"+mspInterface).href = 'JavaScript:document.mspForm.submit()'
-	    	            } else {
-	    	                document.getElementById("mspPing"+mspInterface).style.cursor = 'default';
-	    	                document.getElementById("mspMethods"+mspInterface).style.cursor = 'default';
-	    	                document.getElementById("mspPing"+mspInterface).href = 'javascript:;'
-	    	                document.getElementById("mspMethods"+mspInterface).href = 'javascript:;'
-	    	            }
-	    	         }
-	    	            document.getElementById("mspEndpoint"+mspInterface).disabled = !selected;
+	    			
+	    				if(mspInterface !== 'NOT_Server'){
+	    	                document.getElementById("mspEndpoint"+mspInterface).disabled = !selected;
+	    	                //document.getElementById(mspInterface).disabled = !selected;
+	    	                $('.'+mspInterface).prop('disabled', !selected);
+	    				}
 	    	            document.getElementById("mspEndpoint"+mspInterface+"v5").disabled = !selected;
 	            },
 	            
@@ -38,7 +29,7 @@ yukon.admin.multispeak = (function () {
 	            },
 	            
 	            executeRequest : function (service, call) {
-	            	
+	            	debugger;
 	            	document.mspForm.actionService.value = service;
   	                document.mspForm.action = yukon.url("/multispeak/setup/" + call);
 	                document.mspForm.submit();
@@ -46,16 +37,37 @@ yukon.admin.multispeak = (function () {
 	            
 	            vendorChanged : function () {
 	            	
-	            	document.mspForm.action = yukon.url("/multispeak/setup/home");
+	            	document.mspForm.action = yukon.url("/multispeak/setup/vendorHome");
 	                document.mspForm.submit();
 	            },
+	            
+	            confirmDelete : function () {
+	                if (confirm("Are you sure you want to delete this interface?")) {
+	                    $('#delete-form').submit();
+	                }
+	            },
+	            
+	           
+
+	            showHideData : function (id, showData) {
+	            	debugger;
+	               $('#'+id).attr('type', showData ? 'text' : 'password');   
+	            },
+
 	            
 	            /**
 	             * Initializes the module, hooking up event handlers to components.
 	             * Depends on localized text in the jsp, so only run after DOM is ready.
 	             */
 	            init: function () {
-	            	
+	            	 $(document).on('click', '.js-eye-icon', function() {
+	            		 debugger;
+	 	                var targetRow = $(this).closest('.switch-btn');
+	 	                var id = targetRow.find('.switch-btn-checkbox').attr('id');
+	 	                var isSelected = targetRow.find('.switch-btn-checkbox').prop('checked');
+	 	               yukon.admin.multispeak.showHideData(id, !isSelected);
+	 	            });
+	            	 
 	                if (_initialized) return;
 	                _initialized = true;
 	            }

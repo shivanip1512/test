@@ -70,7 +70,7 @@ public class OutageJmsMessageListener implements MessageListener {
         mapBuilder.put(OutageActionType.Restoration, OutageEventType.RESTORATION);
         outageMap = mapBuilder.build();
         
-        List<MultispeakVendor> allVendors = multispeakDao.getMultispeakVendors();
+        List<MultispeakVendor> allVendors = multispeakDao.getMultispeakVendors(false);
         ImmutableList.Builder<MultispeakVendor> supportsOutage = ImmutableList.builder();
         for (MultispeakVendor mspVendor : allVendors) {
             if (mspVendor.getMspInterfaceMap().get(MultispeakDefines.OA_Server_STR) != null) {
