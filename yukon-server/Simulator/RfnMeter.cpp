@@ -38,24 +38,24 @@ const metrics streaming_s4_r = { 1, 2, 23, 43, 100, 101, 102 };
 // 1, 2, 32, 33, 49, 50, 80, 100, 101, 102 RFN_430SL4(PaoType.RFN430SL4,  //Sentinel-L4
 const metrics streaming_sentinel = { 1, 2, 32, 33, 49, 50, 80, 100, 101, 102, 200, 201, 202 };
 
-// 1, 2, 5, 113 RFN_410CL(PaoType.RFN410CL,   //C1SX
-// 1, 2, 5, 113 RFN_410FL(PaoType.RFN410FL,  //FocuskWh
-// 1, 2, 5, 113 RFN_420CL(PaoType.RFN420CL,   //C2SX
-// 1, 2, 5, 113 RFN_510FL(PaoType.RFN510FL,  //FocuskWh-500
+// 1, 2, 5, 115 RFN_410CL(PaoType.RFN410CL,   //C1SX
+// 1, 2, 5, 115 RFN_410FL(PaoType.RFN410FL,  //FocuskWh
+// 1, 2, 5, 115 RFN_420CL(PaoType.RFN420CL,   //C2SX
+// 1, 2, 5, 115 RFN_510FL(PaoType.RFN510FL,  //FocuskWh-500
 const metrics streaming_centron   = { 1, 2, 5, 115 };
 const metrics streaming_focus_kwh = { 1, 2, 5, 115 };
 
-// 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_410FD(PaoType.RFN410FD,  //FocusAXD-SD
-// 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_410FX(PaoType.RFN410FX,  //FocusAXR
-// 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_420FRD(PaoType.RFN420FRD,  //FocusAXR-SD
-// 1, 2, 5, 113, 100, 101, 102, 119, 120, 121 RFN_420FX(PaoType.RFN420FX,  //FocusAXD
+// 1, 2, 5, 115 RFN_410FD(PaoType.RFN410FD,  //FocusAXD-SD
+// 1, 2, 5, 115 RFN_410FX(PaoType.RFN410FX,  //FocusAXR
+// 1, 2, 5, 115 RFN_420FRD(PaoType.RFN420FRD,  //FocusAXR-SD
+// 1, 2, 5, 115 RFN_420FX(PaoType.RFN420FX,  //FocusAXD
 const metrics streaming_focus_ax_400 = { 1, 2, 5, 115 };
 
-// 1, 2, 5, 32, 33, 23, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FRXD_SD(PaoType.RFN520FRXD,  //FocusRXD-SD-500
-// 1, 2, 5, 32, 33, 23, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FRXR(PaoType.RFN520FRX,  //FocusRXR-500
-// 1, 2, 5, 32, 33, 23, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FRXR_SD(PaoType.RFN520FRXD,  //FocusRXR-SD-500
-// 1, 2, 5, 32, 33, 23, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FRXT(PaoType.RFN520FRX,  //FocusRXT-500
-// 1, 2, 5, 32, 33, 23, 49, 50, 43, 113, 100, 101, 102, 119, 120, 121 RFN_520FRXT_SD(PaoType.RFN520FRXD,  //FocusRXT-SD-500
+// 1, 2, 5, 32, 33, 23, 49, 50, 43, 115, 100, 101, 102, 119, 120, 121 RFN_520FRXD_SD(PaoType.RFN520FRXD,  //FocusRXD-SD-500
+// 1, 2, 5, 32, 33, 23, 49, 50, 43, 115, 100, 101, 102, 119, 120, 121 RFN_520FRXR(PaoType.RFN520FRX,  //FocusRXR-500
+// 1, 2, 5, 32, 33, 23, 49, 50, 43, 115, 100, 101, 102, 119, 120, 121 RFN_520FRXR_SD(PaoType.RFN520FRXD,  //FocusRXR-SD-500
+// 1, 2, 5, 32, 33, 23, 49, 50, 43, 115, 100, 101, 102, 119, 120, 121 RFN_520FRXT(PaoType.RFN520FRX,  //FocusRXT-500
+// 1, 2, 5, 32, 33, 23, 49, 50, 43, 115, 100, 101, 102, 119, 120, 121 RFN_520FRXT_SD(PaoType.RFN520FRXD,  //FocusRXT-SD-500
 const metrics streaming_focus_rx = { 1, 2, 5, 32, 33, 23, 49, 50, 43, 115, 100, 101, 102, 119, 120, 121 };
 
 // 1, 2, 5, 32, 33, 49, 50, 43, 100, 101, 102 RFN_430A3D(PaoType.RFN430A3D,  //Elster A3D
