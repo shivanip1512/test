@@ -276,5 +276,4 @@
     
     <entry key="yukon.web.widgetClasses.PendingProfilesWidget.cancel.profile.request.tooltip">Cancel Request</entry>
     <entry key="yukon.web.widgetClasses.PendingProfilesWidget.acknowledge.profile.request.completion.tooltip">Acknowledge Results</entry>
-    
 </properties>
