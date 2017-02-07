@@ -177,6 +177,7 @@ public class ChartServiceImpl implements ChartService {
                  * */
                 ChartValue<Double> modifiedDownToInterval = new ChartValue<>(thisValue);
                 modifiedDownToInterval.setTime(thisInterval);   //override from actual time to modified time
+                modifiedDownToInterval.setId(thisInterval);
                 log.debug("Changed chartValue interval due to interval normalization from " + thisValue.toString()+ " to " + modifiedDownToInterval.toString());
                 
                 currentMax = modifiedDownToInterval;

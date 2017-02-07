@@ -1,6 +1,7 @@
 package com.cannontech.common.chart.model;
 
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
@@ -102,6 +103,7 @@ public class ChartValue<T> {
      * {@code <div>units</div><div>time</div><div>pointName</div>optionalData}
      */
     public String getDescriptionWithoutFormattedVal() {
+        time -= TimeZone.getDefault().getOffset(time);
         return "<div>" + units + "</div><div>" + timeFormat.format(time) + "</div><div>" + pointName + "</div>" +
                 (optionalData != null ? optionalData : "");
     }
