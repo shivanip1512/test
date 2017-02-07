@@ -56,13 +56,14 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
          * AppliancesCategory,DeviceId,InventoryId,ManufacturerSerialNumber,Type,LastCommunication,
          * LastNonZeroRuntime,Availability for those inventory that belongs to the passed load group.
          * Availability is considered as
-         *  1. Active - If the device is in oneway its always considered active. If its a two way device and
-         *  its LastNonZeroRuntime greater than the runtimeWindowEnd.
-         *  2. Inactive - If LastCommunication is greater than communication window then its Inactive.
-         *  3. OptedOut - If the inventory is in OptOutEvent table with StartDate less than current time and
-         *  stopDate greater than currentTime and eventState as START_OPT_OUT_SENT. Then that inventory is
-         *  considered to be opted out.
-         *  4. Unavailable - If non of the above status are valid then the device is considered as unavailable.
+         * 1. Active - If the device is in oneway its always considered active. If its a two way device and
+         * its LastNonZeroRuntime greater than the runtimeWindowEnd. Honeywell wifi thermostats are always
+         * considered as active
+         * 2. Inactive - If LastCommunication is greater than communication window then its Inactive.
+         * 3. OptedOut - If the inventory is in OptOutEvent table with StartDate less than current time and
+         * stopDate greater than currentTime and eventState as START_OPT_OUT_SENT. Then that inventory is
+         * considered to be opted out.
+         * 4. Unavailable - If non of the above status are valid then the device is considered as unavailable.
          * This row set has a alias innertable. Next the records are ordered by the sortBy column and then a
          * row number is attached to each row in the innertable, this row set is given alias outertable. Then
          * to get the final row set its filtered by row number based on pagination values and filter values.
