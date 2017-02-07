@@ -40,7 +40,7 @@
                                      </c:if>
                                      <td>
                                         <c:choose>
-                                            <c:when test="${pendingRequest.percentDone <= 0.0}">
+                                            <c:when test="${pendingRequest.percentDone < 100.0}">
 	                                            <td><cti:button title="${cancelRequest}" onclick="javascript:cancelLoadProfileOrAcknowledgeResults(${pendingRequest.requestId});" icon="icon-cross" renderMode="buttonImage"/></td>
                                             </c:when>
                                             <c:otherwise>
