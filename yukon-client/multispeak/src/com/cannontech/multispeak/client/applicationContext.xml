@@ -56,6 +56,17 @@
         <property name="errorHandler" ref="yukonJmsErrorHandler"/>
     </bean>
 
+  <bean id="outageJmsMessageListenerV5" class="com.cannontech.multispeak.service.v5.OutageJmsMessageListener" />
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.notif.obj.amr.OutageJmsMessage" />
+        <property name="pubSubDomain" value="true"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="taskExecutor" ref="globalTaskExecutor"/>
+        <property name="messageListener" ref="outageJmsMessageListenerV5"/>
+        <property name="errorHandler" ref="yukonJmsErrorHandler"/>
+    </bean>
+
   <bean id="yukonJmsErrorHandler" class="com.cannontech.multispeak.util.YukonJmsErrorHandler"/>
   
   <bean id="multispeakDeviceGroupSyncService" class="com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceImpl"/>

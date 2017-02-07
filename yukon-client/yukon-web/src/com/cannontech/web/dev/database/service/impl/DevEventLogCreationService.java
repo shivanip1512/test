@@ -614,12 +614,12 @@ public class DevEventLogCreationService {
                 String stateGroup = devEventLog.getIndicatorString() + "StateGroup";
                 String evaluatorStatus = devEventLog.getIndicatorString() + "EvaluatorStatus";
                 String monitorName = devEventLog.getIndicatorString() + "MonitorName";
-
+                String mspMethod = devEventLog.getIndicatorString() + "ODEventNotification";
                 Date eventDateTime = new Date();
                 int monitorId = 16;
 
-                outageEventLogService.mspMessageSentToVendor(messageSource, eventType, objectId, deviceType, mspVendor);
-                outageEventLogService.outageEventGenerated(eventType, eventDateTime, deviceType, objectId);
+                outageEventLogService.mspMessageSentToVendor(messageSource, eventType, objectId, deviceType, mspVendor,mspMethod);
+                outageEventLogService.outageEventGenerated(eventType, eventDateTime, deviceType, objectId, mspMethod);
                 outageEventLogService.statusPointMonitorCreated(monitorId, statusPointMonitorName, groupName, attribute, stateGroup, evaluatorStatus,                     yukonUser);
                 outageEventLogService.statusPointMonitorDeleted(monitorId, statusPointMonitorName, groupName, attribute, stateGroup, evaluatorStatus, yukonUser);
                 outageEventLogService.statusPointMonitorUpdated(monitorId, statusPointMonitorName, groupName, attribute, stateGroup, evaluatorStatus, yukonUser);

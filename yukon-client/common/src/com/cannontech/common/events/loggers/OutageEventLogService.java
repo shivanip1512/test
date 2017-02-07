@@ -14,13 +14,15 @@ public interface OutageEventLogService {
                                        String eventType, 
                                        String objectId,
                                        String deviceType,
-                                       String mspVendor);
+                                       String mspVendor,
+                                       String mspMethod);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.outageEvents")
     public void outageEventGenerated(String eventType,
                                      Date eventDateTime,
                                      String deviceType,
-                                     String objectId);
+                                     String objectId,
+                                     String mspMethod);
     
     @YukonEventLog(transactionality=ExecutorTransactionality.TRANSACTIONAL, category="system.outageEvents.statusPointMonitor")
     public void statusPointMonitorCreated(int statusPointMonitorId, 

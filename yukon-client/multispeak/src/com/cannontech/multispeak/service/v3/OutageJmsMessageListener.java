@@ -43,6 +43,7 @@ import com.cannontech.multispeak.client.core.OAClient;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
+import com.cannontech.multispeak.service.MspIdentifiablePaoService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -153,11 +154,12 @@ public class OutageJmsMessageListener implements MessageListener {
                                                                      outageDetectionEvent.getOutageEventType().toString(), 
                                                                      outageDetectionEvent.getObjectID(), 
                                                                      outageDetectionEvent.getOutageDetectDeviceType().toString(),
-                                                                     mspVendor.getCompanyName());
+                                                                     mspVendor.getCompanyName(),
+                                                                     "ODEventNotification");
                     }
                 
             } catch (MultispeakWebServiceClientException e) {
-                log.error("TargetService: " + endpointUrl + " - initiateOutageDetection (" + mspVendor.getCompanyName() + ")");
+                log.error("TargetService: " + endpointUrl + " - ODEventNotification (" + mspVendor.getCompanyName() + ")");
                 log.error("MultispeakWebServiceClientException: " + e.getMessage());
             }
         }
@@ -189,7 +191,8 @@ public class OutageJmsMessageListener implements MessageListener {
         outageEventLogService.outageEventGenerated(outageDetectionEvent.getOutageEventType().value(), 
                                                    outageDetectionEvent.getEventTime().toGregorianCalendar().getTime(), 
                                                    outageDetectionEvent.getOutageDetectDeviceType().value(), 
-                                                   outageDetectionEvent.getObjectID());
+                                                   outageDetectionEvent.getObjectID(),
+                                                   "ODEventNotification");
         
         return outageDetectionEvent;
     }
