@@ -1,5 +1,7 @@
 package com.cannontech.web.rfn.dataStreaming.service.impl;
 
+import static java.util.stream.Collectors.toList;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -74,8 +76,6 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PointDao;
-import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -100,6 +100,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.google.common.collect.Range;
 import com.google.common.collect.Sets;
 
@@ -369,18 +370,39 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return savedConfig.getId();
     }
 
+    private class DeviceTypeList {
+        DeviceTypeList(PaoType type, Collection<Integer> deviceIds) {
+            this.type = type;
+            this.deviceIds = deviceIds;
+        }
+        PaoType type;
+        Collection<Integer> deviceIds;
+    }
+
+    private static Multimap<PaoType, Integer> asTypesToDeviceIds(List<SimpleDevice> devices) {
+        return Multimaps.transformValues(
+                Multimaps.index(devices, SimpleDevice::getDeviceType),
+                SimpleDevice::getDeviceId);        
+    }
+
+    private static List<Integer> asDeviceIds(Collection<SimpleDevice> devices) {
+        return devices.stream()
+                    .map(SimpleDevice::getDeviceId)
+                    .collect(toList());
+    }
+
     @Override
-    public VerificationInformation verifyConfiguration(DataStreamingConfig config, List<Integer> deviceIds) {
+    public VerificationInformation verifyConfiguration(DataStreamingConfig config, List<SimpleDevice> devices) {
 
         DataStreamingConfigInfo configInfo = new DataStreamingConfigInfo();
         configInfo.originalConfig = config;
 
         // Remove devices from the list that don't support data streaming
-        List<Integer> unsupportedDevices = removeDataStreamingUnsupportedDevices(deviceIds);
+        List<Integer> unsupportedDevices = removeDataStreamingUnsupportedDevices(devices);
         List<BuiltInAttribute> allConfigAttributes =
-            config.getAttributes().stream().map(dsAttribute -> dsAttribute.getAttribute()).collect(Collectors.toList());
-        configInfo.addDeviceUnsupported(allConfigAttributes, unsupportedDevices);
-        if (deviceIds.size() == 0) {
+            config.getAttributes().stream().map(DataStreamingAttribute::getAttribute).collect(toList());
+        configInfo.addDeviceUnsupported(allConfigAttributes, unsupportedDevices, true);
+        if (devices.isEmpty()) {
             // None of the selected devices support data streaming
             configInfo.success = false;
             configInfo.exceptions.add(
@@ -389,9 +411,28 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             return verificationInfo;
         }
 
+        Multimap<PaoType, Integer> devicesByType = asTypesToDeviceIds(devices); 
+        
+        Multimap<Set<BuiltInAttribute>, PaoType> unsupportedAttributesPerType = 
+                getUnsupportedAttributesToTypes(config, devicesByType.keySet());
+        
+        long attCount = config.getAttributes().stream().filter(DataStreamingAttribute::getAttributeOn).count();
+
+        unsupportedAttributesPerType.asMap().forEach((unsupportedAttributes, unsupportedTypes) -> {
+            configInfo.addDeviceUnsupported(
+                Lists.newArrayList(unsupportedAttributes),  //  Ideally, this would be a set.
+                unsupportedTypes.stream()
+                    .flatMap(type -> devicesByType.get(type).stream())
+                    .collect(toList()),
+                unsupportedAttributes.size() == attCount);
+        });
+
+        Multimap<DataStreamingConfig, DeviceTypeList> configAssignmentsByType = 
+                splitConfigForDevices(config, devicesByType, unsupportedAttributesPerType);
+
         // Create multiple configurations for different device types if necessary
         // (Some devices may only support some of the configured attributes)
-        Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds = splitConfigForDevices(config, deviceIds, configInfo);
+        Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds = createNmConfigs(configAssignmentsByType);
 
         // Build verification message for NM
         DeviceDataStreamingConfigRequest verificationRequest =
@@ -494,68 +535,51 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     /**
      * Remove the devices that do not support data streaming from the list and return them as a separate list.
      */
-    private List<Integer> removeDataStreamingUnsupportedDevices(List<Integer> deviceIds) {
+    private List<Integer> removeDataStreamingUnsupportedDevices(List<SimpleDevice> devices) {
 
-        List<Integer> unsupportedDeviceIds = new ArrayList<>();
+        List<SimpleDevice> unsupportedDevices = devices.stream()
+                .filter(d -> ! dataStreamingAttributeHelper.supportsDataStreaming(d.getDeviceType()))
+                .collect(toList());
 
-        for (Integer deviceId : deviceIds) {
-            LiteYukonPAObject pao = serverDatabaseCache.getAllPaosMap().get(deviceId);
-            PaoType paoType = pao.getPaoType();
-            boolean supports = dataStreamingAttributeHelper.supportsDataStreaming(paoType);
-            if (!supports) {
-                unsupportedDeviceIds.add(deviceId);
-            }
-        }
-        deviceIds.removeAll(unsupportedDeviceIds);
+        devices.removeAll(unsupportedDevices);
 
-        return unsupportedDeviceIds;
+        return asDeviceIds(unsupportedDevices);
     }
 
-    private Multimap<DeviceDataStreamingConfig, Integer> splitConfigForDevices(DataStreamingConfig config,
-            List<Integer> deviceIds, DataStreamingConfigInfo configInfo) {
-        // sort devices by type
-        Multimap<PaoType, Integer> paoTypeToDeviceIds = getPaoTypeToDeviceIds(deviceIds);
-
+    private Multimap<DataStreamingConfig, DeviceTypeList> splitConfigForDevices(DataStreamingConfig config, 
+            Multimap<PaoType, Integer> devicesByType, Multimap<Set<BuiltInAttribute>, PaoType> unsupportedAttributesToTypes) {
         // build a map of paoTypes and the config attributes they don't support
-        Multimap<Set<BuiltInAttribute>, PaoType> unsupportedAttributesToTypes =
-            getUnsupportedAttributesToTypes(config, paoTypeToDeviceIds.keySet());
-
-        Multimap<DeviceDataStreamingConfig, Integer> newConfigToDevices = ArrayListMultimap.create();
+        Multimap<DataStreamingConfig, DeviceTypeList> configToTypes = ArrayListMultimap.create();
 
         // create a new config for each paoType that has unsupported attributes
-        for (Entry<Set<BuiltInAttribute>, Collection<PaoType>> unsupportedAttributeTypes : unsupportedAttributesToTypes.asMap().entrySet()) {
+        unsupportedAttributesToTypes.asMap().forEach((unsupportedAttributes, paoTypes) -> {
             DataStreamingConfig newConfig = config.clone();
-            Set<BuiltInAttribute> unsupportedAttributes = unsupportedAttributeTypes.getKey();
+
             removeUnsupportedAttributes(newConfig, unsupportedAttributes);
-            for (PaoType type : unsupportedAttributeTypes.getValue()) {
-                // Get devices whose types support this new config
-                List<Integer> deviceIdsForNewConfig = new ArrayList<>();
-                deviceIdsForNewConfig.addAll(paoTypeToDeviceIds.get(type));
-                if (configInfo != null) {
-                    configInfo.addDeviceUnsupported(Lists.newArrayList(unsupportedAttributes), deviceIdsForNewConfig);
-                }
-                DeviceDataStreamingConfig ddsConfig = dataStreamingCommService.buildDeviceDataStreamingConfig(newConfig, type);
-                newConfigToDevices.putAll(ddsConfig, deviceIdsForNewConfig);
-                paoTypeToDeviceIds.removeAll(type);
-            }
-        }
 
-        // all the deviceIds that haven't been mapped to a new config can use their version of the original config
-        for (Entry<PaoType, Collection<Integer>> devicesPerType : paoTypeToDeviceIds.asMap().entrySet()) {
-            DeviceDataStreamingConfig ddsConfig = dataStreamingCommService.buildDeviceDataStreamingConfig(config, devicesPerType.getKey());
-            newConfigToDevices.putAll(ddsConfig, devicesPerType.getValue());
-        }
-
-        return newConfigToDevices;
+            configToTypes.putAll(
+                newConfig,             
+                paoTypes.stream()
+                    .map(type -> new DeviceTypeList(
+                        type, 
+                        devicesByType.get(type)))
+                    .collect(toList()));
+        });
+        
+        return configToTypes;
     }
+    
+    private Multimap<DeviceDataStreamingConfig, Integer> createNmConfigs(Multimap<DataStreamingConfig, DeviceTypeList> configsPerType)
+    {
+        Multimap<DeviceDataStreamingConfig, Integer> configsPerDevice = ArrayListMultimap.create();
+        
+        configsPerType.entries().forEach(entry -> {
+            configsPerDevice.putAll(
+                dataStreamingCommService.buildDeviceDataStreamingConfig(entry.getKey(), entry.getValue().type),
+                entry.getValue().deviceIds);
+        });
 
-    private Multimap<PaoType, Integer> getPaoTypeToDeviceIds(Collection<Integer> deviceIds) {
-        Multimap<PaoType, Integer> paoTypeToDeviceIds = ArrayListMultimap.create();
-        for (Integer deviceId : deviceIds) {
-            PaoType type = serverDatabaseCache.getAllPaosMap().get(deviceId).getPaoType();
-            paoTypeToDeviceIds.put(type, deviceId);
-        }
-        return paoTypeToDeviceIds;
+        return configsPerDevice;
     }
 
     private Multimap<Set<BuiltInAttribute>, PaoType> getUnsupportedAttributesToTypes(DataStreamingConfig config,
@@ -604,13 +628,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         verificationInfo.setExceptions(configInfo.exceptions);
 
         return verificationInfo;
-    }
-
-    @Override
-    public VerificationInformation verifyConfiguration(int configId, List<Integer> deviceIds) {
-        Behavior behavior = deviceBehaviorDao.getBehaviorById(configId);
-        DataStreamingConfig config = convertBehaviorToConfig(behavior);
-        return verifyConfiguration(config, deviceIds);
     }
 
     @Override
@@ -705,8 +722,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             DataStreamingConfigResult result= createUncompletedResult();
             logService.unassignAttempted(user, result.getResultsId(), deviceCollection.getDeviceCount());
             
-            List<Integer> deviceIds =
-                getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
+            List<Integer> deviceIds = asDeviceIds(getSupportedDevices(deviceCollection));
 
             log.info("Unassign data streaming config from devices=" + deviceIds);
 
@@ -725,7 +741,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 // mark devices as "success"
                 addDevicesToGroup(devicesIdsWithoutBehaviors, result.getSuccessGroup());
                 List<Integer> unsupportedDeviceIds = removeDataStreamingUnsupportedDevices(
-                    deviceCollection.getDeviceList().stream().map(s -> s.getDeviceId()).collect(Collectors.toList()));
+                    deviceCollection.getDeviceList());
                // mark devices as "unsupported"
                 addDevicesToGroup(unsupportedDeviceIds, result.getUnsupportedGroup());
                 result.complete();
@@ -791,7 +807,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     private void addDevicesToGroup(List<Integer> deviceIds, StoredDeviceGroup group) {
         if (!deviceIds.isEmpty()) {
             Collection<LiteYukonPAObject> paos =
-                deviceIds.stream().map(id -> serverDatabaseCache.getAllPaosMap().get(id)).collect(Collectors.toList());
+                deviceIds.stream().map(id -> serverDatabaseCache.getAllPaosMap().get(id)).collect(toList());
             deviceGroupMemberEditorDao.addDevices(group, paos);
         }
     }
@@ -807,21 +823,32 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             logService.assignAttempted(user, result.getResultsId(), config.getName(),
                 deviceCollection.getDeviceCount());
 
-            List<Integer> deviceIds =
-                getSupportedDevices(deviceCollection).stream().map(s -> s.getDeviceId()).collect(Collectors.toList());
+            List<SimpleDevice> devices = getSupportedDevices(deviceCollection);
+            Multimap<PaoType, Integer> devicesByType = asTypesToDeviceIds(devices);
             int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
 
-            log.info("Assigning data streaming config " + config + " devices=" + deviceIds);
+            log.info("Assigning data streaming config " + config + " devices=" + devicesByType.values());
+            
+            Multimap<Set<BuiltInAttribute>, PaoType> unsupportedAttributesPerType = 
+                    getUnsupportedAttributesToTypes(config, devicesByType.keySet());
+            
+            Multimap<DataStreamingConfig, DeviceTypeList> configAssignmentsByType = 
+                    splitConfigForDevices(config, devicesByType, unsupportedAttributesPerType);
 
-            sendNmConfiguration(config, deviceIds, requestSeqNumber);
+            // Create multiple configurations for different device types if necessary
+            // (Some devices may only support some of the configured attributes)
+            Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds = createNmConfigs(configAssignmentsByType);
+            
+            sendNmConfiguration(configToDeviceIds, requestSeqNumber, DeviceDataStreamingConfigRequestType.UPDATE);
 
-            if (!deviceIds.isEmpty()) {
-                deviceBehaviorDao.assignBehavior(config.getId(), TYPE, deviceIds, true);
-                deviceIds.forEach(id -> {
-                    BehaviorReport report = buildPendingReport(id);
-                    deviceBehaviorDao.saveBehaviorReport(report);
-                });
-            }
+            //  Save the config per type
+            configAssignmentsByType.asMap().forEach((typeConfig, typeLists) -> {
+                List<Integer> configDeviceIds = typeLists.stream().flatMap(tl -> tl.deviceIds.stream()).collect(toList());
+                deviceBehaviorDao.assignBehavior(config.getId(), TYPE, configDeviceIds, true);
+                configDeviceIds.stream()
+                    .map(this::buildPendingReport)
+                    .forEach(deviceBehaviorDao::saveBehaviorReport);
+            });
             
             result.setConfig(config);
 
@@ -864,9 +891,11 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     continue;
                 }
    
+                // Look for an existing config matching the behavior report
                 DataStreamingConfig config = findConfig(allConfigs, reportedConfig);
 
                 if (config == null) {
+                    // If no existing config, create a new one from the behavior report
                     Behavior behavior = convertConfigToBehavior(reportedConfig);
                     // create behavior
                     int behaviorId = deviceBehaviorDao.saveBehavior(behavior);
@@ -958,22 +987,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return processConfigResponse(response);
     }
 
-    private void sendNmConfiguration(DataStreamingConfig config, List<Integer> deviceIds, int requestSeqNumber)
-            throws DataStreamingConfigException {
-        // Remove devices from the list that don't support data streaming
-        removeDataStreamingUnsupportedDevices(deviceIds);
-
-        // Create multiple configurations for different device types if necessary
-        // (Some devices may only support some of the configured attributes, and some use different metric IDs for the same attribute)
-        Multimap<DeviceDataStreamingConfig, Integer> configToDeviceIds = splitConfigForDevices(config, deviceIds, null);
-
-        sendNmConfiguration(configToDeviceIds, requestSeqNumber, DeviceDataStreamingConfigRequestType.UPDATE);
-    }
-
     private void sendNmConfigurationRemove(List<Integer> deviceIds, int requestSeqNumber)
             throws DataStreamingConfigException {
-        // Remove devices from the list that don't support data streaming
-        removeDataStreamingUnsupportedDevices(deviceIds);
+        // Unsupported devices were already removed by the getSupportedDevices() call in unassignDataStreamingConfig()
+        //removeDataStreamingUnsupportedDevices(deviceIds);
 
         DeviceDataStreamingConfig config = new DeviceDataStreamingConfig();
         config.setDataStreamingOn(false);
@@ -1044,15 +1061,13 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     private List<SimpleDevice> getSupportedDevices(DeviceCollection deviceCollection) {
 
         List<RfnDevice> rfnDevices = rfnDeviceDao.getDevicesByPaoIds(
-            deviceCollection.getDeviceList().stream().map(rfnDevice -> rfnDevice.getDeviceId()).collect(
-                Collectors.toList()));
+            asDeviceIds(deviceCollection.getDeviceList()));
         Set<Integer> deviceIds =
             rfnDevices.stream().map(rfnDevice -> rfnDevice.getPaoIdentifier().getPaoId()).collect(Collectors.toSet());
 
         List<SimpleDevice> supportedDevices =
             deviceCollection.getDeviceList().stream().filter(device -> deviceIds.contains(device.getDeviceId())
-                && dataStreamingAttributeHelper.supportsDataStreaming(device.getDeviceType())).collect(
-                    Collectors.toList());
+                && dataStreamingAttributeHelper.supportsDataStreaming(device.getDeviceType())).collect(toList());
 
         return supportedDevices;
     }
@@ -1160,8 +1175,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         behavior.setType(TYPE);
         // only enabled attributes are stored in the database
         List<DataStreamingAttribute> attributes =
-            config.getAttributes().stream().filter(x -> x.getAttributeOn() == Boolean.TRUE).collect(
-                Collectors.toList());
+            config.getAttributes().stream().filter(DataStreamingAttribute::getAttributeOn).collect(toList());
         behavior.addValue(CHANNELS_STRING, attributes.size());
         for (int i = 0; i < attributes.size(); i++) {
             BuiltInAttribute attribute = attributes.get(i).getAttribute();
@@ -1226,10 +1240,11 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         public List<GatewayLoading> gatewayLoading = new ArrayList<>();
         public boolean success = true;
 
-        public void addDeviceUnsupported(List<BuiltInAttribute> attributes, List<Integer> deviceIds) {
+        public void addDeviceUnsupported(List<BuiltInAttribute> attributes, List<Integer> deviceIds, boolean allAttributes) {
             DeviceUnsupported unsupported = new DeviceUnsupported();
             unsupported.setAttributes(attributes);
             unsupported.setDeviceIds(deviceIds);
+            unsupported.setAllAttributes(allAttributes);
             deviceUnsupported.add(unsupported);
         }
 
@@ -1321,20 +1336,22 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         private boolean setGatewayLoading(DeviceDataStreamingConfigResponse response) {
             boolean gatewaysOversubscribed = false;
             Map<RfnIdentifier, GatewayDataStreamingInfo> affectedGateways = response.getAffectedGateways();
-            for (RfnIdentifier rfnId : affectedGateways.keySet()) {
-                RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(rfnId);
-                GatewayDataStreamingInfo info = affectedGateways.get(rfnId);
-                double currentPercent = (info.getCurrentLoading() / info.getMaxCapacity()) * 100;
-                double proposedPercent = (info.getResultLoading() / info.getMaxCapacity()) * 100;
+            if (affectedGateways != null) {
+                for (RfnIdentifier rfnId : affectedGateways.keySet()) {
+                    RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(rfnId);
+                    GatewayDataStreamingInfo info = affectedGateways.get(rfnId);
+                    double currentPercent = (info.getCurrentLoading() / info.getMaxCapacity()) * 100;
+                    double proposedPercent = (info.getResultLoading() / info.getMaxCapacity()) * 100;
 
-                GatewayLoading loading = new GatewayLoading();
-                loading.setGatewayName(gateway.getName());
-                loading.setCurrentPercent(currentPercent);
-                loading.setProposedPercent(proposedPercent);
-                gatewayLoading.add(loading);
+                    GatewayLoading loading = new GatewayLoading();
+                    loading.setGatewayName(gateway.getName());
+                    loading.setCurrentPercent(currentPercent);
+                    loading.setProposedPercent(proposedPercent);
+                    gatewayLoading.add(loading);
 
-                if (proposedPercent > 100) {
-                    gatewaysOversubscribed = true;
+                    if (proposedPercent > 100) {
+                        gatewaysOversubscribed = true;
+                    }
                 }
             }
             return gatewaysOversubscribed;
@@ -1348,8 +1365,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
      */
     private DeviceCollection createDeviceCollectionForIds(Collection<Integer> deviceIds) {
         Collection<SimpleMeter> meters = deviceIds.stream().map(
-            id -> new SimpleMeter(serverDatabaseCache.getAllPaosMap().get(id).getPaoIdentifier(), "")).collect(
-                Collectors.toList());
+            id -> new SimpleMeter(serverDatabaseCache.getAllPaosMap().get(id).getPaoIdentifier(), "")).collect(toList());
         DeviceCollection deviceCollection =
             deviceGroupCollectionHelper.createDeviceGroupCollection(meters.iterator(), "");
         return deviceCollection;
@@ -1377,8 +1393,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             this.deviceList = deviceList;
             cancelGroup = result.getCanceledGroup();
             this.requestSeqNumber = requestSeqNumber;
-            deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE,
-                deviceList.stream().map(d -> d.getDeviceId()).collect(Collectors.toList()));
+            deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, asDeviceIds(deviceList));
         }
 
         @Override
@@ -1474,8 +1489,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.CANCELING);
                 commandRequestExecutionResultDao.saveUnsupported(canceledDevices, execution.getId(),
                     CommandRequestUnsupportedType.CANCELED);
-                deviceBehaviorDao.updateBehaviorReportStatus(TYPE, BehaviorReportStatus.CANCELED,
-                    canceledDevices.stream().map(s -> s.getDeviceId()).collect(Collectors.toList()));
+                deviceBehaviorDao.updateBehaviorReportStatus(TYPE, BehaviorReportStatus.CANCELED, 
+                    asDeviceIds(canceledDevices));
                 deviceGroupMemberEditorDao.addDevices(cancelGroup, canceledDevices);
                 updateRequestCount(execution, result.getFailureCount() + result.getSuccessCount());
                 

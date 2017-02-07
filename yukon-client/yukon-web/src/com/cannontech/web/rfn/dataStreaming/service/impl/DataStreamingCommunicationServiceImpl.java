@@ -31,6 +31,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingMetricStatus;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -55,8 +56,10 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
+import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingCommunicationService;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 
 public class DataStreamingCommunicationServiceImpl implements DataStreamingCommunicationService {
@@ -70,6 +73,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private RfnDeviceAttributeDao rfnDeviceAttributeDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private AttributeService attributeService;
     @Autowired private RfnGatewayService rfnGatewayService;
@@ -262,18 +266,38 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     public DeviceDataStreamingConfig buildDeviceDataStreamingConfig(DataStreamingConfig config, PaoType type) {
         DeviceDataStreamingConfig nmConfig = new DeviceDataStreamingConfig();
         
-        if (config == null) {
+        if (config == null || config.getAttributes().isEmpty()) {
             nmConfig.setDataStreamingOn(false);
         } else {
             nmConfig.setDataStreamingOn(true);
             
-            Map<Integer, MetricConfig> metrics = config.getAttributes().stream()
+            //  Build a map of all the attributes in the config
+            Map<BuiltInAttribute, DataStreamingAttribute> configAttributes = 
+                    Maps.uniqueIndex(config.getAttributes(), DataStreamingAttribute::getAttribute);
+
+            //  Get a list of all of the attributes supported by this type
+            Collection<BuiltInAttribute> supportedAttributes = dataStreamingAttributeHelper.getSupportedAttributes(type);
+
+            //  Get a default interval to use for disabled metrics 
+            short defaultInterval = (short)config.getAttributes().get(0).getInterval();
+
+            Map<Integer, MetricConfig> metrics = supportedAttributes.stream()
                 .collect(Collectors.toMap(
-                    dsAttribute -> rfnDeviceAttributeDao.getMetricIdForAttribute(dsAttribute.getAttribute(), type),
-                    dsAttribute -> {
+                    attribute -> rfnDeviceAttributeDao.getMetricIdForAttribute(attribute, type),
+                    attribute -> {
                         MetricConfig metricConfig = new MetricConfig();
-                        metricConfig.setEnabled(dsAttribute.getAttributeOn());
-                        metricConfig.setInterval((short)dsAttribute.getInterval());
+
+                        Optional<DataStreamingAttribute> configAttribute = 
+                                Optional.ofNullable(configAttributes.get(attribute));
+
+                        metricConfig.setEnabled(
+                            configAttribute.map(DataStreamingAttribute::getAttributeOn)
+                                           .orElse(false));
+                        metricConfig.setInterval((short)
+                            configAttribute.map(DataStreamingAttribute::getInterval)
+                                           .map(Integer::shortValue)
+                                           .orElse(defaultInterval));
+
                         metricConfig.setStatus(DataStreamingMetricStatus.OK.asShort());  //  We're expecting it to be OK
                         return metricConfig;
                 }));

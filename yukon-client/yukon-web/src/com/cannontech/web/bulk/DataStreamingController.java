@@ -23,6 +23,7 @@ import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -62,7 +63,7 @@ public class DataStreamingController {
 
         //check if the selected devices support data streaming
         Set<PaoType> types = deviceCollection.getDeviceList().stream()
-                .map(device -> device.getDeviceType())
+                .map(SimpleDevice::getDeviceType)
                 .collect(Collectors.toSet());
         List<BuiltInAttribute> attributes = new ArrayList<>(dataStreamingAttributeHelper.getAllSupportedAttributes(types));
         attributes.sort((a1, a2) -> a1.getDescription().compareTo(a2.getDescription()));
@@ -111,37 +112,20 @@ public class DataStreamingController {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
 
-        DataStreamingConfig modelConfig = configuration;
-        int configId = 0;
-
         if (configuration.isNewConfiguration()) {
-            modelConfig.getAttributes().forEach(attribute -> attribute.setInterval(configuration.getSelectedInterval()));
-            configId = dataStreamingService.saveConfig(modelConfig);
-            modelConfig.setId(configId);
-        } else {
-            configId = configuration.getSelectedConfiguration();
-            modelConfig = dataStreamingService.findDataStreamingConfiguration(configId);
-            modelConfig.setId(configId);
+            configuration.getAttributes().forEach(attribute -> attribute.setInterval(configuration.getSelectedInterval()));
         }
 
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        modelConfig.setAccessor(accessor);
+        configuration.setAccessor(accessor);
 
-        model.addAttribute("configuration", modelConfig);
+        //  Don't save the config yet - just do a verification check.
+        //    The config will be saved by dataStreamingService.assignDataStreamingConfig() during the verification POST.
+        VerificationInformation verifyInfo = dataStreamingService.verifyConfiguration(configuration, deviceCollection.getDeviceList());
 
-        List<Integer> deviceIds = new ArrayList<>();
-        deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
-
-        long attCount = modelConfig.getAttributes().stream().filter(attribute -> attribute.getAttributeOn()).count();
-
-        VerificationInformation verifyInfo = dataStreamingService.verifyConfiguration(configId, deviceIds);
-        verifyInfo.setConfiguration(modelConfig);
-        verifyInfo.getDeviceUnsupported().forEach(device -> {
-            if (device.getAttributes().size() == attCount) {
-                device.setAllAttributes(true);
-            }
-            device.setDeviceCollection(dcProducer.createDeviceCollection(device.getDeviceIds(), null));
-            device.setAccessor(accessor);
+        verifyInfo.getDeviceUnsupported().forEach(unsupported -> {
+            unsupported.setDeviceCollection(dcProducer.createDeviceCollection(unsupported.getDeviceIds(), null));
+            unsupported.setAccessor(accessor);
         });
         verifyInfo.getGatewayLoadingInfo().forEach(gateway -> gateway.setAccessor(accessor));
 
@@ -165,9 +149,6 @@ public class DataStreamingController {
         DeviceCollection deviceCollection = deviceCollectionFactory.createDeviceCollection(request);
         model.addAttribute("deviceCollection", deviceCollection);
 
-        List<Integer> deviceIds = new ArrayList<>();
-        deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
-
         try {
             DataStreamingConfigResult result = dataStreamingService.unassignDataStreamingConfig(deviceCollection, user);
             model.addAttribute("resultsId", result.getResultsId());
@@ -188,9 +169,6 @@ public class DataStreamingController {
         model.addAttribute("deviceCollection", deviceCollection);
 
         LiteYukonUser user = userContext.getYukonUser();
-
-        List<Integer> deviceIds = new ArrayList<>();
-        deviceCollection.getDeviceList().forEach(device->deviceIds.add(device.getDeviceId()));
 
         DataStreamingConfig config = verificationInfo.getConfiguration();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);

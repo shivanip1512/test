@@ -2,8 +2,8 @@ package com.cannontech.web.rfn.dataStreaming.service;
 
 import java.util.List;
 import java.util.Map;
-
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
@@ -30,18 +30,13 @@ public interface DataStreamingService {
      * Requests Network Manager to simulate the effects of assigning the specified configuration to these devices.
      * @return VerificationInfo containing the results of the Network manager check.
      */
-    VerificationInformation verifyConfiguration(DataStreamingConfig config, List<Integer> deviceIds);
+    VerificationInformation verifyConfiguration(DataStreamingConfig config, List<SimpleDevice> devices);
     
     /**
-     * Requests Network Manager to simulate the effects of assigning the specified configuration to these devices.
-     * @return VerificationInfo containing the results of the Network manager check.
-     */
-    VerificationInformation verifyConfiguration(int configId, List<Integer> deviceIds);
-    
-    /**
-     * Assign an existing data streaming configuration to the devices.
-     * @param configId The behaviorId of the existing config.
-     * @param correlationId A UUID used to correlate the NM config request and the sync request.
+     * Assign a data streaming configuration to the devices.
+     * @param config The configuration to assign to the devices.  If the deviceCollection contains multiple device types, 
+     *     the config will be split into multiple configs containing the subset of attributes supported by each device type.
+     * @param user The user who initiated this request.
      * @return The resultId to look up the results in recentResultsCache.
      * @throws DataStreamingConfigException If the configuration is disallowed or there is an error.
      */
