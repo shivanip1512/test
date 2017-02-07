@@ -13,6 +13,8 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
 import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
@@ -23,6 +25,7 @@ import com.cannontech.common.device.config.service.DeviceConfigService;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.YukonDevice;
+import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DeviceDao;
@@ -46,6 +49,8 @@ public class ConfigWidget extends WidgetControllerBase {
     @Autowired private DeviceConfigService deviceConfigService;
     @Autowired private DeviceConfigurationService deviceConfigurationService;
     @Autowired private DataStreamingService dataStreamingService;
+    @Autowired private ConfigurationSource configurationSource;
+    @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
 
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     
@@ -94,6 +99,15 @@ public class ConfigWidget extends WidgetControllerBase {
         DiscrepancyResult discrepancy = dataStreamingService.findDiscrepancy(deviceId);
         mav.addObject("dataStreamingDiscrepancy", discrepancy);
 
+        boolean configurableDevice = !existingConfigs.isEmpty();
+        boolean dataStreamingEnabled =
+            configurationSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
+        boolean streamableDevice =
+            dataStreamingEnabled
+                && !dataStreamingAttributeHelper.getSupportedAttributes(device.getPaoIdentifier().getPaoType()).isEmpty();
+        mav.addObject("configurableDevice", configurableDevice);
+        mav.addObject("streamableDevice", streamableDevice);
+
         return mav;
     }
 
@@ -126,7 +140,6 @@ public class ConfigWidget extends WidgetControllerBase {
         deviceConfigurationService.unassignConfig(device, userContext.getYukonUser());
         
         ModelAndView mav = getConfigModelAndView(request);
-        mav.addObject("configurableDevice", true);
         return mav;
     }
     
