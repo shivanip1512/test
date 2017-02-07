@@ -86,8 +86,7 @@
         <tags:nameValue2 nameKey="yukon.common.email.send">
             <tags:switchButton name="sendEmail" checked="${exportData.sendEmail}" toggleGroup="email-address" offClasses="M0" 
                 offNameKey=".no.label" onNameKey=".yes.label"/>
-            <tags:input id="emailNotificationAddress" path="notificationEmailAddresses" disabled="true" 
-                toggleGroup="email-address"/>
+            <tags:input id="emailNotificationAddress" path="notificationEmailAddresses" toggleGroup="email-address"/>
         </tags:nameValue2>
     </c:if>
 </cti:msgScope>
