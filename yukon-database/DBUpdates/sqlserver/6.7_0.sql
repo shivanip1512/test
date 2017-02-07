@@ -53,6 +53,18 @@ GO
 /* @error ignore-end */
 /* End YUK-16225 */
 
+/* Start YUK-16164 */
+ALTER TABLE DEVICEMETERGROUP
+    DROP CONSTRAINT FK_DeviceMeterGroup_Device;
+GO
+
+ALTER TABLE DEVICEMETERGROUP
+   ADD CONSTRAINT FK_DeviceMeterGroup_Device FOREIGN KEY (DEVICEID)
+      REFERENCES DEVICE (DEVICEID)
+         ON DELETE CASCADE;
+GO
+/* End YUK-16164 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

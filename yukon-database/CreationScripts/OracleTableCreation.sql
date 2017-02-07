@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/31/2017 10:19:55 AM                        */
+/* Created on:     2/7/2017 1:00:53 PM                          */
 /*==============================================================*/
 
 
@@ -11347,7 +11347,8 @@ alter table DEVICEMCTIEDPORT
 
 alter table DEVICEMETERGROUP
    add constraint FK_DeviceMeterGroup_Device foreign key (DEVICEID)
-      references DEVICE (DEVICEID);
+      references DEVICE (DEVICEID)
+      on delete cascade;
 
 alter table DEVICEREADLOG
    add constraint FK_DEVICERE_FK_DRLOGR_DEVICERE foreign key (DeviceReadRequestLogID)

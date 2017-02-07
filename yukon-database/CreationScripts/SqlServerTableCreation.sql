@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     1/31/2017 10:20:45 AM                        */
+/* Created on:     2/7/2017 1:00:02 PM                          */
 /*==============================================================*/
 
 
@@ -12139,6 +12139,7 @@ go
 alter table DEVICEMETERGROUP
    add constraint FK_DeviceMeterGroup_Device foreign key (DEVICEID)
       references DEVICE (DEVICEID)
+         on delete cascade
 go
 
 alter table DEVICEREADLOG
