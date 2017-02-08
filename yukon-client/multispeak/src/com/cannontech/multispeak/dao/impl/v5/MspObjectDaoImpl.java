@@ -604,8 +604,15 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
 
     @Override
-    public List<DomainMember> getMspSubstationName(MultispeakVendor mspVendor, List<String> domainNames) {
-        List<DomainMember> allDomainMembers = new ArrayList<>();
+    public List<String> getMspSubstationName(MultispeakVendor mspVendor) {
+        List<String> domainNames = new ArrayList<>();
+        domainNames.add("substationCode");
+        return getMspSubstationName(mspVendor, domainNames);
+    }
+    
+    @Override
+    public List<String> getMspSubstationName(MultispeakVendor mspVendor, List<String> domainNames) {
+        List<String> substationNames = new ArrayList<>();
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
         try {
             GetDomainsByDomainNames getDomainsByDomainNames = new GetDomainsByDomainNames();
@@ -660,7 +667,9 @@ public class MspObjectDaoImpl implements MspObjectDao {
                             if (domainMembers != null) {
                                 List<DomainMember> domainMembersList = domainMembers.getDomainMember();
                                 if (!domainMembersList.isEmpty()) {
-                                    allDomainMembers.addAll(domainMembersList);
+                                    domainMembersList.forEach(domainMember -> {
+                                        substationNames.add(domainMember.getDescription());
+                                    });
                                 }
                             }
                         }
@@ -671,7 +680,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             log.error("TargetService: " + endpointUrl + " - getMspSubstationName(" + mspVendor.getCompanyName());
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
         }
-        return allDomainMembers;
+        return substationNames;
     }
 
     @Override

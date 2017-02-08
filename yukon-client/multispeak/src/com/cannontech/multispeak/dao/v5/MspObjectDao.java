@@ -172,7 +172,7 @@ public interface MspObjectDao {
      *        List<String> domainNames list of domain names
      * @return List<DomainMember> the list of domainMembers
      */
-    public List<DomainMember> getMspSubstationName(MultispeakVendor mspVendor, List<String> domainNames);
+    public List<String> getMspSubstationName(MultispeakVendor mspVendor, List<String> domainNames);
 
     /**
      * Returns a list of the ElectricMeter(s) for the given location/NertworkModelRef(s).
@@ -247,5 +247,13 @@ public interface MspObjectDao {
      * @return
      */
     ServiceLocation getMspServiceLocation(SimpleMeter meter, MultispeakVendor mspVendor);
+    /**
+     * Returns a list of SubstationNames for the vendor.
+     * If the interface/method is not supported by mspVendor, or if no object is found,
+     * an empty String List object is returned.
+     * 
+     * @param mspVendor
+     */
+    List<String> getMspSubstationName(MultispeakVendor mspVendor);
 
 }

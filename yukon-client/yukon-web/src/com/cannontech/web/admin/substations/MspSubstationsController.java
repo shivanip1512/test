@@ -21,9 +21,9 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.admin.substations.service.MspObjectDaoHandler;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
@@ -31,11 +31,11 @@ import com.cannontech.web.security.annotation.CheckRoleProperty;
 @RequestMapping("/substations/routemapping/multispeak/*")
 public class MspSubstationsController {
 
-    private SubstationDao substationDao;
-    private MultispeakFuncs multispeakFuncs;
-    private MultispeakDao multispeakDao;
-    private MspObjectDao mspObjectDao;
-    private static final String DOMAIN_MEMBERS_SUBSTATION_CODE = "getDomainMembers - substationCode";
+    @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private MultispeakDao multispeakDao;
+    @Autowired private MspObjectDaoHandler mspObjectDaoHandler;
+    @Autowired private SubstationDao substationDao;
+
     @RequestMapping("choose")
     public ModelAndView choose(HttpServletRequest request, HttpServletResponse response)  {
         
@@ -50,7 +50,7 @@ public class MspSubstationsController {
         
         // mspSubstationNames
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-        List<String> mspSubstationNames = mspObjectDao.getMspSubstationName(mspVendor);
+        List<String> mspSubstationNames = mspObjectDaoHandler.getMspSubstationName(mspVendor);
         
         // make MspSubstation list. Don't show those that already exists (case insensitive)
         List<MspSubstation> mspSubstations = new ArrayList<MspSubstation>();
@@ -66,8 +66,7 @@ public class MspSubstationsController {
             
             MspSubstation mspSubstation = new MspSubstation(mspSubstationName, show);
             if (!(PaoUtils.isValidPaoName(mspSubstationName))) {
-                mspObjectDao.logMSPActivity(DOMAIN_MEMBERS_SUBSTATION_CODE, "Found invalid substation description : " + mspSubstationName,
-                                            mspVendor.getCompanyName());
+                mspObjectDaoHandler.invalidSubstationName(mspVendor, mspSubstationName);
                 continue;
             }
             mspSubstations.add(mspSubstation);
@@ -117,26 +116,5 @@ public class MspSubstationsController {
         public int compareTo(MspSubstation o) {
             return this.name.compareTo(o.getName());
         }
-    }
-    
-    /* DI Setters */
-    @Autowired
-    public void setSubstationDao(final SubstationDao substationDao) {
-        this.substationDao = substationDao;
-    }
-
-    @Autowired
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
-    }
-    
-    @Autowired
-    public void setMultispeakDao(MultispeakDao multispeakDao) {
-        this.multispeakDao = multispeakDao;
-    }
-    
-    @Autowired
-    public void setMspObjectDao(MspObjectDao mspObjectDao) {
-        this.mspObjectDao = mspObjectDao;
     }
 }

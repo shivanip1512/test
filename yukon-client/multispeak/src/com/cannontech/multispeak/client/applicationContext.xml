@@ -150,7 +150,7 @@
   <bean id="mspAccountInformationV5" class="com.cannontech.web.widget.accountInformation.MspAccountInformationV5"/>
   <bean id="mspAccountInformationHandler" class="com.cannontech.web.widget.accountInformation.MspAccountInformationHandler"/>
   
-  
+  <bean id="mspObjectDaoHandler" class="com.cannontech.web.admin.substations.service.MspObjectDaoHandler"/>
 
     <oxm:jaxb2-marshaller id="domainMarshaller" context-path="com.cannontech.msp.beans.v3" />
     <bean id="domainMarshallerV5" class="org.springframework.oxm.jaxb.Jaxb2Marshaller">
