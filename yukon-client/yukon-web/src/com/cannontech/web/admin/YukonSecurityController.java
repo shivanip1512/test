@@ -1,12 +1,14 @@
 package com.cannontech.web.admin;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.SecureRandom;
+import java.security.cert.X509Certificate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,6 +22,7 @@ import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
+import org.bouncycastle.openssl.PEMWriter;
 import org.jdom2.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -41,9 +44,11 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.db.pao.EncryptedRoute;
 import com.cannontech.database.db.security.EncryptionKey;
+import com.cannontech.encryption.CertificateGenerationFailedException;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.EncryptedRouteDao;
+import com.cannontech.encryption.EncryptedRouteService;
 import com.cannontech.encryption.EncryptionKeyType;
 import com.cannontech.encryption.RSAKeyfileService;
 import com.cannontech.encryption.SecurityKeyPair;
@@ -66,6 +71,7 @@ public class YukonSecurityController {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private CsrfTokenService csrfTokenService;
     @Autowired private SystemEventLogService systemEventLogService;
+    @Autowired private EncryptedRouteService encryptedRouteService;
 
     private static final int KEYNAME_MAX_LENGTH = 50;
     private static final int KEYHEX_DIGITS_LENGTH = 32;
@@ -519,6 +525,33 @@ public class YukonSecurityController {
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
         }
         return success;
+    }
+    
+    @RequestMapping(value = "/config/security/downloadHoneywellPublicKey", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Object> downloadHoneywellPublicKey() {
+        Map<String, Object> json = new HashMap<>();
+        try {
+            X509Certificate certificate = encryptedRouteService.generateHoneywellCertificate();
+
+            // create .crt file
+            StringBuilder crtFilePath = new StringBuilder();
+            crtFilePath.append(System.getenv("YUKON_BASE"));
+            crtFilePath.append("\\Server\\Config\\Keys\\cert-eaton.crt");
+            PEMWriter fileWriter = new PEMWriter(new FileWriter(crtFilePath.toString()));
+            fileWriter.writeObject(certificate);
+            fileWriter.flush();
+            fileWriter.close();
+
+            json.put("hasError", false);
+        } catch (CertificateGenerationFailedException exception) {
+            log.error("Certificate creation failed ", exception);
+            json.put("hasError", true);
+        } catch (IOException exception) {
+            log.error("Error in creating .crt file ", exception);
+            json.put("hasError", true);
+        }
+        return json;
     }
 
 }

@@ -158,6 +158,9 @@
     <entry key="yukon.web.modules.adminSetup.security.copyBtn.label">Copy Public Key</entry>
     <entry key="yukon.web.modules.adminSetup.security.copyBtn.title">Copy Public Key</entry>
     
+    <entry key="yukon.web.modules.adminSetup.security.downloadHoneywellPublicKey.label">Download Public Key</entry>
+    <entry key="yukon.web.modules.adminSetup.security.downloadHoneywellPublicKey.title">Download Public Key</entry>
+    
     <entry key="yukon.web.modules.adminSetup.security.viewPublicKeyBtn.label">View Public Key</entry>
     <entry key="yukon.web.modules.adminSetup.security.viewPublicKeyDialog.title">View Public Key</entry>
    
@@ -186,6 +189,8 @@
     <entry key="yukon.web.modules.adminSetup.security.publicKey.keyExpired">The stored public key has expired. Please generate a new one.</entry>
     <entry key="yukon.web.modules.adminSetup.security.publicKey.keyGenerationFailed">New public key generation failed. Check logs for more information.</entry>
     <entry key="yukon.web.modules.adminSetup.security.honeywellPublicKey.notCreated">Honeywell Key could not be created.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.honeywellPublicKey.downloadSuccessful">Honeywell public key downloaded successfully.</entry>
+    <entry key="yukon.web.modules.adminSetup.security.honeywellPublicKey.downloadfailed">Honeywell public key download failed.</entry>
         
     <entry key="yukon.web.modules.adminSetup.security.addError.alreadyAdded">Encrypted route is already added using key {0}.</entry>
     <entry key="yukon.web.modules.adminSetup.security.addError.invalidKey">Cannot enable because the key no longer exists.</entry>

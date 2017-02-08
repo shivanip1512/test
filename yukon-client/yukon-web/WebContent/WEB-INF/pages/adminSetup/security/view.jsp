@@ -7,7 +7,8 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="adminSetup" page="security">
-
+    <div id="honeywellPublicKeyDownloadStatus" style="display:none"></div>
+	
     <div class="clearfix box">
         <div class="category fl">
             <cti:url var="viewUrl" value="/admin/config/security/view"/>
@@ -220,8 +221,10 @@
                   <c:choose>
                       <c:when test="${fn:length(honeywellPublicKey) <= 0}">
                             <i:inline key=".noKeysAvailable" />
+                            <c:set var="isPublicKeyGenerated" value="false" />
                       </c:when>
                       <c:otherwise>
+                          <c:set var="isPublicKeyGenerated" value="true" />
                           <div id="honeywellPublicKeyText">
             		          <p><i:inline key=".currentPublicKey" /></p>
             		                 <textarea id="honeywellPublicKeyTextArea" rows="6" cols="60" 
@@ -234,6 +237,7 @@
                       <cti:button id="generateHonewellKeyFileBtn" nameKey="generateHonewellKeyFileBtn" />
                       <cti:button id="importHoneywellKeyFileBtn" nameKey="importKeyFileBtn" />
                       <cti:button id="copyBtn" nameKey="copyBtn" />
+                      <cti:button id="downloadHoneywellPublicKey" nameKey="downloadHoneywellPublicKey" disabled="${!isPublicKeyGenerated}" />
                   </div>
               </tags:boxContainer2>
            </cti:checkRolesAndProperties>
@@ -244,6 +248,7 @@
     $(function(){
     	$('#honeywellPublicKeyStatus').hide();
         if ("${showDialog}" == "addKey") {
+            $('#honeywellPublicKeyDownloadStatus').hide();
             $('#addNewKeyBtn').trigger($.Event("click")); // Opens up addKey Dialog
         } else if ("${showDialog}" == "importKey") {
             $('#importKeyFileBtn').trigger($.Event("click")); // Opens up importKey Dialog
@@ -257,15 +262,52 @@
     }
     
     $("#viewPublicKeyBtn").click(function() {
+        $('#honeywellPublicKeyDownloadStatus').hide();
         loadPublicKey(false);
     });
     
+    $("#downloadHoneywellPublicKey").click(function() {
+        //hide all the user message that are currectly displayed
+        $("div.user-message").hide();
+        yukon.ui.blockPage();
+        $.ajax({ 
+            url: "downloadHoneywellPublicKey", 
+            type: "POST",
+            dataType: "json"
+        }).done(function(result) {
+             if(result.hasError == true) {
+                 $('#honeywellPublicKeyDownloadStatus').html("<i:inline key='.honeywellPublicKey.downloadfailed'/>")
+                                                      .removeClass()
+                                                      .addClass("user-message error")
+                                                      .show('fade',{},200);
+            } else {
+                 $('#honeywellPublicKeyDownloadStatus').html("<i:inline key='.honeywellPublicKey.downloadSuccessful'/>")
+                                                      .removeClass()
+                                                      .addClass("user-message success")
+                                                      .show('fade',{},200);
+            }
+            yukon.ui.unblockPage();
+        }).fail(function(data) {
+              $('#honeywellPublicKeyDownloadStatus').html("<i:inline key='.honeywellPublicKey.downloadfailed'/>")
+                                                   .removeClass()
+                                                   .addClass("user-message error")
+                                                   .show('fade',{},200);
+              yukon.ui.unblockPage();
+        });
+    });
+    
+    $(document).on("table.routesBoxTable button" , "click", function () {
+    	$('#honeywellPublicKeyDownloadStatus').hide();
+    });
+    
     $("#copyBtn").click(function() {
+         $('#honeywellPublicKeyDownloadStatus').hide();
     	 $("#honeywellPublicKeyTextArea").select();
     	    document.execCommand('copy');
     });
     
     function loadPublicKey(generateNewKey) {
+        $('#honeywellPublicKeyDownloadStatus').hide();
         yukon.ui.blockPage();
         $.ajax({ 
             url: "getPublicKey", 
@@ -297,6 +339,7 @@
     }
     
     $(document).on("yukon.dialog.confirm.ok", function(event) {
+        $('#honeywellPublicKeyDownloadStatus').hide();
     	$.ajax({ 
             url: "getHoneywellPublicKey", 
             type: "GET",
