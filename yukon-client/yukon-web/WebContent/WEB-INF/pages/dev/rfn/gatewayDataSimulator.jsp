@@ -289,7 +289,7 @@
                                 <c:if test="${not autoFirmwareVersionReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Version">
-                                            <input type="text" name="version" value="1.2.3"/>
+                                            <input type="text" name="version" value="6.1.0"/>
                                         </tags:nameValue>
                                         <tags:nameValue name="ReplyType">
                                             <select name="replyType">

@@ -87,5 +87,18 @@ public class GatewayUpdateModel {
 
         return updateServer;
     }
-
+    
+    public boolean isUpgradeable() {
+        try {
+            GatewayFirmwareVersion currentVersion = GatewayFirmwareVersion.parse(this.currentVersion);
+            GatewayFirmwareVersion availableVersion = GatewayFirmwareVersion.parse(this.availableVersion);
+            int comparison = currentVersion.compareTo(availableVersion);
+            
+            System.out.println(comparison);
+            return comparison < 0;
+        } catch (Exception e) {
+            //If there's any reason we can't compare the versions, assume it's an invalid upgrade.
+            return false;
+        }
+    }
 }

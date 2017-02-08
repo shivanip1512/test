@@ -2,6 +2,7 @@ package com.cannontech.common.rfn.model;
 
 import java.util.Set;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.model.Locatable;
 import com.cannontech.common.pao.model.PaoLocation;
@@ -36,7 +37,28 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
     }
     
     public boolean isUpgradeAvailable () {
-        return upgradeVersion != null && !upgradeVersion.equals(getData().getReleaseVersion());
+        //If this is a legacy gateway, firmware update is not supported
+        if (getPaoIdentifier().getPaoType() == PaoType.RFN_GATEWAY) {
+            return false;
+        }
+        //If the current or available version is null, we can't upgrade
+        String currentVersionString = getData().getReleaseVersion();
+        if (currentVersionString == null || upgradeVersion == null) {
+            return false;
+        }
+        
+        try {
+            //If the current version is < 6.1.0, the upgrade has to be done manually
+            GatewayFirmwareVersion currentVersion = GatewayFirmwareVersion.parse(currentVersionString);
+            if (currentVersion.compareTo(new GatewayFirmwareVersion(6, 1, 0)) < 0) {
+                return false;
+            }
+            //The available version has to be greater than the current version to allow upgrade
+            GatewayFirmwareVersion availableVersion = GatewayFirmwareVersion.parse(upgradeVersion);
+            return (currentVersion.compareTo(availableVersion) < 0);
+        } catch (Exception e) {
+            return false;
+        }
     }
     
     public void setData(RfnGatewayData data) {

@@ -189,7 +189,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             if (criteria.isGatewaySelected()) {
                 gateways.addAll(rfnGatewayService.getGatewaysByPaoIdsWithData(criteria.getSelectedGatewayIds()));
             } else {
-                gateways.addAll(rfnGatewayService.getAllGatewaysWithData());
+                gateways.addAll(rfnGatewayService.getGatewaysWithData(PaoType.getRfGatewayTypes()));
             }
         } catch (NmCommunicationException e) {
             throw new DataStreamingConfigException("Communication error requesting gateway data from Network Manager.",
@@ -216,7 +216,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
         List<RfnGateway> allGateways = new ArrayList<>();
         try {
-            allGateways.addAll(rfnGatewayService.getAllGatewaysWithData());
+            allGateways.addAll(rfnGatewayService.getGatewaysWithData(PaoType.getRfGatewayTypes()));
             allGateways.forEach(gateway -> {
                 if (gateway.getData().getDataStreamingLoadingPercent() > 100) {
                     overloadedGateways.add(gateway);

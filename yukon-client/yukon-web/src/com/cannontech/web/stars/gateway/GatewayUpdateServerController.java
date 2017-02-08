@@ -27,6 +27,7 @@ import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.rfn.dao.impl.GatewayDataException;
 import com.cannontech.common.rfn.message.gateway.Authentication;
+import com.cannontech.common.rfn.model.GatewayFirmwareVersion;
 import com.cannontech.common.rfn.model.GatewayUpdateModel;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -179,15 +180,12 @@ public class GatewayUpdateServerController {
 
         try {
             List<GatewayUpdateModel> gateways =
-                rfnGatewayService.getAllGatewaysWithUpdateServer().stream()
-                    .sorted()
-                    .map(new Function<RfnGateway, GatewayUpdateModel>() {
-
-                        @Override
-                        public GatewayUpdateModel apply(RfnGateway gateway) {
-                            return GatewayUpdateModel.of(gateway);
-                        }
-                    }).collect(Collectors.toList());
+                rfnGatewayService.getAllGatewaysWithUpdateServer()
+                                 .stream()
+                                 .filter(this::isGatewayUpgradeable)
+                                 .sorted()
+                                 .map(gateway -> GatewayUpdateModel.of(gateway))
+                                 .collect(Collectors.toList());
 
             GatewayUpdateModelList springGateways = new GatewayUpdateModelList(gateways);
             model.addAttribute("gateways", springGateways);
@@ -205,6 +203,22 @@ public class GatewayUpdateServerController {
         return "gateways/firmware-upgrade.jsp";
     }
 
+    private boolean isGatewayUpgradeable(RfnGateway gateway) {
+        if (gateway.getData() == null) {
+            return false;
+        }
+        String versionString = gateway.getData().getReleaseVersion();
+        //Make sure firmware version is >= 6.1.0 or the feature is not supported
+        try {
+            GatewayFirmwareVersion version = GatewayFirmwareVersion.parse(versionString);
+            int compare = version.compareTo(new GatewayFirmwareVersion(6, 1, 0));
+            return compare >= 0;
+        } catch (IllegalArgumentException e) {
+            log.trace(e);
+            return false;
+        }
+    }
+    
     @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
     @RequestMapping(value = "/gateways/firmware-upgrade", method=RequestMethod.POST)
     public String sendFirmwareUpgrade(
@@ -259,5 +273,4 @@ public class GatewayUpdateServerController {
             return "gateways/firmware-upgrade.jsp";
         }
     }
-
 }

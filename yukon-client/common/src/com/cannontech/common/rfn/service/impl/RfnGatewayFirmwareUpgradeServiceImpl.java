@@ -18,6 +18,7 @@ import org.springframework.util.StringUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.dao.RfnGatewayFirmwareUpgradeDao;
 import com.cannontech.common.rfn.dao.impl.GatewayDataException;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayFirmwareUpdateRequest;
@@ -105,7 +106,7 @@ public class RfnGatewayFirmwareUpgradeServiceImpl implements RfnGatewayFirmwareU
         
         // Collect cached values for as many gateways as possible
         // Make a set of gateways without cached values
-        Set<RfnGateway> gateways = rfnGatewayService.getAllGatewaysWithData();
+        Set<RfnGateway> gateways = rfnGatewayService.getGatewaysWithData(PaoType.getRfGatewayTypes());
         for (RfnGateway gateway : gateways) {
             if (gateway.getData() != null) {
                 String url = gateway.getData().getUpdateServerUrl();

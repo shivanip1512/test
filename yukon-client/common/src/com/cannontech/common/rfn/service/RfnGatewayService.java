@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
@@ -41,14 +42,21 @@ public interface RfnGatewayService {
     Set<RfnGateway> getAllLegacyGateways();
     
     /**
-     * Retrieves all gateways that have paos in the Yukon database. 
+     * Retrieves all non-"legacy" gateways (newer than gateway 1.5s) that have paos in the Yukon database. If the 
+     * gateway is not cached, it will be set as null in the RfnGateway, and the cache will be updated in a separate 
+     * thread.
+     */
+    Set<RfnGateway> getAllNonLegacyGateways();
+    
+    /**
+     * Retrieves gateways of the specified types that have paos in the Yukon database. 
      * If the gateway data is not cached, a request will be sent to Network Manager. 
      * The request for gateway data from Network Manager is a blocking request.
      * 
      * @throws NmCommunicationException if there is a communication error between Yukon
      *             and Network Manager.
      */
-    Set<RfnGateway> getAllGatewaysWithData() throws NmCommunicationException;
+    Set<RfnGateway> getGatewaysWithData(Collection<PaoType> paoType) throws NmCommunicationException;
 
     /**
      * Retrieves all gateways that have paos in the Yukon database.

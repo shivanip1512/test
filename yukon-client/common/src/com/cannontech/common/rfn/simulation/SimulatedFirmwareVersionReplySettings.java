@@ -7,7 +7,7 @@ import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersion
 public class SimulatedFirmwareVersionReplySettings implements Serializable {
     private static final long serialVersionUID = 1L;
     private RfnUpdateServerAvailableVersionResult result = RfnUpdateServerAvailableVersionResult.SUCCESS;
-    private String version = "1.2.3";
+    private String version = "6.1.3";
     
     public RfnUpdateServerAvailableVersionResult getResult() {
         return result;

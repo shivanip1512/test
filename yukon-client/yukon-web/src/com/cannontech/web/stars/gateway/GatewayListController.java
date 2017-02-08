@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 
@@ -149,20 +148,17 @@ public class GatewayListController {
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
         try {
             Map<String, String>  upgradeVersions = rfnGatewayFirmwareUpgradeService.getFirmwareUpdateServerVersions();
-            gateways.forEach(new Consumer<RfnGateway>() {
-                @Override
-                public void accept(RfnGateway gateway) {
-                   if (gateway.getData() != null) {
-                       String updateServerUrl = gateway.getData().getUpdateServerUrl();
-                       if (updateServerUrl == null) {
-                           updateServerUrl = defaultUpdateServerUrl;
-                       }
-                       String upgradeVersion = upgradeVersions.get(updateServerUrl);
-                       gateway.setUpgradeVersion(upgradeVersion); 
-                   }
-                   Map<String, Object> data = helper.buildGatewayModel(gateway, userContext);
-                   json.put(gateway.getPaoIdentifier().getPaoId(), data);
+            gateways.forEach(gateway -> {
+                if (gateway.getData() != null) {
+                    String updateServerUrl = gateway.getData().getUpdateServerUrl();
+                    if (updateServerUrl == null) {
+                        updateServerUrl = defaultUpdateServerUrl;
+                    }
+                    String upgradeVersion = upgradeVersions.get(updateServerUrl);
+                    gateway.setUpgradeVersion(upgradeVersion); 
                 }
+                Map<String, Object> data = helper.buildGatewayModel(gateway, userContext);
+                json.put(gateway.getPaoIdentifier().getPaoId(), data);
             });
             
         } catch (NmCommunicationException e){

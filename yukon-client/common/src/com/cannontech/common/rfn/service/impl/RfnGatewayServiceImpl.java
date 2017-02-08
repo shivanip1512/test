@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
-import java.util.function.Consumer;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -131,25 +130,30 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     
     @Override
     public Set<RfnGateway> getAllGateways() {
-        
-        List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfGatewayTypes());
-        Set<RfnGateway> gateways = getGatewaysFromDevices(devices);
-        
-        return gateways;
+        return getGateways(PaoType.getRfGatewayTypes());
     }
     
     @Override
     public Set<RfnGateway> getAllLegacyGateways() {
-        List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(Lists.newArrayList(PaoType.RFN_GATEWAY));
+        return getGateways(Lists.newArrayList(PaoType.RFN_GATEWAY));
+    }
+    
+    @Override
+    public Set<RfnGateway> getAllNonLegacyGateways() {
+        return getGateways(Lists.newArrayList(PaoType.GWY800));
+    }
+    
+    private Set<RfnGateway> getGateways(Collection<PaoType> types) {
+        List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(types);
         Set<RfnGateway> gateways = getGatewaysFromDevices(devices);
         
         return gateways;
     }
     
     @Override
-    public Set<RfnGateway> getAllGatewaysWithData() throws NmCommunicationException {
+    public Set<RfnGateway> getGatewaysWithData(Collection<PaoType> paoTypes) throws NmCommunicationException {
 
-        List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfGatewayTypes());
+        List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(paoTypes);
 
         Set<RfnGateway> gateways = new HashSet<>();
 
@@ -166,20 +170,17 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     public Set<RfnGateway> getAllGatewaysWithUpdateServer() throws NmCommunicationException {
         
         String defaultUpdateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
-        Set<RfnGateway> gateways = getAllGatewaysWithData();
+        Set<RfnGateway> gateways = getGatewaysWithData(Lists.newArrayList(PaoType.GWY800));
         Map<String, String>  upgradeVersions = rfnFirmwareUpgradeService.getFirmwareUpdateServerVersions();
         
-        gateways.forEach(new Consumer<RfnGateway>() {
-            @Override
-            public void accept(RfnGateway gateway) {
-                if (gateway.getData() != null) {
-                    String updateServerUrl = gateway.getData().getUpdateServerUrl();
-                    if (updateServerUrl == null) {
-                        updateServerUrl = defaultUpdateServerUrl;
-                    }
-                    String upgradeVersion = upgradeVersions.get(updateServerUrl);
-                    gateway.setUpgradeVersion(upgradeVersion); 
+        gateways.forEach(gateway -> {
+            if (gateway.getData() != null) {
+                String updateServerUrl = gateway.getData().getUpdateServerUrl();
+                if (updateServerUrl == null) {
+                    updateServerUrl = defaultUpdateServerUrl;
                 }
+                String upgradeVersion = upgradeVersions.get(updateServerUrl);
+                gateway.setUpgradeVersion(upgradeVersion); 
             }
         });
 
