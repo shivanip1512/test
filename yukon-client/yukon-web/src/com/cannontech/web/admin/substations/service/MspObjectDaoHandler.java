@@ -34,12 +34,12 @@ public class MspObjectDaoHandler {
     public void invalidSubstationName(MultispeakVendor mspPrimaryCISVendor, String mspSubstationName) {
         if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR) != null) {
             if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR).getVersion().equals(
-               MultiSpeakVersion.V3.getVersion())) {
-                multispeakEventLogService.invalidSubstationName(DOMAIN_MEMBERS_SUBSTATION_CODE,
-                    "Found invalid substation description : " + mspSubstationName, mspPrimaryCISVendor.getCompanyName());
+                MultiSpeakVersion.V3.getVersion())) {
+                multispeakEventLogService.invalidSubstationName(DOMAIN_MEMBERS_SUBSTATION_CODE, mspSubstationName,
+                    mspPrimaryCISVendor.getCompanyName());
             } else {
-                multispeakEventLogService.invalidSubstationName(DOMAIN_MEMBERS_SUBSTATION_CODE_V5,
-                    "Found invalid substation description : " + mspSubstationName, mspPrimaryCISVendor.getCompanyName());
+                multispeakEventLogService.invalidSubstationName(DOMAIN_MEMBERS_SUBSTATION_CODE_V5, mspSubstationName,
+                    mspPrimaryCISVendor.getCompanyName());
             }
         }
     }
