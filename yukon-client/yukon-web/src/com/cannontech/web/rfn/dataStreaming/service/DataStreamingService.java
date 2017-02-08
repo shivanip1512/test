@@ -2,8 +2,10 @@ package com.cannontech.web.rfn.dataStreaming.service;
 
 import java.util.List;
 import java.util.Map;
+
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.streaming.dao.DeviceBehaviorStrings;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
@@ -14,7 +16,7 @@ import com.cannontech.web.rfn.dataStreaming.model.SummarySearchCriteria;
 import com.cannontech.web.rfn.dataStreaming.model.SummarySearchResult;
 import com.cannontech.web.rfn.dataStreaming.model.VerificationInformation;
 
-public interface DataStreamingService {
+public interface DataStreamingService extends DeviceBehaviorStrings{
     
     /**
      * @return The DataStreamingConfiguration assigned to the device, or null if no configuration is assigned.

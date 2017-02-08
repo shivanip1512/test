@@ -109,12 +109,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     private static final Logger log = YukonLogManager.getLogger(DataStreamingServiceImpl.class);
 
     public final static BehaviorType TYPE = BehaviorType.DATA_STREAMING;
-    public final static String STREAMING_ENABLED_STRING = "enabled";
-    public final static String CHANNELS_STRING = "channels";
-    public final static String ATTRIBUTE_STRING = ".attribute";
-    public final static String INTERVAL_STRING = ".interval";
-    public final static String ENABLED_STRING = ".enabled";
-    public final static String STATUS_STRING = ".status";
 
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;

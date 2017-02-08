@@ -11,15 +11,14 @@ import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
 import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 
-public interface DeviceBehaviorDao {
-
+public interface DeviceBehaviorDao extends DeviceBehaviorStrings {
+    
     /**
      * Attempts to find a behavior by BehaviorId.
      * If found, updates the behavior. Otherwise creates a new behavior.
      * 
      * @return BehaviorId
      */
-
     int saveBehavior(Behavior behavior);
 
     /**

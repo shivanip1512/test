@@ -28,6 +28,7 @@ import com.cannontech.common.device.streaming.model.BehaviorReport;
 import com.cannontech.common.device.streaming.model.BehaviorReportStatus;
 import com.cannontech.common.device.streaming.model.BehaviorType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.rfn.dataStreaming.DataStreamingMetricStatus;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -182,7 +183,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
 
         List<Behavior> behaviors = jdbcTemplate.query(sql, new YukonRowMapper<Behavior>() {
             @Override
-            public Behavior mapRow(YukonResultSet rs) throws SQLException {;
+            public Behavior mapRow(YukonResultSet rs) throws SQLException {
                 return getBehaviorFromResultSet(rs);
             }
         });
@@ -318,8 +319,12 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT br.BehaviorReportId, DeviceId, BehaviorType, BehaviorStatus, TimeStamp");
         sql.append("FROM BehaviorReport br");
-        sql.append("JOIN BehaviorReportValue ge on br.BehaviorReportId=ge.BehaviorReportId and ge.Name='enabled' and ge.Value = 'true'");
-        sql.append("JOIN BehaviorReportValue ce on br.BehaviorReportId=ce.BehaviorReportId and right(ce.Name,8)='.enabled' and ce.Value = 'true'");
+        sql.append("JOIN BehaviorReportValue ge on br.BehaviorReportId=ge.BehaviorReportId");
+        sql.append("    AND ge.Name").eq(STREAMING_ENABLED_STRING);
+        sql.append("    AND ge.Value").eq(Boolean.toString(true));
+        sql.append("JOIN BehaviorReportValue ce on br.BehaviorReportId=ce.BehaviorReportId");
+        sql.append("    AND right(ce.Name,8)").eq(ENABLED_STRING);
+        sql.append("    AND ce.Value").eq(Boolean.toString(true));
         sql.append("WHERE BehaviorType").eq_k(type);
         if (deviceId != null) {
             sql.append("AND br.DeviceId").eq(deviceId);
@@ -330,9 +335,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         sql.append("    JOIN Behavior b on dbm.BehaviorId = b.BehaviorId");
         sql.append("    WHERE b.BehaviorType").eq_k(type);
         sql.append("    AND dbm.DeviceId = br.DeviceId)");
-        
-        System.out.println(sql.getDebugSql());
-                
+                     
         jdbcTemplate.query(sql, new DiscrepancyCallback(discrepancyForDeviceId));
     }
     
@@ -346,7 +349,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         sql.append("SELECT b.BehaviorId, b.BehaviorType, dbm.DeviceId, br.BehaviorReportId, br.BehaviorType, br.BehaviorStatus, br.TimeStamp");
         sql.append("FROM DeviceBehaviorMap dbm");
         sql.append("JOIN Behavior b on b.BehaviorId = dbm.BehaviorId");
-        sql.append("AND b.BehaviorType").eq_k(type);
+        sql.append("    AND b.BehaviorType").eq_k(type);
         if (deviceId != null) {
             sql.append("AND dbm.DeviceId").eq(deviceId);
         }
@@ -356,9 +359,10 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         sql.append("    FROM BehaviorReport br");
         sql.append("    JOIN BehaviorReportValue brv on br.BehaviorReportId = brv.BehaviorReportId");
         sql.append("    WHERE br.BehaviorType=b.BehaviorType");
-        sql.append("    AND br.DeviceId=dbm.DeviceId");
-        sql.append("    AND brv.name='enabled'");
-        sql.append("    AND brv.value='true')");
+        sql.append("        AND br.DeviceId=dbm.DeviceId");
+        sql.append("        AND brv.name").eq(STREAMING_ENABLED_STRING);
+        sql.append("        AND brv.value").eq(Boolean.toString(true));
+        sql.append("    )");
         jdbcTemplate.query(sql, new DiscrepancyCallback(discrepancyForDeviceId));
     }
     
@@ -376,16 +380,28 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         if (deviceId != null) {
             sql1.append("AND dbm.DeviceId").eq(deviceId);
         }
-        sql1.append("JOIN behaviorvalue a on b.BehaviorId = a.BehaviorId and right(a.name, 10) = '.attribute'");
-        sql1.append("JOIN behaviorvalue i on b.BehaviorId = i.BehaviorId and right(i.name,  9) = '.interval' and substring(a.name, 1, 11)=substring(i.name, 1, 11)");
+        sql1.append("JOIN behaviorvalue a on b.BehaviorId = a.BehaviorId");
+        sql1.append("   AND right(a.name, 10)").eq(ATTRIBUTE_STRING);
+        sql1.append("JOIN behaviorvalue i on b.BehaviorId = i.BehaviorId");
+        sql1.append("   AND right(i.name,  9)").eq(INTERVAL_STRING);
+        sql1.append("   AND substring(a.name, 1, 11)=substring(i.name, 1, 11)");
         sql1.append("JOIN BehaviorReport br on dbm.DeviceId=br.DeviceId");
-        sql1.append("JOIN behaviorreportvalue ra on br.BehaviorReportId = ra.BehaviorReportId and right(ra.name, 10) = '.attribute'");
-        sql1.append("JOIN behaviorreportvalue ri on br.BehaviorReportId = ri.BehaviorReportId and right(ri.name,  9) = '.interval' and substring(ra.name, 1, 11)=substring(ri.name, 1, 11)");
-        sql1.append("JOIN behaviorreportvalue re on br.BehaviorReportId = re.BehaviorReportId and right(re.name,  8) = '.enabled'  and substring(ra.name, 1, 11)=substring(re.name, 1, 11)");
-        sql1.append("JOIN behaviorreportvalue rs on br.BehaviorReportId = rs.BehaviorReportId and right(rs.name,  7) = '.status'   and substring(ra.name, 1, 11)=substring(rs.name, 1, 11)");
+        sql1.append("JOIN behaviorreportvalue ra on br.BehaviorReportId = ra.BehaviorReportId");
+        sql1.append("   AND right(ra.name, 10)").eq(ATTRIBUTE_STRING);
+        sql1.append("JOIN behaviorreportvalue ri on br.BehaviorReportId = ri.BehaviorReportId");
+        sql1.append("   AND right(ri.name,  9)").eq(INTERVAL_STRING);
+        sql1.append("   AND substring(ra.name, 1, 11)=substring(ri.name, 1, 11)");
+        sql1.append("JOIN behaviorreportvalue re on br.BehaviorReportId = re.BehaviorReportId");
+        sql1.append("   AND right(re.name,  8)").eq(ENABLED_STRING);
+        sql1.append("   AND substring(ra.name, 1, 11)=substring(re.name, 1, 11)");
+        sql1.append("JOIN behaviorreportvalue rs on br.BehaviorReportId = rs.BehaviorReportId");
+        sql1.append("   AND right(rs.name,  7)").eq(STATUS_STRING);
+        sql1.append("   AND substring(ra.name, 1, 11)=substring(rs.name, 1, 11)");
         sql1.append("WHERE br.BehaviorType=b.BehaviorType");
         sql1.append("AND a.value=ra.value");
-        sql1.append("AND (re.value<>'true' OR rs.value<>'OK' OR ri.Value<>i.Value)");
+        sql1.append("AND (re.value").neq(Boolean.toString(true));
+        sql1.append("     OR re.value").neq_k(DataStreamingMetricStatus.OK);
+        sql1.append("     OR ri.Value<>i.Value)");
 
         jdbcTemplate.query(sql1, new DiscrepancyCallback(discrepancyForDeviceId));
         
@@ -401,14 +417,14 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         if (deviceId != null) {
             sql2.append("AND br.DeviceId").eq(deviceId);
         }
-        sql2.append("AND right(ra.name, 10)='.attribute'");
-        sql2.append("AND right(re.name, 8)='.enabled'");
-        sql2.append("AND re.Value='true'");
+        sql2.append("AND right(ra.name, 10)").eq(ATTRIBUTE_STRING);
+        sql2.append("AND right(re.name, 8)").eq(ENABLED_STRING);
+        sql2.append("AND re.Value").eq(Boolean.toString(true));
         sql2.append("AND not exists (");
         sql2.append("   SELECT *");
         sql2.append("   FROM BehaviorValue");
         sql2.append("   WHERE behaviorid=b.behaviorid");
-        sql2.append("   AND right(name, 10)='.attribute'");
+        sql2.append("   AND right(name, 10)").eq(ATTRIBUTE_STRING);
         sql2.append("   AND value=ra.value)");
         
         jdbcTemplate.query(sql2, new DiscrepancyCallback(discrepancyForDeviceId));
