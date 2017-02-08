@@ -47,9 +47,9 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         String[] methods = null;
         methods =
-            new String[] { "pingURL", "getMethods", "serviceLocationsChangedNotification",
-                "metersCreatedNotification", "metersInstalledNotification", "metersUninstalledNotification",
-                "metersChangedNotification", "metersExchangedNotification", "metersDeletedNotification",
+            new String[] { "PingURL", "GetMethods", "ServiceLocationsChangedNotification",
+                "MetersCreatedNotification", "MetersInstalledNotification", "MetersUninstalledNotification",
+                "MetersChangedNotification", "MetersExchangedNotification", "MetersDeletedNotification",
                 "SCADAAnalogsChangedNotification" };
         return multispeakFuncs.getMethods(MultispeakDefines.NOT_Server_STR, Arrays.asList(methods));
     }
@@ -61,7 +61,7 @@ public class NOT_ServerImpl implements NOT_Server {
 
           multispeakFuncs.getMultispeakVendorFromHeader();
         
-        // multispeakEventLogService.methodInvoked("scadaAnalogsChangedNotification", vendor.getCompanyName());
+        // multispeakEventLogService.methodInvoked("ScadaAnalogsChangedNotification", vendor.getCompanyName());
         // - stop logging this, it's occurring every minute or more
 
         List<ErrorObject> errorObjects = Lists.newArrayList();
@@ -82,7 +82,7 @@ public class NOT_ServerImpl implements NOT_Server {
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("serviceLocationsChangedNotification", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("ServiceLocationsChangedNotification", vendor.getCompanyName());
 
         List<ErrorObject> errorObject = multispeakMeterService.serviceLocationsChanged(vendor, changedServiceLocations);
         return errorObject;
@@ -93,7 +93,7 @@ public class NOT_ServerImpl implements NOT_Server {
     public List<ErrorObject> metersCreatedNotification(List<ElectricMeter> electricCreatedMeters) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("metersCreatedNotification", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("MetersCreatedNotification", vendor.getCompanyName());
         List<ErrorObject> errorObject = multispeakMeterService.metersCreated(vendor, electricCreatedMeters);
         return errorObject;
     }
@@ -102,7 +102,7 @@ public class NOT_ServerImpl implements NOT_Server {
     public List<ErrorObject> metersInstalledNotification(List<ElectricMeter> electricInstalledMeters) throws MultispeakWebServiceException{
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("metersInstalledNotification", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("MetersInstalledNotification", vendor.getCompanyName());
         List<ErrorObject> errorObject = multispeakMeterService.metersInstalled(vendor, electricInstalledMeters);
         return errorObject;
     }
@@ -111,7 +111,7 @@ public class NOT_ServerImpl implements NOT_Server {
     public List<ErrorObject> metersUninstalledNotification(List<ElectricMeter> electricUninstalledMeters) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("metersUninstalledNotification", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("MetersUninstalledNotification", vendor.getCompanyName());
         List<ErrorObject> errorObject = multispeakMeterService.metersUninstalled(vendor, electricUninstalledMeters);
         return errorObject;
     }
@@ -120,7 +120,7 @@ public class NOT_ServerImpl implements NOT_Server {
     public List<ErrorObject> metersChangedNotification(List<ElectricMeter> electricChangedMeters) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("metersChangedNotification", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("MetersChangedNotification", vendor.getCompanyName());
         
         List<ErrorObject> errorObject = multispeakMeterService.metersChanged(vendor, electricChangedMeters);
         return errorObject;
@@ -130,7 +130,7 @@ public class NOT_ServerImpl implements NOT_Server {
     public List<ErrorObject> metersExchangedNotification(List<ElectricMeterExchange> exchangeMeters) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("metersExchangedNotification", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("MetersExchangedNotification", vendor.getCompanyName());
         List<ErrorObject> errorObject = multispeakMeterService.metersExchanged(vendor, exchangeMeters);
         return errorObject;
     }
@@ -140,7 +140,7 @@ public class NOT_ServerImpl implements NOT_Server {
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("metersDeletedNotification", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("MetersDeletedNotification", vendor.getCompanyName());
         List<ErrorObject> errorObject = multispeakMeterService.metersDeleted(vendor, electricMeters);
         return errorObject;
     }

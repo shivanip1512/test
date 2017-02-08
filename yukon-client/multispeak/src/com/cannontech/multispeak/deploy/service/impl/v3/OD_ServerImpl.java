@@ -36,7 +36,7 @@ public class OD_ServerImpl implements OD_Server {
     @Override
     public List<String> getMethods() throws MultispeakWebServiceException {
         init();
-        String[] methods = new String[] { "pingURL", "getMethods", "initiateOutageDetectionEventRequest" };
+        String[] methods = new String[] { "PingURL", "GetMethods", "InitiateOutageDetectionEventRequest" };
         return multispeakFuncs.getMethods(MultispeakDefines.OD_Server_STR, Arrays.asList(methods));
     }
 
@@ -46,11 +46,11 @@ public class OD_ServerImpl implements OD_Server {
         init();
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
-        multispeakEventLogService.methodInvoked("initiateOutageDetectionEventRequest", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("InitiateOutageDetectionEventRequest", vendor.getCompanyName());
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.OA_Server_STR);
 
         List<ErrorObject> errorObjects = multispeakMeterService.odEvent(vendor, meterNos, transactionID, actualResponseUrl);
-        multispeakFuncs.logErrorObjects(MultispeakDefines.OD_Server_STR, "initiateOutageDetectionEventRequest",
+        multispeakFuncs.logErrorObjects(MultispeakDefines.OD_Server_STR, "InitiateOutageDetectionEventRequest",
             errorObjects);
         return errorObjects;
     }

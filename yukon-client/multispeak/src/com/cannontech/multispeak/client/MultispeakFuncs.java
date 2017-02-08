@@ -225,7 +225,7 @@ public class MultispeakFuncs {
      * @throws java.rmi.RemoteException
      */
     public List<String> getMethods(String interfaceName, List<String> methods) {
-        logStrings(interfaceName, "getMethods", methods);
+        logStrings(interfaceName, "GetMethods", methods);
         return methods;
     }
 

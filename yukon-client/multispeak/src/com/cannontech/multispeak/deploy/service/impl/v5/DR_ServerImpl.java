@@ -14,7 +14,6 @@ import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.client.v5.UserDetailHolder;
-import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.db.v5.MspLoadControl;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v5.DR_Server;
@@ -27,7 +26,6 @@ public class DR_ServerImpl implements DR_Server {
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MultispeakEventLogService multispeakEventLogService;
     @Autowired private MultispeakLMService multispeakLMService;
-    @Autowired private MspObjectDao mspObjectDao;
     @Autowired private MspValidationService mspValidationService;
 
     private void init() throws MultispeakWebServiceException {
@@ -43,8 +41,8 @@ public class DR_ServerImpl implements DR_Server {
     public List<String> getMethods() throws MultispeakWebServiceException {
         init();
         String[] methods =
-            new String[] { "pingURL", "getMethods", "getAllSubstationLoadControlStatuses",
-                "initiateLoadManagementEvents" };
+            new String[] { "PingURL", "GetMethods", "GetAllSubstationLoadControlStatuses",
+                "InitiateLoadManagementEvents" };
         return multispeakFuncs.getMethods(MultispeakDefines.DR_Server_STR, Arrays.asList(methods));
     }
 
@@ -60,7 +58,7 @@ public class DR_ServerImpl implements DR_Server {
         init();
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("initiateLoadManagementEvents", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("InitiateLoadManagementEvents", vendor.getCompanyName());
 
         List<ErrorObject> errorObjects = Lists.newArrayList();
 
@@ -68,7 +66,7 @@ public class DR_ServerImpl implements DR_Server {
             ErrorObject errorObject = mspValidationService.isValidLoadManagementEvent(loadManagementEvent);
             if (errorObject == null) {
                 MspLoadControl mspLoadControl = new MspLoadControl();
-                // If errorObjects are returned, we still continue on and
+                // If errorObjects are returned, we still continue on and 
                 // control what we can.
                 List<ErrorObject> errorObject2 =
                     multispeakLMService.buildMspLoadControl(loadManagementEvent, mspLoadControl, vendor);

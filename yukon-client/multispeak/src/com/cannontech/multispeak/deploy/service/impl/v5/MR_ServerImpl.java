@@ -21,14 +21,10 @@ import com.cannontech.amr.demandreset.service.DemandResetService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.commontypes.MeterID;
 import com.cannontech.msp.beans.v5.commontypes.ObjectID;
-import com.cannontech.msp.beans.v5.mr_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
 import com.cannontech.msp.beans.v5.multispeak.MeterGroup;
@@ -40,7 +36,6 @@ import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.dao.v5.FormattedBlockProcessingService;
-import com.cannontech.multispeak.dao.v5.MeterReadProcessingService;
 import com.cannontech.multispeak.dao.v5.MspMeterDao;
 import com.cannontech.multispeak.dao.v5.MspObjectDao;
 import com.cannontech.multispeak.dao.v5.MspRawPointHistoryDao;
@@ -61,10 +56,7 @@ import com.google.common.collect.Sets;
 
 public class MR_ServerImpl implements MR_Server{
 
-    @Autowired private AttributeService attributeService;
     @Autowired private DemandResetService demandResetService;
-    @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private MeterReadProcessingService meterReadProcessingService;
     @Autowired private MspMeterDao mspMeterDao;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private MspRawPointHistoryDao mspRawPointHistoryDao;
@@ -73,37 +65,35 @@ public class MR_ServerImpl implements MR_Server{
     @Autowired private MultispeakMeterService multispeakMeterService;
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private PaoDao paoDao;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private ObjectFactory objectFactory;
     private BasicServerConnection porterConnection;
 
     private Map<String, FormattedBlockProcessingService<Block>> readingTypesMap;
 
     private final Logger log = YukonLogManager.getLogger(MR_ServerImpl.class);
     private final static String[] methods = new String[] {
-        "pingURL",
-        "getMethods",
-        "getMeterReadingsByDate",
-        "getAMRSupportedMeters",
-        "getLatestMeterReadings",
-        "getMeterReadingsByMeterIDs",
-        "getLatestMeterReadingsByMeterIDs",
-        "getLatestMeterReadingsByMeterIDsAndReadingTypeCodes",
-        "getLatestMeterReadingsByReadingTypeCodes",
-        "getMeterReadingsByDateAndReadingTypeCodes", 
-        "getMeterReadingsByMeterIDsAndReadingTypeCodes",
-        "initiateMeterReadingsByMeterIDs",
-        "initiateMeterReadingsByReadingTypeCodes",
-        "initiateDemandReset",
-        "isAMRMeter",
+        "PingURL",
+        "GetMethods",
+        "GetMeterReadingsByDate",
+        "GetAMRSupportedMeters",
+        "GetLatestMeterReadings",
+        "GetMeterReadingsByMeterIDs",
+        "GetLatestMeterReadingsByMeterIDs",
+        "GetLatestMeterReadingsByMeterIDsAndReadingTypeCodes",
+        "GetLatestMeterReadingsByReadingTypeCodes",
+        "GetMeterReadingsByDateAndReadingTypeCodes", 
+        "GetMeterReadingsByMeterIDsAndReadingTypeCodes",
+        "InitiateMeterReadingsByMeterIDs",
+        "InitiateMeterReadingsByReadingTypeCodes",
+        "InitiateDemandReset",
+        "IsAMRMeter",
         "InitiateEndDeviceEventMonitoring",
-        "cancelEndDeviceEventMonitoring",
-        "setDisconnectedStatus",
-        "clearDisconnectedStatus",
-        "deleteMeterGroups",
-        "createMeterGroups",
-        "insertMeterInMeterGroup",
-        "removeMetersFromMeterGroup"
+        "CancelEndDeviceEventMonitoring",
+        "SetDisconnectedStatus",
+        "ClearDisconnectedStatus",
+        "DeleteMeterGroups",
+        "CreateMeterGroups",
+        "InsertMeterInMeterGroup",
+        "RemoveMetersFromMeterGroup"
         };
 
     private void init() throws MultispeakWebServiceException {
@@ -127,7 +117,7 @@ public class MR_ServerImpl implements MR_Server{
         init();
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("getMeterReadingsByDate", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("GetMeterReadingsByDate", vendor.getCompanyName());
 
         MspMeterReadReturnList mspMeterReadReturnList = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.NONE, null,
             startDate.getTime(), endDate.getTime(), lastReceived, vendor.getMaxReturnRecords());
@@ -136,7 +126,7 @@ public class MR_ServerImpl implements MR_Server{
         List<MeterReading> meterReads = mspMeterReadReturnList.getMeterReads();
         log.info("Returning " + meterReads.size() + " Readings By Date.");
         multispeakEventLogService.returnObjects(meterReads.size(), mspMeterReadReturnList.getObjectsRemaining(),
-            "MeterRead", mspMeterReadReturnList.getLastSent(), "getMeterReadingsByDate", vendor.getCompanyName());
+            "MeterRead", mspMeterReadReturnList.getLastSent(), "GetMeterReadingsByDate", vendor.getCompanyName());
 
         return meterReads;
     }
@@ -149,7 +139,7 @@ public class MR_ServerImpl implements MR_Server{
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         MspMeterReadReturnList mspMeterReadReturnList = null;
         List<String> meterNbrList = new ArrayList<String>();
-        multispeakEventLogService.methodInvoked("getMeterReadingsByMeterIDs", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("GetMeterReadingsByMeterIDs", vendor.getCompanyName());
         
         if (mspValidationService.isValidMeterCount(meterIDs, vendor.getMaxReturnRecords())) {
             // TODO Spring 3.1.3 is not compatible with java 8 (lambda) so need to use above code instead of
@@ -169,7 +159,7 @@ public class MR_ServerImpl implements MR_Server{
             log.info("Returning " + mspMeterReadReturnList.getMeterReads().size() + "Readings By Meter Number/s"
                 + meterNbrList);
 
-            multispeakEventLogService.returnObject("MeterRead", meterNbrList.size(), "getMeterReadingsByMeterIDs",
+            multispeakEventLogService.returnObject("MeterRead", meterNbrList.size(), "GetMeterReadingsByMeterIDs",
                 vendor.getCompanyName());
         }
        
@@ -180,7 +170,7 @@ public class MR_ServerImpl implements MR_Server{
     public List<ElectricMeter> getAMRSupportedMeters(String lastReceived) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("getAMRSupportedMeters", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("GetAMRSupportedMeters", vendor.getCompanyName());
 
         MspMeterReturnList meterList = null;
         Date timerStart = new Date();
@@ -191,7 +181,7 @@ public class MR_ServerImpl implements MR_Server{
         log.info("Returning " + meterList.getMeters().size() + " AMR Supported Meters. ("
             + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
         multispeakEventLogService.returnObjects(meterList.getMeters().size(), meterList.getObjectsRemaining(), "Meter",
-            meterList.getLastSent(), "getAMRSupportedMeters", vendor.getCompanyName());
+            meterList.getLastSent(), "GetAMRSupportedMeters", vendor.getCompanyName());
 
         return meterList.getMeters();
     }
@@ -200,7 +190,7 @@ public class MR_ServerImpl implements MR_Server{
     public List<MeterReading> getLatestMeterReadings(String lastReceived) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("getLatestMeterReadings", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("GetLatestMeterReadings", vendor.getCompanyName());
 
         MspMeterReadReturnList mspMeterReadReturnList =
             mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.NONE, null, lastReceived,
@@ -211,7 +201,7 @@ public class MR_ServerImpl implements MR_Server{
         List<MeterReading> meterReads = mspMeterReadReturnList.getMeterReads();
         log.info("Returning " + meterReads.size() + " latest Readings.");
         multispeakEventLogService.returnObjects(meterReads.size(), mspMeterReadReturnList.getObjectsRemaining(),
-            "MeterRead", mspMeterReadReturnList.getLastSent(), "getLatestMeterReadings", vendor.getCompanyName());
+            "MeterRead", mspMeterReadReturnList.getLastSent(), "GetLatestMeterReadings", vendor.getCompanyName());
 
         return meterReads;
     }
@@ -224,7 +214,7 @@ public class MR_ServerImpl implements MR_Server{
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         MspMeterReadReturnList mspMeterReadReturnList = null;
         List<String> meterNbrList = new ArrayList<String>();
-        multispeakEventLogService.methodInvoked("getLatestMeterReadingsByMeterIDs", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("GetLatestMeterReadingsByMeterIDs", vendor.getCompanyName());
         
         if (mspValidationService.isValidMeterCount(meterIDs, vendor.getMaxReturnRecords())) {
             // TODO Spring 3.1.3 is not compatible with java 8 (lambda) so need to use above code instead of below code
@@ -240,7 +230,7 @@ public class MR_ServerImpl implements MR_Server{
                         vendor.getMaxReturnRecords());
 
             meterReadings = mspMeterReadReturnList.getMeterReads();
-            multispeakEventLogService.returnObject("MeterRead", meterNbrList.size(), "getLatestMeterReadingsByMeterIDs",
+            multispeakEventLogService.returnObject("MeterRead", meterNbrList.size(), "GetLatestMeterReadingsByMeterIDs",
                 vendor.getCompanyName());
         }
         
@@ -254,7 +244,7 @@ public class MR_ServerImpl implements MR_Server{
         String blockTemplateName = null;
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("getMeterReadingsByDateAndReadingTypeCodes", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("GetMeterReadingsByDateAndReadingTypeCodes", vendor.getCompanyName());
 
         // TODO template name can come from objectID or primaryIdentifier value (objectGuid is mandatory)
         if (formattedBlockTemplateID!= null && formattedBlockTemplateID.getObjectGUID() != null) {
@@ -289,7 +279,7 @@ public class MR_ServerImpl implements MR_Server{
             formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
 
         multispeakEventLogService.returnObjects(1, mspBlockReturnList.getObjectsRemaining(), "FormattedBlock",
-            mspBlockReturnList.getLastSent(), "getMeterReadingsByDateAndReadingTypeCodes", vendor.getCompanyName());
+            mspBlockReturnList.getLastSent(), "GetMeterReadingsByDateAndReadingTypeCodes", vendor.getCompanyName());
         return Collections.singletonList(formattedBlock);
     }
 
@@ -302,7 +292,7 @@ public class MR_ServerImpl implements MR_Server{
         
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("getLatestMeterReadingsByMeterIDsAndReadingTypeCodes",
+        multispeakEventLogService.methodInvoked("GetLatestMeterReadingsByMeterIDsAndReadingTypeCodes",
             vendor.getCompanyName());
 
         boolean isValidMeterCount = mspValidationService.isValidMeterCount(meterIDs, vendor.getMaxReturnRecords());
@@ -346,7 +336,7 @@ public class MR_ServerImpl implements MR_Server{
             formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
 
             multispeakEventLogService.returnObject("FormattedBlock", mspMeters.size(),
-                "getLatestMeterReadingsByMeterIDsAndReadingTypeCodes", vendor.getCompanyName());
+                "GetLatestMeterReadingsByMeterIDsAndReadingTypeCodes", vendor.getCompanyName());
 
         }
 
@@ -362,7 +352,7 @@ public class MR_ServerImpl implements MR_Server{
 
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("getMeterReadingsByMeterIDsAndReadingTypeCodes",
+        multispeakEventLogService.methodInvoked("GetMeterReadingsByMeterIDsAndReadingTypeCodes",
             vendor.getCompanyName());
 
         boolean isValidMeterCount = mspValidationService.isValidMeterCount(meterIDs, vendor.getMaxReturnRecords());
@@ -412,7 +402,7 @@ public class MR_ServerImpl implements MR_Server{
             formattedBlock = formattedBlockProcessingService.createMspFormattedBlock(mspBlockReturnList.getBlocks());
 
             multispeakEventLogService.returnObject("FormattedBlock", mspMeters.size(),
-                "getMeterReadingsByMeterIDsAndReadingTypeCodes", vendor.getCompanyName());
+                "GetMeterReadingsByMeterIDsAndReadingTypeCodes", vendor.getCompanyName());
         }
         return Collections.singletonList(formattedBlock);
 
@@ -470,7 +460,7 @@ public class MR_ServerImpl implements MR_Server{
         init();
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("initiateMeterReadingsByMeterIDs",
+        multispeakEventLogService.methodInvoked("InitiateMeterReadingsByMeterIDs",
                                                 vendor.getCompanyName());
 
         List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
@@ -490,7 +480,7 @@ public class MR_ServerImpl implements MR_Server{
 
         }
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR,
-                                        "initiateMeterReadingsByMeterIDs",
+                                        "InitiateMeterReadingsByMeterIDs",
                                         errorObjects);
         return errorObjects;
     }
@@ -542,7 +532,7 @@ public class MR_ServerImpl implements MR_Server{
                                                                transactionID, actualResponseUrl);
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_Server_STR,
-                                        "initiateMeterReadingsByReadingTypeCodes",
+                                        "InitiateMeterReadingsByReadingTypeCodes",
                                         errorObjects);
         return errorObjects;
     }
@@ -554,7 +544,7 @@ public class MR_ServerImpl implements MR_Server{
         // could be a lot...and doesn't have much impact to the system
         // MultispeakVendor vendor =
         // multispeakFuncs.getMultispeakVendorFromHeader();
-        // multispeakEventLogService.methodInvoked("isAMRMeter",
+        // multispeakEventLogService.methodInvoked("IsAMRMeter",
         // vendor.getCompanyName());
 
         boolean isAmrMeter = false;
@@ -564,7 +554,7 @@ public class MR_ServerImpl implements MR_Server{
         } catch (MultispeakWebServiceException e) {
             isAmrMeter = false;
         }
-        log.debug("isAMRMeter " + isAmrMeter + " for " + meterNo + ".");
+        log.debug("IsAMRMeter " + isAmrMeter + " for " + meterNo + ".");
         return isAmrMeter;
     }
 
@@ -572,7 +562,7 @@ public class MR_ServerImpl implements MR_Server{
     public List<ErrorObject> initiateEndDeviceEventMonitoring(List<MeterID> meterNos) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("initiateEndDeviceEventMonitoring", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("InitiateEndDeviceEventMonitoring", vendor.getCompanyName());
         List<ErrorObject> errorObject = multispeakMeterService.initiateEndDeviceEventMonitoring(vendor, meterNos);
         return errorObject;
     }
@@ -582,7 +572,7 @@ public class MR_ServerImpl implements MR_Server{
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("cancelEndDeviceEventMonitoring", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("CancelEndDeviceEventMonitoring", vendor.getCompanyName());
         
         List<ErrorObject> errorObject = new ArrayList<ErrorObject>();
         if (meterID != null) {
@@ -596,7 +586,7 @@ public class MR_ServerImpl implements MR_Server{
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("setDisconnectedStatus", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("SetDisconnectedStatus", vendor.getCompanyName());
         List<ErrorObject> errorObject = new ArrayList<ErrorObject>();
         if (meterIDs != null) {
             errorObject = multispeakMeterService.setDisconnectedStatus(vendor, meterIDs);
@@ -609,7 +599,7 @@ public class MR_ServerImpl implements MR_Server{
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("clearDisconnectedStatus", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("ClearDisconnectedStatus", vendor.getCompanyName());
         List<ErrorObject> errorObject = new ArrayList<ErrorObject>();
         if (meterIDs != null) {
             errorObject = multispeakMeterService.clearDisconnectedStatus(vendor, meterIDs);
@@ -622,7 +612,7 @@ public class MR_ServerImpl implements MR_Server{
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("deleteMeterGroups", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("DeleteMeterGroups", vendor.getCompanyName());
 
         List<ErrorObject> errorObject = new ArrayList<ErrorObject>();
 
@@ -655,7 +645,7 @@ public class MR_ServerImpl implements MR_Server{
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("removeMetersFromMeterGroup",
+        multispeakEventLogService.methodInvoked("RemoveMetersFromMeterGroup",
                                                 vendor.getCompanyName());
 
         List<ErrorObject> errorObject = multispeakMeterService.removeMetersFromGroup(meterGroupID,
@@ -668,9 +658,9 @@ public class MR_ServerImpl implements MR_Server{
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("createMeterGroups", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("CreateMeterGroups", vendor.getCompanyName());
         List<ErrorObject> errorObject = multispeakMeterService.addMetersToGroup(meterGroups,
-                                                              "createMeterGroups", vendor);
+                                                              "CreateMeterGroups", vendor);
         return errorObject;
     }
 
@@ -679,7 +669,7 @@ public class MR_ServerImpl implements MR_Server{
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("insertMeterInMeterGroup", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("InsertMeterInMeterGroup", vendor.getCompanyName());
 
         List<ErrorObject> errorObject = new ArrayList<ErrorObject>();
         if (meterID != null && meterGroupID != null) {
@@ -696,7 +686,7 @@ public class MR_ServerImpl implements MR_Server{
             meterGroups.add(meterGroup);
 
             errorObject = multispeakMeterService.addMetersToGroup(meterGroups,
-                                                "insertMeterInMeterGroup", vendor);
+                                                "InsertMeterInMeterGroup", vendor);
         }
         return errorObject;
     }
@@ -707,7 +697,7 @@ public class MR_ServerImpl implements MR_Server{
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("initiateDemandReset", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("InitiateDemandReset", vendor.getCompanyName());
         
         List<ErrorObject> errors = Lists.newArrayList();
         boolean hasFatalErrors = false;
@@ -742,7 +732,7 @@ public class MR_ServerImpl implements MR_Server{
         Set<String> invalidMeterNumbers = Sets.difference(meterNumbers, paoIdsByMeterNumber.keySet());
         for (String invalidMeterNumber : invalidMeterNumbers) {
             errors.add(mspObjectDao.getNotFoundErrorObject(invalidMeterNumber, "MeterID", "Meter",
-                                                           "initiateDemandReset", vendor.getCompanyName()));
+                                                           "InitiateDemandReset", vendor.getCompanyName()));
         }
 
         Set<PaoIdentifier> meterIdentifiers = Sets.newHashSet(paoIdsByMeterNumber.values());
@@ -754,7 +744,7 @@ public class MR_ServerImpl implements MR_Server{
                     + " does not support demand reset";
             String meterNumber = meterNumbersByPaoId.get(unsupportedMeter);
             errors.add(mspObjectDao.getErrorObject(meterNumber, errorMsg, "MeterID",
-                                                   "initiateDemandReset", vendor.getCompanyName()));
+                                                   "InitiateDemandReset", vendor.getCompanyName()));
         }
 
         if (hasFatalErrors || validMeters.isEmpty()) {
@@ -764,7 +754,7 @@ public class MR_ServerImpl implements MR_Server{
         log.info("Received " + meterIDs.size() + " Meter(s) for Demand Reset from " + vendor.getCompanyName());
         multispeakEventLogService.initiateDemandResetRequest(meterNumbers.size(), meterNumbersByPaoId.size(), 
                                                              invalidMeterNumbers.size(), unsupportedMeters.size(),
-                                                             "initiateConnectDisconnect", vendor.getCompanyName());
+                                                             "InitiateConnectDisconnect", vendor.getCompanyName());
 
         MRServerDemandResetCallback callback =
             new MRServerDemandResetCallback(mspObjectDao, multispeakEventLogService, vendor, meterNumbersByPaoId,

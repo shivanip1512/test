@@ -284,7 +284,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
         try {
             return getMethods(mspVendor, mspServer);
         } catch (MultispeakWebServiceClientException e) {
-            log.error("Exception processing getMethods (" + mspVendor.getCompanyName() + ") for Server: " + mspServer);
+            log.error("Exception processing GetMethods (" + mspVendor.getCompanyName() + ") for Server: " + mspServer);
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
         }
         return Collections.emptyList();
@@ -310,7 +310,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             
             // TODO : same type of conditions will be added for all other services
         } catch (MultispeakWebServiceClientException e) {
-            log.error("TargetService: " + endpointUrl + " - getMethods (" + mspVendor.getCompanyName() + ") ");
+            log.error("TargetService: " + endpointUrl + " - GetMethods (" + mspVendor.getCompanyName() + ") ");
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
         }
         return methods;

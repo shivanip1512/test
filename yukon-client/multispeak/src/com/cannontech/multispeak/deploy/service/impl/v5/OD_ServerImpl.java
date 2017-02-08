@@ -17,7 +17,6 @@ import com.cannontech.msp.beans.v5.commontypes.ObjectRef;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
-import com.cannontech.multispeak.dao.v5.MspRawPointHistoryDao;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v5.MultispeakMeterService;
 import com.cannontech.multispeak.service.v5.OD_Server;
@@ -25,7 +24,6 @@ import com.cannontech.multispeak.service.v5.OD_Server;
 @Service("OD_ServerImplV5")
 public class OD_ServerImpl implements OD_Server {
 
-    @Autowired private MspRawPointHistoryDao mspRawPointHistoryDao;
     @Autowired private MultispeakEventLogService multispeakEventLogService;
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MultispeakMeterService multispeakMeterService;
@@ -44,7 +42,7 @@ public class OD_ServerImpl implements OD_Server {
     public List<String> getMethods() throws MultispeakWebServiceException {
         init();
         String[] methods = null;
-        methods = new String[] { "pingURL", "getMethods", "initiateEndDevicePings" };
+        methods = new String[] { "PingURL", "GetMethods", "InitiateEndDevicePings" };
         return multispeakFuncs.getMethods(MultispeakDefines.OD_Server_STR, Arrays.asList(methods));
     }
 
@@ -55,7 +53,7 @@ public class OD_ServerImpl implements OD_Server {
         init();
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("initiateEndDevicePings", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("InitiateEndDevicePings", vendor.getCompanyName());
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor,
                                                                   responseURL,
                                                                   MultispeakDefines.NOT_Server_STR);
@@ -72,7 +70,7 @@ public class OD_ServerImpl implements OD_Server {
                                                                         actualResponseUrl);
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.NOT_Server_STR,
-                                        "initiateEndDevicePings",
+                                        "InitiateEndDevicePings",
                                         errorObjects);
 
         return errorObjects;

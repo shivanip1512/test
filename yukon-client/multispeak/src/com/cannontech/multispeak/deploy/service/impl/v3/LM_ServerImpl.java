@@ -16,7 +16,6 @@ import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.db.MspLoadControl;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v3.LM_Server;
@@ -30,7 +29,6 @@ public class LM_ServerImpl implements LM_Server
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MultispeakEventLogService multispeakEventLogService;
     @Autowired private MultispeakLMService multispeakLMService;
-    @Autowired private MspObjectDao mspObjectDao;
     @Autowired private MspValidationService mspValidationService;
     
     private LiteYukonUser init() throws MultispeakWebServiceException{
@@ -47,12 +45,12 @@ public class LM_ServerImpl implements LM_Server
     public List<String> getMethods() throws MultispeakWebServiceException {
         init();
         String[] methods = new String[] {
-                "pingURL",
-                "getMethods",
+                "PingURL",
+                "GetMethods",
                 "SCADAAnalogChangedNotification",
-                "getAllSubstationLoadControlStatuses",
-                "initiateLoadManagementEvent",
-                "initiateLoadManagementEvents"
+                "GetAllSubstationLoadControlStatuses",
+                "InitiateLoadManagementEvent",
+                "InitiateLoadManagementEvents"
                 };
         return multispeakFuncs.getMethods(MultispeakDefines.LM_Server_STR, Arrays.asList(methods));
     }
@@ -91,19 +89,19 @@ public class LM_ServerImpl implements LM_Server
 
         LiteYukonUser liteYukonUser = init();
         
-    	MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
-        multispeakEventLogService.methodInvoked("initiateLoadManagementEvent", vendor.getCompanyName());
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
+        multispeakEventLogService.methodInvoked("InitiateLoadManagementEvent", vendor.getCompanyName());
 
         ErrorObject errorObject = mspValidationService.isValidLoadManagementEvent(theLMEvent);
-    	if (errorObject == null) {
-    		MspLoadControl mspLoadControl = new MspLoadControl();
+        if (errorObject == null) {
+            MspLoadControl mspLoadControl = new MspLoadControl();
             List<ErrorObject> errorObject2 = multispeakLMService.buildMspLoadControl(theLMEvent, mspLoadControl, vendor);
             if (errorObject2.size() > 0) {
             	//We may have more than one error possibly, just return the first error.
             	return errorObject2.get(0);
             }
             errorObject = multispeakLMService.control(mspLoadControl, liteYukonUser);
-    	} 
+        } 
         return errorObject;
     }
     
@@ -113,7 +111,7 @@ public class LM_ServerImpl implements LM_Server
         LiteYukonUser liteYukonUser = init();
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
-        multispeakEventLogService.methodInvoked("initiateLoadManagementEvents", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("InitiateLoadManagementEvents", vendor.getCompanyName());
 
         List<ErrorObject> errorObjects = Lists.newArrayList();
 
@@ -135,5 +133,4 @@ public class LM_ServerImpl implements LM_Server
         }
         return errorObjects;
     }
-
 }

@@ -29,9 +29,9 @@ public class SCADA_ServerImpl implements SCADA_Server {
 
     private final Logger log = YukonLogManager.getLogger(SCADA_ServerImpl.class);
     private final static String[] methods = new String[] {
-        "pingURL",
-        "getMethods",
-        "getLatestSCADAAnalogs",
+        "PingURL",
+        "GetMethods",
+        "GetLatestSCADAAnalogs",
     };
 
     private void init() throws MultispeakWebServiceException {
@@ -53,7 +53,7 @@ public class SCADA_ServerImpl implements SCADA_Server {
     public List<SCADAAnalog> getLatestSCADAAnalogs(String lastReceived) throws MultispeakWebServiceException {
         init();
         MultispeakVendor mspVendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("getLatestSCADAAnalogs", mspVendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("GetLatestSCADAAnalogs", mspVendor.getCompanyName());
 
         Date timerStart = new Date();
 
@@ -63,7 +63,7 @@ public class SCADA_ServerImpl implements SCADA_Server {
         List<SCADAAnalog> scadaAnalogs = scadaAnalogList.getScadaAnalogs();
         log.info("Returning All Scada Analog data (" + scadaAnalogs.size() + " points). (" + (new Date().getTime() - timerStart.getTime())*.001 + " secs)");
         multispeakEventLogService.returnObjects(scadaAnalogs.size(), scadaAnalogList.getObjectsRemaining(), "SCADAAnalog", scadaAnalogList.getLastSent(),
-                                                "getAllSCADAAnalogs", mspVendor.getCompanyName());
+                                                "GetAllSCADAAnalogs", mspVendor.getCompanyName());
         return scadaAnalogs;
     }
 

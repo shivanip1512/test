@@ -19,7 +19,6 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.MspScadaAnalogReturnList;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
-import com.cannontech.multispeak.service.v3.MultispeakLMService;
 import com.cannontech.multispeak.service.v3.SCADA_Server;
 
 @Service
@@ -28,10 +27,9 @@ public class SCADA_ServerImpl implements SCADA_Server {
     @Autowired private MspRawPointHistoryDao mspRawPointHistoryDao;
     @Autowired private MultispeakEventLogService multispeakEventLogService;
     @Autowired private MultispeakFuncs multispeakFuncs;
-    @Autowired private MultispeakLMService multispeakLMService;
 
     private final Logger log = YukonLogManager.getLogger(SCADA_ServerImpl.class);
-    private final static String[] methods = new String[] { "pingURL", "getMethods", "getAllSCADAAnalogs", };
+    private final static String[] methods = new String[] { "PingURL", "GetMethods", "GetAllSCADAAnalogs", };
 
     private LiteYukonUser init() throws MultispeakWebServiceException {
         multispeakFuncs.init();
@@ -53,7 +51,7 @@ public class SCADA_ServerImpl implements SCADA_Server {
     public List<ScadaAnalog> getAllSCADAAnalogs(String lastReceived) throws MultispeakWebServiceException {
         LiteYukonUser user = init();
         MultispeakVendor mspVendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
-        multispeakEventLogService.methodInvoked("getAllSCADAAnalogs", mspVendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("GetAllSCADAAnalogs", mspVendor.getCompanyName());
 
         Date timerStart = new Date();
 
@@ -64,8 +62,7 @@ public class SCADA_ServerImpl implements SCADA_Server {
         log.info("Returning All Scada Analog data (" + scadaAnalogs.size() + " points). ("
             + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
         multispeakEventLogService.returnObjects(scadaAnalogs.size(), scadaAnalogList.getObjectsRemaining(),
-            "ScadaAnalog", scadaAnalogList.getLastSent(), "getAllSCADAAnalogs", mspVendor.getCompanyName());
+            "ScadaAnalog", scadaAnalogList.getLastSent(), "GetAllSCADAAnalogs", mspVendor.getCompanyName());
         return scadaAnalogs;
     }
-
 }

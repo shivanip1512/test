@@ -360,7 +360,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
             
         };
-        multispeakEventLogService.initiateMeterRead(meter.getMeterNumber(), meter, "N/A", "getCDMeterState", mspVendor.getCompanyName());
+        multispeakEventLogService.initiateMeterRead(meter.getMeterNumber(), meter, "N/A", "GetCDMeterState", mspVendor.getCompanyName());
         deviceAttributeReadService.initiateRead(allPaosToRead, attributes, waitableCallback, DeviceRequestType.MULTISPEAK_METER_READ_EVENT, UserUtils.getYukonUser());
         try {
             waitableCallback.waitForCompletion();
@@ -407,7 +407,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         final String meterNumber = meter.getMeterNumber();
         log.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
-        multispeakEventLogService.initiateMeterRead(meterNumber, meter, "N/A", "getLatestReadingByMeterNo", mspVendor.getCompanyName());
+        multispeakEventLogService.initiateMeterRead(meterNumber, meter, "N/A", "GetLatestReadingByMeterNo", mspVendor.getCompanyName());
 
         // Writes a request to pil for the meter and commandStr using the id for mspVendor.
         commandStr += " update noqueue";
@@ -415,12 +415,12 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         pilRequest.setPriority(13);
         porterConnection.write(pilRequest);
 
-        systemLog("getLatestReadingByMeterNo", "(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + commandStr, mspVendor);
+        systemLog("GetLatestReadingByMeterNo", "(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber (" + meterNumber + ") - " + commandStr, mspVendor);
 
         synchronized (event) {
             boolean timeout = !waitOnEvent(event, mspVendor.getRequestMessageTimeout());
             if (timeout) {
-                mspObjectDao.logMSPActivity("getLatestReadingByMeterNo",
+                mspObjectDao.logMSPActivity("GetLatestReadingByMeterNo",
                                             "MeterNumber (" + meterNumber + ") - Reading Timed out after " + 
                                             (mspVendor.getRequestMessageTimeout() / 1000) + " seconds.  No reading collected.",
                                             mspVendor.getCompanyName());
@@ -456,7 +456,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
 
         log.info("Received " + meterNumbers.size() + " Meter(s) for Outage Verification Testing from "
             + mspVendor.getCompanyName());
-        multispeakEventLogService.initiateODEventRequest(meterNumbers.size(), "initiateOutageDetectionEventRequest",
+        multispeakEventLogService.initiateODEventRequest(meterNumbers.size(), "InitiateOutageDetectionEventRequest",
             mspVendor.getCompanyName());
 
         ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
@@ -470,7 +470,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             List<YukonMeter> meters = meterNumberToMeterMap.get(meterNumber);    // this will most likely be size 1
             for (YukonMeter meter : meters) {
                 if (meter == null) {
-                    multispeakEventLogService.meterNotFound(meterNumber, "initiateOutageDetectionEventRequest", mspVendor.getCompanyName());
+                    multispeakEventLogService.meterNotFound(meterNumber, "InitiateOutageDetectionEventRequest", mspVendor.getCompanyName());
                     ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "ODEvent", mspVendor.getCompanyName());
                     errorObjects.add(err);
                     continue;
@@ -482,7 +482,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 // TODO validate is OD supported meter ???
                 if (meter instanceof RfnMeter) {
                     rfnPaosToPing.add(meter);
-                    multispeakEventLogService.initiateODEvent(meterNumber, meter, transactionId, "initiateOutageDetectionEventRequest", mspVendor.getCompanyName());
+                    multispeakEventLogService.initiateODEvent(meterNumber, meter, transactionId, "InitiateOutageDetectionEventRequest", mspVendor.getCompanyName());
                     continue;
                 }
                 // Assume plc if we made it this far, validate meter can receive porter command requests and command string exists, then perform action
@@ -492,7 +492,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                     request.setDevice(SimpleDevice.of(meter.getPaoIdentifier()));
                     request.setCommandCallback(new CommandCallbackBase("ping"));
                     plcCommandRequests.add(request);
-                    multispeakEventLogService.initiateODEvent(meterNumber, meter, transactionId, "initiateOutageDetectionEventRequest", mspVendor.getCompanyName());
+                    multispeakEventLogService.initiateODEvent(meterNumber, meter, transactionId, "InitiateOutageDetectionEventRequest", mspVendor.getCompanyName());
                 } else {
                     ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
                                                                   "MeterNumber (" + meterNumber + ") - Meter cannot receive requests from porter. ",
@@ -745,7 +745,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 
         log.info("Received " + meterNumbers.size() + " Meter(s) for MeterReading from " + mspVendor.getCompanyName());
-        multispeakEventLogService.initiateMeterReadRequest(meterNumbers.size(), "initiateMeterReadByMeterNumber", mspVendor.getCompanyName());
+        multispeakEventLogService.initiateMeterReadRequest(meterNumbers.size(), "InitiateMeterReadByMeterNumber", mspVendor.getCompanyName());
         List<YukonMeter> allPaosToRead = Lists.newArrayListWithCapacity(meterNumbers.size());
         ListMultimap<String, YukonMeter> meterNumberToMeterMap = meterDao.getMetersMapForMeterNumbers(Lists.newArrayList(meterNumbers));
         boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
@@ -754,7 +754,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             List<YukonMeter> meters = meterNumberToMeterMap.get(meterNumber);    // this will most likely be size 1
             for (YukonMeter meter : meters) {
                 if (meter == null) {
-                    multispeakEventLogService.meterNotFound(meterNumber, "initiateMeterReadByMeterNumber", mspVendor.getCompanyName());
+                    multispeakEventLogService.meterNotFound(meterNumber, "InitiateMeterReadByMeterNumber", mspVendor.getCompanyName());
                     ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", mspVendor.getCompanyName());
                     errorObjects.add(err);
                     continue;
@@ -766,7 +766,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 }
     
                 allPaosToRead.add(meter);
-                multispeakEventLogService.initiateMeterRead(meterNumber, meter, transactionID, "initiateMeterReadByMeterNumber", mspVendor.getCompanyName());
+                multispeakEventLogService.initiateMeterRead(meterNumber, meter, transactionID, "InitiateMeterReadByMeterNumber", mspVendor.getCompanyName());
             }
         }
 
@@ -851,7 +851,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                             List<ErrorObject> responseErrorObjects = readingChangedNotificationResponse.getReadingChangedNotificationResult().getErrorObject();
                             errObjects = responseErrorObjects;
                         }
-                        multispeakEventLogService.notificationResponse("readingChangedNotification", transactionID, meterRead.getObjectID(), 
+                        multispeakEventLogService.notificationResponse("ReadingChangedNotification", transactionID, meterRead.getObjectID(), 
                                                                        meterRead.getPosKWh().toString(), CollectionUtils.size(errObjects), responseUrl); //just picked PoskWh to log...because nothing better
                         if (CollectionUtils.isNotEmpty(errObjects)) {
                             multispeakFuncs.logErrorObjects(responseUrl, "ReadingChangedNotification", errObjects);
@@ -888,16 +888,16 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 
         log.info("Received " + meterNumber + " for BlockMeterReading from " + mspVendor.getCompanyName());
-        multispeakEventLogService.initiateMeterReadRequest(1, "initiateMeterReadByMeterNoAndType", mspVendor.getCompanyName());
+        multispeakEventLogService.initiateMeterReadRequest(1, "InitiateMeterReadByMeterNoAndType", mspVendor.getCompanyName());
         
 
 
         final YukonMeter paoToRead;
         try {
             paoToRead = mspMeterDao.getMeterForMeterNumber(meterNumber);
-            multispeakEventLogService.initiateMeterRead(meterNumber, paoToRead, transactionId, "initiateMeterReadByMeterNoAndType", mspVendor.getCompanyName());
+            multispeakEventLogService.initiateMeterRead(meterNumber, paoToRead, transactionId, "InitiateMeterReadByMeterNoAndType", mspVendor.getCompanyName());
         } catch (NotFoundException e) {
-            multispeakEventLogService.meterNotFound(meterNumber, "initiateMeterReadByMeterNoAndType", mspVendor.getCompanyName());
+            multispeakEventLogService.meterNotFound(meterNumber, "InitiateMeterReadByMeterNoAndType", mspVendor.getCompanyName());
             ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", mspVendor.getCompanyName());
             errorObjects.add(err);
             log.error(e);
@@ -952,13 +952,13 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                         List<ErrorObject> responseErrorObjects = formattedBlockNotificationResponse.getFormattedBlockNotificationResult().getErrorObject();
                         errObjects = responseErrorObjects;
                     }
-                    multispeakEventLogService.notificationResponse("formattedBlockNotification", transactionId, block.getObjectId(), 
+                    multispeakEventLogService.notificationResponse("FormattedBlockNotification", transactionId, block.getObjectId(), 
                                                                    "", CollectionUtils.size(errObjects), responseUrl);
                     if (CollectionUtils.isNotEmpty(errObjects)) {
                         multispeakFuncs.logErrorObjects(responseUrl, "FormattedBlockNotification", errObjects);
                     }
                 } catch (MultispeakWebServiceClientException e) {
-                    log.warn("caught exception in receivedValue of formattedBlockEvent", e);
+                    log.warn("caught exception in receivedValue of FormattedBlockEvent", e);
                 }
             }
 
@@ -1007,7 +1007,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
         };
         
-        multispeakEventLogService.initiateMeterRead(meterNumber, paoToRead, transactionId, "initiateMeterReadByMeterNoAndType", mspVendor.getCompanyName());
+        multispeakEventLogService.initiateMeterRead(meterNumber, paoToRead, transactionId, "InitiateMeterReadByMeterNoAndType", mspVendor.getCompanyName());
         deviceAttributeReadService.initiateRead(Collections.singleton(paoToRead), attributes, callback, DeviceRequestType.MULTISPEAK_FORMATTED_BLOCK_READ_EVENT, UserUtils.getYukonUser());
         return errorObjects;
     }
@@ -1022,7 +1022,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }
 
         log.info("Received " + cdEvents.size() + " Meter(s) for Connect/Disconnect from " + mspVendor.getCompanyName());
-        multispeakEventLogService.initiateCDRequest(cdEvents.size(), "initiateConnectDisconnect", mspVendor.getCompanyName());
+        multispeakEventLogService.initiateCDRequest(cdEvents.size(), "InitiateConnectDisconnect", mspVendor.getCompanyName());
         
         ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
         List<CommandRequestDevice> plcCommandRequests = Lists.newArrayList();
@@ -1048,7 +1048,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                 if (isRfnDisconnect) {
                     RfnMeter rfnMeter = (RfnMeter) meter;
                     multispeakEventLogService.initiateCD(meter.getMeterNumber(), meter, mspLoadActionCode.toString(), transactionId,
-                                                         "initiateConnectDisconnect", mspVendor.getCompanyName());
+                                                         "InitiateConnectDisconnect", mspVendor.getCompanyName());
                     doRfnConnectDisconnect(rfnMeter, mspLoadActionCode.getRfnState().getType(), mspVendor, transactionId, responseUrl);
                     continue;
                 }
@@ -1068,10 +1068,10 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                     plcCommandRequests.add(request);
                     multispeakEventLogService.initiateCD(meter.getMeterNumber(), meter, mspLoadActionCode.toString(),
                                                          (cdEvent.getReasonCode() != null ? cdEvent.getReasonCode().value() : "unknown"),
-                                                         "initiateConnectDisconnect", mspVendor.getCompanyName());
+                                                         "InitiateConnectDisconnect", mspVendor.getCompanyName());
                 }
             } catch (NotFoundException e) {
-                multispeakEventLogService.meterNotFound(meterNumber, "initiateConnectDisconnect", mspVendor.getCompanyName());
+                multispeakEventLogService.meterNotFound(meterNumber, "InitiateConnectDisconnect", mspVendor.getCompanyName());
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "CDEvent", mspVendor.getCompanyName());
                 errorObjects.add(err);
                 log.error(e);
@@ -1221,7 +1221,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                                                                loadActionCode.value(), -1, responseUrl);
             
         } catch (MultispeakWebServiceClientException e) {
-            log.error("TargetService: " + responseUrl + " - initiateConnectDisconnect (" + mspVendor.getCompanyName() + ")");
+            log.error("TargetService: " + responseUrl + " - InitiateConnectDisconnect (" + mspVendor.getCompanyName() + ")");
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
         }
     }
@@ -1309,7 +1309,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                             updateBillingCyle(billingCycle, newMeter.getMeterNumber(), newMeter, METER_ADD_STRING, mspVendor);
                             updateAltGroup(mspServiceLocation, newMeter.getMeterNumber(), newMeter, METER_ADD_STRING, mspVendor);
                         } else {
-                            multispeakEventLogService.objectNotFoundByVendor(mspMeter.getMeterNo(), "getServiceLocationByMeterNo", METER_ADD_STRING, mspVendor.getCompanyName());
+                            multispeakEventLogService.objectNotFoundByVendor(mspMeter.getMeterNo(), "GetServiceLocationByMeterNo", METER_ADD_STRING, mspVendor.getCompanyName());
                         }
                         
                         // Must complete route locate after meter is enabled
@@ -1425,6 +1425,8 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             // Format is *RfnTemplate_manufacturer_model
             String nameToStripRfnIdentifierFrom = templateMeter.getName();
             String rfnIdentifierPart = StringUtils.removeStart(nameToStripRfnIdentifierFrom, templatePrefix);
+            
+            // TODO this needs to be fixed to support the water_node (basically the third part containing an underscore.
             String[] manufacturerModel = StringUtils.split(rfnIdentifierPart, "_");
             
             if (manufacturerModel.length == 2) {
@@ -1883,7 +1885,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                                     }
                                 }
                             } else {
-                                multispeakEventLogService.objectNotFoundByVendor(mspServiceLocation.getObjectID(), "getMeterByServLoc", SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
+                                multispeakEventLogService.objectNotFoundByVendor(mspServiceLocation.getObjectID(), "GetMeterByServLoc", SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
                                 ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(),
                                                                               paoAlias.getDisplayName() + " ServiceLocation(" + mspServiceLocation.getObjectID() + ") - No meters returned from vendor for location.",
                                                                               "ServiceLocation", SERV_LOC_CHANGED_STRING, mspVendor.getCompanyName());
@@ -2042,7 +2044,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
 
             deviceGroupMemberEditorDao.removeDevices(storedGroup, yukonDevices);
-            multispeakEventLogService.removeMetersFromGroup(yukonDevices.size(), storedGroup.getFullName(), "removeMetersFromMeterGroup", mspVendor.getCompanyName());
+            multispeakEventLogService.removeMetersFromGroup(yukonDevices.size(), storedGroup.getFullName(), "RemoveMetersFromMeterGroup", mspVendor.getCompanyName());
         } catch (NotFoundException e) {
             ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(groupName, "GroupName", "MeterGroup", "removeMetersFromGroup", mspVendor.getCompanyName());
             errorObjects.add(errorObject);

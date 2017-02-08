@@ -147,7 +147,7 @@ public class MRServerDemandResetCallback extends DemandResetVerificationCallback
                 mspObjectDao.toErrorObject(errObjects);
             }
 
-            multispeakEventLogService.notificationResponse("initiateDemandReset", 
+            multispeakEventLogService.notificationResponse("InitiateDemandReset", 
                                                             transactionId, 
                                                             meterNumber,
                                                            "Reset and Verified", 

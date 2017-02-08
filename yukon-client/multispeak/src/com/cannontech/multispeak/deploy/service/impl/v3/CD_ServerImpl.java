@@ -60,22 +60,19 @@ public class CD_ServerImpl implements CD_Server {
     }
 
     @Override
-	public List<String> getMethods() throws MultispeakWebServiceException {
-		init();
-		String[] methods = null;
-		methods = new String[] { "pingURL", "getMethods",
-				"getCDSupportedMeters", "getCDMeterState",
-				"initiateConnectDisconnect" };
-		return multispeakFuncs.getMethods(MultispeakDefines.CD_Server_STR,
-				Arrays.asList(methods));
-		
-	}
+    public List<String> getMethods() throws MultispeakWebServiceException {
+        init();
+        String[] methods = null;
+        methods = new String[] { "PingURL", "GetMethods", "GetCDSupportedMeters", "GetCDMeterState",
+                "InitiateConnectDisconnect" };
+        return multispeakFuncs.getMethods(MultispeakDefines.CD_Server_STR, Arrays.asList(methods));
+    }
 
     @Override
     public List<Meter> getCDSupportedMeters(String lastReceived) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
-        multispeakEventLogService.methodInvoked("getCDSupportedMeters", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("GetCDSupportedMeters", vendor.getCompanyName());
 
         Date timerStart = new Date();
         MspMeterReturnList meterList = mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
@@ -86,7 +83,7 @@ public class CD_ServerImpl implements CD_Server {
         log.info("Returning " + meters.size() + " CD Supported Meters. ("
             + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
         multispeakEventLogService.returnObjects(meters.size(), meterList.getObjectsRemaining(), "Meter",
-            meterList.getLastSent(), "getCDSupportedMeters", vendor.getCompanyName());
+            meterList.getLastSent(), "GetCDSupportedMeters", vendor.getCompanyName());
 
         return meters;
     }
@@ -95,7 +92,7 @@ public class CD_ServerImpl implements CD_Server {
     public LoadActionCode getCDMeterState(String meterNo) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
-        multispeakEventLogService.methodInvoked("getCDMeterState", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("GetCDMeterState", vendor.getCompanyName());
 
         YukonMeter meter = mspValidationService.isYukonMeterNumber(meterNo);
 
@@ -112,7 +109,7 @@ public class CD_ServerImpl implements CD_Server {
                  // stored.
             loadActionCode = getLoadActionCodeFromCache(meter);
         }
-        multispeakEventLogService.returnObject("LoadActionCode." + loadActionCode.value(), meterNo, "getCDMeterState",
+        multispeakEventLogService.returnObject("LoadActionCode." + loadActionCode.value(), meterNo, "GetCDMeterState",
             vendor.getCompanyName());
         return loadActionCode;
     }
@@ -123,14 +120,14 @@ public class CD_ServerImpl implements CD_Server {
         init();
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
-        multispeakEventLogService.methodInvoked("initiateConnectDisconnect", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("InitiateConnectDisconnect", vendor.getCompanyName());
 
         String actualResponseURL =
             multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.CB_CD_STR,
                 MultispeakDefines.CB_Server_STR);
         List<ErrorObject> errorObjects = multispeakMeterService.cdEvent(vendor, cdEvents, transactionID, actualResponseURL);
 
-        multispeakFuncs.logErrorObjects(MultispeakDefines.CD_Server_STR, "initiateConnectDisconnect", errorObjects);
+        multispeakFuncs.logErrorObjects(MultispeakDefines.CD_Server_STR, "InitiateConnectDisconnect", errorObjects);
         return errorObjects;
     }
 
@@ -166,5 +163,4 @@ public class CD_ServerImpl implements CD_Server {
             throw new MultispeakWebServiceException(message);
         }
     }
-
 }

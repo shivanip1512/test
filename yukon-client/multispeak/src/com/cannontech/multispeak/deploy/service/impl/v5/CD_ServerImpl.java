@@ -74,7 +74,7 @@ public class CD_ServerImpl implements CD_Server {
         init();
         String[] methods = null;
         methods =
-            new String[] { "pingURL", "getMethods", "GetAllCDDevices", "GetCDEnabledMeters", "GetCDDeviceStates",
+            new String[] { "PingURL", "GetMethods", "GetAllCDDevices", "GetCDEnabledMeters", "GetCDDeviceStates",
                 "InitiateConnectDisconnect" };
         return multispeakFuncs.getMethods(MultispeakDefines.CD_Server_STR, Arrays.asList(methods));
     }
@@ -83,7 +83,7 @@ public class CD_ServerImpl implements CD_Server {
     public List<CDDevice> getAllCDDevices(String lastReceived) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("getAllCDDevices", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("GetAllCDDevices", vendor.getCompanyName());
         Date timerStart = new Date();
         MspCDDeviceReturnList mspCDDevices = mspMeterDao.getAllCDDevices(lastReceived, vendor.getMaxReturnRecords());
 
@@ -93,7 +93,7 @@ public class CD_ServerImpl implements CD_Server {
         log.info("Returning " + cdMeters.size() + " CD Supported Meters. ("
             + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
         multispeakEventLogService.returnObjects(cdMeters.size(), mspCDDevices.getObjectsRemaining(), "CDDevice",
-            mspCDDevices.getLastSent(), "getAllCDDevices", vendor.getCompanyName());
+            mspCDDevices.getLastSent(), "GetAllCDDevices", vendor.getCompanyName());
         return cdMeters;
     }
     
@@ -101,7 +101,7 @@ public class CD_ServerImpl implements CD_Server {
     public Meters getCDEnabledMeters(String lastReceived) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("getCDEnabledMeters", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("GetCDEnabledMeters", vendor.getCompanyName());
         Date timerStart = new Date();
         MspMeterReturnList meterList = mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
 
@@ -111,7 +111,7 @@ public class CD_ServerImpl implements CD_Server {
         log.info("Returning " + electricMeterList.size() + " CD Enabled Supported Meters. ("
             + (new Date().getTime() - timerStart.getTime()) * .001 + " secs)");
         multispeakEventLogService.returnObjects(electricMeterList.size(), meterList.getObjectsRemaining(), "Meters",
-            meterList.getLastSent(), "getCDEnabledMeters", vendor.getCompanyName());
+            meterList.getLastSent(), "GetCDEnabledMeters", vendor.getCompanyName());
         
         Meters meters = new Meters();
         ElectricMeters electricMeters = new ElectricMeters();
@@ -127,7 +127,7 @@ public class CD_ServerImpl implements CD_Server {
             throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("getCDDeviceStates", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("GetCDDeviceStates", vendor.getCompanyName());
         
         // TODO can we also support objectsRemaining, LastSent for this method ?
         
@@ -155,7 +155,7 @@ public class CD_ServerImpl implements CD_Server {
                 rcdStateKind = getRCDStateFromCache(meter);
             }
             multispeakEventLogService.returnObject("RCDStateKind." + rcdStateKind.value(),
-                cdDeviceIdentifier.getMeterID().getMeterName(), "getCDDeviceStates", vendor.getCompanyName());
+                cdDeviceIdentifier.getMeterID().getMeterName(), "GetCDDeviceStates", vendor.getCompanyName());
 
             // TODO MeterID is also part of request CDDeviceIdentifier and also part of response and both are
             // necessary objects in both (choose either CD device or meter)
@@ -190,13 +190,13 @@ public class CD_ServerImpl implements CD_Server {
             String transactionID, XMLGregorianCalendar expirationTime) throws MultispeakWebServiceException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        multispeakEventLogService.methodInvoked("initiateConnectDisconnect", vendor.getCompanyName());
+        multispeakEventLogService.methodInvoked("InitiateConnectDisconnect", vendor.getCompanyName());
 
         String actualResponseURL =
             multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.NOT_Server_STR);
         List<ErrorObject> errorObjects = multispeakMeterService.cdEvent(vendor, cdEvents, transactionID, actualResponseURL);
 
-        multispeakFuncs.logErrorObjects(MultispeakDefines.CD_Server_STR, "initiateConnectDisconnect", errorObjects);
+        multispeakFuncs.logErrorObjects(MultispeakDefines.CD_Server_STR, "InitiateConnectDisconnect", errorObjects);
         return errorObjects;
     }
 
