@@ -147,8 +147,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return resultsCache.getResult(resultKey);
     }
 
-    @Override
-    public DataStreamingConfig findDataStreamingConfiguration(int configId) {
+    private DataStreamingConfig findDataStreamingConfiguration(int configId) {
         Behavior behavior = deviceBehaviorDao.getBehaviorById(configId);
         return convertBehaviorToConfig(behavior);
     }
@@ -359,8 +358,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return true;
     }
 
-    @Override
-    public int saveConfig(DataStreamingConfig config) {
+    private int saveConfig(DataStreamingConfig config) {
         DataStreamingConfig savedConfig = findConfig(getAllDataStreamingConfigurations(), config);
         if(savedConfig == null){
             Behavior behavior = convertConfigToBehavior(config);
@@ -395,8 +393,13 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     public VerificationInformation verifyConfiguration(DataStreamingConfig config, List<SimpleDevice> devices) {
 
         DataStreamingConfigInfo configInfo = new DataStreamingConfigInfo();
-        configInfo.originalConfig = config;
 
+        if (!config.isNewConfiguration()) {
+            config = findDataStreamingConfiguration(config.getSelectedConfiguration());
+        }
+
+        configInfo.originalConfig = config;
+        
         // Remove devices from the list that don't support data streaming
         List<Integer> unsupportedDevices = removeDataStreamingUnsupportedDevices(devices);
         List<BuiltInAttribute> allConfigAttributes =
@@ -565,6 +568,17 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                         devicesByType.get(type)))
                     .collect(toList()));
         });
+        
+        Set<PaoType> partialTypes = unsupportedAttributesToTypes.values().stream().collect(Collectors.toSet());
+        
+        Multimap<PaoType, Integer> fullySupported = 
+                Multimaps.filterKeys(devicesByType, type -> !partialTypes.contains(type));
+
+        configToTypes.putAll(
+            config,
+            fullySupported.asMap().entrySet().stream()
+                .map(e -> new DeviceTypeList(e.getKey(), e.getValue()))
+                .collect(toList()));
         
         return configToTypes;
     }
@@ -818,6 +832,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
         if (isValidPorterConnection()) {
 
+            if (config.getId() != 0) {
+                config = findDataStreamingConfiguration(config.getId());
+            }
+            
             DataStreamingConfigResult result = createUncompletedResult();
                 
             logService.assignAttempted(user, result.getResultsId(), config.getName(),
@@ -844,7 +862,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             //  Save the config per type
             configAssignmentsByType.asMap().forEach((typeConfig, typeLists) -> {
                 List<Integer> configDeviceIds = typeLists.stream().flatMap(tl -> tl.deviceIds.stream()).collect(toList());
-                deviceBehaviorDao.assignBehavior(config.getId(), TYPE, configDeviceIds, true);
+                int behaviorId = saveConfig(typeConfig);
+                deviceBehaviorDao.assignBehavior(behaviorId, TYPE, configDeviceIds, true);
                 configDeviceIds.stream()
                     .map(this::buildPendingReport)
                     .forEach(deviceBehaviorDao::saveBehaviorReport);
