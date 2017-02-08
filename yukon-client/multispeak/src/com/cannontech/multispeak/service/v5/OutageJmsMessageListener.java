@@ -1,16 +1,13 @@
 package com.cannontech.multispeak.service.v5;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.ObjectMessage;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -24,7 +21,6 @@ import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfEndDeviceState;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
@@ -44,19 +40,20 @@ import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.dao.v5.MspObjectDao;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.multispeak.service.MspIdentifiablePaoService;
+import com.cannontech.multispeak.service.OutageJmsMessageService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-public class OutageJmsMessageListener implements MessageListener {
+public class OutageJmsMessageListener extends OutageJmsMessageService implements MessageListener {
 
     @Autowired private MultispeakDao multispeakDao;
-    @Autowired private OutageEventLogService outageEventLogService;
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MspIdentifiablePaoService mspIdentifiablePaoService;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private ObjectFactory objectFactory;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private NOTClient notClient;
+    @Autowired private ObjectFactory objectFactory;
+    @Autowired private OutageEventLogService outageEventLogService;
+    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     private ImmutableList<MultispeakVendor> vendorsToSendOutageMsg = ImmutableList.of();
     private AtomicLong atomicLong = new AtomicLong();
@@ -113,21 +110,11 @@ public class OutageJmsMessageListener implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        if (message instanceof ObjectMessage) {
-            ObjectMessage objMessage = (ObjectMessage) message;
-            try {
-                Serializable object = objMessage.getObject();
-                if (object instanceof OutageJmsMessage) {
-                    OutageJmsMessage outageJmsMessage = (OutageJmsMessage) object;
-                    handleMessage(outageJmsMessage);
-                }
-            } catch (JMSException e) {
-                log.warn("Unable to extract OutageJmsMessage from message", e);
-            }
-        }
+        super.onMessage(message);
     }
-
-    private void handleMessage(OutageJmsMessage outageJmsMessage) {
+    
+    @Override
+    public void handleMessage(OutageJmsMessage outageJmsMessage) {
 
         if (vendorsToSendOutageMsg.isEmpty()) {
             log.debug("Recieved outage message from jms queue: not generating message because no vendors are configured");
@@ -212,14 +199,6 @@ public class OutageJmsMessageListener implements MessageListener {
             return EndDeviceType.METER;
         }
         return EndDeviceType.OTHER;
-    }
-
-    private boolean isMeter(YukonPao paoIdentifier) {
-        if (paoDefinitionDao.isTagSupported(paoIdentifier.getPaoIdentifier().getPaoType(),
-            PaoTag.USES_METER_NUMBER_FOR_MSP)) {
-            return true;
-        }
-        return false;
     }
 
 }

@@ -1,15 +1,12 @@
 package com.cannontech.multispeak.service.v3;
 
-import java.io.Serializable;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
-import javax.jms.ObjectMessage;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
@@ -21,8 +18,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.msp.beans.v3.ArrayOfErrorObject;
 import com.cannontech.msp.beans.v3.ArrayOfOutageDetectionEvent;
 import com.cannontech.msp.beans.v3.ArrayOfString;
@@ -44,25 +39,25 @@ import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.multispeak.service.MspIdentifiablePaoService;
+import com.cannontech.multispeak.service.OutageJmsMessageService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-public class OutageJmsMessageListener implements MessageListener {
+public class OutageJmsMessageListener extends OutageJmsMessageService implements MessageListener {
+
+    @Autowired private MultispeakDao multispeakDao;
+    @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private MspIdentifiablePaoService mspIdentifiablePaoService;
+    @Autowired private MspObjectDao mspObjectDao;
+    @Autowired private OAClient oaClient;
+    @Autowired private ObjectFactory objectFactory;
+    @Autowired private OutageEventLogService outageEventLogService;
 
     private ImmutableMap<OutageActionType, OutageEventType> outageMap = ImmutableMap.of();
     private static final Logger log = YukonLogManager.getLogger(OutageJmsMessageListener.class);
-    private MultispeakDao multispeakDao;
     private ImmutableList<MultispeakVendor> vendorsToSendOutageMsg = ImmutableList.of();
-    private OutageEventLogService outageEventLogService;
-    private MultispeakFuncs multispeakFuncs;
-    private MspIdentifiablePaoService mspIdentifiablePaoService;
-    private PaoDefinitionDao paoDefinitionDao;
     private AtomicLong atomicLong = new AtomicLong();
-    @Autowired private ObjectFactory objectFactory;
-    @Autowired private OAClient oaClient;
-    @Autowired private MspObjectDao mspObjectDao;
-    
-    
+
     @PostConstruct
     public void initialize() {
         ImmutableMap.Builder<OutageActionType, OutageEventType> mapBuilder = ImmutableMap.builder();
@@ -97,21 +92,11 @@ public class OutageJmsMessageListener implements MessageListener {
 
     @Override
     public void onMessage(Message message) {
-        if (message instanceof ObjectMessage) {
-            ObjectMessage objMessage = (ObjectMessage) message;
-            try {
-                Serializable object = objMessage.getObject();
-                if (object instanceof OutageJmsMessage) {
-                    OutageJmsMessage outageJmsMessage = (OutageJmsMessage) object;
-                    handleMessage(outageJmsMessage);
-                }
-            } catch (JMSException e) {
-                log.warn("Unable to extract OutageJmsMessage from message", e);
-            }
-        }
+        super.onMessage(message);
     }
-    
-    private void handleMessage(OutageJmsMessage outageJmsMessage) {
+
+    @Override
+    public void handleMessage(OutageJmsMessage outageJmsMessage) {
         
         if (vendorsToSendOutageMsg.isEmpty()) {
             log.debug("Recieved outage message from jms queue: not generating message because no vendors are configured");
@@ -204,35 +189,4 @@ public class OutageJmsMessageListener implements MessageListener {
         return OutageDetectDeviceType.OTHER;
     }
     
-    private boolean isMeter(YukonPao paoIdentifier) {
-        if (paoDefinitionDao.isTagSupported(paoIdentifier.getPaoIdentifier().getPaoType(), PaoTag.USES_METER_NUMBER_FOR_MSP)) {
-            return true;
-        }
-        return false;
-    }
-    
-    @Autowired
-    public void setMultispeakDao(MultispeakDao multispeakDao) {
-        this.multispeakDao = multispeakDao;
-    }
-    
-    @Autowired
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
-    }
-    
-    @Autowired
-    public void setOutageEventLogService(OutageEventLogService outageEventLogService) {
-        this.outageEventLogService = outageEventLogService;
-    }
-    
-    @Autowired
-    public void setMspIdentifiablePaoService(MspIdentifiablePaoService mspIdentifiablePaoService) {
-        this.mspIdentifiablePaoService = mspIdentifiablePaoService;
-    }
-    
-    @Autowired
-    public void setPaoDefinitionDao(PaoDefinitionDao paoDefinitionDao) {
-        this.paoDefinitionDao = paoDefinitionDao;
-    }
 }
