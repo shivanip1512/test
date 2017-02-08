@@ -4,6 +4,8 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="operator" page="relayDetail">
         
@@ -17,16 +19,24 @@
         
         <!-- Actions: Map Network -->
         <cti:url var="mapNetworkUrl" value="/stars/mapNetwork/home?deviceId=${deviceId}"/>
-        <cm:dropdownOption key=".mapNetwork" href="${mapNetworkUrl}"/>
-        
-        <li class="divider"/>
+        <cm:dropdownOption key=".mapNetwork" href="${mapNetworkUrl}" icon="icon-map"/>
         
         <!-- Other Collection Actions -->
         <cti:url var="url" value="/bulk/collectionActions">
             <cti:param name="collectionType" value="idList"/>
             <cti:param name="idList.ids" value="${deviceId}"/>
         </cti:url>
-        <cm:dropdownOption key=".otherActions.label" href="${url}"/>
+        <cm:dropdownOption key=".otherActions.label" href="${url}" icon="icon-cog-go" />
+        
+        <cti:checkRolesAndProperties value="INFRASTRUCTURE_DELETE">
+            <li class="divider"/>
+            <cm:dropdownOption id="deleteRelay" icon="icon-cross" key="components.button.delete.label" onclick="$('#delete-relay-form').submit();" />
+            <d:confirm on="#deleteRelay" nameKey="delete.confirm" />
+            <cti:url var="deleteUrl" value="/stars/relay/${deviceId}"/>
+            <form:form id="delete-relay-form" action="${deleteUrl}" method="delete">
+                <cti:csrfToken/>
+            </form:form>
+        </cti:checkRolesAndProperties>
     </div>
     
     <tags:widgetContainer deviceId="${deviceId}" identify="false">
@@ -49,6 +59,6 @@
                 <tags:widget bean="deviceGroupWidget"/>
             </div>
         </div>
-    </tags:widgetContainer>
+    </tags:widgetContainer>  
     
 </cti:standardPage>

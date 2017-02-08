@@ -17,7 +17,10 @@
     <entry key="yukon.web.modules.operator.relayDetail.mapNetwork">Map Network</entry>
     <entry key="yukon.web.modules.operator.relayDetail.otherActions.label">Other Actions...</entry>
     <entry key="yukon.web.modules.operator.relayDetail.relayEvents">Relay Events</entry>
-        
+    <entry key="yukon.web.modules.operator.relayDetail.delete.confirm.title">Delete Relay</entry>
+    <entry key="yukon.web.modules.operator.relayDetail.delete.confirm.message">Are you sure you want to delete this relay?</entry>
+    <entry key="yukon.web.modules.operator.relayDetail.delete.success">Relay was successfully deleted.</entry>
+    <entry key="yukon.web.modules.operator.relayDetail.delete.failure">There was an error trying to delete the relay.</entry>
     
     <!-- relayInformationWidget/render.jsp -->
     <entry key="yukon.web.widgets.relayInformationWidget">Relay Information</entry>

@@ -19,5 +19,10 @@ public interface RfnRelayService {
      * Searches relays with the given criteria
      */
     Set<RfnRelay> searchRelays(RfnDeviceSearchCriteria critera);
+    
+    /**
+     * Deletes the relay with the given id
+     */
+    boolean deleteRelay(int id);
 
 }

@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -30,7 +31,6 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -149,10 +149,8 @@ public class RelayInformationWidget extends AdvancedWidgetControllerBase {
         try {
             deviceDao.changeName(updatedDevice, relay.getName());
             rfnDeviceDao.updateDevice(updatedDevice);
-        } catch (NotFoundException e) {
-            
+        } catch (DataIntegrityViolationException e) {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
-            
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             String errorMsg = accessor.getMessage(baseKey + "error.rfn.address.duplicate");
             model.addAttribute("errorMsg", errorMsg);
