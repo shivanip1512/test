@@ -155,7 +155,12 @@ SAConnection* createDBConnection()
         else
         {
             connection->setClient(SA_SQLServer_Client);
-            server += "@";
+            if( server.find('@', 0) == std::string::npos )
+            {
+                //  The connection string is in the format servername@databasename
+                //    No database name specified, so make sure the server string is interpreted as a server name.
+                server += "@";
+            }
         }
 
         connection->Connect(server.c_str(), dbUser.c_str(), dbPassword.c_str());
@@ -208,7 +213,19 @@ DLLEXPORT std::function<SAConnection*(void)> gDatabaseConnectionFactory = []()
     if(connHolder.connection != NULL)
     {
         connectionList.push_back(connHolder);
-        CTILOG_INFO(dout, "Database connection " << connectionList.size() << " created ");
+
+        Cti::FormattedList connectionInfo;
+        
+        const auto clientVersion = connHolder.connection->ClientVersion();
+        const auto serverVersion = connHolder.connection->ServerVersion();
+
+        connectionInfo.add("Client major version") << (clientVersion >> 16);
+        connectionInfo.add("Client minor version") << (clientVersion & 0xffff);
+
+        connectionInfo.add("Server major version") << (serverVersion >> 16);
+        connectionInfo.add("Server minor version") << (serverVersion & 0xffff);
+
+        CTILOG_INFO(dout, "Database connection " << connectionList.size() << " created:" << connectionInfo);
     }
 
     return connHolder.connection;
