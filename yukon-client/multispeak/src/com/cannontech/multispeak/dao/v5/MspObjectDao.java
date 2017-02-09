@@ -6,7 +6,6 @@ import java.util.Map;
 import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.multispeak.Customer;
-import com.cannontech.msp.beans.v5.multispeak.DomainMember;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -198,17 +197,6 @@ public interface MspObjectDao {
     List<Customer> getCustomersByMeterIDs(List<String> meterNumbers, MultispeakVendor mspVendor);
 
     /**
-     * Returns a list of the Meter(s) for the given meter numbers.
-     * If the interface/method is not supported by mspVendor, or if no object is found,
-     * an empty ElectricMeter List object is returned.
-     *
-     * @param meterNumbers List of meter numbers to get the meter information for.
-     * @param mspVendor The MultiSpeak Vendor to ask for the information from.
-     * @return List<ElectricMeter> List of Meters
-     */
-    List<ElectricMeter> getMetersByMeterIDs(List<String> meterNumbers, MultispeakVendor mspVendor);
-
-    /**
      * Returns MSP customer for the given meter number
      * If the interface/method is not supported by mspVendor, or if no object is found,
      * an empty Customer object is returned.
@@ -219,17 +207,6 @@ public interface MspObjectDao {
      */
     Customer getMspCustomer(SimpleMeter meter, MultispeakVendor mspVendor);
 
-    /**
-     * Returns MSP Meter for the given meter number
-     * If the interface/method is not supported by mspVendor, or if no object is found,
-     * an empty Meter object is returned.
-     * 
-     * @param meter Meter Number of to get Meter information for.
-     * @param mspVendor The MultiSpeak Vendor to ask for the information from.
-     * @return ElectricMeter MSP Electric meter details
-     */
-    ElectricMeter getMspMeter(SimpleMeter meter, MultispeakVendor mspVendor);
-    
     /**
      * Returns a list of supported method names for mspVendor
      * Catches any MultispeakWebServiceClientException and returns emptyList.

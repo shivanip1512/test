@@ -7,19 +7,19 @@ import com.cannontech.user.YukonUserContext;
 
 public interface MultispeakCustomerInfoService {
 
-	/**
-	 * Build a List of Customer phone numbers
-	 * @param mspCustomer
-	 * @param yukonUserContext
-	 * @return List
-	 */
-    List<String> getPhoneNumbers(Customer mspCustomer, YukonUserContext userContext);
-    
     /**
-     * Build a List of Customer email addresses
+     * Build a List of Customer phone numbers
+     * 
      * @param mspCustomer
      * @param yukonUserContext
-     * @return List
+     */
+    List<String> getPhoneNumbers(Customer mspCustomer, YukonUserContext userContext);
+
+    /**
+     * Build a List of Customer email addresses
+     * 
+     * @param mspCustomer
+     * @param yukonUserContext
      */
     List<String> getEmailAddresses(Customer mspCustomer, YukonUserContext userContext);
 }

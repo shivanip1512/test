@@ -40,7 +40,7 @@ public class CustomWebServiceMsgCallback {
 
                 SoapHeader header = soapMessage.getSoapHeader();
                 try {
-                    multispeakFuncs.getHeader(header, multispeakFuncs.getMSPVersion(nxtNode));
+                    multispeakFuncs.getHeader(header);
                 } catch (SOAPException e) {
                     log.warn("caught exception in addRequestHeader", e);
                 }

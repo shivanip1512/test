@@ -17,20 +17,21 @@ public class MultispeakCustomerInfoServiceImpl implements MultispeakCustomerInfo
     public List<String> getPhoneNumbers(Customer mspCustomer, YukonUserContext userContext) {
         List<String> phoneNumbers = Lists.newArrayList();
         ContactInfo contactInfo = mspCustomer.getContactInfo();
-        if (contactInfo == null || contactInfo.getPhoneNumbers() == null)
-            return phoneNumbers;
-        for (PhoneNumber p : contactInfo.getPhoneNumbers().getPhoneNumber()) {
-            StringBuffer fullPhone = new StringBuffer();
-            if (p.getPhone() != null) {
-                fullPhone.append(p.getPhone().getAreaCode());
-                fullPhone.append(p.getPhone().getLocalNumber());
-            }
-            if (p.getPhoneType() != null && p.getPhoneType() != null) {
-                fullPhone.append(StringUtils.SPACE);
-                fullPhone.append(p.getPhoneType().getValue());
-            }
-            if (!StringUtils.isBlank(fullPhone)) {
-                phoneNumbers.add(fullPhone.toString());
+        if (contactInfo != null && contactInfo.getPhoneNumbers() != null) {
+
+            for (PhoneNumber p : contactInfo.getPhoneNumbers().getPhoneNumber()) {
+                StringBuffer fullPhone = new StringBuffer();
+                if (p.getPhone() != null) {
+                    fullPhone.append(p.getPhone().getAreaCode());
+                    fullPhone.append(p.getPhone().getLocalNumber());
+                }
+                if (p.getPhoneType() != null && p.getPhoneType() != null) {
+                    fullPhone.append(StringUtils.SPACE);
+                    fullPhone.append(p.getPhoneType().getValue());
+                }
+                if (!StringUtils.isBlank(fullPhone)) {
+                    phoneNumbers.add(fullPhone.toString());
+                }
             }
         }
         return phoneNumbers;
@@ -40,14 +41,11 @@ public class MultispeakCustomerInfoServiceImpl implements MultispeakCustomerInfo
     public List<String> getEmailAddresses(Customer mspCustomer, YukonUserContext userContext) {
         List<String> emails = Lists.newArrayList();
         ContactInfo contactInfo = mspCustomer.getContactInfo();
-        if (contactInfo == null || contactInfo.getEMailAddresses() == null)
-            return emails;
-        if (contactInfo.getEMailAddresses() != null) {
+        if (contactInfo != null && contactInfo.getEMailAddresses() != null) {
             for (EMailAddress e : contactInfo.getEMailAddresses().getEMailAddress()) {
                 StringBuffer fullEmail = new StringBuffer();
                 if (e.getEMail() != null) {
                     fullEmail.append(e.getEMail());
-
                     if (e.getEMailType() != null) {
                         fullEmail.append(StringUtils.SPACE);
                         fullEmail.append(e.getEMailType().getValue());

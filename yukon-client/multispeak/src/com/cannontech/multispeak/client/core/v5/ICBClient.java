@@ -14,8 +14,6 @@ import com.cannontech.msp.beans.v5.cb_server.GetMetersByContactInfo;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByContactInfoResponse;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByCustomerIDs;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByCustomerIDsResponse;
-import com.cannontech.msp.beans.v5.cb_server.GetMetersByMeterIDs;
-import com.cannontech.msp.beans.v5.cb_server.GetMetersByMeterIDsResponse;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByNetworkModelRefs;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByNetworkModelRefsResponse;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersBySearchString;
@@ -147,17 +145,6 @@ public interface ICBClient {
     GetCustomersByMeterIDsResponse getCustomersByMeterIDs(MultispeakVendor mspVendor, String uri,
             GetCustomersByMeterIDs getCustomersByMeterIDs) throws MultispeakWebServiceClientException;
 
-    /**
-     * Get Meters By Meter IDs.
-     * 
-     * @param MSP vendor details
-     * @param String the URI of the CB Server
-     * @param GetMetersByMeterIDs, the GetMetersByMeterIDs used as input
-     * @return GetMetersByMeterIDsResponse
-     * @throws MultispeakWebServiceClientException
-     */
-    GetMetersByMeterIDsResponse getMetersByMeterIDs(MultispeakVendor mspVendor, String uri,
-            GetMetersByMeterIDs getMetersByMeterIDs) throws MultispeakWebServiceClientException;
 
     /**
      * Get Meters By Service Location IDs.

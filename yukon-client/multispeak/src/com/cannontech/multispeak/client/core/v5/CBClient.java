@@ -22,8 +22,6 @@ import com.cannontech.msp.beans.v5.cb_server.GetMetersByContactInfo;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByContactInfoResponse;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByCustomerIDs;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByCustomerIDsResponse;
-import com.cannontech.msp.beans.v5.cb_server.GetMetersByMeterIDs;
-import com.cannontech.msp.beans.v5.cb_server.GetMetersByMeterIDsResponse;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByNetworkModelRefs;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByNetworkModelRefsResponse;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersBySearchString;
@@ -197,18 +195,6 @@ public class CBClient implements ICBClient {
             messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
             return (GetServiceLocationsByMeterIDsResponse) webServiceTemplate.marshalSendAndReceive(uri,
                 getServiceLocationsByMeterIDs, customWebServiceMsgCallback.addRequestHeader(mspVendor));
-        } catch (WebServiceException | XmlMappingException e) {
-            throw new MultispeakWebServiceClientException(e.getMessage());
-        }
-    }
-
-    @Override
-    public GetMetersByMeterIDsResponse getMetersByMeterIDs(MultispeakVendor mspVendor, String uri,
-            GetMetersByMeterIDs getMetersByMeterIDs) throws MultispeakWebServiceClientException {
-        try {
-            messageSender.setConnectionTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
-            return (GetMetersByMeterIDsResponse) webServiceTemplate.marshalSendAndReceive(uri, getMetersByMeterIDs,
-                customWebServiceMsgCallback.addRequestHeader(mspVendor));
         } catch (WebServiceException | XmlMappingException e) {
             throw new MultispeakWebServiceClientException(e.getMessage());
         }

@@ -31,8 +31,6 @@ import com.cannontech.msp.beans.v5.cb_server.GetMetersByContactInfo;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByContactInfoResponse;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByCustomerIDs;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByCustomerIDsResponse;
-import com.cannontech.msp.beans.v5.cb_server.GetMetersByMeterIDs;
-import com.cannontech.msp.beans.v5.cb_server.GetMetersByMeterIDsResponse;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByNetworkModelRefs;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersByNetworkModelRefsResponse;
 import com.cannontech.msp.beans.v5.cb_server.GetMetersBySearchString;
@@ -800,63 +798,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
         return customers;
     }
     
-    @Override
-    public List<ElectricMeter> getMetersByMeterIDs(List<String> meterNumbers, MultispeakVendor mspVendor) {
-        List<ElectricMeter> meterDetails = new ArrayList<>();
-        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.CB_Server_STR);
-        try {
-            GetMetersByMeterIDs getMetersByMeterIDs = new GetMetersByMeterIDs();
-            ArrayOfMeterID arrayOfMeterID = new ArrayOfMeterID();
-            List<MeterID> meterIds = arrayOfMeterID.getMeterID();
-
-            // TODO : Please uncomment this part of code while merging with trunk.
-            // Due to absence of Spring 4, lambda expression will not work here
-
-            /*
-             * meterNumbers.forEach(meterNumber -> {
-             * MeterID meterID = new MeterID();
-             * meterID.setMeterName(meterNumber);
-             * meterID.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
-             * meterID.setServiceType(ServiceKind.ELECTRIC);
-             * meterID.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
-             * meterIds.add(meterID);
-             * });
-             */
-
-            // TODO : Please remove this part of code(foreach) while merging with trunk.
-            if (meterNumbers != null) {
-                meterNumbers.forEach(new Consumer<String>() {
-                    @Override
-                    public void accept(String meterNumber) {
-                        MeterID meterID = new MeterID();
-                        meterID.setMeterName(meterNumber);
-                        meterID.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
-                        meterID.setServiceType(ServiceKind.ELECTRIC);
-                        meterID.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
-                        meterIds.add(meterID);
-                    }
-                });
-            }
-            getMetersByMeterIDs.setArrayOfMeterID(arrayOfMeterID);
-
-            GetMetersByMeterIDsResponse getMetersByMeterIDsResponse =
-                cbClient.getMetersByMeterIDs(mspVendor, endpointUrl, getMetersByMeterIDs);
-
-            if (getMetersByMeterIDsResponse != null) {
-                Meters meters = getMetersByMeterIDsResponse.getMeters();
-                if (meters != null) {
-                    ElectricMeters electricMeters = meters.getElectricMeters();
-                    if (electricMeters != null) {
-                        meterDetails = electricMeters.getElectricMeter();
-                    }
-                }
-            }
-        } catch (MultispeakWebServiceClientException e) {
-            log.error("TargetService: " + endpointUrl + " - getMetersByMeterIDs (" + mspVendor.getCompanyName());
-            log.error("MultispeakWebServiceClientException: " + e.getMessage());
-        }
-        return meterDetails;
-    }
+    
     
     @Override
     public Customer getMspCustomer(SimpleMeter meter, MultispeakVendor mspVendor) {
@@ -864,13 +806,5 @@ public class MspObjectDaoImpl implements MspObjectDao {
         meterIds.add(meter.getMeterNumber());
         List<Customer> customers = getCustomersByMeterIDs(meterIds, mspVendor);
         return (customers.isEmpty() ? new Customer() : customers.get(0));
-    }
-    
-    @Override
-    public ElectricMeter getMspMeter(SimpleMeter meter, MultispeakVendor mspVendor) {
-        List<String> meterIds = new ArrayList<>();
-        meterIds.add(meter.getMeterNumber());
-        List<ElectricMeter> meters = getMetersByMeterIDs(meterIds , mspVendor);
-        return (meters.isEmpty() ? new ElectricMeter() : meters.get(0));
     }
 }

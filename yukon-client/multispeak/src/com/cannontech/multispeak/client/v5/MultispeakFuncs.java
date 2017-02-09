@@ -1,21 +1,10 @@
 package com.cannontech.multispeak.client.v5;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
-import java.util.TimeZone;
 
 import javax.annotation.Resource;
 import javax.xml.bind.JAXBElement;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPElement;
 import javax.xml.soap.SOAPEnvelope;
@@ -26,7 +15,6 @@ import javax.xml.soap.SOAPMessage;
 import javax.xml.transform.dom.DOMSource;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -40,7 +28,6 @@ import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import org.w3c.dom.Node;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.exception.PasswordExpiredException;
@@ -51,8 +38,6 @@ import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.authentication.service.AuthenticationService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
-import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -64,20 +49,18 @@ import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.enumerations.RCDStateKind;
 import com.cannontech.msp.beans.v5.ws.response.MultiSpeakResponseMsgHeader;
 import com.cannontech.multispeak.client.MessageContextHolder;
-import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
+import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.data.v5.MspRCDStateKind;
 import com.cannontech.multispeak.data.v5.MspReturnList;
-import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
-import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 
-public class MultispeakFuncs {
+public class MultispeakFuncs extends MultispeakFuncsBase {
     private final static Logger log = YukonLogManager.getLogger(MultispeakFuncs.class);
 
     @Autowired public AuthenticationService authenticationService;
@@ -98,13 +81,6 @@ public class MultispeakFuncs {
         "objectsRemaining");
     private static final QName QNAME_RESULT = new QName("http://www.multispeak.org/V5.0/response", "Result");
 
-    public void logStrings(String intfaceName, String methodName, List<String> strings) {
-        if (CollectionUtils.isNotEmpty(strings)) {
-            for (String method : strings) {
-                log.info("Return from " + intfaceName + " (" + methodName + "): " + method);
-            }
-        }
-    }
 
     public void logErrorObjects(String intfaceName, String methodName, List<ErrorObject> objects) {
         if (CollectionUtils.isNotEmpty(objects)) {
@@ -202,7 +178,7 @@ public class MultispeakFuncs {
         buildElement.addTextNode("8");
     }
 
-    /** This method loads the response header. */
+    @Override
     public void loadResponseHeader() throws MultispeakWebServiceException {
         SOAPMessage soapMessage;
         try {
@@ -248,26 +224,6 @@ public class MultispeakFuncs {
     }
 
     /**
-     * This method should be called by every multispeak function!!!
-     */
-    public void init() throws MultispeakWebServiceException {
-        loadResponseHeader();
-    }
-
-    /**
-     * A common declaration of the getMethods method for all services to use.
-     * 
-     * @param interfaceName
-     * @param methods
-     * @return
-     * @throws java.rmi.RemoteException
-     */
-    public List<String> getMethods(String interfaceName, List<String> methods) {
-        logStrings(interfaceName, "GetMethods", methods);
-        return methods;
-    }
-
-    /**
      * This method returns an Company name from the request header.
      * @throws SOAPException
      **/
@@ -283,9 +239,7 @@ public class MultispeakFuncs {
         return getNodeValueFromSOAPMessage(QNAME_APPNAME, QNAME_CALLER);
     }
 
-    /**
-     * This method authenticate message header based on the userid/password.
-     **/
+    @Override
     public LiteYukonUser authenticateMsgHeader() throws MultispeakWebServiceException {
         LiteYukonUser user = null;
         try {
@@ -368,34 +322,6 @@ public class MultispeakFuncs {
     }
 
     /**
-     * This method will return XMLGregorianCalendar type for given date/Calendar/null in case of current date
-     * 
-     * @param Object - Input date/Calendar/null
-     * @return eventime
-     */
-    public static XMLGregorianCalendar toXMLGregorianCalendar(Object inputDate) {
-        XMLGregorianCalendar eventTime = null;
-
-        try {
-            GregorianCalendar gc = (GregorianCalendar) GregorianCalendar.getInstance(TimeZone.getTimeZone("UTC"));
-            if (inputDate instanceof Date) {
-                Date date = (Date) inputDate;
-                gc.setTime(date);
-            } else if (inputDate instanceof Calendar) {
-                Calendar cal = (Calendar) inputDate;
-                gc.setTimeInMillis(cal.getTimeInMillis());
-            } else {
-                Date date = new Date();
-                gc.setTime(date);
-            }
-            eventTime = DatatypeFactory.newInstance().newXMLGregorianCalendar(gc);
-        } catch (DatatypeConfigurationException e) {
-            log.warn("caught exception in parsing event time", e);
-        }
-        return eventTime;
-    }
-
-    /**
      * Adding ErrorObject and Version in response
      */
 
@@ -427,58 +353,7 @@ public class MultispeakFuncs {
         }
 
     }
-    
-    public MspPaoNameAliasEnum getPaoNameAlias() {
-        MspPaoNameAliasEnum paoNameAlias = globalSettingDao.getEnum(GlobalSettingType.MSP_PAONAME_ALIAS,
-                                                                    MspPaoNameAliasEnum.class);
-        return paoNameAlias;
-    }
 
-    /**
-     * @return Returns the billingCycle parent Device Group
-     */
-    public DeviceGroup getBillingCycleDeviceGroup() throws NotFoundException {
-        // WE MAY HAVE SOME PROBLEMS HERE WITH THE EXPLICIT CAST TO
-        // STOREDDEVICEGROUP....
-        String value = globalSettingDao.getString(GlobalSettingType.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP);
-        DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(value);
-        return deviceGroup;
-    }
-    
-    public boolean usesPaoNameAliasExtension() {
-        String paoNameAliasExtension = getPaoNameAliasExtension();
-        return StringUtils.isNotBlank(paoNameAliasExtension);
-    }
-
-    public String getPaoNameAliasExtension() {
-        return globalSettingDao.getString(GlobalSettingType.MSP_PAONAME_EXTENSION);
-    }
-
-    public MultispeakMeterLookupFieldEnum getMeterLookupField() {
-        return globalSettingDao.getEnum(GlobalSettingType.MSP_METER_LOOKUP_FIELD, MultispeakMeterLookupFieldEnum.class);
-    }
-    
-    /**
-     * Helper method to construct a deviceName alias value value containing an
-     * additional quantifier. Format is "value [quantifer]" NOTE: For
-     * mspVendor.CompanyName = NISC -> Only add the quantifier for quantifier !=
-     * 1.
-     * @param value
-     * @param quantifier
-     * @return
-     */
-    public String buildAliasWithQuantifier(String value, String quantifier, MultispeakVendor mspVendor) {
-        boolean isNISC = mspVendor.getCompanyName().equalsIgnoreCase("NISC");
-        String valueWithQuantifier = value;
-
-        if (StringUtils.isNotBlank(quantifier)) {
-            if (isNISC && StringUtils.equals(quantifier, "1")) { // NISC vendor specific handling
-                return valueWithQuantifier;
-            }
-            valueWithQuantifier += " [" + quantifier + "]";
-        }
-        return valueWithQuantifier;
-    }
     
     /**
      * Helper method to update responseHeader.objectsRemaining and
@@ -579,68 +454,8 @@ public class MultispeakFuncs {
         return nodeValue;
     }
 
-    /**
-     * Return the responseUrl. Used for asynchronous calls, where Yukon is the
-     * Server. (Initiate_toYukon > Return_fromYukon; Notification_toVendor >
-     * Return_fromVendor) Yukon receives the InitiateXxx. Then asynchoronously
-     * pushes notificationXxx _to_ responseUrl. If responseURL is not blank,
-     * return responseURL. Otherwise, loop through services and try to build the
-     * responseURL from the mspVendor's URL and service endpoint
-     * @param mspVendor
-     * @param responseURL
-     * @param services
-     * @return responseURL for notification messages
-     */
-    public String getResponseUrl(MultispeakVendor mspVendor, String responseURL, String... services) {
-        if (StringUtils.isNotBlank(responseURL)) {
-            return responseURL;
-        } else {
-            for (String service : services) {
-                MultispeakInterface mspInterface = mspVendor.getMspInterfaceMap().get(service);
-                if (mspInterface != null) {
-                    return mspInterface.getMspEndpoint();
-                }
-            }
-        }
 
-        // return empty response URL...may need to do some more here? We don't
-        // expect to ever be in this situation!!
-        return "";
-    }
 
-    /**
-     * gets Version from the request header
-     * 
-     * @return
-     * @throws SOAPException
-     */
-    public MultiSpeakVersion getMSPVersion() throws SOAPException {
-
-        MessageContext ctx = MessageContextHolder.getMessageContext();
-
-        WebServiceMessage webServiceRequestMessage = ctx.getRequest();
-        SaajSoapMessage saajSoapRequestMessage = (SaajSoapMessage) webServiceRequestMessage;
-        Node nxtNode = saajSoapRequestMessage.getSaajMessage().getSOAPPart().getEnvelope().getBody().getFirstChild();
-        return getMSPVersion(nxtNode);
-    }
-
-    public MultiSpeakVersion getMSPVersion(Node nxtNode) {
-        if (nxtNode != null && nxtNode.getNamespaceURI() == null) {
-            nxtNode = nxtNode.getNextSibling();
-        }
-        String soapAction = "";
-        if (nxtNode != null) {
-            soapAction = nxtNode.getNamespaceURI() + "/" + nxtNode.getLocalName();
-        } else {
-            log.warn("Namespace and method not identified. SOAPAction not set.");
-        }
-        if (soapAction.contains(MultiSpeakVersion.V3.getVersion())) {
-            return MultiSpeakVersion.V3;
-        } else if (soapAction.contains(MultiSpeakVersion.V5.getVersion())) {
-            return MultiSpeakVersion.V5;
-        }
-        return MultiSpeakVersion.V3;
-    }
     
     /**
      * Translates the rawState into a RCDStateKind based on the type of meter
@@ -679,67 +494,4 @@ public class MultispeakFuncs {
         return mspRCDStateKind.getRCDStateKind();
     }
     
-    /**
-     * Return the endpointUrl to send method/request _to_. Used for synchronous
-     * calls, where Yukon is the Client. (Get_fromVendor > Return_toYukon)
-     * @param mspVendor
-     * @param services
-     */
-    public String getEndpointUrl(MultispeakVendor mspVendor, String services) {
-        return encodeURL(getResponseUrl(mspVendor, null, services));
-    }
-    
-    /**
-     * Encodes the given url by replacing unsafe ASCII characters
-     * and converting them to a valid ASCII format
-     * 
-     * @param String - URL to be encoded
-     * @return encodedURL
-     */
-    public String encodeURL(String endpointUrl) {
-        try {
-            URL url = new URL(endpointUrl);
-            URI uri =
-                new URI(url.getProtocol(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath(),
-                    url.getQuery(), null);
-            endpointUrl = uri.toString();
-        } catch (MalformedURLException e) {
-            log.error("URL " + endpointUrl + " is a malformed URL");
-        } catch (URISyntaxException e) {
-            log.error("URI " + endpointUrl + " is a malformed URL");
-        }
-        return endpointUrl;
-    }
-    /**
-     * @return Returns the primaryCIS vendorID.
-     */
-    public int getPrimaryCIS() {
-        return globalSettingDao.getInteger(GlobalSettingType.MSP_PRIMARY_CB_VENDORID);
-    }
-    
-    /**
-     * Returns a formatted phone number of (111) 234-5678
-     * Where 111 is the areaCode and 234-5678 is phone
-     */
-    public String formatPhone(String areaCode, String phone) {
-        String formattedPhone = "";
-        if (!StringUtils.isBlank(areaCode)) {
-            formattedPhone += "(" + areaCode + ") ";
-        }
-        if (!StringUtils.isBlank(phone)) {
-            formattedPhone += phone;
-        }
-        return formattedPhone;
-    }
-    
-    /**
-     * @return Returns version of mspInterface.
-     * @param vendorId
-     * @param mspInterface
-     */
-    public Double getEndPointInterfaceVersion(int vendorId, String mspInterface) {
-        MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
-        return mspVendor.getMspInterfaceMap().get(mspInterface).getVersion();
-
-    }
 }
