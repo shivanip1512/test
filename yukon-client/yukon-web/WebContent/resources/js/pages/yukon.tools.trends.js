@@ -145,10 +145,6 @@ yukon.tools.trends = (function () {
                     },
 
                     yAxis: trend.yAxis,
-                    
-                    yAxis: {
-                        opposite: false
-                    }
 
                 });
             });

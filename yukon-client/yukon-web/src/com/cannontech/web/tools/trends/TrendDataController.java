@@ -26,7 +26,6 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.core.service.DurationFormattingService;
 import com.cannontech.core.users.model.PreferenceTrendZoomOption;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -51,7 +50,6 @@ import com.google.common.collect.ImmutableMap;
 
 public class TrendDataController {
 
-    @Autowired private DurationFormattingService durationFormatting;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private GraphDao graphDao;
     @Autowired private TrendDataService trendDataService;
@@ -235,6 +233,7 @@ public class TrendDataController {
         List<Map<String, Object>> yAxis = new ArrayList<>();
         ImmutableMap<String, ImmutableMap<String, String>> labels = ImmutableMap.of("style", ImmutableMap.of("color", "#555"));
         yAxisProperties.put("labels", labels);
+        yAxisProperties.put("opposite", false);
         yAxis.add(yAxisProperties);
         if (showRightAxis) {
             addRightAxis(userContext, seriesList, yAxis, labels);
