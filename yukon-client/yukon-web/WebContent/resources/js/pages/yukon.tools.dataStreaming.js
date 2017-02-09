@@ -150,11 +150,6 @@ yukon.tools.dataStreaming = (function () {
                 mod.showHideConfigurations();
             });
             
-            /** Show All was clicked */
-            $(document).on('click', '.js-show-all', function (ev) {
-                window.location.href = yukon.url('/tools/dataStreaming/summary');
-            });
-            
             $(document).on('yukon:tools:dataStreaming:resend', function (ev) {
                 var container = $(ev.target),
                 deviceId = container.data('deviceId'),

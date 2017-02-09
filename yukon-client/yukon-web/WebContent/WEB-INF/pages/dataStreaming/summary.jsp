@@ -21,9 +21,9 @@
 
                         <tags:nameValue2 nameKey=".filter.gateway">
                             <form:select multiple="true" id="gatewaysSelect" path="selectedGatewayIds" size="6" style="min-width:200px;">
-                                <option value="-1" ${searchFilters.selectedGatewayIds.size() == 0 || (fn:contains(searchFilters.selectedGatewayIds, -1))? 'selected':''}>Any</option>
+                                <form:option value="-1">Any</form:option>
                                 <c:forEach var="gateway" items="${gateways}">
-                                    <option value="${gateway.id}" ${(fn:contains(searchFilters.selectedGatewayIds, gateway.id))? 'selected':''}>${gateway.name}</option>
+                                    <form:option value="${gateway.id}">${gateway.name}</form:option>
                                 </c:forEach>
                             </form:select>
                         </tags:nameValue2>
@@ -39,8 +39,8 @@
                 <div class="column two">
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".filter.configuration">
-                            <select path="selectedConfiguration" name="selectedConfiguration" class="js-selected-configuration">
-                                <option value="-1">Any</option>
+                            <form:select path="selectedConfiguration" name="selectedConfiguration" class="js-selected-configuration">
+                                <form:option value="-1">Any</form:option>
                                 <c:forEach var="config" items="${existingConfigs}">
                                     <c:set var="selected" value=""/>
                                     <c:if test="${searchFilters.selectedConfiguration == config.id}">
@@ -48,13 +48,13 @@
                                     </c:if>
                                     <option value="${config.id}" ${selected}>${config.name}</option>
                                 </c:forEach>
-                            </select>
+                            </form:select>
                         </tags:nameValue2>
                         <tags:nameValue2 nameKey=".filter.attributes" valueClass="dif">
                             <form:select multiple="true" path="selectedAttributes" id="attributesSelect" class="js-selected-attInterval" size="6" style="min-width:200px;">
-                                <option value="-1" ${searchFilters.selectedAttributes.size() == 0 || (fn:contains(searchFilters.selectedAttributes, -1))? 'selected':''}>Any</option>
+                                <form:option value="-1">Any</form:option>
                                 <c:forEach var="attribute" items="${searchAttributes}">
-                                    <option value="${attribute.key}" ${(fn:contains(searchFilters.selectedAttributes, attribute.key))? 'selected':''}>${attribute.description}</option>
+                                    <form:option value="${attribute.key}">${attribute.description}</form:option>
                                 </c:forEach>
                             </form:select>
                             <span style="margin-left: 40px;"> <i:inline
@@ -69,7 +69,8 @@
 
             <div class="action-area">
                 <cti:button nameKey="export" classes="primary action" type="submit" />
-                <cti:button nameKey="showAll" classes="js-show-all"/>
+                <cti:url var="showAllUrl" value="/tools/dataStreaming/summary" />
+                <cti:button nameKey="showAll" href="${showAllUrl}"/>
             </div>
 
         </tags:sectionContainer2>

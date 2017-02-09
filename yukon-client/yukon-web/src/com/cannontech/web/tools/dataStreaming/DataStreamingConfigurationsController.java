@@ -231,9 +231,12 @@ public class DataStreamingConfigurationsController {
         SummarySearchCriteria searchFilter = new SummarySearchCriteria();
         int selectedConfiguration = ServletRequestUtils.getIntParameter(request, "selectedConfiguration", -1);
         searchFilter.setSelectedConfiguration(selectedConfiguration);
-        Integer[] gatewaysSelected = ArrayUtils.toObject(ServletRequestUtils.getIntParameters(request,"selectedGatewayIds"));
+        int[] selectedGateways = ServletRequestUtils.getIntParameters(request,"selectedGatewayIds");
+        selectedGateways = selectedGateways.length > 0 ? selectedGateways : new int[]{-1};
+        Integer[] gatewaysSelected = ArrayUtils.toObject(selectedGateways);
         searchFilter.setSelectedGatewayIds(Arrays.asList(gatewaysSelected));
         String[] attributesSelected = ServletRequestUtils.getStringParameters(request, "selectedAttributes");
+        attributesSelected = attributesSelected.length > 0 ? attributesSelected : new String[]{"-1"};
         int selectedInterval = ServletRequestUtils.getIntParameter(request, "selectedInterval", -1);
         searchFilter.setSelectedInterval(selectedInterval);
         searchFilter.setSelectedAttributes(Arrays.asList(attributesSelected));
