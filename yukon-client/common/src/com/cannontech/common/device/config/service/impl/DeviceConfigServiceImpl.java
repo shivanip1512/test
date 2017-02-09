@@ -93,10 +93,8 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         
         String key = groupCommandExecutor.execute(supportedCollection, command, type, callback, user);
         if(type == DeviceRequestType.GROUP_DEVICE_CONFIG_SEND){
-            eventLogService.sendConfigInitiated(supportedCollection.getDeviceCount(), command, key, user);
             logInitiated(supportedCollection.getDeviceList(),  LogAction.SEND, user);
         }else if(type == DeviceRequestType.GROUP_DEVICE_CONFIG_READ){
-            eventLogService.readConfigInitiated(supportedCollection.getDeviceCount(), key, user);
             logInitiated(supportedCollection.getDeviceList(),  LogAction.READ, user);
         }
         
@@ -252,7 +250,6 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         WaitableCommandCompletionCallback<CommandRequestDevice> waitableCallback =
             waitableCommandCompletionCallbackFactory.createWaitable(commandCompletionCallback);
 
-        eventLogService.verifyConfigInitiated(deviceList.size(), user);
         logInitiated(deviceList.stream()
                                .map(x -> new SimpleDevice(x))
                                .collect(Collectors.toList()), LogAction.VERIFY, user);
