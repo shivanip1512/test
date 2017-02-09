@@ -16,8 +16,8 @@ public class MspObjectDaoHandler {
     @Autowired private MultispeakEventLogService multispeakEventLogService;
     @Autowired private com.cannontech.multispeak.dao.v5.MspObjectDao mspObjectDaoV5;
 
-    private static final String DOMAIN_MEMBERS_SUBSTATION_CODE = "getDomainMembers - substationCode";
-    private static final String DOMAIN_MEMBERS_SUBSTATION_CODE_V5 = "getDomainsByDomainNames - substationCode";
+    private static final String DOMAIN_MEMBERS_SUBSTATION_CODE = "GetDomainMembers - substationCode";
+    private static final String DOMAIN_MEMBERS_SUBSTATION_CODE_V5 = "GetDomainsByDomainNames - substationCode";
 
     public List<String> getMspSubstationName(MultispeakVendor mspPrimaryCISVendor) {
         if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR) != null) {
