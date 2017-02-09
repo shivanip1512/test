@@ -68,7 +68,7 @@ yukon.assets.gateway.list = (function () {
                     if (data.dataStreamingLoadingPercent > 120) {
                         color = "badge-error";
                     }
-                    capacity.text(data.dataStreamingLoadingPercent + "%");
+                    capacity.text(data.dataStreamingLoadingPercent.toFixed(2) + "%");
                     capacity.removeClass("badge-success badge-warning badge-error");
                     capacity.addClass(color);
                     row.find('.js-gw-rv-text').text(data.releaseVersion);

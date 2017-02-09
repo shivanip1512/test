@@ -3,6 +3,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <table class="compact-results-table row-highlighting js-select-all-container">
     <thead>
@@ -31,7 +32,7 @@
                         <td>
                             <a href="${gatewayUrl}">${fn:escapeXml(result.gateway.name)}</a>
                         </td>
-                        <td>${result.gateway.data.dataStreamingLoadingPercent}</td>
+                        <td><fmt:formatNumber pattern="###.##%" value="${result.gateway.data.dataStreamingLoadingPercent / 100}"/></td>
                         <td style="max-width:400px;">${result.config.commaDelimitedAttributes}</td>
                         <td>${result.config.selectedInterval}
                             <c:choose>
