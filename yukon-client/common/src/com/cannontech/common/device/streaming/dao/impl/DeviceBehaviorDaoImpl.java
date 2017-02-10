@@ -400,7 +400,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         sql1.append("WHERE br.BehaviorType=b.BehaviorType");
         sql1.append("AND a.value=ra.value");
         sql1.append("AND (re.value").neq(Boolean.toString(true));
-        sql1.append("     OR re.value").neq_k(DataStreamingMetricStatus.OK);
+        sql1.append("     OR rs.value").neq_k(DataStreamingMetricStatus.OK);
         sql1.append("     OR ri.Value<>i.Value)");
 
         jdbcTemplate.query(sql1, new DiscrepancyCallback(discrepancyForDeviceId));
