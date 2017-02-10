@@ -9,6 +9,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -35,6 +36,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.service.PaoPersistenceService;
+import com.cannontech.common.util.YukonHttpProxy;
 import com.cannontech.common.util.xml.YukonXPathTemplate;
 import com.cannontech.common.util.xml.YukonXml;
 import com.cannontech.common.weather.GeographicCoordinate;
@@ -44,7 +46,6 @@ import com.cannontech.common.weather.WeatherObservation;
 import com.cannontech.common.weather.WeatherStation;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.db.pao.dao.StaticPaoInfoDao;
-import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
 public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
@@ -251,28 +252,13 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
      */
     private CloseableHttpClient buildHTTPClient() {
         CloseableHttpClient client = null;
-        String[] hostAndPort = null;
-        try {
-            String httpProxy = globalSettingDao.getString(GlobalSettingType.HTTP_PROXY);
-            if (!httpProxy.equals("none")) {
-                hostAndPort = httpProxy.split(":");
-                if (hostAndPort.length != 2) {
-                    log.error("GlobalSettingType = HTTP_PROXY has an invalid value: " + httpProxy
-                        + ". Unable to setup proxy settings for NOAA weather data service");
-                } else {
-                    String host = httpProxy.split(":")[0];
-                    int port = Integer.parseInt(httpProxy.split(":")[1]);
-                    HttpHost proxy = new HttpHost(host, port);
-                    DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
-                    client = HttpClients.custom().setRoutePlanner(routePlanner).build();
-                }
-            } else {
-                client = HttpClients.custom().build();
-            }
-
-        } catch (NumberFormatException e) {
-            log.error("GlobalSettingType = HTTP_PROXY has an invalid value: " + hostAndPort + ". Unable to setup "
-                + "proxy settings for NOAA weather data service", e);
+        Optional<YukonHttpProxy> oProxy = YukonHttpProxy.fromGlobalSetting(globalSettingDao);
+        if (oProxy.isPresent()) {
+            HttpHost proxy = new HttpHost(oProxy.get().getHost(), oProxy.get().getPort());
+            DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
+            client = HttpClients.custom().setRoutePlanner(routePlanner).build();
+        } else {
+            client = HttpClients.custom().build();
         }
         return client;
     }
