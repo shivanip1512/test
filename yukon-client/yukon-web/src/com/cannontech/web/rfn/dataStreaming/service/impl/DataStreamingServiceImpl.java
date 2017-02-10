@@ -702,23 +702,16 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         Map<Integer, BehaviorReport> deviceIdToBehaviorReport =
             deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, deviceIds);
 
-        deviceIds.forEach(id -> {
-            BehaviorReport report = deviceIdToBehaviorReport.get(id);
-            if (report == null) {
-                report = buildPendingReport(id);
-            } else {
-                report.setStatus(BehaviorReportStatus.PENDING);
-                report.setTimestamp(new Instant());
-            }
-        });
+        deviceIds.stream()
+            .map(id -> deviceIdToBehaviorReport.computeIfAbsent(id, this::buildEmptyBehaviorReport))
+            .forEach(this::setBehaviorReportPending);
+
         return deviceIdToBehaviorReport;
     }
 
     private void saveBehaviorReports(Map<Integer, BehaviorReport> deviceIdToBehaviorReport) {
-        deviceIdToBehaviorReport.keySet().forEach(id -> {
-            BehaviorReport report = deviceIdToBehaviorReport.get(id);
-            deviceBehaviorDao.saveBehaviorReport(report);
-        });
+        deviceIdToBehaviorReport.values()
+            .forEach(deviceBehaviorDao::saveBehaviorReport);
     }
 
     @Override
@@ -766,18 +759,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             deviceIds.remove(devicesIdsWithoutBehaviors);
 
             sendNmConfigurationRemove(deviceIds, requestSeqNumber);
-            Map<Integer, BehaviorReport> reports =
-                deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, deviceIds);
-            deviceIds.forEach(id -> {
-                BehaviorReport report = reports.get(id);
-                if (report == null) {
-                    report = buildPendingReport(id);
-                } else {
-                    report.setStatus(BehaviorReportStatus.PENDING);
-                    report.setTimestamp(new Instant());
-                }
-                deviceBehaviorDao.saveBehaviorReport(report);
-            });
+
+            Map<Integer, BehaviorReport> deviceIdToBehaviorReport = initPendingReports(deviceIds);
+            saveBehaviorReports(deviceIdToBehaviorReport);
+
             deviceBehaviorDao.unassignBehavior(TYPE, deviceIds);
             sendConfiguration(user, deviceCollection, requestSeqNumber, result);
             // mark devices as "success"
@@ -858,9 +843,9 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 List<Integer> configDeviceIds = typeLists.stream().flatMap(tl -> tl.deviceIds.stream()).collect(toList());
                 int behaviorId = saveConfig(typeConfig);
                 deviceBehaviorDao.assignBehavior(behaviorId, TYPE, configDeviceIds, true);
-                configDeviceIds.stream()
-                    .map(this::buildPendingReport)
-                    .forEach(deviceBehaviorDao::saveBehaviorReport);
+
+                Map<Integer, BehaviorReport> deviceIdToBehaviorReport = initPendingReports(configDeviceIds);
+                saveBehaviorReports(deviceIdToBehaviorReport);
             });
             
             result.setConfig(config);
@@ -1201,9 +1186,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     private BehaviorReport buildBehaviorReport(ReportedDataStreamingConfig config, int deviceId, BehaviorReportStatus status) {
-        BehaviorReport report = new BehaviorReport();
-        report.setType(TYPE);
-        report.setDeviceId(deviceId);
+        BehaviorReport report = buildEmptyBehaviorReport(deviceId);
         report.setStatus(status);
         report.setTimestamp(new Instant());
         List<ReportedDataStreamingAttribute> attributes = config.getConfiguredMetrics();
@@ -1222,15 +1205,23 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     /**
-     * Builds pending report.
-     * 
+     * Builds an empty BehaviorReport without setting status or timestamp.
+     * This allows setReportPending() to be called on existing and new (empty) reports.
      * @param deviceId
-     * @param false - the user is trying to unassign a device that was not assigned to a config
      */
-    private BehaviorReport buildPendingReport(int deviceId) {
+    private BehaviorReport buildEmptyBehaviorReport(int deviceId) {
         BehaviorReport report = new BehaviorReport();
         report.setType(TYPE);
         report.setDeviceId(deviceId);
+        return report;
+    }
+    
+    /**
+     * Sets the report status to pending and updates the timestamp.
+     * @param report
+     * @return
+     */
+    private BehaviorReport setBehaviorReportPending(BehaviorReport report) {
         report.setStatus(BehaviorReportStatus.PENDING);
         report.setTimestamp(new Instant());
         return report;
