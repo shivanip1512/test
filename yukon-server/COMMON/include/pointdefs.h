@@ -216,7 +216,7 @@ enum ElectronicMeterPointOffsets
  */
 
 // Qualities
-typedef enum
+enum PointQuality_t
 {
    UnintializedQuality = 0,
    InitDefaultQuality,
@@ -237,8 +237,7 @@ typedef enum
    UnreasonableQuality,
    ConstantQuality,
    EstimatedQuality,
-
-} PointQuality_t;
+};
 
 // SystemMetric Point IDs
 #define SYSTEM_DEVICE 0

@@ -1038,6 +1038,80 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_opp
 }
 
 
+BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_disabled_all_channels_enabled)
+{
+    Cti::Test::Override_BehaviorManager b;
+
+    test_RfnMeterDevice dut;
+
+    b.behaviorManagerHandle->behaviorValues = std::map<std::string, std::string> {
+        { "channels", "2" },
+        { "channels.0.attribute", "VOLTAGE" },
+        { "channels.0.interval", "4" },
+        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.interval", "7" }};
+
+    b.behaviorManagerHandle->behaviorReport = std::map<std::string, std::string> {
+        { "enabled", "false" },
+        { "channels", "4" },
+        { "channels.0.attribute", "VOLTAGE" },
+        { "channels.0.interval", "40" },
+        { "channels.0.enabled", "true" },
+        { "channels.1.attribute", "DEMAND" },
+        { "channels.1.interval", "17" },
+        { "channels.1.enabled", "true" },
+        { "channels.2.attribute", "KVAR" },
+        { "channels.2.interval", "9" },
+        { "channels.2.enabled", "true" },
+        { "channels.3.attribute", "POWER_FACTOR" },
+        { "channels.3.interval", "11" },
+        { "channels.3.enabled", "true" }};
+
+    {
+        CtiCommandParser parse("putconfig behavior rfndatastreaming");
+
+        BOOST_CHECK_EQUAL(ClientErrors::None, dut.ExecuteRequest(request.get(), parse, returnMsgs, rfnRequests));
+        BOOST_REQUIRE_EQUAL(1, returnMsgs.size());
+        BOOST_REQUIRE_EQUAL(1, rfnRequests.size());
+
+        {
+            const CtiReturnMsg &returnMsg = returnMsgs.front();
+
+            BOOST_CHECK_EQUAL(returnMsg.Status(), 0);
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "1 command queued for device");
+        }
+    }
+
+    Cti::Devices::RfnDevice::RfnCommandList::iterator rfnRequest_itr = rfnRequests.begin();
+    {
+        Cti::Devices::Commands::RfnCommandSPtr command = *rfnRequest_itr++;
+        {
+            Cti::Devices::Commands::RfnCommand::RfnRequestPayload rcv = command->executeCommand(execute_time);
+
+            const std::vector<unsigned char> exp {
+                0x86,  //  command code
+                0x04,  //  number of metrics
+                0x01,  //  data streaming ON
+                0x00, 0x05,  //  metric ID 1
+                0x01,        //  metric ID 1 enable/disable
+                0x07,        //  metric ID 1 interval
+                0x00, 0x73,  //  metric ID 2
+                0x01,        //  metric ID 2 enable/disable
+                0x04,        //  metric ID 2 interval
+                0x00, 0x20,  //  metric ID 3
+                0x00,        //  metric ID 3 enable/disable
+                0x1e,        //  metric ID 3 interval
+                0x00, 0x50,  //  metric ID 4
+                0x00,        //  metric ID 4 enable/disable
+                0x1e         //  metric ID 4 interval
+            };
+
+            BOOST_CHECK_EQUAL(rcv, exp);
+        }
+    }
+}
+
+
 BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_unsupported_attribute)
 {
     Cti::Test::Override_BehaviorManager b;

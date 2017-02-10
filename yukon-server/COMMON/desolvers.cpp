@@ -4,7 +4,6 @@
 #include "dsm2.h"
 #include "resolvers.h"
 #include "devicetypes.h"
-#include "pointtypes.h"
 #include "logger.h"
 #include "utility.h"
 
@@ -288,6 +287,43 @@ const string &desolvePointType( int aPointType )
 
     return none;
 }
+
+static const std::map<PointQuality_t, std::string> PointQualityStrings {
+    { UnintializedQuality,    "Unintialized" },
+    { InitDefaultQuality,     "InitDefault" },
+    { InitLastKnownQuality,   "InitLastKnown" },
+    { NonUpdatedQuality,      "NonUpdated" },
+    { ManualQuality,          "Manual" },
+    { NormalQuality,          "Normal" },
+    { ExceedsLowQuality,      "ExceedsLow" },
+    { ExceedsHighQuality,     "ExceedsHigh" },
+    { AbnormalQuality,        "Abnormal" },
+    { UnknownQuality,         "Unknown" },
+    { InvalidQuality,         "Invalid" },
+    { PartialIntervalQuality, "PartialInterval" },
+    { DeviceFillerQuality,    "DeviceFiller" },
+    { QuestionableQuality,    "Questionable" },
+    { OverflowQuality,        "Overflow" },
+    { PowerfailQuality,       "Powerfail" },
+    { UnreasonableQuality,    "Unreasonable" },
+    { ConstantQuality,        "Constant" },
+    { EstimatedQuality,       "Estimated" },
+};
+
+const string desolvePointQuality(const PointQuality_t quality)
+{
+    if( auto name = Cti::mapFindRef(PointQualityStrings, quality) )
+    {
+        return *name;
+    }
+
+    auto errorMsg = "Unknown point quality (" + std::to_string(quality) + ")";
+
+    CTILOG_ERROR(dout, errorMsg);
+
+    return errorMsg;
+}
+
 
 static const std::map<CtiControlType_t, std::string> ControlTypeStrings {
     { ControlType_Normal,   "normal"    },

@@ -197,4 +197,62 @@ BOOST_AUTO_TEST_CASE(test_desolveDeviceType)
        results.begin(), results.end());
 }
 
+BOOST_AUTO_TEST_CASE(test_desolvePointQuality)
+{
+    std::array<PointQuality_t, 19> qualities = {
+        UnintializedQuality,
+        InitDefaultQuality,
+        InitLastKnownQuality,
+        NonUpdatedQuality,
+        ManualQuality,
+        NormalQuality,
+        ExceedsLowQuality,
+        ExceedsHighQuality,
+        AbnormalQuality,
+        UnknownQuality,
+        InvalidQuality,
+        PartialIntervalQuality,
+        DeviceFillerQuality,
+        QuestionableQuality,
+        OverflowQuality,
+        PowerfailQuality,
+        UnreasonableQuality,
+        ConstantQuality,
+        EstimatedQuality
+    };
+
+    std::array<std::string, 19> expected = {
+        "Unintialized",
+        "InitDefault",
+        "InitLastKnown",
+        "NonUpdated",
+        "Manual",
+        "Normal",
+        "ExceedsLow",
+        "ExceedsHigh",
+        "Abnormal",
+        "Unknown",
+        "Invalid",
+        "PartialInterval",
+        "DeviceFiller",
+        "Questionable",
+        "Overflow",
+        "Powerfail",
+        "Unreasonable",
+        "Constant",
+        "Estimated"
+    };
+
+    std::vector<std::string> results;
+
+    for( auto quality : qualities )
+    {
+        results.push_back(desolvePointQuality(quality));
+    }
+
+    BOOST_CHECK_EQUAL_COLLECTIONS(
+        expected.begin(), expected.end(),
+        results.begin(), results.end());
+}
+
 BOOST_AUTO_TEST_SUITE_END()

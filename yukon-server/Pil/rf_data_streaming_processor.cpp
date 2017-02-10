@@ -192,7 +192,7 @@ auto RfDataStreamingProcessor::processPacket(const Packet &p) -> DeviceReport
     CTILOG_DEBUG(dout, "rfnId, timestamp, metricId, value, quality");
     for( const Value& value : dr.values )
     {
-        CTILOG_DEBUG(dout, dr.rfnId << "," << value.timestamp << "," << value.metricId << "," << value.value << "," << value.quality);
+        CTILOG_DEBUG(dout, dr.rfnId << "," << value.timestamp << "," << value.metricId << "," << value.value << "," << desolvePointQuality(value.quality));
     }
 
     return dr;
@@ -344,10 +344,37 @@ void RfDataStreamingProcessor::handleStatistics()
         size_t row {}, maxCol {};
 
         report.setCell(row++, maxCol++) << "Device ID";
+        report.setCell(row, maxCol++) << "Device name";
+        report.setCell(row, maxCol++) << "RFN Identifier";
 
         for( const auto& dev : stats )
         {
              report.setCell(row, 0) << dev.first;
+
+             if( dev.first )
+             {
+                 if( auto device = _deviceManager->getDeviceByID(dev.first) )
+                 {
+                     report.setCell(row, 1) << device->getName();
+
+                     if( auto rfnDevice = dynamic_cast<const Devices::RfnDevice *>(device.get()) )
+                     {
+                         report.setCell(row, 2) << rfnDevice->getRfnIdentifier();
+                     }
+                     else
+                     {
+                         report.setCell(row, 2) << "(not an RfnDevice)";
+                     }
+                 }
+                 else
+                 {
+                     report.setCell(row, 1) << "(invalid device id)";
+                 }
+             }
+             else
+             {
+                 report.setCell(row, 1) << "(not found)";
+             }
 
              for( const auto& metricCounts : dev.second )
              {
