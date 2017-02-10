@@ -92,7 +92,7 @@ end;
 function OnFirstUIAfter()
 string sProg, sCMD, sName, sKey, sEnv, sPath, sFileName, sResult, sFilePath;
 number nResult;
-BOOL opt, bOptYes, bOptNo, bWinUpdate;
+BOOL opt, bOptYes, bOptNo;
 pointer pEnv;
 begin
 	//IMPORTANT NOTE: using LaunchApplication with the SW_HIDDEN flag will
@@ -155,16 +155,9 @@ begin
 	endif;
 
     Dialog_StartServices:
-	
-	// nWinMajor version 10 means, Windows Server 2016 or Win 10.
-	if (SYSINFO.nWinMajor < 10) then
-    bWinUpdate = WindowsUpdateRequired(); 
-    else
-    bWinUpdate = TRUE;
-    endif;
 	//only give the option to start services if services were installed
 	//and only if a restart is not necessary
-	if (FeatureIsItemSelected(MEDIA, "Yukon Server") && (!BATCH_INSTALL) && bWinUpdate) then
+	if (FeatureIsItemSelected(MEDIA, "Yukon Server") && (!BATCH_INSTALL)) then
 		bOptYes = TRUE;
 		nResult = AskOptions(EXCLUSIVE,
 					"Would you like to start the Yukon Services?",
@@ -397,7 +390,7 @@ end;
 function OnUpdateUIAfter()
 number nResult, nNewVersion, nVMajor, nVMinor, nVBuild;
 string sCMD, sProg, sVTemp;
-BOOL bOpt, bOptYes, bOptNo, bWinUpdate;
+BOOL bOpt, bOptYes, bOptNo;
 begin
 	//get the DWORD representing the new version number
 	VerProductStrToNum (nNewVersion, IFX_PRODUCT_VERSION);
@@ -452,14 +445,9 @@ begin
 	CleanupTomcatWebapps();
 	Dialog_StartServices:
 	
-	if (SYSINFO.nWinMajor < 10) then
-    bWinUpdate = WindowsUpdateRequired(); 
-    else
-    bWinUpdate = TRUE;
-    endif;
 	//only give the option to start services if services were installed
 	//and only if a restart is not necessary
-	if (FeatureIsItemSelected(MEDIA, "Yukon Server") && (!BATCH_INSTALL) && bWinUpdate) then
+	if (FeatureIsItemSelected(MEDIA, "Yukon Server") && (!BATCH_INSTALL)) then
 		bOptYes = TRUE;
 		nResult = AskOptions(EXCLUSIVE,
 					"Would you like to start the Yukon Services?",
