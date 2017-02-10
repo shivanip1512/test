@@ -410,6 +410,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 
         @Override
+        public void removeDevice(int id) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
         public void changeAddress(YukonDevice device, int newAddress) {
             throw new UnsupportedOperationException("Method not implemented");
         }
@@ -477,5 +482,6 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         public List<SimpleDevice> getYukonDeviceObjectByIds(Iterable<Integer> ids) {
             throw new UnsupportedOperationException("Method not implemented");
         }
+
     }
 }

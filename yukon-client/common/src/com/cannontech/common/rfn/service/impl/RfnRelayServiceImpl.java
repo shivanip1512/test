@@ -4,10 +4,11 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.jfree.util.Log;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnDeviceSearchCriteria;
@@ -16,6 +17,8 @@ import com.cannontech.common.rfn.service.RfnRelayService;
 import com.cannontech.core.dao.DeviceDao;
 
 public class RfnRelayServiceImpl implements RfnRelayService {
+    
+    private static final Logger log = YukonLogManager.getLogger(RfnRelayServiceImpl.class); 
     
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private DeviceDao deviceDao;
@@ -48,12 +51,11 @@ public class RfnRelayServiceImpl implements RfnRelayService {
 
     @Override
     public boolean deleteRelay(int id) {
-        RfnDevice device = rfnDeviceDao.getDeviceForId(id);
         try {
-            deviceDao.removeDevice(device);
+            deviceDao.removeDevice(id);
             return true;
         } catch (Exception e) {
-            Log.error(e);
+            log.error("Unable to delete relay with id " + id, e);
             return false;
         }
 

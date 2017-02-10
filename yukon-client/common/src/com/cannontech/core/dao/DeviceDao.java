@@ -78,7 +78,15 @@ public interface DeviceDao {
 
     void disableDevice(YukonDevice device);
 
+    /**
+     * Removes the given device
+     */
     void removeDevice(YukonDevice device);
+    
+    /**
+     * Removes the device with the given id
+     */
+    void removeDevice(int id);
 
     /**
      * Method to change the route of a given device based on a route id
@@ -138,4 +146,5 @@ public interface DeviceDao {
      * Returns a list of {@link SimpleDevice} objects for a list of pao ids.
      */
     List<SimpleDevice> getYukonDeviceObjectByIds(Iterable<Integer> ids);
+
 }

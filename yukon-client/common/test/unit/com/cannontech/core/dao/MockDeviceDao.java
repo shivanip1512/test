@@ -92,6 +92,12 @@ public class MockDeviceDao implements DeviceDao {
     public void removeDevice(YukonDevice device) {
         throw new MethodNotImplementedException();
     }
+    
+
+    @Override
+    public void removeDevice(int id) {
+        throw new MethodNotImplementedException();
+    }
 
     @Override
     public void changeRoute(YukonDevice device, int newRouteId) {
@@ -147,5 +153,6 @@ public class MockDeviceDao implements DeviceDao {
     public List<SimpleDevice> getYukonDeviceObjectByIds(Iterable<Integer> ids) {
         throw new MethodNotImplementedException();
     }
+
 
 }

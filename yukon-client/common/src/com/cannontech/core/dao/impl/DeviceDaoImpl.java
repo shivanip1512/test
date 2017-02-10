@@ -96,6 +96,13 @@ public final class DeviceDaoImpl implements DeviceDao {
         DBPersistent persistent = dbPersistentDao.retrieveDBPersistent(liteDevice);
         dbPersistentDao.performDBChange(persistent, TransactionType.DELETE);
     }
+    
+    @Override
+    public void removeDevice(int id) {
+        LiteYukonPAObject liteDevice = cache.getAllPaosMap().get(id);
+        DBPersistent persistent = dbPersistentDao.retrieveDBPersistent(liteDevice);
+        dbPersistentDao.performDBChange(persistent, TransactionType.DELETE);
+    }
 
     @Override
     public SimpleDevice getYukonDevice(int paoId) {
