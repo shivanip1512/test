@@ -61,4 +61,7 @@ public interface DeviceCreationService {
      * @throws DeviceCreationException
      */
     public SimpleDevice createRfnDeviceByDeviceType(PaoType type, String name, RfnIdentifier rfId, boolean createPoints) throws DeviceCreationException;
+
+    SimpleDevice createIEDDeviceByDeviceType(PaoType paoType, String name, int portId, boolean createPoints)
+            throws DeviceCreationException;
 }

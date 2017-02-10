@@ -10,21 +10,67 @@ yukon.ami.meterDetails = (function () {
 
     'use strict';
     
-    var
-    _initialized = false,
+    var _initialized = false;
     
     mod = {
+            
+            updateMeterTypeFields : function() {
+                var rfMeterTypes = yukon.fromJson('#rf-meter-types'),
+                    mctMeterTypes = yukon.fromJson('#mct-meter-types'),
+                    meterType = $('#meter-type').val(),
+                    isRF = rfMeterTypes.indexOf(meterType) !== -1,
+                    isMCT = mctMeterTypes.indexOf(meterType) !== -1;
+                if (isRF) {
+                    $('.js-rf-fields').removeClass('dn');
+                    $('.js-mct-fields').addClass('dn');
+                    $('.js-ied-fields').addClass('dn');
+                } else if (isMCT) {
+                    $('.js-mct-fields').removeClass('dn');
+                    $('.js-rf-fields').addClass('dn');
+                    $('.js-ied-fields').addClass('dn');
+                }
+                else {
+                    $('.js-ied-fields').removeClass('dn');
+                    $('.js-mct-fields').addClass('dn');
+                    $('.js-rf-fields').addClass('dn');
+                }
+                
+            },
         
         /** Initialize this module. */
         init: function () {
             
-            if (_initialized) return;
+            if (_initialized) return; 
+            
+            $(document).on('yukon.ami.meterDetails.saveMeter', function (ev) {
+                //$('#meter-create-form').submit();
+                $('#meter-create-form').ajaxSubmit({
+                    success: function (data, status, xhr, $form) {
+                        window.location.href=yukon.url('/meter/home?deviceId=' + data.deviceId);
+                    },
+                    error: function (xhr, status, error, $form) {
+                        $('#meter-create-form').html(xhr.responseText);
+                        mod.updateMeterTypeFields();
+                    }
+                });
+            });
             
             $('#commander-menu-option').click(function (ev) {
                 var deviceId = $('#device-id').val();
                 yukon.cookie.set('commander', 'lastTarget', 'DEVICE');
                 yukon.cookie.set('commander', 'lastPaoId', deviceId);
                 window.location.href = yukon.url('/tools/commander');
+            });
+            
+            $('.js-create-meter').click(function () {
+                var content = $('#contentPopup');
+                content.load(yukon.url('/meter/create'), function () {
+                    content.dialog({
+                        title: 'Create Meter', 
+                        width: 500, 
+                        buttons: yukon.ui.buttons({ okText: yg.text.create, event: 'yukon.ami.meterDetails.saveMeter' }),
+                        modal: true});
+                });
             });
             
             _initialized = true;

@@ -38,8 +38,11 @@ import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
+import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.db.device.DeviceDirectCommSettings;
+import com.cannontech.database.db.device.DeviceIED;
 import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
@@ -145,7 +148,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         newDevice.setPAOName(name);
         newDevice.setAddress(address);
         newDevice.getDeviceRoutes().setRouteID(routeId);
-
+        
         SimpleDevice yukonDevice = createNewDeviceByType(newDevice, createPoints, paoType);
         return yukonDevice;
 
@@ -185,6 +188,30 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         return yukonDevice;
     }
 
+    @Override
+    @Transactional
+    public SimpleDevice createIEDDeviceByDeviceType(PaoType paoType, String name, int portId, boolean createPoints) throws DeviceCreationException {
+
+        if (StringUtils.isBlank(name)) {
+            throw new DeviceCreationException("Device name is blank.");
+        }
+        
+        if (!(PaoUtils.isValidPaoName(name))) {
+            throw new DeviceCreationException("Device name cannot include any of the following characters: / \\ ,\" ' |");
+        }
+
+        // create
+        int newDeviceId = paoDao.getNextPaoId();
+        IEDBase newDevice = (IEDBase) DeviceFactory.createDevice(paoType);
+        newDevice.setDeviceID(newDeviceId);
+        newDevice.setPAOName(name);        
+        newDevice.setDeviceDirectCommSettings(new DeviceDirectCommSettings(newDeviceId,portId));
+        newDevice.setDeviceIED(new DeviceIED(newDeviceId,"0",IEDBase.SLAVE_STAND_ALONE));
+        SimpleDevice yukonDevice = createNewDeviceByType(newDevice, createPoints, paoType);
+        return yukonDevice;
+
+    }
+    
     private SimpleDevice createNewDeviceByType(DeviceBase newDevice, boolean createPoints, PaoType type) {
         try {
             dbPersistentDao.performDBChangeWithNoMsg(newDevice, TransactionType.INSERT);

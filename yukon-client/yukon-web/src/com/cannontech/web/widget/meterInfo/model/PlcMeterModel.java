@@ -35,4 +35,29 @@ public class PlcMeterModel extends MeterModel {
         
         return model;
     }
+    
+    public static PlcMeterModel of(CreateMeterModel meter) {
+        
+        PlcMeterModel model = new PlcMeterModel();
+        model.setAddress(meter.getAddress());
+        model.setDeviceId(meter.getDeviceId());
+        model.setDisabled(meter.isDisabled());
+        model.setMeterNumber(meter.getMeterNumber());
+        model.setName(meter.getName());
+        model.setRouteId(meter.getRouteId());
+        
+        return model;
+    }
+
+    public static PlcMeterModel of(MeterModel meter) {
+        
+        if (meter instanceof PlcMeterModel) {
+            return (PlcMeterModel)meter;
+        }
+        if (meter instanceof CreateMeterModel) {
+            return of((CreateMeterModel)meter);
+        }
+
+        return null;
+    }
 }

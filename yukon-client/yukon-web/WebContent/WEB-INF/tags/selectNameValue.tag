@@ -14,12 +14,13 @@
 <%@ attribute name="emptyValueKey" %>
 <%@ attribute name="onchange" %>
 <%@ attribute name="inputClass" %>
+<%@ attribute name="rowClass" rtexprvalue="true" %>
 <%@ attribute name="rowId" %>
 <%@ attribute name="id" %>
 
 <c:choose>
     <c:when test="${not empty pageScope.rowId}">
-        <tags:nameValue2 rowId="${pageScope.rowId}" nameKey="${nameKey}">
+        <tags:nameValue2 rowId="${pageScope.rowId}" nameKey="${nameKey}" rowClass="${rowClass}">
             <tags:selectWithItems path="${path}" items="${items}" itemValue="${pageScope.itemValue}" itemLabel="${pageScope.itemLabel}" 
                                   defaultItemValue="${pageScope.defaultItemValue}" defaultItemLabel="${pageScope.defaultItemLabel}" 
                                   emptyValueKey="${pageScope.emptyValueKey}" onchange="${pageScope.onchange}" inputClass="${pageScope.inputClass}"
@@ -27,7 +28,7 @@
         </tags:nameValue2>
     </c:when>
     <c:otherwise>
-        <tags:nameValue2 nameKey="${nameKey}">
+        <tags:nameValue2 nameKey="${nameKey}" rowClass="${rowClass}">
             <tags:selectWithItems path="${path}" items="${items}" itemValue="${pageScope.itemValue}" itemLabel="${pageScope.itemLabel}" 
                                    defaultItemValue="${pageScope.defaultItemValue}" defaultItemLabel="${pageScope.defaultItemLabel}"
                                    emptyValueKey="${pageScope.emptyValueKey}" onchange="${pageScope.onchange}" inputClass="${pageScope.inputClass}"

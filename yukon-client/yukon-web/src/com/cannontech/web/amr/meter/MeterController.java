@@ -2,16 +2,23 @@ package com.cannontech.web.amr.meter;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.disconnect.service.DisconnectService;
 import com.cannontech.amr.meter.model.YukonMeter;
@@ -25,6 +32,7 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -32,6 +40,7 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeHelper;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -40,11 +49,15 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
+import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
+import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -52,18 +65,26 @@ import com.cannontech.core.service.CachingPointFormattingService;
 import com.cannontech.core.service.PaoLoadingService;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
+import com.cannontech.web.capcontrol.validators.CbcValidator;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.web.security.annotation.CheckCparm;
+import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.widget.meterInfo.model.CreateMeterModel;
+import com.cannontech.web.widget.meterInfo.model.PlcMeterModel;
+import com.cannontech.web.widget.meterInfo.model.RfMeterModel;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -92,8 +113,11 @@ public class MeterController {
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
     @Autowired private DataStreamingService dataStreamingService;
     @Autowired private ConfigurationSource configurationSource;
-
-   
+    @Autowired private PaoDao paoDao;
+    @Autowired private MeterValidator meterValidator;
+    @Autowired private DeviceCreationService deviceCreationService;
+    @Autowired private ServerDatabaseCache serverDatabaseCache;
+    
     private static final String baseKey = "yukon.web.modules.amr.meterSearchResults";
     
     @RequestMapping("start")
@@ -288,6 +312,82 @@ public class MeterController {
         
         return "meterHome.jsp";
     }
+    
+    @RequestMapping(value="create", method=RequestMethod.GET)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
+    public String create(ModelMap model, LiteYukonUser user) throws Exception {
+        
+        Set<PaoType> meterTypes = PaoType.getMeterTypes();
+        model.addAttribute("meterTypes", meterTypes);
+        
+        LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
+        model.addAttribute("routes", routes);
+        
+        List<LiteYukonPAObject> ports = serverDatabaseCache.getAllPorts();
+        model.addAttribute("ports",ports);
+        
+        Set<PaoType> rfMeterTypes = PaoType.getRfMeterTypes();
+        model.addAttribute("rfMeterTypes", rfMeterTypes);
+        
+        Set<PaoType> mctMeterTypes = PaoType.getMctTypes();
+        model.addAttribute("mctMeterTypes", mctMeterTypes);
+        
+        CreateMeterModel meter = new CreateMeterModel();
+        model.addAttribute("meter", meter);
+      
+        return "create.jsp";
+    }
+    
+    @RequestMapping(value="save", method=RequestMethod.POST)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
+    public String save(@ModelAttribute("meter") CreateMeterModel meter, BindingResult result, HttpServletResponse resp, ModelMap model, LiteYukonUser user) throws Exception {
+        
+        meterValidator.validate(meter, result);
+
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            Set<PaoType> meterTypes = PaoType.getMeterTypes();
+            model.addAttribute("meterTypes", meterTypes);
+            
+            LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
+            model.addAttribute("routes", routes);
+            
+            List<LiteYukonPAObject> ports = serverDatabaseCache.getAllPorts();
+            model.addAttribute("ports", ports);
+            
+            Set<PaoType> rfMeterTypes = PaoType.getRfMeterTypes();
+            model.addAttribute("rfMeterTypes", rfMeterTypes);
+            
+            Set<PaoType> mctMeterTypes = PaoType.getMctTypes();
+            model.addAttribute("mctMeterTypes", mctMeterTypes);
+            
+            model.addAttribute("meter", meter);
+            
+            return "create.jsp";
+        }
+        
+        SimpleDevice device;
+        if (PaoType.getMctTypes().contains(meter.getType())) {
+            device = deviceCreationService.createCarrierDeviceByDeviceType(meter.getType(), meter.getName(), meter.getAddress(), meter.getRouteId(), meter.isCreatePoints());
+        }
+        else if (PaoType.getRfMeterTypes().contains(meter.getType())) {
+            RfnIdentifier rfnId = new RfnIdentifier(meter.getSerialNumber(), meter.getManufacturer(), meter.getModel());
+            device = deviceCreationService.createRfnDeviceByDeviceType(meter.getType(), meter.getName(), rfnId, meter.isCreatePoints());
+        }
+        else {
+            device = deviceCreationService.createIEDDeviceByDeviceType(meter.getType(), meter.getName(),meter.getPortId(), meter.isCreatePoints());
+        }
+        
+        deviceDao.changeMeterNumber(device, meter.getMeterNumber());
+        
+        Map<String, Object> json = new HashMap<>();
+        json.put("deviceId", device.getDeviceId());
+        resp.setContentType("application/json");
+        JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
+        
+        return null;
+    }
+    
     
     @CheckRole({ YukonRole.METERING })
     @RequestMapping("touPreviousReadings")

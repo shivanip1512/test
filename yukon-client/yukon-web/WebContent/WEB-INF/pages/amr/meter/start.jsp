@@ -14,7 +14,17 @@
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="amr" page="meteringStart">
-
+    
+    <div id="contentPopup" class="dn"></div>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.ami.meter.details.js"/>
+    
+    <div id="page-actions" class="dn">
+        
+            <cm:dropdownOption key=".create" classes="js-create-meter"/>
+            
+    </div>
+    
     <ct:widgetContainer identify="false">
 
         <div class="column-12-12">

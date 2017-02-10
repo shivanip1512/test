@@ -45,4 +45,31 @@ public class RfMeterModel extends MeterModel {
         
         return model;
     }
+    
+    public static RfMeterModel of(CreateMeterModel meter) {
+        
+        RfMeterModel model = new RfMeterModel();
+        model.setDeviceId(meter.getDeviceId());
+        model.setDisabled(meter.isDisabled());
+        model.setManufacturer(meter.getManufacturer());
+        model.setMeterNumber(meter.getMeterNumber());
+        model.setModel(meter.getModel());
+        model.setName(meter.getName());
+        model.setSerialNumber(meter.getSerialNumber());
+        
+        return model;
+    }
+
+    public static RfMeterModel of(MeterModel meter) {
+        
+        if (meter instanceof RfMeterModel) {
+            return (RfMeterModel)meter;
+        }
+        
+        if (meter instanceof CreateMeterModel) {
+            return of((CreateMeterModel)meter);
+        }
+        
+        return null;
+    }
 }

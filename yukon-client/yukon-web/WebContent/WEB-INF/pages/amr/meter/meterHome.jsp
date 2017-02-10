@@ -6,6 +6,9 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="meterDetail.electric">
+
+<!-- Popup for create meter -->
+<div id="contentPopup" class="dn"></div>
     
     <cti:includeScript link="/resources/js/pages/yukon.ami.meter.details.js"/>
     
@@ -28,6 +31,11 @@
     <%-- Page Actions Button --%>
     <c:if test="${hasActions}">
         <div id="page-actions" class="dn">
+        
+            <cm:dropdownOption key=".create" classes="js-create-meter"/>
+            
+            <li class="divider"/>
+
             <c:if test="${showMoveInOut}">
                 <cti:url var="url" value="/meter/moveIn">
                     <cti:param name="deviceId" value="${deviceId}"/>

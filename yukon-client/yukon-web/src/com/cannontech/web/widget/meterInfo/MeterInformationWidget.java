@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -51,8 +52,10 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.meter.MeterValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.web.widget.meterInfo.model.CreateMeterModel;
 import com.cannontech.web.widget.meterInfo.model.MeterModel;
 import com.cannontech.web.widget.meterInfo.model.PlcMeterModel;
 import com.cannontech.web.widget.meterInfo.model.RfMeterModel;
@@ -79,72 +82,6 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
     }
     
-    private final Validator validator = new SimpleValidator<MeterModel>(MeterModel.class) {
-        
-        private final static String key = baseKey + "error.";
-        
-        @Override
-        protected void doValidation(MeterModel meter, Errors errors) {
-            
-            LiteYukonPAObject pao = cache.getAllPaosMap().get(meter.getDeviceId());
-            PaoType type = pao.getPaoType();
-            
-            // Device Name
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "name", key + "deviceName.required");
-            if (!errors.hasFieldErrors("name")) {
-                YukonValidationUtils.checkExceedsMaxLength(errors, "name", meter.getName(), 60);
-            }
-            if (!errors.hasFieldErrors("name")) {
-                LiteYukonPAObject unique = paoDao.findUnique(meter.getName(), type);
-                if (unique != null) {
-                    if (unique.getPaoIdentifier().getPaoId() != pao.getPaoIdentifier().getPaoId()) {
-                        errors.rejectValue("name", key + "deviceName.unique");
-                    }
-                }
-            }
-            if (!errors.hasFieldErrors("name")) {
-                if (!PaoUtils.isValidPaoName(meter.getName())) {
-                    errors.rejectValue("name", "yukon.web.error.paoName.containsIllegalChars");
-                }
-            }
-
-            // Meter Number
-            YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "meterNumber", key + "meterNumber.required");
-            
-            // Validate PLC meter settings
-            if (meter instanceof PlcMeterModel) {
-                
-                PlcMeterModel plc = (PlcMeterModel) meter;
-                
-                // Physical Address
-                YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "address", key + "physicalAddress.required");
-                if (!errors.hasFieldErrors("address")) {
-                    boolean validAddress = addressRangeService.isValidEnforcedAddress(type, plc.getAddress());
-                    if (!validAddress) {
-                        String ranges = addressRangeService.rangeStringEnforced(type);
-                        Object[] args = new Object[] { ranges };
-                        errors.rejectValue("address", key + "physicalAddress.range", args, null);
-                    }
-                }
-            }
-            
-            // Validate RF meter settings
-            if (meter instanceof RfMeterModel) {
-                
-                RfMeterModel rf = (RfMeterModel) meter;
-                RfnIdentifier rfnId = new RfnIdentifier(rf.getSerialNumber(), rf.getManufacturer(), rf.getModel());
-                if (!rfnId.isBlank()) {
-                    YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "serialNumber", key + "serialNumber.required");
-                    YukonValidationUtils.checkExceedsMaxLength(errors, "serialNumber", rf.getSerialNumber(), 30);
-                    YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "manufacturer", key + "manufacturer.required");
-                    YukonValidationUtils.checkExceedsMaxLength(errors, "manufacturer", rf.getManufacturer(), 60);
-                    YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "model", key + "model.required");
-                    YukonValidationUtils.checkExceedsMaxLength(errors, "model", rf.getModel(), 60);
-                }
-            }
-        }
-    };
-    
     @Autowired private MeterDao meterDao;
     @Autowired private PaoDao paoDao;
     @Autowired private CommandRequestDeviceExecutor cre;
@@ -153,6 +90,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     @Autowired private DlcAddressRangeService addressRangeService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private MeterValidator meterValidator;
 
     @RequestMapping("render")
     public String render(ModelMap model, int deviceId) {
@@ -237,7 +175,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             meter.setAddress(Integer.parseInt(originalMeter.getAddress()));
             meter.setName(originalMeter.getName());
         }
-        validator.validate(meter, result);
+        meterValidator.validate(meter, result);
         
         if (result.hasErrors()) {
             LiteYukonPAObject pao = cache.getAllPaosMap().get(meter.getDeviceId());
@@ -281,7 +219,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             meter.setSerialNumber(originalMeter.getRfnIdentifier().getSensorSerialNumber());
             meter.setName(originalMeter.getName());
         }
-        validator.validate(meter, result);
+        meterValidator.validate(meter, result);
         
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -328,7 +266,7 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             meter.setMeterNumber(originalMeter.getMeterNumber());
             meter.setName(originalMeter.getName());
         }
-        validator.validate(meter, result);
+        meterValidator.validate(meter, result);
         
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
