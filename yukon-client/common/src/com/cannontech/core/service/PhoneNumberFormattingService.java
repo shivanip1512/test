@@ -19,4 +19,6 @@ public interface PhoneNumberFormattingService {
     
     public String removeNonDigits(String phoneNumber);
     
+    public String formatPhone(String areaCode, String phone);
+    
 }

@@ -16,13 +16,13 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.model.Address;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.msp.beans.v5.commontypes.PhoneNumber;
 import com.cannontech.msp.beans.v5.enumerations.PhoneTypeKind;
 import com.cannontech.msp.beans.v5.multispeak.BillingStatusInformation;
 import com.cannontech.msp.beans.v5.multispeak.Customer;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.dao.v5.MspObjectDao;
 import com.cannontech.multispeak.service.v5.MultispeakCustomerInfoService;
 import com.cannontech.user.YukonUserContext;
@@ -33,7 +33,7 @@ public class MspAccountInformationV5 implements MspAccountInformation {
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private MultispeakCustomerInfoService multispeakCustomerInfoService;
-    @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
 
     public ModelAndView getMspInformation(YukonMeter meter, MultispeakVendor mspVendor, ModelAndView mav,
             YukonUserContext userContext) {
@@ -248,7 +248,7 @@ public class MspAccountInformationV5 implements MspAccountInformation {
 
                         allPhoneNumbers.put(
                             phNo.getPhoneType().getValue(),
-                            multispeakFuncs.formatPhone(phNo.getPhone().getAreaCode(), phNo.getPhone().getLocalNumber()));
+                            phoneNumberFormattingService.formatPhone(phNo.getPhone().getAreaCode(), phNo.getPhone().getLocalNumber()));
                     }
                 }
             });

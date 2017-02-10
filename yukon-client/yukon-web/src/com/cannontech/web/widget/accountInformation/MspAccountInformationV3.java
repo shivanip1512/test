@@ -18,6 +18,7 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.model.Address;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.msp.beans.v3.CoordType;
 import com.cannontech.msp.beans.v3.Customer;
 import com.cannontech.msp.beans.v3.LinkedTransformer;
@@ -29,7 +30,6 @@ import com.cannontech.msp.beans.v3.ObjectRef;
 import com.cannontech.msp.beans.v3.PointType;
 import com.cannontech.msp.beans.v3.ServiceLocation;
 import com.cannontech.msp.beans.v3.UtilityInfo;
-import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
@@ -41,12 +41,12 @@ import com.google.common.collect.Lists;
 public class MspAccountInformationV3 implements MspAccountInformation {
     
     @Autowired private MspObjectDao mspObjectDao;
-    @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MultispeakDao multispeakDao;
     @Autowired private MeterDao meterDao;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private MultispeakCustomerInfoService multispeakCustomerInfoService;
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
 
     public ModelAndView getMspInformation(YukonMeter meter, MultispeakVendor mspVendor, ModelAndView mav, YukonUserContext userContext) {
         
@@ -56,8 +56,8 @@ public class MspAccountInformationV3 implements MspAccountInformation {
         
         mav.addObject("mspCustomer", mspCustomer);
 
-        mav.addObject("homePhone", multispeakFuncs.formatPhone(mspCustomer.getHomeAc(), mspCustomer.getHomePhone()));
-        mav.addObject("dayPhone", multispeakFuncs.formatPhone(mspCustomer.getDayAc(), mspCustomer.getDayPhone()));
+        mav.addObject("homePhone", phoneNumberFormattingService.formatPhone(mspCustomer.getHomeAc(), mspCustomer.getHomePhone()));
+        mav.addObject("dayPhone", phoneNumberFormattingService.formatPhone(mspCustomer.getDayAc(), mspCustomer.getDayPhone()));
 
         mav.addObject("mspServLoc", mspServLoc);
         mav.addObject("mspMeter", mspMeter);
@@ -101,8 +101,8 @@ public class MspAccountInformationV3 implements MspAccountInformation {
         add("First Name", mspCustomer.getFirstName(), false, infoList, userContext);
         add("Middle Name", mspCustomer.getMName(), true, infoList, userContext);
         add("DBA", mspCustomer.getDBAName(), false, infoList, userContext);
-        add("Home Phone", multispeakFuncs.formatPhone(mspCustomer.getHomeAc(), mspCustomer.getHomePhone()), true, infoList, userContext);
-        add("Day Phone", multispeakFuncs.formatPhone(mspCustomer.getDayAc(), mspCustomer.getDayPhone()), true, infoList, userContext);
+        add("Home Phone", phoneNumberFormattingService.formatPhone(mspCustomer.getHomeAc(), mspCustomer.getHomePhone()), true, infoList, userContext);
+        add("Day Phone", phoneNumberFormattingService.formatPhone(mspCustomer.getDayAc(), mspCustomer.getDayPhone()), true, infoList, userContext);
         add("Utility", mspCustomer.getUtility(), true, infoList, userContext);
         add("Comments", mspCustomer.getComments(), true, infoList, userContext);
         add("Error String", mspCustomer.getErrorString(), true, infoList, userContext);

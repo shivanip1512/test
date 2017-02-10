@@ -68,6 +68,22 @@ public class PhoneNumberFormattingServiceImpl implements PhoneNumberFormattingSe
         return result;
     }
     
+
+    /**
+     * Returns a formatted phone number of (111) 234-5678
+     * Where 111 is the areaCode and 234-5678 is phone
+     */
+    public String formatPhone(String areaCode, String phone) {
+        String formattedPhone = "";
+        if (!StringUtils.isBlank(areaCode)) {
+            formattedPhone += "(" + areaCode + ") ";
+        }
+        if (!StringUtils.isBlank(phone)) {
+            formattedPhone += phone;
+        }
+        return formattedPhone;
+    }
+    
     @Autowired
     public void setMessageSourceResolver(
             YukonUserContextMessageSourceResolver messageSourceResolver) {
