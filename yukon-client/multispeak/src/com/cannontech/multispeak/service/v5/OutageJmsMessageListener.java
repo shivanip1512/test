@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
-import javax.jms.Message;
-import javax.jms.MessageListener;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.collections4.CollectionUtils;
@@ -20,7 +18,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfEndDeviceState;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
@@ -37,23 +34,20 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.v5.NOTClient;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.dao.MultispeakDao;
-import com.cannontech.multispeak.dao.v5.MspObjectDao;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.multispeak.service.MspIdentifiablePaoService;
 import com.cannontech.multispeak.service.OutageJmsMessageService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-public class OutageJmsMessageListener extends OutageJmsMessageService implements MessageListener {
+public class OutageJmsMessageListener extends OutageJmsMessageService {
 
     @Autowired private MultispeakDao multispeakDao;
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MspIdentifiablePaoService mspIdentifiablePaoService;
-    @Autowired private MspObjectDao mspObjectDao;
     @Autowired private NOTClient notClient;
     @Autowired private ObjectFactory objectFactory;
     @Autowired private OutageEventLogService outageEventLogService;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
 
     private ImmutableList<MultispeakVendor> vendorsToSendOutageMsg = ImmutableList.of();
     private AtomicLong atomicLong = new AtomicLong();
@@ -108,11 +102,6 @@ public class OutageJmsMessageListener extends OutageJmsMessageService implements
         vendorsToSendOutageMsg = supportsOutage.build();
     }
 
-    @Override
-    public void onMessage(Message message) {
-        super.onMessage(message);
-    }
-    
     @Override
     public void handleMessage(OutageJmsMessage outageJmsMessage) {
 

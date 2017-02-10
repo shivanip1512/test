@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 import javax.annotation.PostConstruct;
-import javax.jms.Message;
-import javax.jms.MessageListener;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
@@ -35,7 +33,6 @@ import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.OAClient;
-import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.multispeak.service.MspIdentifiablePaoService;
@@ -43,12 +40,11 @@ import com.cannontech.multispeak.service.OutageJmsMessageService;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
-public class OutageJmsMessageListener extends OutageJmsMessageService implements MessageListener {
+public class OutageJmsMessageListener extends OutageJmsMessageService {
 
     @Autowired private MultispeakDao multispeakDao;
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MspIdentifiablePaoService mspIdentifiablePaoService;
-    @Autowired private MspObjectDao mspObjectDao;
     @Autowired private OAClient oaClient;
     @Autowired private ObjectFactory objectFactory;
     @Autowired private OutageEventLogService outageEventLogService;
@@ -88,11 +84,6 @@ public class OutageJmsMessageListener extends OutageJmsMessageService implements
         }
         
         vendorsToSendOutageMsg = supportsOutage.build();
-    }
-
-    @Override
-    public void onMessage(Message message) {
-        super.onMessage(message);
     }
 
     @Override

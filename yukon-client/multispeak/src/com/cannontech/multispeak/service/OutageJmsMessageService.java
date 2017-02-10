@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import javax.jms.JMSException;
 import javax.jms.Message;
+import javax.jms.MessageListener;
 import javax.jms.ObjectMessage;
 
 import org.apache.log4j.Logger;
@@ -15,7 +16,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 
-public abstract class OutageJmsMessageService {
+public abstract class OutageJmsMessageService implements MessageListener {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     private static final Logger log = YukonLogManager.getLogger(OutageJmsMessageService.class);
 
@@ -29,6 +30,7 @@ public abstract class OutageJmsMessageService {
         return false;
     }
 
+    @Override
     public void onMessage(Message message) {
         if (message instanceof ObjectMessage) {
             ObjectMessage objMessage = (ObjectMessage) message;
