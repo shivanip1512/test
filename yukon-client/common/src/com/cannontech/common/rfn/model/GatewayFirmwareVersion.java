@@ -44,4 +44,9 @@ public final class GatewayFirmwareVersion implements Comparable<GatewayFirmwareV
             throw new IllegalArgumentException("Invalid firmware version string: " + versionString, e);
         }
     }
+    
+    @Override
+    public String toString() {
+        return Integer.toString(major) + "." + Integer.toString(minor) + "." + Integer.toString(revision);
+    }
 }

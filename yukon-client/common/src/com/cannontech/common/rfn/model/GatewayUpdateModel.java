@@ -1,9 +1,13 @@
 package com.cannontech.common.rfn.model;
 
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 
 public class GatewayUpdateModel {
-
+    private static final Logger log = YukonLogManager.getLogger(GatewayUpdateModel.class);
+    
     private int id;
     private String name;
     private String updateServerUrl;
@@ -93,11 +97,11 @@ public class GatewayUpdateModel {
             GatewayFirmwareVersion currentVersion = GatewayFirmwareVersion.parse(this.currentVersion);
             GatewayFirmwareVersion availableVersion = GatewayFirmwareVersion.parse(this.availableVersion);
             int comparison = currentVersion.compareTo(availableVersion);
-            
-            System.out.println(comparison);
+            log.debug("Comparing gateway firmware versions: " + currentVersion + " <=> " + availableVersion + " = " + comparison);
             return comparison < 0;
         } catch (Exception e) {
             //If there's any reason we can't compare the versions, assume it's an invalid upgrade.
+            log.debug("Comparison failed", e);
             return false;
         }
     }
