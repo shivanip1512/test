@@ -2676,7 +2676,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }).collect(Collectors.toList());
 
         return addToGroup(mspMeters, SystemGroupEnum.USAGE_MONITORING,
-                          "initiateEndDeviceEventMonitoring", mspVendor);
+                          "InitiateEndDeviceEventMonitoring", mspVendor);
     }
     
     @Override
@@ -2686,7 +2686,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         List<String> mspMeters = new ArrayList<String>();
         mspMeters.add(meterID);
         return removeFromGroup(mspMeters, SystemGroupEnum.USAGE_MONITORING,
-                               "cancelEndDeviceEventMonitoring", mspVendor);
+                               "CancelEndDeviceEventMonitoring", mspVendor);
     }
     
     /**
@@ -2747,7 +2747,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }).collect(Collectors.toList());
 
         return addToGroupAndDisable(mspMeters, SystemGroupEnum.DISCONNECTED_STATUS,
-                                    "setDisconnectedStatus", mspVendor, disable);
+                                    "SetDisconnectedStatus", mspVendor, disable);
     }
     
     @Override
@@ -2770,7 +2770,7 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
         }).collect(Collectors.toList());
 
         return removeFromGroupAndEnable(mspMeters, SystemGroupEnum.DISCONNECTED_STATUS,
-                                        "cancelDisconnectedStatus", mspVendor, enable);
+                                        "CancelDisconnectedStatus", mspVendor, enable);
     }
 
     @Override

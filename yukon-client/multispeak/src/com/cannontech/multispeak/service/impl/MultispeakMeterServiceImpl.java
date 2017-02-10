@@ -1259,24 +1259,24 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     @Override
     public List<ErrorObject> initiateDisconnectedStatus(MultispeakVendor mspVendor, List<String> meterNos) {
         boolean disable = globalSettingDao.getBoolean(GlobalSettingType.MSP_DISABLE_DISCONNECT_STATUS);
-        return addToGroupAndDisable(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "initiateDisconnectedStatus", mspVendor, disable);
+        return addToGroupAndDisable(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "InitiateDisconnectedStatus", mspVendor, disable);
     }
 
     @Override
     public List<ErrorObject> initiateUsageMonitoring(MultispeakVendor mspVendor, List<String> meterNos) {
-        return addToGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "initiateUsageMonitoring", mspVendor);
+        return addToGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "InitiateUsageMonitoring", mspVendor);
     }
 
     @Override
     public List<ErrorObject> cancelDisconnectedStatus(MultispeakVendor mspVendor, List<String> meterNos) {
         // For the cancel method, the MSP_DISABLE_DISCONNECT_STATUS setting shall be reversed to "undo" the disable.
         boolean enable = globalSettingDao.getBoolean(GlobalSettingType.MSP_DISABLE_DISCONNECT_STATUS);
-        return removeFromGroupAndEnable(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "cancelDisconnectedStatus", mspVendor, enable);
+        return removeFromGroupAndEnable(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "CancelDisconnectedStatus", mspVendor, enable);
     }
 
     @Override
     public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<String> meterNos) {
-        return removeFromGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "cancelUsageMonitoring", mspVendor);
+        return removeFromGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "CancelUsageMonitoring", mspVendor);
     }
 
     @Override
