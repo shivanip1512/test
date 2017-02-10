@@ -703,7 +703,7 @@
     <entry key="yukon.common.events.multispeak.notificationResponse.5">Url</entry>
     <entry key="yukon.common.events.multispeak.notificationResponse.7">Errors</entry>
     <entry key="yukon.common.events.multispeak.errorObject">Encountered error: {1}. {2} by {3}.</entry>
-    <entry key="yukon.common.events.multispeak.invalidSubstationName">Found invalid substation description : {2} for {1} by Multispeak vendor {3}.</entry>
+    <entry key="yukon.common.events.multispeak.invalidSubstationName">Found invalid substation description : {2} for {1} by {3}.</entry>
     
     <entry key="yukon.common.events.estimatedLoad.applianceCategoryNotFound">No appliance category found for program {1}.</entry>
     <entry key="yukon.common.events.estimatedLoad.applianceCategoryInfoNotFound">Unable to calculate value for program {1}. Appliance Load (kW) not found for appliance category {2}.</entry>
