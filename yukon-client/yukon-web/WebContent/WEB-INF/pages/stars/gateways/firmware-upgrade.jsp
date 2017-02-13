@@ -53,7 +53,7 @@
                     </td>
                     <td class="tar">
                         <tags:setFormEditMode mode="EDIT"/>
-                        <c:if test="${gateway.updateAvailable}">
+                        <c:if test="${gateway.updateAvailable and gateway.upgradeable}">
                             <tags:checkbox path="list[${idx}].sendNow" styleClass="js-send-now js-select-all-item"/>
                         </c:if>
                     </td>
