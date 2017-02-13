@@ -1,6 +1,7 @@
 package com.cannontech.web.rfn.dataStreaming.service.impl;
 
 import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,7 +98,6 @@ import com.cannontech.yukon.conns.ConnPool;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
@@ -396,8 +396,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         
         // Remove devices from the list that don't support data streaming
         List<Integer> unsupportedDevices = removeDataStreamingUnsupportedDevices(devices);
-        List<BuiltInAttribute> allConfigAttributes =
-            config.getAttributes().stream().map(DataStreamingAttribute::getAttribute).collect(toList());
+        Set<BuiltInAttribute> allConfigAttributes =
+            config.getAttributes().stream().map(DataStreamingAttribute::getAttribute).collect(toSet());
         configInfo.addDeviceUnsupported(allConfigAttributes, unsupportedDevices, true);
         if (devices.isEmpty()) {
             // None of the selected devices support data streaming
@@ -417,7 +417,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
         unsupportedAttributesPerType.asMap().forEach((unsupportedAttributes, unsupportedTypes) -> {
             configInfo.addDeviceUnsupported(
-                Lists.newArrayList(unsupportedAttributes),  //  Ideally, this would be a set.
+                unsupportedAttributes,
                 unsupportedTypes.stream()
                     .flatMap(type -> devicesByType.get(type).stream())
                     .collect(toList()),
@@ -610,8 +610,11 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     private Set<BuiltInAttribute> getUnsupportedAttributes(DataStreamingConfig config,
             Collection<BuiltInAttribute> attributes) {
         Set<BuiltInAttribute> unsupportedAttributes =
-            config.getAttributes().stream().map(dsAttribute -> dsAttribute.getAttribute()).filter(
-                attribute -> !attributes.contains(attribute)).collect(Collectors.toSet());
+            config.getAttributes().stream()
+                .filter(DataStreamingAttribute::getAttributeOn)
+                .map(DataStreamingAttribute::getAttribute)
+                .filter(attribute -> !attributes.contains(attribute))
+                .collect(Collectors.toSet());
 
         return unsupportedAttributes;
     }
@@ -699,8 +702,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     private Map<Integer, BehaviorReport> initPendingReports(List<Integer> deviceIds) {
-        Map<Integer, BehaviorReport> deviceIdToBehaviorReport =
-            deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, deviceIds);
+        Map<Integer, BehaviorReport> deviceIdToBehaviorReport = Maps.newHashMap(  //  Make a mutable copy
+            deviceBehaviorDao.getBehaviorReportsByTypeAndDeviceIds(TYPE, deviceIds));
 
         deviceIds.stream()
             .map(id -> deviceIdToBehaviorReport.computeIfAbsent(id, this::buildEmptyBehaviorReport))
@@ -1244,7 +1247,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         public List<GatewayLoading> gatewayLoading = new ArrayList<>();
         public boolean success = true;
 
-        public void addDeviceUnsupported(List<BuiltInAttribute> attributes, List<Integer> deviceIds, boolean allAttributes) {
+        public void addDeviceUnsupported(Set<BuiltInAttribute> attributes, List<Integer> deviceIds, boolean allAttributes) {
             DeviceUnsupported unsupported = new DeviceUnsupported();
             unsupported.setAttributes(attributes);
             unsupported.setDeviceIds(deviceIds);

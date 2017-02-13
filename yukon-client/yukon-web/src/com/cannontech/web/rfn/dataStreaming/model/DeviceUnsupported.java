@@ -1,7 +1,9 @@
 package com.cannontech.web.rfn.dataStreaming.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -12,7 +14,7 @@ public class DeviceUnsupported {
     private static final String nameKey= "yukon.web.modules.tools.bulk.dataStreaming.verification.devicesUnsupported";
 
     private List<Integer> deviceIds = new ArrayList<Integer>();
-    private List<BuiltInAttribute> attributes = new ArrayList<BuiltInAttribute>();
+    private Set<BuiltInAttribute> attributes = Collections.emptySet();
     private String detail;
     private DeviceCollection deviceCollection;
     private MessageSourceAccessor accessor;
@@ -24,10 +26,10 @@ public class DeviceUnsupported {
     public void setDeviceIds(List<Integer> deviceIds) {
         this.deviceIds = deviceIds;
     }
-    public List<BuiltInAttribute> getAttributes() {
+    public Set<BuiltInAttribute> getAttributes() {
         return attributes;
     }
-    public void setAttributes(List<BuiltInAttribute> attributes) {
+    public void setAttributes(Set<BuiltInAttribute> attributes) {
         this.attributes = attributes;
     }
     public void setAccessor(MessageSourceAccessor accessor) {
