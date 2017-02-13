@@ -22,6 +22,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.hardware.exception.DeviceMacAddressAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.service.HardwareUiService;
@@ -99,6 +100,9 @@ public class HardwareModelHelper {
                 result.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
                 break;
             }
+        } catch (DeviceMacAddressAlreadyExistsException e) {
+            result.rejectValue("macAddress",
+                "yukon.web.modules.operator.hardware.error.unavailable.macAddress");
         }
         return inventoryId;
     }

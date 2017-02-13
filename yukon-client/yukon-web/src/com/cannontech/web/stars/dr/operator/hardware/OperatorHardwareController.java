@@ -78,6 +78,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.digi.model.ZigbeeDeviceDto;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.dao.LmHardwareBaseDao;
+import com.cannontech.stars.dr.hardware.exception.DeviceMacAddressAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
@@ -430,6 +431,10 @@ public class OperatorHardwareController {
                 bindingResult.rejectValue("serialNumber", "yukon.web.modules.operator.hardware.error.nonNumericSerialNumber");
                 break;
             }
+            log.error("Unable to update hardware. ", e);
+        } catch (DeviceMacAddressAlreadyExistsException e) {
+            bindingResult.rejectValue("macAddress",
+                "yukon.web.modules.operator.hardware.error.unavailable.macAddress");
             log.error("Unable to update hardware. ", e);
         }
         if (bindingResult.hasErrors()) {

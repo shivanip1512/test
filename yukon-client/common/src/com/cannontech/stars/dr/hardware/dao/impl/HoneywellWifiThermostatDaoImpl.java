@@ -88,4 +88,15 @@ public class HoneywellWifiThermostatDaoImpl implements HoneywellWifiThermostatDa
        
         return jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
     }
+    
+    @Override
+    public boolean isHoneywellMacAddressUnique(String macAddress) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(MacAddress)");
+        sql.append("FROM HoneywellWifiThermostat ");
+        sql.append("WHERE UPPER(MacAddress)").eq(macAddress.toUpperCase());
+        return jdbcTemplate.queryForInt(sql) == 0;
+
+    }
 }

@@ -21,6 +21,8 @@ import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
 import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
+import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
+import com.cannontech.stars.dr.hardware.exception.DeviceMacAddressAlreadyExistsException;
 import com.cannontech.util.Validator;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -38,6 +40,8 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
     @Autowired private HoneywellCommunicationService honeywellCommunicationService;
     @Autowired private PaoPersistenceService paoPersistenceService;
     @Autowired private InventoryBaseDao inventoryBaseDao;
+    @Autowired private HoneywellWifiThermostatDao honeywellWifiThermostatDao;
+
     private final Map<Integer, String> inventoryIdToSerialNumber = new HashMap<>();
     
     @Override
@@ -48,6 +52,12 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
     
     public void createDevice(int inventoryId, String serialNumber, HardwareType hardwareType, String macAddress,
             Integer deviceVendorUserId) {
+
+        boolean isMacAddressUnique = honeywellWifiThermostatDao.isHoneywellMacAddressUnique(macAddress);
+        if (!isMacAddressUnique) {
+            throw new DeviceMacAddressAlreadyExistsException();
+        }
+
         try {
             honeywellCommunicationService.registerDevice(macAddress, deviceVendorUserId);
 
@@ -95,6 +105,16 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
     }
 
     public void updateDevice(int inventoryId, String macAddress, int deviceId, Integer deviceVendorUserId, YukonPao pao) {
+
+        String existingMacAddress = honeywellWifiThermostatDao.getHoneywellWifiThermostat(deviceId).getMacAddress();
+
+        if (!existingMacAddress.equalsIgnoreCase(macAddress)) {
+            boolean isMacAddressUnique = honeywellWifiThermostatDao.isHoneywellMacAddressUnique(macAddress);
+            if (!isMacAddressUnique) {
+                throw new DeviceMacAddressAlreadyExistsException();
+            }
+            honeywellCommunicationService.registerDevice(macAddress, deviceVendorUserId);
+        }
         CompleteHoneywellWifiThermostat honeywellThermostat =
             paoPersistenceService.retreivePao(pao, CompleteHoneywellWifiThermostat.class);
         honeywellThermostat.setMacAddress(macAddress);

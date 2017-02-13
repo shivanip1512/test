@@ -139,6 +139,11 @@ public class LmDeviceDtoConverterImpl implements LmDeviceDtoConverter {
         if (!StringUtils.isEmpty(hwFields[ImportFields.IDX_MAC_ADDRESS])) {
             dto.setMacAddress(hwFields[ImportFields.IDX_MAC_ADDRESS]);
         }
+        
+        if (!StringUtils.isBlank(hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])
+            && StringUtils.isNumeric(hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])) {
+            dto.setDeviceVendorUserId(Integer.valueOf((hwFields[ImportFields.IDX_DEVICE_VENDOR_USER_ID])));
+        }
     }
     
 }

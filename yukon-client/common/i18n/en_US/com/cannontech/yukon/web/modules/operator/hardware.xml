@@ -207,6 +207,7 @@
     <entry key="yukon.web.modules.operator.hardware.error.required.firmwareVersion">A Firmware Version is required.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.required.macAddress">A MAC Address is required.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.required.deviceVendorUserId">A Device Vendor User ID is required.</entry>
+    <entry key="yukon.web.modules.operator.hardware.error.unavailable.macAddress">A MAC Address is already in use.</entry>
     <entry key="yukon.web.modules.operator.hardware.error.format.installCode">Invalid Install Code format. Expected XX:XX:XX:XX:XX:XX:XX:XX</entry>
     <entry key="yukon.web.modules.operator.hardware.error.format.eui48.macAddress">Invalid MAC Address format. Expected XX:XX:XX:XX:XX:XX</entry>
     <entry key="yukon.web.modules.operator.hardware.error.format.eui64.macAddress">Invalid MAC Address format. Expected XX:XX:XX:XX:XX:XX:XX:XX</entry>

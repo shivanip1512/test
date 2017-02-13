@@ -37,4 +37,9 @@ public interface HoneywellWifiThermostatDao {
      * @return List of past enrolled honeywell group ids list
      */
     List<Integer> getPastEnrolledHoneywellGroupsByInventoryId(Integer inventoryId);
+
+    /**
+     * Check to see if the MAC Address provided is unique.
+     */
+    boolean isHoneywellMacAddressUnique(String macAddress);
 }
