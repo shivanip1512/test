@@ -1,11 +1,13 @@
 package com.cannontech.web.user.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
 import com.cannontech.core.users.model.PreferenceTrendZoomOption;
+import com.cannontech.core.users.model.PreferenceType;
 import com.cannontech.core.users.model.UserPreference;
 import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -65,4 +67,40 @@ public interface UserPreferenceService {
      */   
     public PreferenceTrendZoomOption updatePreferenceZoomType(PreferenceTrendZoomOption prefType, LiteYukonUser user)
             throws IllegalArgumentException;
+    
+    /**
+     * Returns the User preference values for a user by Preference type
+     * 
+     * @param user , user details
+     * @param preferenceType, contains the preference type
+     * @returns the List of preferences for the selected user
+     */
+    public Map<String, UserPreference> findUserPreferencesByPreferenceType(LiteYukonUser user,
+            PreferenceType preferenceType);
+
+    /**
+     * Deletes User Preferences for a selected user By PreferenceType
+     * 
+     * @param user , user details
+     * @param preferenceType, contains the preference type
+     * @returns count of rows deleted
+     */
+    int deleteUserPreferencesByPreferenceType(LiteYukonUser user, PreferenceType preferenceType);
+
+    /**
+     * Returns the user preferences for the commander functionality for selected user
+     * 
+     * @param user, User details
+     * @returns Map of User preferences, only for Commander context
+     */
+    public Map<UserPreferenceName, UserPreference> findCommanderUserPreferences(LiteYukonUser user);
+
+    /**
+     * Updates new preferences for a user in cache / DB
+     * 
+     * @param userId, user details
+     * @param preferences, List of user preferences to be set for a user
+     */
+    void updateUserPreferences(Integer userId, List<UserPreference> preferences);
+
 }

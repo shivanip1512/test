@@ -2,6 +2,7 @@ package com.cannontech.core.users.dao;
 
 import java.util.List;
 
+import com.cannontech.core.users.model.PreferenceType;
 import com.cannontech.core.users.model.UserPreference;
 import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -35,4 +36,23 @@ public interface UserPreferenceDao {
      * @return Number of preferences deleted (NOT necessarily the same as the # changed!)
      */
     public int deleteAllSavedPreferencesForUser(LiteYukonUser user);
+
+    /**
+     * Used to find User Preferences By Preference Type for a selected user
+     * 
+     * @param user contains selected user Id
+     * @param preferenceType contains type of preferences you would like to find
+     * @returns preferences list for a type if it exists, else null.
+     */
+    public List<UserPreference> findUserPreferencesByPreferenceType(LiteYukonUser user, PreferenceType preferenceType);
+
+    /**
+     * Used to delete User Preferences By Preference Type for a selected user
+     * 
+     * @param user contains selected user Id
+     * @param preferenceType contains type of preference
+     * @returns number of preference rows deleted, optional for use
+     */
+    int deleteUserPreferencesByPreferenceType(LiteYukonUser user, PreferenceType preferenceType);
+
 }

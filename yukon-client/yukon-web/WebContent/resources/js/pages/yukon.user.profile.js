@@ -16,7 +16,6 @@ yukon.userProfile = (function () {
     _phone_types = ['CALL_BACK_PHONE', 'CELL_PHONE', 'FAX', 'HOME_PHONE', 'PHONE', 'WORK_PHONE'],
     
     _setEnumPreference = function (ev) {
-        
         var btn = $(this),
             row = btn.closest('tr'),
             url = yukon.url('/user/updatePreference.json'),
@@ -51,12 +50,14 @@ yukon.userProfile = (function () {
         
         $.ajax({ type: 'post', url: url, data: params })
         .done(function (json) {
+            var defaultPriority = $('#resetCommandPriorityBtn').attr('data-value');
             // Go through the data and turn on enums
             json.preferences.forEach(function (preference, index, fullarray) {
                 var row = table.find('tr[data-type=' + preference.name + ']');
                 row.find('.button').removeClass('on');
                 row.find('.button-group [data-value='+ preference.defaultVal +']').addClass('on');
             });
+            $('#commandPriority').val(defaultPriority);
         });
     },
     
@@ -108,6 +109,63 @@ yukon.userProfile = (function () {
         yukon.ui.reindexInputs('#contact-notif-table');
     },
     
+    _validateAndSetCommanderPriority = function (ev) {
+        var value = $('#commandPriority').val(),
+            url = yukon.url('/user/updatePreference.json'),
+            btn = $(this),
+            row = btn.closest('tr'),
+            minPriority = 1, // $('#commandPriority').attr('min'),
+            maxPriority = 14, //$('#commandPriority').attr('max'),
+            params = {
+                userId: $('#user-id').val(),
+                prefName: row.data('type'),
+                prefValue: $('#commandPriority').val()
+            };
+        $('.warning').addClass('dn');
+        if (value < minPriority){
+            $('.warning').removeClass('dn');
+            $('#commandPriority').val(minPriority);
+        }
+        if (value > maxPriority) {
+            $('.warning').removeClass('dn');
+            $('#commandPriority').val(maxPriority);
+        }
+        
+        $.ajax({ type: 'post', url: url, data: params });
+    },
+    
+    _setQueueCommand = function (ev) {
+        var enabled = $('#queueCommand .yes').is('.on'),
+        url = yukon.url('/user/updatePreference.json'),
+        btn = $(this),
+        row = btn.closest('tr'),
+        params = {
+            userId: $('#user-id').val(),
+            prefName: row.data('type'),
+            prefValue: enabled
+        };
+        $.ajax({ type: 'post', url: url, data: params })
+         .done(function (json) {
+             $('#queueCommand').val(enabled);
+        });;
+    },
+    
+    _resetCommandPriority = function (ev) {
+        var url = yukon.url('/user/updatePreference.json'),
+        btn = $(this),
+        row = btn.closest('tr'),
+        defaultPriority = btn.attr('data-value'),
+        params = {
+            userId: $('#user-id').val(),
+            prefName: row.data('type'),
+            prefValue: defaultPriority
+        };
+        $.ajax({ type: 'post', url: url, data: params })
+        .done(function (json) {
+            $('#commandPriority').val(defaultPriority);
+        });
+    },
+    
     mod = {
             
         init: function () {
@@ -115,13 +173,17 @@ yukon.userProfile = (function () {
             if (_initialized) return;
             
             $(document).on('click', '#preferences-table .js-pref-options .button-group .button', _setEnumPreference);
-            $(document).on('click', '#preferences-table .js-pref-options .js-pref-default', _restoreDefault);
+            $(document).on('click', '#preferences-table .js-pref-default', _restoreDefault);
             $(document).on('click', '#add-notif-btn', _addNotification);
             $(document).on('click', '#contact-notif-table td .js-remove', _removeNotification);
             $(document).on('change', '.js-has-select-one', _removePlaceholder);
             $(document).on('change', 'select.js-notif-type', _adjustFormatting);
             $(document).on('yukon:user:profile:pref:defaults', _resetAllPreferences);
             $(document).on('yukon:user:profile:password:save', _submitChangePassword);
+            $(document).on('change', '#commandPriority', _validateAndSetCommanderPriority);
+            $(document).on('click', '#queueCommand', _setQueueCommand);
+            $(document).on('click', '#resetCommandPriorityBtn', _resetCommandPriority);
+            
             
             _initialized = true;
         }

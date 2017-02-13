@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -49,6 +50,8 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.roleproperties.HierarchyPermissionLevel;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.users.model.UserPreference;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -67,6 +70,7 @@ import com.cannontech.web.tools.commander.model.CommandTarget;
 import com.cannontech.web.tools.commander.model.RecentTarget;
 import com.cannontech.web.tools.commander.model.ViewableTarget;
 import com.cannontech.web.tools.commander.service.CommanderService;
+import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.util.WebUtilityService;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -91,6 +95,7 @@ public class CommanderController {
     @Autowired private WebUtilityService webUtil;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private RolePropertyDao rolePropertyDao;
+    @Autowired private UserPreferenceService userPreferenceService;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     
     private static final Logger log = YukonLogManager.getLogger(CommanderController.class);
@@ -106,10 +111,11 @@ public class CommanderController {
             return Long.compare(o1.getTimestamp(), o2.getTimestamp());
         }
     };
+    private static final int RECENT_TARGET_MAXIMUM_SIZE_LIMIT = 10;
     
     /** The commander page. */
     @RequestMapping({"/commander", "/commander/"})
-    public String commander(HttpServletRequest req, ModelMap model, LiteYukonUser user) throws IOException {
+    public String commander(HttpServletRequest req, ModelMap model, LiteYukonUser user) {
         
         LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
         model.addAttribute("routes", routes);
@@ -117,16 +123,21 @@ public class CommanderController {
         Collections.sort(requests, onTimestamp);
         model.addAttribute("requests", requests);
         
-        // Check cookie for last target of command execution
-        String lastTarget = webUtil.getYukonCookieValue(req, "commander", "lastTarget", null, JsonUtils.STRING_TYPE);
+        // Check preferences for last target of command execution
+        Map<UserPreferenceName, UserPreference> userPreferences =
+                                                        userPreferenceService.findCommanderUserPreferences(user);
+
+        UserPreference lastTargetPref = userPreferences.get(UserPreferenceName.COMMANDER_LAST_TARGET);
+        String lastTarget =
+            lastTargetPref != null ? userPreferences.get(UserPreferenceName.COMMANDER_LAST_TARGET).getValue() : null;
+
         if (lastTarget != null) {
-            
             CommandTarget target = CommandTarget.valueOf(lastTarget);
             model.addAttribute("target", target);
-            
             if (target.isPao()) {
                 // Device or load group
-                Integer paoId = webUtil.getYukonCookieValue(req, "commander", "lastPaoId", null, JsonUtils.INT_TYPE);
+                Integer paoId =
+                    Integer.valueOf(userPreferences.get(UserPreferenceName.COMMANDER_LAST_PAO_ID).getValue());
                 if (paoId != null) {
                     try {
                         LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
@@ -139,7 +150,8 @@ public class CommanderController {
                             LiteYukonPAObject route = cache.getAllRoutesMap().get(pao.getRouteID());
                             model.addAttribute("route", route);
                         }
-                        if(rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION, HierarchyPermissionLevel.LIMITED, user)){
+                        if (rolePropertyDao.checkLevel(YukonRoleProperty.ENDPOINT_PERMISSION,
+                            HierarchyPermissionLevel.LIMITED, user)) {
                             model.addAttribute("changeRoute", true);
                         }
                     } catch (NotFoundException nfe) {
@@ -148,23 +160,33 @@ public class CommanderController {
                     }
                 }
             } else {
-                model.addAttribute("serialNumber", webUtil.getYukonCookieValue(req, "commander", "lastSerialNumber", null, 
-                        JsonUtils.STRING_TYPE));
-                model.addAttribute("routeId", webUtil.getYukonCookieValue(req, "commander", "lastRouteId", null, 
-                        JsonUtils.INT_TYPE));
+                model.addAttribute("serialNumber",
+                    Integer.valueOf(userPreferences.get(UserPreferenceName.COMMANDER_LAST_SERIAL_NUMBER).getValue()));
+                model.addAttribute("routeId",
+                    Integer.valueOf(userPreferences.get(UserPreferenceName.COMMANDER_LAST_ROUTE_ID).getValue()));
             }
         } else {
             // Default to device target
             model.addAttribute("target", CommandTarget.DEVICE);
         }
-        
-        List<RecentTarget> recentTargets = webUtil.getYukonCookieValue(req, "commander", "recentTargets", null, 
-                recentTargetsType);
-        if (recentTargets != null) {
-            model.addAttribute("recentTargets", buildViewableTargets(recentTargets));
+        if (userPreferences.containsKey(UserPreferenceName.COMMANDER_RECENT_TARGETS)) {
+            String recentPrefStringValue = userPreferences.get(UserPreferenceName.COMMANDER_RECENT_TARGETS).getValue();
+            List<RecentTarget> recentTargets;
+            try {
+                recentTargets =
+                    recentPrefStringValue == null ? new ArrayList<>() : JsonUtils.fromJson(recentPrefStringValue,
+                        recentTargetsType);
+
+                if (recentTargets != null) {
+                    model.addAttribute("recentTargets", buildViewableTargets(recentTargets));
+                }
+            } catch (IOException e) {
+                log.error("Commander failed to load the recent target, because recent Target JSON format is incorrect."
+                    + " To see the correct recent targets, please make correction in user preference for recent targets");
+            }
         }
-        model.addAttribute("executeManualCommand", rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, user));
-        
+        model.addAttribute("executeManualCommand",
+            rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, user));
         return "commander/commander.jsp";
     }
     
@@ -278,13 +300,15 @@ public class CommanderController {
     }
 
     @RequestMapping("editSettingsPopup")
-    public String editSettingsPopup(ModelMap model, HttpServletRequest req) throws IOException {
-        Integer priority = webUtil.getYukonCookieValue(req, "commander", "priority", null, JsonUtils.INT_TYPE);
-        if (priority == null || !CommandPriority.isCommandPriorityValid(priority)) {
-            priority = CommandPriority.maxPriority;
+    public String editSettingsPopup(ModelMap model, HttpServletRequest req, LiteYukonUser user) {
+        Integer priority =
+            Integer.valueOf(userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_PRIORITY));
+        if (!CommandPriority.isCommandPriorityValid(priority)) {
+            priority = CommandPriority.minPriority;
         }
         model.addAttribute("priority", priority);
-        Boolean queueCmd = webUtil.getYukonCookieValue(req, "commander", "queueCommand", null, JsonUtils.BOOLEAN_TYPE);
+        Boolean queueCmd =
+            Boolean.valueOf(userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_QUEUE_COMMAND));
         if (queueCmd == null) {
             queueCmd = queueCommand;
         }
@@ -305,12 +329,11 @@ public class CommanderController {
         Collections.sort(requests, onTimestamp);
         return requests;
     }
-    
-    /** Execute a command */
+
     @RequestMapping("/commander/execute")
-    public @ResponseBody Map<String, Object> execute(HttpServletResponse resp,
-            YukonUserContext userContext, @ModelAttribute CommandParams params) {
-     
+    public @ResponseBody Map<String, Object> execute(HttpServletResponse resp, YukonUserContext userContext,
+            @ModelAttribute CommandParams params, LiteYukonUser user) {
+
         Map<String, Object> result = new HashMap<>();
 
         List<CommandRequest> commands = null;
@@ -380,6 +403,27 @@ public class CommanderController {
                                                              commanderService.getPorterHost());
             result.put("unAuthorizedCommand", unAuthorizedCommand);
             result.put("unAuthorizedErrorMsg", unAuthorizedMessage);
+        }
+
+        // Save user preferences for commander
+        try {
+            List<UserPreference> userPreferences = updateCommanderUserPreferences(user, params);
+            List<UserPreference> results = userPreferences
+                    .stream()
+                    .filter(p -> p.getName() == UserPreferenceName.COMMANDER_RECENT_TARGETS)
+                    .collect(Collectors.toList());
+
+            if (!results.isEmpty()) {
+                String recentPrefStringValue = results.get(0).getValue();
+                List<RecentTarget> recentTargets = JsonUtils.fromJson(recentPrefStringValue, recentTargetsType);
+
+                if (!recentTargets.isEmpty()) {
+                    result.put("recentTargets", buildViewableTargets(recentTargets));
+                }
+            }
+        } catch (IOException e) {
+            log.error("Commander failed to set the recent target, because recent Target JSON format is incorrect."
+                + " To see the correct recent targets, please make correction in user preference for recent targets");
         }
         return result;
     }
@@ -464,7 +508,7 @@ public class CommanderController {
                 
                 LiteYukonPAObject pao = cache.getAllPaosMap().get(recent.getPaoId());
                 if (pao == null){
-                    continue; // May have had an old id in the cookie
+                    continue; // May have had an old id in the preference
                 }
                 
                 viewable.setLabel(pao.getPaoName());
@@ -472,7 +516,7 @@ public class CommanderController {
                 
                 LiteYukonPAObject route = cache.getAllPaosMap().get(recent.getRouteId());
                 if (route == null){
-                    continue; // May have had an old id in the cookie
+                    continue; // May have had an old id in the preference
                 }
                 
                 viewable.setLabel(recent.getSerialNumber() + " - " + route.getPaoName());
@@ -486,5 +530,77 @@ public class CommanderController {
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class RequestIdsContainer {
         public List<String> requestIds;
+    }
+
+    /**
+     * Updates all the Commander page related User Preferences to cache, if found in the params
+     * 
+     * @param user, selected user details
+     * @param params, command parameters for retrieving the target information
+     * @throws IOException, throws exception if JSON parsing fails for recent targets
+     */
+    private List<UserPreference> updateCommanderUserPreferences(LiteYukonUser user, CommandParams params) throws IOException {
+
+        List<UserPreference> preferences = new ArrayList<>();
+
+        // Get recent targets set in the preferences, parse the JSON string to a list of RecentTarget objects
+        String recentPrefStringValue =
+            userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_RECENT_TARGETS);
+        
+        List<RecentTarget> recentTargets =
+            recentPrefStringValue == null ? new ArrayList<>() : JsonUtils.fromJson(recentPrefStringValue,
+                recentTargetsType);
+
+        // Initialize the current target from the params    
+        if (params.getTarget() != null) {
+            RecentTarget currentTarget =
+                new RecentTarget(params.getTarget().name(), params.getPaoId(), params.getRouteId(),
+                    params.getSerialNumber());
+
+            // Find if the current target already exists in the recent targets preferences
+            List<RecentTarget> existingTargets =
+                recentTargets.stream().filter(p -> p.equals(currentTarget)).collect(Collectors.toList());
+
+            if (existingTargets == null || existingTargets.size() == 0) {
+                // Target selected is a new target, add target to the recent targets preferences
+                if (recentTargets.size() == RECENT_TARGET_MAXIMUM_SIZE_LIMIT) {
+                    // Maintain the recent targets list size count, remove the oldest element - LRU
+                    recentTargets.remove(0);
+                }
+                recentTargets.add(currentTarget);
+                preferences.add(new UserPreference(null, user.getUserID(), UserPreferenceName.COMMANDER_RECENT_TARGETS,
+                    JsonUtils.toJson(recentTargets), true));
+                preferences.add(new UserPreference(null, user.getUserID(), UserPreferenceName.COMMANDER_LAST_TARGET,
+                    params.getTarget().name(), true));
+            }
+            if (params.getTarget() == (CommandTarget.DEVICE) || params.getTarget() == (CommandTarget.LOAD_GROUP)) {
+                preferences.add(new UserPreference(null, user.getUserID(), UserPreferenceName.COMMANDER_LAST_PAO_ID,
+                    Integer.toString(params.getPaoId()), true));
+            } else {
+                preferences.add(new UserPreference(null, user.getUserID(), 
+                    UserPreferenceName.COMMANDER_LAST_SERIAL_NUMBER, params.getSerialNumber(), true));
+                preferences.add(new UserPreference(null, user.getUserID(), UserPreferenceName.COMMANDER_LAST_ROUTE_ID,
+                    Integer.toString(params.getRouteId()), true));
+            }
+        }
+        
+        if (params.getPriority() > 0) {
+            preferences.add(new UserPreference(null, user.getUserID(), UserPreferenceName.COMMANDER_PRIORITY,
+                Integer.toString(params.getPriority()), true));
+        }
+
+        preferences.add(new UserPreference(null, user.getUserID(), UserPreferenceName.COMMANDER_QUEUE_COMMAND,
+                Boolean.toString(params.isQueueCommand()), true));
+        
+        // Update preferences all at once
+        userPreferenceService.updateUserPreferences(user.getUserID(), preferences);
+        return preferences;
+    }
+
+    /** This method is exposed for UI operations, which selectively want to update the commander preferences */
+    @RequestMapping(value = "/commander/updateCommanderPreferences", method = RequestMethod.POST)
+    public void updateDeviceTargetPreferences(HttpServletResponse resp, YukonUserContext userContext,
+            @ModelAttribute CommandParams params, LiteYukonUser user) throws IOException {
+        updateCommanderUserPreferences(user, params);
     }
 }

@@ -14,7 +14,6 @@ $(document).ready(function(){
     });
     
     function expirePassword(){
-    	debugger;
         var passwordExpired = <%=session.getAttribute("passwordExpired")%>;
         var url = "../login/expirePassword";
         if(passwordExpired){
@@ -136,11 +135,14 @@ $(document).ready(function(){
                         
                         <c:forEach var="preference" items="${allPreferenceNames}" >
                             <tr data-type="${preference}">
-                                <td class="name"><i:inline key="${preference}"/></td>
-                                
+                            <c:set var="prefName" value="${preference.toString()}"/>
+                            <c:set var="prefInputType" value="${preference.valueType}"/>
+                            <td class="name"> 
+                                <div class="wsnw oh"><i:inline key="${preference}"/></div>
+                            </td>
+                            <c:choose>
+                            <c:when test="${fn:contains(prefInputType, 'Enum')}">
                                 <td class="value js-pref-options">
-                                    
-                                    <c:set var="prefName" value="${preference.toString()}"/>
                                     <c:set var="defaultVal" value="${preference.defaultValue}"/>
                                     <c:set var="prefValue" value="${userPreferenceMap.get(prefName) != null ? userPreferenceMap.get(prefName).value : preference.defaultValue}"/>                                   
                                     <c:set var="prefOptions" value="${preference.valueType.optionList}"/>
@@ -179,6 +181,43 @@ $(document).ready(function(){
                                         </c:forEach>
                                     </div>
                                 </td>
+                            </c:when>
+                            <c:when test="${prefName == 'COMMANDER_PRIORITY'}">
+                                <td>
+                                    <c:set var="defaultVal" value="${preference.defaultValue}"/>
+                                    <cti:button id="resetCommandPriorityBtn" data-value="${defaultVal}" icon="icon-arrow-swap" 
+                                        renderMode="buttonImage"/>
+                                        
+                                    <!--<input type="number" id="commandPriority" name="commandPriority" 
+                                        min="${minCmdPriority}" max="${maxCmdPriority}" value="${priority}" />-->
+                                        
+                                    <input type="number" id="commandPriority" name="commandPriority"
+                                            value="${priority}" />
+                                    <cti:list var="arguments">
+                                            <cti:item value="${cmdPriority}" />
+                                            <cti:item value="${minCmdPriority}"/>
+                                            <cti:item value="${maxCmdPriority}"/>
+                                    </cti:list>
+                                    <div class="warning dn wsnw">
+                                           <i:inline key="yukon.web.input.error.outOfRangeInt" arguments="${arguments}"/>
+                                    </div>
+                                </td>
+                            </c:when>
+                            <c:when test="${prefName == 'COMMANDER_QUEUE_COMMAND'}">
+                                <td>
+                                    <c:set var="defaultVal" value="${preference.defaultValue}"/>
+                                    <cti:button classes="js-pref-default" data-value="${defaultVal}" icon="icon-arrow-swap" 
+                                        renderMode="buttonImage"/> 
+                                    <c:set var="trueClass" value="${queueCommand ? 'on' : ''}"/>
+                                    <c:set var="falseClass" value="${queueCommand ? '' : 'on'}"/>
+                                    <div id="queueCommand" class="button-group button-group-toggle">
+                                        <cti:button nameKey="yes" classes="yes ${trueClass}" data-value="true"/>
+                                        <cti:button nameKey="no"  classes="no ${falseClass}" data-value="false"/>
+                                    </div>
+                                </td>
+                            </c:when>
+                            <c:otherwise></c:otherwise>
+                            </c:choose>
                             </tr>
                         </c:forEach>
                     </tbody>

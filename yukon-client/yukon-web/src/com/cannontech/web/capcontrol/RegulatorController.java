@@ -36,6 +36,7 @@ import com.cannontech.common.device.config.model.LightDeviceConfiguration;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.TimeRange;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -44,9 +45,8 @@ import com.cannontech.web.capcontrol.regulator.setup.model.RegulatorMappingResul
 import com.cannontech.web.capcontrol.regulator.setup.service.RegulatorMappingService;
 import com.cannontech.web.capcontrol.validators.RegulatorValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.WebUtilityService;
+import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.yukon.IDatabaseCache;
-import com.fasterxml.jackson.core.type.TypeReference;
 
 @RequestMapping("regulators")
 @Controller
@@ -62,10 +62,7 @@ public class RegulatorController {
     @Autowired private RegulatorMappingService mappingService;
     @Autowired private ZoneDao zoneDao;
     @Autowired private FileExporter fileExporter;
-    @Autowired private WebUtilityService webUtil;
-    
-    private static final TypeReference<TimeRange> rangeRef = new TypeReference<TimeRange>() {};
-    
+    @Autowired private UserPreferenceService userPreferenceService;
     
     @RequestMapping(value="{id}", method=RequestMethod.GET)
     public String view(HttpServletRequest req, ModelMap model, @PathVariable int id, YukonUserContext userContext) 
@@ -82,10 +79,12 @@ public class RegulatorController {
         }
         model.put("hours", hours);
         
-        // Check cookie for last event range
-        TimeRange range = webUtil.getYukonCookieValue(req, "ivvc-regualtor", "last-event-range", TimeRange.DAY_1, rangeRef);
+        // Check user preference for last event range
+        TimeRange range =
+            TimeRange.valueOf(userPreferenceService.getPreference(userContext.getYukonUser(),
+                UserPreferenceName.DISPLAY_EVENT_RANGE));
         model.addAttribute("lastRange", range);
-        
+
         return setUpModel(model, regulator, userContext);
     }
     

@@ -295,58 +295,39 @@ yukon.tools.commander = (function () {
      * User is attempting a command to a target, store that target as the last target
      * and add it to the most recent 10 targets if it's a new target.
      */
-    _storeTarget = function (target, params) {
+    _updateTarget = function (target, recent, params) {
+
+        var option, targetStore;
         
-        var option, recent, targetStore, newTarget = true;
-        
-        yukon.cookie.set('commander', 'lastTarget', target);
-        recent = yukon.cookie.get('commander', 'recentTargets', []);
         targetStore = { target: target };
-        
         if (params.paoId) {
-            yukon.cookie.set('commander', 'lastPaoId', params.paoId);
             targetStore.paoId = params.paoId;
         } else {
-            yukon.cookie.set('commander', 'lastSerialNumber', params.serialNumber);
-            yukon.cookie.set('commander', 'lastRouteId', params.routeId);
             targetStore.serialNumber = params.serialNumber;
             targetStore.routeId = params.routeId;
         }
         
-        recent.forEach(function (item, index, arr) {
-            if (JSON.stringify(targetStore) === JSON.stringify(item)) {
-                newTarget = false; // This is not a new target
-            }
-        });
+        option = $('#cmdr-templates .dropdown-option').clone()
+            .removeClass('js-template-menu-option')
+            .data('type', targetStore.target);
         
-        if (newTarget) {
-            
-            recent.unshift(targetStore);
-            recent.slice(0, 10);
-            yukon.cookie.set('commander', 'recentTargets', recent);
-            
-            option = $('#cmdr-templates .dropdown-option').clone()
-                .removeClass('js-template-menu-option')
-                .data('type', targetStore.target);
-            
-            if (targetStore.target === _targetTypes.device || targetStore.target === _targetTypes.lmGroup) {
-                option.data('paoId', targetStore.paoId);
-                if (targetStore.target === _targetTypes.device) {
-                    option.find('.dropdown-option-label').text($('#picker-commanderDevicePicker-btn .b-label').text());
-                } else {
-                    option.find('.dropdown-option-label').text($('#picker-lmGroupPicker-btn .b-label').text());
-                }
+        if (targetStore.target === _targetTypes.device || targetStore.target === _targetTypes.lmGroup) {
+            option.data('paoId', targetStore.paoId);
+            if (targetStore.target === _targetTypes.device) {
+                option.find('.dropdown-option-label').text($('#picker-commanderDevicePicker-btn .b-label').text());
             } else {
-                option.data('routeId', targetStore.routeId);
-                option.data('serialNumber', targetStore.serialNumber);
-                option.find('.dropdown-option-label').text($('#serial-number').val() + ' - ' 
-                        + $('#route-id option:selected').text());
-                option.find('.icon').toggleClass('icon-database-add icon-textfield');
+                option.find('.dropdown-option-label').text($('#picker-lmGroupPicker-btn .b-label').text());
             }
-            
-            $('.js-recent-menu').prepend(option);
-            $('.js-recent-btn').removeClass('dn');
+        } else {
+            option.data('routeId', targetStore.routeId);
+            option.data('serialNumber', targetStore.serialNumber);
+            option.find('.dropdown-option-label').text($('#serial-number').val() + ' - ' 
+                    + $('#route-id option:selected').text());
+            option.find('.icon').toggleClass('icon-database-add icon-textfield');
         }
+        
+        $('.js-recent-menu').prepend(option);
+        $('.js-recent-btn').removeClass('dn');
     },
     
     _persistFields = function () {
@@ -354,12 +335,8 @@ yukon.tools.commander = (function () {
     },
     
     _saveFields = function () {
-        var priority = $('#commandPriority').val();
-        yukon.cookie.set('commander','priority',priority);	
         var enabled = $('.js-queueCmd').is(':checked');
-
         $('#queueCommand').val(enabled);
-        yukon.cookie.set('commander','queueCommand',enabled);
     },
     
     /** 
@@ -389,7 +366,6 @@ yukon.tools.commander = (function () {
         }
         params.priority = $('#commandPriority').val();
         params.queueCommand = $('#queueCommand').val();
-        
         
         // Do some validation before we fire a request
         if (!params.command) {
@@ -424,9 +400,6 @@ yukon.tools.commander = (function () {
         
         if (valid) {
             
-            // Store the target of the command in the yukon cookie
-            _storeTarget(target, params);
-            
             yukon.ui.busy(btn);
             field.prop('disabled', true);
             $.ajax({
@@ -441,6 +414,9 @@ yukon.tools.commander = (function () {
                     _logRequestUnAuthorized(i, result.unAuthorizedCommand[i]);
                     _logError(i,result.unAuthorizedErrorMsg);
                 }
+                // Update the recent target
+                _updateTarget(target,result.recentTargets, params);
+                
             }).fail(function (xhr, status, errorThrown) {
                 var 
                 requests = xhr.responseJSON.requests,
@@ -716,7 +692,17 @@ yukon.tools.commander = (function () {
             /** User clicked ok on commander settings dialog. */
             $(document).on('yukon:tools:commander:popup', function (ev) {
             	_saveFields();
-            	var dialog = $('.js-settings-popup');
+            	var dialog = $('.js-settings-popup'),
+            	    params = {
+                        priority : $('#commandPriority').val(),
+                        queueCommand : $('#queueCommand').val()
+                    },
+                    url = ;
+                $.ajax({
+                    type: 'post',
+                    url: 'commander/updateCommanderPreferences',
+                    data: params,
+                });
                 dialog.dialog('close');
             });
             /** User has supplied input for command, use it and check if more is needed. */

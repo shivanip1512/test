@@ -10,6 +10,19 @@ public class UserPreference implements Serializable {
     private Integer userId;
     private UserPreferenceName name;
     private String value;
+    private boolean isUpdated;
+
+    public UserPreference() {
+    }
+
+    public UserPreference(Integer id, Integer userId, UserPreferenceName name, String value, boolean isUpdated) {
+        super();
+        this.id = id;
+        this.userId = userId;
+        this.name = name;
+        this.value = value;
+        this.isUpdated = isUpdated;
+    }
 
     public Integer getId() {
         return id;
@@ -43,4 +56,11 @@ public class UserPreference implements Serializable {
         this.value = value;
     }
 
+    public boolean isUpdated() {
+        return isUpdated;
+    }
+
+    public void setUpdated(boolean isUpdated) {
+        this.isUpdated = isUpdated;
+    }
 }

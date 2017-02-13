@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.users.dao.UserPreferenceDao;
+import com.cannontech.core.users.model.PreferenceType;
 import com.cannontech.core.users.model.UserPreference;
 import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.FieldMapper;
@@ -159,4 +160,30 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
         }
     }
 
+    @Override
+    public List<UserPreference> findUserPreferencesByPreferenceType(LiteYukonUser user, PreferenceType preferenceType) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PreferenceId, UserId, Name, Value");
+        sql.append("FROM " + TABLE_NAME);
+        sql.append("WHERE " + FIELD_USER_ID).eq(user.getUserID());
+        sql.append("AND " + FIELD_NAME).in(UserPreferenceName.getUserPreferenceNamesByType(preferenceType));
+
+        List<UserPreference> prefs = yukonJdbcTemplate.query(sql, new RowMapper());
+        return prefs;
+    }
+
+    @Override
+    public int deleteUserPreferencesByPreferenceType(LiteYukonUser user, PreferenceType preferenceType) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM " + TABLE_NAME);
+        sql.append("WHERE " + FIELD_USER_ID).eq(user.getUserID());
+        sql.append("AND " + FIELD_NAME).in(UserPreferenceName.getUserPreferenceNamesByType(preferenceType));
+
+        int rowsDeleted = yukonJdbcTemplate.update(sql);
+
+        dbChangeManager.processDbChange(user.getUserID(), DBChangeMsg.CHANGE_USER_PREFERENCE_DB_DELETE_BY_USER_ID,
+            DBChangeMsg.CAT_USER_PREFERENCE, DBChangeMsg.CAT_USER_PREFERENCE, DbChangeType.DELETE);
+        return rowsDeleted;
+    }
 }

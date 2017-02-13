@@ -141,11 +141,21 @@ yukon.tools.trends = (function () {
                         // Disabling stops highcharts from spacing points equally regardless of timestamp,
                         // it means sections with no data will take up space in the chart.
                         // http://api.highcharts.com/highstock#xAxis.ordinal
-                        ordinal: false 
+                        ordinal: false ,
+                        events: {
+                            setExtremes: function(e) {
+                                if (typeof(e.rangeSelectorButton) !== 'undefined') {
+                                  var url = yukon.url('/tools/trends/updateZoom'),
+                                      params = {
+                                          value : e.rangeSelectorButton.value
+                                      };
+                                  $.ajax({ type: 'post', url: url, data: params});
+                                }
+                            }
+                        }
                     },
 
                     yAxis: trend.yAxis,
-
                 });
             });
             

@@ -31,6 +31,7 @@ import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.util.TimeRange;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -42,6 +43,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.capcontrol.ivvc.models.VfGraph;
 import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.common.chart.service.FlotChartService;
+import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.util.WebUtilityService;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
@@ -61,6 +63,7 @@ public class BusViewController {
     @Autowired private CcMonitorBankListDao ccMonitorBankListDao;
     @Autowired private FlotChartService flotChartService;
     @Autowired private WebUtilityService webUtil;
+    @Autowired private UserPreferenceService userPreferenceService;
     
     private static final TypeReference<TimeRange> rangeRef = new TypeReference<TimeRange>() {};
 
@@ -98,9 +101,12 @@ public class BusViewController {
         model.addAttribute("singlePhaseZone", ZoneType.SINGLE_PHASE);
         
         model.addAttribute("ranges", TimeRange.values());
-        TimeRange lastRange = webUtil.getYukonCookieValue(req, "ivvc-regualtor", "last-event-range", TimeRange.DAY_1, rangeRef);
+        String preference =
+            userPreferenceService.getPreference(userContext.getYukonUser(), UserPreferenceName.DISPLAY_EVENT_RANGE);
+        TimeRange lastRange =
+            TimeRange.valueOf(userPreferenceService.getPreference(userContext.getYukonUser(),
+                UserPreferenceName.DISPLAY_EVENT_RANGE));
         model.addAttribute("lastRange", lastRange);
-        
         Map<String, Integer> hours = new HashMap<>();
         for (TimeRange range : TimeRange.values()) {
             hours.put(range.name(), range.getHours());

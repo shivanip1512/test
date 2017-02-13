@@ -56,9 +56,13 @@ yukon.ami.meterDetails = (function () {
             });
             
             $('#commander-menu-option').click(function (ev) {
-                var deviceId = $('#device-id').val();
-                yukon.cookie.set('commander', 'lastTarget', 'DEVICE');
-                yukon.cookie.set('commander', 'lastPaoId', deviceId);
+                var params = {
+                    target: 'DEVICE',
+                    paoId: $('#device-id').val()
+                },
+                url = yukon.url('/tools/commander/updateCommanderPreferences');
+            
+                $.ajax({ type: 'POST', url: url, data: params });
                 window.location.href = yukon.url('/tools/commander');
             });
             

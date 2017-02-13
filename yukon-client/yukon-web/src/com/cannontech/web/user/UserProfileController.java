@@ -37,6 +37,7 @@ import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.users.model.PreferenceType;
 import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -69,7 +70,7 @@ public class UserProfileController {
     @Autowired private UserProfileHelper profileHelper;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private YukonUserDao yukonUserDao;
-    @Autowired private UserPreferenceService prefService;
+    @Autowired private UserPreferenceService userPreferenceService;
     @Autowired private UserProfileValidator userValidator;
     @Autowired private ChangePasswordValidatorFactory passwordValidatorFactory;
 
@@ -91,7 +92,6 @@ public class UserProfileController {
         model.addAttribute("mode", PageEditMode.VIEW);
         profileHelper.setupUserAndNotifications(model, user, context);
         prefHelper.setupUserPreferences(model, user);
-        prefHelper.buildPreferenceOptions(model);
         profileHelper.setupRoleGroups(model, user.getUserGroupId());
         profileHelper.setupPasswordData(model, user);
 
@@ -165,7 +165,7 @@ public class UserProfileController {
     public Map<String, Boolean> updatePreference(Integer userId, UserPreferenceName prefName,
                                                  String prefValue, LiteYukonUser user) {
         profileHelper.isUserAuthorized(user, userId);
-        prefService.savePreference(user, prefName, prefValue);
+        userPreferenceService.savePreference(user, prefName, prefValue);
         return Collections.singletonMap("success", true);
     }
 
@@ -173,12 +173,12 @@ public class UserProfileController {
     public @ResponseBody Map<String, ?> resetAllPreferences(Integer userId, LiteYukonUser user) {
 
         profileHelper.isUserAuthorized(user, userId);
-        prefService.deleteAllSavedPreferencesForUser(user);
+        userPreferenceService.deleteUserPreferencesByPreferenceType(user, PreferenceType.EDITABLE);
 
         List<Object> prefList = new ArrayList<>();
-        for (UserPreferenceName pref : UserPreferenceName.values() ) {
+        for (UserPreferenceName pref : UserPreferenceName.getUserPreferencesByType(PreferenceType.EDITABLE)) {
             Map<String, Object> jsonPref = Maps.newHashMapWithExpectedSize(2);
-            jsonPref.put("name", pref);
+            jsonPref.put("name", pref.name());
             jsonPref.put("defaultVal", pref.getDefaultValue());
             prefList.add(jsonPref);
         }
@@ -287,5 +287,13 @@ public class UserProfileController {
         
         return result;
     }
-
+    
+    @RequestMapping(value = "/updateDisplayEventRangePreference.json", method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String, Boolean> updateDisplayEventRangePreference(String prefValue, LiteYukonUser user) {
+        // This preference does not require the check for the authorized user
+        // No admin can set this preference for the other user.
+        userPreferenceService.savePreference(user, UserPreferenceName.DISPLAY_EVENT_RANGE, prefValue);
+        return Collections.singletonMap("success", true);
+    }
 }

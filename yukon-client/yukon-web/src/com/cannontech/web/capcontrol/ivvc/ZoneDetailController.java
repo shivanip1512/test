@@ -50,6 +50,7 @@ import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
+import com.cannontech.core.users.model.UserPreferenceName;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.ZoneType;
@@ -70,9 +71,8 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.PaoIdentifierPropertyEditor;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.WebUtilityService;
+import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.yukon.IDatabaseCache;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Ordering;
@@ -92,13 +92,11 @@ public class ZoneDetailController {
     @Autowired private StrategyDao strategyDao;
     @Autowired private VoltageFlatnessGraphService voltageFlatnessGraphService;
     @Autowired private VoltageRegulatorService voltageRegulatorService;
-    @Autowired private WebUtilityService webUtil;
+    @Autowired private UserPreferenceService userPreferenceService;
     @Autowired private ZoneDao zoneDao;
     @Autowired private ZoneDtoHelper zoneDtoHelper;
     @Autowired private ZoneService zoneService;
     
-    private static final TypeReference<TimeRange> rangeRef = new TypeReference<TimeRange>() {};
-
     public static class ZoneVoltageDeltas {
         private List<CapBankPointDelta> pointDeltas = LazyList
                 .ofInstance(CapBankPointDelta.class);
@@ -132,11 +130,11 @@ public class ZoneDetailController {
         
         model.addAttribute("ranges", TimeRange.values());
         model.put("hours", hours);
-        
-        TimeRange range = webUtil.getYukonCookieValue(req, "ivvc-regualtor", "last-event-range", TimeRange.DAY_1, rangeRef);
+        TimeRange range =
+            TimeRange.valueOf(userPreferenceService.getPreference(userContext.getYukonUser(),
+                UserPreferenceName.DISPLAY_EVENT_RANGE));
         model.addAttribute("lastRange", range);
-
-        return "ivvc/zoneDetail.jsp";
+ return "ivvc/zoneDetail.jsp";
     }
 
     @RequestMapping("voltagePoints")

@@ -169,7 +169,12 @@ yukon.da.regulator = (function () {
             
             /** User changed the events time range. Cancel updating timeout and restart. */
             $('#ivvc-events-range').on('change', function () {
-                yukon.cookie.set('ivvc-regualtor', 'last-event-range', $(this).val());
+                var url = yukon.url('/user/updateDisplayEventRangePreference.json'),
+                params = {
+                    prefValue: $(this).val()
+                };
+
+                $.ajax({ type: 'post', url: url, data: params });
                 clearTimeout(_events_token);
                 _updateRecentEvents();
             });
