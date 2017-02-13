@@ -1,13 +1,14 @@
 package com.cannontech.common.rfn.dataStreaming;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.ui.ModelMap;
@@ -15,15 +16,14 @@ import org.springframework.ui.ModelMap;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
-import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 
 /**
  * This class tracks which pao types support data streaming, and which attributes are supported for streaming.
  */
 public class DataStreamingAttributeHelper {
-    private Multimap<PaoType, BuiltInAttribute> typeToSupportedAttributes = ArrayListMultimap.create();
+    private Map<PaoType, Set<BuiltInAttribute>> typeToSupportedAttributes = Maps.newEnumMap(PaoType.class);
     private Set<BuiltInAttribute> supportedAttributes = new HashSet<>();
 
     /**
@@ -534,10 +534,18 @@ public class DataStreamingAttributeHelper {
         ;
 
         private PaoType paoType;
-        private List<BuiltInAttribute> supportedAttributes;
+        private Set<BuiltInAttribute> supportedAttributes;
         private DataStreamingPaoAttributes(PaoType paoType, BuiltInAttribute... supportedAttributes) {
             this.paoType = paoType;
-            this.supportedAttributes = Lists.newArrayList(supportedAttributes);
+            this.supportedAttributes = Sets.newEnumSet(Arrays.asList(supportedAttributes), BuiltInAttribute.class);
+        }
+        
+        PaoType getPaoType() {
+            return paoType;
+        }
+        
+        Set<BuiltInAttribute> getSupportedAttributes() {
+            return supportedAttributes;
         }
     }
 
@@ -547,7 +555,7 @@ public class DataStreamingAttributeHelper {
     @PostConstruct
     private void init() {
         for (DataStreamingPaoAttributes dspa : DataStreamingPaoAttributes.values()) {
-            typeToSupportedAttributes.putAll(dspa.paoType, dspa.supportedAttributes);
+            typeToSupportedAttributes.put(dspa.paoType, dspa.supportedAttributes);
             supportedAttributes.addAll(dspa.supportedAttributes);
         }
     }
@@ -594,12 +602,11 @@ public class DataStreamingAttributeHelper {
         return typeToSupportedAttributes.keySet();
     }
 
-    public Multimap<PaoType, BuiltInAttribute> getAllTypesAndAttributes(){
+    public Map<PaoType,Set<BuiltInAttribute>> getAllTypesAndAttributes(){
         return typeToSupportedAttributes;
     }
 
     public void buildMatrixModel(ModelMap model) {
-        Multimap<PaoType, BuiltInAttribute> devicesMap = getAllTypesAndAttributes();
         List<PaoType> deviceList = new ArrayList<>();
         deviceList.addAll(getAllSupportedPaoTypes());
         final Comparator<PaoType> paoComparator = (pt1, pt2) -> pt1.getDbString().compareTo(pt2.getDbString());
@@ -612,7 +619,7 @@ public class DataStreamingAttributeHelper {
         Collections.sort(biaList, biaComparator);
         model.addAttribute("devices", deviceList);
         model.addAttribute("attributes", biaList);
-        model.addAttribute("dataStreamingDevices", devicesMap.asMap());
+        model.addAttribute("dataStreamingDevices", getAllTypesAndAttributes());
 
     }
 }
