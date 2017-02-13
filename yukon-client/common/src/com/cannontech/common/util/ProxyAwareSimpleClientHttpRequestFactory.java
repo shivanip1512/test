@@ -1,8 +1,5 @@
 package com.cannontech.common.util;
 
-import java.net.Proxy;
-import java.util.Optional;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,12 +16,9 @@ public class ProxyAwareSimpleClientHttpRequestFactory extends SimpleClientHttpRe
     
     @PostConstruct
     public void init() {
-        Optional<YukonHttpProxy> oProxy = YukonHttpProxy.fromGlobalSetting(globalSettingDao);
-
-        if (oProxy.isPresent()) {
-            Proxy proxy = oProxy.get().getJavaHttpProxy();
-            setProxy(proxy);
-        }
+        YukonHttpProxy.fromGlobalSetting(globalSettingDao).ifPresent(proxy -> {
+            setProxy(proxy.getJavaHttpProxy());
+        });
 
     }
 }

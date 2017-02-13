@@ -252,9 +252,9 @@ public class NoaaWeatherDataServiceImpl implements NoaaWeatherDataService {
      */
     private CloseableHttpClient buildHTTPClient() {
         CloseableHttpClient client = null;
-        Optional<YukonHttpProxy> oProxy = YukonHttpProxy.fromGlobalSetting(globalSettingDao);
-        if (oProxy.isPresent()) {
-            HttpHost proxy = new HttpHost(oProxy.get().getHost(), oProxy.get().getPort());
+        Optional<YukonHttpProxy> httpProxy = YukonHttpProxy.fromGlobalSetting(globalSettingDao);
+        if (httpProxy.isPresent()) {
+            HttpHost proxy = new HttpHost(httpProxy.get().getHost(), httpProxy.get().getPort());
             DefaultProxyRoutePlanner routePlanner = new DefaultProxyRoutePlanner(proxy);
             client = HttpClients.custom().setRoutePlanner(routePlanner).build();
         } else {
