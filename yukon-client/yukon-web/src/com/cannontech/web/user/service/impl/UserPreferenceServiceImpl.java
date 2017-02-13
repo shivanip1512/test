@@ -57,19 +57,20 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
     public void saveUserPreferencesToDB() {
         ConcurrentMap<Integer, CacheableUserPreferences> userPreferencesCacheMap = userPreferencesCache.asMap();
 
-        userPreferencesCacheMap.forEach((userId, categorizedUserReferences) -> {
-            Map<String, UserPreference> persistedPreferences = categorizedUserReferences.getPersistedPreferences();
-            persistedPreferences.forEach((prefName, pref) -> {
-                if (pref.isUpdated()) {
-                    if (pref.getId() != null) {
-                        prefDao.update(pref);
-                    } else {
-                        prefDao.create(pref);
+        userPreferencesCacheMap
+            .forEach((userId, categorizedUserReferences) -> {
+                Map<String, UserPreference> persistedPreferences = categorizedUserReferences.getPersistedPreferences();
+                persistedPreferences.forEach((prefName, pref) -> {
+                    if (pref.isUpdated()) {
+                        if (pref.getId() != null) {
+                            prefDao.update(pref);
+                        } else {
+                            prefDao.create(pref);
+                        }
+                        pref.setUpdated(false);
                     }
-                    pref.setUpdated(false);
-                }
+                });
             });
-        });
     }
 
     private LoadingCache<Integer, CacheableUserPreferences> userPreferencesCache =

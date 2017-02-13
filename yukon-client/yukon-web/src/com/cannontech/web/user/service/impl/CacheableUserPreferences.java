@@ -23,7 +23,6 @@ public class CacheableUserPreferences {
     }
 
     public CacheableUserPreferences() {
-        // TODO Auto-generated constructor stub
     }
 
     public Map<String, UserPreference> getTemporaryPreferences() {

@@ -136,14 +136,14 @@ yukon.userProfile = (function () {
     
     _setQueueCommand = function (ev) {
         var enabled = $('#queueCommand .yes').is('.on'),
-        url = yukon.url('/user/updatePreference.json'),
-        btn = $(this),
-        row = btn.closest('tr'),
-        params = {
-            userId: $('#user-id').val(),
-            prefName: row.data('type'),
-            prefValue: enabled
-        };
+            url = yukon.url('/user/updatePreference.json'),
+            btn = $(this),
+            row = btn.closest('tr'),
+            params = {
+                userId: $('#user-id').val(),
+                prefName: row.data('type'),
+                prefValue: enabled
+            };
         $.ajax({ type: 'post', url: url, data: params })
          .done(function (json) {
              $('#queueCommand').val(enabled);
@@ -152,14 +152,14 @@ yukon.userProfile = (function () {
     
     _resetCommandPriority = function (ev) {
         var url = yukon.url('/user/updatePreference.json'),
-        btn = $(this),
-        row = btn.closest('tr'),
-        defaultPriority = btn.attr('data-value'),
-        params = {
-            userId: $('#user-id').val(),
-            prefName: row.data('type'),
-            prefValue: defaultPriority
-        };
+            btn = $(this),
+            row = btn.closest('tr'),
+            defaultPriority = btn.attr('data-value'),
+            params = {
+                userId: $('#user-id').val(),
+                prefName: row.data('type'),
+                prefValue: defaultPriority
+            };
         $.ajax({ type: 'post', url: url, data: params })
         .done(function (json) {
             $('#commandPriority').val(defaultPriority);

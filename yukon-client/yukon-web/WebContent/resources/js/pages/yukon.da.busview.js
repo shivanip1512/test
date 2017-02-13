@@ -151,9 +151,9 @@ yukon.da.busview = (function () {
             /** User changed the events time range. Cancel updating timeout and restart. */
             $('#ivvc-events-range').on('change', function () {
                 var url = yukon.url('/user/updateDisplayEventRangePreference.json'),
-                params = {
-                    prefValue: $(this).val()
-                };
+                    params = {
+                        prefValue: $(this).val()
+                    };
                 $.ajax({ type: 'post', url: url, data: params });
                 clearTimeout(_events_token);
                 _updateRecentEvents();
