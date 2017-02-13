@@ -102,9 +102,9 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlCommon.append("WHERE EntryID=lmbase.LMHardwareTypeID) AS type,");
         sqlCommon.append("LastCommunication AS last_comm, LastNonZeroRuntime AS last_run,");
         sqlCommon.append("(SELECT CASE WHEN inv.DeviceId=0 THEN").appendArgument_k(
-            AssetAvailabilityCombinedStatus.ACTIVE);
-        sqlCommon.append("ELSE (SELECT CASE WHEN AddressingGroupID IN (SELECT DeviceId FROM LMGroupHoneywellWiFi) THEN").appendArgument_k(
-            AssetAvailabilityCombinedStatus.ACTIVE);
+            AssetAvailabilityCombinedStatus.ACTIVE).append("ELSE");
+        sqlCommon.append("(SELECT CASE WHEN AddressingGroupID IN (SELECT DeviceId FROM LMGroupHoneywellWiFi) THEN").appendArgument_k(
+            AssetAvailabilityCombinedStatus.ACTIVE).append("ELSE");
         sqlCommon.append("(SELECT CASE WHEN lmbase.InventoryId IN");
         sqlCommon.append("(SELECT DISTINCT ib.InventoryId");
         sqlCommon.append("FROM InventoryBase ib ");
@@ -117,7 +117,8 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlCommon.append("WHEN LastCommunication").gt(communicatingWindowEnd);
         sqlCommon.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.INACTIVE);
         sqlCommon.append("ELSE").appendArgument_k(AssetAvailabilityCombinedStatus.UNAVAILABLE).append("END");
-        sqlCommon.append(getTable().getSql()).append(")END");
+        sqlCommon.append(getTable().getSql());
+        sqlCommon.append(")END");
         sqlCommon.append(getTable().getSql());
         sqlCommon.append(")END");
         sqlCommon.append(getTable().getSql());
@@ -176,7 +177,8 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
          * status(Availability) is found.
          * Availability is considered as
          *  1. Active - If the device is in oneway its always considered active. If its a two way device and
-         *  its LastNonZeroRuntime greater than the runtimeWindowEnd.
+         *  its LastNonZeroRuntime greater than the runtimeWindowEnd. Honeywell wifi thermostats are always
+         *  considered as active
          *  2. Inactive - If LastCommunication is greater than communication window then its Inactive.
          *  3. OptedOut - If the inventory is in OptOutEvent table with StartDate less than current time and
          *  stopDate greater than currentTime and eventState as START_OPT_OUT_SENT. Then that inventory is
