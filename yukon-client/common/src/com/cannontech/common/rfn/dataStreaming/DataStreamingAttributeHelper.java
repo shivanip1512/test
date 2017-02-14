@@ -8,7 +8,11 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.ui.ModelMap;
@@ -580,12 +584,11 @@ public class DataStreamingAttributeHelper {
      * be supported by all specified paoTypes.
      */
     public Set<BuiltInAttribute> getAllSupportedAttributes(Collection<PaoType> paoTypes) {
-        Set<BuiltInAttribute> supportedAttributes = new HashSet<>();
-        for (PaoType paoType : paoTypes) {
-            Collection<BuiltInAttribute> attributesForType = typeToSupportedAttributes.get(paoType);
-            supportedAttributes.addAll(attributesForType);
-        }
-        return supportedAttributes;
+        return paoTypes.stream()
+                        .map(typeToSupportedAttributes::get)
+                        .filter(Objects::nonNull)
+                        .flatMap(Set::stream)
+                        .collect(Collectors.toSet());
     }
 
     /**
