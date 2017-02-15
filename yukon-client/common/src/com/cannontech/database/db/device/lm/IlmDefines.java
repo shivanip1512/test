@@ -51,6 +51,8 @@ public interface IlmDefines
 	public static final String OPTION_DYNAMIC_SHED = "DynamicShedTime";
 	public static final String OPTION_LIMITED_COUNT_DOWN = "LimitedCountDown";
 	public static final String OPTION_TRUE_CYCLE = "TrueCycle";
+	public static final String OPTION_MANDATORY = "Mandatory";
+	public static final String OPTION_OPTIONAL = "Optional";
 
 	// All possible values for ramp in/ramp out options
 	public static final String RAMP_NO_RAMP = "NoRamp";

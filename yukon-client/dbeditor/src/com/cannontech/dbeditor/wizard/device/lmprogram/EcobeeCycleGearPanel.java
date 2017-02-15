@@ -57,6 +57,7 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
     private JTextField kwReductionTextField;
     private JCheckBox checkBoxRampIn;
     private JCheckBox checkBoxRampOut;
+    private JCheckBox checkBoxmandatary;
 
     public EcobeeCycleGearPanel() {
         initialize();
@@ -84,6 +85,16 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
             checkBoxRampIn.setSelected(true);
         }
         return checkBoxRampIn;
+    }
+    
+    private JCheckBox getCheckBoxMandatary() {
+        if (checkBoxmandatary == null) {
+        	checkBoxmandatary = new JCheckBox();
+        	checkBoxmandatary.setText(LMProgramDirectGear.OPTION_MANDATORY);
+        	checkBoxmandatary.setPreferredSize(new Dimension(165, 23));
+        	checkBoxmandatary.setSelected(false);
+        }
+        return checkBoxmandatary;
     }
     
     private JCheckBox getCheckBoxRampOut() {
@@ -570,6 +581,7 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         }
         gear.setDutyCyclePercent(toInteger(getJCSpinFieldDutyCyclePercent().getValue()));
         gear.setFrontRampEnabled(getCheckBoxRampIn().isSelected());
+        gear.setMethodOptionTypes(getCheckBoxMandatary().isSelected());
         gear.setBackRampEnabled(getCheckBoxRampOut().isSelected());
         
         return gear;
@@ -597,6 +609,7 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         getJTextFieldChangeTriggerOffset().addCaretListener(this);
         getJTextFieldKWReduction().addCaretListener(this);
         getCheckBoxRampIn().addActionListener(this);
+        getCheckBoxMandatary().addActionListener(this);
         getCheckBoxRampOut().addActionListener(this);
     }
 
@@ -612,8 +625,17 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
             GridBagConstraints constraintJCSpinFieldPercentReduction = new GridBagConstraints();
             GridBagConstraints constraintJComboBoxHowToStop = new GridBagConstraints();
             GridBagConstraints constraintJCheckBoxRampIn = new GridBagConstraints();
+            GridBagConstraints constraintJCheckBoxMandatory = new GridBagConstraints();
             GridBagConstraints constraintJCheckBoxRampOut = new GridBagConstraints();
             
+            constraintJCheckBoxMandatory.insets = new Insets(0, 0, 5, 0);
+            constraintJCheckBoxMandatory.ipady = -3;
+            constraintJCheckBoxMandatory.ipadx = 200;
+            constraintJCheckBoxMandatory.gridwidth = 3;
+            constraintJCheckBoxMandatory.anchor = GridBagConstraints.WEST;
+            constraintJCheckBoxMandatory.gridy = 0;
+            constraintJCheckBoxMandatory.gridx = 1;
+
             constraintJCheckBoxRampIn.insets = new Insets(0, 0, 5, 0);
             constraintJCheckBoxRampIn.ipady = -3;
             constraintJCheckBoxRampIn.ipadx = 200;
@@ -669,6 +691,7 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
 
             setLayout(new GridBagLayout());
             this.add(getCheckBoxRampIn(), constraintJCheckBoxRampIn);
+            this.add(getCheckBoxMandatary(), constraintJCheckBoxMandatory);
             this.add(getCheckBoxRampOut(), constraintJCheckBoxRampOut);
             this.add(getJLabelDutyCyclePercent(), constraintJLabelDutyCyclePercent);
             this.add(getJCSpinFieldDutyCyclePercent(), constraintJCSpinFieldDutyCyclePercent);
@@ -769,6 +792,8 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         getJTextFieldChangeTriggerOffset().setText(format.format(gear.getChangeTriggerOffset()));
         getJCSpinFieldDutyCyclePercent().setValue(gear.getDutyCyclePercent());
         getCheckBoxRampIn().setSelected(gear.isFrontRampEnabled());
+        getCheckBoxMandatary().setText(LMProgramDirectGear.OPTION_MANDATORY);
+        getCheckBoxMandatary().setSelected(gear.isMandatorySelected(gear.getMethodOptionTypes()));
         getCheckBoxRampOut().setSelected(gear.isBackRampEnabled());
     }
 
