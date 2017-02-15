@@ -44,7 +44,10 @@
                         
                         <tags:nameValueContainer2 tableClass="dn js-new-configuration">
                              <cti:url var="helpUrl" value="/support/matrixView"/>
-                             <tags:sectionContainer2 nameKey="attributes" styleClass="dn js-new-configuration" helpUrl="${helpUrl}" helpWidth="960">
+                             <tags:sectionContainer2 nameKey="attributes" styleClass="dn js-new-configuration" helpUrl="${helpUrl}" helpWidth="auto">
+                                <div class="empty-list stacked">
+                                    <i:inline key=".attributeMessage"/>
+                                </div>
                                 <c:forEach var="attribute" varStatus="status" items="${configuration.attributes}">
                                     <c:set var="idx" value="${status.index}" />
                                     <form:hidden path="attributes[${idx}].attribute" />

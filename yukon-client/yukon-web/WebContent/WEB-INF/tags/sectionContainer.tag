@@ -61,7 +61,7 @@
     <div id="section-container-info-popup-${id}" class="dn" 
             data-title="${pageScope.title}" 
             <c:if test="${not empty pageScope.helpUrl}">data-url="${helpUrl}"</c:if>
-            data-width="${(not empty helpWidth && helpWidth > 0)? helpWidth: 600}">${helpText}</div>
+            data-width="${(not empty helpWidth)? helpWidth: 600}">${helpText}</div>
 </c:if>
 <%-- Information Popup --%>
 <c:if test="${not empty pageScope.infoText}">
