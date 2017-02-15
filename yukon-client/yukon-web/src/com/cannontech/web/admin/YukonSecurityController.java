@@ -1,8 +1,11 @@
 package com.cannontech.web.admin;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.security.GeneralSecurityException;
 import java.security.KeyPairGenerator;
 import java.security.PrivateKey;
@@ -15,11 +18,13 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.binary.Hex;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.bouncycastle.openssl.PEMWriter;
@@ -48,12 +53,13 @@ import com.cannontech.encryption.CertificateGenerationFailedException;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.EncryptedRouteDao;
-import com.cannontech.encryption.EncryptedRouteService;
 import com.cannontech.encryption.EncryptionKeyType;
+import com.cannontech.encryption.HoneywellSecurityService;
 import com.cannontech.encryption.RSAKeyfileService;
 import com.cannontech.encryption.SecurityKeyPair;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.system.ServiceProvider;
 import com.cannontech.system.KeyFileType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -71,11 +77,13 @@ public class YukonSecurityController {
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private CsrfTokenService csrfTokenService;
     @Autowired private SystemEventLogService systemEventLogService;
-    @Autowired private EncryptedRouteService encryptedRouteService;
+    @Autowired private HoneywellSecurityService honeywellSecurityService;
 
     private static final int KEYNAME_MAX_LENGTH = 50;
     private static final int KEYHEX_DIGITS_LENGTH = 32;
     private static final String HEX_STRING_PATTERN = "^[0-9A-Fa-f]*$";
+    private static final String HONEYWELL_CERTIFICATE_FILE_NAME = "cert-eaton.crt";
+    private static final String RESPONSE_CONTENT_TYPE_X509_CERTIFICATE = "application/x-x509-user-cert";
     
     private Logger log = YukonLogManager.getLogger(YukonSecurityController.class);
 
@@ -527,31 +535,41 @@ public class YukonSecurityController {
         return success;
     }
     
-    @RequestMapping(value = "/config/security/downloadHoneywellPublicKey", method = RequestMethod.POST)
-    @ResponseBody
-    public Map<String, Object> downloadHoneywellPublicKey() {
-        Map<String, Object> json = new HashMap<>();
+    @RequestMapping(value = "/config/security/generateHoneywellCertificate", method = RequestMethod.POST)
+    public String generateHoneywellCertificate(HttpServletResponse response, FlashScope flashScope,
+            YukonUserContext userContext) {
         try {
-            X509Certificate certificate = encryptedRouteService.generateHoneywellCertificate();
-
+            X509Certificate certificate = honeywellSecurityService.generateHoneywellCertificate();
             // create .crt file
             StringBuilder crtFilePath = new StringBuilder();
             crtFilePath.append(System.getenv("YUKON_BASE"));
-            crtFilePath.append("\\Server\\Config\\Keys\\cert-eaton.crt");
-            PEMWriter fileWriter = new PEMWriter(new FileWriter(crtFilePath.toString()));
+            crtFilePath.append("\\Server\\Config\\Keys\\" + HONEYWELL_CERTIFICATE_FILE_NAME);
+            String fileName = crtFilePath.toString();
+            PEMWriter fileWriter = new PEMWriter(new FileWriter(fileName));
             fileWriter.writeObject(certificate);
             fileWriter.flush();
             fileWriter.close();
 
-            json.put("hasError", false);
-        } catch (CertificateGenerationFailedException exception) {
-            log.error("Certificate creation failed ", exception);
-            json.put("hasError", true);
-        } catch (IOException exception) {
+            // download the file
+            OutputStream output = response.getOutputStream();
+            InputStream input = new FileInputStream(new File(fileName));
+            // set up the response
+            response.setContentType(RESPONSE_CONTENT_TYPE_X509_CERTIFICATE);
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + HONEYWELL_CERTIFICATE_FILE_NAME
+                + "\"");
+
+            // pull data from the file and push it to the browser
+            IOUtils.copy(input, output);
+            systemEventLogService.certificateGenerated(userContext.getYukonUser(),
+                ServiceProvider.HONEYWELL.getCertificateSubject());
+            return null;
+        } catch (IOException | CertificateGenerationFailedException exception) {
+            systemEventLogService.certificateGenerationFailed(userContext.getYukonUser(),
+                ServiceProvider.HONEYWELL.getCertificateSubject());
             log.error("Error in creating .crt file ", exception);
-            json.put("hasError", true);
+            flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".honeywellCertificate.downloadfailed"));
+            return "redirect:view";
         }
-        return json;
     }
 
 }

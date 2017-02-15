@@ -236,8 +236,10 @@
                   <div class="page-action-area">
                       <cti:button id="generateHonewellKeyFileBtn" nameKey="generateHonewellKeyFileBtn" />
                       <cti:button id="importHoneywellKeyFileBtn" nameKey="importKeyFileBtn" />
-                      <cti:button id="copyBtn" nameKey="copyBtn" />
-                      <cti:button id="downloadHoneywellPublicKey" nameKey="downloadHoneywellPublicKey" disabled="${!isPublicKeyGenerated}" />
+                      <form:form method="POST" action="generateHoneywellCertificate" autocomplete="off" enctype="multipart/form-data">
+                         <cti:csrfToken/>
+                         <cti:button id="generateCertificate" nameKey="generateCertificate" type="submit" disabled="${!isPublicKeyGenerated}" />
+                      </form:form>
                   </div>
               </tags:boxContainer2>
            </cti:checkRolesAndProperties>
@@ -266,45 +268,10 @@
         loadPublicKey(false);
     });
     
-    $("#downloadHoneywellPublicKey").click(function() {
-        //hide all the user message that are currectly displayed
-        $("div.user-message").hide();
-        yukon.ui.blockPage();
-        $.ajax({ 
-            url: "downloadHoneywellPublicKey", 
-            type: "POST",
-            dataType: "json"
-        }).done(function(result) {
-             if(result.hasError == true) {
-                 $('#honeywellPublicKeyDownloadStatus').html("<i:inline key='.honeywellPublicKey.downloadfailed'/>")
-                                                      .removeClass()
-                                                      .addClass("user-message error")
-                                                      .show('fade',{},200);
-            } else {
-                 $('#honeywellPublicKeyDownloadStatus').html("<i:inline key='.honeywellPublicKey.downloadSuccessful'/>")
-                                                      .removeClass()
-                                                      .addClass("user-message success")
-                                                      .show('fade',{},200);
-            }
-            yukon.ui.unblockPage();
-        }).fail(function(data) {
-              $('#honeywellPublicKeyDownloadStatus').html("<i:inline key='.honeywellPublicKey.downloadfailed'/>")
-                                                   .removeClass()
-                                                   .addClass("user-message error")
-                                                   .show('fade',{},200);
-              yukon.ui.unblockPage();
-        });
-    });
-    
     $(document).on("table.routesBoxTable button" , "click", function () {
     	$('#honeywellPublicKeyDownloadStatus').hide();
     });
     
-    $("#copyBtn").click(function() {
-         $('#honeywellPublicKeyDownloadStatus').hide();
-    	 $("#honeywellPublicKeyTextArea").select();
-    	    document.execCommand('copy');
-    });
     
     function loadPublicKey(generateNewKey) {
         $('#honeywellPublicKeyDownloadStatus').hide();
@@ -367,6 +334,10 @@
     $(document).on('importHoneywellKeyFileFormSubmit', function(event) {
         yukon.ui.blockPage();
         $('#honeywellFileImportBindingBean').submit();
+    });
+    
+    $(document).on( "dialogopen", function( event, ui ) {
+        $('div.ui-dialog .user-message').hide(); 
     });
     
     </script>

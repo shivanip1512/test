@@ -110,4 +110,10 @@ public interface SystemEventLogService {
     
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
     public void newPublicKeyGenerated(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.keyFileType) String keyFileType);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
+    public void certificateGenerated(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.serviceProvider) String serviceProvider);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
+    public void certificateGenerationFailed(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.serviceProvider) String serviceProvider);
 }

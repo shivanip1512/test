@@ -32,9 +32,9 @@ import com.cannontech.encryption.CertificateGenerationFailedException;
 import com.cannontech.encryption.CryptoException;
 import com.cannontech.encryption.CryptoUtils;
 import com.cannontech.encryption.EncryptedRouteDao;
-import com.cannontech.encryption.EncryptedRouteService;
+import com.cannontech.encryption.HoneywellSecurityService;
 
-public class EncryptedRouteServiceImpl implements EncryptedRouteService {
+public class HoneywellSecurityServiceImpl implements HoneywellSecurityService {
 
     @Autowired private EncryptedRouteDao encryptedRouteDao;
 
@@ -50,6 +50,10 @@ public class EncryptedRouteServiceImpl implements EncryptedRouteService {
         try {
             // get honeywell public and private keys from database
             EncryptionKey honeywellEncryptionKey = encryptedRouteDao.getHoneywellEncryptionKey();
+            
+            if(honeywellEncryptionKey == null) {
+                throw new CertificateGenerationFailedException("Honeywell public key not found in database");
+            }
 
             // decrypt the public and private keys
             String decryptedPublicKey = decryptKey(honeywellEncryptionKey.getPublicKey());
@@ -91,15 +95,7 @@ public class EncryptedRouteServiceImpl implements EncryptedRouteService {
         }
     }
 
-    /**
-     * Decrypts the key
-     * @param key, the key to be decrypted
-     * @return decrypted key
-     * @throws CryptoException
-     * @throws IOException
-     * @throws JDOMException
-     * @throws DecoderException
-     */
+
     private String decryptKey(String key) throws CryptoException, IOException, JDOMException, DecoderException {
         char[] password = CryptoUtils.getSharedPasskey();
         AESPasswordBasedCrypto decrypter = new AESPasswordBasedCrypto(password);

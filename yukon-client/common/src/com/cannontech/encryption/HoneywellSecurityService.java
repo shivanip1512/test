@@ -2,7 +2,7 @@ package com.cannontech.encryption;
 
 import java.security.cert.X509Certificate;
 
-public interface EncryptedRouteService {
+public interface HoneywellSecurityService {
 
     /**
      * Generates a certificate for Honeywell.
