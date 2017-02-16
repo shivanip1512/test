@@ -32,6 +32,7 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -40,13 +41,13 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.AttributeHelper;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.pao.meter.model.MeterTypeHelper;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -67,24 +68,21 @@ import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
-import com.cannontech.web.capcontrol.validators.CbcValidator;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
-import com.cannontech.web.security.annotation.CheckCparm;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.widget.meterInfo.model.CreateMeterModel;
-import com.cannontech.web.widget.meterInfo.model.PlcMeterModel;
-import com.cannontech.web.widget.meterInfo.model.RfMeterModel;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -117,6 +115,7 @@ public class MeterController {
     @Autowired private MeterValidator meterValidator;
     @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private ServerDatabaseCache serverDatabaseCache;
+    @Autowired private MeterTypeHelper meterTypeHelper;
     
     private static final String baseKey = "yukon.web.modules.amr.meterSearchResults";
     
@@ -317,21 +316,7 @@ public class MeterController {
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public String create(ModelMap model, LiteYukonUser user) throws Exception {
         
-        Set<PaoType> meterTypes = PaoType.getMeterTypes();
-        model.addAttribute("meterTypes", meterTypes);
-        
-        LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
-        model.addAttribute("routes", routes);
-        
-        List<LiteYukonPAObject> ports = serverDatabaseCache.getAllPorts();
-        model.addAttribute("ports",ports);
-        
-        Set<PaoType> rfMeterTypes = PaoType.getRfMeterTypes();
-        model.addAttribute("rfMeterTypes", rfMeterTypes);
-        
-        Set<PaoType> mctMeterTypes = PaoType.getMctTypes();
-        model.addAttribute("mctMeterTypes", mctMeterTypes);
-        
+        loadMeterTypes(model);
         CreateMeterModel meter = new CreateMeterModel();
         model.addAttribute("meter", meter);
       
@@ -340,51 +325,46 @@ public class MeterController {
     
     @RequestMapping(value="save", method=RequestMethod.POST)
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
-    public String save(@ModelAttribute("meter") CreateMeterModel meter, BindingResult result, HttpServletResponse resp, ModelMap model, LiteYukonUser user) throws Exception {
+    public String save(@ModelAttribute("meter") CreateMeterModel meter, BindingResult result, HttpServletResponse resp, ModelMap model, LiteYukonUser user, FlashScope flash) throws Exception {
         
         meterValidator.validate(meter, result);
 
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            Set<PaoType> meterTypes = PaoType.getMeterTypes();
-            model.addAttribute("meterTypes", meterTypes);
             
-            LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
-            model.addAttribute("routes", routes);
+            loadMeterTypes(model);
             
-            List<LiteYukonPAObject> ports = serverDatabaseCache.getAllPorts();
-            model.addAttribute("ports", ports);
-            
-            Set<PaoType> rfMeterTypes = PaoType.getRfMeterTypes();
-            model.addAttribute("rfMeterTypes", rfMeterTypes);
-            
-            Set<PaoType> mctMeterTypes = PaoType.getMctTypes();
-            model.addAttribute("mctMeterTypes", mctMeterTypes);
-            
-            model.addAttribute("meter", meter);
+            model.addAttribute("meter",meter);
             
             return "create.jsp";
         }
         
         SimpleDevice device;
-        if (PaoType.getMctTypes().contains(meter.getType())) {
-            device = deviceCreationService.createCarrierDeviceByDeviceType(meter.getType(), meter.getName(), meter.getAddress(), meter.getRouteId(), meter.isCreatePoints());
+        try {
+            if (meter.getType().isMct()) {
+                device = deviceCreationService.createCarrierDeviceByDeviceType(meter.getType(), meter.getName(), meter.getAddress(), meter.getRouteId(), meter.isCreatePoints());
+            }
+            else if (meter.getType().isRfMeter()) {
+                RfnIdentifier rfnId = new RfnIdentifier(meter.getSerialNumber(), meter.getManufacturer(), meter.getModel());
+                device = deviceCreationService.createRfnDeviceByDeviceType(meter.getType(), meter.getName(), rfnId, meter.isCreatePoints());
+            }
+            else {
+                device = deviceCreationService.createIEDDeviceByDeviceType(meter.getType(), meter.getName(),meter.getPortId(), meter.isCreatePoints());
+            }
         }
-        else if (PaoType.getRfMeterTypes().contains(meter.getType())) {
-            RfnIdentifier rfnId = new RfnIdentifier(meter.getSerialNumber(), meter.getManufacturer(), meter.getModel());
-            device = deviceCreationService.createRfnDeviceByDeviceType(meter.getType(), meter.getName(), rfnId, meter.isCreatePoints());
-        }
-        else {
-            device = deviceCreationService.createIEDDeviceByDeviceType(meter.getType(), meter.getName(),meter.getPortId(), meter.isCreatePoints());
+        catch (DeviceCreationException e) {
+            throw new DeviceCreationException("Could not create new device", "Invalid Device", e);
         }
         
         deviceDao.changeMeterNumber(device, meter.getMeterNumber());
-        
+        if (meter.isDisabled()) {
+           deviceDao.disableDevice(device); 
+        }
         Map<String, Object> json = new HashMap<>();
         json.put("deviceId", device.getDeviceId());
         resp.setContentType("application/json");
         JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
-        
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.create.successful", meter.getName()));
         return null;
     }
     
@@ -412,6 +392,23 @@ public class MeterController {
         }
         model.addAttribute("previousReadingsExist", previousReadingsExist);
         return "touPreviousReadings.jsp";
+    }
+    
+    private void loadMeterTypes(ModelMap model) {
+
+        model.addAttribute("meterTypes", meterTypeHelper.getCreateGroupedMeters());
+        
+        LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
+        model.addAttribute("routes", routes);
+        
+        List<LiteYukonPAObject> ports = serverDatabaseCache.getAllPorts();
+        model.addAttribute("ports",ports);
+        
+        Set<PaoType> rfMeterTypes = PaoType.getRfMeterTypes();
+        model.addAttribute("rfMeterTypes", rfMeterTypes);
+        
+        Set<PaoType> mctMeterTypes = PaoType.getMctTypes();
+        model.addAttribute("mctMeterTypes", mctMeterTypes);
     }
     
 }

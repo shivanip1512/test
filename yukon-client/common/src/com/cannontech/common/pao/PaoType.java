@@ -286,6 +286,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> iedTypes;
     private final static ImmutableSet<PaoType> rtuTypes;
     private final static ImmutableSet<PaoType> ionTypes;
+    private final static ImmutableSet<PaoType> ipcTypes;
     private final static ImmutableSet<PaoType> portTypes;
     private final static ImmutableSet<PaoType> lmProgramTypes;
     private final static ImmutableSet<PaoType> directProgramTypes;
@@ -597,6 +598,12 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             ION_7700,
             ION_8300);
         
+        ipcTypes = ImmutableSet.of(
+            IPC430SL,
+            IPC430S4E,
+            IPC420FD,
+            IPC410FL);
+        
         portTypes = ImmutableSet.of(
             LOCAL_DIRECT,
             LOCAL_SHARED,
@@ -757,7 +764,11 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     public boolean isIon() {
         return ionTypes.contains(this);
     }
-
+    
+    public boolean isIpc() {
+        return ipcTypes.contains(this);
+    }
+    
     public boolean isRfn() {
         return paoClass == PaoClass.RFMESH;
     }
@@ -919,6 +930,10 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
 
     public static ImmutableSet<PaoType> getIonTypes() {
         return ionTypes;
+    }
+    
+    public static ImmutableSet<PaoType> getIpcTypes() {
+        return ipcTypes;
     }
     
     public static ImmutableSet<PaoType> getRfLcrTypes() {

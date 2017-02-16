@@ -15,9 +15,9 @@
 
 <cti:standardPage module="amr" page="meteringStart">
     
-    <div id="contentPopup" class="dn"></div>
-    
-    <cti:includeScript link="/resources/js/pages/yukon.ami.meter.details.js"/>
+    <cti:msg2 key="yukon.web.modules.amr.create" var="popupTitle"/>
+    <div id="contentPopup" class="dn"
+        data-title="${popupTitle}"></div>
     
     <div id="page-actions" class="dn">
         
@@ -60,4 +60,5 @@
             </div>
         </div>
     </ct:widgetContainer>
+    <cti:includeScript link="/resources/js/pages/yukon.ami.meter.details.js"/>
 </cti:standardPage>

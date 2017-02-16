@@ -36,7 +36,7 @@ public class MeterValidator extends SimpleValidator<MeterModel> {
         LiteYukonPAObject pao = cache.getAllPaosMap().get(meter.getDeviceId());
         PaoType type = pao.getPaoType();
         
-        if(meter instanceof CreateMeterModel){
+        if (pao.getLiteID() == 0) {
             type = ((CreateMeterModel)meter).getType();
         }
         
@@ -63,7 +63,7 @@ public class MeterValidator extends SimpleValidator<MeterModel> {
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "meterNumber", key + "meterNumber.required");
         
         // Validate PLC meter settings
-        if (PaoType.getMctTypes().contains(type)||meter instanceof PlcMeterModel) {
+        if (type.isMct()) {
             
             PlcMeterModel plc = PlcMeterModel.of(meter);
             
@@ -80,7 +80,7 @@ public class MeterValidator extends SimpleValidator<MeterModel> {
         }
         
         // Validate RF meter settings
-        if (PaoType.getRfMeterTypes().contains(type)||meter instanceof RfMeterModel) {
+        if (type.isRfMeter()) {
             
             RfMeterModel rf = RfMeterModel.of(meter);
             RfnIdentifier rfnId = new RfnIdentifier(rf.getSerialNumber(), rf.getManufacturer(), rf.getModel());

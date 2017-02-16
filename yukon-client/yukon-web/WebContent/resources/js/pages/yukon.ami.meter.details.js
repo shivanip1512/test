@@ -43,13 +43,12 @@ yukon.ami.meterDetails = (function () {
             if (_initialized) return; 
             
             $(document).on('yukon.ami.meterDetails.saveMeter', function (ev) {
-                //$('#meter-create-form').submit();
                 $('#meter-create-form').ajaxSubmit({
                     success: function (data, status, xhr, $form) {
                         window.location.href=yukon.url('/meter/home?deviceId=' + data.deviceId);
                     },
                     error: function (xhr, status, error, $form) {
-                        $('#meter-create-form').html(xhr.responseText);
+                        $('#contentPopup').html(xhr.responseText);
                         mod.updateMeterTypeFields();
                     }
                 });
@@ -67,10 +66,12 @@ yukon.ami.meterDetails = (function () {
             });
             
             $('.js-create-meter').click(function () {
-                var content = $('#contentPopup');
+                var content = $('#contentPopup'),
+                popupTitle = content.data('title');
+                
                 content.load(yukon.url('/meter/create'), function () {
                     content.dialog({
-                        title: 'Create Meter', 
+                        title: popupTitle, 
                         width: 500, 
                         buttons: yukon.ui.buttons({ okText: yg.text.create, event: 'yukon.ami.meterDetails.saveMeter' }),
                         modal: true});

@@ -8,9 +8,9 @@
 <cti:standardPage module="amr" page="meterDetail.electric">
 
 <!-- Popup for create meter -->
-<div id="contentPopup" class="dn"></div>
-    
-    <cti:includeScript link="/resources/js/pages/yukon.ami.meter.details.js"/>
+    <cti:msg2 key="yukon.web.modules.amr.create" var="popupTitle"/>
+    <div id="contentPopup" class="dn"
+        data-title="${popupTitle}"></div>
     
     <input id="device-id" type="hidden" value="${deviceId}">
     
@@ -29,10 +29,10 @@
     </c:if>
     
     <%-- Page Actions Button --%>
+    
     <c:if test="${hasActions}">
         <div id="page-actions" class="dn">
-        
-            <cm:dropdownOption key=".create" classes="js-create-meter"/>
+            <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}"/>
             
             <li class="divider"/>
 
@@ -149,5 +149,6 @@
             </div>
         </div>
     </tags:widgetContainer>
-    
+    <cti:includeScript link="/resources/js/pages/yukon.ami.meter.details.js"/>
 </cti:standardPage>
+    

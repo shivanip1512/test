@@ -11,18 +11,18 @@
     
     <tags:nameValueContainer2 naturalWidth="false" tableClass="with-form-controls">
         <tags:nameValue2 nameKey=".type">
-            <tags:selectWithItems items="${meterTypes}" path="type" id="meter-type" onchange="yukon.ami.meterDetails.updateMeterTypeFields()"/>
+            <tags:selectWithItems items="${meterTypes}" path="type" id="meter-type" groupItems="true" onchange="yukon.ami.meterDetails.updateMeterTypeFields()"/>
         </tags:nameValue2>
         <tags:nameValue2 nameKey=".createPoints" nameClass="wsnw">
             <tags:switchButton path="createPoints" onNameKey=".yes.label" offNameKey=".no.label"/>
         </tags:nameValue2>
         <tags:inputNameValue nameKey=".deviceName" path="name" valueClass="full-width" maxlength="60" size="40" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE"/>
         <tags:inputNameValue nameKey=".meterNumber" path="meterNumber" maxlength="50" size="40" valueClass="js-meter-info-meter-number" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE"/>
-        <tags:inputNameValue nameKey=".physicalAddress" path="address" maxlength="18" size="18" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE" rowClass="js-mct-fields dn"/>
+        <tags:inputNameValue nameKey=".physicalAddress" path="address" maxlength="18" size="18" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE" rowClass="js-mct-fields"/>
         
-        <tags:selectNameValue nameKey=".ports" items="${ports}" path="portId" itemLabel="paoName" itemValue="liteID" rowClass="js-ied-fields"/>
+        <tags:selectNameValue nameKey=".ports" items="${ports}" path="portId" itemLabel="paoName" itemValue="liteID" rowClass="js-ied-fields dn"/>
         
-        <tags:selectNameValue nameKey=".route" items="${routes}" path="routeId" itemLabel="paoName" itemValue="liteID" rowClass="js-mct-fields dn"/>
+        <tags:selectNameValue nameKey=".route" items="${routes}" path="routeId" itemLabel="paoName" itemValue="liteID" rowClass="js-mct-fields"/>
         <tags:inputNameValue nameKey=".serialNumber" path="serialNumber" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE" rowClass="js-rf-fields dn"/>
         <tags:inputNameValue nameKey=".manufacturer" path="manufacturer" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE" rowClass="js-rf-fields dn"/>
         <tags:inputNameValue nameKey=".model" path="model" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE" rowClass="js-rf-fields dn"/>
@@ -34,5 +34,13 @@
 
     <cti:toJson id="rf-meter-types" object="${rfMeterTypes}"/>
     <cti:toJson id="mct-meter-types" object="${mctMeterTypes}"/>
+<style>
+#contentPopup {
+    overflow: visible !important;
+}
+</style>
+<script>
+    $("#meter-type").chosen({width: '250px;'});
+</script>
 
 </cti:msgScope>

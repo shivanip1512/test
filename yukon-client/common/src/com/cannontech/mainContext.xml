@@ -432,4 +432,6 @@
     
     <bean id="jacksonHttpMessageConverter" class="com.cannontech.spring.JacksonHttpMessageConverter"/>
     
+    <bean id="meterTypeHelper" class="com.cannontech.common.pao.meter.model.MeterTypeHelper"/>
+    
 </beans>

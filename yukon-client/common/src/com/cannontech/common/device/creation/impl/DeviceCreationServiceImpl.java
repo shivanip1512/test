@@ -205,8 +205,8 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         IEDBase newDevice = (IEDBase) DeviceFactory.createDevice(paoType);
         newDevice.setDeviceID(newDeviceId);
         newDevice.setPAOName(name);        
-        newDevice.setDeviceDirectCommSettings(new DeviceDirectCommSettings(newDeviceId,portId));
-        newDevice.setDeviceIED(new DeviceIED(newDeviceId,"0",IEDBase.SLAVE_STAND_ALONE));
+        newDevice.setDeviceDirectCommSettings(new DeviceDirectCommSettings(newDeviceId, portId));
+        newDevice.getDeviceIEDDefaults();
         SimpleDevice yukonDevice = createNewDeviceByType(newDevice, createPoints, paoType);
         return yukonDevice;
 

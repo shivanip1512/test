@@ -1309,7 +1309,7 @@
     
     <bean id="mappingService" class="com.cannontech.web.common.mapping.service.impl.MappingServiceImpl"/>
     
-     <bean class="com.cannontech.web.amr.meter.MeterValidator"/>
+    <bean class="com.cannontech.web.amr.meter.MeterValidator"/>
     
     
 </beans>
