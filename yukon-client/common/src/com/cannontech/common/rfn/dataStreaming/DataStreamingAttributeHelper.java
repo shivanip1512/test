@@ -9,7 +9,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -576,7 +575,7 @@ public class DataStreamingAttributeHelper {
      * an empty collection will be returned.
      */
     public Collection<BuiltInAttribute> getSupportedAttributes(PaoType paoType) {
-        return typeToSupportedAttributes.get(paoType);
+        return typeToSupportedAttributes.getOrDefault(paoType, Collections.emptySet());
     }
 
     /**
