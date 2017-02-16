@@ -52,7 +52,9 @@ void CtiMCFileInterface::handleFile(const string& filename )
 
     if( (fptr = fopen( filename.c_str(), "r" ) ) == NULL )
     {
-        CTILOG_ERROR(dout, "Could not open file: "<< filename);
+        CTILOG_ERROR(dout, "Could not open file: "<< filename << ", sleeping 100ms");
+
+        Sleep(100);
 
         return;
     }
