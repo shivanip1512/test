@@ -73,6 +73,7 @@ yukon.ami.meterDetails = (function () {
                     content.dialog({
                         title: popupTitle, 
                         width: 500, 
+                        dialogClass: 'ov',
                         buttons: yukon.ui.buttons({ okText: yg.text.create, event: 'yukon.ami.meterDetails.saveMeter' }),
                         modal: true});
                 });

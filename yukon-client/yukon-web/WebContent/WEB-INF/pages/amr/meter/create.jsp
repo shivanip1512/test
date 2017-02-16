@@ -45,7 +45,6 @@
 </style>
 <script>
     $("#meter-type").chosen({width: '250px;'});
-    $("ul.chosen-results").height('165px');
 </script>
 
 </cti:msgScope>
