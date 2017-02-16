@@ -8,7 +8,11 @@
 <cti:url var="action" value="/meter/save"/>
 <form:form id="meter-create-form" action="${action}" method="post" commandName="meter">
     <cti:csrfToken/>
-    
+    <c:if test="${errorMessage != null}">
+        <div class="user-message error">
+            ${errorMessage}
+        </div>
+    </c:if>
     <tags:nameValueContainer2 naturalWidth="false" tableClass="with-form-controls">
         <tags:nameValue2 nameKey=".type">
             <tags:selectWithItems items="${meterTypes}" path="type" id="meter-type" groupItems="true" onchange="yukon.ami.meterDetails.updateMeterTypeFields()"/>
@@ -41,6 +45,7 @@
 </style>
 <script>
     $("#meter-type").chosen({width: '250px;'});
+    $("ul.chosen-results").height('165px');
 </script>
 
 </cti:msgScope>

@@ -42,7 +42,6 @@ import com.cannontech.database.data.device.IEDBase;
 import com.cannontech.database.data.device.RfnBase;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
-import com.cannontech.database.db.device.DeviceIED;
 import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;

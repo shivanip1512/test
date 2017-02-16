@@ -316,7 +316,7 @@ public class MeterController {
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
     public String create(ModelMap model, LiteYukonUser user) throws Exception {
         
-        loadMeterTypes(model);
+        setupModel(model);
         CreateMeterModel meter = new CreateMeterModel();
         model.addAttribute("meter", meter);
       
@@ -331,15 +331,12 @@ public class MeterController {
 
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            
-            loadMeterTypes(model);
-            
-            model.addAttribute("meter",meter);
+            setupModel(model);            
             
             return "create.jsp";
         }
         
-        SimpleDevice device;
+        SimpleDevice device = null;
         try {
             if (meter.getType().isMct()) {
                 device = deviceCreationService.createCarrierDeviceByDeviceType(meter.getType(), meter.getName(), meter.getAddress(), meter.getRouteId(), meter.isCreatePoints());
@@ -353,7 +350,11 @@ public class MeterController {
             }
         }
         catch (DeviceCreationException e) {
-            throw new DeviceCreationException("Could not create new device", "Invalid Device", e);
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            setupModel(model);
+            model.addAttribute("errorMessage", e.getMessage());
+            
+            return "create.jsp";
         }
         
         deviceDao.changeMeterNumber(device, meter.getMeterNumber());
@@ -394,7 +395,7 @@ public class MeterController {
         return "touPreviousReadings.jsp";
     }
     
-    private void loadMeterTypes(ModelMap model) {
+    private void setupModel(ModelMap model) {
 
         model.addAttribute("meterTypes", meterTypeHelper.getCreateGroupedMeters());
         
