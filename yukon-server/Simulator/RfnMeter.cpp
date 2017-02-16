@@ -347,6 +347,11 @@ std::vector<unsigned char> DataStreamingWrite(const std::vector<unsigned char>& 
 
     streaming_metrics::metrics modelMetrics;
 
+    const unsigned default_interval = 
+            requestedChannels.empty()
+                ? 5
+                : requestedChannels.begin()->second.interval;
+
     if( const auto models = Cti::mapFindRef(streaming_metrics::perType, rfnId.manufacturer) )
     {
         if( const auto metrics = Cti::mapFindRef(*models, rfnId.model) )
@@ -359,7 +364,7 @@ std::vector<unsigned char> DataStreamingWrite(const std::vector<unsigned char>& 
                 }
                 else
                 {
-                    response.metrics.push_back(metric_response::channel{metricId, 5, 0, false});
+                    response.metrics.push_back(metric_response::channel{metricId, default_interval, 0, false});
                 }
             }
         }
