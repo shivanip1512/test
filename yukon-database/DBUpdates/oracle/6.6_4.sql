@@ -2,7 +2,12 @@
 /****     Oracle DBupdates             ****/ 
 /******************************************/ 
 
-/* No Updates */
+/* Start YUK-16233 */
+UPDATE LMProgramDirectGear 
+SET MethodOptionType = 'Optional' 
+WHERE ControlMethod = 'EcobeeCycle'
+AND MethodOptionType = 'FixedCount';
+/* End YUK-16233 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
