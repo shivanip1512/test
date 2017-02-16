@@ -197,6 +197,9 @@ private:
     // TODO: Since adding function information to this map, it probably should be turned into a structure.
     enum MemoryMap
     {
+        MM_SspecLo = 0x00,
+        MM_SspecRev = 0x01,
+        MM_SspecHi = 0x04,
         MM_EventFlags1  = 0x06,
         MM_EventFlags2  = 0x07,
         MM_MeterAlarms1 = 0x08,

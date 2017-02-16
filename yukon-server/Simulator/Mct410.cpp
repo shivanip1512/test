@@ -54,9 +54,15 @@ Mct410Sim::Mct410Sim(int address) :
          * map with the default information.
          */
 
+        _memory.writeValueToMemoryMap(MM_SspecHi, 0x04);
+        _memory.writeValueToMemoryMap(MM_SspecLo, 0x05);
+        _memory.writeValueToMemoryMap(MM_SspecRev, 33);  //  SSPEC supporting the hourly reads
+
         //  _llp_interest should eventually be persisted and restored.
         //  We could access the DynamicPaoInfo table for this... ?
         // _llp_interest.time = CtiTime::now();
+
+        _memory.writeValueToMemoryMap(MM_LoadProfileInterval, 0x0f);
 
         // Memory map position 0x0A is the EventFlags-1 Alarm Mask. This needs to be initialized to 0x80 in order
         // to catch the tamper flag bit that may be set at memory map position 0x06 and set the general alarm bit.
