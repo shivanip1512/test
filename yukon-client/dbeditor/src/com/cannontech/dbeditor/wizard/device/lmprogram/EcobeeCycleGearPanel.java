@@ -581,7 +581,7 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         }
         gear.setDutyCyclePercent(toInteger(getJCSpinFieldDutyCyclePercent().getValue()));
         gear.setFrontRampEnabled(getCheckBoxRampIn().isSelected());
-        gear.setMethodOptionTypes(getCheckBoxMandatory().isSelected());
+        gear.setMethodOptionType(getCheckBoxMandatory().isSelected());
         gear.setBackRampEnabled(getCheckBoxRampOut().isSelected());
         
         return gear;

@@ -51,7 +51,7 @@ public class EcobeeCycleGear extends com.cannontech.database.db.device.lm.LMProg
         setMethodPeriod(criticality);
     }
     
-    public void setMethodOptionTypes(boolean isSelected) {
+    public void setMethodOptionType(boolean isSelected) {
         if (isSelected) {
             setMethodOptionType(OPTION_MANDATORY);
         } else {
