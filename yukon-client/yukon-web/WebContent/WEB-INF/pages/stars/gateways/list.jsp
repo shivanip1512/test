@@ -187,6 +187,7 @@
                     <c:otherwise>
                         <td><cti:icon icon="icon-loading-bars"/></td>
                         <td><a href="${detailUrl}">${fn:escapeXml(gateway.name)}</a></td>
+                        <td><em><i:inline key=".loadingStreamingCapacity"/></em></td>
                         <td>${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
                         <td colspan="4"><em><i:inline key=".loadingGatewayData"/></em></td>
                     </c:otherwise>

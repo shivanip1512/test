@@ -29,6 +29,7 @@
     <entry key="yukon.web.modules.operator.gateways.list.pageName">Gateways</entry>
     <entry key="yukon.web.modules.operator.gateways.list.connected">Connected</entry>
     <entry key="yukon.web.modules.operator.gateways.list.loadingGatewayData">Loading Gateway Data...</entry>
+    <entry key="yukon.web.modules.operator.gateways.list.loadingStreamingCapacity">Loading Streaming Capacity...</entry>
     <entry key="yukon.web.modules.operator.gateways.list.firmwareUpdates">Firmware Version Updates</entry>
     <entry key="yukon.web.modules.operator.gateways.list.duplicateColors">Duplicate gateway colors detected: {0}</entry>
     <entry key="yukon.web.modules.operator.gateways.list.firmwareUpdates.none">No firmware updates</entry>
