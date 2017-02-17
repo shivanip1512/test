@@ -879,7 +879,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             addDevicesToGroup(new ArrayList<>(deviceIdToReport.keySet()), result.getSuccessGroup());
 
             List<Integer> devicesIdsToUnassign = new ArrayList<>();
-            List<DataStreamingConfig> allConfigs = getAllDataStreamingConfigurations();
             Multimap<Integer, Integer> configIdsToDeviceIds = ArrayListMultimap.create();
 
             for (int deviceId : allDeviceIds) {
@@ -892,6 +891,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     continue;
                 }
    
+                List<DataStreamingConfig> allConfigs = getAllDataStreamingConfigurations();
                 // Look for an existing config matching the behavior report
                 DataStreamingConfig config = findConfig(allConfigs, reportedConfig);
 
