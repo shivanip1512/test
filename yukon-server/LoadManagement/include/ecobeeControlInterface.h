@@ -11,7 +11,8 @@ struct EcobeeControlInterface
     virtual bool sendCycleControl( long dutyCycle,
                                    long controlDurationSeconds,
                                    bool rampInOption,
-                                   bool rampOutOption ) = 0;
+                                   bool rampOutOption,
+                                   bool mandatory ) = 0;
 };
 
 typedef boost::shared_ptr<EcobeeControlInterface> EcobeeControlInterfacePtr;

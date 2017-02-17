@@ -32,7 +32,8 @@ CtiLMGroupBase* LMGroupEcobee::replicate() const
 bool LMGroupEcobee::sendCycleControl( long dutyCycle,
                                       long controlDurationSeconds,
                                       bool rampInOption,
-                                      bool rampOutOption )
+                                      bool rampOutOption,
+                                      bool mandatory )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
@@ -49,7 +50,8 @@ bool LMGroupEcobee::sendCycleControl( long dutyCycle,
                     static_cast<int>(utcNow.seconds()),
                     controlDurationSeconds,
                     rampInOption,
-                    rampOutOption ));
+                    rampOutOption,
+                    mandatory ));
 
     if ( _LM_DEBUG & LM_DEBUG_STANDARD )
     {
@@ -120,7 +122,8 @@ bool LMGroupEcobee::sendShedControl( long controlMinutes )
                     static_cast<int>(utcNow.seconds()),
                     controlMinutes * 60,
                     false,
-                    false ));
+                    false,
+                    true ));
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
     {

@@ -30,7 +30,8 @@ public:
     virtual bool sendCycleControl( long dutyCycle,
                                    long controlDurationSeconds,
                                    bool rampInOption,
-                                   bool rampOutOption );
+                                   bool rampOutOption,
+                                   bool mandatory );
 
     //Unused
     virtual CtiRequestMsg* createTimeRefreshRequestMsg(LONG refreshRate, LONG shedTime, int priority) const;

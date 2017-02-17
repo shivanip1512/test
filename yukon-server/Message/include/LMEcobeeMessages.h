@@ -17,7 +17,8 @@ public:
                                    int  startTime,
                                    int  controlDuration,
                                    bool rampIn,
-                                   bool rampOut );
+                                   bool rampOut,
+                                   bool mandatory );
 
     void streamInto( cms::StreamMessage & message ) const;
 
@@ -34,6 +35,7 @@ private:
     char _dutyCycle;
     int  _startTime;
     int  _stopTime;
+    char _mandatory;
 };
 
 ///
