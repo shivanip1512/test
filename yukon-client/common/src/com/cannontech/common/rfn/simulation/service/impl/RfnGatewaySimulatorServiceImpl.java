@@ -16,7 +16,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
+import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.GatewayArchiveRequest;
 import com.cannontech.common.rfn.message.gateway.GatewayCreateRequest;
@@ -38,6 +43,7 @@ import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponseType;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionRequest;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResponse;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
+import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareReplySettings;
@@ -45,6 +51,12 @@ import com.cannontech.common.rfn.simulation.SimulatedFirmwareVersionReplySetting
 import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.message.dispatch.message.PointData;
 
 //Switch info logs to debug
 public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorService {
@@ -81,6 +93,11 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     private volatile boolean autoFirmwareVersionReplyActive;
     private volatile boolean autoFirmwareVersionReplyStopping;
     private volatile SimulatedFirmwareVersionReplySettings firmwareVersionSettings;
+    
+    @Autowired private AsyncDynamicDataSource dataSource;
+    @Autowired private AttributeService attributeService;
+    @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private DbChangeManager dbChangeManager;
 
     @Autowired ConnectionFactory connectionFactory;
     private JmsTemplate jmsTemplate;
@@ -375,7 +392,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
                             log.info("Processing gateway data message");
                             ObjectMessage requestMessage = (ObjectMessage) message;
                             GatewayDataRequest request = (GatewayDataRequest) requestMessage.getObject();
-                            
+                            generateDataStreamingLoadPointData(request.getRfnIdentifier(), settings.getCurrentDataStreamingLoading());
                             GatewayDataResponse response = setUpDataResponse(request.getRfnIdentifier(), settings);
                             
                             jmsTemplate.convertAndSend(requestMessage.getJMSReplyTo(), response);
@@ -563,6 +580,39 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         GatewayDataResponse response = DefaultGatewaySimulatorData.buildDataResponse(rfnId, cachedData, settings.getCurrentDataStreamingLoading());
         
         return response;
+    }
+    
+    /**
+     * Attempts to lookup a point for the data streaming load point if it doesn't exists creates a point.
+     */
+    private LitePoint findPoint(RfnDevice gateway) {
+        BuiltInAttribute attribute = BuiltInAttribute.DATA_STREAMING_LOAD;
+        LitePoint point = null;
+        try {
+            point = attributeService.getPointForAttribute(gateway, attribute);
+        } catch (IllegalUseOfAttribute e) {
+            attributeService.createPointForAttribute(gateway, attribute);
+            point = attributeService.getPointForAttribute(gateway, attribute);
+            log.info("Created point " + point + " for " + attribute + " device:" + gateway.getRfnIdentifier());
+            dbChangeManager.processPaoDbChange(gateway, DbChangeType.UPDATE);
+        }
+        return point;
+    }
+
+    public void generateDataStreamingLoadPointData(RfnIdentifier identifier, double value) {
+        RfnDevice gateway = rfnDeviceDao.getDeviceForExactIdentifier(identifier);
+        LitePoint point = findPoint(gateway);
+        PointValueQualityHolder pd = dataSource.getPointValue(point.getLiteID());
+        if (pd == null || pd.getValue() != value) {
+            PointData pointData = new PointData();
+            pointData = new PointData();
+            pointData.setId(point.getLiteID());
+            pointData.setPointQuality(PointQuality.Normal);
+            pointData.setValue(value);
+            pointData.setType(point.getPointType());
+            pointData.setTagsPointMustArchive(true);
+            dataSource.putValue(pointData);
+        }
     }
     
     /**

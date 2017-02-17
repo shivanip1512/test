@@ -50,6 +50,9 @@
             </span>
         </tags:nameValue2>
         <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+            <tags:nameValue2 nameKey=".streamingCapacity">
+                <tags:attributeValue pao="${gateway}" attribute="${streamingCapacity}" />
+            </tags:nameValue2>
             <tags:nameValue2 nameKey=".streamingCapacity" data-gateway="${gateway.paoIdentifier.paoId}">
                 <c:set var="color" value="badge-success"/>
                 <c:if test="${gateway.data.dataStreamingLoadingPercent > 100}">
