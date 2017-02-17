@@ -11,16 +11,18 @@ public final class EcobeeDutyCycleDrParameters {
     private final int dutyCyclePercent;
     private final boolean rampIn;
     private final boolean rampOut;
+    private final boolean isOptional;
     private final int groupId;
     
     public EcobeeDutyCycleDrParameters(Instant startTime, Instant endTime, int dutyCyclePercent, boolean rampIn, 
-                                       boolean rampOut, int groupId) {
+                                       boolean rampOut, boolean isOptional, int groupId) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.dutyCyclePercent = dutyCyclePercent;
         this.rampIn = rampIn;
         this.rampOut = rampOut;
         this.groupId = groupId;
+        this.isOptional = isOptional;
     }
 
     public Instant getStartTime() {
@@ -41,6 +43,10 @@ public final class EcobeeDutyCycleDrParameters {
 
     public boolean isRampOut() {
         return rampOut;
+    }
+    
+    public boolean isOptional() {
+        return isOptional;
     }
 
     public int getGroupId() {

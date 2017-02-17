@@ -105,14 +105,16 @@ public class EcobeeMessageListener {
      * 1.  Group ID        : signed int (32 bits)
      * 2.  Duty Cycle      : signed char (8 bits)
      * 3.  Ramping option  : signed char (8 bits) bitmask:[ 0x01 == ramp out, 0x02 == ramp in ]
-     * 4.  Start time      : signed int (32 bits) [seconds from 1970.01.01:UTC]
-     * 5.  End time        : signed int (32 bits) [seconds from 1970.01.01:UTC]
+     * 4.  Mandatory       : signed char (8 bits) 0 == optional, 1 == mandatory]
+     * 5.  Start time      : signed int (32 bits) [seconds from 1970.01.01:UTC]
+     * 6.  End time        : signed int (32 bits) [seconds from 1970.01.01:UTC]
      */
     private EcobeeDutyCycleDrParameters buildDutyCycleDrParameters(StreamMessage message) throws JMSException {
         //Get the raw values
         int groupId = message.readInt();
         int shedPercent = message.readByte();
         byte rampingOptions = message.readByte();
+        byte mandatoryByte = message.readByte();
         long utcStartTimeSeconds = message.readInt();
         long utcEndTimeSeconds = message.readInt();
 
@@ -122,10 +124,11 @@ public class EcobeeMessageListener {
         Instant endTime = new Instant(utcEndTimeSeconds * 1000);
         boolean rampIn = (rampingOptions & 2) == 2;
         boolean rampOut = (rampingOptions & 1) == 1;
+        boolean optional = (mandatoryByte == 0);
         log.trace("Parsed duty cycle dr parameters. Start time: " + startTime + " (" + utcStartTimeSeconds 
                   + ") End time: " + endTime + " (" + utcEndTimeSeconds + ") Ramp in: " + rampIn + " Ramp out: " 
-                  + rampOut);
+                  + rampOut + "Optional: " + optional + "(" + mandatoryByte + ")");
         
-        return new EcobeeDutyCycleDrParameters(startTime, endTime, runtimePercent, rampIn, rampOut, groupId);
+        return new EcobeeDutyCycleDrParameters(startTime, endTime, runtimePercent, rampIn, rampOut, optional, groupId);
     }
 }

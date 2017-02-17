@@ -20,10 +20,10 @@ public class DutyCycleDrRequest {
      * @param drName Name of the event to send to ecobee. Must be less than 12 characters.
      */
     public DutyCycleDrRequest(String setName, String drName, String eventDisplayMessage, int dutyCyclePercentage, Instant startDate, 
-            boolean randomizeStartTime, Instant endDate, boolean randomizeEndTime) {
+            boolean randomizeStartTime, Instant endDate, boolean randomizeEndTime, boolean isOptional) {
         selection = new Selection(SelectionType.MANAGEMENT_SET, "/" + setName);
         demandResponse = new DutyCycleDr(drName, eventDisplayMessage, dutyCyclePercentage, startDate, randomizeStartTime, endDate,
-                                              randomizeEndTime);
+                                              randomizeEndTime, isOptional);
     }
 
     @JsonCreator

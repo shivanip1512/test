@@ -17,27 +17,30 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 public class DutyCycleEvent {
     private final String type = "demandResponse";
     private final String name;
-    private final boolean isOptional = true;
+    private final boolean isOptional;
     private final Instant startDate;
     private final Instant endDate;
     private final int dutyCyclePercentage;
     
-    public DutyCycleEvent(String name, int dutyCyclePercentage, Instant startDate, Instant endDate) {
+    public DutyCycleEvent(String name, int dutyCyclePercentage, Instant startDate, Instant endDate, boolean isOptional) {
         this.name = name;
         this.dutyCyclePercentage = dutyCyclePercentage;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.isOptional = isOptional;
     }
 
     @JsonCreator
     private DutyCycleEvent(@JsonProperty("name") String name, @JsonProperty("dutyCyclePercentage") int dutyCyclePercentage,
             @JsonProperty("startDate") Instant startDate, @JsonProperty("endDate") Instant endDate,
-            @JsonProperty("startTime") Instant startTime, @JsonProperty("endTime") Instant endTime) {
+            @JsonProperty("startTime") Instant startTime, @JsonProperty("endTime") Instant endTime,
+            @JsonProperty("isOptional") boolean isOptional) {
         this.name = name;
         this.dutyCyclePercentage = dutyCyclePercentage;
         // Date and Time are separate in ecobee. This combines the date and time to form a single Instant
         this.startDate = startTime.plus(startDate.getMillis());
         this.endDate = endTime.plus(endDate.getMillis());
+        this.isOptional = isOptional;
     }
 
     public String getName() {

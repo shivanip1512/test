@@ -15,12 +15,12 @@ public class DutyCycleDr {
     private final boolean randomizeEndTime;
     
     public DutyCycleDr(String name, String message, int dutyCyclePercentage, Instant startDate, 
-                       boolean randomizeStartTime, Instant endDate, boolean randomizeEndTime) {
+                       boolean randomizeStartTime, Instant endDate, boolean randomizeEndTime, boolean isOptional) {
         this.name = name;
         this.message = message;
         this.randomizeStartTime = randomizeStartTime;
         this.randomizeEndTime = randomizeEndTime;
-        event = new DutyCycleEvent(name, dutyCyclePercentage, startDate, endDate);
+        event = new DutyCycleEvent(name, dutyCyclePercentage, startDate, endDate, isOptional);
     }
 
     @JsonCreator
