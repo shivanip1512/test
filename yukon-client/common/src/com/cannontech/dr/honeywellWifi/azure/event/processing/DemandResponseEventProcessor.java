@@ -1,6 +1,7 @@
 package com.cannontech.dr.honeywellWifi.azure.event.processing;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -9,6 +10,7 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.cannontech.dr.honeywellWifi.azure.event.DemandResponseEvent;
+import com.cannontech.dr.honeywellWifi.azure.event.EventPhase;
 import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
 
 public class DemandResponseEventProcessor extends AbstractHoneywellWifiDataProcessor {
@@ -30,6 +32,12 @@ public class DemandResponseEventProcessor extends AbstractHoneywellWifiDataProce
         
         double stateValue = event.getPhase().getStateValue();
         Instant eventTime = event.getMessageWrapper().getDate();
+        
+        // Subtract 1 second from "NotStarted" events. This avoids problems that occur when a "NotStarted" and a 
+        // "Phase1" event come in with identical timestamps. See YUK-16219.
+        if (event.getPhase() == EventPhase.NOT_STARTED) {
+            eventTime.minus(Duration.standardSeconds(1));
+        }
         
         try {
             PaoIdentifier thermostat = getThermostatByMacId(event.getMacId());
