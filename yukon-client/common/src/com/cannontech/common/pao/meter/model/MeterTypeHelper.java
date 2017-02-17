@@ -29,9 +29,7 @@ public class MeterTypeHelper {
         // RFN/MCT/Electronic Meter groups.
         MCT,
         RF_MESH,
-        ELECTRONIC,
-        OTHER;
-        
+        ELECTRONIC;        
         private static final String groupPrefix = "yukon.common.meterGroups.";
 
     
