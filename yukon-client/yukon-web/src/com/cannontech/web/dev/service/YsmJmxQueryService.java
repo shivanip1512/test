@@ -1,5 +1,7 @@
 package com.cannontech.web.dev.service;
 
+import static com.cannontech.common.config.MasterConfigString.JMS_SERVER_BROKER_LISTEN_CONNECTION;
+
 import java.io.IOException;
 
 import javax.annotation.PostConstruct;
@@ -10,12 +12,15 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.support.service.impl.BeanTypeForJMXConnector;
 
 public class YsmJmxQueryService {
@@ -25,15 +30,15 @@ public class YsmJmxQueryService {
      * JMX port for Message Broker : 1097
      * JMX port for Service Manager Broker : 1099
      */
-    private static final String messageBrokerService = "service:jmx:rmi:///jndi/rmi://localhost:1097/jmxrmi";
-    private static final String serviceManagerService = "service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi";
+    private static final String serviceManagerJMXConnectionUrl = "service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi";
 
     private JMXServiceURL messageBrokerServiceUrl;
     private JMXConnector messageBrokerJmxConnector;
     private JMXServiceURL serviceManagerServiceUrl;
     private JMXConnector serviceManagerJmxConnector;
 
-    private @Autowired ConfigurationSource config;
+    @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private ConfigurationSource config;
     
     public Object get(ObjectName name, String attribute , JMXServiceURL serviceUrl, JMXConnector jmxConnector) throws Exception {
         
@@ -85,16 +90,25 @@ public class YsmJmxQueryService {
     
     @PostConstruct
     public void init() {
+
+        String hostUri;
         if (config.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE, false)) {
             try {
-                messageBrokerServiceUrl = new JMXServiceURL(messageBrokerService);
+                String serverListenConnection = config.getString(JMS_SERVER_BROKER_LISTEN_CONNECTION);
+                if (serverListenConnection != null) {
+                    hostUri = StringUtils.substringBetween(serverListenConnection, "//", ":");
+                } else {
+                    hostUri = globalSettingDao.getString(GlobalSettingType.JMS_BROKER_HOST);
+                }
+                String messageBrokerJMXConnectionUrl = "service:jmx:rmi:///jndi/rmi://" + hostUri + ":1097/jmxrmi";
+                messageBrokerServiceUrl = new JMXServiceURL(messageBrokerJMXConnectionUrl);
                 messageBrokerJmxConnector = JMXConnectorFactory.connect(messageBrokerServiceUrl, null);
             } catch (IOException e) {
                 log.error("Could not init jmx connection for Yukon Message Broker.");
             }
 
             try {
-                serviceManagerServiceUrl = new JMXServiceURL(serviceManagerService);
+                serviceManagerServiceUrl = new JMXServiceURL(serviceManagerJMXConnectionUrl);
                 serviceManagerJmxConnector = JMXConnectorFactory.connect(serviceManagerServiceUrl, null);
             } catch (IOException e) {
                 log.error("Could not init jmx connection for Service Manager.");
