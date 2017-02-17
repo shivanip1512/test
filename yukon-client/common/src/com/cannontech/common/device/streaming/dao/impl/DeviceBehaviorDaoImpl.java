@@ -316,7 +316,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     /**
      * Return database vendor specific SQL.
      */
-    private String getRightFunctionSql(String string, int numberOfCharacters) {
+    private String right(String string, int numberOfCharacters) {
         if (dbVendorResolver.getDatabaseVendor().isOracle()) {
             return "substr(" + string + ",-" + numberOfCharacters + ")";
         } else {
@@ -327,7 +327,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     /**
      * Return database vendor specific SQL.
      */
-    private String getPartialNameComparisonSql(String string1, String string2) {
+    private String leftEq(String string1, String string2) {
         if (dbVendorResolver.getDatabaseVendor().isOracle()) {
             return "substr(" + string1 + ", 1, 11)=substr(" + string2 + ", 1, 11)";
         } else {
@@ -346,7 +346,7 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         sql.append("    AND ge.Name").eq(STREAMING_ENABLED_STRING);
         sql.append("    AND ge.Value").eq(Boolean.TRUE.toString());
         sql.append("JOIN BehaviorReportValue ce on br.BehaviorReportId=ce.BehaviorReportId");
-        sql.append("    AND ").append(getRightFunctionSql("ce.Name", 8)).eq(ENABLED_STRING);
+        sql.append("    AND ").append(right("ce.Name", 8)).eq(ENABLED_STRING);
         sql.append("    AND ce.Value").eq(Boolean.TRUE.toString());
         sql.append("WHERE BehaviorType").eq_k(type);
         if (deviceId != null) {
@@ -404,22 +404,22 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
             sql1.append("AND dbm.DeviceId").eq(deviceId);
         }
         sql1.append("JOIN behaviorvalue a on b.BehaviorId = a.BehaviorId");
-        sql1.append("   AND ").append(getRightFunctionSql("a.name", 10)).eq(ATTRIBUTE_STRING);
+        sql1.append("   AND ").append(right("a.name", 10)).eq(ATTRIBUTE_STRING);
         sql1.append("JOIN behaviorvalue i on b.BehaviorId = i.BehaviorId");
-        sql1.append("   AND ").append(getRightFunctionSql("i.name", 9)).eq(INTERVAL_STRING);
-        sql1.append("   AND ").append(getPartialNameComparisonSql("a.name","i.name"));
+        sql1.append("   AND ").append(right("i.name", 9)).eq(INTERVAL_STRING);
+        sql1.append("   AND ").append(leftEq("a.name","i.name"));
         sql1.append("JOIN BehaviorReport br on dbm.DeviceId=br.DeviceId");
         sql1.append("JOIN behaviorreportvalue ra on br.BehaviorReportId = ra.BehaviorReportId");
-        sql1.append("   AND ").append(getRightFunctionSql("ra.name", 10)).eq(ATTRIBUTE_STRING);
+        sql1.append("   AND ").append(right("ra.name", 10)).eq(ATTRIBUTE_STRING);
         sql1.append("JOIN behaviorreportvalue ri on br.BehaviorReportId = ri.BehaviorReportId");
-        sql1.append("   AND ").append(getRightFunctionSql("ri.name", 9)).eq(INTERVAL_STRING);
-        sql1.append("   AND ").append(getPartialNameComparisonSql("ra.name", "ri.name"));
+        sql1.append("   AND ").append(right("ri.name", 9)).eq(INTERVAL_STRING);
+        sql1.append("   AND ").append(leftEq("ra.name", "ri.name"));
         sql1.append("JOIN behaviorreportvalue re on br.BehaviorReportId = re.BehaviorReportId");
-        sql1.append("   AND ").append(getRightFunctionSql("re.name", 8)).eq(ENABLED_STRING);
-        sql1.append("   AND ").append(getPartialNameComparisonSql("ra.name", "re.name"));
+        sql1.append("   AND ").append(right("re.name", 8)).eq(ENABLED_STRING);
+        sql1.append("   AND ").append(leftEq("ra.name", "re.name"));
         sql1.append("JOIN behaviorreportvalue rs on br.BehaviorReportId = rs.BehaviorReportId");
-        sql1.append("   AND ").append(getRightFunctionSql("rs.name", 7)).eq(STATUS_STRING);
-        sql1.append("   AND ").append(getPartialNameComparisonSql("ra.name", "rs.name"));
+        sql1.append("   AND ").append(right("rs.name", 7)).eq(STATUS_STRING);
+        sql1.append("   AND ").append(leftEq("ra.name", "rs.name"));
         sql1.append("WHERE br.BehaviorType=b.BehaviorType");
         sql1.append("AND a.value=ra.value");
         sql1.append("AND (re.value").neq(Boolean.TRUE.toString());
@@ -435,20 +435,20 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
         sql2.append("JOIN Behavior b on dbm.BehaviorId = b.BehaviorId");
         sql2.append("JOIN BehaviorReport br on br.DeviceId = dbm.DeviceId");
         sql2.append("JOIN behaviorreportvalue ra on br.BehaviorReportId = ra.BehaviorReportId");
-        sql2.append("JOIN behaviorreportvalue re on ").append(getPartialNameComparisonSql("ra.name", "re.name"));
+        sql2.append("JOIN behaviorreportvalue re on ").append(leftEq("ra.name", "re.name"));
         sql2.append("AND br.BehaviorReportId = re.BehaviorReportId");
         sql2.append("WHERE b.BehaviorType").eq_k(type);
         if (deviceId != null) {
             sql2.append("AND br.DeviceId").eq(deviceId);
         }
-        sql2.append("AND ").append(getRightFunctionSql("ra.name", 10)).eq(ATTRIBUTE_STRING);
-        sql2.append("AND ").append(getRightFunctionSql("re.name", 8)).eq(ENABLED_STRING);
+        sql2.append("AND ").append(right("ra.name", 10)).eq(ATTRIBUTE_STRING);
+        sql2.append("AND ").append(right("re.name", 8)).eq(ENABLED_STRING);
         sql2.append("AND re.Value").eq(Boolean.TRUE.toString());
         sql2.append("AND not exists (");
         sql2.append("   SELECT *");
         sql2.append("   FROM BehaviorValue");
         sql2.append("   WHERE behaviorid=b.behaviorid");
-        sql2.append("   AND ").append(getRightFunctionSql("name", 10)).eq(ATTRIBUTE_STRING);
+        sql2.append("   AND ").append(right("name", 10)).eq(ATTRIBUTE_STRING);
         sql2.append("   AND value=ra.value)");
         
         jdbcTemplate.query(sql2, new DiscrepancyCallback(discrepancyForDeviceId));
