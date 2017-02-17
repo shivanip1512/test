@@ -6,7 +6,7 @@
 UPDATE LMProgramDirectGear 
 SET MethodOptionType = 'Optional' 
 WHERE ControlMethod = 'EcobeeCycle'
-AND MethodOptionType = 'FixedCount';
+AND MethodOptionType != 'Mandatory';
 /* End YUK-16233 */
 
 /**************************************************************/
