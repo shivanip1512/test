@@ -258,4 +258,31 @@ BOOST_AUTO_TEST_CASE(test_Strategy_bool_flag_support)
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_Strategy_upper_and_lower_volt_limit_support)
+{
+    // NoStrategy
+    // KVarStrategy
+    // VoltStrategy
+    // MultiVoltStrategy
+    // MultiVoltVarStrategy
+    // PFactorKWKVarStrategy
+    // PFactorKWKQStrategy
+    // TimeOfDayStrategy
+
+    // IVVCStrategy
+    {
+        IVVCStrategy    strategy( PointDataRequestFactoryPtr( new PointDataRequestFactory ) );
+
+        strategy.restoreParameters( "Upper Volt Limit", "PEAK",     "122.0" );
+        strategy.restoreParameters( "Upper Volt Limit", "OFFPEAK",  "124.0" );
+        strategy.restoreParameters( "Lower Volt Limit", "PEAK",     "118.0" );
+        strategy.restoreParameters( "Lower Volt Limit", "OFFPEAK",  "116.0" );
+
+        BOOST_CHECK_EQUAL( 122.0, strategy.getUpperVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 124.0, strategy.getUpperVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 118.0, strategy.getLowerVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 116.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+    }
+}
+
 BOOST_AUTO_TEST_SUITE_END()
