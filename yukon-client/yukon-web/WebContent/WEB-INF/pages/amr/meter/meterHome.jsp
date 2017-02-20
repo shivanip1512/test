@@ -34,8 +34,10 @@
     
     <c:if test="${hasActions}">
         <div id="page-actions" class="dn">
-            <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}"/>
-            
+            <!--  Meter Create Button -->
+            <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
+                <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}"/>
+            </cti:checkRolesAndProperties>
             <!-- Delete Meter Button -->
             <cti:checkRolesAndProperties value="INFRASTRUCTURE_DELETE">
                 <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" onclick="$('#delete-meter-form').submit();" />

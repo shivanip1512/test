@@ -8,7 +8,11 @@
 
 <cti:standardPage module="amr" page="meterDetail.water">
     <dt:pickerIncludes/>
-
+    <!-- Meter Create Popup -->
+    <cti:msg2 key="yukon.web.modules.amr.create" var="popupTitle"/>
+    <div id="contentPopup" class="dn"
+        data-title="${popupTitle}"></div>
+    
     <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
         <cti:param name="collectionType" value="idList" />
         <cti:param name="idList.ids" value="${deviceId}" />
@@ -18,6 +22,10 @@
         <cti:param name="idList.ids" value="${deviceId}" />
     </cti:url>    
     <div id="page-actions" class="dn">
+        <!--  Meter Create Button -->
+        <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
+            <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}"/>
+        </cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="WATER_LEAK_REPORT">
             <cm:dropdownOption key=".waterLeakReport.report.pageName" href="${waterLeakReportUrl}" />
         </cti:checkRolesAndProperties>
@@ -61,5 +69,5 @@
             </div>
         </div>
     </tags:widgetContainer>
-
+    <cti:includeScript link="/resources/js/pages/yukon.ami.meter.details.js"/>
 </cti:standardPage>

@@ -317,7 +317,7 @@ public class MeterController {
     }
     
     @RequestMapping(value="create", method=RequestMethod.GET)
-    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String create(ModelMap model, LiteYukonUser user) throws Exception {
         
         setupModel(model);
@@ -328,7 +328,7 @@ public class MeterController {
     }
     
     @RequestMapping(value="save", method=RequestMethod.POST)
-    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.LIMITED)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String save(@ModelAttribute("meter") CreateMeterModel meter, BindingResult result, HttpServletResponse resp, ModelMap model, LiteYukonUser user, FlashScope flash) throws Exception {
         
         meterValidator.validate(meter, result);

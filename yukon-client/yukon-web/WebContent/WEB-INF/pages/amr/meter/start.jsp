@@ -20,9 +20,9 @@
         data-title="${popupTitle}"></div>
     
     <div id="page-actions" class="dn">
-        
-            <cm:dropdownOption key=".create" classes="js-create-meter"/>
-            
+        <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
+            <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}"/>
+        </cti:checkRolesAndProperties>
     </div>
     
     <ct:widgetContainer identify="false">
