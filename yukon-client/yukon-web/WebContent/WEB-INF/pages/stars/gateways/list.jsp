@@ -187,9 +187,14 @@
                     <c:otherwise>
                         <td><cti:icon icon="icon-loading-bars"/></td>
                         <td><a href="${detailUrl}">${fn:escapeXml(gateway.name)}</a></td>
-                        <td><em><i:inline key=".loadingStreamingCapacity"/></em></td>
+                        <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
+                            <td><cti:icon icon="icon-loading-bars"/></td>
+                        </cti:checkRolesAndProperties>
                         <td>${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
-                        <td colspan="4"><em><i:inline key=".loadingGatewayData"/></em></td>
+                        <td><cti:icon icon="icon-loading-bars"/></td>
+                        <td><cti:icon icon="icon-loading-bars"/></td>
+                        <td><cti:icon icon="icon-loading-bars"/></td>
+                        <td><cti:icon icon="icon-loading-bars"/></td>
                     </c:otherwise>
                 </c:choose>
             </tr>
@@ -352,10 +357,15 @@
             <td class="js-gw-conn-status"><cti:icon icon="icon-loading-bars"/></td>
             <td class="js-gw-name"></td>
             <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
-                <td class="js-gw-capacity"></td>
+                <td class="js-gw-capacity">
+                   <cti:icon icon="icon-loading-bars"/>
+                </td>
             </cti:checkRolesAndProperties>
             <td class="js-gw-sn"></td>
-            <td colspan="4"><i:inline key=".loadingGatewayData"/></td>
+            <td><cti:icon icon="icon-loading-bars"/></td>
+            <td><cti:icon icon="icon-loading-bars"/></td>
+            <td><cti:icon icon="icon-loading-bars"/></td>
+            <td><cti:icon icon="icon-loading-bars"/></td>
         </tr>
         <tr class="js-new-cert-update" data-yui="">
             <td class="js-cert-update-timestamp">
