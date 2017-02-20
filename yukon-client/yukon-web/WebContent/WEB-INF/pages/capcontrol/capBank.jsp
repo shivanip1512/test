@@ -380,8 +380,12 @@
         <cti:displayForPageEditModes modes="EDIT,VIEW">
 
             <div class="column-12-12 clearfix">
+                <c:set var="tableWidth" value="100%"/>
+                <c:if test="${!capbank.overrideFeederLimitsSupported}">
+                    <c:set var="tableWidth" value="70%"/>
+                </c:if>
                 <tags:sectionContainer2 nameKey="assignedPointsSection">
-                <table class="compact-results-table row-highlighting">
+                <table class="compact-results-table row-highlighting" style="width:${tableWidth}">
                     <tr>
                         <th><i:inline key=".assignedPoints.point"/></th>
                         <th><i:inline key=".assignedPoints.adaptiveCount"/></th>
