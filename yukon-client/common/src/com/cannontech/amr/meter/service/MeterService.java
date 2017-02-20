@@ -9,4 +9,6 @@ public interface MeterService {
     public void addDisconnectAddress(SimpleDevice device, int disconnectAddress) throws IllegalArgumentException, TransactionException, IllegalUseOfAttribute;
     
     public void removeDisconnectAddress(SimpleDevice device) throws IllegalArgumentException, TransactionException, IllegalUseOfAttribute;
+
+    boolean deleteMeter(int id);
 }

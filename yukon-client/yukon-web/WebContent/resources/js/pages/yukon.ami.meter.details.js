@@ -79,6 +79,10 @@ yukon.ami.meterDetails = (function () {
                 });
             });
             
+            $('.js-hide-dropdown').click(function () {
+                $('.dropdown-menu').hide()
+            });
+            
             _initialized = true;
         }
 

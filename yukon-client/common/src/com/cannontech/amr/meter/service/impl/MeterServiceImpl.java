@@ -1,5 +1,6 @@
 package com.cannontech.amr.meter.service.impl;
 
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 
@@ -11,6 +12,7 @@ import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.DbChangeManager;
@@ -23,7 +25,8 @@ public class MeterServiceImpl implements MeterService {
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
-
+    @Autowired private DeviceDao deviceDao;
+    
     @Override
     public void addDisconnectAddress(SimpleDevice device, int disconnectAddress) throws IllegalArgumentException, IllegalUseOfAttribute {
 
@@ -86,5 +89,16 @@ public class MeterServiceImpl implements MeterService {
         }
         
         dbChangeManager.processPaoDbChange(device, DbChangeType.UPDATE);
+    }
+    
+    @Override
+    public boolean deleteMeter(int id) {
+        try {
+            deviceDao.removeDevice(id);
+            return true;
+        } catch (Exception e) {
+            Log.error("Unable to delete meter with id " + id, e);
+            return false;
+        }
     }
 }

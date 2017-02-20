@@ -4,6 +4,8 @@
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="amr" page="meterDetail.electric">
 
@@ -34,8 +36,17 @@
         <div id="page-actions" class="dn">
             <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}"/>
             
+            <!-- Delete Meter Button -->
+            <cti:checkRolesAndProperties value="INFRASTRUCTURE_DELETE">
+                <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" onclick="$('#delete-meter-form').submit();" />
+                <d:confirm on="#deleteMeter"  nameKey="meter.confirmDelete"/>
+                <cti:url var="deleteUrl" value="/meter/${deviceId}"/>
+                <form:form id="delete-meter-form" action="${deleteUrl}" method="delete">
+                    <cti:csrfToken/>
+                </form:form>
+            </cti:checkRolesAndProperties>
             <li class="divider"/>
-
+            
             <c:if test="${showMoveInOut}">
                 <cti:url var="url" value="/meter/moveIn">
                     <cti:param name="deviceId" value="${deviceId}"/>
