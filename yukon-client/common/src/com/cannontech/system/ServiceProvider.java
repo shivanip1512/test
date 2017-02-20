@@ -2,7 +2,7 @@ package com.cannontech.system;
 
 public enum ServiceProvider {
 
-    HONEYWELL("HONEYWELL");
+    HONEYWELL("Honeywell");
 
     private String certificateSubject;
 
