@@ -69,35 +69,12 @@ public enum UserPreferenceName implements DisplayableEnum {
         return preferenceType;
     }
 
-    public static List<String> getUserPreferenceNamesByType(PreferenceType preferenceType) {
-        return Arrays.asList(UserPreferenceName.values())
-                .stream()
-                .filter(p -> (p.preferenceType == preferenceType))
-                .map(p -> p.name())
-                .collect(Collectors.toList());
-    }
-
-    public static List<String> getCommanderUserPreferenceNames() {
-
-        List<String> commanderPreferenceNames =
-            Arrays.asList(
-                COMMANDER_PRIORITY.name(), 
-                COMMANDER_QUEUE_COMMAND.name(), 
-                COMMANDER_RECENT_TARGETS.name(),
-                COMMANDER_LAST_ROUTE_ID.name(), 
-                COMMANDER_LAST_SERIAL_NUMBER.name(), 
-                COMMANDER_LAST_TARGET.name(),
-                COMMANDER_LAST_PAO_ID.name());
-
-        return commanderPreferenceNames;
-    }
-
     public static List<UserPreferenceName> getUserPreferencesByType(PreferenceType preferenceType) {
         List<UserPreferenceName> prefList =
             Arrays.asList(UserPreferenceName.values())
                 .stream()
-                .filter(p -> (p.preferenceType == preferenceType))
-                .map(p -> p)
+                .filter(preference -> (preference.preferenceType == preferenceType))
+                .map(preference -> preference)
                 .collect(Collectors.toList());
 
         return prefList;

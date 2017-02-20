@@ -24,7 +24,8 @@ public class UserPreferencesHelper {
      */
     public void setupUserPreferences(ModelMap model, LiteYukonUser user) {
 
-        Map<String,UserPreference> prefMap = prefService.findUserPreferencesByPreferenceType(user, PreferenceType.EDITABLE);
+        Map<UserPreferenceName, UserPreference> prefMap =
+            prefService.getUserPreferencesByPreferenceType(user, PreferenceType.EDITABLE);
         
         model.addAttribute("userPreferenceMap", prefMap);
         model.addAttribute("allPreferenceNames",

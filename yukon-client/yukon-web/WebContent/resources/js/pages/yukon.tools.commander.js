@@ -696,8 +696,7 @@ yukon.tools.commander = (function () {
             	    params = {
                         priority : $('#commandPriority').val(),
                         queueCommand : $('#queueCommand').val()
-                    },
-                    url = ;
+                    };
                 $.ajax({
                     type: 'post',
                     url: 'commander/updateCommanderPreferences',

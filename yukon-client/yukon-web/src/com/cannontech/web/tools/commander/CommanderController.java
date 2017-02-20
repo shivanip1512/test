@@ -20,6 +20,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -116,20 +117,14 @@ public class CommanderController {
     /** The commander page. */
     @RequestMapping({"/commander", "/commander/"})
     public String commander(HttpServletRequest req, ModelMap model, LiteYukonUser user) {
-        
+
         LiteYukonPAObject[] routes = paoDao.getRoutesByType(PaoType.ROUTE_CCU, PaoType.ROUTE_MACRO);
         model.addAttribute("routes", routes);
         List<CommandRequest> requests = new ArrayList<>(commanderService.getRequests(user).values());
         Collections.sort(requests, onTimestamp);
         model.addAttribute("requests", requests);
-        
-        // Check preferences for last target of command execution
-        Map<UserPreferenceName, UserPreference> userPreferences =
-                                                        userPreferenceService.findCommanderUserPreferences(user);
 
-        UserPreference lastTargetPref = userPreferences.get(UserPreferenceName.COMMANDER_LAST_TARGET);
-        String lastTarget =
-            lastTargetPref != null ? userPreferences.get(UserPreferenceName.COMMANDER_LAST_TARGET).getValue() : null;
+        String lastTarget = userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_LAST_TARGET);
 
         if (lastTarget != null) {
             CommandTarget target = CommandTarget.valueOf(lastTarget);
@@ -137,7 +132,7 @@ public class CommanderController {
             if (target.isPao()) {
                 // Device or load group
                 Integer paoId =
-                    Integer.valueOf(userPreferences.get(UserPreferenceName.COMMANDER_LAST_PAO_ID).getValue());
+                    Integer.valueOf(userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_LAST_PAO_ID));
                 if (paoId != null) {
                     try {
                         LiteYukonPAObject pao = cache.getAllPaosMap().get(paoId);
@@ -160,26 +155,22 @@ public class CommanderController {
                     }
                 }
             } else {
-                model.addAttribute("serialNumber",
-                    Integer.valueOf(userPreferences.get(UserPreferenceName.COMMANDER_LAST_SERIAL_NUMBER).getValue()));
-                model.addAttribute("routeId",
-                    Integer.valueOf(userPreferences.get(UserPreferenceName.COMMANDER_LAST_ROUTE_ID).getValue()));
+                model.addAttribute("serialNumber", Integer.valueOf(userPreferenceService.getPreference(user,
+                    UserPreferenceName.COMMANDER_LAST_SERIAL_NUMBER)));
+                model.addAttribute("routeId", Integer.valueOf(userPreferenceService.getPreference(user,
+                    UserPreferenceName.COMMANDER_LAST_ROUTE_ID)));
             }
         } else {
             // Default to device target
             model.addAttribute("target", CommandTarget.DEVICE);
         }
-        if (userPreferences.containsKey(UserPreferenceName.COMMANDER_RECENT_TARGETS)) {
-            String recentPrefStringValue = userPreferences.get(UserPreferenceName.COMMANDER_RECENT_TARGETS).getValue();
+        if (userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_RECENT_TARGETS) != null) {
+            String recentPrefStringValue =
+                userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_RECENT_TARGETS);
             List<RecentTarget> recentTargets;
             try {
-                recentTargets =
-                    recentPrefStringValue == null ? new ArrayList<>() : JsonUtils.fromJson(recentPrefStringValue,
-                        recentTargetsType);
-
-                if (recentTargets != null) {
-                    model.addAttribute("recentTargets", buildViewableTargets(recentTargets));
-                }
+                recentTargets = JsonUtils.fromJson(recentPrefStringValue, recentTargetsType);
+                model.addAttribute("recentTargets", buildViewableTargets(recentTargets));
             } catch (IOException e) {
                 log.error("Commander failed to load the recent target, because recent Target JSON format is incorrect."
                     + " To see the correct recent targets, please make correction in user preference for recent targets");
@@ -410,7 +401,7 @@ public class CommanderController {
             List<UserPreference> userPreferences = updateCommanderUserPreferences(user, params);
             List<UserPreference> results = userPreferences
                     .stream()
-                    .filter(p -> p.getName() == UserPreferenceName.COMMANDER_RECENT_TARGETS)
+                    .filter(preference -> preference.getName() == UserPreferenceName.COMMANDER_RECENT_TARGETS)
                     .collect(Collectors.toList());
 
             if (!results.isEmpty()) {
@@ -559,9 +550,11 @@ public class CommanderController {
 
             // Find if the current target already exists in the recent targets preferences
             List<RecentTarget> existingTargets =
-                recentTargets.stream().filter(p -> p.equals(currentTarget)).collect(Collectors.toList());
+                recentTargets.stream()
+                    .filter(preference -> preference.equals(currentTarget))
+                    .collect(Collectors.toList());
 
-            if (existingTargets == null || existingTargets.size() == 0) {
+            if (CollectionUtils.isEmpty(existingTargets)) {
                 // Target selected is a new target, add target to the recent targets preferences
                 if (recentTargets.size() == RECENT_TARGET_MAXIMUM_SIZE_LIMIT) {
                     // Maintain the recent targets list size count, remove the oldest element - LRU

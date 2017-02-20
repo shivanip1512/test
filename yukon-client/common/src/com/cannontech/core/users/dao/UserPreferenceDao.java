@@ -13,7 +13,8 @@ public interface UserPreferenceDao {
     public void update(UserPreference pref);
 
     /**
-     * Find the preference, if any, associated with the given user for this category
+     * Find the preference, if any, associated with the given user for this category.
+     * Tries to find the non-temporary user preference from cache, if not present gets it from DB.
      * 
      * @return Returns preference if it exists, else null.
      */
@@ -26,25 +27,13 @@ public interface UserPreferenceDao {
     public String getValueOrDefault(LiteYukonUser user, UserPreferenceName category);
 
     /**
-     * Returns a list of all preferences the user has saved.
-     */
-    public List<UserPreference> findAllSavedPreferencesForUser(LiteYukonUser user);
-    
-    /**
-     * Used to reset the user's preferences to their defaults.
-     * 
-     * @return Number of preferences deleted (NOT necessarily the same as the # changed!)
-     */
-    public int deleteAllSavedPreferencesForUser(LiteYukonUser user);
-
-    /**
      * Used to find User Preferences By Preference Type for a selected user
      * 
      * @param user contains selected user Id
      * @param preferenceType contains type of preferences you would like to find
      * @returns preferences list for a type if it exists, else null.
      */
-    public List<UserPreference> findUserPreferencesByPreferenceType(LiteYukonUser user, PreferenceType preferenceType);
+    public List<UserPreference> getUserPreferencesByPreferenceType(LiteYukonUser user, PreferenceType preferenceType);
 
     /**
      * Used to delete User Preferences By Preference Type for a selected user
@@ -54,5 +43,15 @@ public interface UserPreferenceDao {
      * @returns number of preference rows deleted, optional for use
      */
     int deleteUserPreferencesByPreferenceType(LiteYukonUser user, PreferenceType preferenceType);
+    
+    /**
+     * Saves User Preferences to DB from the cache
+     */
+    public void saveUserPreferenceToDB();
+    
+    /**
+     * Update the list of User preferences to cache/DB
+     */
+    public void updateUserPreferences(int userID, List<UserPreference> preferences);
 
 }

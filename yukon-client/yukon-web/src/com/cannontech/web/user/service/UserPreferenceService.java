@@ -21,20 +21,12 @@ public interface UserPreferenceService {
      */
     public UserPreference savePreference(LiteYukonUser user, UserPreferenceName preference, String newValue);
 
-    public int deleteAllSavedPreferencesForUser(LiteYukonUser user);
-
     /**
      * If there is no saved preference, the default one is returned.
      * 
      * @return String version of the enum value.
      */
     public String getPreference(LiteYukonUser user, UserPreferenceName category);
-
-    /**
-     * @param user LiteYukonUser
-     * @return Gets only the ones which have been saved in the database.
-     */
-    public List<UserPreference> findAllSavedPreferencesForUser(LiteYukonUser user);
 
     public PreferenceGraphVisualTypeOption getDefaultGraphType(LiteYukonUser user);
 
@@ -73,9 +65,9 @@ public interface UserPreferenceService {
      * 
      * @param user , user details
      * @param preferenceType, contains the preference type
-     * @returns the List of preferences for the selected user
+     * @returns the Map of preferences for the selected user
      */
-    public Map<String, UserPreference> findUserPreferencesByPreferenceType(LiteYukonUser user,
+    public Map<UserPreferenceName, UserPreference> getUserPreferencesByPreferenceType(LiteYukonUser user,
             PreferenceType preferenceType);
 
     /**
@@ -86,14 +78,6 @@ public interface UserPreferenceService {
      * @returns count of rows deleted
      */
     int deleteUserPreferencesByPreferenceType(LiteYukonUser user, PreferenceType preferenceType);
-
-    /**
-     * Returns the user preferences for the commander functionality for selected user
-     * 
-     * @param user, User details
-     * @returns Map of User preferences, only for Commander context
-     */
-    public Map<UserPreferenceName, UserPreference> findCommanderUserPreferences(LiteYukonUser user);
 
     /**
      * Updates new preferences for a user in cache / DB

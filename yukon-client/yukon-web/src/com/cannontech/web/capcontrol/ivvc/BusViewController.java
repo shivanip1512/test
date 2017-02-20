@@ -45,7 +45,6 @@ import com.cannontech.web.capcontrol.ivvc.service.VoltageFlatnessGraphService;
 import com.cannontech.web.common.chart.service.FlotChartService;
 import com.cannontech.web.user.service.UserPreferenceService;
 import com.cannontech.web.util.WebUtilityService;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -64,9 +63,6 @@ public class BusViewController {
     @Autowired private FlotChartService flotChartService;
     @Autowired private WebUtilityService webUtil;
     @Autowired private UserPreferenceService userPreferenceService;
-    
-    private static final TypeReference<TimeRange> rangeRef = new TypeReference<TimeRange>() {};
-
     
     @RequestMapping(value="detail", method = RequestMethod.GET)
     public String detail(ModelMap model, YukonUserContext userContext, int subBusId, HttpServletRequest req) throws IOException {

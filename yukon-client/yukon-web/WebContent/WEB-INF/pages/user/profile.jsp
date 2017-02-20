@@ -121,107 +121,80 @@ $(document).ready(function(){
             
             <%-- PREFERENCES SECTION --%>
             <tags:sectionContainer2 nameKey="preferences">
-                <table id="preferences-table" class="full-width with-form-controls">
-                    <tbody>
-                        
-                        <tr>
-                            <td class="name"><i:inline key=".preferences.default.all"/></td>
-                            <td class="value">
-                                <cti:button classes="js-pref-default" id="restore-to-defaults" icon="icon-arrow-swap" 
-                                    nameKey="preferences.default.all.button" 
-                                    data-ok-event="yukon:user:profile:pref:defaults"/>
-                            </td>
-                        </tr>
-                        
-                        <c:forEach var="preference" items="${allPreferenceNames}" >
-                            <tr data-type="${preference}">
-                            <c:set var="prefName" value="${preference.toString()}"/>
-                            <c:set var="prefInputType" value="${preference.valueType}"/>
-                            <td class="name"> 
-                                <div class="wsnw oh"><i:inline key="${preference}"/></div>
-                            </td>
-                            <c:choose>
-                            <c:when test="${fn:contains(prefInputType, 'Enum')}">
-                                <td class="value js-pref-options">
-                                    <c:set var="defaultVal" value="${preference.defaultValue}"/>
-                                    <c:set var="prefValue" value="${userPreferenceMap.get(prefName) != null ? userPreferenceMap.get(prefName).value : preference.defaultValue}"/>                                   
-                                    <c:set var="prefOptions" value="${preference.valueType.optionList}"/>
-                                    <c:set var="prefDisplayOptMap" value="${userPreferencesNameToDisplayOptions.get(prefName)}"/>
-                                    
-                                    <cti:button classes="js-pref-default" data-value="${defaultVal}" icon="icon-arrow-swap" 
-                                        renderMode="buttonImage"/>
-                                    
-                                    <div class="button-group button-group-toggle fl">
-                                        <c:forEach var="prefOption" items="${prefOptions}" varStatus="stat">
-                                            <cti:msg2 var="prefText" key="${prefOption.message}"/>
-                                            <c:set var="iconOnly" value='${prefDisplayOptMap != null && (prefDisplayOptMap.containsKey("iconONLY"))}'/>
-                                            <c:set var="classes" value="${prefOption.value eq 'OFF' ? 'no' : 'yes'}"/>
-                                            <c:if test="${prefOption.value.equals(prefValue)}">
-                                                <c:set var="classes" value="${classes} on"/>
-                                            </c:if>
-                                            <c:choose>
-                                                <c:when test="${iconOnly}">
-                                                    <c:set var="title" value="${prefText}"/>
-                                                    <c:set var="renderMode" value="buttonImage"/>
-                                                </c:when>
-                                                <c:otherwise>
-                                                    <c:set var="title" value=""/>
-                                                    <c:set var="renderMode" value="button"/>
-                                                </c:otherwise>
-                                            </c:choose>
-                                            <c:choose>
-                                                <c:when test="${iconOnly}">
-                                                    <c:set var="optMap" value="${prefDisplayOptMap.get('iconONLY')}"/>
-                                                    <c:set var="icon" value="${optMap.get(prefOption.value)}"/>
-                                                </c:when>
-                                                <c:otherwise><c:set var="icon" value=""/></c:otherwise>
-                                            </c:choose>
-                                            <cti:button classes="${classes}" title="${title}" renderMode="${renderMode}" 
-                                                label="${prefText}" icon="${icon}" data-value="${prefOption.value}"/>
-                                        </c:forEach>
-                                    </div>
-                                </td>
-                            </c:when>
-                            <c:when test="${prefName == 'COMMANDER_PRIORITY'}">
-                                <td>
-                                    <c:set var="defaultVal" value="${preference.defaultValue}"/>
-                                    <cti:button id="resetCommandPriorityBtn" data-value="${defaultVal}" icon="icon-arrow-swap" 
-                                        renderMode="buttonImage"/>
-                                        
-                                    <!--<input type="number" id="commandPriority" name="commandPriority" 
-                                        min="${minCmdPriority}" max="${maxCmdPriority}" value="${priority}" />-->
-                                        
-                                    <input type="number" id="commandPriority" name="commandPriority"
-                                            value="${priority}" />
-                                    <cti:list var="arguments">
+                <tags:nameValueContainer2 id="preferences-table">
+                        <tags:nameValue2 nameKey=".preferences.default.all">
+                            <cti:button classes="js-pref-default" id="restore-to-defaults" icon="icon-arrow-swap" nameKey="preferences.default.all.button" data-ok-event="yukon:user:profile:pref:defaults" />
+                        </tags:nameValue2>
+                        <c:forEach var="preference" items="${allPreferenceNames}">
+                            <c:set var="prefName" value="${preference.toString()}" />
+                            <c:set var="prefInputType" value="${preference.valueType}" />
+                            <c:set var="defaultVal" value="${preference.defaultValue}" />
+                            <tags:nameValue2 nameKey=".preferences.${preference}" data-type="${preference}" valueClass="js-pref-options">
+                                <c:choose>
+                                    <c:when test="${fn:contains(prefInputType, 'Enum')}">
+                                        <c:set var="prefValue" value="${userPreferenceMap.get(prefName) != null ? userPreferenceMap.get(prefName).value : preference.defaultValue}" />
+                                        <c:set var="prefOptions" value="${preference.valueType.optionList}" />
+                                        <c:set var="prefDisplayOptMap" value="${userPreferencesNameToDisplayOptions.get(prefName)}" />
+
+                                        <cti:button classes="js-pref-default" data-value="${defaultVal}" icon="icon-arrow-swap" renderMode="buttonImage" />
+
+                                        <div class="button-group button-group-toggle fl">
+                                            <c:forEach var="prefOption" items="${prefOptions}" varStatus="stat">
+                                                <cti:msg2 var="prefText" key="${prefOption.message}" />
+                                                <c:set var="iconOnly" value='${prefDisplayOptMap != null && (prefDisplayOptMap.containsKey("iconONLY"))}' />
+                                                <c:set var="classes" value="${prefOption.value eq 'OFF' ? 'no' : 'yes'}" />
+                                                <c:if test="${prefOption.value.equals(prefValue)}">
+                                                    <c:set var="classes" value="${classes} on" />
+                                                </c:if>
+                                                <c:choose>
+                                                    <c:when test="${iconOnly}">
+                                                        <c:set var="title" value="${prefText}" />
+                                                        <c:set var="renderMode" value="buttonImage" />
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <c:set var="title" value="" />
+                                                        <c:set var="renderMode" value="button" />
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <c:choose>
+                                                    <c:when test="${iconOnly}">
+                                                        <c:set var="optMap" value="${prefDisplayOptMap.get('iconONLY')}" />
+                                                        <c:set var="icon" value="${optMap.get(prefOption.value)}" />
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <c:set var="icon" value="" />
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                <cti:button classes="${classes}" title="${title}" renderMode="${renderMode}" label="${prefText}" icon="${icon}" data-value="${prefOption.value}" />
+                                            </c:forEach>
+                                        </div>
+                                    </c:when>
+                                    <c:when test="${prefName == 'COMMANDER_PRIORITY'}">
+                                        <cti:button id="resetCommandPriorityBtn" data-value="${defaultVal}" icon="icon-arrow-swap" renderMode="buttonImage" />
+                                        <input type="number" id="commandPriority" name="commandPriority" value="${priority}" />
+                                        <cti:list var="arguments">
                                             <cti:item value="${cmdPriority}" />
-                                            <cti:item value="${minCmdPriority}"/>
-                                            <cti:item value="${maxCmdPriority}"/>
-                                    </cti:list>
-                                    <div class="warning dn wsnw">
-                                           <i:inline key="yukon.web.input.error.outOfRangeInt" arguments="${arguments}"/>
-                                    </div>
-                                </td>
-                            </c:when>
-                            <c:when test="${prefName == 'COMMANDER_QUEUE_COMMAND'}">
-                                <td>
-                                    <c:set var="defaultVal" value="${preference.defaultValue}"/>
-                                    <cti:button classes="js-pref-default" data-value="${defaultVal}" icon="icon-arrow-swap" 
-                                        renderMode="buttonImage"/> 
-                                    <c:set var="trueClass" value="${queueCommand ? 'on' : ''}"/>
-                                    <c:set var="falseClass" value="${queueCommand ? '' : 'on'}"/>
-                                    <div id="queueCommand" class="button-group button-group-toggle">
-                                        <cti:button nameKey="yes" classes="yes ${trueClass}" data-value="true"/>
-                                        <cti:button nameKey="no"  classes="no ${falseClass}" data-value="false"/>
-                                    </div>
-                                </td>
-                            </c:when>
-                            <c:otherwise></c:otherwise>
-                            </c:choose>
-                            </tr>
+                                            <cti:item value="${minCmdPriority}" />
+                                            <cti:item value="${maxCmdPriority}" />
+                                        </cti:list>
+                                        <br>
+                                        <span class="warning dn">
+                                            <i:inline key="yukon.web.input.error.outOfRangeInt" arguments="${arguments}" />
+                                        </span>
+                                    </c:when>
+                                    <c:when test="${prefName == 'COMMANDER_QUEUE_COMMAND'}">
+                                        <cti:button classes="js-pref-default" data-value="${defaultVal}" icon="icon-arrow-swap" renderMode="buttonImage" />
+                                        <c:set var="trueClass" value="${queueCommand ? 'on' : ''}" />
+                                        <c:set var="falseClass" value="${queueCommand ? '' : 'on'}" />
+                                        <div id="queueCommand" class="button-group button-group-toggle">
+                                            <cti:button nameKey="yes" classes="yes ${trueClass}" data-value="true" />
+                                            <cti:button nameKey="no" classes="no ${falseClass}" data-value="false" />
+                                        </div>
+                                    </c:when>
+                                </c:choose>
+                            </tags:nameValue2>
                         </c:forEach>
-                    </tbody>
-                </table>
+                    </tags:nameValueContainer2>
             </tags:sectionContainer2>
         </cti:displayForPageEditModes>
     </div>
