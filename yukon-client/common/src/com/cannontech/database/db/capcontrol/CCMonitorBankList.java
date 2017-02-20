@@ -22,8 +22,8 @@ public class CCMonitorBankList extends DBPersistent {
 	private Integer displayOrder = new Integer ( 0 );
 	private Character scannable = new Character ( 'N' );
 	private Long NINAvg = new Long ( 3 );
-	private Float upperBandwidth = new Float(0);
-	private Float lowerBandwidth = new Float(0);
+	private Float upperBandwidth = new Float(126);
+	private Float lowerBandwidth = new Float(114);
 	private Character phase;
 	private Boolean overrideStrategySettings = Boolean.FALSE;
 	private Boolean scannableBoolean = Boolean.FALSE;

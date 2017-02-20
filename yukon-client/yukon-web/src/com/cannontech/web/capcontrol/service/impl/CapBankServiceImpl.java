@@ -3,19 +3,16 @@ package com.cannontech.web.capcontrol.service.impl;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.capcontrol.dao.CapbankDao;
-import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.model.CompleteCapBank;
@@ -36,7 +33,6 @@ import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
-import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.web.capcontrol.service.CapBankService;
 import com.cannontech.web.capcontrol.service.CbcService;
 import com.cannontech.web.editor.CapControlCBC;
@@ -47,9 +43,7 @@ public class CapBankServiceImpl implements CapBankService {
 
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private IDatabaseCache dbCache;
-    @Autowired private CapControlCache ccCache;
     @Autowired private PointDao pointDao;
-    @Autowired private CapbankDao capbankDao;
     @Autowired private CbcService cbcService;
     @Autowired private PaoPersistenceService paoPersistenceService;
 
@@ -77,37 +71,24 @@ public class CapBankServiceImpl implements CapBankService {
     
     @Override
     public List<CCMonitorBankList> getUnassignedPoints(CapBank capBank) {
-            List<CCMonitorBankList> unassignedPoints = new ArrayList<CCMonitorBankList>();
-            int controlDeviceId = capBank.getCapBank().getControlDeviceID().intValue();
-            if (controlDeviceId > 0) {
-                List<LitePoint> allPoints = pointDao.getLitePointsByPaObjectId(controlDeviceId);
-                for (int i = 0; i < allPoints.size(); i++) {
-                    LitePoint point = allPoints.get(i);
-                    
-                    if (UnitOfMeasure.getForId(point.getUofmID()) == UnitOfMeasure.VOLTS) {
+        List<CCMonitorBankList> unassignedPoints = new ArrayList<CCMonitorBankList>();
+        List<Integer> alreadyAssignedPoints = new ArrayList<>();
+        capBank.getCcMonitorBankList().forEach(monitor -> alreadyAssignedPoints.add(monitor.getId()));
+        int controlDeviceId = capBank.getCapBank().getControlDeviceID().intValue();
+        if (controlDeviceId > 0) {
+            List<LitePoint> allPoints = pointDao.getLitePointsByPaObjectId(controlDeviceId);
+            allPoints.stream().filter(point -> UnitOfMeasure.getForId(point.getUofmID()) == UnitOfMeasure.VOLTS)
+                .forEach(voltPoint -> {
+                    if (!alreadyAssignedPoints.contains(voltPoint.getLiteID())){
                         CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams();
-                        monitorPoint.setPointId(point.getLiteID());
+                        monitorPoint.setPointId(voltPoint.getLiteID());
                         monitorPoint.setDeviceId(controlDeviceId);
-                        monitorPoint.setPointName(point.getPointName());
-                        // set the feeder limits by default
-                        setDefaultFeederLimits(capBank, monitorPoint);
-                        
+                        monitorPoint.setPointName(voltPoint.getPointName());
                         CCMonitorBankList monitorListPoint = new CCMonitorBankList(monitorPoint);
-
-                        //check if already assigned
-                        boolean alreadyAssigned = false;
-                        for(CCMonitorBankList bankPoint : capBank.getCcMonitorBankList()) {
-                            if(bankPoint.getPointId().equals(monitorPoint.getPointId())){
-                                alreadyAssigned = true;
-                                break;
-                            }
-                        }
-                        if (!alreadyAssigned) {
-                            unassignedPoints.add(monitorListPoint);
-                        }
+                        unassignedPoints.add(monitorListPoint);
                     }
-                }
-            }
+                });
+        }
             
         return unassignedPoints;
     }
@@ -124,26 +105,6 @@ public class CapBankServiceImpl implements CapBankService {
         Collections.sort(bankList, DISPLAY_ORDER_COMPARATOR);
         capbank.setCcMonitorBankList(bankList);
 
-    }
-    
-    private void setDefaultFeederLimits(CapBank capBank, CapBankMonitorPointParams monitorPoint) {
-        int fdrId = 0;
-        try {
-            fdrId = capbankDao.getParentFeederIdentifier(capBank.getPAObjectID().intValue()).getPaoId();
-        }
-        catch( EmptyResultDataAccessException e) {
-            CTILogger.debug("Feeder " + capBank.getPAObjectID().intValue() + " not found. Capbank may be orphaned.");
-        }
-        
-        if (fdrId != 0) {
-            try {
-                Feeder feeder = ccCache.getFeeder(fdrId);
-                monitorPoint.setLowerBandwidth((float)feeder.getPeakLag());
-                monitorPoint.setUpperBandwidth((float)feeder.getPeakLead());
-            } catch (NotFoundException e) {
-                CTILogger.debug("Feeder " + fdrId + " not found. Capbank may be orphaned.");
-            }
-        }
     }
 
     @Override
@@ -235,23 +196,21 @@ public class CapBankServiceImpl implements CapBankService {
             CapBankMonitorPointParams monitorPoint = new CapBankMonitorPointParams();
             monitorPoint.setDeviceId(capbank.getCapBank().getDeviceID());
             monitorPoint.setPointId(pointId);
-            CCMonitorBankList monitorListPoint = new CCMonitorBankList(monitorPoint);
+            CCMonitorBankList monitorListPoint = new CCMonitorBankList(monitorPoint);            
             for (CCMonitorBankList existingMonitor : existingList) {
                 if (existingMonitor.getPointId().equals(pointId)){
                     monitorListPoint = existingMonitor;
                     update = true;
                 }
             }
+
             monitorListPoint.setDisplayOrder(displayOrder);
             monitorListPoint.setDbConnection(connection);
-
+            
             try {
                 if (update) {
                     monitorListPoint.update();
                 } else {
-                    setDefaultFeederLimits(capbank, monitorPoint);
-                    monitorListPoint.setUpperBandwidth((float)monitorPoint.getUpperBandwidth());
-                    monitorListPoint.setLowerBandwidth((float)monitorPoint.getLowerBandwidth());
                     monitorListPoint.add();
                 }
             } catch (SQLException e) {
@@ -261,22 +220,15 @@ public class CapBankServiceImpl implements CapBankService {
         }
         
         //delete any that were removed
-        for (CCMonitorBankList existingMonitor : existingList) {
-            boolean delete = true;
-            for (int pointId : pointIds) {
-                if(existingMonitor.getPointId().equals(pointId)) {
-                    delete = false;
-                }
-            }
-            if (delete) {
+        existingList.stream().filter(point -> !Arrays.asList(pointIds).contains(point.getId()))
+            .forEach(deletePoint -> {
                 try {
-                    existingMonitor.setDbConnection(connection);
-                    existingMonitor.delete();
+                    deletePoint.setDbConnection(connection);
+                    deletePoint.delete();
                 } catch (SQLException e) {
                     log.warn("Exception while deleting points from CapBank", e);
                 }
-            }
-        }   
+        });
     }
 
 

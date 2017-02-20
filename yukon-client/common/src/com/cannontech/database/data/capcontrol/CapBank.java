@@ -55,6 +55,7 @@ public class CapBank extends CapControlDeviceBase {
     private String cbcControllerName;
     private PaoType cbcType;
     private Integer cbcCommChannel;
+    private boolean overrideFeederLimitsSupported;
 
     public CapBank() {
         super(PaoType.CAPBANK);
@@ -280,6 +281,14 @@ public class CapBank extends CapControlDeviceBase {
 
     public void setCreateCBC(Boolean createCBC) {
         this.createCBC = createCBC;
+    }
+
+    public boolean isOverrideFeederLimitsSupported() {
+        return overrideFeederLimitsSupported;
+    }
+
+    public void setOverrideFeederLimitsSupported(boolean overrideFeederLimitsSupported) {
+        this.overrideFeederLimitsSupported = overrideFeederLimitsSupported;
     }
 
 }

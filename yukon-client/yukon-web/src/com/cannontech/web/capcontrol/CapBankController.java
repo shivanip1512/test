@@ -199,6 +199,8 @@ public class CapBankController {
                 
                 int feederId = ccCache.getParentFeederId(capBankId);
                 Feeder feeder = ccCache.getFeeder(feederId);
+                
+                capbank.setOverrideFeederLimitsSupported(feeder.isOverrideFeederLimitsSupported());
 
                 model.addAttribute("feederId", feeder.getCcId());
                 model.addAttribute("feederName", feeder.getCcName());

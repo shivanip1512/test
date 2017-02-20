@@ -62,6 +62,7 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
     private Vector<CapBankDevice> ccCapBanks;
     private boolean usePhaseData;
     private int originalParentId;
+    private boolean overrideFeederLimitsSupported;
 
     public Feeder() {
         super();
@@ -462,5 +463,10 @@ public class Feeder extends StreamableCapObject implements PointQualityCheckable
 
     public void setOriginalParentId(int originalParentId) {
         this.originalParentId = originalParentId;
+    }
+
+    public boolean isOverrideFeederLimitsSupported() {
+        overrideFeederLimitsSupported = algorithm == ControlAlgorithm.MULTI_VOLT || algorithm == ControlAlgorithm.MULTI_VOLT_VAR || algorithm == ControlAlgorithm.INTEGRATED_VOLT_VAR;
+        return overrideFeederLimitsSupported;
     }
 }

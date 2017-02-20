@@ -387,9 +387,11 @@
                         <th><i:inline key=".assignedPoints.adaptiveCount"/></th>
                         <th><i:inline key=".assignedPoints.phase"/></th>
                         <th><i:inline key=".assignedPoints.initiateScan"/></th>
-                        <th><i:inline key=".assignedPoints.overrideFeederLimits"/></th>
-                        <th><i:inline key=".assignedPoints.upperBandwidth"/></th>
-                        <th><i:inline key=".assignedPoints.lowerBandwidth"/></th>
+                        <c:if test="${capbank.overrideFeederLimitsSupported}">
+                            <th><i:inline key=".assignedPoints.overrideFeederLimits"/></th>
+                            <th><i:inline key=".assignedPoints.upperBandwidth"/></th>
+                            <th><i:inline key=".assignedPoints.lowerBandwidth"/></th>
+                        </c:if>
                         <th></th>
                     </tr>
                         <c:forEach var="point" items="${capbank.ccMonitorBankList}" varStatus="status">
@@ -405,16 +407,18 @@
                             <td>
                                 <tags:switchButton path="ccMonitorBankList[${idx}].scannableBoolean" offNameKey=".no.label" onNameKey=".yes.label"/>
                             </td>
-                            <td>
-                                <tags:switchButton path="ccMonitorBankList[${idx}].overrideStrategySettings" offNameKey=".no.label" onNameKey=".yes.label" toggleGroup="overrideFeederLimits_${idx}" toggleAction="disabled"/>
-                            </td>
-    
-                            <td style="max-width:150px;" class="db wrbw wsn">
-                                <span data-toggle-group="overrideFeederLimits_${idx}"><tags:input path="ccMonitorBankList[${idx}].upperBandwidth" size="10" /></span>
-                            </td>
-                            <td style="max-width:150px;" class="wsn">
-                                <span data-toggle-group="overrideFeederLimits_${idx}"><tags:input path="ccMonitorBankList[${idx}].lowerBandwidth" size="10" /></span>
-                            </td>
+                            <c:if test="${capbank.overrideFeederLimitsSupported}">
+                                <td>
+                                    <tags:switchButton path="ccMonitorBankList[${idx}].overrideStrategySettings" offNameKey=".no.label" onNameKey=".yes.label" toggleGroup="overrideFeederLimits_${idx}" toggleAction="disabled"/>
+                                </td>
+        
+                                <td style="max-width:150px;" class="db wrbw wsn">
+                                    <span data-toggle-group="overrideFeederLimits_${idx}"><tags:input path="ccMonitorBankList[${idx}].upperBandwidth" size="10" /></span>
+                                </td>
+                                <td style="max-width:150px;" class="wsn">
+                                    <span data-toggle-group="overrideFeederLimits_${idx}"><tags:input path="ccMonitorBankList[${idx}].lowerBandwidth" size="10" /></span>
+                                </td>
+                            </c:if>
                             <td>
                             <cti:displayForPageEditModes modes="EDIT">
                                 <cti:checkRolesAndProperties value="CBC_DATABASE_EDIT">
