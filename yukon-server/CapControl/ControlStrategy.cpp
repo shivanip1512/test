@@ -598,6 +598,37 @@ bool ControlStrategy::isPeakTime( const CtiTime & now ) const
     return false;
 }
 
+/*  
+    These two functions provide the base voltage limit functionality for control strategies.  They need
+        to be overridden in the voltage based strategies (Volt, MultiVolt, MultiVoltVar and IVVC) to return
+        actual voltage target limits.  This base implementation provides a default NEMA nominal 120V +/- 5%
+        window.  These functions should never be called for a strategy that is not one of the 4 types listed
+        above.  A message is printed in the log if this happens.
+*/
+double ControlStrategy::getUpperVoltLimit( const bool isPeak ) const
+{
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD )
+    {
+        CTILOG_ERROR( dout, "getUpperVoltLimit() called in strategy: " << _strategyName
+                        << " (ID: " << _strategyID << ") with unsupported control unit type: "
+                        << getControlUnits() );
+    }
+
+    return 126.0;   // NEMA standard 120V + 5%
+}
+
+double ControlStrategy::getLowerVoltLimit( const bool isPeak ) const
+{
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD )
+    {
+        CTILOG_ERROR( dout, "getLowerVoltLimit() called in strategy: " << _strategyName
+                        << " (ID: " << _strategyID << ") with unsupported control unit type: "
+                        << getControlUnits() );
+    }
+
+    return 114.0;   // NEMA standard 120V - 5%
+}
+
 
 const std::string ControlStrategy::NoControlMethod                  = "NONE";
 const std::string ControlStrategy::IndividualFeederControlMethod    = "INDIVIDUAL_FEEDER";

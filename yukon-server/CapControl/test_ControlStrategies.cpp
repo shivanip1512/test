@@ -2,7 +2,14 @@
 
 #include "ControlStrategy.h"
 #include "NoStrategy.h"
-#include "IVVCSTrategy.h"
+#include "IVVCStrategy.h"
+#include "KVarStrategy.h"
+#include "VoltStrategy.h"
+#include "MultiVoltStrategy.h"
+#include "MultiVoltVarStrategy.h"
+#include "PFactorKWKVarStrategy.h"
+#include "PFactorKWKQStrategy.h"
+#include "TimeOfDayStrategy.h"
 #include "StrategyLoader.h"
 #include "test_reader.h"
 
@@ -261,13 +268,217 @@ BOOST_AUTO_TEST_CASE(test_Strategy_bool_flag_support)
 BOOST_AUTO_TEST_CASE(test_Strategy_upper_and_lower_volt_limit_support)
 {
     // NoStrategy
+    {
+        NoStrategy  strategy;
+
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+
+        strategy.setPeakTimeFlag( false );
+
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLag() );
+
+        strategy.setPeakTimeFlag( true );
+
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLag() );
+    }
+
     // KVarStrategy
+    {
+        KVarStrategy    strategy;
+
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+
+        strategy.setPeakTimeFlag( false );
+
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLag() );
+
+        strategy.setPeakTimeFlag( true );
+
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLag() );
+    }
+
     // VoltStrategy
+    {
+        VoltStrategy    strategy;
+
+        strategy.restoreParameters( "Upper Volt Limit", "PEAK",     "122.0" );
+        strategy.restoreParameters( "Upper Volt Limit", "OFFPEAK",  "124.0" );
+        strategy.restoreParameters( "Lower Volt Limit", "PEAK",     "118.0" );
+        strategy.restoreParameters( "Lower Volt Limit", "OFFPEAK",  "116.0" );
+
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+
+        // the following are the legacy messaging passthru functions for sending limits to yukon-client
+
+        strategy.setPeakTimeFlag( false );
+
+        BOOST_CHECK_EQUAL( 122.0, strategy.getPeakLead() );                 // peak
+        BOOST_CHECK_EQUAL( 118.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 124.0, strategy.getOffPeakLead() );              // offpeak
+        BOOST_CHECK_EQUAL( 116.0, strategy.getOffPeakLag() );
+
+        strategy.setPeakTimeFlag( true );   // flag has no effect on what is sent in the message
+
+        BOOST_CHECK_EQUAL( 122.0, strategy.getPeakLead() );                 // peak
+        BOOST_CHECK_EQUAL( 118.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 124.0, strategy.getOffPeakLead() );              // offpeak
+        BOOST_CHECK_EQUAL( 116.0, strategy.getOffPeakLag() );
+    }
+
     // MultiVoltStrategy
+    {
+        MultiVoltStrategy   strategy;
+
+        strategy.restoreParameters( "Upper Volt Limit", "PEAK",     "122.0" );
+        strategy.restoreParameters( "Upper Volt Limit", "OFFPEAK",  "124.0" );
+        strategy.restoreParameters( "Lower Volt Limit", "PEAK",     "118.0" );
+        strategy.restoreParameters( "Lower Volt Limit", "OFFPEAK",  "116.0" );
+
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+
+        // legacy passthru to yukon-client
+
+        strategy.setPeakTimeFlag( false );
+
+        BOOST_CHECK_EQUAL( 122.0, strategy.getPeakLead() );                 // peak
+        BOOST_CHECK_EQUAL( 118.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 124.0, strategy.getOffPeakLead() );              // offpeak
+        BOOST_CHECK_EQUAL( 116.0, strategy.getOffPeakLag() );
+
+        strategy.setPeakTimeFlag( true );   // flag has no effect on what is sent in the message
+
+        BOOST_CHECK_EQUAL( 122.0, strategy.getPeakLead() );                 // peak
+        BOOST_CHECK_EQUAL( 118.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 124.0, strategy.getOffPeakLead() );              // offpeak
+        BOOST_CHECK_EQUAL( 116.0, strategy.getOffPeakLag() );
+    }
+
     // MultiVoltVarStrategy
+    {
+        MultiVoltVarStrategy    strategy;
+
+        strategy.restoreParameters( "Upper Volt Limit", "PEAK",     "122.0" );
+        strategy.restoreParameters( "Upper Volt Limit", "OFFPEAK",  "124.0" );
+        strategy.restoreParameters( "Lower Volt Limit", "PEAK",     "118.0" );
+        strategy.restoreParameters( "Lower Volt Limit", "OFFPEAK",  "116.0" );
+
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+
+        // legacy passthru to yukon-client
+
+        strategy.setPeakTimeFlag( false );
+
+        BOOST_CHECK_EQUAL( 122.0, strategy.getPeakLead() );                 // peak
+        BOOST_CHECK_EQUAL( 118.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 124.0, strategy.getOffPeakLead() );              // offpeak
+        BOOST_CHECK_EQUAL( 116.0, strategy.getOffPeakLag() );
+
+        strategy.setPeakTimeFlag( true );   // flag has no effect on what is sent in the message
+
+        BOOST_CHECK_EQUAL( 122.0, strategy.getPeakLead() );                 // peak
+        BOOST_CHECK_EQUAL( 118.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 124.0, strategy.getOffPeakLead() );              // offpeak
+        BOOST_CHECK_EQUAL( 116.0, strategy.getOffPeakLag() );
+    }
+
     // PFactorKWKVarStrategy
+    {
+        PFactorKWKVarStrategy   strategy;
+
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+
+        strategy.setPeakTimeFlag( false );
+
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLag() );
+
+        strategy.setPeakTimeFlag( true );
+
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLag() );
+    }
+
     // PFactorKWKQStrategy
+    {
+        PFactorKWKQStrategy strategy;
+
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+
+        strategy.setPeakTimeFlag( false );
+
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLag() );
+
+        strategy.setPeakTimeFlag( true );
+
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLag() );
+    }
+
     // TimeOfDayStrategy
+    {
+        TimeOfDayStrategy   strategy;
+
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+
+        strategy.setPeakTimeFlag( false );
+
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLag() );
+
+        strategy.setPeakTimeFlag( true );
+
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getPeakLag() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLead() );
+        BOOST_CHECK_EQUAL( 0.0, strategy.getOffPeakLag() );
+    }
 
     // IVVCStrategy
     {
@@ -282,6 +493,18 @@ BOOST_AUTO_TEST_CASE(test_Strategy_upper_and_lower_volt_limit_support)
         BOOST_CHECK_EQUAL( 124.0, strategy.getUpperVoltLimit( false ) );    // offpeak
         BOOST_CHECK_EQUAL( 118.0, strategy.getLowerVoltLimit( true ) );     // peak
         BOOST_CHECK_EQUAL( 116.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+
+        // legacy passthru to yukon-client
+
+        strategy.setPeakTimeFlag( false );
+
+        BOOST_CHECK_EQUAL( 124.0, strategy.getPeakLead() );                 // offpeak
+        BOOST_CHECK_EQUAL( 116.0, strategy.getPeakLag() );
+
+        strategy.setPeakTimeFlag( true );
+
+        BOOST_CHECK_EQUAL( 122.0, strategy.getPeakLead() );                 // peak
+        BOOST_CHECK_EQUAL( 118.0, strategy.getPeakLag() );
     }
 }
 

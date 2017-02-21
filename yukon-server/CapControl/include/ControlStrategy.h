@@ -152,6 +152,9 @@ public:
 
     bool isPeakTime( const CtiTime & now ) const;
 
+    virtual double getUpperVoltLimit( const bool isPeak ) const;
+    virtual double getLowerVoltLimit( const bool isPeak ) const;
+
 private:
 
     long        _strategyID;

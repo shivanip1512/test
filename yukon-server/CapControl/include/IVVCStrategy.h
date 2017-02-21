@@ -33,8 +33,9 @@ public:
 
     virtual const std::string getControlUnits() const;
 
-    const double getUpperVoltLimit(const bool isPeak) const;
-    const double getLowerVoltLimit(const bool isPeak) const;
+    double getUpperVoltLimit( const bool isPeak ) const override;
+    double getLowerVoltLimit( const bool isPeak ) const override;
+
     const double getTargetPF(const bool isPeak) const;
     const double getMinBankOpen(const bool isPeak) const;
     const double getMinBankClose(const bool isPeak) const;

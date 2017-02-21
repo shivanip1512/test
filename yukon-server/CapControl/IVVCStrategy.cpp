@@ -301,13 +301,13 @@ const std::string IVVCStrategy::getControlUnits() const
 }
 
 
-const double IVVCStrategy::getUpperVoltLimit(const bool isPeak) const
+double IVVCStrategy::getUpperVoltLimit( const bool isPeak ) const
 {
     return isPeak ? _peakUpperVoltLimit : _offpeakUpperVoltLimit;
 }
 
 
-const double IVVCStrategy::getLowerVoltLimit(const bool isPeak) const
+double IVVCStrategy::getLowerVoltLimit( const bool isPeak ) const
 {
     return isPeak ? _peakLowerVoltLimit : _offpeakLowerVoltLimit;
 }
