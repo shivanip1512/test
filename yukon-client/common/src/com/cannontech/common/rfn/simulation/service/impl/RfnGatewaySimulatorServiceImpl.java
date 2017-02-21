@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.jms.ConnectionFactory;
@@ -38,7 +39,9 @@ import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponseType;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionRequest;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResponse;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
+import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnDeviceCreationService;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareVersionReplySettings;
@@ -83,6 +86,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     private volatile SimulatedFirmwareVersionReplySettings firmwareVersionSettings;
 
     @Autowired ConnectionFactory connectionFactory;
+    @Autowired private RfnGatewayService rfnGatewayService;
     private JmsTemplate jmsTemplate;
     
     @PostConstruct
@@ -96,6 +100,11 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         if (autoDataReplyActive) {
             return false;
         } else {
+            Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
+            gateways.forEach(gateway -> {
+                GatewayDataResponse response = setUpDataResponse(gateway.getRfnIdentifier(), settings);
+                jmsTemplate.convertAndSend(dataAndUpgradeResponseQueue, response);
+            });
             Thread autoDataThread = getAutoDataRunnerThread(settings);
             autoDataThread.start();
             gatewayDataSettings = settings;
