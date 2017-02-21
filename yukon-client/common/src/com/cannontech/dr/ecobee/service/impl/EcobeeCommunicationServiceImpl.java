@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTimeZone;
+import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.LocalDateTime;
 import org.joda.time.MutableDateTime;
@@ -47,8 +48,11 @@ import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
 import com.cannontech.dr.ecobee.message.UnregisterDeviceRequest;
+import com.cannontech.dr.ecobee.message.partial.DutyCycleDr;
 import com.cannontech.dr.ecobee.message.partial.RuntimeReport;
 import com.cannontech.dr.ecobee.message.partial.RuntimeReportRow;
+import com.cannontech.dr.ecobee.message.partial.Selection;
+import com.cannontech.dr.ecobee.message.partial.Selection.SelectionType;
 import com.cannontech.dr.ecobee.message.partial.SetNode;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReadings;
@@ -311,6 +315,34 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         DrResponse response = queryEcobee(url, requestEntity, EcobeeQueryType.DEMAND_RESPONSE, DrResponse.class);
 
         return response.getDemandResponseRef();
+    }
+
+    @Override
+    public void sendOverrideControl(String serialNumber) {
+        log.debug("Sending ecobee override event to " + serialNumber);
+        
+        String url = getUrlBase() + demandResponseUrlPart;
+        
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
+        String displayMessage = messageSourceAccessor.getMessage("yukon.web.modules.dr.ecobee.overrideDisplayMessage");
+        
+        Selection selection = new Selection(SelectionType.THERMOSTATS, serialNumber);
+        
+        int utcOffset = DateTimeZone.getDefault().getOffset(Instant.now());
+        Instant startTime = Instant.now().minus(utcOffset);
+        Instant endTime = startTime.plus(Duration.standardMinutes(5));
+        
+        DutyCycleDr dr = new DutyCycleDr(YUKON_OVERRIDE_EVENT_NAME, displayMessage, 100, startTime, false, endTime, 
+                                         false, false);
+        DutyCycleDrRequest request = new DutyCycleDrRequest(selection, dr);
+        
+        HttpEntity<DutyCycleDrRequest> requestEntity = new HttpEntity<>(request, new HttpHeaders());
+        DrResponse response = queryEcobee(url, requestEntity, EcobeeQueryType.DEMAND_RESPONSE, DrResponse.class);
+        
+        if (log.isDebugEnabled()) {
+            log.debug("Override event response - code: " + response.getStatus().getCode() + ", message: " +
+                      response.getStatus().getMessage());
+        }
     }
 
     @Override

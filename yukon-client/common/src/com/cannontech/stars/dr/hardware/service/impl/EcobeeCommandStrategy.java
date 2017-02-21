@@ -65,6 +65,8 @@ public class EcobeeCommandStrategy implements LmHardwareCommandStrategy {
                 break;
             case TEMP_OUT_OF_SERVICE:
                 ecobeeCommunicationService.moveDeviceToSet(serialNumber, EcobeeCommunicationService.OPT_OUT_SET);
+                // Send a 5-minute, 0% control to override any currently running control for the device
+                ecobeeCommunicationService.sendOverrideControl(serialNumber);
                 break;
             case CANCEL_TEMP_OUT_OF_SERVICE:
                 groupId = getGroupId(device.getInventoryID());

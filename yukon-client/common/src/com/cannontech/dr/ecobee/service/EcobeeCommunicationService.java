@@ -27,6 +27,7 @@ public interface EcobeeCommunicationService {
     String OPT_OUT_SET = "optout";
     String UNENROLLED_SET = "unenrolled";
     String YUKON_CYCLE_EVENT_NAME = "yukonCycle";
+    String YUKON_OVERRIDE_EVENT_NAME = "override";
     
     /**
      * Registers the specified device with Ecobee.
@@ -94,7 +95,13 @@ public interface EcobeeCommunicationService {
      * @throws EcobeeCommunicationException if Yukon cannot log in or connect to Ecobee API
      */
     String sendDutyCycleDR(EcobeeDutyCycleDrParameters parameters);
-
+    
+    /**
+     * Initiates a 5-minute 0% duty cycle demand response event in ecobee.
+     * This control will do no actual cycling. It's purpose is to override any events that are currently running.
+     */
+    void sendOverrideControl(String serialNumber);
+    
     /**
      * Sends a message to cancel a DR event based on ecobee's event identifier.
      * @throws EcobeeCommunicationException if Yukon cannot log in or connect to Ecobee API

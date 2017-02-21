@@ -550,6 +550,7 @@
 <entry key="yukon.web.modules.dr.ecobee.queryType.SYSTEM">System</entry>
 
 <entry key="yukon.web.modules.dr.ecobee.eventDisplayMessage">Savings</entry>
+<entry key="yukon.web.modules.dr.ecobee.overrideDisplayMessage">DR Override</entry>
 
 <entry key="yukon.web.modules.dr.home.rfPerformance.title">RF Broadcast Performance</entry>
 <entry key="yukon.web.modules.dr.home.rfPerformance.last24Hr">Last 24 Hours</entry>

@@ -162,5 +162,10 @@ public class DataDownloadServiceImplTest {
         public void deleteDevice(String serialNumber) {
             throw new UnsupportedOperationException("Method not implemented.");
         }
+
+        @Override
+        public void sendOverrideControl(String serialNumber) {
+            throw new UnsupportedOperationException("Method not implemented.");
+        }
     }
 }
