@@ -10047,10 +10047,6 @@
                 <unitofmeasure value="Temp-C" />
                 <decimalplaces value="3" />
             </point>
-            <point type="Status" offset="81">
-                <name>Low Battery Voltage</name>
-                <stategroup value="TrueFalse" />
-            </point>
             <point type="Status" offset="82">
                 <name>Meter Read - No encoder found</name>
                 <stategroup value="TrueFalse" />
@@ -10086,7 +10082,6 @@
         </points>
         <attributes>
             <attribute name="LOW_BATTERY_VOLTAGE">
-                <basicLookup point="Low Battery Voltage" />
             </attribute>
             <attribute name="METER_READ_NO_ENCODER_FOUND">
                 <basicLookup point="Meter Read - No encoder found" />
