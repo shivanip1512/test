@@ -39,7 +39,7 @@
                 <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}"/>
             </cti:checkRolesAndProperties>
             <!-- Delete Meter Button -->
-            <cti:checkRolesAndProperties value="INFRASTRUCTURE_DELETE">
+            <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
                 <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" onclick="$('#delete-meter-form').submit();" />
                 <d:confirm on="#deleteMeter"  nameKey="meter.confirmDelete"/>
                 <cti:url var="deleteUrl" value="/meter/${deviceId}"/>

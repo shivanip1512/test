@@ -5,6 +5,8 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="amr" page="meterDetail.water">
     <dt:pickerIncludes/>
@@ -26,9 +28,22 @@
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
             <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}"/>
         </cti:checkRolesAndProperties>
+        
+        <!-- Delete Meter Button -->
+        <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
+            <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" onclick="$('#delete-meter-form').submit();" />
+            <d:confirm on="#deleteMeter"  nameKey="meter.confirmDelete"/>
+            <cti:url var="deleteUrl" value="/meter/${deviceId}"/>
+            <form:form id="delete-meter-form" action="${deleteUrl}" method="delete">
+                <cti:csrfToken/>
+            </form:form>
+        </cti:checkRolesAndProperties>
+        
+        <!-- Water Leak Report -->
         <cti:checkRolesAndProperties value="WATER_LEAK_REPORT">
             <cm:dropdownOption key=".waterLeakReport.report.pageName" href="${waterLeakReportUrl}" />
         </cti:checkRolesAndProperties>
+
         <!-- Actions: Map Network -->
         <c:if test="${showMapNetwork}">
             <cti:url var="mapNetworkUrl" value="/stars/mapNetwork/home?deviceId=${deviceId}"/>

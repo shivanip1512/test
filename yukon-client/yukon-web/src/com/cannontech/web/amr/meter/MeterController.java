@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
+import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -29,6 +31,7 @@ import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.amr.meter.search.service.MeterSearchService;
 import com.cannontech.amr.meter.service.MeterService;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceFilterCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.config.ConfigurationSource;
@@ -54,6 +57,7 @@ import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnGateway;
+import com.cannontech.common.rfn.service.impl.RfnRelayServiceImpl;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.DeviceDao;
@@ -120,7 +124,8 @@ public class MeterController {
     @Autowired private ServerDatabaseCache serverDatabaseCache;
     @Autowired private MeterTypeHelper meterTypeHelper;
     @Autowired private MeterService meterService;
-    
+    private static final Logger log = YukonLogManager.getLogger(MeterController.class); 
+
     private static final String baseKey = "yukon.web.modules.amr.meterSearchResults";
     
     @RequestMapping("start")
@@ -416,15 +421,17 @@ public class MeterController {
         model.addAttribute("mctMeterTypes", mctMeterTypes);
     }
     
-    @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_DELETE)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     @RequestMapping(value="/{id}", method=RequestMethod.DELETE)
     public String delete(FlashScope flash, @PathVariable int id, ModelMap model) {
         
-        boolean success = meterService.deleteMeter(id);
-        if (success) {
+        try {
+            deviceDao.removeDevice(id);
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.successful", id));
             return "redirect:/meter/start";
-        } else {
+        }
+        catch (Exception e) {
+            log.error("Unable to delete meter with id " + id, e);
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.failure", id));
             return "redirect:/meter/home?deviceId="+id;
         }
