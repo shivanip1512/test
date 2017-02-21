@@ -57,7 +57,7 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
     private JTextField kwReductionTextField;
     private JCheckBox checkBoxRampIn;
     private JCheckBox checkBoxRampOut;
-    private JCheckBox checkBoxMandatary;
+    private JCheckBox checkBoxMandatory;
 
     public EcobeeCycleGearPanel() {
         initialize();
@@ -88,13 +88,13 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
     }
     
     private JCheckBox getCheckBoxMandatory() {
-        if (checkBoxMandatary == null) {
-            checkBoxMandatary = new JCheckBox();
-            checkBoxMandatary.setText(LMProgramDirectGear.OPTION_MANDATORY);
-            checkBoxMandatary.setPreferredSize(new Dimension(165, 23));
-            checkBoxMandatary.setSelected(false);
+        if (checkBoxMandatory == null) {
+            checkBoxMandatory = new JCheckBox();
+            checkBoxMandatory.setText(LMProgramDirectGear.OPTION_MANDATORY);
+            checkBoxMandatory.setPreferredSize(new Dimension(165, 23));
+            checkBoxMandatory.setSelected(false);
         }
-        return checkBoxMandatary;
+        return checkBoxMandatory;
     }
     
     private JCheckBox getCheckBoxRampOut() {
