@@ -34,6 +34,7 @@ public:
 
     static std::vector<AttributeNotFound> getUnknownAttributes();
     static std::vector<MetricMappingNotFound>  getUnmappedAttributes();
+    static std::set<unsigned short> getMappedMetricIds();
 
 private:
     using attribute_bimap = boost::bimap< Attribute, MetricId >;

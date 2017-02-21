@@ -5,6 +5,8 @@
 #include "std_helper.h"
 
 #include <boost/bimap.hpp>
+#include <boost/range/adaptor/map.hpp>
+#include <boost/range/algorithm/set_algorithm.hpp>
 
 namespace Cti {
 
@@ -95,6 +97,18 @@ std::vector<AttributeNotFound> MetricIdLookup::getUnknownAttributes()
 std::vector<MetricMappingNotFound> MetricIdLookup::getUnmappedAttributes()
 {
     return unmappedAttributes;
+}
+
+std::set<unsigned short> MetricIdLookup::getMappedMetricIds()
+{
+    const auto globalMetrics = boost::copy_range<std::set<MetricId>>(attributes.left | boost::adaptors::map_values);
+    const auto paoOverrides  = boost::copy_range<std::set<MetricId>>(paoMetrics | boost::adaptors::map_values);
+
+    std::set<MetricId> combinedMetrics;
+
+    boost::range::set_union(globalMetrics, paoOverrides, std::inserter(combinedMetrics, combinedMetrics.begin()));
+
+    return combinedMetrics;
 }
 
 MetricMappingNotFound::MetricMappingNotFound(const Attribute &attrib)

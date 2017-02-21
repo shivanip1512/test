@@ -61,6 +61,9 @@ const MetricInfo metricInfos[] = {
         {  35,  TouRates,  "Var received, peak demand"             },
         {  36,  TouRates,  "Var delivered, peak demand coincident" },
         {  37,  TouRates,  "Var received, peak demand coincident"  },
+        {  38,  TouRates,  "Var Q1"                                },
+        {  39,  TouRates,  "Var Q2"                                },
+        {  40,  TouRates,  "Var Q3"                                },
 
         {  41,  TouRates,  "VA hour delivered"                     },
         {  42,  TouRates,  "VA hour received"                      },
@@ -86,6 +89,7 @@ const MetricInfo metricInfos[] = {
         {  69,  TouRates,  "Q delivered, peak demand coincident"   },
         {  70,  TouRates,  "Q received, peak demand coincident"    },
 
+        {  80,  TouRates,  "Power Factor"                          },
         {  81,  TouRates,  "Power Factor kWh(del)/kVar(del)"       },
         {  82,  TouRates,  "Power Factor kWh(rec)/kVar(rec)"       },
         {  83,  TouRates,  "Power Factor kWh(total)/kVar(total)"   },
@@ -116,6 +120,8 @@ const MetricInfo metricInfos[] = {
         { 123,  TouRates,  "Voltage Max Phase B"                   },
         { 124,  TouRates,  "Voltage Max Phase C"                   },
 
+        { 128,  TouRates,  "Current Neutral to Ground"             },
+
         { 150,  TouRates,  "Watts Phase A"                         },
         { 151,  TouRates,  "Watts Phase B"                         },
         { 152,  TouRates,  "Watts Phase C"                         },
@@ -131,6 +137,8 @@ const MetricInfo metricInfos[] = {
         { 162,  TouRates,  "PF Phase A"                            },
         { 163,  TouRates,  "PF Phase B"                            },
         { 164,  TouRates,  "PF Phase C"                            },
+
+        { 200,  TouRates,  "Watts"                                 },
 
         { 256,  TouRates,  "Time in Seconds"                       },
         { 257,  None,      "Temperature in Centigrade"             }};

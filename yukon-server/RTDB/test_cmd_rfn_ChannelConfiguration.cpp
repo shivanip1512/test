@@ -1,6 +1,7 @@
 #include "cmd_rfn_ChannelConfiguration.h"
 
 #include "ctidate.h"
+#include "MetricIdLookup.h"
 #include "std_helper.h"
 #include "boost_test_helpers.h"
 
@@ -1469,12 +1470,12 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelIntervalRecordingCommand_exceptions )
     {
         const std::vector<RfnChannelConfigurationCommand::MetricIds> metrics = {
             // invalid metric
-            {  1,   2,   3,   4,   5,  38 },
+            {  1,   2,   3,   4,   5,  999 },
             // 16 metrics
             {  1,   2,   3,   4,   5,   6,   7,   8,   9,  10,  11,  12,  21,  22,  23,  24 } };
 
         const std::vector<RfnCommand::CommandException> expected = list_of
-                ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid metric id (38)" ) )
+                ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid metric id (999)" ) )
                 ( RfnCommand::CommandException( ClientErrors::BadParameter, "Number of metrics 16, expected <= 15" ) );
 
         std::vector< RfnCommand::CommandException > actual;
@@ -1607,6 +1608,21 @@ BOOST_AUTO_TEST_CASE( test_RfnGetChannelIntervalRecordingCommand_exceptions )
 
         BOOST_CHECK_EQUAL_COLLECTIONS( actual.begin(),   actual.end(),
                                        expected.begin(), expected.end() );
+    }
+}
+
+BOOST_AUTO_TEST_CASE( test_valid_metrics )
+{
+    for( const auto metric : Cti::MetricIdLookup::getMappedMetricIds() )
+    {
+        try 
+        {
+            RfnSetChannelSelectionCommand({ metric });
+        }
+        catch( const RfnCommand::CommandException& ce )
+        {
+            BOOST_ERROR("Metric " << metric << " failed");
+        }
     }
 }
 
