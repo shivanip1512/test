@@ -561,28 +561,28 @@ public class CommanderController {
                     recentTargets.remove(0);
                 }
                 recentTargets.add(currentTarget);
-                preferences.add(new UserPreference(null, user.getUserID(), UserPreferenceName.COMMANDER_RECENT_TARGETS,
+                preferences.add(new UserPreference(user.getUserID(), UserPreferenceName.COMMANDER_RECENT_TARGETS,
                     JsonUtils.toJson(recentTargets), true));
-                preferences.add(new UserPreference(null, user.getUserID(), UserPreferenceName.COMMANDER_LAST_TARGET,
+                preferences.add(new UserPreference(user.getUserID(), UserPreferenceName.COMMANDER_LAST_TARGET,
                     params.getTarget().name(), true));
             }
             if (params.getTarget() == (CommandTarget.DEVICE) || params.getTarget() == (CommandTarget.LOAD_GROUP)) {
-                preferences.add(new UserPreference(null, user.getUserID(), UserPreferenceName.COMMANDER_LAST_PAO_ID,
+                preferences.add(new UserPreference(user.getUserID(), UserPreferenceName.COMMANDER_LAST_PAO_ID,
                     Integer.toString(params.getPaoId()), true));
             } else {
-                preferences.add(new UserPreference(null, user.getUserID(), 
+                preferences.add(new UserPreference(user.getUserID(), 
                     UserPreferenceName.COMMANDER_LAST_SERIAL_NUMBER, params.getSerialNumber(), true));
-                preferences.add(new UserPreference(null, user.getUserID(), UserPreferenceName.COMMANDER_LAST_ROUTE_ID,
+                preferences.add(new UserPreference(user.getUserID(), UserPreferenceName.COMMANDER_LAST_ROUTE_ID,
                     Integer.toString(params.getRouteId()), true));
             }
         }
         
         if (params.getPriority() > 0) {
-            preferences.add(new UserPreference(null, user.getUserID(), UserPreferenceName.COMMANDER_PRIORITY,
+            preferences.add(new UserPreference(user.getUserID(), UserPreferenceName.COMMANDER_PRIORITY,
                 Integer.toString(params.getPriority()), true));
         }
 
-        preferences.add(new UserPreference(null, user.getUserID(), UserPreferenceName.COMMANDER_QUEUE_COMMAND,
+        preferences.add(new UserPreference(user.getUserID(), UserPreferenceName.COMMANDER_QUEUE_COMMAND,
                 Boolean.toString(params.isQueueCommand()), true));
         
         // Update preferences all at once

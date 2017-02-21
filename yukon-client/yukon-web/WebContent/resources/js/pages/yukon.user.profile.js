@@ -114,8 +114,8 @@ yukon.userProfile = (function () {
             url = yukon.url('/user/updatePreference.json'),
             btn = $(this),
             row = btn.closest('tr'),
-            minPriority = 1, // $('#commandPriority').attr('min'),
-            maxPriority = 14, //$('#commandPriority').attr('max'),
+            minPriority = 1,
+            maxPriority = 14,
             params = {
                 userId: $('#user-id').val(),
                 prefName: row.data('type'),
@@ -125,12 +125,13 @@ yukon.userProfile = (function () {
         if (value < minPriority){
             $('.warning').removeClass('dn');
             $('#commandPriority').val(minPriority);
+            return;
         }
         if (value > maxPriority) {
             $('.warning').removeClass('dn');
             $('#commandPriority').val(maxPriority);
+            return;
         }
-        
         $.ajax({ type: 'post', url: url, data: params });
     },
     

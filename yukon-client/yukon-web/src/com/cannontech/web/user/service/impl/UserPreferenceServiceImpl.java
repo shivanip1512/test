@@ -29,8 +29,8 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
 
     @Autowired private UserPreferenceDao prefDao;
     @Autowired @Qualifier("main") private ScheduledExecutor dbUpdateTimer;
-    private static final int STARTUP_REF_RATE = 1000 ; // 6 * 60 * 60 * 1000; // 6 hours
-    private static final int PERIODIC_UPDATE_REF_RATE = 1000 * 5 ;// 6 * 60 * 60 * 1000; // 6 hours
+    private static final int STARTUP_REF_RATE = 6 * 60 * 60 * 1000; // 6 hours
+    private static final int PERIODIC_UPDATE_REF_RATE = 6 * 60 * 60 * 1000; // 6 hours
 
     @PostConstruct
     public void initialize() {
@@ -63,7 +63,7 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
 
     @Override
     public UserPreference savePreference(LiteYukonUser user, UserPreferenceName preferenceName, String newValue) {
-        UserPreference preference = new UserPreference(null, user.getUserID(), preferenceName, newValue, false);
+        UserPreference preference = new UserPreference(user.getUserID(), preferenceName, newValue, false);
         prefDao.updateUserPreferences(user.getUserID(), Arrays.asList(preference));
         return preference;
     }

@@ -15,9 +15,7 @@ public class UserPreference implements Serializable {
     public UserPreference() {
     }
 
-    public UserPreference(Integer id, Integer userId, UserPreferenceName name, String value, boolean isUpdated) {
-        super();
-        this.id = id;
+    public UserPreference(Integer userId, UserPreferenceName name, String value, boolean isUpdated) {
         this.userId = userId;
         this.name = name;
         this.value = value;
