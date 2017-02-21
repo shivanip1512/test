@@ -10081,8 +10081,6 @@
             </point>
         </points>
         <attributes>
-            <attribute name="LOW_BATTERY_VOLTAGE">
-            </attribute>
             <attribute name="METER_READ_NO_ENCODER_FOUND">
                 <basicLookup point="Meter Read - No encoder found" />
             </attribute>
