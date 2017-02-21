@@ -17,6 +17,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
@@ -49,7 +50,7 @@ public class AreaDaoImpl implements AreaDao {
             area.setId(rs.getInt("AreaId"));
             area.setType(rs.getEnum("Type", PaoType.class));
             area.setName(rs.getString("PAOName"));
-            area.setDescription(rs.getString("Description"));
+            area.setDescription(SqlUtils.convertDbValueToString(rs.getString("Description")));
             area.setDisabled(rs.getBoolean("DisableFlag"));
             int voltReduction = rs.getInt("VoltReductionPointId");
             area.setVoltReductionPoint(voltReduction == 0 ? null : voltReduction);
@@ -110,7 +111,7 @@ public class AreaDaoImpl implements AreaDao {
             values.addValue("PAOClass", PaoClass.CAPCONTROL);
             values.addValue("Type", area.getType());
             values.addValue("PAOName", area.getName());
-            values.addValue("Description", area.getDescription());
+            values.addValue("Description", SqlUtils.convertStringToDbValue(area.getDescription()));
             values.addValue("DisableFlag", YNBoolean.valueOf(area.isDisabled()));
             jdbcTemplate.update(sql);
             
@@ -126,7 +127,7 @@ public class AreaDaoImpl implements AreaDao {
             // UPDATE
             SqlParameterSink values = sql.update("YukonPAObject");
             values.addValue("PAOName", area.getName());
-            values.addValue("Description", area.getDescription());
+            values.addValue("Description", SqlUtils.convertStringToDbValue(area.getDescription()));
             values.addValue("DisableFlag", YNBoolean.valueOf(area.isDisabled()));
             sql.append("WHERE PAObjectId").eq(area.getId());
             jdbcTemplate.update(sql);
