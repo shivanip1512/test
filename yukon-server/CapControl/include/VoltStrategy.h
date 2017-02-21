@@ -39,6 +39,9 @@ public:
 
     virtual const std::string getControlUnits() const;
 
+    double getUpperVoltLimit( const bool isPeak ) const override;
+    double getLowerVoltLimit( const bool isPeak ) const override;
+
 private:
 
     std::string _controlMethod;

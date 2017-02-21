@@ -54,25 +54,37 @@ void VoltStrategy::restoreParameters(const std::string &name, const std::string 
 
 double VoltStrategy::getPeakLag() const
 {
-    return _peakLowerVoltLimit;
+    return getLowerVoltLimit( true );
 }
 
 
 double VoltStrategy::getOffPeakLag() const
 {
-    return _offpeakLowerVoltLimit;
+    return getLowerVoltLimit( false );
 }
 
 
 double VoltStrategy::getPeakLead() const
 {
-    return _peakUpperVoltLimit;
+    return getUpperVoltLimit( true );
 }
 
 
 double VoltStrategy::getOffPeakLead() const
 {
-    return _offpeakUpperVoltLimit;
+    return getUpperVoltLimit( false );
+}
+
+
+double VoltStrategy::getUpperVoltLimit( const bool isPeak ) const
+{
+    return isPeak ? _peakUpperVoltLimit : _offpeakUpperVoltLimit;
+}
+
+
+double VoltStrategy::getLowerVoltLimit( const bool isPeak ) const
+{
+    return isPeak ? _peakLowerVoltLimit : _offpeakLowerVoltLimit;
 }
 
 

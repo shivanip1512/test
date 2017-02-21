@@ -54,25 +54,37 @@ void MultiVoltStrategy::restoreParameters(const std::string &name, const std::st
 
 double MultiVoltStrategy::getPeakLag() const
 {
-    return _peakLowerVoltLimit;
+    return getLowerVoltLimit( true );
 }
 
 
 double MultiVoltStrategy::getOffPeakLag() const
 {
-    return _offpeakLowerVoltLimit;
+    return getLowerVoltLimit( false );
 }
 
 
 double MultiVoltStrategy::getPeakLead() const
 {
-    return _peakUpperVoltLimit;
+    return getUpperVoltLimit( true );
 }
 
 
 double MultiVoltStrategy::getOffPeakLead() const
 {
-    return _offpeakUpperVoltLimit;
+    return getUpperVoltLimit( false );
+}
+
+
+double MultiVoltStrategy::getUpperVoltLimit( const bool isPeak ) const
+{
+    return isPeak ? _peakUpperVoltLimit : _offpeakUpperVoltLimit;
+}
+
+
+double MultiVoltStrategy::getLowerVoltLimit( const bool isPeak ) const
+{
+    return isPeak ? _peakLowerVoltLimit : _offpeakLowerVoltLimit;
 }
 
 

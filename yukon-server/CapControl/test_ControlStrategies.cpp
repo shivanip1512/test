@@ -324,10 +324,10 @@ BOOST_AUTO_TEST_CASE(test_Strategy_upper_and_lower_volt_limit_support)
         strategy.restoreParameters( "Lower Volt Limit", "PEAK",     "118.0" );
         strategy.restoreParameters( "Lower Volt Limit", "OFFPEAK",  "116.0" );
 
-        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( true ) );     // peak
-        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( false ) );    // offpeak
-        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( true ) );     // peak
-        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 122.0, strategy.getUpperVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 124.0, strategy.getUpperVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 118.0, strategy.getLowerVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 116.0, strategy.getLowerVoltLimit( false ) );    // offpeak
 
         // the following are the legacy messaging passthru functions for sending limits to yukon-client
 
@@ -355,10 +355,10 @@ BOOST_AUTO_TEST_CASE(test_Strategy_upper_and_lower_volt_limit_support)
         strategy.restoreParameters( "Lower Volt Limit", "PEAK",     "118.0" );
         strategy.restoreParameters( "Lower Volt Limit", "OFFPEAK",  "116.0" );
 
-        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( true ) );     // peak
-        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( false ) );    // offpeak
-        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( true ) );     // peak
-        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 122.0, strategy.getUpperVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 124.0, strategy.getUpperVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 118.0, strategy.getLowerVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 116.0, strategy.getLowerVoltLimit( false ) );    // offpeak
 
         // legacy passthru to yukon-client
 
@@ -386,10 +386,10 @@ BOOST_AUTO_TEST_CASE(test_Strategy_upper_and_lower_volt_limit_support)
         strategy.restoreParameters( "Lower Volt Limit", "PEAK",     "118.0" );
         strategy.restoreParameters( "Lower Volt Limit", "OFFPEAK",  "116.0" );
 
-        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( true ) );     // peak
-        BOOST_CHECK_EQUAL( 126.0, strategy.getUpperVoltLimit( false ) );    // offpeak
-        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( true ) );     // peak
-        BOOST_CHECK_EQUAL( 114.0, strategy.getLowerVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 122.0, strategy.getUpperVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 124.0, strategy.getUpperVoltLimit( false ) );    // offpeak
+        BOOST_CHECK_EQUAL( 118.0, strategy.getLowerVoltLimit( true ) );     // peak
+        BOOST_CHECK_EQUAL( 116.0, strategy.getLowerVoltLimit( false ) );    // offpeak
 
         // legacy passthru to yukon-client
 
