@@ -171,7 +171,7 @@ $(document).ready(function(){
                                     </c:when>
                                     <c:when test="${prefName == 'COMMANDER_PRIORITY'}">
                                         <cti:button id="resetCommandPriorityBtn" data-value="${defaultVal}" icon="icon-arrow-swap" renderMode="buttonImage" />
-                                        <input style='width:80px;' type="number" id="commandPriority" name="commandPriority" value="${priority}" width="5"/>
+                                        <input type="number" id="commandPriority" name="commandPriority" value="${priority}" style='width:80px;'/>
                                         <cti:list var="arguments">
                                             <cti:item value="${cmdPriority}" />
                                             <cti:item value="${minCmdPriority}" />
