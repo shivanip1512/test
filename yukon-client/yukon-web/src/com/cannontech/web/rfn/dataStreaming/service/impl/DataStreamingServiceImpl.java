@@ -1483,6 +1483,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         @Override
         public void cancel(LiteYukonUser user) {
             if (!result.isComplete()) {
+                result.complete();
+                result.getCommandCompletionCallback().cancel();
                 log.info("Command Canceled");
                 Set<SimpleDevice> canceledDevices = new HashSet<>();
                 canceledDevices.addAll(deviceList);
@@ -1490,9 +1492,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 canceledDevices.removeAll(result.getFailureDeviceCollection().getDeviceList());
                 canceledDevices.removeAll(result.getUnsupportedDeviceCollection().getDeviceList());
                 
-                result.complete();
-                result.getCommandCompletionCallback().cancel();
-
                 completeCommandRequestExecutionRecord(execution, CommandRequestExecutionStatus.CANCELING);
                 commandRequestExecutionResultDao.saveUnsupported(canceledDevices, execution.getId(),
                     CommandRequestUnsupportedType.CANCELED);
