@@ -12,7 +12,8 @@
     <c:when test="${pao.paoIdentifier.paoType == 'LM_CONTROL_AREA'}">
         <dr:controlAreaState controlAreaId="${paoId}"/>
     </c:when>
-    <c:when test="${pao.paoIdentifier.paoType == 'LM_DIRECT_PROGRAM'}">
+    <c:when test="${pao.paoIdentifier.paoType == 'LM_DIRECT_PROGRAM' or pao.paoIdentifier.paoType == 'LM_HONEYWELL_PROGRAM' 
+                     or pao.paoIdentifier.paoType == 'LM_ECOBEE_PROGRAM'}">
         <dr:programState programId="${paoId}"/>
     </c:when>
     <c:when test="${pao.paoIdentifier.paoType == 'LM_SEP_PROGRAM'}">

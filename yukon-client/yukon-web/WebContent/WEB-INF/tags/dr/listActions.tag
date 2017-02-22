@@ -13,7 +13,8 @@
     <c:when test="${pao.paoIdentifier.paoType == 'LM_CONTROL_AREA'}">
         <dr:controlAreaListActions pao="${pao}"/>
     </c:when>
-    <c:when test="${pao.paoIdentifier.paoType == 'LM_DIRECT_PROGRAM' or pao.paoIdentifier.paoType == 'LM_SEP_PROGRAM'}">
+    <c:when test="${pao.paoIdentifier.paoType == 'LM_DIRECT_PROGRAM' or pao.paoIdentifier.paoType == 'LM_SEP_PROGRAM' or 
+                     pao.paoIdentifier.paoType == 'LM_HONEYWELL_PROGRAM' or pao.paoIdentifier.paoType == 'LM_ECOBEE_PROGRAM'}">
         <dr:programListActions pao="${pao}"/>
     </c:when>
     <c:otherwise>
