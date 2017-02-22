@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ArrayBlockingQueue;
@@ -76,16 +77,19 @@ public class HistoricalReadingsController {
     private static String baseKey = "yukon.web.modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings.";
     private Logger log = YukonLogManager.getLogger(HistoricalReadingsController.class);
     
-    private static int MAX_ROWS_DISPLAY = 100;
-    private static final String PERIOD = "period";
-    private static final String ALL = "all";
-    private static final String ONE_MONTH = "oneMonth";
-    private static final String DISPLAY = "display";
+    private static int MAX_ROWS_DISPLAY = 1536;
     
     private static final Map<String, OrderBy> sorters = ImmutableMap.of(
             "timestamp", OrderBy.TIMESTAMP, 
             "value", OrderBy.VALUE);
 
+    private enum Duration {
+        ONE_MONTH,
+        THREE_MONTH,
+        ONE_YEAR,
+        ALL;
+    }
+    
     @RequestMapping("view")
     public String view(ModelMap model, 
             Integer deviceId, 
@@ -101,19 +105,23 @@ public class HistoricalReadingsController {
 
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         String attributeMsg = getAttributeMessage(deviceId, attribute, pointId, context);
-        String readings = accessor.getMessage(baseKey + "readings");
-        String title = StringUtils.isBlank(attributeMsg) ? readings : attributeMsg + " " + readings;
+        String attributeMessage = StringUtils.isBlank(attributeMsg) ? StringUtils.EMPTY : attributeMsg;
+        String title = accessor.getMessage(baseKey + "readings", attributeMessage);
+        
         
         model.addAttribute("pointId", pointId);
         model.addAttribute("deviceId", deviceId);
         model.addAttribute("attribute", attribute);
         model.addAttribute("resultLimit", accessor.getMessage(baseKey + "resultLimit", MAX_ROWS_DISPLAY));
-        model.addAttribute(ALL, accessor.getMessage(baseKey + ALL));
-        model.addAttribute(ONE_MONTH,  accessor.getMessage(baseKey + ONE_MONTH));
-        model.addAttribute("title", title);
-        model.addAttribute("allUrl", getDownloadUrl(ALL, pointId));
-        model.addAttribute("oneMonthUrl", getDownloadUrl(ONE_MONTH, pointId));
         
+        Map<String, String> duration = new LinkedHashMap<>();
+        duration.put(accessor.getMessage(baseKey + Duration.ONE_MONTH),getDownloadUrl(Duration.ONE_MONTH, pointId));
+        duration.put(accessor.getMessage(baseKey + Duration.THREE_MONTH),getDownloadUrl(Duration.THREE_MONTH, pointId));
+        duration.put(accessor.getMessage(baseKey + Duration.ONE_YEAR),getDownloadUrl(Duration.ONE_YEAR, pointId));
+        duration.put(accessor.getMessage(baseKey + Duration.ALL),getDownloadUrl(Duration.ALL, pointId));
+       
+        model.addAttribute("duration", duration);
+        model.addAttribute("title", title);
         cachedPointDataCorrelationService.correlateAndLog(pointId);
         
         return "historicalReadings/view.jsp";
@@ -140,7 +148,7 @@ public class HistoricalReadingsController {
     }
      
     @RequestMapping("download")
-    public String download(String period, int pointId, HttpServletResponse response,
+    public String download(Duration duration, int pointId, HttpServletResponse response,
             YukonUserContext context) throws IOException {
 
         BlockingQueue<PointValueHolder> queue = new ArrayBlockingQueue<PointValueHolder>(100000);
@@ -160,7 +168,7 @@ public class HistoricalReadingsController {
         String pointName = pointDao.getPointName(pointId);
         
         String fileName = deviceName + "_" + pointName + ".csv";
-        queueLimitedPointData(period,
+        queueLimitedPointData(duration,
                               context,
                               Order.REVERSE,
                               OrderBy.TIMESTAMP,
@@ -220,7 +228,7 @@ public class HistoricalReadingsController {
         
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(context);
         
-        List<List<String>> points  = getLimitedPointData(DISPLAY, context, order, orderBy, pointId); 
+        List<List<String>> points  = getLimitedPointData(context, order, orderBy, pointId); 
         model.addAttribute("points", points);
         
         String timestampHeader = accessor.getMessage(baseKey + "tableHeader.timestamp.linkText");
@@ -264,24 +272,21 @@ public class HistoricalReadingsController {
         return attributeMsg;
     }
   
-    private List<List<String>> getLimitedPointData(String period, 
-            final YukonUserContext userContext, 
-            Order order, 
-            OrderBy orderBy, 
-            int pointId) {
-        
+    private List<List<String>> getLimitedPointData(final YukonUserContext userContext, Order order,
+            OrderBy orderBy, int pointId) {
+
         List<PointValueHolder> data = null;
-        if (period.equals(DISPLAY)) {
-            DateTime startDate = new DateTime(userContext.getJodaTimeZone());
-            startDate = startDate.minusDays(30);
-            DateTime endDate = new DateTime(userContext.getJodaTimeZone());
-            Range<Date> dateRange = new Range<Date>(startDate.toDate(), true, endDate.toDate(), false);
-            data = rawPointHistoryDao.getLimitedPointData(pointId,
-                    dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), 
-                    false, 
-                    order, 
-                    MAX_ROWS_DISPLAY);
-        }
+
+        DateTime startOfMonth =
+            new DateTime(userContext.getJodaTimeZone()).dayOfMonth().withMinimumValue().withTimeAtStartOfDay();
+        DateTime endDate = new DateTime(userContext.getJodaTimeZone()).plusDays(1).withTimeAtStartOfDay();
+        DateTime startDate = startOfMonth.minusMonths(1);
+        Range<Date> dateRange = new Range<Date>(startDate.toDate(), true, endDate.toDate(), false);
+
+        data =
+            rawPointHistoryDao.getLimitedPointData(pointId, dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), false,
+                order, MAX_ROWS_DISPLAY);
+
         data = sort(data, order, orderBy);
         List<List<String>> points = Lists.transform(data, new Function<PointValueHolder, List<String>>() {
             @Override
@@ -298,21 +303,29 @@ public class HistoricalReadingsController {
     /**
      * Create a thread to queue point data.
      */
-    private void queueLimitedPointData(String period, final YukonUserContext userContext,
+    private void queueLimitedPointData(Duration duration, final YukonUserContext userContext,
             Order order, OrderBy orderBy, int pointId, BlockingQueue<PointValueHolder> queue, AtomicBoolean isCompleted) {
         ExecutorService executorService = Executors.newFixedThreadPool(1);
 
         Range<Date> dateRange = null;
+        DateTime startDate = null;
 
-        if (period.equals(ONE_MONTH)) {
-            DateTime startDate = new DateTime(userContext.getJodaTimeZone());
-            startDate = startDate.minusDays(30);
-            DateTime endDate = new DateTime(userContext.getJodaTimeZone());
+        DateTime startOfMonth =
+            new DateTime(userContext.getJodaTimeZone()).dayOfMonth().withMinimumValue().withTimeAtStartOfDay();
+        DateTime endDate = new DateTime(userContext.getJodaTimeZone()).plusDays(1).withTimeAtStartOfDay();
+
+        if (duration == Duration.ONE_MONTH) {
+            startDate = startOfMonth.minusMonths(1);
+        } else if (duration == Duration.THREE_MONTH) {
+            startDate = startOfMonth.minusMonths(3);
+        } else if (duration == Duration.ONE_YEAR) {
+            startDate = startOfMonth.minusYears(1);
+        } else if (duration == Duration.ALL) {
+            Instant startDateInstant = new Instant(0);
+            dateRange = new Range<Date>(startDateInstant.toDate(), true, null, true);
+        }
+        if (dateRange == null) {
             dateRange = new Range<Date>(startDate.toDate(), true, endDate.toDate(), false);
-
-        } else if (period.equals(ALL)) {
-            Instant startDate = new Instant(0);
-            dateRange = new Range<Date>(startDate.toDate(), true, null, true);
         }
         executorService.submit(new DataQueuer(queue, pointId, dateRange, order, isCompleted));
     }
@@ -347,8 +360,8 @@ public class HistoricalReadingsController {
     
  
     
-    private String getDownloadUrl(String period, int pointId) {
-        return "/meter/historicalReadings/download?" + PERIOD + "=" + period + "&pointId=" + pointId;
+    private String getDownloadUrl(Duration duration, int pointId) {
+        return "/meter/historicalReadings/download?duration=" + duration + "&pointId=" + pointId;
     }
 
     private List<PointValueHolder> sort(List<PointValueHolder> data, final Order order, OrderBy orderBy) {
