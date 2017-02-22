@@ -50,7 +50,7 @@ public class AreaDaoImpl implements AreaDao {
             area.setId(rs.getInt("AreaId"));
             area.setType(rs.getEnum("Type", PaoType.class));
             area.setName(rs.getString("PAOName"));
-            area.setDescription(SqlUtils.convertDbValueToString(rs.getString("Description")));
+            area.setDescription(rs.getStringSafe("Description"));
             area.setDisabled(rs.getBoolean("DisableFlag"));
             int voltReduction = rs.getInt("VoltReductionPointId");
             area.setVoltReductionPoint(voltReduction == 0 ? null : voltReduction);
@@ -111,7 +111,7 @@ public class AreaDaoImpl implements AreaDao {
             values.addValue("PAOClass", PaoClass.CAPCONTROL);
             values.addValue("Type", area.getType());
             values.addValue("PAOName", area.getName());
-            values.addValue("Description", SqlUtils.convertStringToDbValue(area.getDescription()));
+            values.addValueSafe("Description", area.getDescription());
             values.addValue("DisableFlag", YNBoolean.valueOf(area.isDisabled()));
             jdbcTemplate.update(sql);
             
@@ -127,7 +127,7 @@ public class AreaDaoImpl implements AreaDao {
             // UPDATE
             SqlParameterSink values = sql.update("YukonPAObject");
             values.addValue("PAOName", area.getName());
-            values.addValue("Description", SqlUtils.convertStringToDbValue(area.getDescription()));
+            values.addValueSafe("Description", area.getDescription());
             values.addValue("DisableFlag", YNBoolean.valueOf(area.isDisabled()));
             sql.append("WHERE PAObjectId").eq(area.getId());
             jdbcTemplate.update(sql);
