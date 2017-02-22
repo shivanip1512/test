@@ -295,23 +295,22 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         int displayOrder = 1;
-        
-        if (isOracle) {
-            sql.append("INSERT ALL");
-        }
+
         for (Integer feederId : feederList) {
-            if (!isOracle) {
+            if (isOracle) {
+                sql.append("INSERT ALL");
+            } else if (!isOracle) {
                 sql.append("INSERT");
             }
             sql.append("INTO CCFeederSubAssignment");
             sql.values(busId, feederId, displayOrder);
             displayOrder++;
         }
-        
+
         if (isOracle) {
             sql.append("SELECT 1 from dual");
         }
-        
+
         return sql;
     }
     
