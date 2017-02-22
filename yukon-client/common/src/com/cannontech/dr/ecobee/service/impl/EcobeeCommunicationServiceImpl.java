@@ -329,7 +329,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         Selection selection = new Selection(SelectionType.THERMOSTATS, serialNumber);
         
         int utcOffset = DateTimeZone.getDefault().getOffset(Instant.now());
-        Instant startTime = Instant.now().minus(utcOffset);
+        Instant startTime = Instant.now().plus(utcOffset);
         Instant endTime = startTime.plus(Duration.standardMinutes(5));
         
         DutyCycleDr dr = new DutyCycleDr(YUKON_OVERRIDE_EVENT_NAME, displayMessage, 100, startTime, false, endTime, 
