@@ -409,7 +409,7 @@ public class YukonSecurityController {
             String encryptedPrivateKeyValue = new String(Hex.encodeHex(encrypter.encrypt(privateStringKey.getBytes())));
 
             encryptedRouteDao.saveNewHoneywellEncryptionKey(encryptedPrivateKeyValue, encryptedpublicKeyValue);
-            systemEventLogService.newPublicKeyGenerated(userContext.getYukonUser(), KeyFileType.HONEYWELL.getKeyFileType());
+            systemEventLogService.newPublicKeyGenerated(userContext.getYukonUser(), KeyFileType.HONEYWELL.name());
             json.put("honeywellPublicKey", publicStringKey);
 
         } catch (Exception ex) {
@@ -494,10 +494,10 @@ public class YukonSecurityController {
         boolean success = handleHoneywellUploadedFile(honeywellFileImportBindingBean, flashScope);
         if (!success) {
             log.info("Import for Honeywell Key file failed.");
-            systemEventLogService.keyFileImportFailed(userContext.getYukonUser(), KeyFileType.HONEYWELL.getKeyFileType());
+            systemEventLogService.keyFileImportFailed(userContext.getYukonUser(), KeyFileType.HONEYWELL.name());
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
         } else {
-            systemEventLogService.importedKeyFile(userContext.getYukonUser(), KeyFileType.HONEYWELL.getKeyFileType());
+            systemEventLogService.importedKeyFile(userContext.getYukonUser(), KeyFileType.HONEYWELL.name());
         }
         return "redirect:view";
     }

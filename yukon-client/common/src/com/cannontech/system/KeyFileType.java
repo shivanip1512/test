@@ -1,16 +1,15 @@
 package com.cannontech.system;
 
-public enum KeyFileType {
+import com.cannontech.common.i18n.DisplayableEnum;
 
-    HONEYWELL("Honeywell");
+public enum KeyFileType implements DisplayableEnum {
 
-    private String keyFileType;
+    HONEYWELL;
 
-    KeyFileType(String keyFileType) {
-        this.keyFileType = keyFileType;
-    }
-
-    public String getKeyFileType() {
-        return this.keyFileType;
+    private final static String baseKey = "yukon.common.setting.";
+    
+    @Override
+    public String getFormatKey() {
+        return baseKey + name();
     }
 }

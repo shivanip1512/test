@@ -705,9 +705,9 @@ public class DevEventLogCreationService {
 
                 systemEventLogService.globalSettingChanged(user, GlobalSettingType.ACCT_PORT, "abc");
                 systemEventLogService.sensitiveGlobalSettingChanged(user, GlobalSettingType.ACCT_PORT);
-                systemEventLogService.importedKeyFile(user, KeyFileType.HONEYWELL.getKeyFileType());
-                systemEventLogService.keyFileImportFailed(user, KeyFileType.HONEYWELL.getKeyFileType());
-                systemEventLogService.newPublicKeyGenerated(user, KeyFileType.HONEYWELL.getKeyFileType());
+                systemEventLogService.importedKeyFile(user, KeyFileType.HONEYWELL.name());
+                systemEventLogService.keyFileImportFailed(user, KeyFileType.HONEYWELL.name());
+                systemEventLogService.newPublicKeyGenerated(user, KeyFileType.HONEYWELL.name());
                 systemEventLogService.loginChangeAttempted(user, username, devEventLog.getEventSource());
                 systemEventLogService.loginWebFailed(user.getUsername(), username, Type.DISABLED_USER);
                 systemEventLogService.loginWebFailed(user.getUsername(), username, Type.INVALID_PASSWORD);
