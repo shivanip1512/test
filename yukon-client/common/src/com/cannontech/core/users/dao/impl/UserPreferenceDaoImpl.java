@@ -1,6 +1,7 @@
 package com.cannontech.core.users.dao.impl;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,12 +11,15 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.util.CollectionUtils;
 
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.users.dao.UserPreferenceDao;
@@ -50,6 +54,9 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired @Qualifier("main") private ScheduledExecutor dbUpdateTimer;
+    private static final int STARTUP_REF_RATE = 2000;//6 * 60 * 60 * 1000; // 6 hours
+    private static final int PERIODIC_UPDATE_REF_RATE = 10000; //6 * 60 * 60 * 1000; // 6 hours
     
     private SimpleTableAccessTemplate<UserPreference> userGroupTemplate;
     
@@ -64,9 +71,26 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
                     }
             });
 
+    @PostConstruct
+    public void initialize() {
+        Runnable task = () -> {
+            saveUserPreferencesToDB();
+        };
+        dbUpdateTimer.scheduleWithFixedDelay(task, STARTUP_REF_RATE, PERIODIC_UPDATE_REF_RATE, TimeUnit.MILLISECONDS);
+    }
+
+    /**
+     * Save persist-able/non-editable User Preferences To DB from Cache.
+     * This method is called from timer defined above and during server shutdown
+     */
+    @PreDestroy
+    public void saveUserPreferencesToDB() {
+        saveUserPreferenceToDB();
+    }
+
     /**
      * The DB change Listener updates the cache as per the update/delete
-     * dbchange events occurring on the user preferences
+     * DBChange events occurring on the user preferences
      */
     private void createDatabaseChangeListener() {
         asyncDynamicDataSource.addDBChangeListener(new DBChangeListener() {
@@ -76,27 +100,23 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
                     && dbChange.getDatabase() == DBChangeMsg.CHANGE_USER_PREFERENCE_DB) {
                     UserPreference userPreference = getPreference(dbChange.getId());
                     if (userPreferencesCache != null) {
-                        synchronized (this) {
-                            Map<UserPreferenceName, UserPreference> userPrefs =
-                                userPreferencesCache.getUnchecked(userPreference.getUserId());
-                            // over-write the cache with the DB preference value
-                            userPreference.setUpdated(true);
-                            userPrefs.put(userPreference.getName(), userPreference);
-                        }
+                        Map<UserPreferenceName, UserPreference> userPrefs =
+                            userPreferencesCache.getUnchecked(userPreference.getUserId());
+                        // over-write the cache with the DB preference value
+                        userPreference.setUpdated(true);
+                        userPrefs.put(userPreference.getName(), userPreference);
                     }
                 }
                 if (dbChange.getDbChangeType() == DbChangeType.DELETE
                     && dbChange.getDatabase() == DBChangeMsg.CHANGE_USER_PREFERENCE_DB_DELETE_BY_USER_ID) {
                     if (userPreferencesCache != null) {
-                        synchronized (this) {
-                            Map<UserPreferenceName, UserPreference> userPrefs =
-                                userPreferencesCache.getUnchecked(dbChange.getId());
-                            List<UserPreferenceName> userPreferenceNames =
-                                UserPreferenceName.getUserPreferencesByType(PreferenceType.EDITABLE);
-                            for (UserPreferenceName name : userPreferenceNames) {
-                                if (userPrefs.containsKey(name)) {
-                                    userPrefs.remove(name);
-                                }
+                        Map<UserPreferenceName, UserPreference> userPrefs =
+                            userPreferencesCache.getUnchecked(dbChange.getId());
+                        List<UserPreferenceName> userPreferenceNames =
+                            UserPreferenceName.getUserPreferencesByType(PreferenceType.EDITABLE);
+                        for (UserPreferenceName name : userPreferenceNames) {
+                            if (userPrefs.containsKey(name)) {
+                                userPrefs.remove(name);
                             }
                         }
                     }
@@ -112,11 +132,14 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
      * @param userId, user details
      * @returns User Preferences Map with only the preferences which are persisted in DB
      */
-    private Map<UserPreferenceName, UserPreference> getUserPreferencesFromDatabase(Integer userId) {
+   private Map<UserPreferenceName, UserPreference> getUserPreferencesFromDatabase(Integer userId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PreferenceId, UserId, Name, Value");
+        sql.append("FROM " + TABLE_NAME);
+        sql.append("WHERE " + FIELD_USER_ID).eq(userId);
 
-        LiteYukonUser user = new LiteYukonUser(userId);
-        List<UserPreference> preferences = getUserPreferencesByPreferenceType(user, PreferenceType.EDITABLE);
-        preferences.addAll(getUserPreferencesByPreferenceType(user, PreferenceType.NONEDITABLE));
+        List<UserPreference> preferences = yukonJdbcTemplate.query(sql, new RowMapper());
         Map<UserPreferenceName, UserPreference> persistedPreferenceMap =
                 preferences
                     .stream()
@@ -169,27 +192,33 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
     }
 
     /**
-     * Get User preference from database by user Id and preference name
-     * @throws EmptyResultDataAccessException if the preference is not found
+     * Get User preference from database by user Id and preference name, if not found return the default value
      */
-    private UserPreference getPreference(LiteYukonUser user, UserPreferenceName prefName)
-            throws EmptyResultDataAccessException {
+    private UserPreference getPreferenceFromDbOrDefault(LiteYukonUser user, UserPreferenceName prefName) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PreferenceId, UserId, Name, Value");
         sql.append("FROM " + TABLE_NAME);
         sql.append("WHERE " + FIELD_USER_ID).eq(user.getUserID());
         sql.append("AND " + FIELD_NAME).eq(prefName);
 
-        UserPreference pref = yukonJdbcTemplate.queryForObject(sql, new RowMapper());
-        return pref;
+        try {
+            return yukonJdbcTemplate.queryForObject(sql, new RowMapper());
+        } catch (EmptyResultDataAccessException e) {
+            UserPreference userPreference = new UserPreference(); // use null id for "new"
+            userPreference.setUserId(user.getUserID());
+            userPreference.setName(prefName);
+            userPreference.setValue(prefName.getDefaultValue());
+            userPreference.setUpdated(false); // need to archive
+            return userPreference;
+        }
     }
     
     /**
      * Get User preference from database by preference Id
+     * 
      * @throws EmptyResultDataAccessException if the preference is not found
      */
-    private UserPreference getPreference(int preferenceId)
-            throws EmptyResultDataAccessException {
+    private UserPreference getPreference(int preferenceId) throws EmptyResultDataAccessException {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PreferenceId, UserId, Name, Value");
         sql.append("FROM " + TABLE_NAME);
@@ -200,36 +229,23 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
     }
 
     @Override
-    public UserPreference findPreference(LiteYukonUser user, UserPreferenceName userPreferenceName) {
-        UserPreference value = null;
-        try {
-            Map<UserPreferenceName, UserPreference> cacheableUserPreferences =
-                userPreferencesCache.getUnchecked(user.getUserID());
+    public UserPreference getPreference(LiteYukonUser user, UserPreferenceName userPreferenceName) {
 
-            if (cacheableUserPreferences.containsKey(userPreferenceName)) {
-                value = cacheableUserPreferences.get(userPreferenceName);
-            } else if (userPreferenceName.getPreferenceType() != PreferenceType.TEMPORARY) {
-                value = getPreference(user, userPreferenceName);
-                cacheableUserPreferences.put(userPreferenceName, value);
-            }
-        } catch (EmptyResultDataAccessException e) {/* return nulls for find methods */}
-
-        return value;
-    }
-
-    @Override
-    public String getValueOrDefault(LiteYukonUser user, UserPreferenceName prefName) {
-        if (prefName == null) {
+        if (userPreferenceName == null) {
             throw new IllegalArgumentException("UserPreferenceDaoImpl cannot get Preference for null UserPreference.");
         }
-        if (user == null) {
-            return prefName.getDefaultValue();
+
+        UserPreference value = null;
+        Map<UserPreferenceName, UserPreference> cacheableUserPreferences =
+            userPreferencesCache.getUnchecked(user.getUserID());
+
+        if (cacheableUserPreferences.containsKey(userPreferenceName)) {
+            value = cacheableUserPreferences.get(userPreferenceName);
+        } else if (userPreferenceName.getPreferenceType() != PreferenceType.TEMPORARY) {
+            value = getPreferenceFromDbOrDefault(user, userPreferenceName);
+            cacheableUserPreferences.put(userPreferenceName, value);
         }
-        UserPreference value = findPreference(user, prefName);
-        if (value != null) {
-            return value.getValue();
-        }
-        return prefName.getDefaultValue();
+        return value;
     }
 
     private static class RowMapper implements YukonRowMapper<UserPreference> {
@@ -248,16 +264,21 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
     }
 
     @Override
-    public List<UserPreference> getUserPreferencesByPreferenceType(LiteYukonUser user, PreferenceType preferenceType) {
+    public Map<UserPreferenceName, UserPreference> getUserPreferencesByPreferenceType(LiteYukonUser user,
+            PreferenceType preferenceType) {
+        Map<UserPreferenceName, UserPreference> userPreferences = new HashMap<>();
+        Map<UserPreferenceName, UserPreference> cacheableUserPreferences =
+            userPreferencesCache.getUnchecked(user.getUserID());
 
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT PreferenceId, UserId, Name, Value");
-        sql.append("FROM " + TABLE_NAME);
-        sql.append("WHERE " + FIELD_USER_ID).eq(user.getUserID());
-        sql.append("AND " + FIELD_NAME).in(UserPreferenceName.getUserPreferencesByType(preferenceType));
+        List<UserPreferenceName> userPreferenceNames = UserPreferenceName.getUserPreferencesByType(preferenceType);
 
-        List<UserPreference> prefs = yukonJdbcTemplate.query(sql, new RowMapper());
-        return prefs;
+        for (UserPreferenceName userPreferenceName : userPreferenceNames) {
+            if (cacheableUserPreferences.containsKey(userPreferenceName)) {
+                UserPreference userPreference = cacheableUserPreferences.get(userPreferenceName);
+                userPreferences.put(userPreferenceName, userPreference);
+            }
+        }
+        return userPreferences;
     }
 
     @Override
@@ -302,27 +323,25 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
         for (UserPreference preference : preferences) {
             UserPreferenceName preferenceName = preference.getName();
             if (userPreferencesCache != null) {
-                synchronized (this) {
-                    Map<UserPreferenceName, UserPreference> cacheableUserPreferences =
-                        userPreferencesCache.getIfPresent(userID);
-                    if (CollectionUtils.isEmpty(cacheableUserPreferences)) {
-                        cacheableUserPreferences = new HashMap<>();
-                        userPreferencesCache.put(userID, cacheableUserPreferences);
-                    }
-                    if (cacheableUserPreferences.containsKey(preferenceName)) {
-                        String newValue = preference.getValue();
-                        // Get old preference, to retain the prefId in cache, instead of directly overwriting
-                        preference = cacheableUserPreferences.get(preferenceName);
-                        if (!newValue.equalsIgnoreCase(preference.getValue())) {
-                            isValueChanged = true; // old and new values don't match
-                        }
-                        preference.setValue(newValue);
-                    } else {
-                        // Add new pref in cache
-                        cacheableUserPreferences.put(preferenceName, preference);
-                    }
-                    preference.setUpdated(false); // Not updated to DB
+                Map<UserPreferenceName, UserPreference> cacheableUserPreferences =
+                    userPreferencesCache.getIfPresent(userID);
+                if (CollectionUtils.isEmpty(cacheableUserPreferences)) {
+                    cacheableUserPreferences = new HashMap<>();
+                    userPreferencesCache.put(userID, cacheableUserPreferences);
                 }
+                if (cacheableUserPreferences.containsKey(preferenceName)) {
+                    String newValue = preference.getValue();
+                    // Get old preference, to retain the prefId in cache, instead of directly overwriting
+                    preference = cacheableUserPreferences.get(preferenceName);
+                    if (!newValue.equalsIgnoreCase(preference.getValue())) {
+                        isValueChanged = true; // old and new values don't match
+                    }
+                    preference.setValue(newValue);
+                } else {
+                    // Add new pref in cache
+                    cacheableUserPreferences.put(preferenceName, preference);
+                }
+                preference.setUpdated(false); // Not updated to DB
             }
             if (preferenceName.getPreferenceType() == PreferenceType.EDITABLE) {
                 preference.setUpdated(true); // Updated to DB

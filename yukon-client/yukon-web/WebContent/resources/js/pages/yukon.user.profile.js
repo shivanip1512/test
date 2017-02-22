@@ -134,23 +134,7 @@ yukon.userProfile = (function () {
         }
         $.ajax({ type: 'post', url: url, data: params });
     },
-    
-    _setQueueCommand = function (ev) {
-        var enabled = $('#queueCommand .yes').is('.on'),
-            url = yukon.url('/user/updatePreference.json'),
-            btn = $(this),
-            row = btn.closest('tr'),
-            params = {
-                userId: $('#user-id').val(),
-                prefName: row.data('type'),
-                prefValue: enabled
-            };
-        $.ajax({ type: 'post', url: url, data: params })
-         .done(function (json) {
-             $('#queueCommand').val(enabled);
-        });;
-    },
-    
+
     _resetCommandPriority = function (ev) {
         var url = yukon.url('/user/updatePreference.json'),
             btn = $(this),
@@ -182,9 +166,7 @@ yukon.userProfile = (function () {
             $(document).on('yukon:user:profile:pref:defaults', _resetAllPreferences);
             $(document).on('yukon:user:profile:password:save', _submitChangePassword);
             $(document).on('change', '#commandPriority', _validateAndSetCommanderPriority);
-            $(document).on('click', '#queueCommand', _setQueueCommand);
             $(document).on('click', '#resetCommandPriorityBtn', _resetCommandPriority);
-            
             
             _initialized = true;
         }

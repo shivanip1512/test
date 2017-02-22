@@ -4,17 +4,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.PreDestroy;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.GraphType;
-import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.users.dao.UserPreferenceDao;
 import com.cannontech.core.users.model.PreferenceGraphTimeDurationOption;
 import com.cannontech.core.users.model.PreferenceGraphVisualTypeOption;
@@ -28,37 +22,11 @@ import com.cannontech.web.user.service.UserPreferenceService;
 public class UserPreferenceServiceImpl implements UserPreferenceService {
 
     @Autowired private UserPreferenceDao prefDao;
-    @Autowired @Qualifier("main") private ScheduledExecutor dbUpdateTimer;
-    private static final int STARTUP_REF_RATE = 6 * 60 * 60 * 1000; // 6 hours
-    private static final int PERIODIC_UPDATE_REF_RATE = 6 * 60 * 60 * 1000; // 6 hours
-
-    @PostConstruct
-    public void initialize() {
-
-        Runnable task = () -> {
-            saveUserPreferencesToDB();
-        };
-        dbUpdateTimer.scheduleWithFixedDelay(task, STARTUP_REF_RATE, PERIODIC_UPDATE_REF_RATE, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Save persist-able/non-editable User Preferences To DB from Cache.
-     * This method is called from timer defined above and during server shutdown
-     */
-    @PreDestroy
-    public void saveUserPreferencesToDB() {
-       prefDao.saveUserPreferenceToDB();
-    }
 
     @Override
     public Map<UserPreferenceName, UserPreference> getUserPreferencesByPreferenceType(LiteYukonUser user,
             PreferenceType preferenceType) {
-        List<UserPreference> prefs = prefDao.getUserPreferencesByPreferenceType(user, preferenceType);
-        Map<UserPreferenceName, UserPreference> prefMap = new HashMap<>();
-        for (UserPreference preference : prefs) {
-            prefMap.put(preference.getName(), preference);
-        }
-        return prefMap;
+        return prefDao.getUserPreferencesByPreferenceType(user, preferenceType);
     }
 
     @Override
@@ -76,7 +44,11 @@ public class UserPreferenceServiceImpl implements UserPreferenceService {
 
     @Override
     public String getPreference(LiteYukonUser user, UserPreferenceName userPreferenceName) {
-        return prefDao.getValueOrDefault(user, userPreferenceName);
+        UserPreference pref = prefDao.getPreference(user, userPreferenceName);
+        if (pref != null) {
+            return pref.getValue();
+        }
+        return null;
     }
 
     @Override
