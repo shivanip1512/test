@@ -84,10 +84,6 @@
     <entry key="yukon.web.modules.operator.mapNetwork.location.notSet">(no location set)</entry>
     
     <entry key="yukon.web.modules.operator.mapNetwork.location"><![CDATA[Location <em class="subtle">(optional)</em>]]></entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.latitude.invalid">Latitude must be between -90 and 90.</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.latitude.required">Latitude cannot be empty.</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.longitude.invalid">Longitude must be between -180 and 180.</entry>
-    <entry key="yukon.web.modules.operator.mapNetwork.longitude.required">Longitude cannot be empty.</entry>
     <entry key="yukon.web.modules.operator.mapNetwork.location.helpText"><![CDATA[A map will display if the device has coordinates entered, with a map marker in the location of the device.<br/><br/>
     To edit the coordinates, click on the pencil icon next to the Latitude/Longitude.  You will then be able to either enter new coordinates and click on the Save button or drag and drop the device icon marker on the map to the new location.<br/><br/>
     Click on the Neighbors button (if applicable) to see all of the neighboring devices.  Click on the Primary Route button (if applicable) to see the primary route to the gateway.  Click on the Parent Node button (if applicable) to view the parent node of the device.<br/><br/>
