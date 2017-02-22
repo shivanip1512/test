@@ -51,7 +51,7 @@ import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
 import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Route;
-
+import com.cannontech.web.stars.gateway.model.LocationValidator;
 @RequestMapping("/mapNetwork/*")
 @Controller
 public class MapNetworkController {
@@ -133,28 +133,10 @@ public class MapNetworkController {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         Map<String, Object> json = new HashMap<>();
         boolean errorFound = false;
-        List<String> errorMessages = new ArrayList<>();
-        if (latitude != null || longitude != null) {
-            if (latitude != null) {
-                if (latitude > 90 || latitude < -90) {
-                    errorMessages.add(accessor.getMessage(nameKey + "latitude.invalid"));
-                    errorFound = true;
-                }
-            } else {
-                errorMessages.add(accessor.getMessage(nameKey + "latitude.required", "latitude"));
-                errorFound = true;
-            }
-            if (longitude != null) {
-                if (longitude > 180 || longitude < -180) {
-                    errorMessages.add(accessor.getMessage(nameKey + "longitude.invalid"));
-                    errorFound = true;
-                }
-            } else {
-                errorMessages.add(accessor.getMessage(nameKey + "longitude.required", "longitude"));
-                errorFound = true;
-            }
+        List<String> errorMessages = LocationValidator.getErrorMessages(latitude, longitude, accessor);
+        if (errorMessages.size()!=0) {
+           errorFound = true; 
         }
-        
         if (!errorFound) {
             if (latitude == null && longitude == null) {
                 paoLocationService.deleteLocationForPaoId(deviceId);

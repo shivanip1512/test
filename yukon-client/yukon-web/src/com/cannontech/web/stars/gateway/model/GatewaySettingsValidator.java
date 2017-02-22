@@ -44,7 +44,7 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
         Double latitude = settings.getLatitude();
         Double longitude = settings.getLongitude();
         
-        validateLocation(latitude, longitude, errors);
+        LocationValidator.validate(latitude, longitude, errors);
         
         validateUpdateServer(settings, errors);
     }
@@ -57,26 +57,4 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
             YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "updateServerLogin.username", baseKey + "updateserver.username.required");
         }
     }
-    
-    public static void validateLocation(Double latitude, Double longitude, Errors errors) {
-        
-        if (latitude != null || longitude != null) {
-            if (latitude != null) {
-                if (latitude > 90 || latitude < -90) {
-                    errors.rejectValue("latitude", baseKey + "latitude.invalid");
-                }
-            } else {
-                YukonValidationUtils.rejectValues(errors, baseKey + "latitude.required", "latitude");
-            }
-            if (longitude != null) {
-                if (longitude > 180 || longitude < -180) {
-                    errors.rejectValue("longitude", baseKey + "longitude.invalid");
-                }
-            } else {
-                YukonValidationUtils.rejectValues(errors, baseKey + "longitude.required", "longitude");
-            }
-        }
-        
-    }
-    
 }

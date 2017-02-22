@@ -53,6 +53,7 @@ import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.gateway.model.GatewaySettingsValidator;
 import com.cannontech.web.stars.gateway.model.Location;
+import com.cannontech.web.stars.gateway.model.LocationValidator;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
@@ -241,8 +242,10 @@ public class GatewaySettingsController {
     public String location(HttpServletResponse resp, ModelMap model, YukonUserContext userContext, FlashScope flash,
             @PathVariable int id, @ModelAttribute Location location, BindingResult result) {
         
-        GatewaySettingsValidator.validateLocation(location.getLatitude(), location.getLongitude(), result);
-        
+        LocationValidator.validate(location.getLatitude(), location.getLongitude(), result);
+        if (location.getLatitude() == null && location.getLongitude() == null) {
+            return "redirect:/stars/gateways/"+id;
+        }
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             return "gateways/location.jsp";
