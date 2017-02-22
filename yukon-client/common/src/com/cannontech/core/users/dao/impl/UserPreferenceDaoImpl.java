@@ -1,7 +1,6 @@
 package com.cannontech.core.users.dao.impl;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,8 +54,8 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired @Qualifier("main") private ScheduledExecutor dbUpdateTimer;
-    private static final int STARTUP_REF_RATE = 2000;//6 * 60 * 60 * 1000; // 6 hours
-    private static final int PERIODIC_UPDATE_REF_RATE = 10000; //6 * 60 * 60 * 1000; // 6 hours
+    private static final int STARTUP_REF_RATE = 6 * 60 * 60 * 1000; // 6 hours
+    private static final int PERIODIC_UPDATE_REF_RATE = 6 * 60 * 60 * 1000; // 6 hours
     
     private SimpleTableAccessTemplate<UserPreference> userGroupTemplate;
     
@@ -74,18 +73,9 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
     @PostConstruct
     public void initialize() {
         Runnable task = () -> {
-            saveUserPreferencesToDB();
+            saveUserPreferenceToDB();
         };
         dbUpdateTimer.scheduleWithFixedDelay(task, STARTUP_REF_RATE, PERIODIC_UPDATE_REF_RATE, TimeUnit.MILLISECONDS);
-    }
-
-    /**
-     * Save persist-able/non-editable User Preferences To DB from Cache.
-     * This method is called from timer defined above and during server shutdown
-     */
-    @PreDestroy
-    public void saveUserPreferencesToDB() {
-        saveUserPreferenceToDB();
     }
 
     /**
@@ -298,6 +288,11 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
         return rowsDeleted;
     }
     
+    /**
+     * Save persist-able/non-editable User Preferences To DB from Cache.
+     * This method is called from timer defined above and during server shutdown
+     */
+    @PreDestroy
     @Override
     public void saveUserPreferenceToDB() {
         ConcurrentMap<Integer, Map<UserPreferenceName, UserPreference>> allUserPreferences =
