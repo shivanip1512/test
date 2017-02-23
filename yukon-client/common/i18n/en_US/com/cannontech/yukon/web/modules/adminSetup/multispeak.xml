@@ -22,36 +22,72 @@
     
     <entry key="yukon.web.modules.adminSetup.interfaces.setup.title">MultiSpeak Interface Setup</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.setup.helpText"><![CDATA[
-     The MultiSpeak Interface Setup page provides the means to establish communications between Yukon and a MultiSpeak-compliant application.This is the default yukon/Cannon setup
-     <br><br>
-     <ul>
-         <li>
-             <b>App Name:</b>Enter the unique name of the application for this interface.
-         </li>
-         <li>
-             <b>Company Name:</b>Select the interface to view from this drop-down list.
-         </li>
-         <li>
-             <b>Primary CIS:</b>Select the vendor that is the owner of the data export data. This option is displayed on the Cannon interface only.
-         </li>
-         <li>
-             <b>DeviceName Alias:</b>Select the field to map Yukon’s device name to the billing system. This option is displayed on the Cannon interface only.
-         </li>
-         <li>
-             <b>Use Extension and Extension Name:</b>Select the Use Extension check box and enter an extension in the Extension name field. This option is displayed on the Cannon interface only.
-         </li>
-         <li>
-             <b>Meter Lookup Field:</b>Select the field to use to lookup meters from the drop-down list. This option is displayed on the Cannon interface only.
-         </li>
-     <ul>
-         
-     ]]>
-     </entry>
-     <entry key="yukon.web.modules.adminSetup.interfaces.vendorSetup.title">MultiSpeak Interface Setup</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.vendorSetup.helpText"><![CDATA[
-    The MultiSpeak Interface Setup page is used to configure new and view existing MultiSpeak integration configurations. Each MultiSpeak vendor must have a separate interface configured.
+        Configure Yukon's MultiSpeak integration settings. Yukon is acting as the "server" for the following interfaces: MR, OD, CD, LM, SCADA, and NOT.
+        <br>
+        <ul>
+            <li>
+                <b>Company Name: </b>The <i>Company</i> element of the v3 <i>MultiSpeakMsgHeader</i> or v5 <i>MultiSpeakResponseMsgHeader.Caller</i>.
+                This value is returned in all Yukon responses or Yukon client requests.
+            </li>
+            <li>
+                <b>App Name: </b>The <i>AppName</i> element of the v3 <i>MultiSpeakMsgHeader</i> or v5 <i>MultiSpeakResponseMsgHeader.Caller</i>.
+                This value is returned in all Yukon responses or Yukon client requests. The Company and AppName pair must be unique across all integrations.
+            </li>
+            <li>
+                <b>Primary CIS: </b>The primary vendor interface used for all outgoing CB_Server requests. For example, requesting the Meter Detail's
+                CIS Information widget data.
+            </li>
+            <li>
+                <b>DeviceName Alias: </b>The MultiSpeak data field used to populate Yukon's Device Name field for meter management. For example, the is the Device Name value of the Meter Detail's  
+                Meter Information widget. This data field must be a <b>unique</b> value per meter. 
+             
+            </li>
+            <li>
+                <b>Use Extension and Extension Name: </b>Used in combination with Device Name Alias, to append additional data to Yukon's Device Name field. Enable this
+                option and enter the extensions name. This value will be appended to the Device name with the following format: "DeviceName [extensionValue]".
+            </li>
+            <li>
+                <b>Meter Lookup Field: </b>The primary field used in Yukon when searching for a meter. 
+            </li>
+        <ul>
+            Please refer to the <i>MultiSpeak Implementation_Yukon</i> manual for more information.
     ]]>
-     </entry>
+    </entry>
+    <entry key="yukon.web.modules.adminSetup.interfaces.vendorSetup.title">MultiSpeak Interface Setup</entry>
+    <entry key="yukon.web.modules.adminSetup.interfaces.vendorSetup.helpText"><![CDATA[
+        Configure MultiSpeak interfaces for third-party vendors. These vendors are acting as the "client" for the following interfaces: CB, OA, EA, and MDM.
+        <br>
+        <ul>
+            <li>
+                <b>Company Name: </b>The <i>Company</i> element of the v3 <i>MultiSpeakMsgHeader</i> or v5 <i>MultiSpeakResponseMsgHeader.Caller</i>.
+                This value is required to identify and authenticate all incoming client requests.
+            </li>
+            <li>
+                <b>App Name: </b>The <i>AppName</i> element of the v3 <i>MultiSpeakMsgHeader</i> or v5 <i>MultiSpeakResponseMsgHeader.Caller</i>.
+                This field is required if one vendor (Company) has multiple integrations such that Company is not unique. The Company and AppName pair must be unique across all integrations.
+            </li>
+            <li>
+                <b>Maximum Records Returned: </b>The maximum number of objects returned for one method call. This is the "chunk" size.
+            </li>
+            <li>
+                <b>Request Message Timeout: </b>The maximum time, in milliseconds, that Yukon will wait for data to be returned from a method call.
+            </li>
+            <li>
+                <b>Maximum Initate Request Objects: </b>The maximum number of objects Yukon will allow to be requested in an "initiate" method call.
+            </li>
+            <li>
+                <b>Default Meter Template: </b>The default meter name to be used if no meter "template" name is provided for meter deployment messages.
+                The template meter is copied when creating a new meter.
+            </li>
+            <li>
+                <b>Incoming Authentication: </b>The username and password authenticated against for all <i>incoming</i> requests received by Yukon from the respective vendor.
+            </li>
+            <li>
+                <b>Outgoing Authentication: </b>The username and password Yukon will provide in all of it's <i>outgoing</i> responses to the respective vendor.
+            </li>
+        <ul>
+    ]]>
+    </entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.setup.controls">*indicates required field</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.home.tab.title">Yukon Setup</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.companyName">Company Name</entry>
@@ -60,7 +96,7 @@
     <entry key="yukon.web.modules.adminSetup.interfaces.appName">App Name</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.appName.title">Enter the Application Name</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.maxRecords">Maximum Records Returned</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.maxRecords.title">Enter the Application Name</entry>
+    <entry key="yukon.web.modules.adminSetup.interfaces.maxRecords.title">Enter the Maximum Records Returned</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.reqMsgTimeout">Request Message Timeout</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.reqMsgTimeout.title">Enter the Request Message Timeout</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.initRequestTimeout">Maximum Initiate Request Objects</entry>
@@ -101,6 +137,8 @@
     <entry key="yukon.web.modules.adminSetup.interfaces.outcomingAuthentication">Outcoming Authentication</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.mspVersion3">3.0</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.mspVersion5">5.0</entry>
+    <entry key="yukon.web.modules.adminSetup.interfaces.confirmDelete.title">Confirm Delete</entry>
+    <entry key="yukon.web.modules.adminSetup.interfaces.confirmDelete.message">Are you sure you want to delete this interface?</entry>
     
     <entry key="yukon.web.modules.adminSetup.interfaces.title">MultiSpeak Interface Setup</entry>
     <!-- <entry key="yukon.web.modules.adminSetup.interfaces.home.tab.title">Setup</entry> -->

@@ -7,6 +7,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,6 +30,7 @@ import com.cannontech.msp.beans.v3.OutageDetectDeviceType;
 import com.cannontech.msp.beans.v3.OutageDetectionEvent;
 import com.cannontech.msp.beans.v3.OutageEventType;
 import com.cannontech.msp.beans.v3.OutageLocation;
+import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -65,17 +67,20 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
         List<MultispeakVendor> allVendors = multispeakDao.getMultispeakVendors(false);
         ImmutableList.Builder<MultispeakVendor> supportsOutage = ImmutableList.builder();
         for (MultispeakVendor mspVendor : allVendors) {
-            if (mspVendor.getMspInterfaceMap().get(MultispeakDefines.OA_Server_STR) != null) {
+            Pair<String, MultiSpeakVersion> keyPair =
+                MultispeakVendor.buildMapKey(MultispeakDefines.OA_Server_STR, MultiSpeakVersion.V3);
+            if (mspVendor.getMspInterfaceMap().get(keyPair) != null) {
                 String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.OA_Server_STR);
                 try {
                     GetMethods getMethods = objectFactory.createGetMethods();
                     GetMethodsResponse getMethodsResponse = oaClient.getMethods(mspVendor, endpointUrl, getMethods);
                     ArrayOfString arrayOfMethods = getMethodsResponse.getGetMethodsResult();
                     List<String> mspMethodNames = arrayOfMethods.getString();
-                    //not sure where a static variable containing this method exists.. doing this for now
+                    // not sure where a static variable containing this method exists.. doing this for now
                     if (mspMethodNames.contains("ODEventNotification")) {
                         supportsOutage.add(mspVendor);
-                        log.info("Added OMS vendor to receive Status Point Monitor messages: " + mspVendor.getCompanyName());
+                        log.info("Added OMS vendor to receive Status Point Monitor messages: "
+                            + mspVendor.getCompanyName());
                     }
                 } catch (MultispeakWebServiceClientException e) {
                     log.warn("caught exception in initialize");

@@ -53,6 +53,7 @@ public class MultispeakController {
     @Autowired private MultispeakDao multispeakDao;
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MspObjectDao mspObjectDao;
+    @Autowired private com.cannontech.multispeak.dao.v5.MspObjectDao mspObjectDaoV5;
     @Autowired private MspMeterSearchService mspMeterSearchService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private GlobalSettingUpdateDao globalSettingUpdateDao;
@@ -191,31 +192,48 @@ public class MultispeakController {
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
         
         String mspService = ServletRequestUtils.getStringParameter(request, "actionService");
-        if( mspService != null) {
+        int version = ServletRequestUtils.getIntParameter(request, "version");
+
+        if (mspService != null) {
             try {
-                ErrorObject[] objects = mspObjectDao.pingURL(mspVendor, mspService);
-                if( objects != null && objects != null  && objects.length > 0){
-                    String result = "";
-                    for (int i = 0; i < objects.length; i++) {
-                        result += objects[i].getObjectID() + " - " + objects[i].getErrorString();
+                if (version == 3) {
+                    ErrorObject[] objects = mspObjectDao.pingURL(mspVendor, mspService);
+                    if (objects != null && objects != null && objects.length > 0) {
+                        String result = "";
+                        for (int i = 0; i < objects.length; i++) {
+                            result += objects[i].getObjectID() + " - " + objects[i].getErrorString();
+                        }
+                        map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, result);
+                        map.addAttribute(RESULT_COLOR_ATT, "red");
+                    } else {
+                        map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, "* " + mspService + " pingURL Successful");
+                        map.addAttribute(RESULT_COLOR_ATT, "blue");
                     }
-                    map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, result);
-                    map.addAttribute(RESULT_COLOR_ATT, "red");
+                } else {
+                    com.cannontech.msp.beans.v5.commontypes.ErrorObject[] objects =
+                        mspObjectDaoV5.pingURL(mspVendor, mspService);
+                    if (objects != null && objects != null && objects.length > 0) {
+                        String result = "";
+                        for (int i = 0; i < objects.length; i++) {
+                            result += objects[i].getErrorCode() + " - " + objects[i].getDisplayString();
+                        }
+                        map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, result);
+                        map.addAttribute(RESULT_COLOR_ATT, "red");
+                    } else {
+                        map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, "* " + mspService + " pingURL Successful");
+                        map.addAttribute(RESULT_COLOR_ATT, "blue");
+                    }
                 }
-                else {
-                    map.addAttribute( MultispeakDefines.MSP_RESULT_MSG, "* " + mspService + " pingURL Successful");
-                    map.addAttribute(RESULT_COLOR_ATT, "blue");
-                }
-            }catch (MultispeakWebServiceClientException re) {
-                map.addAttribute( MultispeakDefines.MSP_RESULT_MSG, re.getMessage());
+            } catch (MultispeakWebServiceClientException re) {
+                map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, re.getMessage());
                 map.addAttribute(RESULT_COLOR_ATT, "red");
             }
         }
 
         map.addAttribute("mspVendorId", vendorId);
-        if (source!=null) {
+        if (source != null) {
             return "redirect:vendorHome";
-        } else{
+        } else {
             return "redirect:home";
         }
     }
@@ -229,22 +247,40 @@ public class MultispeakController {
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
 
         String mspService = ServletRequestUtils.getStringParameter(request, "actionService");
-        if( mspService != null) {
+        int version = ServletRequestUtils.getIntParameter(request, "version");
+        if (mspService != null) {
             try {
-                List<String> supportedMethods = mspObjectDao.getMethods(mspVendor, mspService);
-                if (supportedMethods.isEmpty()) {
-                    map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, "* No methods reported for " + mspService +" getMethods:\n" + mspService + " is not supported.");
-                    map.addAttribute(RESULT_COLOR_ATT, "red");
-                } else {
-                    String resultStr = mspService + " available methods:\n";
-                    for (String method : supportedMethods) {
-                        resultStr += " * " + method + "\n";
+                if (version == 3) {
+                    List<String> supportedMethods = mspObjectDao.getMethods(mspVendor, mspService);
+                    if (supportedMethods.isEmpty()) {
+                        map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, "* No methods reported for " + mspService
+                            + " getMethods:\n" + mspService + " is not supported.");
+                        map.addAttribute(RESULT_COLOR_ATT, "red");
+                    } else {
+                        String resultStr = mspService + " available methods:\n";
+                        for (String method : supportedMethods) {
+                            resultStr += " * " + method + "\n";
+                        }
+                        map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, resultStr);
+                        map.addAttribute(RESULT_COLOR_ATT, "blue");
                     }
-                    map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, resultStr);
-                    map.addAttribute(RESULT_COLOR_ATT, "blue");
+                } else {
+                    List<String> supportedMethods = mspObjectDaoV5.getMethods(mspVendor, mspService);
+                    if (supportedMethods.isEmpty()) {
+                        map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, "* No methods reported for " + mspService
+                            + " getMethods:\n" + mspService + " is not supported.");
+                        map.addAttribute(RESULT_COLOR_ATT, "red");
+                    } else {
+                        String resultStr = mspService + " available methods:\n";
+                        for (String method : supportedMethods) {
+                            resultStr += " * " + method + "\n";
+                        }
+                        map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, resultStr);
+                        map.addAttribute(RESULT_COLOR_ATT, "blue");
+                    }
                 }
-            }catch (MultispeakWebServiceClientException re) {
-                map.addAttribute( MultispeakDefines.MSP_RESULT_MSG, re.getMessage());
+            } catch (MultispeakWebServiceClientException re) {
+                map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, re.getMessage());
                 map.addAttribute(RESULT_COLOR_ATT, "red");
             }
         }
@@ -289,7 +325,8 @@ public class MultispeakController {
         if( !mspURL.endsWith("/")) {
             mspURL += "/";
         }
-        
+        String source = ServletRequestUtils.getStringParameter(request, "source");
+        String[] versions = ServletRequestUtils.getStringParameters(request, "mspVersions");
         MultispeakVendor mspVendor = new MultispeakVendor(vendorId,companyName, appName, 
                                                           username, password, outUsername, outPassword, 
                                                           maxReturnRecords, requestMessageTimeout,
@@ -299,16 +336,28 @@ public class MultispeakController {
         if (mspInterfaces != null && mspEndpoints != null) {
             for (int i = 0, j = 0; i < mspInterfaces.length; i++) {
                 if (!mspInterfaces[i].trim().equalsIgnoreCase(MultispeakDefines.NOT_Server_STR)) {
-                    MultispeakInterface mspInterface =
-                        new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[j], 3.0);
-                    mspInterfaceList.add(mspInterface);
-                    MultispeakInterface mspInterfaceV5 =
-                        new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[j + 1], 5.0);
-                    mspInterfaceList.add(mspInterfaceV5);
-                    j = j + 2;
+
+                    if (source == null) {
+                        MultispeakInterface mspInterface =
+                            new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[j], MultiSpeakVersion.V3);
+                        mspInterfaceList.add(mspInterface);
+                        MultispeakInterface mspInterfaceV5 =
+                            new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[j + 1],
+                                MultiSpeakVersion.V5);
+                        mspInterfaceList.add(mspInterfaceV5);
+                        j = j + 2;
+                    } else {
+
+                        MultispeakInterface mspInterface =
+                            (versions[i].equals("3.0")) ? new MultispeakInterface(vendorId, mspInterfaces[i],
+                                mspEndpoints[i], MultiSpeakVersion.V3) : new MultispeakInterface(vendorId,
+                                mspInterfaces[i], mspEndpoints[j], MultiSpeakVersion.V5);
+                        mspInterfaceList.add(mspInterface);
+
+                    }
                 } else {
                     MultispeakInterface mspInterfaceV5 =
-                        new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[j], 5.0);
+                        new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[j], MultiSpeakVersion.V5);
                     mspInterfaceList.add(mspInterfaceV5);
                     j = j + 1;
                 }

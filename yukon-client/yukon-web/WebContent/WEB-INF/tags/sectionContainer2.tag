@@ -14,7 +14,7 @@
 <%@ attribute name="infoWidth" %>
 <%@ attribute name="controls" %>
 <%@ attribute name="helpText" %>
-
+<%@ attribute name="displayRequiredFieldsNotice" %>
 
 <cti:msgScope paths=".${nameKey},">
     <cti:msg2 var="title" key=".title" arguments="${arguments}"/>
@@ -23,6 +23,6 @@
 </cti:msgScope>
 <tags:sectionContainer title="${pageScope.title}" id="${pageScope.id}" styleClass="${pageScope.styleClass}" 
     helpText="${pageScope.helpText}" helpUrl="${pageScope.helpUrl}" infoText="${pageScope.infoText}" hideEnabled="${pageScope.hideEnabled}" hideInitially="${pageScope.hideInitially}" 
-    controls="${pageScope.controls}" helpWidth="${helpWidth}" infoWidth="${infoWidth}"
+    controls="${pageScope.controls}" helpWidth="${helpWidth}" infoWidth="${infoWidth}" displayRequiredFieldsNotice="${pageScope.displayRequiredFieldsNotice}"
     ><jsp:doBody/>
 </tags:sectionContainer>

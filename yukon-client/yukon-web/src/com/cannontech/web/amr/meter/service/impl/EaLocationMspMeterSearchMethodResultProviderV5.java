@@ -40,7 +40,7 @@ public class EaLocationMspMeterSearchMethodResultProviderV5 implements MspMeterS
     }
 
     @Override
-    public MultiSpeakVersion getMspVersion() {
+    public MultiSpeakVersion version() {
         return MultiSpeakVersion.V5;
     }
 }

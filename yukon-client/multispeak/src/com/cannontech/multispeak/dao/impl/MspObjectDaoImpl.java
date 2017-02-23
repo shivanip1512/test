@@ -499,25 +499,25 @@ public class MspObjectDaoImpl implements MspObjectDao {
         PingURL pingURL = objectFactory.createPingURL();
         PingURLResponse response;
         
-        if (service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
+        if (service.contains(MultispeakDefines.OD_Server_STR)) {
             response = odClient.pingURL(mspVendor, endpointUrl, pingURL);
-        } else if (service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
+        } else if (service.contains(MultispeakDefines.OA_Server_STR)) {
             response = oaClient.pingURL(mspVendor, endpointUrl, pingURL);
-        } else if (service.equalsIgnoreCase(MultispeakDefines.MDM_Server_STR)) {
+        } else if (service.contains(MultispeakDefines.MDM_Server_STR)) {
             response = mdmClient.pingURL(mspVendor, endpointUrl, pingURL);
-        } else if (service.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
+        } else if (service.contains(MultispeakDefines.MR_Server_STR)) {
             response = mrClient.pingURL(mspVendor, endpointUrl, pingURL);
-        } else if (service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
+        } else if (service.contains(MultispeakDefines.EA_Server_STR)) {
             response = eaClient.pingURL(mspVendor, endpointUrl, pingURL);
-        } else if (service.equalsIgnoreCase(MultispeakDefines.LM_Server_STR)) {
+        } else if (service.contains(MultispeakDefines.LM_Server_STR)) {
             response = lmClient.pingURL(mspVendor, endpointUrl, pingURL);
-        } else if (service.equalsIgnoreCase(MultispeakDefines.CD_Server_STR)) {
+        } else if (service.contains(MultispeakDefines.CD_Server_STR)) {
             response = cdClient.pingURL(mspVendor, endpointUrl, pingURL);
-        } else if (service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
+        } else if (service.contains(MultispeakDefines.CB_Server_STR)) {
             response = cbClient.pingURL(mspVendor, endpointUrl, pingURL);
-        } else if (service.equalsIgnoreCase(MultispeakDefines.SCADA_Server_STR)) {
+        } else if (service.contains(MultispeakDefines.SCADA_Server_STR)) {
             response = scadaClient.pingURL(mspVendor, endpointUrl, pingURL);
-        } else if (service.equalsIgnoreCase(MultispeakDefines.CB_CD_STR)) {
+        } else if (service.contains(MultispeakDefines.CB_CD_STR)) {
             response = cbClient.pingURL(mspVendor, endpointUrl, pingURL);
         } else {
             ErrorObject obj = new ErrorObject();

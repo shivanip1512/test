@@ -244,7 +244,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
 
     @Override
     public ErrorObject[] pingURL(MultispeakVendor mspVendor, String service) throws MultispeakWebServiceClientException {
-        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, service + 5);
+        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, service);
         if (service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
             cbClient.pingURL(mspVendor, endpointUrl);
         } else if (service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
@@ -257,7 +257,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
             mrClient.pingURL(mspVendor, endpointUrl);
         } else if (service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
             PingURL pingURL = odObjectFactory.createPingURL();
-            PingURLResponse response=odClient.pingURL(mspVendor, endpointUrl, pingURL);
+            PingURLResponse response = odClient.pingURL(mspVendor, endpointUrl, pingURL);
             log.debug(response);
         } else {
             ErrorObject obj = new ErrorObject();

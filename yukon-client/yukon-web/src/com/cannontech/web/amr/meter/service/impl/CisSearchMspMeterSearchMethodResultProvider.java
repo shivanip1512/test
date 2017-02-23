@@ -39,7 +39,7 @@ public class CisSearchMspMeterSearchMethodResultProvider implements MspMeterSear
     }
     
     @Override
-    public MultiSpeakVersion getMspVersion() {
+    public MultiSpeakVersion version() {
         return MultiSpeakVersion.V3;
     }
 }

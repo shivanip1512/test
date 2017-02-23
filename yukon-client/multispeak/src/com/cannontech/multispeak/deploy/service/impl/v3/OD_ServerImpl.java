@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.msp.beans.v3.ErrorObject;
-import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -45,7 +44,7 @@ public class OD_ServerImpl implements OD_Server {
             String responseURL, String transactionID, Float expirationTime) throws MultispeakWebServiceException {
         init();
 
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("InitiateOutageDetectionEventRequest", vendor.getCompanyName());
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.OA_Server_STR);
 

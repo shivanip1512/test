@@ -4,6 +4,11 @@
  */
 package com.cannontech.multispeak.client;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.commons.lang3.tuple.Pair;
+
 /**
  * @author stacey
  */
@@ -48,35 +53,60 @@ public class MultispeakDefines {
     public static final String ACCOUNT_ID = "AccountId";
     // TODO : TO be tested if the SERVICE_LOCATION_ID carries a valid value
     public static final String SERVICE_LOCATION_ID = "ServiceLocationId";
-            
-    /**
-     * These are the Server side interfaces, the ones that Yukon supports. Other
-     * systems may call these servers in Yukon
-     */
-    public static final String[] MSP_SERVER_INTERFACE_ARRAY = new String[] { MR_Server_STR, OD_Server_STR,
-            CD_Server_STR, LM_Server_STR, SCADA_Server_STR, NOT_Server_STR};
+    private static final List<Pair<String, MultiSpeakVersion>> MSP_SERVER_INTERFACES;
+    private static final List<Pair<String, MultiSpeakVersion>> MSP_CLIENT_INTERFACES;
 
-    /**
-     * These are the Client side interface, the ones that Yukon may call and are
-     * implmented by the other vendor.
-     */
-    public static final String[] MSP_CLIENT_INTERFACE_ARRAY = new String[] { CB_Server_STR, OA_Server_STR,
-            EA_Server_STR, MDM_Server_STR, CB_CD_STR, NOT_Server_STR};
+    static {
+        /**
+         * These are the Server side interfaces, the ones that Yukon supports. Other
+         * systems may call these servers in Yukon
+         */
+        MSP_SERVER_INTERFACES = new ArrayList<>();
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(MR_Server_STR, MultiSpeakVersion.V3));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(MR_Server_STR, MultiSpeakVersion.V5));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(OD_Server_STR, MultiSpeakVersion.V3));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(OD_Server_STR, MultiSpeakVersion.V5));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(CD_Server_STR, MultiSpeakVersion.V3));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(CD_Server_STR, MultiSpeakVersion.V5));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(LM_Server_STR, MultiSpeakVersion.V3));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(LM_Server_STR, MultiSpeakVersion.V5));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(SCADA_Server_STR, MultiSpeakVersion.V3));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(SCADA_Server_STR, MultiSpeakVersion.V5));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_STR, MultiSpeakVersion.V5));
 
-    public static String[] getMSP_SERVER_INTERFACE_ARRAY() {
-        return MSP_SERVER_INTERFACE_ARRAY;
+        /**
+         * These are the Client side interface, the ones that Yukon may call and are
+         * implmented by the other vendor.
+         */
+        MSP_CLIENT_INTERFACES = new ArrayList<>();
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(CB_Server_STR, MultiSpeakVersion.V5));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(CB_Server_STR, MultiSpeakVersion.V3));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(OA_Server_STR, MultiSpeakVersion.V5));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(OA_Server_STR, MultiSpeakVersion.V3));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(EA_Server_STR, MultiSpeakVersion.V5));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(EA_Server_STR, MultiSpeakVersion.V3));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(MDM_Server_STR, MultiSpeakVersion.V5));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(MDM_Server_STR, MultiSpeakVersion.V3));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(CB_CD_STR, MultiSpeakVersion.V5));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(CB_CD_STR, MultiSpeakVersion.V3));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_STR, MultiSpeakVersion.V5));
     }
 
-    public static String[] getMSP_CLIENT_INTERFACE_ARRAY() {
-        return MSP_CLIENT_INTERFACE_ARRAY;
+    public static List<Pair<String, MultiSpeakVersion>> getMSP_SERVER_INTERFACE_ARRAY() {
+        return MSP_SERVER_INTERFACES;
     }
 
-    public static String[] getPossibleInterfaces(MultispeakVendor mspVendor) {
+    public static List<Pair<String, MultiSpeakVersion>> getMSP_CLIENT_INTERFACE_ARRAY() {
+        return MSP_CLIENT_INTERFACES;
+    }
 
-        if (mspVendor != null && mspVendor.getVendorID() != null && mspVendor.getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
-            return MultispeakDefines.MSP_SERVER_INTERFACE_ARRAY;
+    public static List<Pair<String, MultiSpeakVersion>> getPossibleInterfaces(MultispeakVendor mspVendor) {
+
+        if (mspVendor != null && mspVendor.getVendorID() != null
+            && mspVendor.getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
+            return MultispeakDefines.MSP_SERVER_INTERFACES;
         } else {
-            return MultispeakDefines.MSP_CLIENT_INTERFACE_ARRAY;
+            return MultispeakDefines.MSP_CLIENT_INTERFACES;
         }
     }
 }

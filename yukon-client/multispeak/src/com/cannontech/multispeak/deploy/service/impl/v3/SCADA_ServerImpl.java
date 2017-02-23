@@ -12,7 +12,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v3.ScadaAnalog;
-import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -50,7 +49,7 @@ public class SCADA_ServerImpl implements SCADA_Server {
     @Override
     public List<ScadaAnalog> getAllSCADAAnalogs(String lastReceived) throws MultispeakWebServiceException {
         LiteYukonUser user = init();
-        MultispeakVendor mspVendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
+        MultispeakVendor mspVendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetAllSCADAAnalogs", mspVendor.getCompanyName());
 
         Date timerStart = new Date();

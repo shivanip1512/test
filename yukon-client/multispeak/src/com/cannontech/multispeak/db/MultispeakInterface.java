@@ -1,5 +1,7 @@
 package com.cannontech.multispeak.db;
 
+import com.cannontech.multispeak.client.MultiSpeakVersion;
+
 public class MultispeakInterface
 {
     public static final String TABLE_NAME = "MSPInterface";
@@ -7,8 +9,9 @@ public class MultispeakInterface
     private Integer vendorID = null;
     private String mspInterface = null;
     private String mspEndpoint = null;
-    private Double version = null;
-    public MultispeakInterface(Integer vendorID, String mspInterface, String mspEndpoint, Double version)
+    private MultiSpeakVersion version = null;
+
+    public MultispeakInterface(Integer vendorID, String mspInterface, String mspEndpoint, MultiSpeakVersion version)
     {
         super();
         this.vendorID = vendorID;
@@ -42,14 +45,11 @@ public class MultispeakInterface
         this.vendorID = vendorID;
     }
 
-    public Double getVersion() {
+    public MultiSpeakVersion getVersion() {
         return version;
     }
 
-    public void setVersion(Double version) {
+    public void setVersion(MultiSpeakVersion version) {
         this.version = version;
     }
-
-    
-    
 }

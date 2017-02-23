@@ -12,7 +12,6 @@ import com.cannontech.msp.beans.v3.ErrorObject;
 import com.cannontech.msp.beans.v3.LoadManagementEvent;
 import com.cannontech.msp.beans.v3.ScadaAnalog;
 import com.cannontech.msp.beans.v3.SubstationLoadControlStatus;
-import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -60,7 +59,6 @@ public class LM_ServerImpl implements LM_Server
             List<ScadaAnalog> scadaAnalogs) throws MultispeakWebServiceException {
         LiteYukonUser liteYukonUser = init();
         
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
         // multispeakEventLogService.methodInvoked("SCADAAnalogChangedNotification", vendor.getCompanyName()); - stop logging this, it's occurring every minute or more
         
         List<ErrorObject> errorObjects = Lists.newArrayList();
@@ -89,7 +87,7 @@ public class LM_ServerImpl implements LM_Server
 
         LiteYukonUser liteYukonUser = init();
         
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("InitiateLoadManagementEvent", vendor.getCompanyName());
 
         ErrorObject errorObject = mspValidationService.isValidLoadManagementEvent(theLMEvent);
@@ -110,7 +108,7 @@ public class LM_ServerImpl implements LM_Server
             throws MultispeakWebServiceException {
         LiteYukonUser liteYukonUser = init();
 
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("InitiateLoadManagementEvents", vendor.getCompanyName());
 
         List<ErrorObject> errorObjects = Lists.newArrayList();

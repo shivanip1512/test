@@ -1,5 +1,6 @@
 package com.cannontech.multispeak.client;
 
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.google.common.collect.ImmutableSet;
 
 
@@ -7,7 +8,7 @@ import com.google.common.collect.ImmutableSet;
  * Enum for version and namespace
  */
 
-public enum MultiSpeakVersion {
+public enum MultiSpeakVersion implements DatabaseRepresentationSource {
 
     V3("3.0", "http://www.multispeak.org/Version_3.0"), 
     V5("5.0", "http://www.multispeak.org/V5.0"),;
@@ -33,4 +34,8 @@ public enum MultiSpeakVersion {
         return supportedMspVerions;
     }
 
+    @Override
+    public Object getDatabaseRepresentation() {
+        return getVersion();
+    }
 }

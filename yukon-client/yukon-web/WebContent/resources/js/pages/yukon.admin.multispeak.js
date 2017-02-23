@@ -16,11 +16,13 @@ yukon.admin.multispeak = (function () {
 	    		enableEndpointValue : function (isNew, selected, mspInterface) {
 	    			
 	    				if(mspInterface !== 'NOT_Server'){
-	    	                document.getElementById("mspEndpoint"+mspInterface).disabled = !selected;
-	    	                //document.getElementById(mspInterface).disabled = !selected;
+	    					if(document.getElementById(mspInterface+"3.0")!=null){
+	    						document.getElementById(mspInterface+"3.0").disabled = !selected;
+	    					}
 	    	                $('.'+mspInterface).prop('disabled', !selected);
 	    				}
-	    	            document.getElementById("mspEndpoint"+mspInterface+"v5").disabled = !selected;
+	    				document.getElementById("select"+mspInterface).disabled = !selected;
+	    	            document.getElementById(mspInterface+"5.0").disabled = !selected;
 	            },
 	            
 	            enableExtension: function (selected) {
@@ -28,8 +30,8 @@ yukon.admin.multispeak = (function () {
 	                document.getElementById("mspPaoNameAliasExtension").disabled = !selected;
 	            },
 	            
-	            executeRequest : function (service, call) {
-	            	debugger;
+	            executeRequest : function (service, call, version) {
+	            	document.mspForm.version.value = version;
 	            	document.mspForm.actionService.value = service;
   	                document.mspForm.action = yukon.url("/multispeak/setup/" + call);
 	                document.mspForm.submit();
@@ -41,16 +43,7 @@ yukon.admin.multispeak = (function () {
 	                document.mspForm.submit();
 	            },
 	            
-	            confirmDelete : function () {
-	                if (confirm("Are you sure you want to delete this interface?")) {
-	                    $('#delete-form').submit();
-	                }
-	            },
-	            
-	           
-
 	            showHideData : function (id, showData) {
-	            	debugger;
 	               $('#'+id).attr('type', showData ? 'text' : 'password');   
 	            },
 
@@ -61,13 +54,15 @@ yukon.admin.multispeak = (function () {
 	             */
 	            init: function () {
 	            	 $(document).on('click', '.js-eye-icon', function() {
-	            		 debugger;
 	 	                var targetRow = $(this).closest('.switch-btn');
 	 	                var id = targetRow.find('.switch-btn-checkbox').attr('id');
 	 	                var isSelected = targetRow.find('.switch-btn-checkbox').prop('checked');
 	 	               yukon.admin.multispeak.showHideData(id, !isSelected);
 	 	            });
 	            	 
+	            	 $(document).on('yukon:multispeak:vendor:delete', function () {
+	            		 $('#delete-form').submit();
+	                 });
 	                if (_initialized) return;
 	                _initialized = true;
 	            }

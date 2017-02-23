@@ -4,6 +4,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.tuple.ImmutablePair;
+import org.apache.commons.lang3.tuple.Pair;
+
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.multispeak.db.MultispeakInterface;
@@ -76,16 +79,19 @@ public class MultispeakVendor {
         this.mspInterfaces = mspInterfaces;
     }
 
+    public static Pair<String, MultiSpeakVersion> buildMapKey(String mspInterface, MultiSpeakVersion mspVersion) {
+        return new ImmutablePair<String, MultiSpeakVersion>(mspInterface, mspVersion);
+    }
     /**
      * @return
      */
-    public Map<String, MultispeakInterface> getMspInterfaceMap() {
-        Map<String, MultispeakInterface> mspInterfaceMap = new HashMap<String, MultispeakInterface>();
-        String mspVersion = null;
+    public Map<Pair<String, MultiSpeakVersion>, MultispeakInterface> getMspInterfaceMap() {
+        Map<Pair<String, MultiSpeakVersion>, MultispeakInterface> mspInterfaceMap =
+            new HashMap<Pair<String, MultiSpeakVersion>, MultispeakInterface>();
         for (MultispeakInterface mspInterface : getMspInterfaces()) {
-            mspVersion =
-                mspInterface.getVersion() == 5 ? mspInterface.getMspInterface() + 5 : mspInterface.getMspInterface();
-            mspInterfaceMap.put(mspVersion, mspInterface);
+            Pair<String, MultiSpeakVersion> keyPair =
+                buildMapKey(mspInterface.getMspInterface(), mspInterface.getVersion());
+            mspInterfaceMap.put(keyPair, mspInterface);
         }
 
         return mspInterfaceMap;

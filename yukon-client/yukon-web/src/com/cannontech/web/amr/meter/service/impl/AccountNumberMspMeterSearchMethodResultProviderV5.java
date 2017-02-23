@@ -8,8 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.amr.meter.search.model.MspSearchField;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
-import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.dao.v5.MspObjectDao;
 import com.cannontech.web.amr.meter.service.MspMeterSearchMethodResultProvider;
@@ -40,7 +40,7 @@ public class AccountNumberMspMeterSearchMethodResultProviderV5 implements MspMet
     }
 
     @Override
-    public MultiSpeakVersion getMspVersion() {
+    public MultiSpeakVersion version() {
         return MultiSpeakVersion.V5;
     }
 }

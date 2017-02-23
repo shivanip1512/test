@@ -49,6 +49,7 @@ import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.enumerations.RCDStateKind;
 import com.cannontech.msp.beans.v5.ws.response.MultiSpeakResponseMsgHeader;
 import com.cannontech.multispeak.client.MessageContextHolder;
+import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncsBase;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -493,5 +494,9 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         }
         return mspRCDStateKind.getRCDStateKind();
     }
-    
+
+    @Override
+    public MultiSpeakVersion version() {
+        return MultiSpeakVersion.V5;
+    }
 }

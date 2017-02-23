@@ -15,6 +15,7 @@
 <%@ attribute name="title" %>
 <%@ attribute name="helpWidth" %>
 <%@ attribute name="infoWidth" %>
+<%@ attribute name="displayRequiredFieldsNotice" %>
 
 <cti:uniqueIdentifier prefix="section-container-" var="thisId"/>
 <cti:default var="id" value="${thisId}"/>
@@ -52,6 +53,7 @@
                 data-popup-toggle=""/>
         </c:if>
         <div class="controls">${controls}</div>
+        <div class="displayRequiredFieldsNotice"><i><span class="red">${displayRequiredFieldsNotice}</span></i></div>
     </div>
     <%-- Body --%>
     <div id="${id}_content" class="content clearfix ${hideMe}"><jsp:doBody/></div>

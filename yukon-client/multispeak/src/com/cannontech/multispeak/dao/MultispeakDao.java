@@ -15,7 +15,7 @@ public interface MultispeakDao {
 
     public List<MultispeakInterface> getMultispeakInterfaces(int vendorID);
     
-    public List<MultispeakVendor> getMultispeakVendors(boolean ignoreCannon);
+    public List<MultispeakVendor> getMultispeakVendors(boolean excludeCannon);
     
     /**
      * Returns a list of MultiSpeakVendors that support CIS functionality.

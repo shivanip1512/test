@@ -87,9 +87,9 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
 
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakDefines.MSP_COMPANY_YUKON,
                 MultispeakDefines.MSP_APPNAME_YUKON);
-        YukonMultispeakMsgHeader yukonMspMsgHeader = new YukonMultispeakMsgHeader(mspVendor.getOutUserName(),
-        		mspVendor.getOutPassword(), MultiSpeakVersion.V3.getVersion());
-        QName qname = new QName(MultiSpeakVersion.V3.namespace, "MultiSpeakMsgHeader");
+        YukonMultispeakMsgHeader yukonMspMsgHeader =
+            new YukonMultispeakMsgHeader(mspVendor.getOutUserName(), mspVendor.getOutPassword(), version().getVersion());
+        QName qname = new QName(version().namespace, "MultiSpeakMsgHeader");
         SoapHeaderElement headerElement = header.addHeaderElement(qname);
         headerElement.addAttribute(new QName("Version"), yukonMspMsgHeader.getVersion());
         headerElement.addAttribute(new QName("UserID"), yukonMspMsgHeader.getUserID());
@@ -172,7 +172,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
      * @param multispeakVersion - Multispeak version.
      * @return String - attribute value.
      **/
-    public String getCompanyNameFromSOAPHeader(SoapHeader header, MultiSpeakVersion multispeakVersion) {
+    public String getCompanyNameFromSOAPHeader(SoapHeader header) {
         return getAtributeFromSOAPHeader(header, MultispeakDefines.COMPANY);
     }
 
@@ -182,7 +182,7 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
      * @param multispeakVersion - Multispeak version.
      * @return String - attribute value.
      **/
-    public String getAppNameFromSOAPHeader(SoapHeader header, MultiSpeakVersion multispeakVersion) {
+    public String getAppNameFromSOAPHeader(SoapHeader header) {
         return getAtributeFromSOAPHeader(header, MultispeakDefines.APPNAME);
     }
 
@@ -208,13 +208,13 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
      * @param version - multispeak version.
      * @return MultispeakVendor - Multispeak vendor information.
      **/
-    public MultispeakVendor getMultispeakVendorFromHeader(MultiSpeakVersion version)
+    public MultispeakVendor getMultispeakVendorFromHeader()
             throws MultispeakWebServiceException {
         try {
             SoapEnvelope env = getRequestMessageSOAPEnvelope();
             SoapHeader soapHeader = env.getHeader();
-            String companyName = getCompanyNameFromSOAPHeader(soapHeader, version);
-            String appName = getAppNameFromSOAPHeader(soapHeader, version);
+            String companyName = getCompanyNameFromSOAPHeader(soapHeader);
+            String appName = getAppNameFromSOAPHeader(soapHeader);
             return multispeakDao.getMultispeakVendorFromCache(companyName, appName);
         } catch (NotFoundException e) {
             throw new MultispeakWebServiceException(e.getMessage());
@@ -422,4 +422,8 @@ public class MultispeakFuncs extends MultispeakFuncsBase {
         return arrayOfString;
     }
 
+    @Override
+    public MultiSpeakVersion version() {
+        return MultiSpeakVersion.V3;
+    }
 }

@@ -41,7 +41,7 @@ public class ServiceLocationMspMeterSearchMethodResultProviderV5 implements MspM
     }
 
     @Override
-    public MultiSpeakVersion getMspVersion() {
+    public MultiSpeakVersion version() {
         return MultiSpeakVersion.V5;
     }
 }

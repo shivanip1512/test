@@ -17,6 +17,7 @@ import javax.xml.soap.SOAPException;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.ws.WebServiceMessage;
@@ -35,14 +36,13 @@ import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.msp.beans.v3.ObjectFactory;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 
-public abstract class MultispeakFuncsBase {
+public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
     private final static Logger log = YukonLogManager.getLogger(MultispeakFuncsBase.class);
 
     @Autowired public AuthenticationService authenticationService;
@@ -52,7 +52,6 @@ public abstract class MultispeakFuncsBase {
     @Autowired public PaoDefinitionDao paoDefinitionDao;
     @Autowired public PointFormattingService pointFormattingService;
     @Autowired public RolePropertyDao rolePropertyDao;
-    @Autowired private ObjectFactory objectFactory;
 
     /** A method that loads the response header. */
     public abstract void loadResponseHeader() throws MultispeakWebServiceException;
@@ -219,15 +218,14 @@ public abstract class MultispeakFuncsBase {
             return responseURL;
         } else {
             for (String service : services) {
-                MultispeakInterface mspInterface = mspVendor.getMspInterfaceMap().get(service);
+                Pair<String, MultiSpeakVersion> key = MultispeakVendor.buildMapKey(service, version());
+                MultispeakInterface mspInterface = mspVendor.getMspInterfaceMap().get(key);
                 if (mspInterface != null) {
                     return mspInterface.getMspEndpoint();
                 }
             }
         }
 
-        // return empty response URL...may need to do some more here? We don't
-        // expect to ever be in this situation!!
         return "";
     }
 
@@ -290,17 +288,5 @@ public abstract class MultispeakFuncsBase {
             log.error("URI " + endpointUrl + " is a malformed URL");
         }
         return endpointUrl;
-    }
-
-
-    /**
-     * @return Returns version of mspInterface.
-     * @param vendorId
-     * @param mspInterface
-     */
-    public Double getEndPointInterfaceVersion(int vendorId, String mspInterface) {
-        MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
-        return mspVendor.getMspInterfaceMap().get(mspInterface).getVersion();
-
     }
 }

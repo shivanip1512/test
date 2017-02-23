@@ -10,6 +10,7 @@ import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
+import com.cannontech.multispeak.db.MultispeakInterface;
 
 public class MspObjectDaoHandler {
     @Autowired private MspObjectDao mspObjectDao;
@@ -20,11 +21,19 @@ public class MspObjectDaoHandler {
     private static final String DOMAIN_MEMBERS_SUBSTATION_CODE_V5 = "GetDomainsByDomainNames - substationCode";
 
     public List<String> getMspSubstationName(MultispeakVendor mspPrimaryCISVendor) {
-        if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR) != null) {
-            if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR).getVersion().equals(
-               MultiSpeakVersion.V3.getVersion())) {
-                return mspObjectDao.getMspSubstationName(mspPrimaryCISVendor);
-            } else {
+
+        MultispeakInterface cb_server_v3 =
+            mspPrimaryCISVendor.getMspInterfaceMap().get(
+                MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR, MultiSpeakVersion.V3));
+
+        if (cb_server_v3 != null) {
+            return mspObjectDao.getMspSubstationName(mspPrimaryCISVendor);
+        } else {
+            MultispeakInterface cb_server_v5 =
+                mspPrimaryCISVendor.getMspInterfaceMap().get(
+                    MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR, MultiSpeakVersion.V5));
+
+            if (cb_server_v5 != null) {
                 return mspObjectDaoV5.getMspSubstationName(mspPrimaryCISVendor);
             }
         }
@@ -32,12 +41,20 @@ public class MspObjectDaoHandler {
     }
 
     public void invalidSubstationName(MultispeakVendor mspPrimaryCISVendor, String mspSubstationName) {
-        if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR) != null) {
-            if (mspPrimaryCISVendor.getMspInterfaceMap().get(MultispeakDefines.CB_Server_STR).getVersion().equals(
-                MultiSpeakVersion.V3.getVersion())) {
-                multispeakEventLogService.invalidSubstationName(DOMAIN_MEMBERS_SUBSTATION_CODE, mspSubstationName,
-                    mspPrimaryCISVendor.getCompanyName());
-            } else {
+
+        MultispeakInterface cb_server_v3 =
+            mspPrimaryCISVendor.getMspInterfaceMap().get(
+                MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR, MultiSpeakVersion.V3));
+
+        if (cb_server_v3 != null) {
+            multispeakEventLogService.invalidSubstationName(DOMAIN_MEMBERS_SUBSTATION_CODE, mspSubstationName,
+                mspPrimaryCISVendor.getCompanyName());
+        } else {
+            MultispeakInterface cb_server_v5 =
+                mspPrimaryCISVendor.getMspInterfaceMap().get(
+                    MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR, MultiSpeakVersion.V5));
+
+            if (cb_server_v5 != null) {
                 multispeakEventLogService.invalidSubstationName(DOMAIN_MEMBERS_SUBSTATION_CODE_V5, mspSubstationName,
                     mspPrimaryCISVendor.getCompanyName());
             }

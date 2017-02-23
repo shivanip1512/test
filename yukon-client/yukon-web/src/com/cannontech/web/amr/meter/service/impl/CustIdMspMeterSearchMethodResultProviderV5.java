@@ -40,7 +40,7 @@ public class CustIdMspMeterSearchMethodResultProviderV5 implements MspMeterSearc
     }
 
     @Override
-    public MultiSpeakVersion getMspVersion() {
+    public MultiSpeakVersion version() {
         return MultiSpeakVersion.V5;
     }
 }

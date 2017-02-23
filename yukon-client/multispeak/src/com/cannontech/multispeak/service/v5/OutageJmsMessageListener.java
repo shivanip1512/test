@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.xml.namespace.QName;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -29,6 +30,7 @@ import com.cannontech.msp.beans.v5.not_server.EndDeviceStatesNotification;
 import com.cannontech.msp.beans.v5.not_server.GetMethods;
 import com.cannontech.msp.beans.v5.not_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.not_server.ObjectFactory;
+import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.v5.NOTClient;
@@ -80,7 +82,9 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
         List<MultispeakVendor> allVendors = multispeakDao.getMultispeakVendors(false);
         ImmutableList.Builder<MultispeakVendor> supportsOutage = ImmutableList.builder();
         for (MultispeakVendor mspVendor : allVendors) {
-            if (mspVendor.getMspInterfaceMap().get(MultispeakDefines.NOT_Server_STR) != null) {
+            Pair<String, MultiSpeakVersion> keyPair =
+                MultispeakVendor.buildMapKey(MultispeakDefines.NOT_Server_STR, MultiSpeakVersion.V5);
+            if (mspVendor.getMspInterfaceMap().get(keyPair) != null) {
                 String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_STR);
                 try {
                     GetMethods getMethods = objectFactory.createGetMethods();

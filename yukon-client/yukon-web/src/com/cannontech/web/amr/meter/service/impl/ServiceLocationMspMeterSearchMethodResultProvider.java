@@ -19,27 +19,27 @@ public class ServiceLocationMspMeterSearchMethodResultProvider implements MspMet
     @Autowired protected MultispeakDao multispeakDao;
     @Autowired MultispeakFuncs multispeakFuncs;
     
-	@Override
-	public MspSearchField getSearchField() {
-		return MspSearchField.SERVICE_LOCATION;
-	}
-	
-	@Override
-	public List<String> getMeterNumbers(String filterValue) {
-		
+    @Override
+    public MspSearchField getSearchField() {
+        return MspSearchField.SERVICE_LOCATION;
+    }
+
+    @Override
+    public List<String> getMeterNumbers(String filterValue) {
+
         List<String> meterNumbers = new ArrayList<String>();
 
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-		List<Meter> meters = mspObjectDao.getMspMetersByServiceLocation(filterValue, mspVendor);
-		for (Meter meter : meters) {
-			meterNumbers.add(meter.getMeterNo());
-		}
-		
-		return meterNumbers;
-	}
+        List<Meter> meters = mspObjectDao.getMspMetersByServiceLocation(filterValue, mspVendor);
+        for (Meter meter : meters) {
+            meterNumbers.add(meter.getMeterNo());
+        }
+
+        return meterNumbers;
+    }
 
     @Override
-    public MultiSpeakVersion getMspVersion() {
+    public MultiSpeakVersion version() {
         return MultiSpeakVersion.V3;
     }
 }

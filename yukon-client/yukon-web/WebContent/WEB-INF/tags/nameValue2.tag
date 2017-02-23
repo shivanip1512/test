@@ -24,7 +24,7 @@
 <%@ attribute name="rowId" %>
 
 <%@ attribute name="valueClass" %>
-
+<%@ attribute name="requiredField" %>
     <c:choose>
         <c:when test="${nameValueContainer2}">
             <c:set var="colonSuffix" value=":"/>
@@ -59,12 +59,19 @@
                             </c:choose>
                         </c:otherwise>
                     </c:choose>
+                    
                 </td>
                 
-                <td class="value <c:if test="${!empty pageScope.valueClass}"> ${pageScope.valueClass}</c:if>"><jsp:doBody/></td>
+                <td class="value <c:if test="${!empty pageScope.valueClass}"> ${pageScope.valueClass}</c:if>"><jsp:doBody/>
+                    <c:if test="${requiredField == true}">
+                    <span class="red">*</span>
+                    </c:if>
+                </td>
+                
             </tr>
         </c:when>
         <c:otherwise>
             <div class="error">ERROR: The &lt;nameValue2&gt; tag must be enclosed in a &lt;nameValueContainer2&gt; tag</div>
         </c:otherwise>
     </c:choose>
+    

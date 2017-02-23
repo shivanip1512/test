@@ -25,7 +25,6 @@ import com.cannontech.msp.beans.v3.ConnectDisconnectEvent;
 import com.cannontech.msp.beans.v3.ErrorObject;
 import com.cannontech.msp.beans.v3.LoadActionCode;
 import com.cannontech.msp.beans.v3.Meter;
-import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
@@ -71,7 +70,7 @@ public class CD_ServerImpl implements CD_Server {
     @Override
     public List<Meter> getCDSupportedMeters(String lastReceived) throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetCDSupportedMeters", vendor.getCompanyName());
 
         Date timerStart = new Date();
@@ -91,7 +90,7 @@ public class CD_ServerImpl implements CD_Server {
     @Override
     public LoadActionCode getCDMeterState(String meterNo) throws MultispeakWebServiceException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetCDMeterState", vendor.getCompanyName());
 
         YukonMeter meter = mspValidationService.isYukonMeterNumber(meterNo);
@@ -119,7 +118,7 @@ public class CD_ServerImpl implements CD_Server {
             String transactionID, Float expirationTime) throws MultispeakWebServiceException {
         init();
 
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader(MultiSpeakVersion.V3);
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("InitiateConnectDisconnect", vendor.getCompanyName());
 
         String actualResponseURL =
