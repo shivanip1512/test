@@ -241,8 +241,9 @@ public class GatewaySettingsController {
     @RequestMapping("/gateways/{id}/location")
     public String location(HttpServletResponse resp, ModelMap model, YukonUserContext userContext, FlashScope flash,
             @PathVariable int id, @ModelAttribute Location location, BindingResult result) {
-        
-        LocationValidator.validate(location.getLatitude(), location.getLongitude(), result);
+        LocationValidator locationValidator = new LocationValidator();
+        Location target = new Location();
+        locationValidator.validate(location, result);
         if (location.getLatitude() == null && location.getLongitude() == null) {
             return "redirect:/stars/gateways/"+id;
         }

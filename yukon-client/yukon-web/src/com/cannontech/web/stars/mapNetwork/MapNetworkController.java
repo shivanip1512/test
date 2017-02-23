@@ -18,6 +18,9 @@ import org.geojson.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindException;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -51,6 +54,7 @@ import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
 import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Route;
+import com.cannontech.web.stars.gateway.model.Location;
 import com.cannontech.web.stars.gateway.model.LocationValidator;
 @RequestMapping("/mapNetwork/*")
 @Controller
@@ -131,9 +135,16 @@ public class MapNetworkController {
     public String saveCoordinates(HttpServletResponse resp, @RequestParam("deviceId") int deviceId, @RequestParam("latitude") Double latitude, 
                   @RequestParam("longitude") Double longitude, FlashScope flash, YukonUserContext userContext) throws ServletException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        BindException errors = new BindException(accessor, "accessor");
         Map<String, Object> json = new HashMap<>();
         boolean errorFound = false;
-        List<String> errorMessages = LocationValidator.getErrorMessages(latitude, longitude, accessor);
+        Location target = new Location();
+        target.setLatitude(latitude);
+        target.setLongitude(longitude);
+        LocationValidator locationValidator = new LocationValidator();
+        locationValidator.validate(target, errors);
+        List<String> errorMessages = new ArrayList<String>();
+        errors.getAllErrors().stream().forEach(e -> errorMessages.add(accessor.getMessage(e.getCode())));
         if (errorMessages.size()!=0) {
            errorFound = true; 
         }
