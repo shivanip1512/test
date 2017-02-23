@@ -3805,10 +3805,45 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
    //Check for undervoltage condition first.
    try
    {
-        if (point.getValue() < point.getLowerBandwidth())
+        StrategyManager::SharedPtr  strategy;
         {
+            /*
+                I'm not sure how to handle this... the calling code for this function checks the bus strategy
+                    so I'm imitating this here.  If there is no strategy assigned to the bus, it defaults over
+                    to the feeder assigned strategy.  Normally this won't be an issue because the feeder
+                    strategy is cascaded down from the bus, but unintended things may happen with a differing
+                    strategy attached to the feeder.
+            */
+            CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+            CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+
+            if ( CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( getParentId() ) )
+            {
+                strategy = bus->getStrategy();
+            }
+
+            if ( strategy->getUnitType() == ControlStrategy::None ) 
+            {
+                strategy = getStrategy();
+            }
+        }
+
+        const bool   isPeakTime = strategy->getPeakTimeFlag();
+        const double upperLimit = strategy->getUpperVoltLimit( isPeakTime );
+        const double lowerLimit = strategy->getLowerVoltLimit( isPeakTime );
+
+        double upperBound = upperLimit;
+        double lowerBound = lowerLimit;
+
+        if ( point.getOverrideStrategy() )
+        {
+            upperBound = point.getUpperBandwidth();
+            lowerBound = point.getLowerBandwidth();
+        }
+
+       if ( point.getValue() < lowerBound)
+       {
             CtiCCCapBank* parentBank = NULL;
-            double bestDelta = 0;
 
             //1.  First check this point's parent bank to see if we can close it.
             parentBank = getMonitorPointParentBank(point);
@@ -3821,9 +3856,10 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                     {
                         PointResponse pResponse = parentBank->getPointResponse(point);
 
-                        if ( (point.getValue() + pResponse.getDelta() <= point.getUpperBandwidth() &&
-                              point.getValue() + pResponse.getDelta() >= point.getLowerBandwidth() ) ||
-                              point.getValue() + pResponse.getDelta() < point.getUpperBandwidth() )
+                        const double value = point.getValue() + pResponse.getDelta();
+
+                        if ( ( lowerBound <= value && value <= upperBound )
+                                || value < upperBound )
                         {
                             CTILOG_INFO(dout, "Attempting to Increase Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<parentBank->getPaoName());
 
@@ -3869,9 +3905,8 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             //2.  If parent bank won't work, start checking other banks...
             if (parentBank == NULL || request == NULL)
             {
-                for (long i = 0; i < _cccapbanks.size(); i++)
+                for ( CtiCCCapBankPtr currentCapBank : _cccapbanks )
                 {
-                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
                     if (currentCapBank->getControlStatus() == CtiCCCapBank::Open ||
                         currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable)
                     {
@@ -3882,10 +3917,11 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                             {
                                 PointResponse pResponse = currentCapBank->getPointResponse(point);
 
-                                if ( (point.getValue() + pResponse.getDelta() <= point.getUpperBandwidth() &&
-                                      point.getValue() + pResponse.getDelta() >= point.getLowerBandwidth() ) ||
-                                      pResponse.getDelta() == 0 ||
-                                      point.getValue() + pResponse.getDelta() < point.getUpperBandwidth() )
+                                const double value = point.getValue() + pResponse.getDelta();
+
+                                if ( ( lowerBound <= value && value <= upperBound )
+                                        || value < upperBound
+                                        || pResponse.getDelta() == 0 )
                                 {
                                     CTILOG_INFO(dout, "Attempting to Increase Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<currentCapBank->getPaoName());
 
@@ -3926,13 +3962,10 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                 CTILOG_WARN(dout, "No Banks Available to Close on Feeder: "<<getPaoName());
             }
         }
-        else if (point.getValue() > point.getUpperBandwidth())
+        else if ( point.getValue() > upperBound )
         {
-            CtiCCCapBank* parentBank = NULL;
-            double bestDelta = 0;
-
             //1.  First check this point's parent bank to see if we can open it.
-            parentBank = getMonitorPointParentBank(point);
+            CtiCCCapBankPtr parentBank = getMonitorPointParentBank(point);
             if (parentBank != NULL)
             {
                 if (parentBank->getControlStatus() == CtiCCCapBank::Close ||
@@ -3942,10 +3975,10 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                     {
                         PointResponse pResponse = parentBank->getPointResponse(point);
 
-                        if ( (point.getValue() - pResponse.getDelta() <= point.getUpperBandwidth() &&
-                              point.getValue() - pResponse.getDelta() >= point.getLowerBandwidth() ) ||
-                              //pRespone.getDelta() == 0 ||
-                              point.getValue() - pResponse.getDelta() > point.getLowerBandwidth() )
+                        const double value = point.getValue() - pResponse.getDelta();
+
+                        if ( ( lowerBound <= value && value <= upperBound )
+                                || value > lowerBound )
                         {
                             CTILOG_INFO(dout, "Attempting to Decrease Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<parentBank->getPaoName());
 
@@ -3967,10 +4000,14 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                                 bestBank = parentBank;
                             }
                             else
+                            {
                                 parentBank = NULL;
+                            }
                         }
                         else
+                        {
                             parentBank = NULL;
+                        }
                     }
                     catch (NotFoundException& e)
                     {
@@ -3978,15 +4015,16 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                     }
                 }
                 else
+                {
                     parentBank = NULL;
+                }
             }
 
             //2.  If parent bank won't work, start checking other banks...
             if (parentBank == NULL || request == NULL)
             {
-                for (long i = 0; i < _cccapbanks.size(); i++)
+                for ( CtiCCCapBankPtr currentCapBank : _cccapbanks )
                 {
-                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
                     if (currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
                         currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable)
                     {
@@ -3997,10 +4035,11 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
                             {
                                 PointResponse pResponse = currentCapBank->getPointResponse(point);
 
-                                if ( (point.getValue() - pResponse.getDelta() <= point.getUpperBandwidth() &&
-                                      point.getValue() - pResponse.getDelta() >= point.getLowerBandwidth() ) ||
-                                      pResponse.getDelta() == 0 ||
-                                      point.getValue() - pResponse.getDelta() > point.getLowerBandwidth() )
+                                const double value = point.getValue() - pResponse.getDelta();
+
+                                if ( ( lowerBound <= value && value <= upperBound )
+                                        || value > lowerBound
+                                        || pResponse.getDelta() == 0 )
                                 {
                                     CTILOG_INFO(dout, "Attempting to Decrease Voltage on Feeder: "<<getPaoName()<<" CapBank: "<<currentCapBank->getPaoName());
 
@@ -4074,32 +4113,59 @@ bool CtiCCFeeder::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* p
     //action = 0 --> open
     //action = 1 --> close
 
-    for (long i = 0; i < _multipleMonitorPoints.size(); i++)
+    StrategyManager::SharedPtr  strategy;
     {
-        const CtiCCMonitorPoint & otherPoint = *_multipleMonitorPoints[i];
-        if (otherPoint.getPointId() != mPointID)
+        /*
+            I'm not sure how to handle this... the calling code for this function checks the bus strategy
+                so I'm imitating this here.  If there is no strategy assigned to the bus, it defaults over
+                to the feeder assigned strategy.  Normally this won't be an issue because the feeder
+                strategy is cascaded down from the bus, but unintended things may happen with a differing
+                strategy attached to the feeder.
+        */
+        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+        CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+
+        if ( CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( getParentId() ) )
         {
-            for each (const PointResponse& pResponse in potentialCap->getPointResponses())
+            strategy = bus->getStrategy();
+        }
+
+        if ( strategy->getUnitType() == ControlStrategy::None ) 
+        {
+            strategy = getStrategy();
+        }
+    }
+
+    const bool   isPeakTime = strategy->getPeakTimeFlag();
+    const double upperLimit = strategy->getUpperVoltLimit( isPeakTime );
+    const double lowerLimit = strategy->getLowerVoltLimit( isPeakTime );
+
+    for ( const CtiCCMonitorPointPtr otherPoint : _multipleMonitorPoints )
+    {
+        if (otherPoint->getPointId() != mPointID)
+        {
+            for ( const PointResponse & pResponse : potentialCap->getPointResponses() )
             {
-                if (otherPoint.getPointId() == pResponse.getPointId())
+                if (otherPoint->getPointId() == pResponse.getPointId())
                 {
                     if (action) //CLOSE
                     {
-                        if (pResponse.getDelta() != 0)
-                        {
-                            if (otherPoint.getValue() + pResponse.getDelta() > otherPoint.getUpperBandwidth() )
-                                //||otherPoint.getValue() + pResponse->getDelta() < otherPoint.getLowerBandwidth())
-                            {
+                        const double upperBound =
+                            otherPoint->getOverrideStrategy()
+                                ? otherPoint->getUpperBandwidth()
+                                : upperLimit;
 
-                                {
-                                    CTILOG_INFO(dout, "OPERATION CANCELLED: Other Monitor Point Voltages will be overly affected on Feeder: "<<getPaoName()<<" CapBank: "<<potentialCap->getPaoName() << " MULTIVOLT: otherPoint: "<<otherPoint.getPointId()<<" "<<otherPoint.getDeviceId()<<" Value: "<<otherPoint.getValue()<<" Delta: "<<pResponse.getDelta()<<" pResponse: "<<pResponse.getPointId()<<" "<<pResponse.getDeviceId());                                }
-                                retVal = false;
-                                break;
-                            }
-                            else
-                            {
-                                retVal = true;
-                            }
+                        if ( pResponse.getDelta() != 0
+                                && otherPoint->getValue() + pResponse.getDelta() > upperBound )
+                        {
+                            CTILOG_INFO( dout,
+                                         "OPERATION CANCELLED: Other Monitor Point Voltages will be overly affected on Feeder: "
+                                            << getPaoName() << " CapBank: " << potentialCap->getPaoName()
+                                            << " MULTIVOLT: otherPoint: " << otherPoint->getPointId() << " " << otherPoint->getDeviceId()
+                                            << " Value: " << otherPoint->getValue() << " Delta: " << pResponse.getDelta()
+                                            << " pResponse: " << pResponse.getPointId() << " " << pResponse.getDeviceId() );
+                            retVal = false;
+                            break;
                         }
                         else
                         {
@@ -4108,18 +4174,22 @@ bool CtiCCFeeder::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* p
                     }
                     else // OPEN
                     {
-                        if (pResponse.getDelta() != 0)
+                        const double lowerBound =
+                            otherPoint->getOverrideStrategy()
+                                ? otherPoint->getLowerBandwidth()
+                                : lowerLimit;
+
+                        if ( pResponse.getDelta() != 0
+                                && otherPoint->getValue() - pResponse.getDelta() < lowerBound )
                         {
-                            if (//otherPoint.getValue() - pResponse->getDelta() > otherPoint.getUpperBandwidth() ||
-                                otherPoint.getValue() - pResponse.getDelta() < otherPoint.getLowerBandwidth())
-                            {
-                                {
-                                    CTILOG_INFO(dout, "OPERATION CANCELLED: Other Monitor Point Voltages will be overly affected on Feeder: "<<getPaoName()<<" CapBank: "<<potentialCap->getPaoName() << " MULTIVOLT: otherPoint: "<<otherPoint.getPointId()<<" "<<otherPoint.getDeviceId()<<" Value: "<<otherPoint.getValue()<<" Delta: "<<pResponse.getDelta()<<" pResponse: "<<pResponse.getPointId()<<" "<<pResponse.getDeviceId());                                }
-                                retVal = false;
-                                break;
-                            }
-                            else
-                                retVal = true;
+                            CTILOG_INFO( dout,
+                                         "OPERATION CANCELLED: Other Monitor Point Voltages will be overly affected on Feeder: "
+                                            << getPaoName() << " CapBank: " << potentialCap->getPaoName()
+                                            << " MULTIVOLT: otherPoint: " << otherPoint->getPointId() << " " << otherPoint->getDeviceId()
+                                            << " Value: " << otherPoint->getValue() << " Delta: " << pResponse.getDelta()
+                                            << " pResponse: " << pResponse.getPointId() << " " << pResponse.getDeviceId() );
+                            retVal = false;
+                            break;
                         }
                         else
                         {
@@ -4143,22 +4213,63 @@ bool CtiCCFeeder::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPo
     bool retVal = false;
     try
     {
-        for (int i = 0; i < _multipleMonitorPoints.size(); i++)
+        StrategyManager::SharedPtr  strategy;
         {
-            CtiCCMonitorPointPtr point = (CtiCCMonitorPointPtr)_multipleMonitorPoints[i];
-            if (point->getValue() >= point->getLowerBandwidth() &&
-                point->getValue() <= point->getUpperBandwidth() )
+            /*
+                I'm not sure how to handle this... the calling code for this function checks the bus strategy
+                    so I'm imitating this here.  If there is no strategy assigned to the bus, it defaults over
+                    to the feeder assigned strategy.  Normally this won't be an issue because the feeder
+                    strategy is cascaded down from the bus, but unintended things may happen with a differing
+                    strategy attached to the feeder.
+            */
+            CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+            CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
+
+            if ( CtiCCSubstationBusPtr bus = store->findSubBusByPAObjectID( getParentId() ) )
+            {
+                strategy = bus->getStrategy();
+            }
+
+            if ( strategy->getUnitType() == ControlStrategy::None ) 
+            {
+                strategy = getStrategy();
+            }
+        }
+
+        const bool   isPeakTime = strategy->getPeakTimeFlag();
+        const double upperLimit = strategy->getUpperVoltLimit( isPeakTime );
+        const double lowerLimit = strategy->getLowerVoltLimit( isPeakTime );
+
+        for ( CtiCCMonitorPointPtr point : _multipleMonitorPoints )
+        {
+            double upperBound = upperLimit;
+            double lowerBound = lowerLimit;
+
+            if ( point->getOverrideStrategy() )
+            {
+                upperBound = point->getUpperBandwidth();
+                lowerBound = point->getLowerBandwidth();
+            }
+
+            if ( lowerBound <= point->getValue() && point->getValue() <= upperBound )
             {
                 if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
                 {
-                    CTILOG_DEBUG(dout, "MULTIVOLT: Monitor Point: "<<point->getPointId()<<" on CapBank: "<<point->getDeviceId()<<" is inside limits.  Current value: "<<point->getValue());
+                    CTILOG_DEBUG( dout,
+                                  "MULTIVOLT: Monitor Point: " << point->getPointId() << " on CapBank: "
+                                    << point->getDeviceId() << " is inside limits.  Current value: "
+                                    << point->getValue()
+                                    << " Limits: [" << lowerBound << ", " << upperBound << "]" ); 
                 }
                 retVal = true;
             }
             else
             {
 
-                CTILOG_WARN(dout, "Monitor Point: "<<point->getPointId()<<" on CapBank: "<<point->getDeviceId()<<" is OUTSIDE limits.  Current value: "<<point->getValue());
+                CTILOG_WARN( dout,
+                             "Monitor Point: " << point->getPointId() << " on CapBank: " << point->getDeviceId()
+                                << " is OUTSIDE limits.  Current value: " << point->getValue()
+                                << " Limits: [" << lowerBound << ", " << upperBound << "]" ); 
                 oorPoint = point;
                 retVal = false;
                 break;
@@ -4239,36 +4350,23 @@ bool CtiCCFeeder::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
 
     try
     {
-        //if ( isScanFlagSet() && currentDateTime >= getMonitorPointScanTime() - (_SCAN_WAIT_EXPIRE) )  //T1 Expired.. Force Process
         if ( isScanFlagSet() && currentDateTime.seconds() >= getLastOperationTime().seconds() + (_SCAN_WAIT_EXPIRE *60) )  //T1 Expired.. Force Process
         {
-            for (int i = 0; i < _multipleMonitorPoints.size(); i++)
+            for ( CtiCCMonitorPointPtr point : _multipleMonitorPoints )
             {
-                CtiCCMonitorPoint & point = *_multipleMonitorPoints[i];
-                if (point.getScanInProgress())
-                {
-                    point.setScanInProgress(false);
-                }
-            }
-            if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
-            {
-                CTILOG_DEBUG(dout, "ALL MONITOR POINTS ARE NEW ENOUGH on Feeder: " <<getPaoName());
+                point->setScanInProgress( false );
             }
             retVal = true;
         }
         else
         {
-            for (int i = 0; i < _multipleMonitorPoints.size(); i++)
+            for ( CtiCCMonitorPointPtr point : _multipleMonitorPoints )
             {
-                CtiCCMonitorPoint & point = *_multipleMonitorPoints[i];
-                if (point.getTimeStamp().seconds() > (getLastOperationTime().seconds() - 30) &&
-                    point.getTimeStamp().seconds() + _POINT_AGE <= currentDateTime.seconds())
+                if ( point->getTimeStamp() > ( getLastOperationTime() - 30 )
+                        && point->getTimeStamp() >= ( currentDateTime - ( 60 * _POINT_AGE ) ) )
                 {
                     retVal = true;
-                    if (point.getScanInProgress())
-                    {
-                        point.setScanInProgress(false);
-                    }
+                    point->setScanInProgress( false );
                 }
                 else
                 {
@@ -4276,23 +4374,11 @@ bool CtiCCFeeder::areAllMonitorPointsNewEnough(const CtiTime& currentDateTime)
                     break;
                 }
             }
-            if (retVal == true)
-            {
-                if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
-                {
-                   CTILOG_DEBUG(dout, "ALL MONITOR POINTS ARE NEW ENOUGH on Feeder: " <<getPaoName());
-                }
-                bool scanInProgress = false;
-                for (int i = 0; i < _multipleMonitorPoints.size(); i++)
-                {
-                    const CtiCCMonitorPoint & point = *_multipleMonitorPoints[i];
-                    if (point.getScanInProgress())
-                    {
-                        scanInProgress = true;
+        }
 
-                    }
-                }
-            }
+        if ( retVal && ( _CC_DEBUG & CC_DEBUG_MULTIVOLT ) )
+        {
+            CTILOG_DEBUG(dout, "ALL MONITOR POINTS ARE NEW ENOUGH on Feeder: " <<getPaoName());
         }
     }
     catch(...)
