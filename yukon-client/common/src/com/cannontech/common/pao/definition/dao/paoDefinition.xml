@@ -7821,42 +7821,6 @@
                 <unitofmeasure value="kW" />
                 <decimalplaces value="3" />
             </point>
-            <point type="Analog" offset="360">
-                <name>Received kW</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="kW" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="Analog" offset="361">
-                <name>Received kVAr</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="kVAr" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="Analog" offset="362">
-                <name>Delivered kVA</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="kVA" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="Analog" offset="363">
-                <name>Received kVA</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="kVA" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="Analog" offset="364">
-                <name>Delivered Power Factor</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="PF" />
-                <decimalplaces value="3" />
-            </point>
-            <point type="Analog" offset="365">
-                <name>Received Power Factor</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="PF" />
-                <decimalplaces value="3" />
-            </point>
         </points>
         <tags>
             <tag name="THREE_PHASE_VOLTAGE" />
