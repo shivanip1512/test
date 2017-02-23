@@ -323,7 +323,7 @@ public class DataStreamingConfigurationsController {
 
             downloadSearchResults(criteria, response, accessor);
             
-            return "";
+            return null;
         } catch (IOException ioe) {
             flash.setError(YukonMessageSourceResolvable.createSingleCodeWithArguments(
                     "yukon.web.modules.tools.dataStreaming.summary.results.errors.connectionError", ioe));
