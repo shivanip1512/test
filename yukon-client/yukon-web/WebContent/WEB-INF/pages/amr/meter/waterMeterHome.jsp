@@ -26,12 +26,12 @@
     <div id="page-actions" class="dn">
         <!--  Meter Create Button -->
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
-            <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}"/>
+            <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" icon="icon-plus-green" data-popup-title="${popupTitle}"/>
         </cti:checkRolesAndProperties>
         
         <!-- Delete Meter Button -->
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
-            <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" onclick="$('#delete-meter-form').submit();" />
+            <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" icon="icon-cross" onclick="$('#delete-meter-form').submit();" />
             <d:confirm on="#deleteMeter"  nameKey="meter.confirmDelete"/>
             <cti:url var="deleteUrl" value="/meter/${deviceId}"/>
             <form:form id="delete-meter-form" action="${deleteUrl}" method="delete">
@@ -39,17 +39,22 @@
             </form:form>
         </cti:checkRolesAndProperties>
         
-        <!-- Water Leak Report -->
-        <cti:checkRolesAndProperties value="WATER_LEAK_REPORT">
-            <cm:dropdownOption key=".waterLeakReport.report.pageName" href="${waterLeakReportUrl}" />
-        </cti:checkRolesAndProperties>
-
+        <li class="divider"/>
+        
         <!-- Actions: Map Network -->
         <c:if test="${showMapNetwork}">
             <cti:url var="mapNetworkUrl" value="/stars/mapNetwork/home?deviceId=${deviceId}"/>
-            <cm:dropdownOption key=".mapNetwork" href="${mapNetworkUrl}"/>
+            <cm:dropdownOption key=".mapNetwork" href="${mapNetworkUrl}" icon="icon-map"/>
         </c:if>
-        <cm:dropdownOption key=".otherActions.label" href="${collectionActionsUrl}" />
+        
+        <!-- Water Leak Report -->
+        <cti:checkRolesAndProperties value="WATER_LEAK_REPORT">
+            <cm:dropdownOption key=".waterLeakReport.report.pageName" href="${waterLeakReportUrl}" icon="icon-application-view-columns"/>
+        </cti:checkRolesAndProperties>
+        
+        <li class="divider"/>
+        
+        <cm:dropdownOption key=".otherActions.label" href="${collectionActionsUrl}" icon="icon-cog-go"/>
     </div>
 
 	<tags:widgetContainer deviceId="${deviceId}" identify="false">

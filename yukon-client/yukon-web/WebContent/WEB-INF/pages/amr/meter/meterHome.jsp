@@ -36,11 +36,11 @@
         <div id="page-actions" class="dn">
             <!--  Meter Create Button -->
             <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
-                <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}"/>
+                <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" icon="icon-plus-green" data-popup-title="${popupTitle}"/>
             </cti:checkRolesAndProperties>
             <!-- Delete Meter Button -->
             <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
-                <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" onclick="$('#delete-meter-form').submit();" />
+                <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" icon="icon-cross" onclick="$('#delete-meter-form').submit();" />
                 <d:confirm on="#deleteMeter"  nameKey="meter.confirmDelete"/>
                 <cti:url var="deleteUrl" value="/meter/${deviceId}"/>
                 <form:form id="delete-meter-form" action="${deleteUrl}" method="delete">
@@ -49,44 +49,17 @@
             </cti:checkRolesAndProperties>
             <li class="divider"/>
             
-            <c:if test="${showMoveInOut}">
-                <cti:url var="url" value="/meter/moveIn">
-                    <cti:param name="deviceId" value="${deviceId}"/>
-                </cti:url>
-                <cm:dropdownOption key=".moveIn" href="${url}"/>
-                <cti:url var="url" value="/meter/moveOut">
-                    <cti:param name="deviceId" value="${deviceId}"/>
-                </cti:url>
-                <cm:dropdownOption key=".moveOut" href="${url}"/>
+            <!-- Actions: Manual Commander -->
+            <c:if test="${showCommander}">
+                <cm:dropdownOption key=".commander" id="commander-menu-option" icon="icon-ping"/>
             </c:if>
-            
+                        
             <!-- Actions: High Bill Complaint -->
             <c:if test="${showHighBill}">
                 <cti:url var="url" value="/meter/highBill/view">
                     <cti:param name="deviceId" value="${deviceId}"/>
                 </cti:url>
-                <cm:dropdownOption key=".highBill" href="${url}"/>
-            </c:if>
-            
-            <!-- Actions: Profile -->
-            <c:if test="${showProfile}">
-                <cti:url var="url" value="/amr/profile/home">
-                    <cti:param name="deviceId" value="${deviceId}"/>
-                </cti:url>
-                <cm:dropdownOption key=".profile" href="${url}"/>
-            </c:if >
-            
-            <!-- Actions: Voltage & TOU -->
-            <c:if test="${showVoltageAndTou}">
-                <cti:url var="url" value="/amr/voltageAndTou/home">
-                    <cti:param name="deviceId" value="${deviceId}"/>
-                </cti:url>
-                <cm:dropdownOption key=".voltageAndTou" href="${url}"/>
-            </c:if>
-            
-            <!-- Actions: Manual Commander -->
-            <c:if test="${showCommander}">
-                <cm:dropdownOption key=".commander" id="commander-menu-option"/>
+                <cm:dropdownOption key=".highBill" href="${url}" icon="icon-email-error"/>
             </c:if>
             
             <!-- Actions: Locate Route -->
@@ -95,13 +68,40 @@
                     <cti:param name="collectionType" value="idList"/>
                     <cti:param name="idList.ids" value="${deviceId}"/>
                 </cti:url>
-                <cm:dropdownOption key=".locateRoute" href="${url}"/>
-            </c:if>
+                <cm:dropdownOption key=".locateRoute" href="${url}" icon="icon-connect"/>
+            </c:if>    
             
             <!-- Actions: Map Network -->
             <c:if test="${showMapNetwork}">
                 <cti:url var="mapNetworkUrl" value="/stars/mapNetwork/home?deviceId=${deviceId}"/>
-                <cm:dropdownOption key=".mapNetwork" href="${mapNetworkUrl}"/>
+                <cm:dropdownOption key=".mapNetwork" href="${mapNetworkUrl}" icon="icon-map"/>
+            </c:if>
+            
+            <c:if test="${showMoveInOut}">
+                <cti:url var="url" value="/meter/moveIn">
+                    <cti:param name="deviceId" value="${deviceId}"/>
+                </cti:url>
+                <cm:dropdownOption key=".moveIn" href="${url}" icon="icon-door-in"/>
+                <cti:url var="url" value="/meter/moveOut">
+                    <cti:param name="deviceId" value="${deviceId}"/>
+                </cti:url>
+                <cm:dropdownOption key=".moveOut" href="${url}" icon="icon-door-out"/>
+            </c:if>
+            
+            <!-- Actions: Profile -->
+            <c:if test="${showProfile}">
+                <cti:url var="url" value="/amr/profile/home">
+                    <cti:param name="deviceId" value="${deviceId}"/>
+                </cti:url>
+                <cm:dropdownOption key=".profile" href="${url}" icon="icon-application-form-magnify"/>
+            </c:if >
+            
+            <!-- Actions: Voltage & TOU -->
+            <c:if test="${showVoltageAndTou}">
+                <cti:url var="url" value="/amr/voltageAndTou/home">
+                    <cti:param name="deviceId" value="${deviceId}"/>
+                </cti:url>
+                <cm:dropdownOption key=".voltageAndTou" href="${url}" icon="icon-lightning"/>
             </c:if>
             
             <li class="divider"/>
@@ -111,7 +111,7 @@
                 <cti:param name="collectionType" value="idList"/>
                 <cti:param name="idList.ids" value="${deviceId}"/>
             </cti:url>
-            <cm:dropdownOption key=".otherActions.label" href="${url}"/>
+            <cm:dropdownOption key=".otherActions.label" href="${url}" icon="icon-cog-go"/>
         </div>
     </c:if>
     

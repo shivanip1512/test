@@ -21,7 +21,7 @@
     
     <div id="page-actions" class="dn">
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
-            <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}"/>
+            <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" icon="icon-plus-green" data-popup-title="${popupTitle}"/>
         </cti:checkRolesAndProperties>
     </div>
     
