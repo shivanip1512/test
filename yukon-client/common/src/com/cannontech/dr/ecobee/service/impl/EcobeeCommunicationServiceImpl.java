@@ -107,6 +107,10 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
             log.debug("Ecobee response code was 7 (validation error). Message: \"" + response.getStatus().getMessage()
                       + "\". Assuming device already exists.");
             return true;
+        } else if(!response.getSuccess()) {
+            //error
+            log.info("Error registering device with ecobee. (Code " + response.getStatus().getCode() + ") " 
+                     + response.getStatus().getMessage()); 
         }
 
         return response.getSuccess();

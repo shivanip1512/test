@@ -44,8 +44,11 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     
     public void createDevice(int inventoryId, String serialNumber, HardwareType hardwareType) {
         try {
-            ecobeeCommunicationService.registerDevice(serialNumber);
-
+            boolean success = ecobeeCommunicationService.registerDevice(serialNumber);
+            if (!success) {
+                throw new Exception("ecobee device registration failed.");
+            }
+            
             CompleteDevice ecobeePao = new CompleteDevice();
             ecobeePao.setPaoName(serialNumber);
             paoPersistenceService.createPaoWithDefaultPoints(ecobeePao, hardwareTypeToPaoType.get(hardwareType));
