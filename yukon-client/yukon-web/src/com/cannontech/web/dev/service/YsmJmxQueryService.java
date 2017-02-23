@@ -1,6 +1,7 @@
 package com.cannontech.web.dev.service;
 
 import static com.cannontech.common.config.MasterConfigString.JMS_SERVER_BROKER_LISTEN_CONNECTION;
+import static com.cannontech.common.config.MasterConfigString.JMS_CLIENT_BROKER_CONNECTION;
 
 import java.io.IOException;
 
@@ -26,11 +27,6 @@ import com.cannontech.web.support.service.impl.BeanTypeForJMXConnector;
 public class YsmJmxQueryService {
 
     private static final Logger log = YukonLogManager.getLogger(YsmJmxQueryService.class);
-    /*
-     * JMX port for Message Broker : 1097
-     * JMX port for Service Manager Broker : 1099
-     */
-    private static final String serviceManagerJMXConnectionUrl = "service:jmx:rmi:///jndi/rmi://localhost:1099/jmxrmi";
 
     private JMXServiceURL messageBrokerServiceUrl;
     private JMXConnector messageBrokerJmxConnector;
@@ -87,18 +83,21 @@ public class YsmJmxQueryService {
         }
     }
 
-    
+    /*
+     * JMX port for Message Broker : 1097
+     * JMX port for Service Manager Broker : 1099
+     */
+
     @PostConstruct
     public void init() {
 
-        String hostUri;
+        String hostUri = globalSettingDao.getString(GlobalSettingType.JMS_BROKER_HOST);
+        String serverBrokerConnection = config.getString(JMS_SERVER_BROKER_LISTEN_CONNECTION);
+
         if (config.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE, false)) {
             try {
-                String serverListenConnection = config.getString(JMS_SERVER_BROKER_LISTEN_CONNECTION);
-                if (serverListenConnection != null) {
-                    hostUri = StringUtils.substringBetween(serverListenConnection, "//", ":");
-                } else {
-                    hostUri = globalSettingDao.getString(GlobalSettingType.JMS_BROKER_HOST);
+                if (serverBrokerConnection != null) {
+                    hostUri = StringUtils.substringBetween(serverBrokerConnection, "//", ":");
                 }
                 String messageBrokerJMXConnectionUrl = "service:jmx:rmi:///jndi/rmi://" + hostUri + ":1097/jmxrmi";
                 messageBrokerServiceUrl = new JMXServiceURL(messageBrokerJMXConnectionUrl);
@@ -108,6 +107,11 @@ public class YsmJmxQueryService {
             }
 
             try {
+                String clientBrokerConnection = config.getString(JMS_CLIENT_BROKER_CONNECTION);
+                if (clientBrokerConnection != null) {
+                    hostUri = StringUtils.substringBetween(clientBrokerConnection, "//", ":");
+                }
+                String serviceManagerJMXConnectionUrl = "service:jmx:rmi:///jndi/rmi://" + hostUri + ":1099/jmxrmi";
                 serviceManagerServiceUrl = new JMXServiceURL(serviceManagerJMXConnectionUrl);
                 serviceManagerJmxConnector = JMXConnectorFactory.connect(serviceManagerServiceUrl, null);
             } catch (IOException e) {
