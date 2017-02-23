@@ -7,6 +7,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.stream.Collectors;
 
@@ -399,13 +400,14 @@ public class CommanderController {
         // Save user preferences for commander
         try {
             List<UserPreference> userPreferences = updateCommanderUserPreferences(user, params);
-            List<UserPreference> results = userPreferences
+            Optional<UserPreference> results =
+                userPreferences
                     .stream()
                     .filter(preference -> preference.getName() == UserPreferenceName.COMMANDER_RECENT_TARGETS)
-                    .collect(Collectors.toList());
+                    .findFirst();
 
-            if (!results.isEmpty()) {
-                String recentPrefStringValue = results.get(0).getValue();
+            if (results.isPresent()) {
+                String recentPrefStringValue = results.get().getValue();
                 List<RecentTarget> recentTargets = JsonUtils.fromJson(recentPrefStringValue, recentTargetsType);
 
                 if (!recentTargets.isEmpty()) {
