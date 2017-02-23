@@ -151,7 +151,10 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
                 LCR_1000,
                 SA_205,
                 SA_305, 
-                SA_SIMPLE);
+                SA_SIMPLE,
+                UTILITY_PRO,
+                UTILITY_PRO_G2,
+                UTILITY_PRO_G3);
         
         rfTypes = ImmutableSet.of(LCR_6200_RFN, LCR_6600_RFN);
         
