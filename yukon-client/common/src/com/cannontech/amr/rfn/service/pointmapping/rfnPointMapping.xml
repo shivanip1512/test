@@ -978,7 +978,7 @@
                 <modifier>Harmonic</modifier>
             </modifiers>
         </point>
-        <point name="Avg Power Factor">
+        <point name="Power Factor">
             <uom>PF</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
