@@ -74,7 +74,6 @@ public enum UserPreferenceName implements DisplayableEnum {
             Arrays.asList(UserPreferenceName.values())
                 .stream()
                 .filter(preference -> (preference.preferenceType == preferenceType))
-                .map(preference -> preference)
                 .collect(Collectors.toList());
 
         return prefList;

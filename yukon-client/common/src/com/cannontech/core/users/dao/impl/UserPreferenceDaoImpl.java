@@ -225,17 +225,17 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
             throw new IllegalArgumentException("UserPreferenceDaoImpl cannot get Preference for null UserPreference.");
         }
 
-        UserPreference value = null;
+        UserPreference userPreference = null;
         Map<UserPreferenceName, UserPreference> cacheableUserPreferences =
             userPreferencesCache.getUnchecked(user.getUserID());
 
         if (cacheableUserPreferences.containsKey(userPreferenceName)) {
-            value = cacheableUserPreferences.get(userPreferenceName);
+            userPreference = cacheableUserPreferences.get(userPreferenceName);
         } else if (userPreferenceName.getPreferenceType() != PreferenceType.TEMPORARY) {
-            value = getPreferenceFromDbOrDefault(user, userPreferenceName);
-            cacheableUserPreferences.put(userPreferenceName, value);
+            userPreference = getPreferenceFromDbOrDefault(user, userPreferenceName);
+            cacheableUserPreferences.put(userPreferenceName, userPreference);
         }
-        return value;
+        return userPreference;
     }
 
     private static class RowMapper implements YukonRowMapper<UserPreference> {
@@ -257,16 +257,12 @@ public class UserPreferenceDaoImpl implements UserPreferenceDao {
     public Map<UserPreferenceName, UserPreference> getUserPreferencesByPreferenceType(LiteYukonUser user,
             PreferenceType preferenceType) {
         Map<UserPreferenceName, UserPreference> userPreferences = new HashMap<>();
-        Map<UserPreferenceName, UserPreference> cacheableUserPreferences =
-            userPreferencesCache.getUnchecked(user.getUserID());
 
         List<UserPreferenceName> userPreferenceNames = UserPreferenceName.getUserPreferencesByType(preferenceType);
 
         for (UserPreferenceName userPreferenceName : userPreferenceNames) {
-            if (cacheableUserPreferences.containsKey(userPreferenceName)) {
-                UserPreference userPreference = cacheableUserPreferences.get(userPreferenceName);
-                userPreferences.put(userPreferenceName, userPreference);
-            }
+            UserPreference userPreference = getPreference(user, userPreferenceName);
+            userPreferences.put(userPreferenceName, userPreference);
         }
         return userPreferences;
     }
