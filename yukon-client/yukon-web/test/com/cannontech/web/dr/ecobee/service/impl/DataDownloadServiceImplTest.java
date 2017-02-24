@@ -118,7 +118,7 @@ public class DataDownloadServiceImplTest {
         /* All other methods unimplemented */
         
         @Override
-        public boolean registerDevice(String serialNumber) {
+        public void registerDevice(String serialNumber) {
             throw new UnsupportedOperationException("Method not implemented.");
         }
 

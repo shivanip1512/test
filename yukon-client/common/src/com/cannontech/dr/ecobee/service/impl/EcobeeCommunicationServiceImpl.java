@@ -92,7 +92,7 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
         "compHeat1"); // heat runtime
 
     @Override
-    public boolean registerDevice(String serialNumber) {
+    public void registerDevice(String serialNumber) {
         log.debug("Registering ecobee device with serial number " + serialNumber);
         
         String url = getUrlBase() + modifyThermostatUrlPart;
@@ -106,14 +106,12 @@ public class EcobeeCommunicationServiceImpl implements EcobeeCommunicationServic
             //device already exists
             log.debug("Ecobee response code was 7 (validation error). Message: \"" + response.getStatus().getMessage()
                       + "\". Assuming device already exists.");
-            return true;
         } else if(!response.getSuccess()) {
-            //error
-            log.info("Error registering device with ecobee. (Code " + response.getStatus().getCode() + ") " 
-                     + response.getStatus().getMessage()); 
-        }
-
-        return response.getSuccess();
+            String message = "Error registering device with ecobee. (Code "  + response.getStatus().getCode() + ") " 
+                             + response.getStatus().getMessage();
+            log.info(message);
+            throw new EcobeeCommunicationException(message);
+        };
     }
     
     @Override
