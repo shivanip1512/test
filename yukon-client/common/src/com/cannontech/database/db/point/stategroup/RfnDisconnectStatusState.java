@@ -1,7 +1,6 @@
 package com.cannontech.database.db.point.stategroup;
 
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 
 /**
  * This is a little unfortunate, but because we are unable to change anything within the network manager "shared"
@@ -11,33 +10,26 @@ import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
  *  some associations between state and type.
  */
 public enum RfnDisconnectStatusState implements PointState {
-    UNKNOWN(RfnMeterDisconnectState.UNKNOWN, null), 
-    CONNECTED(RfnMeterDisconnectState.CONNECTED, RfnMeterDisconnectStatusType.RESUME), 
-    DISCONNECTED(RfnMeterDisconnectState.DISCONNECTED, RfnMeterDisconnectStatusType.TERMINATE), 
-    ARMED(RfnMeterDisconnectState.ARMED, RfnMeterDisconnectStatusType.ARM),
-    ;
+    UNKNOWN(RfnMeterDisconnectState.UNKNOWN),
+    CONNECTED(RfnMeterDisconnectState.CONNECTED),
+    DISCONNECTED(RfnMeterDisconnectState.DISCONNECTED),
+    ARMED(RfnMeterDisconnectState.ARMED), ;
 
     private final RfnMeterDisconnectState nmReferenceState;
-    private final RfnMeterDisconnectStatusType type;
-    
-    private RfnDisconnectStatusState(RfnMeterDisconnectState nmReferenceState, RfnMeterDisconnectStatusType type) {
+
+    private RfnDisconnectStatusState(RfnMeterDisconnectState nmReferenceState) {
         this.nmReferenceState = nmReferenceState;
-        this.type = type;
     }
 
     @Override
     public int getRawState() {
         return nmReferenceState.getRawState();
     }
-    
+
     public RfnMeterDisconnectState getNmReferenceState() {
         return nmReferenceState;
     }
-    
-    public RfnMeterDisconnectStatusType getType() {
-        return type;
-    }
-    
+
     /**
      * Returns the RfnDisconnectStatusState for the Network Manager serialized 
      *  message state (RfnMeterDisconnectState). 
@@ -50,6 +42,5 @@ public enum RfnDisconnectStatusState implements PointState {
         }
         throw new  IllegalArgumentException();
     }
-    
-    
+
 }

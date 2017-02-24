@@ -38,7 +38,7 @@ public class RfnMeterDisconnectRequest implements RfnIdentifyingMessage, Seriali
 
     @Override
     public String toString() {
-        return String.format("RfnMeterDisconnectRequest [rfnIdentifier=%s]", rfnIdentifier);
+        return String.format("RfnMeterDisconnectRequest [rfnIdentifier=%s]:%s", rfnIdentifier, action);
     }
 
 }

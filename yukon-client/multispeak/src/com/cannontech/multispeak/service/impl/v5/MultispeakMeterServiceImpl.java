@@ -2096,7 +2096,9 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
                     RfnMeter rfnMeter = (RfnMeter) meter;
                     multispeakEventLogService.initiateCD(meter.getMeterNumber(), meter, mspLoadActionCode.toString(), transactionId,
                                                          "InitiateConnectDisconnect", mspVendor.getCompanyName());
-                    doRfnConnectDisconnect(rfnMeter, mspLoadActionCode.getRfnState().getType(), mspVendor, transactionId, responseUrl);
+                    doRfnConnectDisconnect(rfnMeter,
+                        mspLoadActionCode.getRfnMeterDisconnectStatusType(configurationSource), mspVendor,
+                        transactionId, responseUrl);
                     continue;
                 }
 
