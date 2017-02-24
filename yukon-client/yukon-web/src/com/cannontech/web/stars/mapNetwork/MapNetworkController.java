@@ -69,6 +69,7 @@ public class MapNetworkController {
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnDeviceMetadataService metadataService;
     @Autowired private RfnGatewayDataCache gatewayDataCache;
+    @Autowired private LocationValidator locationValidator;
     
     @RequestMapping("home")
     public String home(ModelMap model, @RequestParam("deviceId") int deviceId, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
@@ -140,7 +141,7 @@ public class MapNetworkController {
         target.setLatitude(latitude);
         target.setLongitude(longitude);
         DataBinder binder = new DataBinder(target);
-        binder.setValidator(new LocationValidator());
+        binder.setValidator(locationValidator);
         binder.validate();
         BindingResult results = binder.getBindingResult();
         List<String> errorMessages = new ArrayList<String>();

@@ -434,4 +434,6 @@
     
     <bean id="meterTypeHelper" class="com.cannontech.common.pao.meter.model.MeterTypeHelper"/>
     
+    <bean class="com.cannontech.web.stars.gateway.model.LocationValidator"/>
+    
 </beans>

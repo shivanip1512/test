@@ -2,6 +2,7 @@ package com.cannontech.web.stars.gateway.model;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.InetAddressValidator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.pao.PaoUtils;
@@ -10,6 +11,9 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 
 public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
+    
+    @Autowired private LocationValidator locationValidator;
+
     
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
     
@@ -41,7 +45,6 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "admin.username", baseKey + "username.required");
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "superAdmin.username", baseKey + "username.required");
         
-        LocationValidator locationValidator = new LocationValidator();
         Location target = new Location();
         target.setLatitude(settings.getLatitude());
         target.setLongitude(settings.getLongitude());
