@@ -169,14 +169,8 @@ public class DataStreamingAttributeHelper {
         RFN_530S4X(PaoType.RFN530S4X,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.RECEIVED_DEMAND, //metric 6
-                BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.RECEIVED_KVAR,   //metric 33
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 /*Var Hour Net*/				     //metric 24
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.NET_KVAH,        //metric 44
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
