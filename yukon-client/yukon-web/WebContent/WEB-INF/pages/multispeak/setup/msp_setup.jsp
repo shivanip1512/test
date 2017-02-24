@@ -118,10 +118,10 @@
                      <c:set var="disabled" value="${interfaceValuev5 == null}" scope="page" />
                      <c:choose>
                          <c:when test="${mspPossibleInterface.right.version== '3.0'}">
-                             <c:set var="defaultURL" value="${mspVendor.url}/v3/${mspPossibleInterface.left}Soap" scope="page" />
+                             <c:set var="defaultURL" value="${mspVendor.url}v3/${mspPossibleInterface.left}Soap" scope="page" />
                              </c:when>
                          <c:otherwise>
-                             <c:set var="defaultURL" value="${mspVendor.url}/multispeak/v5/${mspPossibleInterface.left}" scope="page" />
+                             <c:set var="defaultURL" value="${mspVendor.url}multispeak/v5/${mspPossibleInterface.left}" scope="page" />
                          </c:otherwise>
                      </c:choose>
                       <tr>
