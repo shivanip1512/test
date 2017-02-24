@@ -67,23 +67,23 @@
                         </c:choose>
                         
                         <tags:nameValue2 nameKey=".appName">
-                          <input title="<cti:msg2 key=".appName.title"/>"  name="mspAppName" value='<spring:escapeBody htmlEscape="true">${mspVendor.appName}</spring:escapeBody>'>
+                          <input name="mspAppName" value='<spring:escapeBody htmlEscape="true">${mspVendor.appName}</spring:escapeBody>'>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".maxRecords" requiredField="true">
-                          <input title="<cti:msg2 key=".maxRecords.title"/>" name="mspMaxReturnRecords" value='<spring:escapeBody htmlEscape="true">${mspVendor.maxReturnRecords}</spring:escapeBody>'>
+                          <input name="mspMaxReturnRecords" value='<spring:escapeBody htmlEscape="true">${mspVendor.maxReturnRecords}</spring:escapeBody>'>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".reqMsgTimeout" requiredField="true">
-                          <input title="<cti:msg2 key=".reqMsgTimeout.title"/>"  name="mspRequestMessageTimeout" value='<spring:escapeBody htmlEscape="true">${mspVendor.requestMessageTimeout}</spring:escapeBody>'>
+                          <input name="mspRequestMessageTimeout" value='<spring:escapeBody htmlEscape="true">${mspVendor.requestMessageTimeout}</spring:escapeBody>'>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".initRequestTimeout" requiredField="true">
-                          <input title="<cti:msg2 key=".initRequestTimeout.title"/>"  name="mspMaxInitiateRequestObjects" value='<spring:escapeBody htmlEscape="true">${mspVendor.maxInitiateRequestObjects}</spring:escapeBody>'>
+                          <input name="mspMaxInitiateRequestObjects" value='<spring:escapeBody htmlEscape="true">${mspVendor.maxInitiateRequestObjects}</spring:escapeBody>'>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".template">
-                          <input title="<cti:msg2 key=".template.title"/>"  name="mspTemplateNameDefault" value='<spring:escapeBody htmlEscape="true">${mspVendor.templateNameDefault}</spring:escapeBody>'>
+                          <input name="mspTemplateNameDefault" value='<spring:escapeBody htmlEscape="true">${mspVendor.templateNameDefault}</spring:escapeBody>'>
                         </tags:nameValue2>
                         
                     </tags:nameValueContainer2>
@@ -94,12 +94,12 @@
                     <h5><i:inline key=".incomingAuthentication"/></h5>
                     <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".userName">
-                          <input title="<cti:msg2 key=".userName.title"/>"  name="mspUserName" value='<spring:escapeBody htmlEscape="true">${mspVendor.userName}</spring:escapeBody>'>
+                          <input name="mspUserName" value='<spring:escapeBody htmlEscape="true">${mspVendor.userName}</spring:escapeBody>'>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".password">
                           <div class="dib M0">
-                             <input title="<cti:msg2 key=".password.title"/>"  name="mspPassword" id="mspPassword" value='<spring:escapeBody htmlEscape="true">${mspVendor.password}</spring:escapeBody>'
+                             <input name="mspPassword" id="mspPassword" value='<spring:escapeBody htmlEscape="true">${mspVendor.password}</spring:escapeBody>'
                              type="password">
                                  <tags:check id="mspPassword" name="showHideButton_mspPassword" classes="fr M0 js-eye-icon">
                                      <i title="<i:inline key="yukon.web.modules.adminSetup.config.showHideData"/>" class="icon icon-eye" id="showhide_mspPassword"></i>
@@ -112,13 +112,13 @@
                 <h5><i:inline key=".outcomingAuthentication"/></h5>
                 <tags:nameValueContainer2>
                         <tags:nameValue2 nameKey=".userName">
-                          <input title="<cti:msg2 key=".outUserName.title"/>"  name="outUserName" value='<spring:escapeBody htmlEscape="true">${mspVendor.outUserName}</spring:escapeBody>'>
+                          <input name="outUserName" value='<spring:escapeBody htmlEscape="true">${mspVendor.outUserName}</spring:escapeBody>'>
                         </tags:nameValue2>
                         
                         <tags:nameValue2 nameKey=".password">
                           
                         <div class="dib M0">
-                            <input title="<cti:msg2 key=".outPassword.title"/>"  name="outPassword" id="outPassword" value='<spring:escapeBody 
+                            <input name="outPassword" id="outPassword" value='<spring:escapeBody 
                             htmlEscape="true">${mspVendor.outPassword}</spring:escapeBody>' type="password">
                              
                                  <tags:check id="outPassword" name="showHideButton_outPassword" classes="fr M0 js-eye-icon">
@@ -150,7 +150,7 @@
                             <tags:nameValue2 nameKey = ".useExtension">
                                 <input id="mspPaoNameUsesExtension" type="checkbox" <c:if test="${paoNameUsesExtension}">checked</c:if> name='mspPaoNameUsesExtension' value='true' onclick='enableExtension(this.checked);'>
                                 <tags:nameValue2 nameKey=".extensionName">
-                                    <input id="mspPaoNameAliasExtension" title="<cti:msg2 key=".extensionName.title"/>"  <c:if test="${!paoNameUsesExtension}">disabled</c:if> name="mspPaoNameAliasExtension" value='<spring:escapeBody htmlEscape="true">${paoNameAliasExtension}</spring:escapeBody>'>
+                                    <input id="mspPaoNameAliasExtension" <c:if test="${!paoNameUsesExtension}">disabled</c:if> name="mspPaoNameAliasExtension" value='<spring:escapeBody htmlEscape="true">${paoNameAliasExtension}</spring:escapeBody>'>
                                 </tags:nameValue2>
                             </tags:nameValue2>
                             

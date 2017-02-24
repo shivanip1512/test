@@ -70,7 +70,7 @@
                             </tags:nameValue2>
                             
                             <tags:nameValue2 nameKey=".deviceNameAlias">
-                                <select title="<cti:msg2 key=".deviceNameAlias.title"/>" name="mspPaoNameAlias">
+                                <select name="mspPaoNameAlias">
                                     <c:forEach var="mspPaoNameAliasEntry" items="${mspVendor.paoNameAliases}" varStatus="status">
                                         <option <c:if test="${mspPaoNameAliasEntry == paoNameAlias}">selected</c:if> value='<c:out value="${mspPaoNameAliasEntry}"/>'> <c:out value="${mspPaoNameAliasEntry}"/></option>
                                     </c:forEach>
@@ -80,7 +80,7 @@
                             <tags:nameValue2 nameKey=".useExtension">
                                 <input id="mspPaoNameUsesExtension" type="checkbox" <c:if test="${paoNameUsesExtension}">checked</c:if> name='mspPaoNameUsesExtension' value='true' onclick='yukon.admin.multispeak.enableExtension(this.checked);'>
                                 <tags:nameValue2 nameKey=".extensionName">
-                                    <input id="mspPaoNameAliasExtension" title="<cti:msg2 key=".extensionName.title"/>" type="text" <c:if test="${!paoNameUsesExtension}">disabled</c:if> name="mspPaoNameAliasExtension" value="${paoNameAliasExtension}">
+                                    <input id="mspPaoNameAliasExtension" type="text" <c:if test="${!paoNameUsesExtension}">disabled</c:if> name="mspPaoNameAliasExtension" value="${paoNameAliasExtension}">
                                 </tags:nameValue2>
                             </tags:nameValue2>
                             
