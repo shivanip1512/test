@@ -54,10 +54,8 @@ public class HoneywellWifiMessageListener {
             // Store the most recent dr handle for each group, so we can cancel
             groupToEventIdMap.put(parameters.getGroupId(), parameters.getEventId());
 
-            Instant startTime = new Instant(DateTimeZone.getDefault()
-                                                        .convertLocalToUTC(parameters.getStartTime()
-                                                                                     .getMillis(),
-                                                                           false));
+            Instant startTime =
+                new Instant(DateTimeZone.getDefault().convertUTCToLocal(parameters.getStartTime().getMillis()));
 
             controlHistoryService.sendControlHistoryShedMessage(parameters.getGroupId(),
                                                                 startTime,
