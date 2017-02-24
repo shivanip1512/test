@@ -170,7 +170,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             
             GatewayUpdateResult updateResult = rfnGatewayService.updateGateway(gateway, userContext.getYukonUser());
             
-            if (settings.getLatitude()==null && settings.getLongitude()==null) {
+            if (settings.getLatitude() == null && settings.getLongitude() == null) {
                 paoLocationDao.delete(gateway.getPaoIdentifier().getPaoId());
             }
             

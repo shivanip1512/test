@@ -18,9 +18,8 @@ import org.geojson.Point;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
+import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -46,6 +45,8 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
+import com.cannontech.web.stars.gateway.model.Location;
+import com.cannontech.web.stars.gateway.model.LocationValidator;
 import com.cannontech.web.tools.mapping.model.Neighbor;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.model.Parent;
@@ -54,8 +55,6 @@ import com.cannontech.web.tools.mapping.service.NmNetworkService;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Neighbors;
 import com.cannontech.web.tools.mapping.service.impl.NmNetworkServiceImpl.Route;
-import com.cannontech.web.stars.gateway.model.Location;
-import com.cannontech.web.stars.gateway.model.LocationValidator;
 @RequestMapping("/mapNetwork/*")
 @Controller
 public class MapNetworkController {
@@ -135,16 +134,17 @@ public class MapNetworkController {
     public String saveCoordinates(HttpServletResponse resp, @RequestParam("deviceId") int deviceId, @RequestParam("latitude") Double latitude, 
                   @RequestParam("longitude") Double longitude, FlashScope flash, YukonUserContext userContext) throws ServletException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        BindException errors = new BindException(accessor, "accessor");
         Map<String, Object> json = new HashMap<>();
         boolean errorFound = false;
         Location target = new Location();
         target.setLatitude(latitude);
         target.setLongitude(longitude);
-        LocationValidator locationValidator = new LocationValidator();
-        locationValidator.validate(target, errors);
+        DataBinder binder = new DataBinder(target);
+        binder.setValidator(new LocationValidator());
+        binder.validate();
+        BindingResult results = binder.getBindingResult();
         List<String> errorMessages = new ArrayList<String>();
-        errors.getAllErrors().stream().forEach(e -> errorMessages.add(accessor.getMessage(e.getCode())));
+        results.getAllErrors().stream().forEach(e -> errorMessages.add(accessor.getMessage(e.getCode())));
         if (errorMessages.size()!=0) {
            errorFound = true; 
         }

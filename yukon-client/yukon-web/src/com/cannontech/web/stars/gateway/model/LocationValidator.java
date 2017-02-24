@@ -1,6 +1,5 @@
 package com.cannontech.web.stars.gateway.model;
 
-import org.springframework.validation.BindException;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
@@ -20,34 +19,17 @@ public class LocationValidator extends SimpleValidator<Location> {
         if (latitude != null || longitude != null) {
             if (latitude != null) {
                 if (latitude > 90 || latitude < -90) {
-                    if (errors instanceof BindException) {
-                        errors.reject(baseKey + "latitude.invalid"); 
-                    } else {
-                        errors.rejectValue("latitude", baseKey + "latitude.invalid");
-                    }
+                    errors.rejectValue("latitude", baseKey + "latitude.invalid");
                 }
             } else {
-                if (errors instanceof BindException) {
-                    errors.reject(baseKey + "latitude.required");
-                } else {
-                    YukonValidationUtils.rejectValues(errors, baseKey + "latitude.required", "latitude");
-                }
+                YukonValidationUtils.rejectValues(errors, baseKey + "latitude.required", "latitude");
             }
             if (longitude != null) {
                 if (longitude > 180 || longitude < -180) {
-                    if (errors instanceof BindException) {
-                        errors.reject(baseKey + "longitude.invalid");
-                    }
-                    else {
-                        errors.rejectValue("longitude", baseKey + "longitude.invalid");
-                    }
+                    errors.rejectValue("longitude", baseKey + "longitude.invalid");
                 }
             } else {
-                if (errors instanceof BindException) {
-                    errors.reject(baseKey + "longitude.required");
-                } else {
-                    YukonValidationUtils.rejectValues(errors, baseKey + "longitude.required", "longitude");
-                }
+                YukonValidationUtils.rejectValues(errors, baseKey + "longitude.required", "longitude");
             }
         }
     }
