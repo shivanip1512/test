@@ -69,7 +69,7 @@ public class MultispeakDefines {
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(CD_Server_STR, MultiSpeakVersion.V3));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(CD_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(LM_Server_STR, MultiSpeakVersion.V3));
-        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(LM_Server_STR, MultiSpeakVersion.V5));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(DR_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(SCADA_Server_STR, MultiSpeakVersion.V3));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(SCADA_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_STR, MultiSpeakVersion.V5));

@@ -32,7 +32,7 @@ public class MultispeakVendor {
     private static MultispeakMeterLookupFieldEnum[] meterLookupFields = MultispeakMeterLookupFieldEnum.values();
     private static MspPaoNameAliasEnum[] paoNameAliases = MspPaoNameAliasEnum.values();
 
-    private String url = "http://127.0.0.1:8080/soap/"; // some default url
+    private String url = "http://127.0.0.1:8080/multispeak/"; // some default url
                                                         // string for formatting
                                                         // example
     private List<MultispeakInterface> mspInterfaces = Lists.newArrayList();

@@ -118,7 +118,7 @@
                      <c:set var="disabled" value="${interfaceValuev5 == null}" scope="page" />
                      <c:choose>
                          <c:when test="${mspPossibleInterface.right.version== '3.0'}">
-                             <c:set var="defaultURL" value="${mspVendor.url}/soap/${mspPossibleInterface.left}Soap" scope="page" />
+                             <c:set var="defaultURL" value="${mspVendor.url}/v3/${mspPossibleInterface.left}Soap" scope="page" />
                              </c:when>
                          <c:otherwise>
                              <c:set var="defaultURL" value="${mspVendor.url}/multispeak/v5/${mspPossibleInterface.left}" scope="page" />
@@ -127,8 +127,8 @@
                       <tr>
                         <td>
                             <c:if test="${mspPossibleInterface.right.version!= '5.0' || mspPossibleInterface.left=='NOT_Server'}">
-                              <input id="${mspPossibleInterface.key}" type="checkbox" <c:if test="${!disabled}">checked</c:if> name='mspInterface' value='<c:out value="${mspPossibleInterface.key}"/>' 
-                              onclick='yukon.admin.multispeak.enableEndpointValue(<c:out value="${disabled}"/>,this.checked, this.value)'>
+                              <input id="${mspPossibleInterface.key}" type="checkbox" <c:if test="${!disabled}">checked</c:if> name='mspInterface' 
+                                     value='<c:out value="${mspPossibleInterface.key}"/>' onclick='yukon.admin.multispeak.enableEndpointValue(<c:out value="${disabled}"/>,this.checked, this.value)'>
                               <c:out value="${mspPossibleInterface.key}"/>
                             </c:if>
                         </td>

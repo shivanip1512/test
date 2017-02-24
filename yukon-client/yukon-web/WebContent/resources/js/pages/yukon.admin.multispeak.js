@@ -14,14 +14,18 @@ yukon.admin.multispeak = (function () {
 	    _initialized = false;
 	    mod = {
 	    		enableEndpointValue : function (isNew, selected, mspInterface) {
-	    			
-	    				if(mspInterface !== 'NOT_Server'){
-	    					if(document.getElementById(mspInterface+"3.0")!=null){
+	    				if (mspInterface !== 'NOT_Server') {
+	    					if(document.getElementById(mspInterface+"3.0") != null) {
 	    						document.getElementById(mspInterface+"3.0").disabled = !selected;
 	    					}
 	    	                $('.'+mspInterface).prop('disabled', !selected);
 	    				}
-	    				document.getElementById("select"+mspInterface).disabled = !selected;
+	    				if (document.getElementById("select"+mspInterface) != null) {
+	    				   document.getElementById("select"+mspInterface).disabled = !selected;
+	    				}
+	    				if(mspInterface == 'LM_Server') {
+	    					mspInterface = "DR_Server";
+	    				}
 	    	            document.getElementById(mspInterface+"5.0").disabled = !selected;
 	            },
 	            
