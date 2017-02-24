@@ -68,9 +68,13 @@
     </bean>
 
   <bean id="yukonJmsErrorHandler" class="com.cannontech.multispeak.util.YukonJmsErrorHandler"/>
-  
-  <bean id="multispeakDeviceGroupSyncService" class="com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceImpl"/>
-  <bean id="multispeakDeviceGroupSyncService_v5" class="com.cannontech.multispeak.service.impl.v5.MultispeakDeviceGroupSyncServiceImpl"/>
+  <bean id="mspDeviceGroupSyncHandler" class="com.cannontech.multispeak.client.MspDeviceGroupSyncHandler"/>
+  <bean id="multispeakDeviceGroupSyncService" class="com.cannontech.multispeak.service.impl.MultispeakDeviceGroupSyncServiceImpl">
+      <qualifier value="v3"/>
+  </bean>
+  <bean id="multispeakDeviceGroupSyncService_v5" class="com.cannontech.multispeak.service.impl.v5.MultispeakDeviceGroupSyncServiceImpl">
+      <qualifier value="v5"/>
+  </bean>
 
   <bean id="multispeakLMService" class="com.cannontech.multispeak.service.impl.MultispeakLMServiceImpl">
     <property name="strategiesToExcludeInReport">

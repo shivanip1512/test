@@ -1,4 +1,4 @@
-package com.cannontech.multispeak.service.v5;
+package com.cannontech.multispeak.service;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 

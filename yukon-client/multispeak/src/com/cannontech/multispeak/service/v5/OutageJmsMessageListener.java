@@ -174,7 +174,7 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
             objectRef.setPrimaryIdentifierValue(objectId);
             objectRef.setValue(objectId);
             objectRef.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
-            objectRef.setSystemName(MultispeakDefines.APPNAME);
+            objectRef.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
             deviceState.setDeviceReference(objectRef);
         }
 

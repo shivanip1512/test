@@ -1,9 +1,11 @@
-package com.cannontech.multispeak.service.v3;
+package com.cannontech.multispeak.service;
 
 import java.util.Map;
 
 import org.joda.time.Instant;
 
+import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncType;
+import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
 import com.cannontech.user.YukonUserContext;
 
 

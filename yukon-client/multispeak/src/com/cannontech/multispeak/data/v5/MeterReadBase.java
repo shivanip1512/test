@@ -36,7 +36,7 @@ public abstract class MeterReadBase implements ReadableDevice{
         meterId.setMeterName(meterNumber);
         meterId.setUtility(MultispeakDefines.AMR_VENDOR);
         meterId.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
-        meterId.setSystemName(MultispeakDefines.APPNAME);
+        meterId.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
         getMeterRead().setMeterID(meterId );
         getMeterRead().setDeviceID(meterNumber);
     }

@@ -28,11 +28,11 @@ import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.dao.v5.MspObjectDao;
 import com.cannontech.multispeak.dao.v5.MultispeakGetAllServiceLocationsCallback;
-import com.cannontech.multispeak.service.v5.MultispeakDeviceGroupSyncProgress;
-import com.cannontech.multispeak.service.v5.MultispeakDeviceGroupSyncService;
-import com.cannontech.multispeak.service.v5.MultispeakDeviceGroupSyncType;
+import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
+import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncService;
+import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncType;
+import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
 import com.cannontech.multispeak.service.v5.MultispeakDeviceGroupSyncTypeProcessor;
-import com.cannontech.multispeak.service.v5.MultispeakDeviceGroupSyncTypeProcessorType;
 import com.cannontech.multispeak.service.v5.MultispeakMeterService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
@@ -41,26 +41,43 @@ import com.google.common.collect.Maps;
 
 public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGroupSyncService {
 
-    private MultispeakDao multispeakDao;
-    private MultispeakFuncs multispeakFuncs;
-    private MultispeakMeterService multispeakMeterService;
-    private Map<MultispeakDeviceGroupSyncTypeProcessorType, MultispeakDeviceGroupSyncTypeProcessor> processorMap;
-    private PersistedSystemValueDao persistedSystemValueDao;
-    private MultispeakDeviceGroupSyncProgress progress = null;
-    private MspObjectDao mspObjectDao;
-    private MeterDao meterDao;
-    private ScheduledExecutor scheduledExecutor;
+    @Autowired private MultispeakDao multispeakDao;
+    @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private MultispeakMeterService multispeakMeterService;
+    @Autowired private PersistedSystemValueDao persistedSystemValueDao;
+    @Autowired private MspObjectDao mspObjectDao;
+    @Autowired private MeterDao meterDao;
 
+    @Resource(name = "globalScheduledExecutor") private ScheduledExecutor scheduledExecutor;
+
+    private Map<MultispeakDeviceGroupSyncTypeProcessorType, MultispeakDeviceGroupSyncTypeProcessor> processorMap;
+    private MultispeakDeviceGroupSyncProgress progress = null;
     private Logger log = YukonLogManager.getLogger(MultispeakDeviceGroupSyncServiceImpl.class);
 
     private static final String SUBSTATION_SYNC_LOG_STRING = "SubstationDeviceGroupSync";
     private static final String BILLING_CYCLE_LOG_STRING = "BillingCycleDeviceGroupSync";
-
+ 
     @PostConstruct
     public void init() {
         processorMap = Maps.newLinkedHashMap();
         processorMap.put(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, new SubstationSyncTypeProcessor());
         processorMap.put(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, new BillingCycleSyncTypeProcessor());
+    }
+
+   @Override
+    public MultispeakDeviceGroupSyncProgress getProgress() {
+    return progress;
+    }
+
+    @Override
+    public Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> getLastSyncInstants() {
+        Instant lastSubstationInstant = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.MSP_SUBSTATION_DEVICE_GROUP_SYNC_LAST_COMPLETED);
+        Instant lastBillingCycleInstant = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.MSP_BILLING_CYCLE_DEVICE_GROUP_SYNC_LAST_COMPLETED);
+        
+        Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstantsMap = Maps.newLinkedHashMap();
+        lastSyncInstantsMap.put(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, lastSubstationInstant);
+        lastSyncInstantsMap.put(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, lastBillingCycleInstant);
+        return lastSyncInstantsMap;
     }
 
     // START
@@ -192,41 +209,6 @@ public class MultispeakDeviceGroupSyncServiceImpl implements MultispeakDeviceGro
         };
 
         scheduledExecutor.execute(runner);
-    }
-
-    @Resource(name = "globalScheduledExecutor")
-    public void setScheduledExecutor(ScheduledExecutor scheduledExecutor) {
-        this.scheduledExecutor = scheduledExecutor;
-    }
-
-    @Autowired
-    public void setMultispeakDao(MultispeakDao multispeakDao) {
-        this.multispeakDao = multispeakDao;
-    }
-
-    @Autowired
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-        this.multispeakFuncs = multispeakFuncs;
-    }
-
-    @Autowired
-    public void setMultispeakMeterService(MultispeakMeterService multispeakMeterService) {
-        this.multispeakMeterService = multispeakMeterService;
-    }
-
-    @Autowired
-    public void setPersistedSystemValueDao(PersistedSystemValueDao persistedSystemValueDao) {
-        this.persistedSystemValueDao = persistedSystemValueDao;
-    }
-
-    @Autowired
-    public void setMspObjectDao(MspObjectDao mspObjectDao) {
-        this.mspObjectDao = mspObjectDao;
-    }
-
-    @Autowired
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
     }
 
     // PROCESSORS
