@@ -52,8 +52,8 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.gateway.model.GatewaySettingsValidator;
-import com.cannontech.web.stars.gateway.model.Location;
-import com.cannontech.web.stars.gateway.model.LocationValidator;
+import com.cannontech.web.tools.mapping.Location;
+import com.cannontech.web.tools.mapping.LocationValidator;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)

@@ -45,8 +45,8 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.cannontech.web.stars.gateway.model.Location;
-import com.cannontech.web.stars.gateway.model.LocationValidator;
+import com.cannontech.web.tools.mapping.Location;
+import com.cannontech.web.tools.mapping.LocationValidator;
 import com.cannontech.web.tools.mapping.model.Neighbor;
 import com.cannontech.web.tools.mapping.model.NmNetworkException;
 import com.cannontech.web.tools.mapping.model.Parent;
@@ -75,7 +75,7 @@ public class MapNetworkController {
     public String home(ModelMap model, @RequestParam("deviceId") int deviceId, YukonUserContext userContext, HttpServletRequest request) throws ServletException {
         SimpleDevice device = deviceDao.getYukonDevice(deviceId);
         FeatureCollection geojson = paoLocationService.getLocationsAsGeoJson(Arrays.asList(device));
-        Coordinates coordinates = new Coordinates();
+        Location coordinates = new Location();
         
         if (geojson.getFeatures().size() > 0) {
             Point point = (Point) geojson.getFeatures().get(0).getGeometry();
@@ -216,24 +216,6 @@ public class MapNetworkController {
             json.put("errorMsg",  accessor.getMessage(e.getMessageSourceResolvable()));
         }
         return json;
-    }
-    
-    public class Coordinates {
-        private Double latitude;
-        private Double longitude;
-        
-        public Double getLatitude() {
-            return latitude;
-        }
-        public void setLatitude(Double latitude) {
-            this.latitude = latitude;
-        }
-        public Double getLongitude() {
-            return longitude;
-        }
-        public void setLongitude(Double longitude) {
-            this.longitude = longitude;
-        }
     }
     
 }

@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.gateway.model;
+package com.cannontech.web.tools.mapping;
 
 import org.springframework.validation.Errors;
 

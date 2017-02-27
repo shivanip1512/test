@@ -9,6 +9,8 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.web.tools.mapping.Location;
+import com.cannontech.web.tools.mapping.LocationValidator;
 
 public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
     
