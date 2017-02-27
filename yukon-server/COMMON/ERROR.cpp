@@ -95,6 +95,7 @@ static const std::map<YukonError_t, error_info> CtiErrors = {
         { ClientErrors::NoMethodForDecodeResponse,   ei{ ERRTYPESYSTEM,   "No DecodeResponse Method"                    } },
         { ClientErrors::NoMethodForDataCopy,         ei{ ERRTYPESYSTEM,   "No Data Copy Method"                         } },
         { ClientErrors::NoConfigData,                ei{ ERRTYPESYSTEM,   "No Config Data Found"                        } },
+        { ClientErrors::ConfigCurrent,               ei{ ERRTYPESYSTEM,   "Config is current"                           } },
         { ClientErrors::NoRouteGroupDevice,          ei{ ERRTYPESYSTEM,   "No Route for Group Dev."                     } },
         { ClientErrors::NoRoutesInMacro,             ei{ ERRTYPESYSTEM,   "No Routes for Macro Rte"                     } },
         { ClientErrors::RouteOffsetOutOfRange,       ei{ ERRTYPESYSTEM,   "Macro Offset does not exist in Macro Rte"    } },

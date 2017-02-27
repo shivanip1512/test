@@ -784,7 +784,7 @@ BOOST_AUTO_TEST_CASE(putconfig_behavior_rfndatastreaming_two_channels_device_mat
             const CtiReturnMsg &returnMsg = returnMsgs.front();
 
             BOOST_CHECK_EQUAL(returnMsg.Status(), 220);
-            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Unknown Error Code (220)");
+            BOOST_CHECK_EQUAL(returnMsg.ResultString(), "Config is current");
         }
     }
 }

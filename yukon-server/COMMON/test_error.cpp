@@ -158,7 +158,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     ("No Config Data Found")
     ("Unknown Error Code (219)")
     //  220
-    ("Unknown Error Code (220)")
+    ("Config is current")
     ("No Route for Group Dev.")
     ("No Routes for Macro Rte")
     ("Macro Offset does not exist in Macro Rte")
