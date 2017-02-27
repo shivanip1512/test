@@ -285,8 +285,10 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         
         sql = new SqlStatementBuilder();
         ArrayList<Integer> feederList = Lists.newArrayList(feederIds);
-        sql.append(insertFeeders(busId, feederList));
-        jdbcTemplate.update(sql);
+        SqlFragmentSource returnedSql = insertFeeders(busId, feederList);
+        if (!returnedSql.getSql().trim().isEmpty()) {
+            jdbcTemplate.update(returnedSql);
+        }
     }
     
     private SqlFragmentSource insertFeeders(int busId, ArrayList<Integer> feederList) {
@@ -295,11 +297,14 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         int displayOrder = 1;
-
-        for (Integer feederId : feederList) {
+        if (!feederList.isEmpty()) {
             if (isOracle) {
                 sql.append("INSERT ALL");
-            } else if (!isOracle) {
+            }
+        }
+
+        for (Integer feederId : feederList) {
+            if (!isOracle) {
                 sql.append("INSERT");
             }
             sql.append("INTO CCFeederSubAssignment");
