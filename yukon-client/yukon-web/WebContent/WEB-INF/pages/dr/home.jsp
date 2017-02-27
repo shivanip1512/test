@@ -81,7 +81,7 @@
                 <div class="stacked">
                     <tags:nameValueContainer2 naturalWidth="false">
                         <tr>
-                            <td class="name">
+                            <td class="wsnw">
                                 <a href="<cti:url value="/dr/rf/details/day"/>"
                                 ><i:inline key=".rfPerformance.last24Hr"/>:</a>
                             </td>
@@ -90,7 +90,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="name">
+                            <td class="wsnw">
                                 <a href="<cti:url value="/dr/rf/details/week"/>"
                                 ><i:inline key=".rfPerformance.last7Days"/>:</a>
                             </td>
@@ -99,7 +99,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <td class="name">
+                            <td class="wsnw">
                                 <a href="<cti:url value="/dr/rf/details/month"/>"
                                 ><i:inline key=".rfPerformance.last30Days"/>:</a>
                             </td>

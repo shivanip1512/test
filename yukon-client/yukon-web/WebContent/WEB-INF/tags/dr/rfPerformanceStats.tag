@@ -15,7 +15,7 @@
     <div class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="${failedWidth}%"
          aria-valuemin="0" aria-valuemax="100" style="width: ${failedWidth}%"></div>
 </div>
-<div class="fl" style="margin-left: 10px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.successTooltip"/>">
+<div class="fl" style="margin-left: 5px;" title="<cti:msg2 key="yukon.web.modules.dr.home.rfPerformance.successTooltip"/>">
     <span style="margin-right: 10px;width:48px;display: inline-block;">
         <fmt:formatNumber type="percent" maxFractionDigits="2" value="${test.percentSuccess}" />
     </span>
