@@ -116,12 +116,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                     paoAndPointToAttribute.put(PaoTypePointIdentifier.of(paoType, pointId), attribute.getAttribute());
                 }
             }
-
         }
-        creatablePaoDefinitions = paoTypeMap.values()
-                                            .stream()
-                                            .filter(c -> c.isCreatable())
-                                            .collect(Collectors.toSet());
     }
     
     @Override
