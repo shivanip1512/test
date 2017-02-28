@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.RowMapper;
@@ -286,8 +287,9 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         sql = new SqlStatementBuilder();
         ArrayList<Integer> feederList = Lists.newArrayList(feederIds);
         SqlFragmentSource returnedSql = insertFeeders(busId, feederList);
-        if (!returnedSql.getSql().trim().isEmpty()) {
-            jdbcTemplate.update(returnedSql);
+        sql.append(returnedSql);
+        if (StringUtils.isNoneBlank(returnedSql.getSql())) {
+            jdbcTemplate.update(sql);
         }
     }
     
@@ -301,21 +303,18 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
             if (isOracle) {
                 sql.append("INSERT ALL");
             }
-        }
-
-        for (Integer feederId : feederList) {
-            if (!isOracle) {
-                sql.append("INSERT");
+            for (Integer feederId : feederList) {
+                if (!isOracle) {
+                    sql.append("INSERT");
+                }
+                sql.append("INTO CCFeederSubAssignment");
+                sql.values(busId, feederId, displayOrder);
+                displayOrder++;
             }
-            sql.append("INTO CCFeederSubAssignment");
-            sql.values(busId, feederId, displayOrder);
-            displayOrder++;
+            if (isOracle) {
+                sql.append("SELECT 1 from dual");
+            }
         }
-
-        if (isOracle) {
-            sql.append("SELECT 1 from dual");
-        }
-
         return sql;
     }
     
