@@ -9,6 +9,24 @@ WHERE ControlMethod = 'EcobeeCycle'
 AND MethodOptionType != 'Mandatory';
 /* End YUK-16233 */
 
+/* Start YUK-16321 */
+DELETE FROM POINTStatus WHERE POINTID IN ( 
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE PointType = 'Status' AND PointOffset = 81 AND YP.Type IN ('RFW-201', 'RFW-205'));
+ 
+DELETE FROM POINTSTATUS WHERE POINTID IN ( 
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE PointType = 'Status' AND PointOffset = 81 AND YP.Type IN ('RFW-201', 'RFW-205'));
+ 
+DELETE FROM PointAlarming WHERE PointID IN ( 
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE PointType = 'Status' AND PointOffset = 81 AND YP.Type IN ('RFW-201', 'RFW-205'));
+ 
+DELETE FROM Point WHERE PointId IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE PointType = 'Status' AND PointOffset = 81 AND YP.Type IN ('RFW-201', 'RFW-205'));
+/* End YUK-16321 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
