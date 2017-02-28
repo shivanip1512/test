@@ -8,6 +8,7 @@ import com.cannontech.common.events.model.EventSource;
 import com.cannontech.common.exception.BadAuthenticationException;
 import com.cannontech.common.util.TransactionExecutor.ExecutorTransactionality;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.system.DREncryption;
 import com.cannontech.system.GlobalSettingType;
 
 public interface SystemEventLogService {
@@ -102,18 +103,23 @@ public interface SystemEventLogService {
     
     /* Security */
     /* Honeywell Key Configuration */
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
-    public void importedKeyFile(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.keyFileType) String keyFileType);
-    
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
-    public void keyFileImportFailed(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.keyFileType) String keyFileType);
-    
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
-    public void newPublicKeyGenerated(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.keyFileType) String keyFileType);
-    
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
-    public void certificateGenerated(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.serviceProvider) String serviceProvider);
-    
-    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category="system.configuration")
-    public void certificateGenerationFailed(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.serviceProvider) String serviceProvider);
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
+    public void importedKeyFile(@Arg(ArgEnum.username) LiteYukonUser user,
+            @Arg(ArgEnum.drEncryption) DREncryption drEncryption);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
+    public void keyFileImportFailed(@Arg(ArgEnum.username) LiteYukonUser user,
+            @Arg(ArgEnum.drEncryption) DREncryption drEncryption);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
+    public void newPublicKeyGenerated(@Arg(ArgEnum.username) LiteYukonUser user,
+            @Arg(ArgEnum.drEncryption) DREncryption drEncryption);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
+    public void certificateGenerated(@Arg(ArgEnum.username) LiteYukonUser user,
+            @Arg(ArgEnum.drEncryption) DREncryption drEncryption);
+
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.configuration")
+    public void certificateGenerationFailed(@Arg(ArgEnum.username) LiteYukonUser user,
+            @Arg(ArgEnum.drEncryption) DREncryption drEncryption);
 }

@@ -28,6 +28,7 @@
     <entry key="yukon.common.events.deviceGroup">Device Group</entry>
     <entry key="yukon.common.events.deviceName">Device Name</entry>
     <entry key="yukon.common.events.deviceRequestType">Device Request Type</entry>
+    <entry key="yukon.common.events.drEncryption">DR Encryption</entry>
     <entry key="yukon.common.events.email">Email</entry>
     <entry key="yukon.common.events.endDate">End Date</entry>
     <entry key="yukon.common.events.energyCompanyId">Energy Company Id</entry>

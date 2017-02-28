@@ -51,7 +51,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.system.GlobalSettingType;
-import com.cannontech.system.KeyFileType;
+import com.cannontech.system.DREncryption;
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ImmutableList;
@@ -144,7 +144,7 @@ public class EventLogServiceImpl implements EventLogService {
         builder.add(ArgumentMapper.createForEnum(BadAuthenticationException.Type.class));
         builder.add(ArgumentMapper.createForEnum(DisconnectCommand.class));
         builder.add(ArgumentMapper.createForEnum(DisconnectDeviceState.class));
-        builder.add(ArgumentMapper.createForEnum(KeyFileType.class));
+        builder.add(ArgumentMapper.createForEnum(DREncryption.class));
         builder.add(ArgumentMapper.create(ReadableInstant.class, Types.TIMESTAMP, new ObjectMapper<ReadableInstant, Date>() {
             @Override
             public Date map(ReadableInstant from) throws ObjectMappingException {

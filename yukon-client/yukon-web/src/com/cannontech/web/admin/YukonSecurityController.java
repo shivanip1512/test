@@ -59,8 +59,7 @@ import com.cannontech.encryption.RSAKeyfileService;
 import com.cannontech.encryption.SecurityKeyPair;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.system.ServiceProvider;
-import com.cannontech.system.KeyFileType;
+import com.cannontech.system.DREncryption;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -409,7 +408,7 @@ public class YukonSecurityController {
             String encryptedPrivateKeyValue = new String(Hex.encodeHex(encrypter.encrypt(privateStringKey.getBytes())));
 
             encryptedRouteDao.saveNewHoneywellEncryptionKey(encryptedPrivateKeyValue, encryptedpublicKeyValue);
-            systemEventLogService.newPublicKeyGenerated(userContext.getYukonUser(), KeyFileType.HONEYWELL.name());
+            systemEventLogService.newPublicKeyGenerated(userContext.getYukonUser(), DREncryption.HONEYWELL);
             json.put("honeywellPublicKey", publicStringKey);
 
         } catch (Exception ex) {
@@ -494,10 +493,10 @@ public class YukonSecurityController {
         boolean success = handleHoneywellUploadedFile(honeywellFileImportBindingBean, flashScope);
         if (!success) {
             log.info("Import for Honeywell Key file failed.");
-            systemEventLogService.keyFileImportFailed(userContext.getYukonUser(), KeyFileType.HONEYWELL.name());
+            systemEventLogService.keyFileImportFailed(userContext.getYukonUser(), DREncryption.HONEYWELL);
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".fileUploadError.unknownError"));
         } else {
-            systemEventLogService.importedKeyFile(userContext.getYukonUser(), KeyFileType.HONEYWELL.name());
+            systemEventLogService.importedKeyFile(userContext.getYukonUser(), DREncryption.HONEYWELL);
         }
         return "redirect:view";
     }
@@ -560,12 +559,10 @@ public class YukonSecurityController {
 
             // pull data from the file and push it to the browser
             IOUtils.copy(input, output);
-            systemEventLogService.certificateGenerated(userContext.getYukonUser(),
-                ServiceProvider.HONEYWELL.getCertificateSubject());
+            systemEventLogService.certificateGenerated(userContext.getYukonUser(), DREncryption.HONEYWELL);
             return null;
         } catch (IOException | CertificateGenerationFailedException exception) {
-            systemEventLogService.certificateGenerationFailed(userContext.getYukonUser(),
-                ServiceProvider.HONEYWELL.getCertificateSubject());
+            systemEventLogService.certificateGenerationFailed(userContext.getYukonUser(), DREncryption.HONEYWELL);
             log.error("Error in creating .crt file ", exception);
             flashScope.setError(new YukonMessageSourceResolvable(baseKey + ".honeywellCertificate.downloadfailed"));
             return "redirect:view";
