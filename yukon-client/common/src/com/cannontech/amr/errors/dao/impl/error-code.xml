@@ -795,6 +795,12 @@
             </ul>
         </troubleshooting>
     </error>
+    <error code="220">
+        <category>Yukon System</category>
+        <porter>Config is current</porter>
+        <description>The configuration on the device matches its assigned config.</description>
+        <troubleshooting>Confirm that the intended configuration is assigned to the device.</troubleshooting>
+    </error>
     <error code="226">
         <category>Yukon System</category>
         <porter>Control is currently inhibited for the point.</porter>

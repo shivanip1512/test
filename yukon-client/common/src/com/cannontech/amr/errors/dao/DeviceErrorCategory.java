@@ -3,7 +3,7 @@ package com.cannontech.amr.errors.dao;
 import com.cannontech.common.i18n.DisplayableEnum;
 
 public enum DeviceErrorCategory implements DisplayableEnum {
-    BULK_COMMUNICATIONS("Bulk Communtications"),
+    BULK_COMMUNICATIONS("Bulk Communications"),
     DATA_VALIDATION("Data Validation"),
     POWERLINE_CARRIER("Powerline Carrier"),
     YUKON_SYSTEM("Yukon System"),
