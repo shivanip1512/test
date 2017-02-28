@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Analog">
+        <name>Total kWh</name>
+        <multiplier value="0.0001"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="2" type="Analog">
+        <name>Peak kW (Rate A kW)</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="3" type="Analog">
+        <name>Rate A kWh</name>
+        <multiplier value="0.0001"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="4" type="Analog">
+        <name>Peak kW (Rate B kW)</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="5" type="Analog">
+        <name>Rate B kWh</name>
+        <multiplier value="0.0001"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="6" type="Analog">
+        <name>Peak kW (Rate C kW)</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="7" type="Analog">
+        <name>Rate C kWh</name>
+        <multiplier value="0.0001"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="8" type="Analog">
+        <name>Peak kW (Rate D kW)</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="9" type="Analog">
+        <name>Rate D kWh</name>
+        <multiplier value="0.0001"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="10" type="Analog">
+        <name>Last Interval kW</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="11" type="Analog">
+        <name>kVArh</name>
+        <multiplier value="0.0001"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="12" type="Analog">
+        <name>Peak kVAr (Rate A kVAr)</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="13" type="Analog">
+        <name>Rate A kVArh</name>
+        <multiplier value="0.0001"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="14" type="Analog">
+        <name>Peak kVAr (Rate B kVAr)</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="15" type="Analog">
+        <name>Rate B kVArh</name>
+        <multiplier value="0.0001"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="16" type="Analog">
+        <name>Peak kVAr (Rate C kVAr)</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="17" type="Analog">
+        <name>Rate C kVArh</name>
+        <multiplier value="0.0001"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="18" type="Analog">
+        <name>Peak kVAr (Rate D kVAr)</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="19" type="Analog">
+        <name>Rate D kVArh</name>
+        <multiplier value="0.0001"/>
+        <unitofmeasure value="KVARH"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="20" type="Analog">
+        <name>Last Interval kVAr</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="21" type="Analog">
+        <name>Peak kW (IED)</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="22" type="Analog">
+        <name>Peak kM (Coincidental)</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="31" type="Analog">
+        <name>Average Power Factor</name>
+        <multiplier value="0.001"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="39" type="Analog">
+        <name>IED Demand Reset Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="40" type="Analog">
+        <name>IED Blink Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="41" type="Analog">
+        <name>Voltage Phase A</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="2"/>
+    </point>
+    <point offset="42" type="Analog">
+        <name>Voltage Phase B</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="2"/>
+    </point>
+    <point offset="43" type="Analog">
+        <name>Voltage Phase C</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="2"/>
+    </point>
+    <point offset="44" type="Analog">
+        <name>Neutral Current</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="45" type="Analog">
+        <name>Phase A Current</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="46" type="Analog">
+        <name>Phase B Current</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="47" type="Analog">
+        <name>Phase C Current</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="102" type="Analog">
+        <name>Peak kW Frozen (Rate A kW)</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="103" type="Analog">
+        <name>Rate A kWh Frozen</name>
+        <multiplier value="0.0001"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="4"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -DemandAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="101" type="DemandAccumulator">
+        <name>kW-LP</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="102" type="DemandAccumulator">
+        <name>kW-LP (Channel 2)</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="103" type="DemandAccumulator">
+        <name>kW-LP (Channel 3)</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="104" type="DemandAccumulator">
+        <name>Voltage Profile</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="4"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -PulseAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="20" type="PulseAccumulator">
+        <name>Blink Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1000" type="Status">
+        <name>Outage Status</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Outage Status"/>
+    </point>
+    <point offset="2000" type="Status">
+        <name>Comm Status</name>
+        <stategroup value="Comm Status State"/>
+    </point>
+</points>

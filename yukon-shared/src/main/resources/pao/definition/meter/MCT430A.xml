@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="MCT430A" changeGroup="meter" displayGroup="MCT" displayName="MCT-430A" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>MCT43X.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_CONFIGURATION"/>
+        <tag name="DEVICE_ICON_TYPE" option="electric_meter"/>
+        <tag name="DLC_ADDRESS_RANGE" option="620000-620199,620200-700000,700001-700356,701001-799999"/>
+        <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="0-4194303"/>
+        <tag name="LOAD_PROFILE"/>
+        <tag name="LOCATE_ROUTE"/>
+        <tag name="METER_DETAIL_DISPLAYABLE"/>
+        <tag name="OUTAGE"/>
+        <tag name="PLC_DEMAND_RESET"/>
+        <tag name="PORTER_COMMAND_REQUESTS"/>
+        <tag name="STARS_ACCOUNT_ATTACHABLE_METER"/>
+        <tag name="TOU"/>
+        <tag name="USES_METER_NUMBER_FOR_MSP"/>
+    </tags>
+    <configuration>
+        <category type="addressing"/>
+        <category type="demand"/>
+        <category type="mct430ConfigurationByte"/>
+        <category type="mct430PrecannedTable"/>
+        <category type="mct430ProfileChannels"/>
+        <category type="timeZone"/>
+    </configuration>
+    <pointInfos>
+        <pointInfo name="Average Power Factor" zzattributes="POWER_FACTOR"/>
+        <pointInfo name="Blink Count" yyinit="true"/>
+        <pointInfo name="Comm Status" zzattributes="COMM_STATUS"/>
+        <pointInfo name="IED Blink Count" yyinit="true" zzattributes="BLINK_COUNT"/>
+        <pointInfo name="IED Demand Reset Count" yyinit="true" zzattributes="IED_DEMAND_RESET_COUNT"/>
+        <pointInfo name="kVArh" yyinit="true"/>
+        <pointInfo name="kW-LP" yyinit="true" zzattributes="LOAD_PROFILE"/>
+        <pointInfo name="kW-LP (Channel 2)" zzattributes="PROFILE_CHANNEL_2"/>
+        <pointInfo name="kW-LP (Channel 3)" zzattributes="PROFILE_CHANNEL_3"/>
+        <pointInfo name="Last Interval kVAr" zzattributes="KVAR"/>
+        <pointInfo name="Last Interval kW" yyinit="true" zzattributes="DEMAND"/>
+        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
+        <pointInfo name="Peak kM (Coincidental)" zzattributes="PEAK_KVAR_COIN"/>
+        <pointInfo name="Peak kVAr (Rate A kVAr)" yyinit="true" zzattributes="PEAK_KVAR_RATE_A,PEAK_KVAR"/>
+        <pointInfo name="Peak kVAr (Rate B kVAr)" zzattributes="PEAK_KVAR_RATE_B"/>
+        <pointInfo name="Peak kVAr (Rate C kVAr)" zzattributes="PEAK_KVAR_RATE_C"/>
+        <pointInfo name="Peak kVAr (Rate D kVAr)" zzattributes="PEAK_KVAR_RATE_D"/>
+        <pointInfo name="Peak kW (IED)"/>
+        <pointInfo name="Peak kW (Rate A kW)" yyinit="true" zzattributes="PEAK_DEMAND_RATE_A,PEAK_DEMAND"/>
+        <pointInfo name="Peak kW (Rate B kW)" zzattributes="PEAK_DEMAND_RATE_B"/>
+        <pointInfo name="Peak kW (Rate C kW)" zzattributes="PEAK_DEMAND_RATE_C"/>
+        <pointInfo name="Peak kW (Rate D kW)" zzattributes="PEAK_DEMAND_RATE_D"/>
+        <pointInfo name="Peak kW Frozen (Rate A kW)" zzattributes="PEAK_DEMAND_FROZEN_RATE_A,PEAK_DEMAND_FROZEN"/>
+        <pointInfo name="Rate A kVArh" yyinit="true" zzattributes="KVARH,KVARH_RATE_A"/>
+        <pointInfo name="Rate A kWh" yyinit="true" zzattributes="USAGE_RATE_A"/>
+        <pointInfo name="Rate A kWh Frozen" zzattributes="USAGE_FROZEN"/>
+        <pointInfo name="Rate B kVArh" zzattributes="KVARH_RATE_B"/>
+        <pointInfo name="Rate B kWh" zzattributes="USAGE_RATE_B"/>
+        <pointInfo name="Rate C kVArh" zzattributes="KVARH_RATE_C"/>
+        <pointInfo name="Rate C kWh" zzattributes="USAGE_RATE_C"/>
+        <pointInfo name="Rate D kVArh" zzattributes="KVARH_RATE_D"/>
+        <pointInfo name="Rate D kWh" zzattributes="USAGE_RATE_D"/>
+        <pointInfo name="Total kWh" yyinit="true" zzattributes="USAGE"/>
+        <pointInfo name="Voltage Profile" zzattributes="VOLTAGE_PROFILE"/>
+    </pointInfos>
+    <commands>
+        <command name="Cancel LP Request">
+            <cmd text="getvalue lp cancel"/>
+        </command>
+        <command name="Read Blink Count">
+            <cmd text="getvalue powerfail"/>
+            <point name="Blink Count"/>
+        </command>
+        <command name="Read Current Rate A kWh/Peak kW">
+            <cmd text="getvalue ied current kwha"/>
+            <point name="Peak kW (Rate A kW)"/>
+            <point name="Rate A kWh"/>
+        </command>
+        <command name="Read Current Rate B kWh/Peak kW">
+            <cmd text="getvalue ied current kwhb"/>
+            <point name="Rate B kWh"/>
+            <point name="Peak kW (Rate B kW)"/>
+        </command>
+        <command name="Read Current Rate C kWh/Peak kW">
+            <cmd text="getvalue ied current kwhc"/>
+            <point name="Peak kW (Rate C kW)"/>
+            <point name="Rate C kWh"/>
+        </command>
+        <command name="Read Current Rate D kWh/Peak kW">
+            <cmd text="getvalue ied current kwhd"/>
+            <point name="Rate D kWh"/>
+            <point name="Peak kW (Rate D kW)"/>
+        </command>
+        <command name="Read Frozen Rate A kWh/Peak kW" zzenabled="false">
+            <cmd text="getvalue ied frozen kwha"/>
+            <point name="Peak kW (Rate A kW)"/>
+            <point name="Rate A kWh"/>
+        </command>
+        <command name="Read Frozen Rate B kWh/Peak kW" zzenabled="false">
+            <cmd text="getvalue ied frozen kwhb"/>
+            <point name="Rate B kWh"/>
+            <point name="Peak kW (Rate B kW)"/>
+        </command>
+        <command name="Read Frozen Rate C kWh/Peak kW" zzenabled="false">
+            <cmd text="getvalue ied frozen kwhc"/>
+            <point name="Peak kW (Rate C kW)"/>
+            <point name="Rate C kWh"/>
+        </command>
+        <command name="Read Frozen Rate D kWh/Peak kW" zzenabled="false">
+            <cmd text="getvalue ied frozen kwhd"/>
+            <point name="Rate D kWh"/>
+            <point name="Peak kW (Rate D kW)"/>
+        </command>
+        <command name="Read IED Blink and Demand Reset Counts">
+            <cmd text="getvalue ied outage"/>
+            <point name="IED Demand Reset Count"/>
+            <point name="IED Blink Count"/>
+        </command>
+        <command name="Read IED Last Interval Demands">
+            <cmd text="getvalue ied demand"/>
+            <point name="Last Interval kW"/>
+        </command>
+        <command name="Read LP Request Status">
+            <cmd text="getvalue lp status"/>
+        </command>
+        <command name="Read Total kWh">
+            <cmd text="getvalue ied kwht"/>
+            <point name="Total kWh"/>
+        </command>
+        <command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
+            <cmd text="getconfig intervals"/>
+        </command>
+    </commands>
+</pao>

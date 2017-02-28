@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="2001" type="Status">
+        <name>Device Reset Indicator</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="TrueFalse"/>
+    </point>
+</points>

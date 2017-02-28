@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Analog">
+        <name>Outdoor Temperature</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="TEMP_F"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="2" type="Analog">
+        <name>Indoor Temperature</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="TEMP_F"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="3" type="Analog">
+        <name>Cool Set Temperature</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="TEMP_F"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="4" type="Analog">
+        <name>Heat Set Temperature</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="TEMP_F"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="5" type="Analog">
+        <name>Run Time Data Log</name>
+        <archive interval="ZERO" type="ON_UPDATE"/>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Status">
+        <name>Control Status</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="TrueFalse"/>
+    </point>
+</points>

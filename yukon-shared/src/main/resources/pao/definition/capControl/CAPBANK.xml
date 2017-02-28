@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="CAPBANK" displayGroup="Volt/Var" displayName="CAP BANK" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>CAPBANK.xml</pointFile>
+    </pointFiles>
+    <pointInfos>
+        <pointInfo name="BANK STATUS" yyinit="true"/>
+        <pointInfo name="OPERATION" yyinit="true"/>
+    </pointInfos>
+</pao>

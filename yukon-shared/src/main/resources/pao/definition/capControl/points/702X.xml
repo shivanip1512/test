@@ -1,0 +1,381 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="3" type="Analog">
+        <name>Firmware Version</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="5" type="Analog">
+        <name>Average Line Voltage</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="6" type="Analog">
+        <name>High Voltage</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="7" type="Analog">
+        <name>Low Voltage</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="8" type="Analog">
+        <name>Delta Voltage</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="9" type="Analog">
+        <name>Analog Input 1</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10" type="Analog">
+        <name>Temperature</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="TEMP_F"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="13" type="Analog">
+        <name>RSSI</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="14" type="Analog">
+        <name>Control Ignored Reason</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="15" type="Analog">
+        <name>CDMA Rx Power</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="16" type="Analog">
+        <name>CDMA Ec/Io</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="17" type="Analog">
+        <name>True VAR RMS Current</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="18" type="Analog">
+        <name>3 Phase kVARs</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="19" type="Analog">
+        <name>VAR RMS Voltage</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="20" type="Analog">
+        <name>VAR 1 Phase kVA</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVA"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="21" type="Analog">
+        <name>VAR 1 Phase kWatts</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="22" type="Analog">
+        <name>VAR Power Factor</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10001" type="Analog">
+        <name>Voltage Control</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10002" type="Analog">
+        <name>UV Threshold</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10003" type="Analog">
+        <name>OV Threshold</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10004" type="Analog">
+        <name>Control OVUV Track Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10006" type="Analog">
+        <name>Daily Control Limit</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10007" type="Analog">
+        <name>Emergency UV Threshold</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10008" type="Analog">
+        <name>Emergency OV Threshold</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10009" type="Analog">
+        <name>Emergency OVUV Track Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10010" type="Analog">
+        <name>Neutral Current Sensor</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10011" type="Analog">
+        <name>Neutral Current Alarm Threshold</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10015" type="Analog">
+        <name>Trip Delay Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10016" type="Analog">
+        <name>Close Delay Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10017" type="Analog">
+        <name>Bank Control Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10018" type="Analog">
+        <name>Re-Close Delay Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10026" type="Analog">
+        <name>Season One Control</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10042" type="Analog">
+        <name>Season Two Control</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10057" type="Analog">
+        <name>Comms Loss Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10068" type="Analog">
+        <name>Var Control</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10110" type="Analog">
+        <name>Com Retry Delay Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10111" type="Analog">
+        <name>Yukon Poll Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10113" type="Analog">
+        <name>VAR Close Point</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10114" type="Analog">
+        <name>VAR Trip Point</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAR"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="20001" type="Analog">
+        <name>IP Address</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="20002" type="Analog">
+        <name>UDP Port</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -PulseAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="PulseAccumulator">
+        <name>Total Op Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="2" type="PulseAccumulator">
+        <name>UV Op Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="3" type="PulseAccumulator">
+        <name>OV Op Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Status">
+        <name>Capacitor Bank State</name>
+        <controlType value="NORMAL"/>
+        <controlOffset value="1"/>
+        <stategroup value="TwoStateStatus"/>
+    </point>
+    <point offset="2" type="Status">
+        <name>Re-Close Blocked</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="3" type="Status">
+        <name>Control Mode</name>
+        <stategroup value="RemoteLocal"/>
+    </point>
+    <point offset="4" type="Status">
+        <name>Auto Volt Control</name>
+        <controlType value="NORMAL"/>
+        <controlOffset value="1"/>
+        <stateZeroControl value="DISABLE_OVUV_702X"/>
+        <stateOneControl value="ENABLE_OVUV_702X"/>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="5" type="Status">
+        <name>Last Control - Local</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="6" type="Status">
+        <name>Last Control - Remote</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="7" type="Status">
+        <name>Last Control - OVUV</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="8" type="Status">
+        <name>Last Control - Neutral Fault</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="9" type="Status">
+        <name>Last Control - Scheduled</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="10" type="Status">
+        <name>Last Control - VAR</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="11" type="Status">
+        <name>Last Control - Analog</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="12" type="Status">
+        <name>Last Control - Temperature</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="13" type="Status">
+        <name>OV Condition</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="14" type="Status">
+        <name>UV Condition</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="15" type="Status">
+        <name>Op Failed - Neutral Current</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="16" type="Status">
+        <name>Neutral Current Fault</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="17" type="Status">
+        <name>VAR Alarm</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="24" type="Status">
+        <name>Bad Relay</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="25" type="Status">
+        <name>Daily Max Ops</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="26" type="Status">
+        <name>Voltage Delta Abnormal</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="27" type="Status">
+        <name>Temp Alarm</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="28" type="Status">
+        <name>DST Active</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="29" type="Status">
+        <name>Neutral Lockout</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="30" type="Status">
+        <name>Power Flow</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="34" type="Status">
+        <name>Control Ignored Indicator</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="2001" type="Status">
+        <name>Device Reset Indicator</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="TrueFalse"/>
+    </point>
+</points>

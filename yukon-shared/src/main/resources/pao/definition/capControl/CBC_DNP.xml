@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="CBC_DNP" changeGroup="cap" displayGroup="Volt/Var" displayName="CBC DNP" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>CAP_CONTROL.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_CONFIGURATION"/>
+        <tag name="TWO_WAY_DEVICE"/>
+    </tags>
+    <configuration>
+        <category type="dnp"/>
+    </configuration>
+    <pointInfos>
+        <pointInfo name="Capacitor Bank State" yyinit="true" zzattributes="CONTROL_POINT"/>
+    </pointInfos>
+</pao>

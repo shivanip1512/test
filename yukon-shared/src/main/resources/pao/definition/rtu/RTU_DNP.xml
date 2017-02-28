@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="RTU_DNP" displayGroup="RTU" displayName="RTU-DNP" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>RTU.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_CONFIGURATION"/>
+    </tags>
+    <configuration>
+        <category type="dnp"/>
+    </configuration>
+    <pointInfos>
+        <pointInfo name="Device Reset Indicator"/>
+    </pointInfos>
+</pao>

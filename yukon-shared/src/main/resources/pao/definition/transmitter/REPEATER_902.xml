@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="REPEATER_902" changeGroup="repeater" displayGroup="Signal Transmitters" displayName="REPEATER 902" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>TRANSMITTER.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_ICON_TYPE" option="transmitter"/>
+        <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="800450-809900"/>
+        <tag name="LOCATE_ROUTE"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Comm Status" yyinit="true" zzattributes="COMM_STATUS"/>
+    </pointInfos>
+</pao>

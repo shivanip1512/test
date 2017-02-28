@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.0">
+    <xs:include schemaLocation="deviceConfigurationCategory.xsd" />
+
+    <xs:element name="pao">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="pointFiles" type="pointFilesType" minOccurs="0" />
+                <xs:element name="tags" type="tagsType" minOccurs="0">
+                    <xs:unique name="tagNameUniq">
+                        <xs:selector xpath="tag" />
+                        <xs:field xpath="@name" />
+                    </xs:unique>
+                </xs:element>
+                <xs:element name="configuration" type="DeviceCategories" minOccurs="0" />
+                <xs:element name="pointInfos" type="pointInfosType" minOccurs="0">
+                    <xs:unique name="pointInfoNameUniq">
+                        <xs:selector xpath="pointInfo" />
+                        <xs:field xpath="@name" />
+                    </xs:unique>
+                </xs:element>
+                <xs:element type="commandsType" name="commands" minOccurs="0">
+                    <xs:unique name="commandNameUniq">
+                        <xs:selector xpath="command" />
+                        <xs:field xpath="@name" />
+                    </xs:unique>
+                </xs:element>
+            </xs:sequence>
+            <xs:attribute name="aaid" type="xs:string" use="required" />
+            <xs:attribute name="changeGroup" type="xs:string" />
+            <xs:attribute name="displayGroup" type="xs:string" />
+            <xs:attribute name="displayName" type="xs:string" use="required" />
+            <xs:attribute name="creatable" type="xs:boolean" default="true" />
+            <xs:attribute name="enabled" type="xs:boolean" default="true" />
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="pointFilesType">
+        <xs:sequence>
+            <xs:element name="pointFile" type="xs:string" maxOccurs="1" minOccurs="1" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="tagType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="name" type="xs:string" use="required" />
+                <xs:attribute name="option" type="xs:string" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="tagsType">
+        <xs:sequence>
+            <xs:element name="tag" type="tagType" maxOccurs="unbounded" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="pointInfoType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="name" type="xs:string" use="required" />
+                <xs:attribute name="zzattributes" type="xs:string" />
+                <xs:attribute name="yyinit" type="xs:boolean" default="false" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="pointInfosType">
+        <xs:sequence>
+            <xs:element name="pointInfo" type="pointInfoType" maxOccurs="unbounded" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="cmdType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="text" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="commandType">
+        <xs:sequence>
+            <xs:element name="cmd" type="cmdType" maxOccurs="unbounded" minOccurs="0" />
+            <xs:element name="point" type="pointType" maxOccurs="unbounded" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute name="name" type="xs:string" use="required" />
+        <xs:attribute name="zzenabled" type="xs:boolean" default="true" />
+    </xs:complexType>
+    <xs:complexType name="pointType">
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute name="name" type="xs:string" use="required" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="commandsType">
+        <xs:sequence>
+            <xs:element name="command" type="commandType" maxOccurs="unbounded" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

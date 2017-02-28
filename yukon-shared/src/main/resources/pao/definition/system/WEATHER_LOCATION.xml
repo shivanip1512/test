@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="WEATHER_LOCATION" displayName="WEATHER LOCATION" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>WEATHER_LOCATION.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="DB_EDITOR_INCOMPATIBLE"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Relative Humidity" yyinit="true" zzattributes="HUMIDITY"/>
+        <pointInfo name="Temperature" yyinit="true" zzattributes="TEMPERATURE"/>
+    </pointInfos>
+</pao>

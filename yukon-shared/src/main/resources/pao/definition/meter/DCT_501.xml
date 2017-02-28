@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="DCT_501" changeGroup="meter" creatable="false" displayGroup="MCT" displayName="DCT-501" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>DCT_501.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_ICON_TYPE" option="electric_meter"/>
+        <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="0-4194303"/>
+        <tag name="LOAD_PROFILE"/>
+        <tag name="LOCATE_ROUTE"/>
+        <tag name="METER_DETAIL_DISPLAYABLE"/>
+        <tag name="PORTER_COMMAND_REQUESTS"/>
+        <tag name="STARS_ACCOUNT_ATTACHABLE_METER"/>
+        <tag name="USES_METER_NUMBER_FOR_MSP"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Analog #1"/>
+        <pointInfo name="Analog #2"/>
+        <pointInfo name="Analog #3"/>
+        <pointInfo name="Analog #4"/>
+        <pointInfo name="Comm Status" zzattributes="COMM_STATUS"/>
+        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
+        <pointInfo name="Over Flow"/>
+        <pointInfo name="Power Fail" yyinit="true"/>
+        <pointInfo name="Remote/Local Status"/>
+        <pointInfo name="Short Power Fail Flag"/>
+        <pointInfo name="Status Input 1"/>
+        <pointInfo name="Status Input 2"/>
+        <pointInfo name="Time Sync Flag"/>
+        <pointInfo name="TOS - Status"/>
+        <pointInfo name="TOS Mode"/>
+    </pointInfos>
+</pao>

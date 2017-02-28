@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Analog">
+        <name>Max Current - Report</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="2" type="Analog">
+        <name>Min Current - Report</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="3" type="Analog">
+        <name>Battery Voltage</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="4" type="Analog">
+        <name>Device Temperature</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="TEMP_C"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="5" type="Analog">
+        <name>Max Current - Period</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="6" type="Analog">
+        <name>Min Current - Period</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10" type="Analog">
+        <name>Period Rate</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="11" type="Analog">
+        <name>High Alert Setpoint</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="12" type="Analog">
+        <name>Reset Alert Setpoint</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="31" type="Analog">
+        <name>Current Survey</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="100" type="Analog">
+        <name>RSSI</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="101" type="Analog">
+        <name>BER</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Status">
+        <name>Over Current</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="2" type="Status">
+        <name>Reset Over Current</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="3" type="Status">
+        <name>Reed Switch Communication</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="10" type="Status">
+        <name>Calibrated</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="100" type="Status">
+        <name>Signal Strength</name>
+        <stategroup value="Signal Strength"/>
+    </point>
+</points>

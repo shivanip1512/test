@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="LM_SCENARIO" displayGroup="Demand Response" displayName="LM SCENARIO" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>LM.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="LM_SCENARIO"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Available Load Reduction" zzattributes="AVAILABLE_LOAD_REDUCTION"/>
+        <pointInfo name="Connected Load" zzattributes="CONNECTED_LOAD"/>
+        <pointInfo name="Diversified Load" zzattributes="DIVERSIFIED_LOAD"/>
+        <pointInfo name="Max Load Reduction" zzattributes="MAX_LOAD_REDUCTION"/>
+    </pointInfos>
+</pao>

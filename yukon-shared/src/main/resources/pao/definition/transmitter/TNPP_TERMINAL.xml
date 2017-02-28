@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="TNPP_TERMINAL" displayGroup="Signal Transmitters" displayName="TNPP TERMINAL" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>TRANSMITTER.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_ICON_TYPE" option="transmitter"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Comm Status" yyinit="true" zzattributes="COMM_STATUS"/>
+    </pointInfos>
+</pao>

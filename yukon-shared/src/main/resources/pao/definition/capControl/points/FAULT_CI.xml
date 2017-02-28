@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Analog">
+        <name>Nominal Amps</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="2" type="Analog">
+        <name>Peak Amps</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="3" type="Analog">
+        <name>Battery Voltage</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="4" type="Analog">
+        <name>Device Temperature</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="TEMP_C"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="11" type="Analog">
+        <name>Latitude</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="DEGREES"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="12" type="Analog">
+        <name>Longitude</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="DEGREES"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="31" type="Analog">
+        <name>Current Survey</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="100" type="Analog">
+        <name>RSSI</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="101" type="Analog">
+        <name>BER</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -PulseAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="PulseAccumulator">
+        <name>Momentary Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Status">
+        <name>Fault Status</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="2" type="Status">
+        <name>No 60Hz or Low Current</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="3" type="Status">
+        <name>Reed Switch Communication</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="4" type="Status">
+        <name>Momentary Toggle</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="100" type="Status">
+        <name>Signal Strength</name>
+        <stategroup value="Signal Strength"/>
+    </point>
+</points>

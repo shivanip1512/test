@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -DemandAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="DemandAccumulator">
+        <name>kW</name>
+        <multiplier value="0.01"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="101" type="DemandAccumulator">
+        <name>kW-LP</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -PulseAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="PulseAccumulator">
+        <name>kWh</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="20" type="PulseAccumulator">
+        <name>Power Fail Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Status">
+        <name>Disconnect Status</name>
+        <stategroup value="ThreeStateStatus"/>
+    </point>
+    <point offset="2" type="Status">
+        <name>Status Input 2</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="3" type="Status">
+        <name>Status Input 3</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="4" type="Status">
+        <name>Status Input 4</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="9" type="Status">
+        <name>Time Sync Flag</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="10" type="Status">
+        <name>Power Fail</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="11" type="Status">
+        <name>Short Power Fail Flag</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="12" type="Status">
+        <name>Over Flow Flag</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="13" type="Status">
+        <name>Load Survey Active Flag</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="14" type="Status">
+        <name>Tamper Flag</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="1000" type="Status">
+        <name>Outage Status</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Outage Status"/>
+    </point>
+    <point offset="2000" type="Status">
+        <name>Comm Status</name>
+        <stategroup value="Comm Status State"/>
+    </point>
+</points>

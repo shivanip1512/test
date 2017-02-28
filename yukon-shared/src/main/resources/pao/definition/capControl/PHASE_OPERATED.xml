@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="PHASE_OPERATED" displayGroup="Volt/Var" displayName="Phase Operated" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <tags>
+        <tag name="DEVICE_CONFIGURATION"/>
+        <tag name="VOLTAGE_REGULATOR"/>
+    </tags>
+    <configuration>
+        <category type="heartbeat"/>
+        <category type="regulatorCategory"/>
+    </configuration>
+</pao>

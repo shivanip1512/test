@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="MCTBROADCAST" displayGroup="MCT" displayName="MCT Broadcast" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <tags>
+        <tag name="DB_EDITOR_INCOMPATIBLE"/>
+        <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="1-4096"/>
+    </tags>
+</pao>

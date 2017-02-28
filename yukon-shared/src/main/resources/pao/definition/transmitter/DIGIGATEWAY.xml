@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="DIGIGATEWAY" displayGroup="Demand Response" displayName="Digi Gateway" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>DIGIGATEWAY.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="ASSET_DETAIL_DISPLAYABLE"/>
+        <tag name="DB_EDITOR_INCOMPATIBLE"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Commissioned State" yyinit="true" zzattributes="ZIGBEE_LINK_STATUS"/>
+    </pointInfos>
+</pao>

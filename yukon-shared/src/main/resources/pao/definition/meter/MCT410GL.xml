@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="MCT410GL" changeGroup="meter" displayGroup="MCT" displayName="MCT-410gL" enabled="false" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>MCT.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_CONFIGURATION"/>
+        <tag name="DEVICE_ICON_TYPE" option="electric_meter"/>
+        <tag name="DISCONNECT_410"/>
+        <tag name="DISCONNECT_COLLAR_COMPATIBLE"/>
+        <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="0-4194303"/>
+        <tag name="HIGH_BILL"/>
+        <tag name="LOAD_PROFILE"/>
+        <tag name="LOCATE_ROUTE"/>
+        <tag name="METER_DETAIL_DISPLAYABLE"/>
+        <tag name="MOVE_SUPPORTED"/>
+        <tag name="OUTAGE"/>
+        <tag name="PEAK_REPORT"/>
+        <tag name="PHASE_DETECT"/>
+        <tag name="PORTER_COMMAND_REQUESTS"/>
+        <tag name="STARS_ACCOUNT_ATTACHABLE_METER"/>
+        <tag name="TOU"/>
+        <tag name="USES_METER_NUMBER_FOR_MSP"/>
+        <tag name="VOLTAGE"/>
+        <tag name="VOLTAGE_PROFILE"/>
+    </tags>
+    <configuration>
+        <category type="demandFreeze"/>
+        <category type="mctDisconnectConfiguration"/>
+        <category type="timeZone"/>
+    </configuration>
+    <pointInfos>
+        <pointInfo name="Blink Count" yyinit="true" zzattributes="BLINK_COUNT"/>
+        <pointInfo name="Comm Status" zzattributes="COMM_STATUS"/>
+        <pointInfo name="Disconnect Status" zzattributes="DISCONNECT_STATUS"/>
+        <pointInfo name="Frozen Max Volts" zzattributes="MAXIMUM_VOLTAGE_FROZEN"/>
+        <pointInfo name="Frozen Min Volts" zzattributes="MINIMUM_VOLTAGE_FROZEN"/>
+        <pointInfo name="Frozen Peak Demand" zzattributes="PEAK_DEMAND_FROZEN"/>
+        <pointInfo name="General Alarm" yyinit="true" zzattributes="GENERAL_ALARM_FLAG"/>
+        <pointInfo name="kW" yyinit="true" zzattributes="DEMAND"/>
+        <pointInfo name="kW (Channel 2)"/>
+        <pointInfo name="kW (Channel 3)"/>
+        <pointInfo name="kW-LP" yyinit="true" zzattributes="LOAD_PROFILE"/>
+        <pointInfo name="kW-LP (Channel 2)" zzattributes="PROFILE_CHANNEL_2"/>
+        <pointInfo name="kW-LP (Channel 3)"/>
+        <pointInfo name="kWh" yyinit="true" zzattributes="USAGE,DELIVERED_KWH"/>
+        <pointInfo name="kWh (Channel 2)" zzattributes="RECEIVED_KWH"/>
+        <pointInfo name="kWh (Channel 3)"/>
+        <pointInfo name="Max Volts" yyinit="true" zzattributes="MAXIMUM_VOLTAGE"/>
+        <pointInfo name="Min Volts" yyinit="true" zzattributes="MINIMUM_VOLTAGE"/>
+        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
+        <pointInfo name="Outages" yyinit="true" zzattributes="OUTAGE_LOG"/>
+        <pointInfo name="Peak kW" yyinit="true" zzattributes="PEAK_DEMAND"/>
+        <pointInfo name="Peak kW (Channel 2)" yyinit="true"/>
+        <pointInfo name="Peak kW (Channel 3)" yyinit="true"/>
+        <pointInfo name="Peak kW (Rate A kW)" zzattributes="PEAK_DEMAND_RATE_A"/>
+        <pointInfo name="Peak kW (Rate B kW)" zzattributes="PEAK_DEMAND_RATE_B"/>
+        <pointInfo name="Peak kW (Rate C kW)" zzattributes="PEAK_DEMAND_RATE_C"/>
+        <pointInfo name="Peak kW (Rate D kW)" zzattributes="PEAK_DEMAND_RATE_D"/>
+        <pointInfo name="Phase" zzattributes="PHASE"/>
+        <pointInfo name="Power Fail" yyinit="true" zzattributes="POWER_FAIL_FLAG"/>
+        <pointInfo name="Rate A kWh" zzattributes="USAGE_RATE_A"/>
+        <pointInfo name="Rate B kWh" zzattributes="USAGE_RATE_B"/>
+        <pointInfo name="Rate C kWh" zzattributes="USAGE_RATE_C"/>
+        <pointInfo name="Rate D kWh" zzattributes="USAGE_RATE_D"/>
+        <pointInfo name="Reverse Power Alarm" yyinit="true" zzattributes="REVERSE_POWER_FLAG"/>
+        <pointInfo name="Tamper Flag Set" yyinit="true" zzattributes="TAMPER_FLAG"/>
+        <pointInfo name="Voltage" yyinit="true" zzattributes="VOLTAGE"/>
+        <pointInfo name="Voltage Profile" yyinit="true" zzattributes="VOLTAGE_PROFILE"/>
+        <pointInfo name="Zero Usage (24 Hours)" zzattributes="ZERO_USAGE_FLAG"/>
+    </pointInfos>
+    <commands>
+        <command name="Cancel LP Request">
+            <cmd text="getvalue lp cancel"/>
+        </command>
+        <command name="Detect Phase">
+            <cmd text="getconfig phasedetect read"/>
+            <point name="Phase"/>
+        </command>
+        <command name="Read Blink Count">
+            <cmd text="getvalue powerfail"/>
+            <point name="Blink Count"/>
+        </command>
+        <command name="Read Disconnect Status">
+            <cmd text="getconfig disconnect"/>
+            <point name="Disconnect Status"/>
+        </command>
+        <command name="Read General Info">
+            <cmd text="getstatus internal"/>
+            <point name="Zero Usage (24 Hours)"/>
+            <point name="Tamper Flag Set"/>
+            <point name="Reverse Power Alarm"/>
+            <point name="Power Fail"/>
+            <point name="General Alarm"/>
+        </command>
+        <command name="Read LP Request Status">
+            <cmd text="getvalue lp status"/>
+        </command>
+        <command name="Read Min/Max Voltage">
+            <cmd text="getvalue voltage"/>
+            <point name="Min Volts"/>
+            <point name="Max Volts"/>
+        </command>
+        <command name="Read Min/Max Voltage (Frozen)">
+            <cmd text="getvalue voltage frozen"/>
+            <point name="Min Volts"/>
+            <point name="Max Volts"/>
+            <point name="Frozen Min Volts"/>
+            <point name="Frozen Max Volts"/>
+        </command>
+        <command name="Read Outage Log (6 most recent)">
+            <cmd text="getvalue outage 1"/>
+            <cmd text="getvalue outage 3"/>
+            <cmd text="getvalue outage 5"/>
+            <point name="Outages"/>
+        </command>
+        <command name="Read Peak">
+            <cmd text="getvalue peak"/>
+            <point name="Peak kW"/>
+            <point name="kWh"/>
+        </command>
+        <command name="Read Peak (Channel 2)">
+            <cmd text="getvalue peak channel 2"/>
+            <point name="Peak kW (Channel 2)"/>
+            <point name="kWh (Channel 2)"/>
+        </command>
+        <command name="Read Peak (Channel 3)">
+            <cmd text="getvalue peak channel 3"/>
+            <point name="Peak kW (Channel 3)"/>
+            <point name="kWh (Channel 3)"/>
+        </command>
+        <command name="Read Peak (Frozen Channel 2)" zzenabled="false">
+            <cmd text="getvalue peak frozen channel 2"/>
+            <point name="Peak kW (Channel 2)"/>
+            <point name="kWh (Channel 2)"/>
+        </command>
+        <command name="Read Peak (Frozen)" zzenabled="false">
+            <cmd text="getvalue peak frozen"/>
+            <point name="Peak kW"/>
+            <point name="kWh"/>
+        </command>
+        <command name="Read TOU Rate A">
+            <cmd text="getvalue kWh rate a"/>
+            <point name="Peak kW (Rate A kW)"/>
+            <point name="Rate A kWh"/>
+        </command>
+        <command name="Read TOU Rate A (Frozen)" zzenabled="false">
+            <cmd text="getvalue kWh rate a frozen"/>
+            <point name="Peak kW (Rate A kW)"/>
+            <point name="Rate A kWh"/>
+        </command>
+        <command name="Read TOU Rate B">
+            <cmd text="getvalue kWh rate b"/>
+            <point name="Rate B kWh"/>
+            <point name="Peak kW (Rate B kW)"/>
+        </command>
+        <command name="Read TOU Rate B (Frozen)" zzenabled="false">
+            <cmd text="getvalue kWh rate b frozen"/>
+            <point name="Rate B kWh"/>
+            <point name="Peak kW (Rate B kW)"/>
+        </command>
+        <command name="Read TOU Rate C">
+            <cmd text="getvalue kWh rate c"/>
+            <point name="Rate C kWh"/>
+            <point name="Peak kW (Rate C kW)"/>
+        </command>
+        <command name="Read TOU Rate C (Frozen)" zzenabled="false">
+            <cmd text="getvalue kWh rate c frozen"/>
+            <point name="Rate C kWh"/>
+            <point name="Peak kW (Rate C kW)"/>
+        </command>
+        <command name="Read TOU Rate D">
+            <cmd text="getvalue kWh rate d"/>
+            <point name="Peak kW (Rate D kW)"/>
+            <point name="Rate D kWh"/>
+        </command>
+        <command name="Read TOU Rate D (Frozen)" zzenabled="false">
+            <cmd text="getvalue kWh rate d frozen"/>
+            <point name="Peak kW (Rate D kW)"/>
+            <point name="Rate D kWh"/>
+        </command>
+        <command name="Read Usage">
+            <cmd text="getvalue kWh"/>
+            <point name="kWh"/>
+        </command>
+        <command name="Read Usage (Channels 1, 2, 3)">
+            <cmd text="getvalue usage"/>
+            <point name="kWh (Channel 2)"/>
+            <point name="kWh"/>
+            <point name="kWh (Channel 3)"/>
+        </command>
+        <command name="Read Usage (Frozen Channels 1, 2, 3)" zzenabled="false">
+            <cmd text="getvalue usage frozen"/>
+            <point name="kWh (Channel 2)"/>
+            <point name="kWh"/>
+            <point name="kWh (Channel 3)"/>
+        </command>
+        <command name="Read Usage (Frozen)" zzenabled="false">
+            <cmd text="getvalue kWh frozen"/>
+            <point name="kWh"/>
+        </command>
+        <command name="Read kW Demand, Voltage, Blink Count">
+            <cmd text="getvalue demand"/>
+            <point name="kW"/>
+            <point name="kW (Channel 2)"/>
+            <point name="kW (Channel 3)"/>
+            <point name="Blink Count"/>
+            <point name="Voltage"/>
+        </command>
+        <command name="Read rates for Demand, LP, Volt Demand, and Volt Profile">
+            <cmd text="getconfig intervals"/>
+        </command>
+    </commands>
+</pao>

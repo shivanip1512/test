@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="MCT248" changeGroup="meter" creatable="false" displayGroup="MCT" displayName="MCT-248" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>MCT2XX.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_ICON_TYPE" option="electric_meter"/>
+        <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="0-4194303"/>
+        <tag name="LOCATE_ROUTE"/>
+        <tag name="MCT_200_SERIES"/>
+        <tag name="METER_DETAIL_DISPLAYABLE"/>
+        <tag name="OUTAGE"/>
+        <tag name="PORTER_COMMAND_REQUESTS"/>
+        <tag name="STARS_ACCOUNT_ATTACHABLE_METER"/>
+        <tag name="USES_METER_NUMBER_FOR_MSP"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Comm Status" zzattributes="COMM_STATUS"/>
+        <pointInfo name="kW" yyinit="true" zzattributes="DEMAND"/>
+        <pointInfo name="kW-LP" yyinit="true" zzattributes="LOAD_PROFILE"/>
+        <pointInfo name="kWh" yyinit="true" zzattributes="USAGE"/>
+        <pointInfo name="Load Survey Active Flag"/>
+        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
+        <pointInfo name="Over Flow Flag"/>
+        <pointInfo name="Power Fail" yyinit="true"/>
+        <pointInfo name="Power Fail Count" yyinit="true" zzattributes="BLINK_COUNT"/>
+        <pointInfo name="Short Power Fail Flag"/>
+        <pointInfo name="Tamper Flag"/>
+        <pointInfo name="Time Sync Flag"/>
+    </pointInfos>
+    <commands>
+        <command name="Read Blink Count">
+            <cmd text="getvalue powerfail"/>
+            <point name="Power Fail Count"/>
+        </command>
+        <command name="Read Current Demand">
+            <cmd text="getvalue demand"/>
+            <point name="kW"/>
+        </command>
+        <command name="Read Usage">
+            <cmd text="getvalue kWh"/>
+            <point name="kWh"/>
+        </command>
+    </commands>
+</pao>

@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="RFN530S4EAD" changeGroup="meter" displayGroup="RFMESH" displayName="RFN-530S4eAD" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>RFN.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_CONFIGURATION"/>
+        <tag name="DEVICE_ICON_TYPE" option="electric_meter"/>
+        <tag name="METER_DETAIL_DISPLAYABLE"/>
+        <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
+        <tag name="OUTAGE"/>
+        <tag name="RFN_DEMAND_RESET"/>
+        <tag name="RFN_EVENTS"/>
+        <tag name="RFN_POINT_CALCULATION"/>
+        <tag name="THREE_PHASE_CURRENT"/>
+        <tag name="THREE_PHASE_VOLTAGE"/>
+        <tag name="USES_METER_NUMBER_FOR_MSP"/>
+    </tags>
+    <configuration>
+        <category type="rfnChannelConfiguration"/>
+        <category type="rfnTempAlarm"/>
+    </configuration>
+    <pointInfos>
+        <pointInfo name="Bad Upgrade Security Param" zzattributes="BAD_UPGRADE_SECURITY_PARAM"/>
+        <pointInfo name="Blink Count" yyinit="true" zzattributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Restore Count" yyinit="true" zzattributes="RFN_BLINK_RESTORE_COUNT"/>
+        <pointInfo name="Clock Error" zzattributes="CLOCK_ERROR"/>
+        <pointInfo name="Configuration Error" zzattributes="CONFIGURATION_ERROR"/>
+        <pointInfo name="Crystal Oscillator Error" zzattributes="CRYSTAL_OSCILLATOR_ERROR"/>
+        <pointInfo name="Current Angle Phase A" zzattributes="CURRENT_ANGLE_PHASE_A"/>
+        <pointInfo name="Current Angle Phase B" zzattributes="CURRENT_ANGLE_PHASE_B"/>
+        <pointInfo name="Current Angle Phase C" zzattributes="CURRENT_ANGLE_PHASE_C"/>
+        <pointInfo name="Current Loss" zzattributes="CURRENT_LOSS"/>
+        <pointInfo name="Current Neutral to Ground" zzattributes="NEUTRAL_CURRENT"/>
+        <pointInfo name="Current Phase A" zzattributes="CURRENT_PHASE_A"/>
+        <pointInfo name="Current Phase B" zzattributes="CURRENT_PHASE_B"/>
+        <pointInfo name="Current Phase C" zzattributes="CURRENT_PHASE_C"/>
+        <pointInfo name="Delivered kW" yyinit="true" zzattributes="DEMAND"/>
+        <pointInfo name="Delivered kW Load Profile" zzattributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
+        <pointInfo name="Delivered kWh" yyinit="true" zzattributes="DELIVERED_KWH"/>
+        <pointInfo name="Delivered kWh per Interval" yyinit="true" zzattributes="DELIVERED_KWH_PER_INTERVAL"/>
+        <pointInfo name="Demand Overload" zzattributes="DEMAND_OVERLOAD"/>
+        <pointInfo name="Demand Reads And Reset" zzattributes="DEMAND_READS_AND_RESET"/>
+        <pointInfo name="Demand Threshold Exceeded Warning" zzattributes="DEMAND_THRESHOLD_EXCEEDED_WARNING"/>
+        <pointInfo name="Device Temperature" yyinit="true" zzattributes="TEMPERATURE_DEVICE"/>
+        <pointInfo name="Display Locked By Warning" zzattributes="DISPLAY_LOCKED_BY_WARNING"/>
+        <pointInfo name="Eeprom Access Error" zzattributes="EEPROM_ACCESS_ERROR"/>
+        <pointInfo name="Encryption Key Table Crc Error" zzattributes="ENCRYPTION_KEY_TABLE_CRC_ERROR"/>
+        <pointInfo name="End Of Calendar Warning" zzattributes="END_OF_CALENDAR_WARNING"/>
+        <pointInfo name="Energy Accumulated While In Standby Mode" zzattributes="ENERGY_ACCUMULATED_WHILE_IN_STANDBY_MODE"/>
+        <pointInfo name="Failed Upgrade Signature Verification" zzattributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
+        <pointInfo name="Improper Meter Engine Operation Warning" zzattributes="IMPROPER_METER_ENGINE_OPERATION_WARNING"/>
+        <pointInfo name="Internal Communication Error" zzattributes="INTERNAL_COMMUNICATION_ERROR"/>
+        <pointInfo name="Invalid Service" zzattributes="INVALID_SERVICE"/>
+        <pointInfo name="Line Frequency Warning" zzattributes="LINE_FREQUENCY_WARNING"/>
+        <pointInfo name="Load Side Voltage Is Missing" zzattributes="LOAD_SIDE_VOLTAGE_IS_MISSING"/>
+        <pointInfo name="Loss Of All Current" zzattributes="LOSS_OF_ALL_CURRENT"/>
+        <pointInfo name="Loss Of Phase A Current" zzattributes="LOSS_OF_PHASE_A_CURRENT"/>
+        <pointInfo name="Loss Of Phase C Current" zzattributes="LOSS_OF_PHASE_C_CURRENT"/>
+        <pointInfo name="Low Battery Warning" zzattributes="LOW_BATTERY_WARNING"/>
+        <pointInfo name="Low Loss Potential" zzattributes="LOW_LOSS_POTENTIAL"/>
+        <pointInfo name="Measurement Error" zzattributes="MEASUREMENT_ERROR"/>
+        <pointInfo name="Net kW Load Profile" zzattributes="NET_KW_LOAD_PROFILE"/>
+        <pointInfo name="Net kWh" zzattributes="NET_KWH"/>
+        <pointInfo name="Net kWh per Interval" zzattributes="NET_KWH_PER_INTERVAL"/>
+        <pointInfo name="Non Volatile Mem Failure" zzattributes="NON_VOLATILE_MEM_FAILURE"/>
+        <pointInfo name="Outage Count" yyinit="true" zzattributes="RFN_OUTAGE_COUNT"/>
+        <pointInfo name="Outage Restore Count" yyinit="true" zzattributes="RFN_OUTAGE_RESTORE_COUNT"/>
+        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
+        <pointInfo name="Outages" yyinit="true" zzattributes="OUTAGE_LOG"/>
+        <pointInfo name="Over Voltage" zzattributes="OVER_VOLTAGE"/>
+        <pointInfo name="Over Voltage Measured" zzattributes="OVER_VOLTAGE_MEASURED"/>
+        <pointInfo name="Over Voltage Threshold" zzattributes="OVER_VOLTAGE_THRESHOLD"/>
+        <pointInfo name="Password Table Crc Error" zzattributes="PASSWORD_TABLE_CRC_ERROR"/>
+        <pointInfo name="Peak kW" yyinit="true"/>
+        <pointInfo name="Potential Indicator Warning" zzattributes="POTENTIAL_INDICATOR_WARNING"/>
+        <pointInfo name="Power Fail Data Save Error" zzattributes="POWER_FAIL_DATA_SAVE_ERROR"/>
+        <pointInfo name="Power Failure" zzattributes="POWER_FAIL_FLAG"/>
+        <pointInfo name="Pqm Test Failure Warning" zzattributes="PQM_TEST_FAILURE_WARNING"/>
+        <pointInfo name="Ram Error" zzattributes="RAM_ERROR"/>
+        <pointInfo name="Received kW Load Profile" zzattributes="RECEIVED_KW_LOAD_PROFILE"/>
+        <pointInfo name="Received kWh" zzattributes="RECEIVED_KWH"/>
+        <pointInfo name="Received kWh per Interval" zzattributes="RECEIVED_KWH_PER_INTERVAL"/>
+        <pointInfo name="Reverse Rotation" zzattributes="REVERSE_POWER_FLAG"/>
+        <pointInfo name="Reversed Aggregate" zzattributes="REVERSED_AGGREGATE"/>
+        <pointInfo name="Reversed Phase A" zzattributes="REVERSED_PHASE_A"/>
+        <pointInfo name="Reversed Phase C" zzattributes="REVERSED_PHASE_C"/>
+        <pointInfo name="RF Demand Reset Status" yyinit="true" zzattributes="RF_DEMAND_RESET_STATUS"/>
+        <pointInfo name="RFN High Temperature Threshold Exceeded" zzattributes="RFN_TEMPERATURE_ALARM"/>
+        <pointInfo name="Rom Error" zzattributes="ROM_ERROR"/>
+        <pointInfo name="Security Configuration Error" zzattributes="SECURITY_CONFIGURATION_ERROR"/>
+        <pointInfo name="Self Check Error" zzattributes="SELF_CHECK_ERROR"/>
+        <pointInfo name="Service Current Test Failure Warning" zzattributes="SERVICE_CURRENT_TEST_FAILURE_WARNING"/>
+        <pointInfo name="Service Disconnect Switch Error" zzattributes="SERVICE_DISCONNECT_SWITCH_ERROR"/>
+        <pointInfo name="Service Disconnect Switch Open" zzattributes="SERVICE_DISCONNECT_SWITCH_OPEN"/>
+        <pointInfo name="Service Disconnect Switch Sensor Error" zzattributes="SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR"/>
+        <pointInfo name="Stuck Switch" zzattributes="STUCK_SWITCH"/>
+        <pointInfo name="Sum kW Load Profile" zzattributes="SUM_KW_LOAD_PROFILE"/>
+        <pointInfo name="Sum kWh" yyinit="true" zzattributes="USAGE,SUM_KWH"/>
+        <pointInfo name="Sum kWh per Interval" zzattributes="SUM_KWH_PER_INTERVAL"/>
+        <pointInfo name="Sum Peak kW" yyinit="true" zzattributes="SUM_PEAK_DEMAND,PEAK_DEMAND"/>
+        <pointInfo name="Table Crc Error" zzattributes="TABLE_CRC_ERROR"/>
+        <pointInfo name="Tamper Detect" zzattributes="TAMPER_FLAG"/>
+        <pointInfo name="Time Adjustment" zzattributes="TIME_ADJUSTMENT"/>
+        <pointInfo name="Total Outage Count" yyinit="true" zzattributes="BLINK_COUNT"/>
+        <pointInfo name="Unconfigured" zzattributes="UNCONFIGURED"/>
+        <pointInfo name="Under Voltage" zzattributes="UNDER_VOLTAGE"/>
+        <pointInfo name="Under Voltage Measured" zzattributes="UNDER_VOLTAGE_MEASURED"/>
+        <pointInfo name="Under Voltage Threshold" zzattributes="UNDER_VOLTAGE_THRESHOLD"/>
+        <pointInfo name="Unprogrammed" zzattributes="UNPROGRAMMED"/>
+        <pointInfo name="User Programmable Temperature Threshold Exceeded" zzattributes="USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED"/>
+        <pointInfo name="Voltage Alerts" zzattributes="VOLTAGE_ALERTS"/>
+        <pointInfo name="Voltage Loss" zzattributes="VOLTAGE_LOSS"/>
+        <pointInfo name="Voltage Phase A" zzattributes="VOLTAGE_PHASE_A"/>
+        <pointInfo name="Voltage Phase A Out" zzattributes="VOLTAGE_PHASE_A_OUT"/>
+        <pointInfo name="Voltage Phase B" zzattributes="VOLTAGE_PHASE_B"/>
+        <pointInfo name="Voltage Phase B Out" zzattributes="VOLTAGE_PHASE_B_OUT"/>
+        <pointInfo name="Voltage Phase C" zzattributes="VOLTAGE_PHASE_C"/>
+        <pointInfo name="Voltage Phase C Out" zzattributes="VOLTAGE_PHASE_C_OUT"/>
+        <pointInfo name="Voltage Phase Error" zzattributes="VOLTAGE_PHASE_ERROR"/>
+        <pointInfo name="Watt-Hour Pulse Failure" zzattributes="WATT_HOUR_PULSE_FAILURE"/>
+    </pointInfos>
+</pao>

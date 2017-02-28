@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="ION_8300" displayGroup="Electronic Meters" displayName="ION-8300" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>ION.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="METER_DETAIL_DISPLAYABLE"/>
+        <tag name="PORTER_COMMAND_REQUESTS"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Comm Status" yyinit="true"/>
+    </pointInfos>
+</pao>

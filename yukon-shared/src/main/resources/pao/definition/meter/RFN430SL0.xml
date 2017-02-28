@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="RFN430SL0" changeGroup="meter" displayGroup="RFMESH" displayName="RFN-430SL0" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>RFN.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_CONFIGURATION"/>
+        <tag name="DEVICE_ICON_TYPE" option="electric_meter"/>
+        <tag name="METER_DETAIL_DISPLAYABLE"/>
+        <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
+        <tag name="OUTAGE"/>
+        <tag name="RFN_DEMAND_RESET"/>
+        <tag name="RFN_EVENTS"/>
+        <tag name="RFN_POINT_CALCULATION"/>
+        <tag name="USES_METER_NUMBER_FOR_MSP"/>
+    </tags>
+    <configuration>
+        <category type="rfnChannelConfiguration"/>
+        <category type="rfnTempAlarm"/>
+    </configuration>
+    <pointInfos>
+        <pointInfo name="Alternate Mode Entry" zzattributes="ALTERNATE_MODE_ENTRY"/>
+        <pointInfo name="ANSI Security Failed" zzattributes="ANSI_SECURITY_FAILED"/>
+        <pointInfo name="Bad Upgrade Security Param" zzattributes="BAD_UPGRADE_SECURITY_PARAM"/>
+        <pointInfo name="Blink Count" yyinit="true" zzattributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Restore Count" yyinit="true" zzattributes="RFN_BLINK_RESTORE_COUNT"/>
+        <pointInfo name="Configuration Error" zzattributes="CONFIGURATION_ERROR"/>
+        <pointInfo name="Current Waveform Distortion" zzattributes="CURRENT_WAVEFORM_DISTORTION"/>
+        <pointInfo name="Delivered kW Load Profile" zzattributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
+        <pointInfo name="Delivered kWh" yyinit="true" zzattributes="USAGE,DELIVERED_KWH"/>
+        <pointInfo name="Delivered kWh per Interval" yyinit="true" zzattributes="DELIVERED_KWH_PER_INTERVAL"/>
+        <pointInfo name="Demand Overload" zzattributes="DEMAND_OVERLOAD"/>
+        <pointInfo name="Demand Reads And Reset" zzattributes="DEMAND_READS_AND_RESET"/>
+        <pointInfo name="Failed Upgrade Signature Verification" zzattributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
+        <pointInfo name="Inactive Phase Current Diagnostic Error" zzattributes="INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR"/>
+        <pointInfo name="Low Battery Warning" zzattributes="LOW_BATTERY_WARNING"/>
+        <pointInfo name="Low Loss Potential" zzattributes="LOW_LOSS_POTENTIAL"/>
+        <pointInfo name="Mass Memory Error" zzattributes="MASS_MEMORY_ERROR"/>
+        <pointInfo name="Meter Reconfigure" zzattributes="METER_RECONFIGURE"/>
+        <pointInfo name="Metrology Communication Failure" zzattributes="METROLOGY_COMM_FAILURE"/>
+        <pointInfo name="Non Volatile Mem Failure" zzattributes="NON_VOLATILE_MEM_FAILURE"/>
+        <pointInfo name="Outage Count" yyinit="true" zzattributes="RFN_OUTAGE_COUNT"/>
+        <pointInfo name="Outage Restore Count" yyinit="true" zzattributes="RFN_OUTAGE_RESTORE_COUNT"/>
+        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
+        <pointInfo name="Outages" yyinit="true" zzattributes="OUTAGE_LOG"/>
+        <pointInfo name="Phase Angle Displacement" zzattributes="PHASE_ANGLE_DISPLACEMENT"/>
+        <pointInfo name="Phase Loss" zzattributes="PHASE_LOSS"/>
+        <pointInfo name="Polarity Cross-phase and Energy Flow Diagnostic" zzattributes="POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC"/>
+        <pointInfo name="Power Failure" zzattributes="POWER_FAIL_FLAG"/>
+        <pointInfo name="Ram Error" zzattributes="RAM_ERROR"/>
+        <pointInfo name="Register Full-scale Exceeded" zzattributes="REGISTER_FULL_SCALE_EXCEEDED"/>
+        <pointInfo name="Reverse Rotation" zzattributes="REVERSE_POWER_FLAG"/>
+        <pointInfo name="RF Demand Reset Status" yyinit="true" zzattributes="RF_DEMAND_RESET_STATUS"/>
+        <pointInfo name="Rom Error" zzattributes="ROM_ERROR"/>
+        <pointInfo name="Season Change" zzattributes="SEASON_CHANGE"/>
+        <pointInfo name="SiteScan Error" zzattributes="SITESCAN_ERROR"/>
+        <pointInfo name="THD V or TDD I Error" zzattributes="THD_V_OR_TDD_I_ERROR"/>
+        <pointInfo name="Total Outage Count" yyinit="true" zzattributes="BLINK_COUNT"/>
+        <pointInfo name="TOU Schedule Error" zzattributes="TOU_SCHEDULE_ERROR"/>
+        <pointInfo name="Unprogrammed" zzattributes="UNPROGRAMMED"/>
+    </pointInfos>
+</pao>

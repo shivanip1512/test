@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Analog">
+        <name>Analog Input #1</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="2" type="Analog">
+        <name>Analog Input #2</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="3" type="Analog">
+        <name>Analog Input #3</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="4" type="Analog">
+        <name>Analog Input #4</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="5" type="Analog">
+        <name>Analog Input #5</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="6" type="Analog">
+        <name>Analog Input #6</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="7" type="Analog">
+        <name>Analog Input #7</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="8" type="Analog">
+        <name>Analog Input #8</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -DemandAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="DemandAccumulator">
+        <name>kW</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -PulseAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="2001" type="PulseAccumulator">
+        <name>Paging Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="2002" type="PulseAccumulator">
+        <name>Paging Character Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Status">
+        <name>Status Input #1</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="2" type="Status">
+        <name>Status Input #2</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="3" type="Status">
+        <name>Status Input #3</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="4" type="Status">
+        <name>Status Input #4</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="5" type="Status">
+        <name>Status Input #5</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="6" type="Status">
+        <name>Status Input #6</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="7" type="Status">
+        <name>Status Input #7</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="8" type="Status">
+        <name>Status Input #8</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="17" type="Status">
+        <name>Local Operation</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="18" type="Status">
+        <name>Injector Alarm</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="19" type="Status">
+        <name>Busy Transmitting</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="24" type="Status">
+        <name>Power Fail</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="26" type="Status">
+        <name>Output disabled</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="27" type="Status">
+        <name>Injector staged</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="2000" type="Status">
+        <name>Comm Status</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Comm Status State"/>
+    </point>
+</points>

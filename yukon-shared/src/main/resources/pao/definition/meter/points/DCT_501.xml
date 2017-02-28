@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Analog">
+        <name>Analog #1</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="2" type="Analog">
+        <name>Analog #2</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="3" type="Analog">
+        <name>Analog #3</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="4" type="Analog">
+        <name>Analog #4</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Status">
+        <name>Status Input 1</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="2" type="Status">
+        <name>Status Input 2</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="9" type="Status">
+        <name>Time Sync Flag</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="10" type="Status">
+        <name>Power Fail</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="11" type="Status">
+        <name>Short Power Fail Flag</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="12" type="Status">
+        <name>Over Flow</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="13" type="Status">
+        <name>Remote/Local Status</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="14" type="Status">
+        <name>TOS - Status</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="16" type="Status">
+        <name>TOS Mode</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="1000" type="Status">
+        <name>Outage Status</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Outage Status"/>
+    </point>
+    <point offset="2000" type="Status">
+        <name>Comm Status</name>
+        <stategroup value="Comm Status State"/>
+    </point>
+</points>

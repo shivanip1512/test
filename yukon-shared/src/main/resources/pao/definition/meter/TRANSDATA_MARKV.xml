@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="TRANSDATA_MARKV" changeGroup="electronic" displayGroup="Electronic Meters" displayName="TRANSDATA MARK-V" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>TRANSDATA_MARKV.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="METER_DETAIL_DISPLAYABLE"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Peak kW (Rate A kW)" yyinit="true" zzattributes="PEAK_DEMAND"/>
+        <pointInfo name="Total kWh" yyinit="true" zzattributes="USAGE"/>
+    </pointInfos>
+    <commands>
+        <command name="General Scan">
+            <cmd text="scan general"/>
+            <point name="Total kWh"/>
+        </command>
+    </commands>
+</pao>

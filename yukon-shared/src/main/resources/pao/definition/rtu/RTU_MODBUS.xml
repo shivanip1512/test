@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="RTU_MODBUS" displayGroup="RTU" displayName="RTU-MODBUS" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+    </tags>
+</pao>

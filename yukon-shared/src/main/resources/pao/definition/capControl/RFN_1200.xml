@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="RFN_1200" changeGroup="rfnda" creatable="false" displayGroup="RFMESH" displayName="RFN-1200" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>RFN_1200.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="OUTAGE"/>
+        <tag name="RFN_EVENTS"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Bad Upgrade Security Param" yyinit="true"/>
+        <pointInfo name="Blink Count" yyinit="true" zzattributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Restore Count" yyinit="true" zzattributes="RFN_BLINK_RESTORE_COUNT"/>
+        <pointInfo name="DNP3 Address Changed" yyinit="true" zzattributes="DNP3_ADDRESS_CHANGED"/>
+        <pointInfo name="Failed Upgrade Signature Verification" yyinit="true"/>
+        <pointInfo name="Outage Count" yyinit="true" zzattributes="RFN_OUTAGE_COUNT"/>
+        <pointInfo name="Outage Restore Count" yyinit="true" zzattributes="RFN_OUTAGE_RESTORE_COUNT"/>
+        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
+        <pointInfo name="Outages" yyinit="true" zzattributes="OUTAGE_LOG"/>
+        <pointInfo name="Outstation DNP3 SerComm Locked" yyinit="true" zzattributes="OUTSTATION_DNP3_SERCOMM_LOCKED"/>
+        <pointInfo name="Time Sync Failed" yyinit="true" zzattributes="TIME_SYNC_FAILED"/>
+    </pointInfos>
+</pao>

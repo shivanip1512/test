@@ -1,0 +1,491 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Analog">
+        <name>Serial Number</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="2" type="Analog">
+        <name>Last Control Reason</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+        <analogstategroup value="Last Control"/>
+    </point>
+    <point offset="5" type="Analog">
+        <name>Temperature</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="DEGREES"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="6" type="Analog">
+        <name>Delta Voltage</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="7" type="Analog">
+        <name>High Voltage</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="8" type="Analog">
+        <name>Low Voltage</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="12" type="Analog">
+        <name>Average Line Voltage</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="21" type="Analog">
+        <name>Line Voltage THD</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PERCENT"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="114" type="Analog">
+        <name>Ignored Control Reason</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+        <analogstategroup value="Ignored Control"/>
+    </point>
+    <point offset="153" type="Analog">
+        <name>Phase A Total Voltage Average</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="154" type="Analog">
+        <name>Phase B Total Voltage Average</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="155" type="Analog">
+        <name>Phase C Total Voltage Average</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="156" type="Analog">
+        <name>Phase A Total Current Average</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="157" type="Analog">
+        <name>Phase B Total Current Average</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="158" type="Analog">
+        <name>Phase C Total Current Average</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="159" type="Analog">
+        <name>Phase A Fundamental Voltage Average</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="160" type="Analog">
+        <name>Phase B Fundamental Voltage Average</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="161" type="Analog">
+        <name>Phase C Fundamental Voltage Average</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="162" type="Analog">
+        <name>Phase A Fundamental Current Average</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="163" type="Analog">
+        <name>Phase B Fundamental Current Average</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="164" type="Analog">
+        <name>Phase C Fundamental Current Average</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="165" type="Analog">
+        <name>VAR Control Total Voltage</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="166" type="Analog">
+        <name>CBC-8000 Hardware Type ID</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+        <analogstategroup value="CBC-8 Hardware Type"/>
+    </point>
+    <point offset="167" type="Analog">
+        <name>SCADA Override Time Remaining</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="9999" type="Analog">
+        <name>Firmware Version</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10001" type="Analog">
+        <name>OV Threshold</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="10002" type="Analog">
+        <name>UV Threshold</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="10005" type="Analog">
+        <name>Daily Control Limit</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10006" type="Analog">
+        <name>Auto Close Delay Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10007" type="Analog">
+        <name>Manual Close Delay Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10008" type="Analog">
+        <name>Open Delay Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10009" type="Analog">
+        <name>Bank Control Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10010" type="Analog">
+        <name>Re-Close Delay Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10011" type="Analog">
+        <name>Comms Loss Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10012" type="Analog">
+        <name>CVR OV Threshold</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="10013" type="Analog">
+        <name>CVR UV Threshold</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="10015" type="Analog">
+        <name>Emergency OV Threshold</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="10016" type="Analog">
+        <name>Emergency UV Threshold</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="10018" type="Analog">
+        <name>Comms Loss OV Threshold</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="10019" type="Analog">
+        <name>Comms Loss UV Threshold</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="10020" type="Analog">
+        <name>Average Line Voltage Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10252" type="Analog">
+        <name>SCADA Override Release Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10318" type="Analog">
+        <name>Voltage Control Flags</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10390" type="Analog">
+        <name>Adaptive kVAr Percent Bank Size</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PERCENT"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10391" type="Analog">
+        <name>Nominal Secondary Voltage</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10392" type="Analog">
+        <name>Three-Phase Voltage Average Interval</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10393" type="Analog">
+        <name>Three-Phase Current Average Interval</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10466" type="Analog">
+        <name>SCADA Override Countdown Timer</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10468" type="Analog">
+        <name>SCADA Override Type</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+        <analogstategroup value="SCADA Override Type"/>
+    </point>
+    <point offset="20001" type="Analog">
+        <name>IP Address</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="20002" type="Analog">
+        <name>UDP Port</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="UNDEF"/>
+        <decimalplaces value="0"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -PulseAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="PulseAccumulator">
+        <name>Total Op Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="2" type="PulseAccumulator">
+        <name>OV Op Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="3" type="PulseAccumulator">
+        <name>UV Op Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="4" type="PulseAccumulator">
+        <name>Close Op Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="5" type="PulseAccumulator">
+        <name>Open Op Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="-1" type="Status">
+        <name>Enable SCADA Override</name>
+        <controlType value="NORMAL"/>
+        <controlOffset value="49"/>
+        <stateZeroControl value="PULSE"/>
+        <stateOneControl value="PULSE"/>
+        <stategroup value="YesNo"/>
+    </point>
+    <point offset="0" type="Status">
+        <name>SCADA Override Clear</name>
+        <controlType value="NORMAL"/>
+        <controlOffset value="12"/>
+        <stateZeroControl value="PULSE"/>
+        <stateOneControl value="PULSE"/>
+        <stategroup value="NoYes"/>
+    </point>
+    <point offset="1" type="Status">
+        <name>Capacitor Bank State</name>
+        <controlType value="NORMAL"/>
+        <controlOffset value="1"/>
+        <stategroup value="TwoStateStatus"/>
+    </point>
+    <point offset="2" type="Status">
+        <name>SCADA Override</name>
+        <controlType value="NORMAL"/>
+        <controlOffset value="2"/>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="3" type="Status">
+        <name>Neutral Lockout</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="4" type="Status">
+        <name>CVR Mode</name>
+        <controlType value="LATCH"/>
+        <controlOffset value="10"/>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="5" type="Status">
+        <name>Line Voltage High</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="6" type="Status">
+        <name>Line Voltage Low</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="14" type="Status">
+        <name>Temperature High</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="15" type="Status">
+        <name>Temperature Low</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="64" type="Status">
+        <name>VAr Reverse Power Flow</name>
+        <stategroup value="TwoStateActive"/>
+    </point>
+    <point offset="65" type="Status">
+        <name>Phase A Reverse Power Flow</name>
+        <stategroup value="TwoStateActive"/>
+    </point>
+    <point offset="66" type="Status">
+        <name>Phase B Reverse Power Flow</name>
+        <stategroup value="TwoStateActive"/>
+    </point>
+    <point offset="67" type="Status">
+        <name>Phase C Reverse Power Flow</name>
+        <stategroup value="TwoStateActive"/>
+    </point>
+    <point offset="68" type="Status">
+        <name>Operation Failed</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="69" type="Status">
+        <name>Max Operation Count</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="70" type="Status">
+        <name>Bad Active Close Relay</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="71" type="Status">
+        <name>Bad Active Trip Relay</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="72" type="Status">
+        <name>Abnormal Delta Voltage</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="83" type="Status">
+        <name>Relay Sense Failed</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="84" type="Status">
+        <name>Reclose Block</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="86" type="Status">
+        <name>Manual Control Mode</name>
+        <controlType value="LATCH"/>
+        <controlOffset value="11"/>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="87" type="Status">
+        <name>Remote Control Mode</name>
+        <controlType value="LATCH"/>
+        <controlOffset value="11"/>
+        <stateZeroControl value="CLOSE"/>
+        <stateOneControl value="OPEN"/>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="88" type="Status">
+        <name>Auto Control Mode</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="89" type="Status">
+        <name>OVUV Control</name>
+        <controlType value="LATCH"/>
+        <controlOffset value="14"/>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="125" type="Status">
+        <name>Door Sensor Damage/Tamper</name>
+        <stategroup value="TwoStateActive"/>
+    </point>
+    <point offset="126" type="Status">
+        <name>Door Status</name>
+        <stategroup value="CBC Door Status"/>
+    </point>
+    <point offset="127" type="Status">
+        <name>Real Time Clock Battery Failure</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="2001" type="Status">
+        <name>Device Reset Indicator</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="10040" type="Status">
+        <name>Ignore SCADA Override Time of Day</name>
+        <controlType value="LATCH"/>
+        <controlOffset value="40"/>
+        <stategroup value="YesNo"/>
+    </point>
+</points>

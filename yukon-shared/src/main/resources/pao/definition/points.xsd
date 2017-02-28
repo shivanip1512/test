@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.0">
+
+    <xs:element name="points">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="point" minOccurs="0" maxOccurs="unbounded">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="name" type="xs:string" minOccurs="1" />
+                            <xs:element name="archive" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:attribute name="type" type="xs:string" default="NONE" />
+                                    <xs:attribute name="interval" type="xs:string" default="ZERO" />
+                                </xs:complexType>
+                            </xs:element>
+                            <xs:choice>
+                                <xs:sequence>
+                                    <xs:element name="multiplier">
+                                        <xs:complexType>
+                                            <xs:attribute name="value" type="xs:decimal" />
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="unitofmeasure">
+                                        <xs:complexType>
+                                            <xs:attribute name="value" type="unitOfMeasureType" use="required" />
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="decimalplaces">
+                                        <xs:complexType>
+                                            <xs:attribute name="value" type="xs:int" use="required" />
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="analogstategroup" minOccurs="0">
+                                        <xs:complexType>
+                                            <xs:attribute name="value" type="xs:string" use="required" />
+                                            <xs:attribute name="initialState" type="xs:string" />
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="dataOffset" minOccurs="0">
+                                        <xs:complexType>
+                                            <xs:attribute name="value" type="xs:decimal" use="required" />
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                                <xs:sequence>
+                                    <xs:element name="controlType" minOccurs="0">
+                                        <xs:complexType>
+                                            <xs:attribute name="value" type="controlTypeType" use="required" />
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="controlOffset" minOccurs="0">
+                                        <xs:complexType>
+                                            <xs:attribute name="value" type="xs:int" use="required" />
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="stateZeroControl" minOccurs="0">
+                                        <xs:complexType>
+                                            <xs:attribute name="value" type="controlStateType" use="required" />
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="stateOneControl" minOccurs="0">
+                                        <xs:complexType>
+                                            <xs:attribute name="value" type="controlStateType" use="required" />
+                                        </xs:complexType>
+                                    </xs:element>
+                                    <xs:element name="stategroup">
+                                        <xs:complexType>
+                                            <xs:attribute name="value" type="xs:string" use="required" />
+                                            <xs:attribute name="initialState" type="xs:string" />
+                                        </xs:complexType>
+                                    </xs:element>
+                                </xs:sequence>
+                            </xs:choice>
+                            <xs:element name="calculation" minOccurs="0">
+                                <xs:complexType>
+                                    <xs:sequence>
+                                        <xs:element name="forceQualityNormal" minOccurs="0" type="xs:boolean" default="false" />
+                                        <xs:element name="periodicRate" minOccurs="0" type="xs:int" default="1" />
+                                        <xs:element name="updateType" minOccurs="0" type="updateTypeType" default="On First Change" />
+                                        <xs:element name="components" minOccurs="1" maxOccurs="1">
+                                            <xs:complexType>
+                                                <xs:sequence>
+                                                    <xs:element name="component" minOccurs="1" maxOccurs="unbounded">
+                                                        <xs:complexType>
+                                                            <xs:attribute name="point" type="xs:string" use="required" />
+                                                            <xs:attribute name="componentType" type="componentTypeType" default="Operation" />
+                                                            <xs:attribute name="operator" type="xs:string" default="+" />
+                                                        </xs:complexType>
+                                                    </xs:element>
+                                                </xs:sequence>
+                                            </xs:complexType>
+                                        </xs:element>
+                                    </xs:sequence>
+                                </xs:complexType>
+                            </xs:element>
+                        </xs:sequence>
+                        <xs:attribute name="type" type="xs:string" use="required" />
+                        <xs:attribute name="offset" type="xs:int" use="required" />
+                        <xs:attribute name="enabled" type="xs:boolean" default="true" />
+                    </xs:complexType>
+                    <xs:unique name="NameUniqueKey">
+                        <xs:selector xpath="point" />
+                        <xs:field xpath="@name" />
+                    </xs:unique>
+                    <xs:unique name="pointTypeAndIdUniq">
+                        <xs:selector xpath="point" />
+                        <xs:field xpath="@type" />
+                        <xs:field xpath="@offset" />
+                    </xs:unique>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:simpleType name="updateTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="On First Change" />
+            <xs:enumeration value="On All Change" />
+            <xs:enumeration value="On Timer" />
+            <xs:enumeration value="On Timer+Change" />
+            <xs:enumeration value="Constant" />
+            <xs:enumeration value="Historical" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <!-- We do not yet support the Constant or Function componentTypes -->
+    <xs:simpleType name="componentTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="Operation" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="controlTypeType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="NONE" />
+            <xs:enumeration value="NORMAL" />
+            <xs:enumeration value="LATCH" />
+            <xs:enumeration value="PSEUDO" />
+            <xs:enumeration value="SBOLATCH" />
+            <xs:enumeration value="SBOPULSE" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="controlStateType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="OPEN" />
+            <xs:enumeration value="CLOSE" />
+            <xs:enumeration value="PULSE" />
+            <xs:enumeration value="DISABLE_OVUV_702X" />
+            <xs:enumeration value="ENABLE_OVUV_702X" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="unitOfMeasureType">
+        <xs:restriction base="xs:string">
+            <xs:enumeration value="KW" />
+            <xs:enumeration value="KWH" />
+            <xs:enumeration value="KVA" />
+            <xs:enumeration value="KVAR" />
+            <xs:enumeration value="KVAH" />
+            <xs:enumeration value="KVARH" />
+            <xs:enumeration value="KVOLTS" />
+            <xs:enumeration value="KQ" />
+            <xs:enumeration value="AMPS" />
+            <xs:enumeration value="COUNTS" />
+            <xs:enumeration value="DEGREES" />
+            <xs:enumeration value="DOLLARS" />
+            <xs:enumeration value="DOLLAR_CHAR" />
+            <xs:enumeration value="FEET" />
+            <xs:enumeration value="GALLONS" />
+            <xs:enumeration value="GAL_PM" />
+            <xs:enumeration value="GAS_CFT" />
+            <xs:enumeration value="HOURS" />
+            <xs:enumeration value="LEVELS" />
+            <xs:enumeration value="MINUTES" />
+            <xs:enumeration value="MW" />
+            <xs:enumeration value="MWH" />
+            <xs:enumeration value="MVA" />
+            <xs:enumeration value="MVAR" />
+            <xs:enumeration value="MVAH" />
+            <xs:enumeration value="MVARH" />
+            <xs:enumeration value="OPS" />
+            <xs:enumeration value="PF" />
+            <xs:enumeration value="PERCENT" />
+            <xs:enumeration value="PERCENT_CHAR" />
+            <xs:enumeration value="PSI" />
+            <xs:enumeration value="SECONDS" />
+            <xs:enumeration value="TEMP_F" />
+            <xs:enumeration value="TEMP_C" />
+            <xs:enumeration value="VARS" />
+            <xs:enumeration value="VOLTS" />
+            <xs:enumeration value="VOLTAMPS" />
+            <xs:enumeration value="VA" />
+            <xs:enumeration value="CUBIC_FEET" />
+            <xs:enumeration value="WATTS" />
+            <xs:enumeration value="HZ" />
+            <xs:enumeration value="VOLTS_V2H" />
+            <xs:enumeration value="AMPS_V2H" />
+            <xs:enumeration value="TAP" />
+            <xs:enumeration value="MILES" />
+            <xs:enumeration value="MS" />
+            <xs:enumeration value="PPM" />
+            <xs:enumeration value="MPH" />
+            <xs:enumeration value="INCHES" />
+            <xs:enumeration value="MILIBARS" />
+            <xs:enumeration value="KH_H" />
+            <xs:enumeration value="M_S" />
+            <xs:enumeration value="KV" />
+            <xs:enumeration value="UNDEF" />
+            <xs:enumeration value="CUBIC_METERS" />
+            <xs:enumeration value="MEGABYTES" />
+        </xs:restriction>
+    </xs:simpleType>
+</xs:schema>

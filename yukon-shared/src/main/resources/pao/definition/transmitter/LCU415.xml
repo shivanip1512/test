@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="LCU415" changeGroup="transmitter" creatable="false" displayGroup="Signal Transmitters" displayName="LCU-415" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>TRANSMITTER.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_ICON_TYPE" option="transmitter"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Analog Input #1" yyinit="true"/>
+        <pointInfo name="Analog Input #2" yyinit="true"/>
+        <pointInfo name="Analog Input #3" yyinit="true"/>
+        <pointInfo name="Analog Input #4" yyinit="true"/>
+        <pointInfo name="Analog Input #5" yyinit="true"/>
+        <pointInfo name="Analog Input #6" yyinit="true"/>
+        <pointInfo name="Analog Input #7" yyinit="true"/>
+        <pointInfo name="Analog Input #8" yyinit="true"/>
+        <pointInfo name="Busy Transmitting"/>
+        <pointInfo name="Comm Status" yyinit="true" zzattributes="COMM_STATUS"/>
+        <pointInfo name="Injector Alarm"/>
+        <pointInfo name="Injector staged"/>
+        <pointInfo name="kW"/>
+        <pointInfo name="Local Operation"/>
+        <pointInfo name="Output disabled"/>
+        <pointInfo name="Power Fail"/>
+        <pointInfo name="Status Input #1"/>
+        <pointInfo name="Status Input #2"/>
+        <pointInfo name="Status Input #3"/>
+        <pointInfo name="Status Input #4"/>
+        <pointInfo name="Status Input #5"/>
+        <pointInfo name="Status Input #6"/>
+        <pointInfo name="Status Input #7"/>
+        <pointInfo name="Status Input #8"/>
+    </pointInfos>
+</pao>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="17" type="Status">
+        <name>Local Operation</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="18" type="Status">
+        <name>Alarms</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="19" type="Status">
+        <name>Queue Full (overflowed when set)</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="20" type="Status">
+        <name>COP Reset</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="21" type="Status">
+        <name>Message Verification</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="23" type="Status">
+        <name>Transmitter alarm</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="24" type="Status">
+        <name>Power restored since last status</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="25" type="Status">
+        <name>Clock unlock</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="26" type="Status">
+        <name>Clock fail</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="27" type="Status">
+        <name>VHF Channel Bust</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="28" type="Status">
+        <name>VHF Tx inhibit</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="29" type="Status">
+        <name>Paging terminal interface full</name>
+        <stategroup value="SystemState"/>
+    </point>
+    <point offset="2000" type="Status">
+        <name>Comm Status</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Comm Status State"/>
+    </point>
+</points>

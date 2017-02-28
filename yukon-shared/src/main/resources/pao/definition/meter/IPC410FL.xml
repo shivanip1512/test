@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="IPC410FL" changeGroup="ipc" displayGroup="IPC" displayName="IPC-410fL" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>IPC410FL.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_ICON_TYPE" option="electric_meter"/>
+        <tag name="IPC_METER"/>
+        <tag name="METER_DETAIL_DISPLAYABLE"/>
+        <tag name="PORTER_COMMAND_REQUESTS"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Comm Status" zzattributes="COMM_STATUS"/>
+        <pointInfo name="Instantaneous Current" yyinit="true"/>
+        <pointInfo name="Instantaneous Current Phase B"/>
+        <pointInfo name="Instantaneous Current Phase C"/>
+        <pointInfo name="Instantaneous Neutral Current"/>
+        <pointInfo name="Instantaneous Voltage" yyinit="true"/>
+        <pointInfo name="Instantaneous Voltage Phase B"/>
+        <pointInfo name="Instantaneous Voltage Phase C"/>
+        <pointInfo name="Last Interval kW" zzattributes="DEMAND"/>
+        <pointInfo name="Last Interval/Instantaneous kVA"/>
+        <pointInfo name="Last Interval/Instantaneous kVAr"/>
+        <pointInfo name="Load Profile Current Phase A"/>
+        <pointInfo name="Load Profile Current Phase B"/>
+        <pointInfo name="Load Profile Current Phase C"/>
+        <pointInfo name="Load Profile kVA"/>
+        <pointInfo name="Load Profile kVAr" yyinit="true"/>
+        <pointInfo name="Load Profile kW" yyinit="true" zzattributes="LOAD_PROFILE"/>
+        <pointInfo name="Load Profile Neutral Current"/>
+        <pointInfo name="Load Profile Voltage Phase A"/>
+        <pointInfo name="Load Profile Voltage Phase B"/>
+        <pointInfo name="Load Profile Voltage Phase C"/>
+        <pointInfo name="Peak kVA (Rate A kVA)"/>
+        <pointInfo name="Peak kVA (Rate B kVA)"/>
+        <pointInfo name="Peak kVA (Rate C kVA)"/>
+        <pointInfo name="Peak kVA (Rate D kVA)"/>
+        <pointInfo name="Peak kVA (Rate E kVA)"/>
+        <pointInfo name="Peak kVAr (Rate A kVAr)"/>
+        <pointInfo name="Peak kVAr (Rate B kVAr)"/>
+        <pointInfo name="Peak kVAr (Rate C kVAr)"/>
+        <pointInfo name="Peak kVAr (Rate D kVAr)"/>
+        <pointInfo name="Peak kVAr (Rate E kVAr)"/>
+        <pointInfo name="Peak kW (Rate A kW)" zzattributes="PEAK_DEMAND"/>
+        <pointInfo name="Peak kW (Rate B kW)"/>
+        <pointInfo name="Peak kW (Rate C kW)"/>
+        <pointInfo name="Peak kW (Rate D kW)"/>
+        <pointInfo name="Peak kW (Rate E kW)"/>
+        <pointInfo name="Rate A kVAh"/>
+        <pointInfo name="Rate A kVArh"/>
+        <pointInfo name="Rate A kWh"/>
+        <pointInfo name="Rate B kVAh"/>
+        <pointInfo name="Rate B kVArh"/>
+        <pointInfo name="Rate B kWh"/>
+        <pointInfo name="Rate C kVAh"/>
+        <pointInfo name="Rate C kVArh"/>
+        <pointInfo name="Rate C kWh"/>
+        <pointInfo name="Rate D kVAh"/>
+        <pointInfo name="Rate D kVArh"/>
+        <pointInfo name="Rate D kWh"/>
+        <pointInfo name="Rate E kVAh"/>
+        <pointInfo name="Rate E kVArh"/>
+        <pointInfo name="Rate E kWh"/>
+        <pointInfo name="Total kVAh"/>
+        <pointInfo name="Total kVArh" yyinit="true"/>
+        <pointInfo name="Total kWh" yyinit="true" zzattributes="USAGE"/>
+    </pointInfos>
+    <commands>
+        <command name="General Scan">
+            <cmd text="scan general"/>
+            <point name="Total kWh"/>
+            <point name="Total kVArh"/>
+        </command>
+    </commands>
+</pao>

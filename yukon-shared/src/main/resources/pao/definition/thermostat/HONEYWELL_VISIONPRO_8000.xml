@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="HONEYWELL_VISIONPRO_8000" displayGroup="Demand Response" displayName="Honeywell Wi-Fi VisionPRO 8000" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>HONEYWELL.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="DB_EDITOR_INCOMPATIBLE"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Comm Status" yyinit="true" zzattributes="COMM_STATUS"/>
+        <pointInfo name="Control Status" yyinit="true" zzattributes="CONTROL_STATUS"/>
+        <pointInfo name="Cool Set Temperature" yyinit="true" zzattributes="COOL_SET_TEMPERATURE"/>
+        <pointInfo name="Heat Set Temperature" yyinit="true" zzattributes="HEAT_SET_TEMPERATURE"/>
+        <pointInfo name="Indoor Temperature" yyinit="true" zzattributes="INDOOR_TEMPERATURE"/>
+        <pointInfo name="Run Time Data Log" yyinit="true" zzattributes="RELAY_1_RUN_TIME_DATA_LOG"/>
+        <pointInfo name="Thermostat Relay State" yyinit="true" zzattributes="THERMOSTAT_RELAY_STATE"/>
+    </pointInfos>
+</pao>

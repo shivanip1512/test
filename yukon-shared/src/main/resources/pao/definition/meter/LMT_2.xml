@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="LMT_2" changeGroup="meter" creatable="false" displayGroup="MCT" displayName="LMT-2" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>LMT_2.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_ICON_TYPE" option="electric_meter"/>
+        <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="0-4194303"/>
+        <tag name="LOCATE_ROUTE"/>
+        <tag name="METER_DETAIL_DISPLAYABLE"/>
+        <tag name="PORTER_COMMAND_REQUESTS"/>
+        <tag name="STARS_ACCOUNT_ATTACHABLE_METER"/>
+        <tag name="USES_METER_NUMBER_FOR_MSP"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Comm Status" zzattributes="COMM_STATUS"/>
+        <pointInfo name="Customer Over Ride Flag"/>
+        <pointInfo name="kW"/>
+        <pointInfo name="kWh"/>
+        <pointInfo name="Load Survey Active Flag"/>
+        <pointInfo name="Mid-Peak TOU Cons."/>
+        <pointInfo name="Off-Peak TOU Cons."/>
+        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
+        <pointInfo name="Over Flow"/>
+        <pointInfo name="Peak TOU Cons."/>
+        <pointInfo name="Power Fail" yyinit="true"/>
+        <pointInfo name="Pulse Input #1 (Previous Register)"/>
+        <pointInfo name="Pulse Input #1 - Mid-Peak Demand (TOU)"/>
+        <pointInfo name="Pulse Input #1 - Off-Peak Demand (TOU)"/>
+        <pointInfo name="Pulse Input #1 - Peak Demand (TOU)"/>
+        <pointInfo name="Pulse Input #2"/>
+        <pointInfo name="Pulse Input #3"/>
+        <pointInfo name="Short Power Fail Flag"/>
+        <pointInfo name="Status Input #1"/>
+        <pointInfo name="Status Input #2"/>
+        <pointInfo name="Time Sync Flag"/>
+        <pointInfo name="TOU Active Flag"/>
+        <pointInfo name="TOU Rate Status"/>
+    </pointInfos>
+    <commands>
+        <command name="Read Current Demand">
+            <cmd text="getvalue demand"/>
+            <point name="kW"/>
+        </command>
+        <command name="Read Usage">
+            <cmd text="getvalue kWh"/>
+            <point name="kWh"/>
+        </command>
+    </commands>
+</pao>

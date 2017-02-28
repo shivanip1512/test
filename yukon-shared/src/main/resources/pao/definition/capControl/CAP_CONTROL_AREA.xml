@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="CAP_CONTROL_AREA" changeGroup="cap" displayGroup="Volt/Var" displayName="Area" xsi:noNamespaceSchemaLocation="../pao.xsd"/>

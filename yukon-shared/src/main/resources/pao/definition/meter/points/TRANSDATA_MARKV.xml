@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Analog">
+        <name>Total kWh</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="2" type="Analog">
+        <name>Peak kW (Rate A kW)</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="3"/>
+    </point>
+</points>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="CBC_8020" changeGroup="cap2" displayGroup="Volt/Var" displayName="CBC 8020" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>802X.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_CONFIGURATION"/>
+        <tag name="TWO_WAY_DEVICE"/>
+    </tags>
+    <configuration>
+        <category type="dnp"/>
+    </configuration>
+    <pointInfos>
+        <pointInfo name="Abnormal Delta Voltage" yyinit="true"/>
+        <pointInfo name="Adaptive kVAr Percent Bank Size"/>
+        <pointInfo name="Auto Close Delay Time" yyinit="true"/>
+        <pointInfo name="Auto Control Mode" yyinit="true"/>
+        <pointInfo name="Average Line Voltage" yyinit="true" zzattributes="VOLTAGE"/>
+        <pointInfo name="Average Line Voltage Time" yyinit="true"/>
+        <pointInfo name="Bad Active Close Relay" yyinit="true"/>
+        <pointInfo name="Bad Active Trip Relay" yyinit="true"/>
+        <pointInfo name="Bank Control Time" yyinit="true"/>
+        <pointInfo name="Capacitor Bank State" yyinit="true" zzattributes="CONTROL_POINT"/>
+        <pointInfo name="CBC-8000 Hardware Type ID" yyinit="true"/>
+        <pointInfo name="Close Op Count" yyinit="true"/>
+        <pointInfo name="Comms Loss OV Threshold" yyinit="true"/>
+        <pointInfo name="Comms Loss Time" yyinit="true"/>
+        <pointInfo name="Comms Loss UV Threshold" yyinit="true"/>
+        <pointInfo name="CVR Mode" yyinit="true"/>
+        <pointInfo name="CVR OV Threshold" yyinit="true"/>
+        <pointInfo name="CVR UV Threshold" yyinit="true"/>
+        <pointInfo name="Daily Control Limit" yyinit="true"/>
+        <pointInfo name="Delta Voltage" yyinit="true"/>
+        <pointInfo name="Device Reset Indicator" yyinit="true"/>
+        <pointInfo name="Door Sensor Damage/Tamper" yyinit="true"/>
+        <pointInfo name="Door Status" yyinit="true"/>
+        <pointInfo name="Emergency OV Threshold" yyinit="true"/>
+        <pointInfo name="Emergency UV Threshold" yyinit="true"/>
+        <pointInfo name="Enable SCADA Override"/>
+        <pointInfo name="Firmware Version" yyinit="true" zzattributes="FIRMWARE_VERSION"/>
+        <pointInfo name="High Voltage" yyinit="true"/>
+        <pointInfo name="Ignore SCADA Override Time of Day"/>
+        <pointInfo name="Ignored Control Reason" yyinit="true" zzattributes="IGNORED_CONTROL_REASON"/>
+        <pointInfo name="IP Address" yyinit="true" zzattributes="IP_ADDRESS"/>
+        <pointInfo name="Last Control Reason" yyinit="true" zzattributes="LAST_CONTROL_REASON"/>
+        <pointInfo name="Line Voltage High" yyinit="true"/>
+        <pointInfo name="Line Voltage Low" yyinit="true"/>
+        <pointInfo name="Line Voltage THD" yyinit="true"/>
+        <pointInfo name="Low Voltage" yyinit="true"/>
+        <pointInfo name="Manual Close Delay Time" yyinit="true"/>
+        <pointInfo name="Manual Control Mode" yyinit="true"/>
+        <pointInfo name="Max Operation Count" yyinit="true"/>
+        <pointInfo name="Neutral Lockout" yyinit="true"/>
+        <pointInfo name="Nominal Secondary Voltage"/>
+        <pointInfo name="Open Delay Time" yyinit="true"/>
+        <pointInfo name="Open Op Count" yyinit="true"/>
+        <pointInfo name="Operation Failed" yyinit="true"/>
+        <pointInfo name="OV Op Count" yyinit="true"/>
+        <pointInfo name="OV Threshold" yyinit="true"/>
+        <pointInfo name="OVUV Control" yyinit="true"/>
+        <pointInfo name="Phase A Fundamental Current Average"/>
+        <pointInfo name="Phase A Fundamental Voltage Average"/>
+        <pointInfo name="Phase A Reverse Power Flow"/>
+        <pointInfo name="Phase A Total Current Average"/>
+        <pointInfo name="Phase A Total Voltage Average"/>
+        <pointInfo name="Phase B Fundamental Current Average"/>
+        <pointInfo name="Phase B Fundamental Voltage Average"/>
+        <pointInfo name="Phase B Reverse Power Flow"/>
+        <pointInfo name="Phase B Total Current Average"/>
+        <pointInfo name="Phase B Total Voltage Average"/>
+        <pointInfo name="Phase C Fundamental Current Average"/>
+        <pointInfo name="Phase C Fundamental Voltage Average"/>
+        <pointInfo name="Phase C Reverse Power Flow"/>
+        <pointInfo name="Phase C Total Current Average"/>
+        <pointInfo name="Phase C Total Voltage Average"/>
+        <pointInfo name="Re-Close Delay Time" yyinit="true"/>
+        <pointInfo name="Real Time Clock Battery Failure" yyinit="true"/>
+        <pointInfo name="Reclose Block" yyinit="true"/>
+        <pointInfo name="Relay Sense Failed" yyinit="true"/>
+        <pointInfo name="Remote Control Mode" yyinit="true"/>
+        <pointInfo name="SCADA Override" yyinit="true"/>
+        <pointInfo name="SCADA Override Clear"/>
+        <pointInfo name="SCADA Override Countdown Timer"/>
+        <pointInfo name="SCADA Override Release Time"/>
+        <pointInfo name="SCADA Override Time Remaining"/>
+        <pointInfo name="SCADA Override Type"/>
+        <pointInfo name="Serial Number" yyinit="true" zzattributes="SERIAL_NUMBER"/>
+        <pointInfo name="Temperature" yyinit="true"/>
+        <pointInfo name="Temperature High" yyinit="true"/>
+        <pointInfo name="Temperature Low" yyinit="true"/>
+        <pointInfo name="Three-Phase Current Average Interval"/>
+        <pointInfo name="Three-Phase Voltage Average Interval"/>
+        <pointInfo name="Total Op Count" yyinit="true"/>
+        <pointInfo name="UDP Port" yyinit="true" zzattributes="UDP_PORT"/>
+        <pointInfo name="UV Op Count" yyinit="true"/>
+        <pointInfo name="UV Threshold" yyinit="true"/>
+        <pointInfo name="VAR Control Total Voltage"/>
+        <pointInfo name="VAr Reverse Power Flow"/>
+        <pointInfo name="Voltage Control Flags" yyinit="true"/>
+    </pointInfos>
+    <commands>
+        <command name="Integrity Scan">
+            <cmd text="scan integrity"/>
+            <point name="Serial Number"/>
+            <point name="Last Control Reason"/>
+            <point name="Ignored Control Reason"/>
+            <point name="Capacitor Bank State"/>
+            <point name="UDP Port"/>
+            <point name="IP Address"/>
+            <point name="Firmware Version"/>
+        </command>
+    </commands>
+</pao>

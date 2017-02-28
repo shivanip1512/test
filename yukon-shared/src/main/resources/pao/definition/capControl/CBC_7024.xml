@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="CBC_7024" changeGroup="cap2" displayGroup="Volt/Var" displayName="CBC 7024" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>702X.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_CONFIGURATION"/>
+        <tag name="TWO_WAY_DEVICE"/>
+    </tags>
+    <configuration>
+        <category type="dnp"/>
+    </configuration>
+    <pointInfos>
+        <pointInfo name="3 Phase kVARs" yyinit="true"/>
+        <pointInfo name="Analog Input 1" yyinit="true"/>
+        <pointInfo name="Auto Volt Control" yyinit="true"/>
+        <pointInfo name="Average Line Voltage" yyinit="true" zzattributes="VOLTAGE"/>
+        <pointInfo name="Bad Relay" yyinit="true"/>
+        <pointInfo name="Bank Control Time" yyinit="true"/>
+        <pointInfo name="Capacitor Bank State" yyinit="true" zzattributes="CONTROL_POINT"/>
+        <pointInfo name="CDMA Ec/Io" yyinit="true"/>
+        <pointInfo name="CDMA Rx Power" yyinit="true"/>
+        <pointInfo name="Close Delay Time" yyinit="true"/>
+        <pointInfo name="Com Retry Delay Time" yyinit="true"/>
+        <pointInfo name="Comms Loss Time" yyinit="true"/>
+        <pointInfo name="Control Ignored Indicator" yyinit="true"/>
+        <pointInfo name="Control Ignored Reason" yyinit="true"/>
+        <pointInfo name="Control Mode" yyinit="true"/>
+        <pointInfo name="Control OVUV Track Time" yyinit="true"/>
+        <pointInfo name="Daily Control Limit" yyinit="true"/>
+        <pointInfo name="Daily Max Ops" yyinit="true"/>
+        <pointInfo name="Delta Voltage" yyinit="true"/>
+        <pointInfo name="Device Reset Indicator" yyinit="true"/>
+        <pointInfo name="DST Active" yyinit="true"/>
+        <pointInfo name="Emergency OV Threshold" yyinit="true"/>
+        <pointInfo name="Emergency OVUV Track Time" yyinit="true"/>
+        <pointInfo name="Emergency UV Threshold" yyinit="true"/>
+        <pointInfo name="Firmware Version" yyinit="true" zzattributes="FIRMWARE_VERSION"/>
+        <pointInfo name="High Voltage" yyinit="true"/>
+        <pointInfo name="IP Address" yyinit="true" zzattributes="IP_ADDRESS"/>
+        <pointInfo name="Last Control - Analog" yyinit="true"/>
+        <pointInfo name="Last Control - Local" yyinit="true"/>
+        <pointInfo name="Last Control - Neutral Fault" yyinit="true"/>
+        <pointInfo name="Last Control - OVUV" yyinit="true"/>
+        <pointInfo name="Last Control - Remote" yyinit="true"/>
+        <pointInfo name="Last Control - Scheduled" yyinit="true"/>
+        <pointInfo name="Last Control - Temperature" yyinit="true"/>
+        <pointInfo name="Last Control - VAR" yyinit="true"/>
+        <pointInfo name="Low Voltage" yyinit="true"/>
+        <pointInfo name="Neutral Current Alarm Threshold" yyinit="true"/>
+        <pointInfo name="Neutral Current Fault" yyinit="true"/>
+        <pointInfo name="Neutral Current Sensor" yyinit="true" zzattributes="NEUTRAL_CURRENT_SENSOR"/>
+        <pointInfo name="Neutral Lockout" yyinit="true"/>
+        <pointInfo name="Op Failed - Neutral Current" yyinit="true"/>
+        <pointInfo name="OV Condition" yyinit="true"/>
+        <pointInfo name="OV Op Count" yyinit="true"/>
+        <pointInfo name="OV Threshold" yyinit="true"/>
+        <pointInfo name="Power Flow" yyinit="true"/>
+        <pointInfo name="Re-Close Blocked" yyinit="true"/>
+        <pointInfo name="Re-Close Delay Time" yyinit="true"/>
+        <pointInfo name="RSSI" yyinit="true"/>
+        <pointInfo name="Season One Control" yyinit="true"/>
+        <pointInfo name="Season Two Control" yyinit="true"/>
+        <pointInfo name="Temp Alarm" yyinit="true"/>
+        <pointInfo name="Temperature" yyinit="true"/>
+        <pointInfo name="Total Op Count" yyinit="true"/>
+        <pointInfo name="Trip Delay Time" yyinit="true"/>
+        <pointInfo name="True VAR RMS Current" yyinit="true"/>
+        <pointInfo name="UDP Port" yyinit="true" zzattributes="UDP_PORT"/>
+        <pointInfo name="UV Condition" yyinit="true"/>
+        <pointInfo name="UV Op Count" yyinit="true"/>
+        <pointInfo name="UV Threshold" yyinit="true"/>
+        <pointInfo name="VAR 1 Phase kVA" yyinit="true"/>
+        <pointInfo name="VAR 1 Phase kWatts" yyinit="true"/>
+        <pointInfo name="VAR Alarm" yyinit="true"/>
+        <pointInfo name="VAR Close Point" yyinit="true"/>
+        <pointInfo name="Var Control" yyinit="true"/>
+        <pointInfo name="VAR Power Factor" yyinit="true"/>
+        <pointInfo name="VAR RMS Voltage" yyinit="true"/>
+        <pointInfo name="VAR Trip Point" yyinit="true"/>
+        <pointInfo name="Voltage Control" yyinit="true"/>
+        <pointInfo name="Voltage Delta Abnormal" yyinit="true"/>
+        <pointInfo name="Yukon Poll Time" yyinit="true"/>
+    </pointInfos>
+    <commands>
+        <command name="Integrity Scan">
+            <cmd text="scan integrity"/>
+            <point name="Capacitor Bank State"/>
+            <point name="Neutral Current Sensor"/>
+            <point name="Firmware Version"/>
+            <point name="UDP Port"/>
+            <point name="IP Address"/>
+        </command>
+    </commands>
+</pao>

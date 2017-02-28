@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="RFN_GATEWAY" creatable="false" displayGroup="RFMESH" displayName="RFN Gateway" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>GATEWAY.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="DB_EDITOR_INCOMPATIBLE"/>
+    </tags>
+    <pointInfos>
+        <pointInfo name="Connected Device Count" yyinit="true" zzattributes="CONNECTED_DEVICE_COUNT"/>
+        <pointInfo name="Data Streaming Load" yyinit="true" zzattributes="DATA_STREAMING_LOAD"/>
+        <pointInfo name="Streaming Device Count" yyinit="true" zzattributes="STREAMING_DEVICE_COUNT"/>
+    </pointInfos>
+</pao>

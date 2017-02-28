@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="5" type="Analog">
+        <name>Runtime Load 1</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="6" type="Analog">
+        <name>Runtime Load 2</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="7" type="Analog">
+        <name>Runtime Load 3</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="8" type="Analog">
+        <name>Runtime Load 4</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="9" type="Analog">
+        <name>Relay 1 Shed Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="10" type="Analog">
+        <name>Relay 2 Shed Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="11" type="Analog">
+        <name>Relay 3 Shed Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="12" type="Analog">
+        <name>Relay 4 Shed Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="13" type="Analog">
+        <name>Prop Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="15" type="Analog">
+        <name>Relay 1 Remaining Control Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="16" type="Analog">
+        <name>Relay 2 Remaining Control Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="17" type="Analog">
+        <name>Relay 3 Remaining Control Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="18" type="Analog">
+        <name>Relay 4 Remaining Control Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="19" type="Analog">
+        <name>CT1 Duty Cycle</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PERCENT"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="20" type="Analog">
+        <name>CT2 Duty Cycle</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PERCENT"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -DemandAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="DemandAccumulator">
+        <name>Last Interval kW Relay 1</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="2" type="DemandAccumulator">
+        <name>Last Interval kW Relay 2</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="3" type="DemandAccumulator">
+        <name>Last Interval kW Relay 3</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="4" type="DemandAccumulator">
+        <name>Last Interval kW Relay 4</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="30" type="Status">
+        <name>Relay Circuit Fault</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="31" type="Status">
+        <name>Runtime Tamper</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="2000" type="Status">
+        <name>Comm Status</name>
+        <stategroup value="Comm Status State"/>
+    </point>
+</points>

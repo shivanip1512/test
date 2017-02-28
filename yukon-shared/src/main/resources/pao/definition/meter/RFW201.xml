@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="RFW201" changeGroup="rfw" displayGroup="RFMESH" displayName="RFW-201" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>RFW.xml</pointFile>
+    </pointFiles>
+    <tags>
+        <tag name="COMMANDER_REQUESTS"/>
+        <tag name="DEVICE_CONFIGURATION"/>
+        <tag name="DEVICE_ICON_TYPE" option="water_meter"/>
+        <tag name="RFN_POINT_CALCULATION"/>
+        <tag name="WATER_METER_DETAIL_DISPLAYABLE"/>
+    </tags>
+    <configuration>
+        <category type="rfnWaterChannelConfiguration"/>
+    </configuration>
+    <pointInfos>
+        <pointInfo name="Battery Voltage" yyinit="true"/>
+        <pointInfo name="Meter Read - Checksum error" zzattributes="METER_READ_CHECKSUM_ERROR"/>
+        <pointInfo name="Meter Read - Error reading serial number" zzattributes="METER_READ_ERROR_READING_SERIAL_NUMBER"/>
+        <pointInfo name="Meter Read - Field exceeded maximum digits" zzattributes="METER_READ_FIELD_EXCEEDED_MAXIMUM_DIGITS"/>
+        <pointInfo name="Meter Read - No encoder found" zzattributes="METER_READ_NO_ENCODER_FOUND"/>
+        <pointInfo name="Meter Read - No EOF detected" zzattributes="METER_READ_NO_EOF_DETECTED"/>
+        <pointInfo name="Meter Read - Parity error" zzattributes="METER_READ_PARITY_ERROR"/>
+        <pointInfo name="Meter Read - Protocol cannot be determined" zzattributes="METER_READ_PROTOCOL_CANNOT_BE_DETERMINED"/>
+        <pointInfo name="Tamper - Cable Cut" zzattributes="TAMPER_CABLE_CUT"/>
+        <pointInfo name="Temperature" yyinit="true"/>
+        <pointInfo name="Water Usage" yyinit="true" zzattributes="USAGE_WATER"/>
+        <pointInfo name="Water Usage per Interval" yyinit="true" zzattributes="WATER_USAGE_PER_INTERVAL"/>
+    </pointInfos>
+</pao>

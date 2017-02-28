@@ -1,0 +1,312 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="100" type="Analog">
+        <name>Outages</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="133" type="Analog">
+        <name>Power Factor</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="801" type="Analog">
+        <name>Voltage Phase A</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="802" type="Analog">
+        <name>Voltage Phase B</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="803" type="Analog">
+        <name>Voltage Phase C</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="811" type="Analog">
+        <name>Current Phase A</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="812" type="Analog">
+        <name>Current Phase B</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="813" type="Analog">
+        <name>Current Phase C</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="AMPS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="821" type="Analog">
+        <name>Power Factor Phase A</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="822" type="Analog">
+        <name>Power Factor Phase B</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="823" type="Analog">
+        <name>Power Factor Phase C</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -DemandAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="14" type="DemandAccumulator">
+        <name>Max Volts</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="15" type="DemandAccumulator">
+        <name>Min Volts</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="24" type="DemandAccumulator">
+        <name>Frozen Max Volts</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="25" type="DemandAccumulator">
+        <name>Frozen Min Volts</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="VOLTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -PulseAccumulator- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="PulseAccumulator">
+        <name>Delivered kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="1"/>
+    </point>
+    <point offset="2" type="PulseAccumulator">
+        <name>Received kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="3" type="PulseAccumulator">
+        <name>Forward Inductive kVArh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="20" type="PulseAccumulator">
+        <name>Blink Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="101" type="PulseAccumulator">
+        <name>Rate A kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="121" type="PulseAccumulator">
+        <name>Rate B kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="141" type="PulseAccumulator">
+        <name>Rate C kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="161" type="PulseAccumulator">
+        <name>Rate D kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="181" type="PulseAccumulator">
+        <name>Recent kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="201" type="PulseAccumulator">
+        <name>Received kWh (Rate A kWh)</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="221" type="PulseAccumulator">
+        <name>Received kWh (Rate B kWh)</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="241" type="PulseAccumulator">
+        <name>Received kWh (Rate C kWh)</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="261" type="PulseAccumulator">
+        <name>Received kWh (Rate D kWh)</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="281" type="PulseAccumulator">
+        <name>Recent Received kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="501" type="PulseAccumulator">
+        <name>Frozen kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="502" type="PulseAccumulator">
+        <name>Frozen Reverse kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="503" type="PulseAccumulator">
+        <name>Frozen Reactive Inductive Energy</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="601" type="PulseAccumulator">
+        <name>Frozen Rate A kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="621" type="PulseAccumulator">
+        <name>Frozen Rate B kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="641" type="PulseAccumulator">
+        <name>Frozen Rate C kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="661" type="PulseAccumulator">
+        <name>Frozen Rate D kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="701" type="PulseAccumulator">
+        <name>Frozen Rate A Reverse kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="721" type="PulseAccumulator">
+        <name>Frozen Rate B Reverse kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="741" type="PulseAccumulator">
+        <name>Frozen Rate C Reverse kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <point offset="761" type="PulseAccumulator">
+        <name>Frozen Rate D Reverse kWh</name>
+        <multiplier value="0.1"/>
+        <unitofmeasure value="KWH"/>
+        <decimalplaces value="3"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Status">
+        <name>Disconnect Status</name>
+        <stategroup value="410 Disconnect"/>
+    </point>
+    <point offset="9" type="Status">
+        <name>General Alarm</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="10" type="Status">
+        <name>Power Fail</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="17" type="Status">
+        <name>Tamper Flag Set</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="35" type="Status">
+        <name>Clock Error</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="40" type="Status">
+        <name>Current Without Voltage</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="50" type="Status">
+        <name>Out of Voltage</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="51" type="Status">
+        <name>Internal Error</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="52" type="Status">
+        <name>Terminal Block Cover Removal</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="53" type="Status">
+        <name>Reverse Energy</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="54" type="Status">
+        <name>Meter Box Cover Removal</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="55" type="Status">
+        <name>Voltage Out of Limits</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="56" type="Status">
+        <name>Low Battery</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="57" type="Status">
+        <name>Load Side Voltage Detected, Relay Open</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="1000" type="Status">
+        <name>Outage Status</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Outage Status"/>
+    </point>
+    <point offset="2000" type="Status">
+        <name>Comm Status</name>
+        <stategroup value="Comm Status State"/>
+    </point>
+</points>

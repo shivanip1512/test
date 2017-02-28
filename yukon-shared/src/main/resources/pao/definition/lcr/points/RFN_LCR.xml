@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<points xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../points.xsd">
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Analog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Analog">
+        <name>Blink Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="10" type="Analog">
+        <name>Relay 1 Run Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="11" type="Analog">
+        <name>Relay 1 Shed Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="12" type="Analog">
+        <name>Relay 1 kW Load Size</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="13" type="Analog">
+        <name>Relay 1 Remaining Control Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="15" type="Analog">
+        <name>Reporting Interval</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="16" type="Analog">
+        <name>Recording Interval</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="17" type="Analog">
+        <name>Total LUF Event Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="18" type="Analog">
+        <name>Total LUV Event Count</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="20" type="Analog">
+        <name>Relay 2 Run Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="21" type="Analog">
+        <name>Relay 2 Shed Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="22" type="Analog">
+        <name>Relay 2 kW Load Size</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="23" type="Analog">
+        <name>Relay 2 Remaining Control Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="24" type="Analog">
+        <name>Relay 3 Run Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="25" type="Analog">
+        <name>Relay 3 Shed Time Data Log</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
+    <point offset="26" type="Analog">
+        <name>Relay 3 kW Load Size</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="4"/>
+    </point>
+    <point offset="27" type="Analog">
+        <name>Relay 3 Remaining Control Time</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="SECONDS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="1" type="Status">
+        <name>Control Status</name>
+        <stategroup value="TrueFalse"/>
+    </point>
+    <point offset="2" type="Status">
+        <name>Service Status</name>
+        <stategroup value="LCR Service Status"/>
+    </point>
+</points>

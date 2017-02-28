@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="ROUTE_SNPP_TERMINAL" displayName="SNPP Terminal Route" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <tags>
+        <tag name="ROUTE_ENCRYPTION"/>
+    </tags>
+</pao>
