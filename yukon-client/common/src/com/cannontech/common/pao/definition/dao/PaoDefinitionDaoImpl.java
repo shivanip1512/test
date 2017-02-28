@@ -190,7 +190,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     public PointTemplate getPointTemplateByTypeAndOffset(PaoType paoType, PointIdentifier pointIdentifier) { 
         Optional<PointTemplate> optional = paoAllPointTemplateMap.get(paoType)
                                                                  .stream()
-                                                                 .filter(x -> x.getPointIdentifier().equals(x.getPointIdentifier()))
+                                                                 .filter(x -> x.getPointIdentifier().equals(pointIdentifier))
                                                                  .findFirst();
         if (optional.isPresent()) {
             return optional.get();
