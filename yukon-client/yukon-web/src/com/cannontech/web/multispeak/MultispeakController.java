@@ -1,8 +1,10 @@
 package com.cannontech.web.multispeak;
 
+import java.lang.reflect.Array;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -192,11 +194,12 @@ public class MultispeakController {
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
         
         String mspService = ServletRequestUtils.getStringParameter(request, "actionService");
-        int version = ServletRequestUtils.getIntParameter(request, "version");
+        MultiSpeakVersion version =
+            MultiSpeakVersion.valueOf(ServletRequestUtils.getStringParameter(request, "version"));
 
         if (mspService != null) {
             try {
-                if (version == 3) {
+                if (version == MultiSpeakVersion.V3) {
                     ErrorObject[] objects = mspObjectDao.pingURL(mspVendor, mspService);
                     if (objects != null && objects != null && objects.length > 0) {
                         String result = "";
@@ -247,10 +250,11 @@ public class MultispeakController {
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
 
         String mspService = ServletRequestUtils.getStringParameter(request, "actionService");
-        int version = ServletRequestUtils.getIntParameter(request, "version");
+        MultiSpeakVersion version =
+            MultiSpeakVersion.valueOf(ServletRequestUtils.getStringParameter(request, "version"));
         if (mspService != null) {
             try {
-                if (version == 3) {
+                if (version == MultiSpeakVersion.V3) {
                     List<String> supportedMethods = mspObjectDao.getMethods(mspVendor, mspService);
                     if (supportedMethods.isEmpty()) {
                         map.addAttribute(MultispeakDefines.MSP_RESULT_MSG, "* No methods reported for " + mspService
@@ -326,7 +330,8 @@ public class MultispeakController {
             mspURL += "/";
         }
         String source = ServletRequestUtils.getStringParameter(request, "source");
-        String[] versions = ServletRequestUtils.getStringParameters(request, "mspVersions");
+        MultiSpeakVersion[] versions =
+            toEnums(ServletRequestUtils.getStringParameters(request, "mspVersions"), MultiSpeakVersion.class);
         MultispeakVendor mspVendor = new MultispeakVendor(vendorId,companyName, appName, 
                                                           username, password, outUsername, outPassword, 
                                                           maxReturnRecords, requestMessageTimeout,
@@ -334,32 +339,31 @@ public class MultispeakController {
         
         List<MultispeakInterface> mspInterfaceList = new ArrayList<MultispeakInterface>();
         if (mspInterfaces != null && mspEndpoints != null) {
-            for (int i = 0, j = 0; i < mspInterfaces.length; i++) {
+            for (int i = 0; i < mspInterfaces.length; i++) {
                 if (!mspInterfaces[i].trim().equalsIgnoreCase(MultispeakDefines.NOT_Server_STR)) {
 
                     if (source == null) {
-                        MultispeakInterface mspInterface =
-                            new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[j], MultiSpeakVersion.V3);
-                        mspInterfaceList.add(mspInterface);
-                        MultispeakInterface mspInterfaceV5 =
-                            new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[j + 1],
-                                MultiSpeakVersion.V5);
-                        mspInterfaceList.add(mspInterfaceV5);
-                        j = j + 2;
+                        if (i < 5) {
+                            mspInterfaceList.add(new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[i],
+                                MultiSpeakVersion.V3));
+
+                        } else {
+                            mspInterfaceList.add(new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[i],
+                                MultiSpeakVersion.V5));
+
+                        }
                     } else {
 
                         MultispeakInterface mspInterface =
-                            (versions[i].equals("3.0")) ? new MultispeakInterface(vendorId, mspInterfaces[i],
+                            (versions[i] == MultiSpeakVersion.V3) ? new MultispeakInterface(vendorId, mspInterfaces[i],
                                 mspEndpoints[i], MultiSpeakVersion.V3) : new MultispeakInterface(vendorId,
-                                mspInterfaces[i], mspEndpoints[j], MultiSpeakVersion.V5);
+                                mspInterfaces[i], mspEndpoints[i], MultiSpeakVersion.V5);
                         mspInterfaceList.add(mspInterface);
-
                     }
                 } else {
                     MultispeakInterface mspInterfaceV5 =
-                        new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[j], MultiSpeakVersion.V5);
+                        new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[i], MultiSpeakVersion.V5);
                     mspInterfaceList.add(mspInterfaceV5);
-                    j = j + 1;
                 }
 
             }
@@ -421,6 +425,14 @@ public class MultispeakController {
         }
         flashScope.setError(messages);
         return (messages.size() == 0);
+    }
+    
+    private <T extends Enum<T>> T[] toEnums(String[] arr, Class<T> type)
+    {
+        T[] result = (T[]) Array.newInstance(type, arr.length);
+        for (int i = 0; i < arr.length; i++)
+            result[i] = Enum.valueOf(type, arr[i]);
+        return result;
     }
     
     /**
@@ -517,6 +529,8 @@ public class MultispeakController {
     private void addSystemModelAndViewObjects(HttpServletRequest request, ModelMap map, MultispeakVendor mspVendor, boolean ignoreCannon) throws ServletRequestBindingException {
         boolean showRoleProperties = false;
         boolean noVendorsExist = false;
+        List<MultiSpeakVersion> mspVersionList =
+            new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V5));
         if (mspVendor != null) {
             map.addAttribute("mspVendorId", mspVendor.getVendorID());
             showRoleProperties = (defaultMspVendor.getCompanyName().equals(mspVendor.getCompanyName()));
@@ -547,7 +561,7 @@ public class MultispeakController {
         MultispeakMeterLookupFieldEnum mspMeterLookupField = ServletRequestEnumUtils.getEnumParameter(request, MultispeakMeterLookupFieldEnum.class, "mspMeterLookupField", multispeakFuncs.getMeterLookupField());
         map.addAttribute("meterLookupField", mspMeterLookupField);
 
-        map.addAttribute("mspVersionList",  MultiSpeakVersion.getSupportedMspVersions());
+        map.addAttribute("mspVersionList", mspVersionList);
 
         String resultMsg = ServletRequestUtils.getStringParameter(request, MultispeakDefines.MSP_RESULT_MSG, null);
         if (resultMsg != null) {

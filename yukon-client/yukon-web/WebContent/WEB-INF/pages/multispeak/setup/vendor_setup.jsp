@@ -50,7 +50,7 @@
                             <c:when test="${isCreateNew}">
                                 <tags:nameValue2 nameKey=".companyName">
                                     <input type="hidden" name="isCreateNew" value="true">
-                                    <input title="<cti:msg2 key=".companyName.title"/>" name="mspCompanyName">
+                                    <input name="mspCompanyName">
                                </tags:nameValue2>
                             </c:when>
                             
@@ -194,12 +194,12 @@
                         <c:choose>
                         <c:when test="${!interfaceDisabledv5}">
                             <c:set var="interfaceValue" value="${interfacesMap[mspPossibleInterfacev5]}" scope="page" />   
-                            <c:set var="mspVersionSelected" value="${mspPossibleInterfacev5.right.version}" scope="page" />
+                            <c:set var="mspVersionSelected" value="${mspPossibleInterfacev5.right}" scope="page" />
                             <c:set var="possibleInterface" value="${mspPossibleInterfacev5}" scope="page" />   
                         </c:when>
                         <c:otherwise>
                             <c:set var="interfaceValue" value="${interfacesMap[possibleInterfacev3]}" scope="page" /> 
-                             <c:set var="mspVersionSelected" value="${possibleInterfacev3.right.version}" scope="page" /> 
+                             <c:set var="mspVersionSelected" value="${possibleInterfacev3.right}" scope="page" /> 
                              <c:set var="possibleInterface" value="${possibleInterfacev3}" scope="page" />  
                         </c:otherwise>
                     </c:choose> 
@@ -238,8 +238,8 @@
                           <td>
                               <select title="Multispeak Version" name="mspVersions" id="<c:out value="select${mspPossibleInterfacev5.key}"/>" <c:if test="${disabled}">disabled</c:if>>
                                   <c:forEach var="mspVersion" items="${mspVersionList}">
-                                      <c:if test="${!(mspVersion==3.0 && mspPossibleInterfacev5.left=='NOT_Server')}">
-                                          <option <c:if test="${interfacesMap[mspPossibleInterfacev5].version.databaseRepresentation == mspVersion}">selected</c:if> value='<c:out value="${mspVersion}"/>'> <c:out value="${mspVersion}"/></option>
+                                      <c:if test="${!(mspVersion.version==3.0 && mspPossibleInterfacev5.left=='NOT_Server')}">
+                                          <option <c:if test="${interfacesMap[mspPossibleInterfacev5].version.databaseRepresentation == mspVersion.version}">selected</c:if> value='<c:out value="${mspVersion}"/>'> <c:out value="${mspVersion.version}"/></option>
                                       </c:if>
                                   </c:forEach>
                               </select>
@@ -248,17 +248,17 @@
                               <td>
                                   <div class="button-group fr wsnw oh">
                                       <cti:button icon="icon-ping" id="${possibleInterface.key}" classes="${possibleInterface}" name="pingURL" renderMode="buttonImage" title="${pingTitle}" 
-                                        disabled="${disabled}" onclick="yukon.admin.multispeak.executeRequest(this.id,this.name, ${mspVersionSelected});"/>
+                                        disabled="${disabled}" onclick="yukon.admin.multispeak.executeRequest(this.id,this.name, '${mspVersionSelected}');"/>
                                       <cti:button icon="icon-application-view-columns" id="${possibleInterface.key}" classes="${possibleInterface}" name="getMethods" renderMode="buttonImage" 
-                                        title="${getMethods}" disabled="${disabled}" onclick="yukon.admin.multispeak.executeRequest(this.id,this.name, ${mspVersionSelected});"/>
+                                        title="${getMethods}" disabled="${disabled}" onclick="yukon.admin.multispeak.executeRequest(this.id,this.name, '${mspVersionSelected}');"/>
                                   </div>
                               </td>
                             
                         </c:if>
                         <c:if test="${status.first}">
                             <c:set var="interfaceListLength" value="${fn:length(possibleInterfaces)}" />
-                            <td rowspan='${interfaceListLength*2}'>
-                                <textarea cols="50" rows="${interfaceListLength * 2 + 1}" name="Results" readonly wrap="VIRTUAL" 
+                            <td rowspan='${interfaceListLength}'>
+                                <textarea cols="50" rows="${interfaceListLength + 1}" name="Results" readonly wrap="VIRTUAL" 
                                     style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>
                             </td>
                       </c:if>

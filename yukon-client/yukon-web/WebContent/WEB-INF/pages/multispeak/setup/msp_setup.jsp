@@ -100,39 +100,24 @@
             
         <tags:sectionContainer2 nameKey="mspInterfaces">
         <table class="compact-results-table row-highlighting">
-         <thead>
-         	<tr>
-                        <th><i:inline key=".interface"/></th>
-                        <th><i:inline key=".url"/></th>
-                        <th><i:inline key=".version"/></th>
-                        <th><i:inline key=".actions"/></th>
-                        <th><i:inline key=".results"/></th>
-            </tr>
-         </thead>
          <tbody>
-             <c:set var="interfacesMap" value="${mspVendor.mspInterfaceMap}" scope="page" />
-                 <c:forEach var="mspPossibleInterface" items="${possibleInterfaces}" varStatus="status">
+         <tr style="border-bottom: solid 1px #ccc;"><td colspan="4"><b><i:inline key=".version3"/></b></td></tr>
+             <c:set var="interfacesMap" value="${mspVendor.mspInterfaceMap}" scope="page"/>
+                 <c:forEach var="mspPossibleInterface" items="${possibleInterfaces}" varStatus="status" step="2">
 				     <c:set var="version" value="${mspPossibleInterface}5" scope="page" />
                      <c:set var="interfaceValue" value="${interfacesMap[mspPossibleInterface]}" scope="page" />    
-                     <c:set var="interfaceValuev5" value="${interfacesMap[mspPossibleInterface]}" scope="page" /> 
-                     <c:set var="disabled" value="${interfaceValuev5 == null}" scope="page" />
                      <c:choose>
-                         <c:when test="${mspPossibleInterface.right.version== '3.0'}">
-                             <c:set var="defaultURL" value="${mspVendor.url}v3/${mspPossibleInterface.left}Soap" scope="page" />
-                             </c:when>
+                         <c:when test="${mspPossibleInterface.right.version== '5.0'}"> 
+                             <c:set var="notInterface" value="${mspPossibleInterface}" scope="page" />
+                             <c:set var="notInterfaceValue" value="${interfaceValue}" scope="page" />
+                         </c:when>
                          <c:otherwise>
-                             <c:set var="defaultURL" value="${mspVendor.url}multispeak/v5/${mspPossibleInterface.left}" scope="page" />
-                         </c:otherwise>
-                     </c:choose>
+                        
                       <tr>
                         <td>
-                            <c:if test="${mspPossibleInterface.right.version!= '5.0' || mspPossibleInterface.left=='NOT_Server'}">
-                              <input id="${mspPossibleInterface.key}" type="checkbox" <c:if test="${!disabled}">checked</c:if> name='mspInterface' 
-                                     value='<c:out value="${mspPossibleInterface.key}"/>' onclick='yukon.admin.multispeak.enableEndpointValue(<c:out value="${disabled}"/>,this.checked, this.value)'>
+                              <input type="hidden" name='mspInterface' value="${mspPossibleInterface.key}"/>
                               <c:out value="${mspPossibleInterface.key}"/>
-                            </c:if>
                         </td>
-                        
                         <td>
                             <input id="<c:out value="${mspPossibleInterface.key}${mspPossibleInterface.right.version}"/>" type="text" name="mspEndpoint" size="30" 
                                 value='<c:out value="${interfaceValue.mspEndpoint}" default="${defaultURL}"/>'
@@ -141,24 +126,76 @@
                         <td>
                                 <span>${mspPossibleInterface.right.version}</span>
                         </td>
-                            
                             <td>       
                             <div class="button-group fr wsnw oh">
                                     <cti:button icon="icon-ping" id="${mspPossibleInterface.left}" classes="${mspPossibleInterface.key}" name="pingURL" renderMode="buttonImage" title="${pingTitle}" disabled="${disabled}"
-                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,${mspPossibleInterface.right.version});"/>
+                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${mspPossibleInterface.right}');"/>
                                     <cti:button icon="icon-application-view-columns" id="${mspPossibleInterface.key}" classes="${mspPossibleInterface.key}" name="getMethods" renderMode="buttonImage" title="${getMethods}" disabled="${disabled}"
-                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,${mspPossibleInterface.right.version});"/>
+                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${mspPossibleInterface.right}');"/>
                                 </div>
                             </td>
-                        
                        <c:if test="${status.first}">
                        <c:set var="interfaceListLength" value="${fn:length(possibleInterfaces)}" />
-                                <td rowspan='${interfaceListLength}'>
-                                    <textarea cols="50" rows="${interfaceListLength*2+1}" name="Results" readonly wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>
+                                <td rowspan='${interfaceListLength+3}'>
+                                    <textarea cols="50" rows="${interfaceListLength*2+3}" name="Results" readonly wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>
                                 </td>
                       </c:if>
                       </tr>
+                      </c:otherwise>
+                      </c:choose>
                 </c:forEach>
+                <tr style="border-bottom: solid 1px #ccc;"><td colspan="4"><b><i:inline key=".version5"/></b></td></tr>
+                
+             <c:set var="interfacesMap" value="${mspVendor.mspInterfaceMap}" scope="page"/>
+                 <c:forEach var="mspPossibleInterface" items="${possibleInterfaces}" varStatus="status" step="2" begin="1">
+				     <c:set var="version" value="${mspPossibleInterface}5" scope="page" />
+                     <c:set var="interfaceValue" value="${interfacesMap[mspPossibleInterface]}" scope="page" />    
+                     <c:if test="${mspPossibleInterface.right.version!= '3.0'}">
+                      <tr>
+                        <td>
+                        <input type="hidden" name='mspInterface' value="${mspPossibleInterface.key}"/>
+                              <c:out value="${mspPossibleInterface.key}"/>
+                        </td>
+                        <td>
+                            <input id="<c:out value="${mspPossibleInterface.key}${mspPossibleInterface.right.version}"/>" type="text" name="mspEndpoint" size="30" 
+                                value='<c:out value="${interfaceValue.mspEndpoint}" default="${defaultURL}"/>'>
+                        </td>
+                        <td>
+                                <span>${mspPossibleInterface.right.version}</span>
+                        </td>
+                            <td>       
+                            <div class="button-group fr wsnw oh">
+                                    <cti:button icon="icon-ping" id="${mspPossibleInterface.left}" classes="${mspPossibleInterface.key}" name="pingURL" renderMode="buttonImage" title="${pingTitle}" disabled="${disabled}"
+                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${mspPossibleInterface.right}');"/>
+                                    <cti:button icon="icon-application-view-columns" id="${mspPossibleInterface.key}" classes="${mspPossibleInterface.key}" name="getMethods" renderMode="buttonImage" title="${getMethods}" disabled="${disabled}"
+                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${mspPossibleInterface.right}');"/>
+                                </div>
+                            </td>
+                      </tr>
+                      
+                      </c:if>
+                </c:forEach>
+                <tr>
+                      <td>
+                      <input type="hidden" name='mspInterface' value="${notInterface.key}"/>
+                              <c:out value="${notInterface.key}"/>
+                        </td>
+                        <td>
+                            <input id="<c:out value="${notInterface.key}${notInterface.right.version}"/>" type="text" name="mspEndpoint" size="30" 
+                                value='<c:out value="${notInterfaceValue.mspEndpoint}" default="${defaultURL}"/>'>
+                        </td>
+                        <td>
+                                <span>${notInterface.right.version}</span>
+                        </td>
+                            <td>       
+                            <div class="button-group fr wsnw oh">
+                                    <cti:button icon="icon-ping" id="${notInterface.left}" classes="${notInterface.key}" name="pingURL" renderMode="buttonImage" title="${pingTitle}" disabled="${disabled}"
+                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${notInterface.right}');"/>
+                                    <cti:button icon="icon-application-view-columns" id="${notInterface.key}" classes="${notInterface.key}" name="getMethods" renderMode="buttonImage" title="${getMethods}" disabled="${disabled}"
+                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${notInterface.right}');"/>
+                                </div>
+                            </td>
+                      </tr>
                 </tbody>
          </table>
         </tags:sectionContainer2>
