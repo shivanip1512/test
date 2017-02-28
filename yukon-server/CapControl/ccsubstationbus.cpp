@@ -6013,7 +6013,7 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
 
     StrategyManager::SharedPtr  strategy = getStrategy();
 
-    const bool   peakTime   = strategy->getPeakTimeFlag();
+    const bool   peakTime   = isPeakTime( currentDateTime );
     const double upperLimit = strategy->getUpperVoltLimit( peakTime );
     const double lowerLimit = strategy->getLowerVoltLimit( peakTime );
 
@@ -6381,9 +6381,11 @@ bool CtiCCSubstationBus::voltControlBankSelectProcess(const CtiCCMonitorPoint & 
    {
        StrategyManager::SharedPtr  strategy = getStrategy();
 
-       const bool   isPeakTime = strategy->getPeakTimeFlag();
-       const double upperLimit = strategy->getUpperVoltLimit( isPeakTime );
-       const double lowerLimit = strategy->getLowerVoltLimit( isPeakTime );
+       CtiTime Now;
+
+       const bool   peakTime   = isPeakTime( Now );
+       const double upperLimit = strategy->getUpperVoltLimit( peakTime );
+       const double lowerLimit = strategy->getLowerVoltLimit( peakTime );
 
        double upperBound = upperLimit;
        double lowerBound = lowerLimit;
@@ -6736,9 +6738,11 @@ bool CtiCCSubstationBus::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCap
 
     StrategyManager::SharedPtr  strategy = getStrategy();
 
-    const bool   isPeakTime = strategy->getPeakTimeFlag();
-    const double upperLimit = strategy->getUpperVoltLimit( isPeakTime );
-    const double lowerLimit = strategy->getLowerVoltLimit( isPeakTime );
+    CtiTime Now;
+
+    const bool   peakTime   = isPeakTime( Now );
+    const double upperLimit = strategy->getUpperVoltLimit( peakTime );
+    const double lowerLimit = strategy->getLowerVoltLimit( peakTime );
 
     for ( const CtiCCMonitorPointPtr otherPoint : _multipleMonitorPoints )
     {
@@ -6813,9 +6817,11 @@ bool CtiCCSubstationBus::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr 
 
     StrategyManager::SharedPtr  strategy = getStrategy();
 
-    const bool   isPeakTime = strategy->getPeakTimeFlag();
-    const double upperLimit = strategy->getUpperVoltLimit( isPeakTime );
-    const double lowerLimit = strategy->getLowerVoltLimit( isPeakTime );
+    CtiTime Now;
+
+    const bool   peakTime   = isPeakTime( Now );
+    const double upperLimit = strategy->getUpperVoltLimit( peakTime );
+    const double lowerLimit = strategy->getLowerVoltLimit( peakTime );
 
     for ( CtiCCMonitorPointPtr point : _multipleMonitorPoints )
     {

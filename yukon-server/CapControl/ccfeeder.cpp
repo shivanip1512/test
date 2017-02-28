@@ -3828,9 +3828,11 @@ bool CtiCCFeeder::voltControlBankSelectProcess(const CtiCCMonitorPoint & point, 
             }
         }
 
-        const bool   isPeakTime = strategy->getPeakTimeFlag();
-        const double upperLimit = strategy->getUpperVoltLimit( isPeakTime );
-        const double lowerLimit = strategy->getLowerVoltLimit( isPeakTime );
+        CtiTime Now;
+
+        const bool   peakTime   = isPeakTime( Now );
+        const double upperLimit = strategy->getUpperVoltLimit( peakTime );
+        const double lowerLimit = strategy->getLowerVoltLimit( peakTime );
 
         double upperBound = upperLimit;
         double lowerBound = lowerLimit;
@@ -4136,9 +4138,11 @@ bool CtiCCFeeder::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCapBank* p
         }
     }
 
-    const bool   isPeakTime = strategy->getPeakTimeFlag();
-    const double upperLimit = strategy->getUpperVoltLimit( isPeakTime );
-    const double lowerLimit = strategy->getLowerVoltLimit( isPeakTime );
+    CtiTime Now;
+
+    const bool   peakTime   = isPeakTime( Now );
+    const double upperLimit = strategy->getUpperVoltLimit( peakTime );
+    const double lowerLimit = strategy->getLowerVoltLimit( peakTime );
 
     for ( const CtiCCMonitorPointPtr otherPoint : _multipleMonitorPoints )
     {
@@ -4236,9 +4240,11 @@ bool CtiCCFeeder::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPo
             }
         }
 
-        const bool   isPeakTime = strategy->getPeakTimeFlag();
-        const double upperLimit = strategy->getUpperVoltLimit( isPeakTime );
-        const double lowerLimit = strategy->getLowerVoltLimit( isPeakTime );
+        CtiTime Now;
+
+        const bool   peakTime   = isPeakTime( Now );
+        const double upperLimit = strategy->getUpperVoltLimit( peakTime );
+        const double lowerLimit = strategy->getLowerVoltLimit( peakTime );
 
         for ( CtiCCMonitorPointPtr point : _multipleMonitorPoints )
         {

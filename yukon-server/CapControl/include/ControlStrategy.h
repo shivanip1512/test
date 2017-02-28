@@ -150,7 +150,7 @@ public:
     // The following is for saving and restoring the embedded states for a database reload.
     virtual void restoreStates(const ControlStrategy * backup);
 
-    bool isPeakTime( const CtiTime & now ) const;
+    bool isPeakTime( const CtiTime & now );
 
     virtual double getUpperVoltLimit( const bool isPeak ) const;
     virtual double getLowerVoltLimit( const bool isPeak ) const;

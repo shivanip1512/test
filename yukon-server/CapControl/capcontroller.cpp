@@ -481,6 +481,9 @@ void CtiCapController::controlLoop()
 
         CtiThreadMonitor::State previous;
 
+        CtiTime peakTimeCheck = nextScheduledTimeAlignedOnRate( CtiTime(), 60 ) - 60;   // slightly in the past
+                
+
         while(true)
         {
             {
@@ -532,36 +535,35 @@ void CtiCapController::controlLoop()
 
                 try
                 {
-                    CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
-
-                    CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(secondsFrom1970, true);
-                    CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(secondsFrom1970);
-
-
-                    if( Now.second() == 0 && secondsFrom1970 != lastThreadPulse )
+                    if ( Now >= peakTimeCheck )
                     {
-                        for(long i=0;i<ccSubstationBuses.size();i++)
-                        {
-                            CtiCCSubstationBusPtr currentSubstationBus = ccSubstationBuses[i];
-                            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+                        CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
 
-                            bool peakFlag = currentSubstationBus->isPeakTime(Now);
-                            for(long j=0;j<ccFeeders.size();j++)
+                        peakTimeCheck += 60;    // check every minute
+
+                        if ( _CC_DEBUG & CC_DEBUG_EXTENDED )
+                        {
+                            CTILOG_INFO( dout, "Controller refreshing PEAK times" );
+                        }
+
+                        for ( CtiCCSubstationBusPtr bus : *store->getCCSubstationBuses( Now.seconds(), true ) )
+                        {
+                            const bool busPeakTime        = bus->isPeakTime( Now ),
+                                       isIndividualFeeder = bus->getStrategy()->getMethodType()
+                                                                == ControlStrategy::IndividualFeeder;
+
+                            for ( CtiCCFeederPtr feeder : bus->getCCFeeders() )
                             {
-                                CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)ccFeeders[j];
-                                if ( currentSubstationBus->getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder &&
-                                    !(ciStringEqual(currentFeeder->getStrategy()->getStrategyName(), ControlStrategy::NoControlUnit)) &&
-                                    (currentFeeder->getStrategy()->getPeakStartTime() > 0 && currentFeeder->getStrategy()->getPeakStopTime() > 0 ))
+                                if ( isIndividualFeeder )
                                 {
-                                    currentFeeder->isPeakTime(Now);
+                                    feeder->isPeakTime( Now );
                                 }
                                 else
                                 {
-                                    currentFeeder->setPeakTimeFlag(peakFlag);
+                                    feeder->setPeakTimeFlag( busPeakTime );
                                 }
                             }
                         }
-
                     }
                 }
                 catch(...)

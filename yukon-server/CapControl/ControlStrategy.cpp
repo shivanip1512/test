@@ -571,9 +571,11 @@ void ControlStrategy::restoreStates(const ControlStrategy * backup)
 }
 
 
-bool ControlStrategy::isPeakTime( const CtiTime & now ) const
+bool ControlStrategy::isPeakTime( const CtiTime & now )
 {
     const unsigned secondsAfterMidnight = ( ( now.hour() * 60 ) + now.minute() ) * 60 + now.second();
+
+    _isPeakTime = false;
 
     if ( getPeakStartTime() <= secondsAfterMidnight && secondsAfterMidnight <= getPeakStopTime() )
     {
@@ -583,19 +585,22 @@ bool ControlStrategy::isPeakTime( const CtiTime & now ) const
         {
             // it's a holiday, return our holiday peak setting
 
-            return ( getDaysOfWeek()[ 7 ] == 'Y' );
+            _isPeakTime = ( getDaysOfWeek()[ 7 ] == 'Y' );
         }
+        else
+        {
 
-        // return day of the week peak setting
+            // return day of the week peak setting
 
-        tm  timeComponents;
+            tm  timeComponents;
 
-        now.extract( &timeComponents );
+            now.extract( &timeComponents );
 
-        return ( getDaysOfWeek()[ timeComponents.tm_wday ] == 'Y' );
+            _isPeakTime = ( getDaysOfWeek()[ timeComponents.tm_wday ] == 'Y' );
+        }
     }
 
-    return false;
+    return _isPeakTime;
 }
 
 /*  
