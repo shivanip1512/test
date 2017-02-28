@@ -51,12 +51,12 @@ import com.cannontech.common.device.config.model.jaxb.DeviceConfigurationCategor
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.jaxb.DeviceCategories;
+import com.cannontech.common.pao.definition.loader.jaxb.DeviceCategories;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.SqlParameterSink;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;

@@ -2,6 +2,9 @@ package com.cannontech.common.pao.definition.model;
 
 import java.util.List;
 
+import org.apache.commons.lang3.builder.StandardToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
+
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 
 public class CalcPointInfo {
@@ -48,7 +51,7 @@ public class CalcPointInfo {
     public void setComponents(List<CalcPointComponent> components) {
         this.components = components;
     }
-
+    
     @Override
     public int hashCode() {
         final int prime = 31;
@@ -62,28 +65,49 @@ public class CalcPointInfo {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         CalcPointInfo other = (CalcPointInfo) obj;
         if (components == null) {
-            if (other.components != null)
+            if (other.components != null) {
                 return false;
-        } else if (!components.equals(other.components))
+            }
+        } else if (!components.equals(other.components)) {
             return false;
-        if (forceQualityNormal != other.forceQualityNormal)
+        }
+        if (forceQualityNormal != other.forceQualityNormal) {
             return false;
-        if (periodicRate != other.periodicRate)
+        }
+        if (periodicRate != other.periodicRate) {
             return false;
+        }
         if (updateType == null) {
-            if (other.updateType != null)
+            if (other.updateType != null) {
                 return false;
-        } else if (!updateType.equals(other.updateType))
+            }
+        } else if (!updateType.equals(other.updateType)) {
             return false;
+        }
         return true;
     }
-
+    
+    @Override
+    public String toString() {
+        StandardToStringStyle style = new StandardToStringStyle();
+        style.setFieldSeparator(", ");
+        style.setUseShortClassName(true);
+        ToStringBuilder builder = new ToStringBuilder(this, style);
+        builder.append("updateType", updateType);
+        builder.append("periodicRate", periodicRate);
+        builder.append("forceQualityNormal", forceQualityNormal);
+        builder.append("components", components);
+        return builder.toString();
+    }
 }

@@ -1,9 +1,8 @@
 package com.cannontech.common.pao.definition.attribute.lookup;
 
 import org.apache.commons.lang3.builder.CompareToBuilder;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.springframework.core.style.ToStringCreator;
+import org.apache.commons.lang3.builder.StandardToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -63,7 +62,7 @@ public class AttributeDefinition implements Comparable<AttributeDefinition> {
             return null;
         }
     }
-    
+        
     /**
      * Attempts to return the pointId of the point for the attribute. Throws
      * an exception if the point does not exist.
@@ -77,36 +76,8 @@ public class AttributeDefinition implements Comparable<AttributeDefinition> {
         return pointId;
     }
     
-    @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof AttributeDefinition == false) {
-            return false;
-        }
-        if (this == obj) {
-            return true;
-        }
-        AttributeDefinition rhs = (AttributeDefinition) obj;
-        return new EqualsBuilder()
-            .append(getAttribute(), rhs.getAttribute())
-            .append(getPointTemplate(), rhs.getPointTemplate())
-            .isEquals();
-    }
 
-    @Override
-    public int hashCode() {
-        return new HashCodeBuilder(6599, 1289)
-            .append(getAttribute())
-            .append(getPointTemplate())
-            .toHashCode();
-    }
 
-    @Override
-    public String toString() {
-        ToStringCreator tsc = new ToStringCreator(this);
-        tsc.append("attribute", getAttribute());
-        return tsc.toString();
-    }
-    
     @Override
     public int compareTo(AttributeDefinition o) {
         return new CompareToBuilder()
@@ -114,4 +85,48 @@ public class AttributeDefinition implements Comparable<AttributeDefinition> {
             .toComparison();
     }
     
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((attribute == null) ? 0 : attribute.hashCode());
+        result = prime * result + ((pointTemplate == null) ? 0 : pointTemplate.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        AttributeDefinition other = (AttributeDefinition) obj;
+        if (attribute != other.attribute) {
+            return false;
+        }
+        if (pointTemplate == null) {
+            if (other.pointTemplate != null) {
+                return false;
+            }
+        } else if (!pointTemplate.equals(other.pointTemplate)) {
+            return false;
+        }
+        return true;
+    }
+    
+    @Override
+    public String toString() {
+        StandardToStringStyle style = new StandardToStringStyle();
+        style.setFieldSeparator(", ");
+        style.setUseShortClassName(true);
+        ToStringBuilder builder = new ToStringBuilder(this, style);
+        builder.append("attribute", getAttribute());
+        builder.append("pointTemplate", pointTemplate);
+        return builder.toString();
+    }    
 }

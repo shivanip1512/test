@@ -1,6 +1,7 @@
 package com.cannontech.common.pao.definition.model;
 
-import org.springframework.core.style.ToStringCreator;
+import org.apache.commons.lang3.builder.StandardToStringStyle;
+import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.cannontech.database.data.point.ControlStateType;
 import com.cannontech.database.data.point.PointArchiveInterval;
@@ -16,7 +17,7 @@ import com.cannontech.database.db.state.StateGroupUtils;
  * instances
  */
 public class PointTemplate implements Comparable<PointTemplate> {
-    
+  
     public static double DEFAULT_DATA_OFFSET = 0.0;
     
     private final PointIdentifier pointIdentifier;
@@ -196,76 +197,127 @@ public class PointTemplate implements Comparable<PointTemplate> {
             return getName().compareToIgnoreCase(o.getName());
         }
     }
-
+    
     @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;
-        result =
-            prime * result + ((pointIdentifier == null) ? 0 : pointIdentifier
-                .hashCode());
+        result = prime * result + ((calcPointInfo == null) ? 0 : calcPointInfo.hashCode());
+        result = prime * result + controlOffset;
+        result = prime * result + ((controlType == null) ? 0 : controlType.hashCode());
+        long temp;
+        temp = Double.doubleToLongBits(dataOffset);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + decimalPlaces;
+        result = prime * result + initialState;
+        temp = Double.doubleToLongBits(multiplier);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
         result = prime * result + ((name == null) ? 0 : name.hashCode());
+        result = prime * result + ((pointArchiveInterval == null) ? 0 : pointArchiveInterval.hashCode());
+        result = prime * result + ((pointArchiveType == null) ? 0 : pointArchiveType.hashCode());
+        result = prime * result + ((pointIdentifier == null) ? 0 : pointIdentifier.hashCode());
+        result = prime * result + stateGroupId;
+        result = prime * result + ((stateOneControl == null) ? 0 : stateOneControl.hashCode());
+        result = prime * result + ((stateZeroControl == null) ? 0 : stateZeroControl.hashCode());
+        result = prime * result + unitOfMeasure;
         return result;
     }
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         PointTemplate other = (PointTemplate) obj;
         if (calcPointInfo == null) {
-            if (other.calcPointInfo != null)
+            if (other.calcPointInfo != null) {
                 return false;
-        } else if (!calcPointInfo.equals(other.calcPointInfo))
+            }
+        } else if (!calcPointInfo.equals(other.calcPointInfo)) {
             return false;
-        if (controlOffset != other.controlOffset)
+        }
+        if (controlOffset != other.controlOffset) {
             return false;
-        if (controlType != other.controlType)
+        }
+        if (controlType != other.controlType) {
             return false;
-        if (decimalPlaces != other.decimalPlaces)
+        }
+        if (Double.doubleToLongBits(dataOffset) != Double.doubleToLongBits(other.dataOffset)) {
             return false;
-        if (initialState != other.initialState)
+        }
+        if (decimalPlaces != other.decimalPlaces) {
             return false;
-        if (Double.doubleToLongBits(multiplier) != Double.doubleToLongBits(other.multiplier))
+        }
+        if (initialState != other.initialState) {
             return false;
-        if (Double.doubleToLongBits(dataOffset) != Double.doubleToLongBits(other.dataOffset))
+        }
+        if (Double.doubleToLongBits(multiplier) != Double.doubleToLongBits(other.multiplier)) {
             return false;
+        }
         if (name == null) {
-            if (other.name != null)
+            if (other.name != null) {
                 return false;
-        } else if (!name.equals(other.name))
+            }
+        } else if (!name.equals(other.name)) {
             return false;
-        if (pointArchiveInterval != other.pointArchiveInterval)
+        }
+        if (pointArchiveInterval != other.pointArchiveInterval) {
             return false;
-        if (pointArchiveType != other.pointArchiveType)
+        }
+        if (pointArchiveType != other.pointArchiveType) {
             return false;
+        }
         if (pointIdentifier == null) {
-            if (other.pointIdentifier != null)
+            if (other.pointIdentifier != null) {
                 return false;
-        } else if (!pointIdentifier.equals(other.pointIdentifier))
+            }
+        } else if (!pointIdentifier.equals(other.pointIdentifier)) {
             return false;
-        if (stateGroupId != other.stateGroupId)
+        }
+        if (stateGroupId != other.stateGroupId) {
             return false;
-        if (stateOneControl != other.stateOneControl)
+        }
+        if (stateOneControl != other.stateOneControl) {
             return false;
-        if (stateZeroControl != other.stateZeroControl)
+        }
+        if (stateZeroControl != other.stateZeroControl) {
             return false;
-        if (unitOfMeasure != other.unitOfMeasure)
+        }
+        if (unitOfMeasure != other.unitOfMeasure) {
             return false;
+        }
         return true;
     }
-
+    
     @Override
     public String toString() {
-        ToStringCreator tsc = new ToStringCreator(this);
-        tsc.append("type", getPointType());
-        tsc.append("offset", getOffset());
-        tsc.append("name", getName());
-        return tsc.toString();
+        StandardToStringStyle style = new StandardToStringStyle();
+        style.setFieldSeparator(", ");
+        style.setUseShortClassName(true);
+        ToStringBuilder builder = new ToStringBuilder(this, style);
+        builder.append("pointIdentifier", pointIdentifier);
+        builder.append("name", getName());
+        builder.append("multiplier", multiplier);
+        builder.append("dataOffset", dataOffset);
+        builder.append("unitOfMeasure", unitOfMeasure);
+        builder.append("stateGroupId", stateGroupId);
+        builder.append("decimalPlaces", decimalPlaces);
+        builder.append("pointArchiveInterval", pointArchiveInterval);
+        builder.append("pointArchiveType", pointArchiveType);
+        builder.append("initialState", initialState);
+        builder.append("controlOffset", controlOffset);
+        builder.append("controlType", controlType);
+        builder.append("stateZeroControl", stateZeroControl);
+        builder.append("stateOneControl", stateOneControl);
+        if(calcPointInfo != null){
+            builder.append("calcPointInfo", calcPointInfo);
+        }
+        return builder.toString();
     }
-
 }

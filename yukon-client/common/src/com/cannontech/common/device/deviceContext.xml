@@ -46,11 +46,9 @@
     
     <bean id="paoDefinitionService" class="com.cannontech.common.pao.definition.service.PaoDefinitionServiceImpl"/>
     
-	<bean id="paoDefinitionDao" class="com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl">
-        <property name="inputFile" value="classpath:com/cannontech/common/pao/definition/dao/paoDefinition.xml" />
-        <property name="schemaFile" value="classpath:com/cannontech/common/pao/definition/dao/paoDefinition.xsd" />
-        <property name="pointLegendFile" value="classpath:com/cannontech/common/pao/definition/dao/pointOffset.xsl" />
-    </bean>
+    <bean class="com.cannontech.common.pao.definition.loader.DefinitionLoaderServiceImpl"/>
+              
+    <bean class="com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl"/>
     
     <bean id="attrDynamicDataSource" class="com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource"/>
     

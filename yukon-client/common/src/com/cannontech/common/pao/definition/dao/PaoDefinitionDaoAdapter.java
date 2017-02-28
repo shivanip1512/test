@@ -9,6 +9,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.attribute.lookup.AttributeDefinition;
+import com.cannontech.common.pao.definition.loader.jaxb.DeviceCategories.Category;
 import com.cannontech.common.pao.definition.model.CommandDefinition;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PaoTag;
@@ -16,7 +17,6 @@ import com.cannontech.common.pao.definition.model.PaoTagDefinition;
 import com.cannontech.common.pao.definition.model.PaoTypePointIdentifier;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
-import com.cannontech.common.pao.definition.model.jaxb.DeviceCategories.Category;
 import com.google.common.collect.ImmutableBiMap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimap;
@@ -187,6 +187,11 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
 
     @Override
     public SetMultimap<String, PaoType> getCategoryTypeToPaoTypesMap() {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public void reload() {
         throw new UnsupportedOperationException("not implemented");
     }
 }
