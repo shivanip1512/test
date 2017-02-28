@@ -137,8 +137,8 @@ std::string RfnDataStreamingConfigurationCommand::createJson(const ConfigRespons
         }
         catch( AttributeMappingNotFound &ex )
         {
-            //  Exclude it from the JSON response, but log loudly.
-            CTILOG_EXCEPTION_ERROR(dout, ex);
+            //  Exclude it from the JSON response, but log quietly.
+            CTILOG_EXCEPTION_WARN(dout, ex);
         }
     }
 
