@@ -236,10 +236,12 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KVA,   //metric 49
                 BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
-                BuiltInAttribute.VOLTAGE,         //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                BuiltInAttribute.VOLTAGE          //metric 115
+                //  Even though the RF node firmware supports polyphase voltages, 
+                //    the Focus Disconnect meters are singlephase and do not. 
+                //BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
+                //BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
+                //BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -252,10 +254,12 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KVA,   //metric 49
                 BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
-                BuiltInAttribute.VOLTAGE,         //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                BuiltInAttribute.VOLTAGE          //metric 115
+                //  Even though the RF node firmware supports polyphase voltages, 
+                //    the Focus Disconnect meters are singlephase and do not. 
+                //BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
+                //BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
+                //BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -268,10 +272,12 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KVA,   //metric 49
                 BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
-                BuiltInAttribute.VOLTAGE,         //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                BuiltInAttribute.VOLTAGE          //metric 115
+                //  Even though the RF node firmware supports polyphase voltages, 
+                //    the Focus Disconnect meters are singlephase and do not. 
+                //BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
+                //BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
+                //BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -326,10 +332,12 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KVA,   //metric 49
                 BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
-                BuiltInAttribute.VOLTAGE,         //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                BuiltInAttribute.VOLTAGE          //metric 115
+                //  Even though the RF node firmware supports polyphase voltages, 
+                //    the Focus Disconnect meters are singlephase and do not. 
+                //BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
+                //BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
+                //BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -345,10 +353,12 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KVA,   //metric 49
                 BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
-                BuiltInAttribute.VOLTAGE,         //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                BuiltInAttribute.VOLTAGE          //metric 115
+                //  Even though the RF node firmware supports polyphase voltages, 
+                //    the Focus Disconnect meters are singlephase and do not. 
+                //BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
+                //BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
+                //BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -364,10 +374,12 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KVA,   //metric 49
                 BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
-                BuiltInAttribute.VOLTAGE,         //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                BuiltInAttribute.VOLTAGE          //metric 115
+                //  Even though the RF node firmware supports polyphase voltages, 
+                //    the Focus Disconnect meters are singlephase and do not. 
+                //BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
+                //BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
+                //BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
