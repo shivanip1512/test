@@ -190,7 +190,8 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
         log.trace("Inserting runtimes for Honeywell wifi thermostat: " + pao);
         
         if (hourlyRuntimeSeconds.size() == 0) {
-            log.info("Unable to insert runtime for " + pao.getPaoIdentifier() + " - no runtime specified.");
+            log.info("Skipping runtime insertion for " + pao.getPaoIdentifier() + 
+                     ". Not enough new data is available for calculation.");
             return false;
         }
         
