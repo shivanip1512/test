@@ -1,5 +1,5 @@
 
-package com.cannontech.common.pao.definition.model.jaxb;
+package com.cannontech.common.pao.definition.loader.jaxb;
 
 import java.util.ArrayList;
 import java.util.List;

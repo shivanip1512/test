@@ -1,5 +1,5 @@
 
-package com.cannontech.common.pao.definition.model.jaxb;
+package com.cannontech.common.pao.definition.loader.jaxb;
 
 import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlType;

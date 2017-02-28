@@ -1,5 +1,5 @@
 
-package com.cannontech.common.pao.definition.model.jaxb;
+package com.cannontech.common.pao.definition.loader.jaxb;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -8,16 +8,17 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for pointsType complex type.
+ * <p>Java class for anonymous complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="pointsType">
+ * &lt;complexType>
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -26,17 +27,24 @@ import javax.xml.bind.annotation.XmlType;
  *             &lt;complexContent>
  *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *                 &lt;sequence>
- *                   &lt;element name="init" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *                   &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *                   &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *                   &lt;element name="archive" type="{}archiveDefaults" minOccurs="0"/>
+ *                   &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *                   &lt;element name="archive" minOccurs="0">
+ *                     &lt;complexType>
+ *                       &lt;complexContent>
+ *                         &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+ *                           &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="NONE" />
+ *                           &lt;attribute name="interval" type="{http://www.w3.org/2001/XMLSchema}string" default="ZERO" />
+ *                         &lt;/restriction>
+ *                       &lt;/complexContent>
+ *                     &lt;/complexType>
+ *                   &lt;/element>
  *                   &lt;choice>
  *                     &lt;sequence>
  *                       &lt;element name="multiplier">
  *                         &lt;complexType>
  *                           &lt;complexContent>
  *                             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                               &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}decimal" />
+ *                               &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}decimal" />
  *                             &lt;/restriction>
  *                           &lt;/complexContent>
  *                         &lt;/complexType>
@@ -45,7 +53,7 @@ import javax.xml.bind.annotation.XmlType;
  *                         &lt;complexType>
  *                           &lt;complexContent>
  *                             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *                               &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *                               &lt;attribute name="value" use="required" type="{}unitOfMeasureType" />
  *                             &lt;/restriction>
  *                           &lt;/complexContent>
  *                         &lt;/complexType>
@@ -163,7 +171,9 @@ import javax.xml.bind.annotation.XmlType;
  *                     &lt;/complexType>
  *                   &lt;/element>
  *                 &lt;/sequence>
- *                 &lt;attGroup ref="{}pointAttributes"/>
+ *                 &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *                 &lt;attribute name="offset" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
+ *                 &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
  *               &lt;/restriction>
  *             &lt;/complexContent>
  *           &lt;/complexType>
@@ -177,12 +187,13 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "pointsType", propOrder = {
+@XmlType(name = "", propOrder = {
     "point"
 })
-public class PointsType {
+@XmlRootElement(name = "points")
+public class Points {
 
-    protected List<PointsType.Point> point;
+    protected List<Points.Point> point;
 
     /**
      * Gets the value of the point property.
@@ -202,13 +213,13 @@ public class PointsType {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link PointsType.Point }
+     * {@link Points.Point }
      * 
      * 
      */
-    public List<PointsType.Point> getPoint() {
+    public List<Points.Point> getPoint() {
         if (point == null) {
-            point = new ArrayList<PointsType.Point>();
+            point = new ArrayList<Points.Point>();
         }
         return this.point;
     }
@@ -224,17 +235,24 @@ public class PointsType {
      *   &lt;complexContent>
      *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
      *       &lt;sequence>
-     *         &lt;element name="init" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
-     *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
-     *         &lt;element name="description" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
-     *         &lt;element name="archive" type="{}archiveDefaults" minOccurs="0"/>
+     *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/>
+     *         &lt;element name="archive" minOccurs="0">
+     *           &lt;complexType>
+     *             &lt;complexContent>
+     *               &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+     *                 &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="NONE" />
+     *                 &lt;attribute name="interval" type="{http://www.w3.org/2001/XMLSchema}string" default="ZERO" />
+     *               &lt;/restriction>
+     *             &lt;/complexContent>
+     *           &lt;/complexType>
+     *         &lt;/element>
      *         &lt;choice>
      *           &lt;sequence>
      *             &lt;element name="multiplier">
      *               &lt;complexType>
      *                 &lt;complexContent>
      *                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *                     &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}decimal" />
+     *                     &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}decimal" />
      *                   &lt;/restriction>
      *                 &lt;/complexContent>
      *               &lt;/complexType>
@@ -243,7 +261,7 @@ public class PointsType {
      *               &lt;complexType>
      *                 &lt;complexContent>
      *                   &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-     *                     &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+     *                     &lt;attribute name="value" use="required" type="{}unitOfMeasureType" />
      *                   &lt;/restriction>
      *                 &lt;/complexContent>
      *               &lt;/complexType>
@@ -361,7 +379,9 @@ public class PointsType {
      *           &lt;/complexType>
      *         &lt;/element>
      *       &lt;/sequence>
-     *       &lt;attGroup ref="{}pointAttributes"/>
+     *       &lt;attribute name="type" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+     *       &lt;attribute name="offset" use="required" type="{http://www.w3.org/2001/XMLSchema}int" />
+     *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
      *     &lt;/restriction>
      *   &lt;/complexContent>
      * &lt;/complexType>
@@ -371,9 +391,7 @@ public class PointsType {
      */
     @XmlAccessorType(XmlAccessType.FIELD)
     @XmlType(name = "", propOrder = {
-        "init",
         "name",
-        "description",
         "archive",
         "multiplier",
         "unitofmeasure",
@@ -389,52 +407,26 @@ public class PointsType {
     })
     public static class Point {
 
-        @XmlElement(defaultValue = "false")
-        protected Boolean init = false;
+        @XmlElement(required = true)
         protected String name;
-        protected String description;
-        protected ArchiveDefaults archive;
-        protected PointsType.Point.Multiplier multiplier;
-        protected PointsType.Point.Unitofmeasure unitofmeasure;
-        protected PointsType.Point.Decimalplaces decimalplaces;
-        protected PointsType.Point.Analogstategroup analogstategroup;
-        protected PointsType.Point.DataOffset dataOffset;
-        protected PointsType.Point.ControlType controlType;
-        protected PointsType.Point.ControlOffset controlOffset;
-        protected PointsType.Point.StateZeroControl stateZeroControl;
-        protected PointsType.Point.StateOneControl stateOneControl;
-        protected PointsType.Point.Stategroup stategroup;
-        protected PointsType.Point.Calculation calculation;
+        protected Points.Point.Archive archive;
+        protected Points.Point.Multiplier multiplier;
+        protected Points.Point.Unitofmeasure unitofmeasure;
+        protected Points.Point.Decimalplaces decimalplaces;
+        protected Points.Point.Analogstategroup analogstategroup;
+        protected Points.Point.DataOffset dataOffset;
+        protected Points.Point.ControlType controlType;
+        protected Points.Point.ControlOffset controlOffset;
+        protected Points.Point.StateZeroControl stateZeroControl;
+        protected Points.Point.StateOneControl stateOneControl;
+        protected Points.Point.Stategroup stategroup;
+        protected Points.Point.Calculation calculation;
         @XmlAttribute(name = "type", required = true)
         protected String type;
         @XmlAttribute(name = "offset", required = true)
         protected int offset;
         @XmlAttribute(name = "enabled")
         protected Boolean enabled;
-
-        /**
-         * Gets the value of the init property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link Boolean }
-         *     
-         */
-        public Boolean isInit() {
-            return init;
-        }
-
-        /**
-         * Sets the value of the init property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link Boolean }
-         *     
-         */
-        public void setInit(Boolean value) {
-            this.init = value;
-        }
 
         /**
          * Gets the value of the name property.
@@ -461,38 +453,14 @@ public class PointsType {
         }
 
         /**
-         * Gets the value of the description property.
-         * 
-         * @return
-         *     possible object is
-         *     {@link String }
-         *     
-         */
-        public String getDescription() {
-            return description;
-        }
-
-        /**
-         * Sets the value of the description property.
-         * 
-         * @param value
-         *     allowed object is
-         *     {@link String }
-         *     
-         */
-        public void setDescription(String value) {
-            this.description = value;
-        }
-
-        /**
          * Gets the value of the archive property.
          * 
          * @return
          *     possible object is
-         *     {@link ArchiveDefaults }
+         *     {@link Points.Point.Archive }
          *     
          */
-        public ArchiveDefaults getArchive() {
+        public Points.Point.Archive getArchive() {
             return archive;
         }
 
@@ -501,10 +469,10 @@ public class PointsType {
          * 
          * @param value
          *     allowed object is
-         *     {@link ArchiveDefaults }
+         *     {@link Points.Point.Archive }
          *     
          */
-        public void setArchive(ArchiveDefaults value) {
+        public void setArchive(Points.Point.Archive value) {
             this.archive = value;
         }
 
@@ -513,10 +481,10 @@ public class PointsType {
          * 
          * @return
          *     possible object is
-         *     {@link PointsType.Point.Multiplier }
+         *     {@link Points.Point.Multiplier }
          *     
          */
-        public PointsType.Point.Multiplier getMultiplier() {
+        public Points.Point.Multiplier getMultiplier() {
             return multiplier;
         }
 
@@ -525,10 +493,10 @@ public class PointsType {
          * 
          * @param value
          *     allowed object is
-         *     {@link PointsType.Point.Multiplier }
+         *     {@link Points.Point.Multiplier }
          *     
          */
-        public void setMultiplier(PointsType.Point.Multiplier value) {
+        public void setMultiplier(Points.Point.Multiplier value) {
             this.multiplier = value;
         }
 
@@ -537,10 +505,10 @@ public class PointsType {
          * 
          * @return
          *     possible object is
-         *     {@link PointsType.Point.Unitofmeasure }
+         *     {@link Points.Point.Unitofmeasure }
          *     
          */
-        public PointsType.Point.Unitofmeasure getUnitofmeasure() {
+        public Points.Point.Unitofmeasure getUnitofmeasure() {
             return unitofmeasure;
         }
 
@@ -549,10 +517,10 @@ public class PointsType {
          * 
          * @param value
          *     allowed object is
-         *     {@link PointsType.Point.Unitofmeasure }
+         *     {@link Points.Point.Unitofmeasure }
          *     
          */
-        public void setUnitofmeasure(PointsType.Point.Unitofmeasure value) {
+        public void setUnitofmeasure(Points.Point.Unitofmeasure value) {
             this.unitofmeasure = value;
         }
 
@@ -561,10 +529,10 @@ public class PointsType {
          * 
          * @return
          *     possible object is
-         *     {@link PointsType.Point.Decimalplaces }
+         *     {@link Points.Point.Decimalplaces }
          *     
          */
-        public PointsType.Point.Decimalplaces getDecimalplaces() {
+        public Points.Point.Decimalplaces getDecimalplaces() {
             return decimalplaces;
         }
 
@@ -573,10 +541,10 @@ public class PointsType {
          * 
          * @param value
          *     allowed object is
-         *     {@link PointsType.Point.Decimalplaces }
+         *     {@link Points.Point.Decimalplaces }
          *     
          */
-        public void setDecimalplaces(PointsType.Point.Decimalplaces value) {
+        public void setDecimalplaces(Points.Point.Decimalplaces value) {
             this.decimalplaces = value;
         }
 
@@ -585,10 +553,10 @@ public class PointsType {
          * 
          * @return
          *     possible object is
-         *     {@link PointsType.Point.Analogstategroup }
+         *     {@link Points.Point.Analogstategroup }
          *     
          */
-        public PointsType.Point.Analogstategroup getAnalogstategroup() {
+        public Points.Point.Analogstategroup getAnalogstategroup() {
             return analogstategroup;
         }
 
@@ -597,10 +565,10 @@ public class PointsType {
          * 
          * @param value
          *     allowed object is
-         *     {@link PointsType.Point.Analogstategroup }
+         *     {@link Points.Point.Analogstategroup }
          *     
          */
-        public void setAnalogstategroup(PointsType.Point.Analogstategroup value) {
+        public void setAnalogstategroup(Points.Point.Analogstategroup value) {
             this.analogstategroup = value;
         }
 
@@ -609,10 +577,10 @@ public class PointsType {
          * 
          * @return
          *     possible object is
-         *     {@link PointsType.Point.DataOffset }
+         *     {@link Points.Point.DataOffset }
          *     
          */
-        public PointsType.Point.DataOffset getDataOffset() {
+        public Points.Point.DataOffset getDataOffset() {
             return dataOffset;
         }
 
@@ -621,10 +589,10 @@ public class PointsType {
          * 
          * @param value
          *     allowed object is
-         *     {@link PointsType.Point.DataOffset }
+         *     {@link Points.Point.DataOffset }
          *     
          */
-        public void setDataOffset(PointsType.Point.DataOffset value) {
+        public void setDataOffset(Points.Point.DataOffset value) {
             this.dataOffset = value;
         }
 
@@ -633,10 +601,10 @@ public class PointsType {
          * 
          * @return
          *     possible object is
-         *     {@link PointsType.Point.ControlType }
+         *     {@link Points.Point.ControlType }
          *     
          */
-        public PointsType.Point.ControlType getControlType() {
+        public Points.Point.ControlType getControlType() {
             return controlType;
         }
 
@@ -645,10 +613,10 @@ public class PointsType {
          * 
          * @param value
          *     allowed object is
-         *     {@link PointsType.Point.ControlType }
+         *     {@link Points.Point.ControlType }
          *     
          */
-        public void setControlType(PointsType.Point.ControlType value) {
+        public void setControlType(Points.Point.ControlType value) {
             this.controlType = value;
         }
 
@@ -657,10 +625,10 @@ public class PointsType {
          * 
          * @return
          *     possible object is
-         *     {@link PointsType.Point.ControlOffset }
+         *     {@link Points.Point.ControlOffset }
          *     
          */
-        public PointsType.Point.ControlOffset getControlOffset() {
+        public Points.Point.ControlOffset getControlOffset() {
             return controlOffset;
         }
 
@@ -669,10 +637,10 @@ public class PointsType {
          * 
          * @param value
          *     allowed object is
-         *     {@link PointsType.Point.ControlOffset }
+         *     {@link Points.Point.ControlOffset }
          *     
          */
-        public void setControlOffset(PointsType.Point.ControlOffset value) {
+        public void setControlOffset(Points.Point.ControlOffset value) {
             this.controlOffset = value;
         }
 
@@ -681,10 +649,10 @@ public class PointsType {
          * 
          * @return
          *     possible object is
-         *     {@link PointsType.Point.StateZeroControl }
+         *     {@link Points.Point.StateZeroControl }
          *     
          */
-        public PointsType.Point.StateZeroControl getStateZeroControl() {
+        public Points.Point.StateZeroControl getStateZeroControl() {
             return stateZeroControl;
         }
 
@@ -693,10 +661,10 @@ public class PointsType {
          * 
          * @param value
          *     allowed object is
-         *     {@link PointsType.Point.StateZeroControl }
+         *     {@link Points.Point.StateZeroControl }
          *     
          */
-        public void setStateZeroControl(PointsType.Point.StateZeroControl value) {
+        public void setStateZeroControl(Points.Point.StateZeroControl value) {
             this.stateZeroControl = value;
         }
 
@@ -705,10 +673,10 @@ public class PointsType {
          * 
          * @return
          *     possible object is
-         *     {@link PointsType.Point.StateOneControl }
+         *     {@link Points.Point.StateOneControl }
          *     
          */
-        public PointsType.Point.StateOneControl getStateOneControl() {
+        public Points.Point.StateOneControl getStateOneControl() {
             return stateOneControl;
         }
 
@@ -717,10 +685,10 @@ public class PointsType {
          * 
          * @param value
          *     allowed object is
-         *     {@link PointsType.Point.StateOneControl }
+         *     {@link Points.Point.StateOneControl }
          *     
          */
-        public void setStateOneControl(PointsType.Point.StateOneControl value) {
+        public void setStateOneControl(Points.Point.StateOneControl value) {
             this.stateOneControl = value;
         }
 
@@ -729,10 +697,10 @@ public class PointsType {
          * 
          * @return
          *     possible object is
-         *     {@link PointsType.Point.Stategroup }
+         *     {@link Points.Point.Stategroup }
          *     
          */
-        public PointsType.Point.Stategroup getStategroup() {
+        public Points.Point.Stategroup getStategroup() {
             return stategroup;
         }
 
@@ -741,10 +709,10 @@ public class PointsType {
          * 
          * @param value
          *     allowed object is
-         *     {@link PointsType.Point.Stategroup }
+         *     {@link Points.Point.Stategroup }
          *     
          */
-        public void setStategroup(PointsType.Point.Stategroup value) {
+        public void setStategroup(Points.Point.Stategroup value) {
             this.stategroup = value;
         }
 
@@ -753,10 +721,10 @@ public class PointsType {
          * 
          * @return
          *     possible object is
-         *     {@link PointsType.Point.Calculation }
+         *     {@link Points.Point.Calculation }
          *     
          */
-        public PointsType.Point.Calculation getCalculation() {
+        public Points.Point.Calculation getCalculation() {
             return calculation;
         }
 
@@ -765,10 +733,10 @@ public class PointsType {
          * 
          * @param value
          *     allowed object is
-         *     {@link PointsType.Point.Calculation }
+         *     {@link Points.Point.Calculation }
          *     
          */
-        public void setCalculation(PointsType.Point.Calculation value) {
+        public void setCalculation(Points.Point.Calculation value) {
             this.calculation = value;
         }
 
@@ -928,6 +896,92 @@ public class PointsType {
          * &lt;complexType>
          *   &lt;complexContent>
          *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
+         *       &lt;attribute name="type" type="{http://www.w3.org/2001/XMLSchema}string" default="NONE" />
+         *       &lt;attribute name="interval" type="{http://www.w3.org/2001/XMLSchema}string" default="ZERO" />
+         *     &lt;/restriction>
+         *   &lt;/complexContent>
+         * &lt;/complexType>
+         * </pre>
+         * 
+         * 
+         */
+        @XmlAccessorType(XmlAccessType.FIELD)
+        @XmlType(name = "")
+        public static class Archive {
+
+            @XmlAttribute(name = "type")
+            protected String type;
+            @XmlAttribute(name = "interval")
+            protected String interval;
+
+            /**
+             * Gets the value of the type property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link String }
+             *     
+             */
+            public String getType() {
+                if (type == null) {
+                    return "NONE";
+                } else {
+                    return type;
+                }
+            }
+
+            /**
+             * Sets the value of the type property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link String }
+             *     
+             */
+            public void setType(String value) {
+                this.type = value;
+            }
+
+            /**
+             * Gets the value of the interval property.
+             * 
+             * @return
+             *     possible object is
+             *     {@link String }
+             *     
+             */
+            public String getInterval() {
+                if (interval == null) {
+                    return "ZERO";
+                } else {
+                    return interval;
+                }
+            }
+
+            /**
+             * Sets the value of the interval property.
+             * 
+             * @param value
+             *     allowed object is
+             *     {@link String }
+             *     
+             */
+            public void setInterval(String value) {
+                this.interval = value;
+            }
+
+        }
+
+
+        /**
+         * <p>Java class for anonymous complex type.
+         * 
+         * <p>The following schema fragment specifies the expected content contained within this class.
+         * 
+         * <pre>
+         * &lt;complexType>
+         *   &lt;complexContent>
+         *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
          *       &lt;sequence>
          *         &lt;element name="forceQualityNormal" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
          *         &lt;element name="periodicRate" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
@@ -977,7 +1031,7 @@ public class PointsType {
             @XmlElement(defaultValue = "On First Change")
             protected UpdateTypeType updateType = UpdateTypeType.ON_FIRST_CHANGE;
             @XmlElement(required = true)
-            protected PointsType.Point.Calculation.Components components;
+            protected Points.Point.Calculation.Components components;
 
             /**
              * Gets the value of the forceQualityNormal property.
@@ -1056,10 +1110,10 @@ public class PointsType {
              * 
              * @return
              *     possible object is
-             *     {@link PointsType.Point.Calculation.Components }
+             *     {@link Points.Point.Calculation.Components }
              *     
              */
-            public PointsType.Point.Calculation.Components getComponents() {
+            public Points.Point.Calculation.Components getComponents() {
                 return components;
             }
 
@@ -1068,10 +1122,10 @@ public class PointsType {
              * 
              * @param value
              *     allowed object is
-             *     {@link PointsType.Point.Calculation.Components }
+             *     {@link Points.Point.Calculation.Components }
              *     
              */
-            public void setComponents(PointsType.Point.Calculation.Components value) {
+            public void setComponents(Points.Point.Calculation.Components value) {
                 this.components = value;
             }
 
@@ -1112,7 +1166,7 @@ public class PointsType {
             public static class Components {
 
                 @XmlElement(required = true)
-                protected List<PointsType.Point.Calculation.Components.Component> component;
+                protected List<Points.Point.Calculation.Components.Component> component;
 
                 /**
                  * Gets the value of the component property.
@@ -1132,13 +1186,13 @@ public class PointsType {
                  * 
                  * <p>
                  * Objects of the following type(s) are allowed in the list
-                 * {@link PointsType.Point.Calculation.Components.Component }
+                 * {@link Points.Point.Calculation.Components.Component }
                  * 
                  * 
                  */
-                public List<PointsType.Point.Calculation.Components.Component> getComponent() {
+                public List<Points.Point.Calculation.Components.Component> getComponent() {
                     if (component == null) {
-                        component = new ArrayList<PointsType.Point.Calculation.Components.Component>();
+                        component = new ArrayList<Points.Point.Calculation.Components.Component>();
                     }
                     return this.component;
                 }
@@ -1458,7 +1512,7 @@ public class PointsType {
          * &lt;complexType>
          *   &lt;complexContent>
          *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-         *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}decimal" />
+         *       &lt;attribute name="value" type="{http://www.w3.org/2001/XMLSchema}decimal" />
          *     &lt;/restriction>
          *   &lt;/complexContent>
          * &lt;/complexType>
@@ -1470,7 +1524,7 @@ public class PointsType {
         @XmlType(name = "")
         public static class Multiplier {
 
-            @XmlAttribute(name = "value", required = true)
+            @XmlAttribute(name = "value")
             protected BigDecimal value;
 
             /**
@@ -1689,7 +1743,7 @@ public class PointsType {
          * &lt;complexType>
          *   &lt;complexContent>
          *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
-         *       &lt;attribute name="value" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+         *       &lt;attribute name="value" use="required" type="{}unitOfMeasureType" />
          *     &lt;/restriction>
          *   &lt;/complexContent>
          * &lt;/complexType>
@@ -1702,17 +1756,17 @@ public class PointsType {
         public static class Unitofmeasure {
 
             @XmlAttribute(name = "value", required = true)
-            protected String value;
+            protected UnitOfMeasureType value;
 
             /**
              * Gets the value of the value property.
              * 
              * @return
              *     possible object is
-             *     {@link String }
+             *     {@link UnitOfMeasureType }
              *     
              */
-            public String getValue() {
+            public UnitOfMeasureType getValue() {
                 return value;
             }
 
@@ -1721,10 +1775,10 @@ public class PointsType {
              * 
              * @param value
              *     allowed object is
-             *     {@link String }
+             *     {@link UnitOfMeasureType }
              *     
              */
-            public void setValue(String value) {
+            public void setValue(UnitOfMeasureType value) {
                 this.value = value;
             }
 

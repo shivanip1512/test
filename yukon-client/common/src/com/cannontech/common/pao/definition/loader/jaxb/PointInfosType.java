@@ -1,26 +1,24 @@
 
-package com.cannontech.common.pao.definition.model.jaxb;
+package com.cannontech.common.pao.definition.loader.jaxb;
 
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>Java class for pointInfosType complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType>
+ * &lt;complexType name="pointInfosType">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="pao" type="{}paoType" maxOccurs="unbounded"/>
+ *         &lt;element name="pointInfo" type="{}pointInfoType" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -30,42 +28,40 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "pao"
+@XmlType(name = "pointInfosType", propOrder = {
+    "pointInfo"
 })
-@XmlRootElement(name = "paoDefinitions")
-public class PaoDefinitions {
+public class PointInfosType {
 
-    @XmlElement(required = true)
-    protected List<Pao> pao;
+    protected List<PointInfoType> pointInfo;
 
     /**
-     * Gets the value of the pao property.
+     * Gets the value of the pointInfo property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the pao property.
+     * This is why there is not a <CODE>set</CODE> method for the pointInfo property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getPao().add(newItem);
+     *    getPointInfo().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Pao }
+     * {@link PointInfoType }
      * 
      * 
      */
-    public List<Pao> getPao() {
-        if (pao == null) {
-            pao = new ArrayList<Pao>();
+    public List<PointInfoType> getPointInfo() {
+        if (pointInfo == null) {
+            pointInfo = new ArrayList<PointInfoType>();
         }
-        return this.pao;
+        return this.pointInfo;
     }
 
 }
