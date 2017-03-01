@@ -292,42 +292,31 @@ yukon.tools.commander = (function () {
     },
     
     /**
-     * User is attempting a command to a target, store that target as the last target
-     * and add it to the most recent 10 targets if it's a new target.
+     * Refresh the commander targets as per the latest recent targets list
      */
     _updateTarget = function (target, recent, params) {
 
         var option, targetStore;
         
-        targetStore = { target: target };
-        if (params.paoId) {
-            targetStore.paoId = params.paoId;
-        } else {
-            targetStore.serialNumber = params.serialNumber;
-            targetStore.routeId = params.routeId;
-        }
-        
-        option = $('#cmdr-templates .dropdown-option').clone()
-            .removeClass('js-template-menu-option')
-            .data('type', targetStore.target);
-        
-        if (targetStore.target === _targetTypes.device || targetStore.target === _targetTypes.lmGroup) {
-            option.data('paoId', targetStore.paoId);
-            if (targetStore.target === _targetTypes.device) {
-                option.find('.dropdown-option-label').text($('#picker-commanderDevicePicker-btn .b-label').text());
+        $('.js-recent-menu').empty();
+        recent.forEach(function (element) {
+            targetStore = element.target;
+            option = $('#cmdr-templates .dropdown-option').clone()
+                .removeClass('js-template-menu-option')
+                .data('type', targetStore.target);
+            
+            if (targetStore.target === _targetTypes.device || targetStore.target === _targetTypes.lmGroup) {
+                option.data('paoId', targetStore.paoId);
             } else {
-                option.find('.dropdown-option-label').text($('#picker-lmGroupPicker-btn .b-label').text());
+                $('#route-id').val = targetStore.routeId;
+                option.data('routeId', targetStore.routeId);
+                option.data('serialNumber', targetStore.serialNumber);
+                option.find('.icon').toggleClass('icon-database-add icon-textfield');
             }
-        } else {
-            option.data('routeId', targetStore.routeId);
-            option.data('serialNumber', targetStore.serialNumber);
-            option.find('.dropdown-option-label').text($('#serial-number').val() + ' - ' 
-                    + $('#route-id option:selected').text());
-            option.find('.icon').toggleClass('icon-database-add icon-textfield');
-        }
-        
-        $('.js-recent-menu').prepend(option);
-        $('.js-recent-btn').removeClass('dn');
+            option.find('.dropdown-option-label').text(element.label);
+            $('.js-recent-menu').append(option);
+            $('.js-recent-btn').removeClass('dn');
+        });
     },
     
     _persistFields = function () {

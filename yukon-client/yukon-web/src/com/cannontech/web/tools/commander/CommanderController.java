@@ -559,15 +559,16 @@ public class CommanderController {
             if (CollectionUtils.isEmpty(existingTargets)) {
                 // Target selected is a new target, add target to the recent targets preferences
                 if (recentTargets.size() == RECENT_TARGET_MAXIMUM_SIZE_LIMIT) {
-                    // Maintain the recent targets list size count, remove the oldest element - LRU
-                    recentTargets.remove(0);
+                    // Maintain the recent targets list size count, remove the oldest element - LRU at the end of List
+                    recentTargets.remove(9);
                 }
-                recentTargets.add(currentTarget);
-                preferences.add(new UserPreference(user.getUserID(), UserPreferenceName.COMMANDER_RECENT_TARGETS,
-                    JsonUtils.toJson(recentTargets), true));
-                preferences.add(new UserPreference(user.getUserID(), UserPreferenceName.COMMANDER_LAST_TARGET,
-                    params.getTarget().name(), true));
+                recentTargets.add(0, currentTarget); // Recent target at the top of list
             }
+            preferences.add(new UserPreference(user.getUserID(), UserPreferenceName.COMMANDER_RECENT_TARGETS,
+                JsonUtils.toJson(recentTargets), true));
+            preferences.add(new UserPreference(user.getUserID(), UserPreferenceName.COMMANDER_LAST_TARGET,
+                params.getTarget().name(), true));
+            
             if (params.getTarget() == (CommandTarget.DEVICE) || params.getTarget() == (CommandTarget.LOAD_GROUP)) {
                 preferences.add(new UserPreference(user.getUserID(), UserPreferenceName.COMMANDER_LAST_PAO_ID,
                     Integer.toString(params.getPaoId()), true));
