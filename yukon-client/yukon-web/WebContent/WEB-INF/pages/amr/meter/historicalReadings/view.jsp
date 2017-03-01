@@ -9,31 +9,28 @@
 <cti:msgScope paths="modules.amr.widgetClasses.MeterReadingsWidget.historicalReadings">
 
 <script>
-$(document).ready(function(){
-$('#download').click(function (ev) {
-    var url = $('#duration :selected').val();
-    $('#download').attr('data-href', yukon.url(url));
-});
-});
+function setUrl(id) {
+    var duration = '#duration_'+id;
+    var url = $(duration+' :selected').val();
+    $('#download_'+id).attr('data-href', yukon.url(url));
+}
 </script>
 
+<cti:msg2 key=".download.tooltip" var="download"/>
 <input class="js-popup-title" type="hidden" value="${fn:escapeXml(title)}"> 
 
 <div class="form-control clearfix">
-    <c:if test="${points.size() > 0}">
+    <c:if test="${points.size() > 0 && points.size() == maxRowsDisplay}">
         <span class="detail">${resultLimit}</span>
     </c:if>
     <div class="fr">
     <tags:nameValueContainer2>
-       <tags:nameValue2 nameKey=".downloadPeriod">
-           <select id="duration">
-               <c:forEach var="duration" items="${duration}">
-                   <option value="${duration.value}">${duration.key}</option>
-               </c:forEach>
-           </select>
-        
-           <cti:button id='download' classes="fr left" renderMode="buttonImage" icon="icon-page-white-excel"/>
-       </tags:nameValue2>
+        <select id="duration_${pointId}" name="duration">
+            <c:forEach var="duration" items="${duration}">
+                <option value="${duration.value}">${duration.key}</option>
+            </c:forEach>
+        </select>
+        <cti:button id="download_${pointId}" title = "${download}" classes="fr left" renderMode="buttonImage" icon="icon-page-white-excel" onClick="javascript:setUrl('${pointId}');"/>
     </tags:nameValueContainer2>
     </div>
 </div>

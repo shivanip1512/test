@@ -113,12 +113,13 @@ public class HistoricalReadingsController {
         model.addAttribute("deviceId", deviceId);
         model.addAttribute("attribute", attribute);
         model.addAttribute("resultLimit", accessor.getMessage(baseKey + "resultLimit", MAX_ROWS_DISPLAY));
+        model.addAttribute("maxRowsDisplay", MAX_ROWS_DISPLAY);
         
         Map<String, String> duration = new LinkedHashMap<>();
-        duration.put(accessor.getMessage(baseKey + Duration.ONE_MONTH),getDownloadUrl(Duration.ONE_MONTH, pointId));
-        duration.put(accessor.getMessage(baseKey + Duration.THREE_MONTH),getDownloadUrl(Duration.THREE_MONTH, pointId));
-        duration.put(accessor.getMessage(baseKey + Duration.ONE_YEAR),getDownloadUrl(Duration.ONE_YEAR, pointId));
-        duration.put(accessor.getMessage(baseKey + Duration.ALL),getDownloadUrl(Duration.ALL, pointId));
+        duration.put(accessor.getMessage(baseKey + Duration.ONE_MONTH), getDownloadUrl(Duration.ONE_MONTH, pointId));
+        duration.put(accessor.getMessage(baseKey + Duration.THREE_MONTH), getDownloadUrl(Duration.THREE_MONTH, pointId));
+        duration.put(accessor.getMessage(baseKey + Duration.ONE_YEAR), getDownloadUrl(Duration.ONE_YEAR, pointId));
+        duration.put(accessor.getMessage(baseKey + Duration.ALL), getDownloadUrl(Duration.ALL, pointId));
        
         model.addAttribute("duration", duration);
         model.addAttribute("title", title);
