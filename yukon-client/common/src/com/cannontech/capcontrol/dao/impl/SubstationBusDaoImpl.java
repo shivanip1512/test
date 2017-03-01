@@ -288,7 +288,7 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         ArrayList<Integer> feederList = Lists.newArrayList(feederIds);
         SqlFragmentSource returnedSql = insertFeeders(busId, feederList);
         sql.append(returnedSql);
-        if (StringUtils.isNoneBlank(returnedSql.getSql())) {
+        if (StringUtils.isNotBlank(returnedSql.getSql())) {
             jdbcTemplate.update(sql);
         }
     }
