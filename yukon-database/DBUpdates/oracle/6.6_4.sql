@@ -10,7 +10,7 @@ AND MethodOptionType != 'Mandatory';
 /* End YUK-16233 */
 
 /* Start YUK-16321 */
-DELETE FROM POINTStatus WHERE POINTID IN ( 
+DELETE FROM DISPLAY2WAYDATA WHERE POINTID IN ( 
     SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
     WHERE PointType = 'Status' AND PointOffset = 81 AND YP.Type IN ('RFW-201', 'RFW-205'));
  
