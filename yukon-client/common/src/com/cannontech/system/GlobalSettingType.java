@@ -197,7 +197,11 @@ public enum GlobalSettingType implements DisplayableEnum {
                this == HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING ||
                this == HONEYWELL_WIFI_SERVICE_BUS_QUEUE ||
                this == HONEYWELL_CLIENTID ||
-               this == HONEYWELL_SECRET;
+               this == HONEYWELL_SECRET ||
+               this == OADR_KEYSTORE_PASSWORD || 
+               this == OADR_TRUSTSTORE_PASSWORD || 
+               this == SMTP_USERNAME || 
+               this == SMTP_PASSWORD;
     }
 
     public Object getDefaultValue() {

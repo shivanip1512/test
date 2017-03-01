@@ -8,20 +8,6 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="adminSetup" page="config.category">
-<script type="text/javascript">
-$(document).on('click', '.js-eye-icon', function() {
-    var targetRow = $(this).closest('.switch-btn');
-    var id = targetRow.find('.switch-btn-checkbox').attr('id');
-    var isSelected = targetRow.find('.switch-btn-checkbox').prop('checked');
-    showHideData(id, !isSelected);
-});
-
-function showHideData(id, showData) {
-   var sensitiveField = $('#sensitiveField_' + id);
-   sensitiveField.attr('type', showData ? 'text' : 'password');   
-}
-
-</script>
 
 <div class="dashboard">
     <cti:url var="updateUrl" value="/admin/config/update"/>

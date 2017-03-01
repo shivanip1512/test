@@ -46,14 +46,24 @@
         <tags:nameValue2 rowClass="js-gateway-edit-admin" nameKey=".admin">
             <spring:bind path="admin.username">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                <form:input path="admin.username" cssClass="js-gateway-edit-username M0 left ${clazz}" 
-                    placeholder="${phUsername}" tabindex="3"/>
+                <div class="dib M0">
+                    <form:password path="admin.username" cssClass="js-gateway-edit-username M0 left ${clazz}" id="sensitiveField_adminUserName" 
+                          showPassword="true" placeholder="${phUsername}" tabindex="3"/>
+                    <tags:check id="adminUserName" name="showHideButton_adminUserName" classes="fr M0 js-eye-icon">
+                        <i title="<i:inline key="yukon.web.modules.adminSetup.config.showHideData"/>" class="icon icon-eye" id="showhide_adminUserName"></i>
+                    </tags:check>
+                </div>
             </spring:bind>
             <spring:bind path="admin.password">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
                 <c:set var="clazz" value="${clazz} ${mode == 'EDIT' ? 'middle' : 'right'}"/>
-                <form:password path="admin.password" cssClass="js-gateway-edit-password M0 ${clazz}" 
-                    placeholder="${phPassword}" tabindex="4" showPassword="true"/>
+                <div class="dib M0">
+                    <form:password path="admin.password" cssClass="js-gateway-edit-password M0" id="sensitiveField_adminPassword" 
+                          placeholder="${phPassword}" tabindex="4" showPassword="true"/>
+                   <tags:check id="adminPassword" name="showHideButton_adminPassword" classes="fr M0 js-eye-icon">
+                        <i title="<i:inline key="yukon.web.modules.adminSetup.config.showHideData"/>" class="icon icon-eye" id="showhide_adminPassword"></i>
+                   </tags:check>
+                 </div>
                 <c:if test="${mode == 'EDIT'}">
                     <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
                          disabled="true" nameKey="testConnection" tabindex="5"/>
@@ -71,14 +81,24 @@
         <tags:nameValue2 rowClass="js-gateway-edit-super-admin" nameKey=".superAdmin">
             <spring:bind path="superAdmin.username">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                <form:input path="superAdmin.username" cssClass="js-gateway-edit-username M0 left ${clazz}" 
-                    placeholder="${phUsername}" tabindex="6"/>
+                <div class="dib M0">
+                    <form:password path="superAdmin.username" cssClass="js-gateway-edit-username M0 left ${clazz}" id="sensitiveField_superAdminUsername"
+                         placeholder="${phUsername}" tabindex="6" showPassword="true"/>
+                    <tags:check id="superAdminUsername" name="showHideButton_superAdminUsername" classes="fr M0 js-eye-icon">
+                        <i title="<i:inline key="yukon.web.modules.adminSetup.config.showHideData"/>" class="icon icon-eye" id="showhide_superAdminUsername"></i>
+                    </tags:check>
+                </div>
             </spring:bind>
             <spring:bind path="superAdmin.password">
                 <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
                 <c:set var="clazz" value="${clazz} ${mode == 'EDIT' ? 'middle' : 'right'}"/>
-                <form:password  path="superAdmin.password" cssClass="js-gateway-edit-password M0 ${clazz}" 
+                <div class="dib M0">
+                <form:password  path="superAdmin.password" cssClass="js-gateway-edit-password M0" id="sensitiveField_superAdminPassword"
                     placeholder="${phPassword}" tabindex="7" showPassword="true"/>
+                <tags:check id="superAdminPassword" name="showHideButton_superAdminPassword" classes="fr M0 js-eye-icon">
+                        <i title="<i:inline key="yukon.web.modules.adminSetup.config.showHideData"/>" class="icon icon-eye" id="showhide_superAdminPassword"></i>
+                </tags:check>
+                </div>
                 <c:if test="${mode == 'EDIT'}">
                     <cti:button renderMode="buttonImage" icon="icon-server-connect" classes="fn vat right js-conn-test-btn" 
                          disabled="true" nameKey="testConnection" tabindex="8"/>
@@ -142,13 +162,23 @@
             <td class="value">
                 <spring:bind path="updateServerLogin.username">
                     <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                    <form:input path="updateServerLogin.username" cssClass="M0 left ${clazz}"
-                        placeholder="${phUsername}"/>
+                    <div class="dib M0">
+                    <form:password path="updateServerLogin.username" cssClass="M0 left ${clazz}" id="sensitiveField_updateServerLoginUserName"
+                        showPassword="true" placeholder="${phUsername}"/>
+                    <tags:check id="updateServerLoginUserName" name="showHideButton_updateServerLoginUserName" classes="fr M0 js-eye-icon">
+                        <i title="<i:inline key="yukon.web.modules.adminSetup.config.showHideData"/>" class="icon icon-eye" id="showhide_updateServerLoginUserName"></i>
+                    </tags:check>
+                    </div>
                 </spring:bind>
                 <spring:bind path="updateServerLogin.password">
                     <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                    <form:password path="updateServerLogin.password" cssClass="M0 ${clazz} right"
+                    <div class="dib M0">
+                    <form:password path="updateServerLogin.password" cssClass="M0 right" id="sensitiveField_updateServerLoginPassword"
                         placeholder="${phPassword}" showPassword="true"/>
+                    <tags:check id="updateServerLoginPassword" name="showHideButton_updateServerLoginPassword" classes="fr M0 js-eye-icon">
+                        <i title="<i:inline key="yukon.web.modules.adminSetup.config.showHideData"/>" class="icon icon-eye" id="showhide_updateServerLoginPassword"></i>
+                    </tags:check>
+                    </div>
                 </spring:bind>
 
                 <spring:bind path="updateServerLogin.username">
@@ -169,4 +199,4 @@
 
 </cti:msgScope>
 
-<cti:includeScript link="/resources/js/widgets/yukon.widget.gateway.info.js"/>
+<%-- <cti:includeScript link="/resources/js/widgets/yukon.widget.gateway.info.js"/> --%>

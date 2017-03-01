@@ -27,7 +27,23 @@
 
 <cti:default var="checked" value="${false}"/>
 <cti:default var="disabled" value="${false}"/>
+<script>
+    $('.js-eye-icon').each(function(i, item) {
+        item.onclick = clickedIt;
+    });
 
+    function clickedIt() {
+        var targetRow = $(this).closest('.switch-btn');
+        var id = targetRow.find('.switch-btn-checkbox').attr('id');
+        var isSelected = targetRow.find('.switch-btn-checkbox').prop('checked');
+        showHideData(id, !isSelected);
+    }
+
+    function showHideData(id, showData) {
+        var sensitiveField = $('#sensitiveField_' + id);
+        sensitiveField.attr('type', showData ? 'text' : 'password');   
+    }
+</script>
 <cti:displayForPageEditModes modes="VIEW">
     <c:if test="${not empty path}">
         <spring:bind path="${path}">

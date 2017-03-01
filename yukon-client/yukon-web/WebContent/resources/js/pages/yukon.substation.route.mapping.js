@@ -21,7 +21,6 @@ yukon.admin.substations = (function () {
 	            init: function () {
 	            	/** Move row up. */
 	                $(document).on('click','.js-up', function (ev) {
-	                	debugger;
 	                    var row = $(this).closest('tr'),
 	                        prevRow = row.prev();
 	                    
