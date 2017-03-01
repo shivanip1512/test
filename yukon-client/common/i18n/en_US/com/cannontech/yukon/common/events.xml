@@ -74,7 +74,6 @@
     <entry key="yukon.common.events.scenarioName">Scenario Name</entry>
     <entry key="yukon.common.events.scheduleName">Schedule Name</entry>
     <entry key="yukon.common.events.serialNumber">Serial Number</entry>
-    <entry key="yukon.common.events.serviceProvider">Service Provider</entry>
     <entry key="yukon.common.events.shedDuration">Shed Duration</entry>
     <entry key="yukon.common.events.startDate">Start Date</entry>
     <entry key="yukon.common.events.state">Enabled/Disabled</entry>

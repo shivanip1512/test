@@ -374,8 +374,6 @@
     <entry key="yukon.common.setting.HONEYWELL_SECRET">Honeywell secret</entry>
     <entry key="yukon.common.setting.HONEYWELL_SECRET.description">Secret to get access token from Honeywell service.</entry>
     
-    <entry key="yukon.common.drEncryption.HONEYWELL">Honeywell</entry>
-    
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE">Producer Window Size</entry>
     <entry key="yukon.common.setting.PRODUCER_WINDOW_SIZE.description">The size, in kilobytes, of messages that a producer can send before it is blocked to await a ProducerAck from the broker that frees enough memory to allow another message to be sent. (Requires restart to take effect.)</entry>
     <entry key="yukon.common.setting.MAX_INACTIVITY_DURATION">Connection Inactivity Timeout</entry>
@@ -520,5 +518,8 @@
     <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.AUTHENTICATION_FAILURE">Authentication failure</entry>
     <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.PROTOCOL_ERROR">Protocol error</entry>
     <entry key="yukon.common.rfn.gatewayFirmwareUpdateStatus.SERVER_ERROR">Server error</entry>
+    
+    <!-- DREncryption enum -->
+    <entry key="yukon.common.drEncryption.HONEYWELL">Honeywell</entry>
     
 </properties>
