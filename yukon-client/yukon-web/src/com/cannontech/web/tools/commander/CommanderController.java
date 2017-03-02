@@ -560,7 +560,7 @@ public class CommanderController {
                 // Target selected is a new target, add target to the recent targets preferences
                 if (recentTargets.size() == RECENT_TARGET_MAXIMUM_SIZE_LIMIT) {
                     // Maintain the recent targets list size count, remove the oldest element - LRU at the end of List
-                    recentTargets.remove(9);
+                    recentTargets.remove(RECENT_TARGET_MAXIMUM_SIZE_LIMIT - 1);
                 }
                 recentTargets.add(0, currentTarget); // Recent target at the top of list
             }
