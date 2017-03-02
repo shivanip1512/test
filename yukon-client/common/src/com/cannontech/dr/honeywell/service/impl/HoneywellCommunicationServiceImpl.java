@@ -244,10 +244,9 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
     }
     
     private HttpHeaders getHttpHeaders(String url, HttpMethod httpMethod, String body) {
-
-        TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
         Date date = new Date();
         SimpleDateFormat simFormatter = new SimpleDateFormat("E, dd MMM yyyy HH:mm:ss z");
+        simFormatter.setTimeZone(TimeZone.getTimeZone("GMT"));
         String formattedDate = simFormatter.format(date);
         
         HttpHeaders newheaders = new HttpHeaders();
