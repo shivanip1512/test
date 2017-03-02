@@ -6,6 +6,7 @@ public class CreateMeterModel extends MeterModel {
     
     private PaoType type;
     private boolean createPoints = true;
+    private Boolean copyPoints = false;
     private String serialNumber;
     private String manufacturer;
     private String model;
@@ -29,6 +30,14 @@ public class CreateMeterModel extends MeterModel {
         this.createPoints = createPoints;
     }
 
+    public boolean isCopyPoints() {
+        return copyPoints;
+    }
+    
+    public void setCopyPoints(boolean copyPoints) {
+        this.copyPoints = copyPoints;
+    }
+    
     public String getSerialNumber() {
         return serialNumber;
     }

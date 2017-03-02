@@ -67,8 +67,10 @@
     <entry key="yukon.web.components.button.configure.label">Configure</entry>
     <entry key="yukon.web.components.button.confirm.label">Confirm</entry>
     <entry key="yukon.web.components.button.copy.label">Copy</entry>
+    <entry key="yukon.web.components.button.copy.points.label">Copy Meter</entry>
     <entry key="yukon.web.components.button.create.label">Create</entry>
     <entry key="yukon.web.components.button.csv.label">Download CSV</entry>
+    <entry key="yukon.web.components.button.default.label">Default Points</entry>
     <entry key="yukon.web.components.button.delete.label">Delete</entry>
     <entry key="yukon.web.components.button.delete.labelBusy">Deleting</entry>
     <entry key="yukon.web.components.button.disable.label">Disable</entry>

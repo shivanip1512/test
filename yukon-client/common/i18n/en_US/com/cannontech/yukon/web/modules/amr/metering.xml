@@ -16,6 +16,8 @@
     <entry key="yukon.web.widgets.meterInformationWidget.manufacturer">Manufacturer</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.status">Status</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.createPoints">Create Default Points</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.copyPoints">Create Points</entry>
+    <entry key="yukon.web.widgets.meterInformationWidget.copyChoice">Use Default/Copy</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.ports">Comm Channel</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.ping.label">Ping</entry>
     <entry key="yukon.web.widgets.meterInformationWidget.ping.labelBusy">Pinging</entry>

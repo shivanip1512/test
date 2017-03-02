@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
-import org.jfree.util.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -24,13 +23,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.amr.disconnect.service.DisconnectService;
+import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterByGenerator;
 import com.cannontech.amr.meter.search.service.MeterSearchService;
-import com.cannontech.amr.meter.service.MeterService;
+import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.collection.DeviceFilterCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -57,7 +57,6 @@ import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnGateway;
-import com.cannontech.common.rfn.service.impl.RfnRelayServiceImpl;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.DeviceDao;
@@ -88,7 +87,6 @@ import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.widget.meterInfo.model.CreateMeterModel;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
@@ -123,7 +121,7 @@ public class MeterController {
     @Autowired private DeviceCreationService deviceCreationService;
     @Autowired private ServerDatabaseCache serverDatabaseCache;
     @Autowired private MeterTypeHelper meterTypeHelper;
-    @Autowired private MeterService meterService;
+    @Autowired private MeterDao meterDao;
     private static final Logger log = YukonLogManager.getLogger(MeterController.class); 
 
     private static final String baseKey = "yukon.web.modules.amr.meterSearchResults";
@@ -332,6 +330,31 @@ public class MeterController {
         return "create.jsp";
     }
     
+    @RequestMapping(value="copy/{deviceId}", method=RequestMethod.GET)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
+    public String copy(ModelMap model, LiteYukonUser user, @PathVariable Integer deviceId) throws Exception {
+        YukonMeter meterOriginal = meterDao.getForId(deviceId);
+        CreateMeterModel meter = new CreateMeterModel();
+        meter.setType(meterOriginal.getPaoType());
+        if (meterOriginal instanceof RfnMeter) {
+            meter.setManufacturer(((RfnMeter)meterOriginal).getRfnIdentifier().getSensorManufacturer());
+            meter.setModel(((RfnMeter)meterOriginal).getRfnIdentifier().getSensorModel());
+        }
+        setupCopyModel(model, meter);
+        model.addAttribute("meter", meter);
+        return "copy.jsp";
+    }
+    
+    private void setupCopyModel(ModelMap model, CreateMeterModel meter) {
+        setupModel(model);
+        if (meter.getType().isRfMeter()) {
+            model.addAttribute("showRFMeshSettings", true);
+        }
+        else if (meter.getType().isPlc()) {
+            model.addAttribute("showCarrierSettings", true);
+        }
+    }
+
     @RequestMapping(value="save", method=RequestMethod.POST)
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String save(@ModelAttribute("meter") CreateMeterModel meter, BindingResult result, HttpServletResponse resp, ModelMap model, LiteYukonUser user, FlashScope flash) throws Exception {
@@ -364,6 +387,64 @@ public class MeterController {
             model.addAttribute("errorMessage", e.getMessage());
             
             return "create.jsp";
+        }
+        
+        deviceDao.changeMeterNumber(device, meter.getMeterNumber());
+        if (meter.isDisabled()) {
+           deviceDao.disableDevice(device); 
+        }
+        Map<String, Object> json = new HashMap<>();
+        json.put("deviceId", device.getDeviceId());
+        resp.setContentType("application/json");
+        JsonUtils.getWriter().writeValue(resp.getOutputStream(), json);
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.create.successful", meter.getName()));
+        return null;
+    }
+    
+    @RequestMapping(value="copy", method=RequestMethod.POST)
+    @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
+    public String copy(@ModelAttribute("meter") CreateMeterModel meter, BindingResult result, HttpServletResponse resp, ModelMap model, LiteYukonUser user, FlashScope flash) throws Exception {
+        
+        meterValidator.validate(meter, result);
+
+        if (result.hasErrors()) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            setupCopyModel(model, meter);        
+            
+            return "copy.jsp";
+        }
+        
+        SimpleDevice device = null;
+        try {
+            if (meter.getType().isMct()) {
+                if (meter.isCopyPoints() && meter.isCreatePoints()) {
+                    device = deviceCreationService.createDeviceByTemplate("mct1", meter.getName(), meter.isCopyPoints());
+                } else {
+                    device = deviceCreationService.createCarrierDeviceByDeviceType(meter.getType(), meter.getName(), meter.getAddress(), meter.getRouteId(), meter.isCreatePoints());
+                }
+            }
+            else if (meter.getType().isRfMeter()) {
+                RfnIdentifier rfnId = new RfnIdentifier(meter.getSerialNumber(), meter.getManufacturer(), meter.getModel());
+                if (meter.isCopyPoints() && meter.isCreatePoints()) {
+                    device = deviceCreationService.createRfnDeviceByTemplate("453", meter.getName(), rfnId, meter.isCopyPoints());
+                } else {
+                    device = deviceCreationService.createRfnDeviceByDeviceType(meter.getType(), meter.getName(), rfnId, meter.isCreatePoints());
+                }
+            }
+            else {
+                if (meter.isCopyPoints() && meter.isCreatePoints()) {
+                    device = deviceCreationService.createDeviceByTemplate("alphaTest", meter.getName(), meter.isCopyPoints());
+                } else {
+                    device = deviceCreationService.createIEDDeviceByDeviceType(meter.getType(), meter.getName(),meter.getPortId(), meter.isCreatePoints());
+                }
+            }
+        }
+        catch (DeviceCreationException e) {
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            setupCopyModel(model, meter);
+            model.addAttribute("errorMessage", e.getMessage());
+            
+            return "copy.jsp";
         }
         
         deviceDao.changeMeterNumber(device, meter.getMeterNumber());

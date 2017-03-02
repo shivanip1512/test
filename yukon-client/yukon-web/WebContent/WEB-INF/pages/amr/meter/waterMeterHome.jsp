@@ -12,8 +12,10 @@
     <dt:pickerIncludes/>
     <!-- Meter Create Popup -->
     <cti:msg2 key="yukon.web.modules.amr.create" var="popupTitle"/>
+    <cti:msg2 key="yukon.web.modules.amr.copy" var="copyTitle"/>
     <div id="contentPopup" class="dn"
-        data-title="${popupTitle}"></div>
+        data-title1="${popupTitle}"
+        data-title2="${copyTitle}"></div>
     
     <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
         <cti:param name="collectionType" value="idList" />
@@ -28,7 +30,10 @@
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
             <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" icon="icon-plus-green" data-popup-title="${popupTitle}"/>
         </cti:checkRolesAndProperties>
-        
+        <!--  Meter Copy Button -->
+            <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
+                <cm:dropdownOption key="yukon.web.modules.amr.copy" classes="js-copy-meter" icon="icon-page-copy" data-popup-title="${copyTitle}"/>
+            </cti:checkRolesAndProperties>
         <!-- Delete Meter Button -->
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="OWNER">
             <cm:dropdownOption id="deleteMeter" key="yukon.web.modules.amr.delete" classes="js-hide-dropdown" icon="icon-cross" onclick="$('#delete-meter-form').submit();" />

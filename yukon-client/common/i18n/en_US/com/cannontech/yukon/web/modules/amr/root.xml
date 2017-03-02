@@ -20,6 +20,7 @@
     <entry key="yukon.web.modules.amr.meteringStart.contextualPageName">AMI</entry>
     <entry key="yukon.web.modules.amr.meteringStart.pageTitle">Metering</entry>
     <entry key="yukon.web.modules.amr.create">Create Meter</entry>
+    <entry key="yukon.web.modules.amr.copy">Copy Meter</entry>
     <entry key="yukon.web.modules.amr.delete">Delete Meter</entry>
     
     <entry key="yukon.web.modules.tools.deviceGroupUpload.pageName">Device Group</entry>
