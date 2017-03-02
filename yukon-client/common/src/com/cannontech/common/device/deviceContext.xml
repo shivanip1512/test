@@ -48,7 +48,7 @@
     
     <bean class="com.cannontech.common.pao.definition.loader.DefinitionLoaderServiceImpl"/>
               
-    <bean class="com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl"/>
+    <bean id="paoDefinitionDao" class="com.cannontech.common.pao.definition.dao.PaoDefinitionDaoImpl"/>
     
     <bean id="attrDynamicDataSource" class="com.cannontech.common.pao.attribute.service.AttributeDynamicDataSource"/>
     
