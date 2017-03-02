@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -177,7 +176,9 @@ public class CbcController {
         model.addAttribute("cbcId", cbc.getId());
         model.addAttribute("cbcName", cbc.getName());
 
-        Set<PaoType> cbcTypes = PaoType.getCbcTypes().stream().filter(cbcType -> paoDefinitionDao.getPaoDefinition(cbcType).isCreatable()).collect(Collectors.toSet());
+        List<PaoType> cbcTypes =
+            PaoType.getCbcTypes().stream().filter(cbcType -> paoDefinitionDao.getPaoDefinition(cbcType).isCreatable()).collect(
+                Collectors.toList());
             
         model.addAttribute("paoTypes", cbcTypes);
         model.addAttribute("timeIntervals", TimeIntervals.getCapControlIntervals());

@@ -341,6 +341,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             LM_HONEYWELL_PROGRAM);
         
         cbcTypes = ImmutableSet.of(
+            CBC_EXPRESSCOM,
             CAPBANKCONTROLLER,
             CBC_7010,
             CBC_7011,
@@ -352,7 +353,6 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             CBC_8020,
             CBC_8024,
             CBC_DNP,
-            CBC_EXPRESSCOM,
             CBC_FP_2800,
             DNP_CBC_6510);
         
