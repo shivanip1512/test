@@ -24,26 +24,12 @@
 
 <%@ attribute name="classes" description="CSS class names applied to the button element." %>
 <%@ attribute name="id" description="The html id attribute of the radio input." %>
+<%@ attribute name="onclick" description="Event to fire on click." %>
+
 
 <cti:default var="checked" value="${false}"/>
 <cti:default var="disabled" value="${false}"/>
-<script>
-    $('.js-eye-icon').each(function(i, item) {
-        item.onclick = clickedIt;
-    });
 
-    function clickedIt() {
-        var targetRow = $(this).closest('.switch-btn');
-        var id = targetRow.find('.switch-btn-checkbox').attr('id');
-        var isSelected = targetRow.find('.switch-btn-checkbox').prop('checked');
-        showHideData(id, !isSelected);
-    }
-
-    function showHideData(id, showData) {
-        var sensitiveField = $('#sensitiveField_' + id);
-        sensitiveField.attr('type', showData ? 'text' : 'password');   
-    }
-</script>
 <cti:displayForPageEditModes modes="VIEW">
     <c:if test="${not empty path}">
         <spring:bind path="${path}">
@@ -71,11 +57,12 @@
             <c:when test="${not empty name}">
                 <input type="checkbox" class="switch-btn-checkbox" name="${name}" value="${value}" 
                     <c:if test="${not empty pageScope.id}">id="${id}"</c:if> 
+                    <c:if test="${not empty pageScope.onclick}">onclick="${onclick}"</c:if> 
                     <c:if test="${checked}">checked</c:if> 
                     <c:if test="${disabled}">disabled</c:if>>
             </c:when>
             <c:otherwise>
-                <form:checkbox class="switch-btn-checkbox" path="${path}" id="${id}" disabled="${disabled}"/>
+                <form:checkbox class="switch-btn-checkbox" path="${path}" id="${id}" onclick="${onclick}" disabled="${disabled}"/>
             </c:otherwise>
         </c:choose>
         <span class="button ${pageScope.classes} yes">

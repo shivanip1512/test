@@ -54,12 +54,7 @@
                                 <div class="value">
                                         <c:choose>
                                             <c:when test="${setting.extra.sensitiveInformation}">
-                                                <div class="dib M0">
-                                                    <form:password path="${setting.path}" id="sensitiveField_${setting.extra.type}" showPassword="true" />
-                                                    <tags:check id="${setting.extra.type}" name="showHideButton_${setting.extra.type}" classes="fr M0 js-eye-icon">
-                                                        <i title="<i:inline key="yukon.web.modules.adminSetup.config.showHideData"/>" class="icon icon-eye" id="showhide_${setting.extra.type}"></i>
-                                                    </tags:check>
-                                                </div>
+                                                <tags:password path="${setting.path}" showPassword="true" includeShowHideButton="true"/>
                                             </c:when>
                                             <c:otherwise>
                                                 <tags:simpleInputType id="${setting.extra.type}" input="${setting.valueType}" path="${setting.path}" />
