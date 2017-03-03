@@ -254,7 +254,7 @@ BOOST_AUTO_TEST_CASE( test_processPacket_three_points )
         BOOST_CHECK_EQUAL( reportValue.metricId, 5 );
         BOOST_CHECK_EQUAL( reportValue.quality, AbnormalQuality );
         BOOST_CHECK_EQUAL( reportValue.timestamp, make_time_point(2016, 7, 12, 22, 13, 18) );
-        BOOST_CHECK_CLOSE( reportValue.value, 3.735928559, 1e-8 );
+        BOOST_CHECK_CLOSE( reportValue.value, -0.559038737, 1e-8 );
     }
 
     {
@@ -272,7 +272,7 @@ BOOST_AUTO_TEST_CASE( test_processPacket_three_points )
         BOOST_CHECK_EQUAL( reportValue.metricId, 80 );
         BOOST_CHECK_EQUAL( reportValue.quality, UnknownQuality );
         BOOST_CHECK_EQUAL( reportValue.timestamp, make_time_point(2152, 2, 7, 6, 28, 15) );
-        BOOST_CHECK_CLOSE( reportValue.value, 4.294967295e+18, 1e-8 );
+        BOOST_CHECK_CLOSE( reportValue.value, -1'000'000'000, 1e-8 );
     }
 }
 
@@ -291,7 +291,7 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
             {   
                 {   5,
                     make_time_point(2016, 7, 12, 22, 13, 18),  //  GMT
-                    3.735928559,
+                    -0.559038737,
                     AbnormalQuality },
                 {   115,
                     make_time_point(2016, 7, 12, 22, 13, 17),  //  GMT
@@ -299,7 +299,7 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
                     InvalidQuality },
                 {   80,
                     make_time_point(2152, 2, 7, 6, 28, 15),    //  GMT
-                    4.294967295e+18,
+                    -1'000'000'000,
                     UnknownQuality } } };
 
         auto pdata = p.processDeviceReport(r);
@@ -311,11 +311,11 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
         {
             auto& pdatum = *pdata_itr++;
 
-            BOOST_CHECK_CLOSE(pdatum->getValue(), 0.003735928559, 1e-8);
+            BOOST_CHECK_CLOSE(pdatum->getValue(), -0.000559038737, 1e-8);
             BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 12, 7, 2016 ), 18, 13, 18 ));
             BOOST_CHECK_EQUAL(pdatum->getId(), 123101);  //  device ID 123, point offset 101
             BOOST_CHECK_EQUAL(pdatum->getType(), 1);  //  Analog
-            BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS GARGANTUAN (123) / Analog101 = 0.003736 @ 07/12/2016 18:13:18");
+            BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS GARGANTUAN (123) / Analog101 = -0.000559 @ 07/12/2016 18:13:18");
         }
         {
             auto& pdatum = *pdata_itr++;
@@ -333,7 +333,7 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
             {   
                 {   5,
                     make_time_point(2016, 7, 12, 22, 13, 18),
-                    3.735928559,
+                    -0.559038737,
                     AbnormalQuality } } };
 
         auto pdata = p.processDeviceReport(r);
@@ -346,7 +346,7 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
             {   
                 {   80,
                     make_time_point(2016, 7, 12, 22, 13, 18),
-                    3.735928559,
+                    -0.559038737,
                     AbnormalQuality },
                 {   100,
                     make_time_point(2016, 7, 12, 22, 13, 17),
@@ -354,7 +354,7 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
                     InvalidQuality },
                 {   103,
                     make_time_point(2152, 2, 7, 6, 28, 15),
-                    4.294967295e+18,
+                    -1'000'000'000,
                     UnknownQuality } } };
 
         auto pdata = p.processDeviceReport(r);
@@ -366,11 +366,11 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
         {
             auto& pdatum = *pdata_itr++;
 
-            BOOST_CHECK_CLOSE(pdatum->getValue(), 111.207785677, 1e-8);
+            BOOST_CHECK_CLOSE(pdatum->getValue(), 99.998322884, 1e-8);
             BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 12, 7, 2016 ), 18, 13, 18 ));
             BOOST_CHECK_EQUAL(pdatum->getId(), 499133);  //  device ID 123, point offset 10
             BOOST_CHECK_EQUAL(pdatum->getType(), 1);  //  Analog
-            BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS TURKEY TOM (499) / Analog133 = 111.207786 @ 07/12/2016 18:13:18");
+            BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS TURKEY TOM (499) / Analog133 = 99.998323 @ 07/12/2016 18:13:18");
         }
         {
             auto& pdatum = *pdata_itr++;
@@ -384,11 +384,11 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
         {
             auto& pdatum = *pdata_itr++;
 
-            BOOST_CHECK_CLOSE(pdatum->getValue(), 1.2884901885e+19, 1e-8);
+            BOOST_CHECK_CLOSE(pdatum->getValue(), -2'999'999'900.0, 1e-8);
             BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 7, 2, 2152 ), 1, 28, 15 ));
             BOOST_CHECK_EQUAL(pdatum->getId(), 499073);  
             BOOST_CHECK_EQUAL(pdatum->getType(), 1);  //  Analog
-            BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS TURKEY TOM (499) / Analog73 = 12884901884999999488.000000 @ 02/07/2152 01:28:15");
+            BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS TURKEY TOM (499) / Analog73 = -2999999900.000000 @ 02/07/2152 01:28:15");
         }
     }
     {
@@ -397,7 +397,7 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
             {   
                 {   5,
                     make_time_point(2016, 7, 12, 22, 13, 18),
-                    3.735928559,
+                    -0.559038737,
                     AbnormalQuality },
                 {   115,
                     make_time_point(2016, 7, 12, 22, 13, 17),
@@ -405,7 +405,7 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
                     InvalidQuality },
                 {   80,
                     make_time_point(2152, 2, 7, 6, 28, 15),
-                    4.294967295e+18,
+                    -1'000'000'000,
                     UnknownQuality } } };
 
         auto pdata = p.processDeviceReport(r);

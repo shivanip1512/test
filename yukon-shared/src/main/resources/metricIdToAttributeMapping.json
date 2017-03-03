@@ -41,9 +41,9 @@
                 { "metricId" : 49, "attributeMagnitude" : 3, "attribute" : "DELIVERED_KVA" },
                 { "metricId" : 50, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVA" },
 
-                { "metricId" : 80, "attribute" : "POWER_FACTOR" },
-                { "metricId" : 81, "attribute" : "DELIVERED_POWER_FACTOR" },
-                { "metricId" : 82, "attribute" : "RECEIVED_POWER_FACTOR" },
+                { "metricId" : 80, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR" },
+                { "metricId" : 81, "attributeMagnitude" : 3, "attribute" : "DELIVERED_POWER_FACTOR" },
+                { "metricId" : 82, "attributeMagnitude" : 3, "attribute" : "RECEIVED_POWER_FACTOR" },
 
 
                 { "metricId" : 100, "attribute" : "VOLTAGE_PHASE_A" },
@@ -60,9 +60,9 @@
                 
                 { "metricId" : 128, "attribute" : "NEUTRAL_CURRENT" },
 
-                { "metricId" : 162, "attribute" : "POWER_FACTOR_PHASE_A" },
-                { "metricId" : 163, "attribute" : "POWER_FACTOR_PHASE_B" },
-                { "metricId" : 164, "attribute" : "POWER_FACTOR_PHASE_C" },
+                { "metricId" : 162, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_PHASE_A" },
+                { "metricId" : 163, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_PHASE_B" },
+                { "metricId" : 164, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_PHASE_C" },
 
                 { "metricId" : 257, "attribute" : "TEMPERATURE_DEVICE" },
 

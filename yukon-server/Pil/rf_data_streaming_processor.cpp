@@ -103,6 +103,11 @@ uint32_t get_uint32(std::vector<unsigned char>::const_iterator itr)
     return *itr++ << 24 | *itr++ << 16 | *itr++ << 8 | *itr++;
 }
 
+int32_t get_int32(std::vector<unsigned char>::const_iterator itr)
+{
+    return *itr++ << 24 | *itr++ << 16 | *itr++ << 8 | *itr++;
+}
+
 double scaling(uint8_t dataScaling)
 {
     switch( dataScaling )
@@ -180,7 +185,7 @@ auto RfDataStreamingProcessor::processPacket(const Packet &p) -> DeviceReport
         const auto metricId  = get_uint16(payload.begin() + offset);
         const auto timestamp = get_uint32(payload.begin() + offset + 2);
         const auto modifier  = get_uint8 (payload.begin() + offset + 6);
-        const auto dataValue = get_uint32(payload.begin() + offset + 7);
+        const auto dataValue = get_int32 (payload.begin() + offset + 7);
 
         dr.values.emplace_back(Value{
             metricId,
