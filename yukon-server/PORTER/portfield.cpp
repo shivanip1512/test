@@ -3190,7 +3190,7 @@ Cti::Optional<repeater_info> findRepeaterInRouteByAddress( int routeId, const Ma
             const unsigned originalMacroOffset =
                 (retryMacroOffset && *retryMacroOffset)
                 ? *retryMacroOffset - 1
-                : macroRoute->getSubrouteIds().size() - 1;
+                : macroRoute->getSubrouteIds().size() - 1; // If retryMacroOffset is 0 or not set, assume it executed on the final macro route.
 
             if (CtiRouteSPtr subroute = macroRoute->getSubroute(originalMacroOffset))
             {
