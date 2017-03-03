@@ -401,24 +401,23 @@ public class MeterController {
         return null;
     }
     
-    @RequestMapping(value="copy", method=RequestMethod.POST)
+    @RequestMapping(value="copy/{deviceId}", method=RequestMethod.POST)
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
-    public String copy(@ModelAttribute("meter") CreateMeterModel meter, BindingResult result, HttpServletResponse resp, ModelMap model, LiteYukonUser user, FlashScope flash) throws Exception {
+    public String copy(@ModelAttribute("meter") CreateMeterModel meter, BindingResult result, HttpServletResponse resp, ModelMap model, LiteYukonUser user, @PathVariable Integer deviceId, FlashScope flash) throws Exception {
         
         meterValidator.validate(meter, result);
-
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             setupCopyModel(model, meter);        
             
             return "copy.jsp";
         }
-        
+        String templateName = meterDao.getForId(deviceId).getName();
         SimpleDevice device = null;
         try {
             if (meter.getType().isMct()) {
                 if (meter.isCopyPoints() && meter.isCreatePoints()) {
-                    device = deviceCreationService.createDeviceByTemplate("mct1", meter.getName(), meter.isCopyPoints());
+                    device = deviceCreationService.createDeviceByTemplate(templateName, meter.getName(), meter.isCopyPoints());
                 } else {
                     device = deviceCreationService.createCarrierDeviceByDeviceType(meter.getType(), meter.getName(), meter.getAddress(), meter.getRouteId(), meter.isCreatePoints());
                 }
@@ -426,14 +425,14 @@ public class MeterController {
             else if (meter.getType().isRfMeter()) {
                 RfnIdentifier rfnId = new RfnIdentifier(meter.getSerialNumber(), meter.getManufacturer(), meter.getModel());
                 if (meter.isCopyPoints() && meter.isCreatePoints()) {
-                    device = deviceCreationService.createRfnDeviceByTemplate("453", meter.getName(), rfnId, meter.isCopyPoints());
+                    device = deviceCreationService.createRfnDeviceByTemplate(templateName, meter.getName(), rfnId, meter.isCopyPoints());
                 } else {
                     device = deviceCreationService.createRfnDeviceByDeviceType(meter.getType(), meter.getName(), rfnId, meter.isCreatePoints());
                 }
             }
             else {
                 if (meter.isCopyPoints() && meter.isCreatePoints()) {
-                    device = deviceCreationService.createDeviceByTemplate("alphaTest", meter.getName(), meter.isCopyPoints());
+                    device = deviceCreationService.createDeviceByTemplate(templateName, meter.getName(), meter.isCopyPoints());
                 } else {
                     device = deviceCreationService.createIEDDeviceByDeviceType(meter.getType(), meter.getName(),meter.getPortId(), meter.isCreatePoints());
                 }

@@ -17,12 +17,9 @@ yukon.ami.meterDetails = (function () {
             updateMeterTypeFields : function() {
                 var rfMeterTypes = yukon.fromJson('#rf-meter-types'),
                     mctMeterTypes = yukon.fromJson('#mct-meter-types'),
-                    meterType = $('#meter-type').val();
-                if (meterType==null) {
-                    meterType = $('.meter-type').val();
-                    }
-                var isRF = rfMeterTypes.indexOf(meterType) !== -1,
-                isMCT = mctMeterTypes.indexOf(meterType) !== -1;
+                    meterType = $('#meter-type').val(),
+                    isRF = rfMeterTypes.indexOf(meterType) !== -1,
+                    isMCT = mctMeterTypes.indexOf(meterType) !== -1;
                 if (isRF) {
                     $('.js-rf-fields').removeClass('dn');
                     $('.js-mct-fields').addClass('dn');
@@ -39,17 +36,6 @@ yukon.ami.meterDetails = (function () {
                 }
                 
             },
-            toggle : function() {
-                var toggleRow = $('.js-toggle-hide'),
-                check = $('.js-click'),
-                configTypeRow = check.closest('tr'),
-                newConfig = configTypeRow.find('.switch-btn-checkbox').prop('checked');;
-                if (newConfig) {
-                    toggleRow.removeClass('dn');
-                } else {
-                    toggleRow.addClass('dn');
-                }
-            },
         
         /** Initialize this module. */
         init: function () {
@@ -63,14 +49,8 @@ yukon.ami.meterDetails = (function () {
                     },
                     error: function (xhr, status, error, $form) {
                         $('#contentPopup').html(xhr.responseText);
-                        mod.updateMeterTypeFields();
-                        mod.toggle();
-                    }
+                        mod.updateMeterTypeFields();                    }
                 });
-            });
-            
-            $(document).on('click', '.js-click', function () {
-                mod.toggle();
             });
             
             $('#commander-menu-option').click(function (ev) {
