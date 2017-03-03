@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(test_GetAttributeDescription_success)
 
         BOOST_CHECK(attribDesc.attrib == Attribute::PowerFactor);
         BOOST_CHECK_EQUAL(attribDesc.attrib.getName(), "POWER_FACTOR");
-        BOOST_CHECK_EQUAL(attribDesc.magnitude, 0);
+        BOOST_CHECK_EQUAL(attribDesc.magnitude, 3);
     }
 }
 
