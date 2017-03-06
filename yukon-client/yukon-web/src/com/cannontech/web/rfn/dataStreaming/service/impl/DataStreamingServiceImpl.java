@@ -82,6 +82,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingPorterConnection;
+import com.cannontech.web.rfn.dataStreaming.DataStreamingPorterConnection.CommandType;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfigResult;
@@ -98,6 +99,7 @@ import com.cannontech.yukon.conns.ConnPool;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
@@ -329,6 +331,12 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 boolean displayRemove = result.getLastCommunicated() == null || ignoreTimeCheck
                     || result.getLastCommunicated().isBefore(oneWeekAgo);
                 result.setDisplayRemove(displayRemove);
+                //display read if status for one of the metrics is not OK
+                result.setDisplayRead(reportedConfig != null ? reportedConfig.getAttributes().stream()
+                                                                .filter(r -> r.getStatus() != DataStreamingMetricStatus.OK)
+                                                                .findFirst()
+                                                                .map(foundNotOkMetric -> true)
+                                                                .orElse(false) : false);
                 results.add(result);
             }
         }
@@ -642,6 +650,25 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     @Override
+    public DataStreamingConfigResult read(int deviceId, LiteYukonUser user) throws DataStreamingConfigException {
+        DataStreamingConfigResult result = createUncompletedResult();
+        
+        log.info("Reading configuration for device=" + deviceId);
+        
+        logService.readAttempted(user, result.getResultsId(), rfnDeviceDao.getDeviceForId(deviceId).getName());
+        
+        if (isValidPorterConnection()) {
+            DeviceCollection deviceCollection = createDeviceCollectionForIds(Lists.newArrayList(deviceId));
+            int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
+            sendConfiguration(user, deviceCollection, requestSeqNumber, result, CommandType.READ);
+        }else {
+            return createEmptyResult(createDeviceCollectionForIds(Lists.newArrayList(deviceId)), "Porter connection is invalid.");
+        }
+        
+        return result;
+    }
+        
+    @Override
     public DataStreamingConfigResult resend(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException {
         DataStreamingConfigResult result = createUncompletedResult();
         return resend(deviceIds, result, user);
@@ -694,7 +721,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             }
             saveBehaviorReports(deviceIdToBehaviorReport);
             DeviceCollection deviceCollection = createDeviceCollectionForIds(deviceIds);
-            sendConfiguration(user, deviceCollection, requestSeqNumber, result);
+            sendConfiguration(user, deviceCollection, requestSeqNumber, result, CommandType.SEND);
             return result;
         } else {
             return createEmptyResult(createDeviceCollectionForIds(deviceIds), "Porter connection is invalid.");
@@ -767,7 +794,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             saveBehaviorReports(deviceIdToBehaviorReport);
 
             deviceBehaviorDao.unassignBehavior(TYPE, deviceIds);
-            sendConfiguration(user, deviceCollection, requestSeqNumber, result);
+            sendConfiguration(user, deviceCollection, requestSeqNumber, result, CommandType.SEND);
             // mark devices as "success"
             addDevicesToGroup(devicesIdsWithoutBehaviors, result.getSuccessGroup());
             return result;
@@ -853,7 +880,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             
             result.setConfig(config);
 
-            sendConfiguration(user, deviceCollection, requestSeqNumber, result);
+            sendConfiguration(user, deviceCollection, requestSeqNumber, result, CommandType.SEND);
             return result;
         } else {
             return createEmptyResult(deviceCollection, "Porter connection is invalid.");
@@ -1016,8 +1043,8 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     private void sendConfiguration(LiteYukonUser user, DeviceCollection deviceCollection,
-            int requestSeqNumber, DataStreamingConfigResult result) {
-        log.info("Attempting to send configuration command to " + deviceCollection.getDeviceCount() + " devices.");
+            int requestSeqNumber, DataStreamingConfigResult result, CommandType commandType) {
+        log.info("Attempting to "+commandType+" configuration command to " + deviceCollection.getDeviceCount() + " devices.");
 
         CommandRequestExecution execution = commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
             DeviceRequestType.DATA_STREAMING_CONFIG, 0, user);
@@ -1042,7 +1069,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         if (supportedDevices.isEmpty()) {
             callback.complete();
         } else {
-            List<CommandRequestDevice> commands = porterConn.buildConfigurationCommandRequests(supportedDevices);
+            List<CommandRequestDevice> commands = porterConn.buildConfigurationCommandRequests(supportedDevices, commandType);
             porterConn.sendConfiguration(commands, result, user);
         }
         updateRequestCount(execution, supportedDevices.size());

@@ -37,24 +37,33 @@ import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfigResult;
  * messages sent to Porter, which then sends configuration messages to the devices.
  */
 public class DataStreamingPorterConnection {
+    public enum CommandType{
+       READ,
+       SEND
+    }
     private static final Logger log = YukonLogManager.getLogger(DataStreamingPorterConnection.class);
-    private static final CommandCallback commandCallback = new PorterCommandCallback("putconfig behavior rfndatastreaming");
+    private static final CommandCallback sendCallback = new PorterCommandCallback("putconfig behavior rfndatastreaming");
+    private static final CommandCallback readCallback = new PorterCommandCallback("getconfig behavior rfndatastreaming");
+
 
     @Autowired private CommandRequestDeviceExecutor commandExecutor;
     @Autowired private DataStreamingDevSettings devSettings;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
 
-
     /**
      * Build a list of data streaming configuration commands for the specified devices. Porter will use the
      * configurations currently in the database for those devices.
      */
-    public List<CommandRequestDevice> buildConfigurationCommandRequests(Collection<SimpleDevice> devices) {
+    public List<CommandRequestDevice> buildConfigurationCommandRequests(Collection<SimpleDevice> devices, CommandType commandType) {
         List<CommandRequestDevice> commands = devices.stream().map(device -> {
             CommandRequestDevice command = new CommandRequestDevice();
             command.setDevice(device);
-            command.setCommandCallback(commandCallback);
+            if(CommandType.READ == commandType){
+                command.setCommandCallback(readCallback);   
+            }else if(CommandType.SEND == commandType){
+                command.setCommandCallback(sendCallback);   
+            }
             return command;
         }).collect(Collectors.toList());
 

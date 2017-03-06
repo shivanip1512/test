@@ -16,6 +16,7 @@ public class DiscrepancyResult {
     private BehaviorReportStatus status;
     private Instant lastCommunicated;
     private boolean displayRemove;
+    private boolean displayRead;
 
     public DataStreamingConfig getExpected() {
         return expected;
@@ -71,6 +72,14 @@ public class DiscrepancyResult {
 
     public void setDisplayRemove(boolean displayRemove) {
         this.displayRemove = displayRemove;
+    }
+    
+    public void setDisplayRead(boolean displayRead) {
+        this.displayRead = displayRead;
+    }
+    
+    public boolean displayRead() {
+        return displayRead;
     }
     
     @Override

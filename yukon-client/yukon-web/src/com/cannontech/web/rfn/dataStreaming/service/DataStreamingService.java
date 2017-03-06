@@ -123,4 +123,6 @@ public interface DataStreamingService extends DeviceBehaviorStrings{
     List<RfnGateway> getOverloadedGateways() throws DataStreamingConfigException;
 
     DataStreamingConfigResult deleteDataStreamingReportAndUnassignConfig(int deviceId, LiteYukonUser user);
+
+    DataStreamingConfigResult read(int deviceId, LiteYukonUser user) throws DataStreamingConfigException;
 }

@@ -18,6 +18,10 @@ public interface DataStreamingEventLogService {
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn.dataStreaming")
     public void resendAttempted(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.resultKey) String resultKey,
             @Arg(ArgEnum.totalCount) Integer total);
+    
+    @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn.dataStreaming")
+    public void readAttempted(@Arg(ArgEnum.username) LiteYukonUser user, @Arg(ArgEnum.resultKey) String resultKey,
+            @Arg(ArgEnum.deviceName) String deviceName);
 
     @YukonEventLog(transactionality = ExecutorTransactionality.TRANSACTIONAL, category = "system.rfn.dataStreaming")
     public void completedResults(@Arg(ArgEnum.resultKey) String resultKey, @Arg(ArgEnum.totalCount) Integer total,

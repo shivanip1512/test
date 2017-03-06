@@ -110,9 +110,17 @@
                                 <td>
                                     <cti:checkRolesAndProperties value="RF_DATA_STREAMING">
                                         <cm:dropdown icon="icon-cog">
-                                            <cti:url var="resendUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/resend" />
-                                            <cm:dropdownOption id="resendConfiguration_${discrepancy.deviceId}" key=".resend" icon="icon-control-repeat-blue"
-                                                data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:resend" />
+                                            <c:choose>
+                                                <c:when test="${discrepancy.displayRead()}">
+                                                    <cti:url var="readUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/read" />
+                                                    <cm:dropdownOption id="readConfiguration_${discrepancy.deviceId}" key=".read" icon="icon-read" href="${readUrl}"/>
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <cti:url var="resendUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/resend" />
+                                                    <cm:dropdownOption id="resendConfiguration_${discrepancy.deviceId}" key=".resend" icon="icon-control-repeat-blue"
+                                                        data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:resend" />
+                                                </c:otherwise>
+                                            </c:choose>
                                             <d:confirm on="#resendConfiguration_${discrepancy.deviceId}" nameKey="resendConfirmation" argument="${discrepancy.paoName}" />
                                             <cm:dropdownOption id="acceptConfiguration_${discrepancy.deviceId}" key=".accept" icon="icon-accept"
                                                 data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:accept" />
