@@ -356,6 +356,8 @@
     <entry key="yukon.web.dr.consumer.hardwareConfigType.SEP.invalidSerialNumber">Serial number is invalid.</entry>
     <entry key="yukon.web.dr.consumer.hardwareConfigType.ECOBEE">EcoBee</entry>
     <entry key="yukon.web.dr.consumer.hardwareConfigType.ECOBEE.invalidSerialNumber">Serial number is invalid.</entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.HONEYWELL">Honeywell</entry>
+    <entry key="yukon.web.dr.consumer.hardwareConfigType.HONEYWELL.invalidSerialNumber">Serial number is invalid.</entry>
     <!-- savedSchedules.jsp -->
     <entry key="yukon.dr.consumer.savedSchedules.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     
