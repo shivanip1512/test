@@ -112,11 +112,10 @@
                                         <cm:dropdown icon="icon-cog">
                                             <c:choose>
                                                 <c:when test="${discrepancy.displayRead()}">
-                                                    <cti:url var="readUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/read" />
-                                                    <cm:dropdownOption id="readConfiguration_${discrepancy.deviceId}" key=".read" icon="icon-read" href="${readUrl}"/>
+                                                    <cm:dropdownOption id="readConfiguration_${discrepancy.deviceId}" key=".read" icon="icon-read" 
+                                                        data-device-id="${discrepancy.deviceId}" classes="js-read-configuration"/>
                                                 </c:when>
                                                 <c:otherwise>
-                                                    <cti:url var="resendUrl" value="/tools/dataStreaming/discrepancies/${discrepancy.deviceId}/resend" />
                                                     <cm:dropdownOption id="resendConfiguration_${discrepancy.deviceId}" key=".resend" icon="icon-control-repeat-blue"
                                                         data-device-id="${discrepancy.deviceId}" data-ok-event="yukon:tools:dataStreaming:resend" />
                                                 </c:otherwise>

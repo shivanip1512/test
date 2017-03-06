@@ -453,8 +453,7 @@ public class DataStreamingConfigurationsController {
     public String readDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext,
             FlashScope flash, PagingParameters paging, SortingParameters sorting) {
         LiteYukonUser user = userContext.getYukonUser();
-       // String redirectUrl = "redirect:/tools/dataStreaming/discrepancies" + getSortingPagingParameters(sorting, paging);
-        String redirectUrl = "redirect:/tools/dataStreaming/discrepancies";
+        String redirectUrl = "redirect:/tools/dataStreaming/discrepancies" + getSortingPagingParameters(sorting, paging);
         
         DataStreamingConfigResult result;
         try {

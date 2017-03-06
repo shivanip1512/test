@@ -150,6 +150,13 @@ yukon.tools.dataStreaming = (function () {
                 mod.showHideConfigurations();
             });
             
+            $(document).on('click', '.js-read-configuration', function (ev) {
+                var deviceId = $(ev.target).closest('li').attr('data-device-id'),
+                params = {};
+                mod.getSortingPagingParameters(params);
+                window.location.href = yukon.url('/tools/dataStreaming/discrepancies/' + deviceId + '/read?' + $.param(params));            
+            });
+            
             $(document).on('yukon:tools:dataStreaming:resend', function (ev) {
                 var container = $(ev.target),
                 deviceId = container.data('deviceId'),
