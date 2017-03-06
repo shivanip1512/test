@@ -14,6 +14,7 @@
 <cti:url var="updateUrl" value='/support/logging/view/update?file=/${file}' />
 
 <div id="page-buttons" class="dn">
+    <cti:button nameKey="downloadZip" href="download?file=${file}&compressed=true" icon="icon-download"/>
     <cti:button nameKey="download" href="download?file=${file}" icon="icon-download"/>
     <cti:button id="pauseBtn" nameKey="pause" icon="icon-control-pause"/>
     <cti:button id="startBtn" nameKey="resume" icon="icon-control-play"/>

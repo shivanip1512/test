@@ -2,6 +2,7 @@ package com.cannontech.web.support.logging;
 
 import java.beans.PropertyEditor;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,6 +45,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.CollationUtils;
 import com.cannontech.common.util.BinaryPrefix;
 import com.cannontech.common.util.BootstrapUtils;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileUtil;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
@@ -50,7 +53,9 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.tools.zip.ZipWriter;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.input.DatePropertyEditorFactory;
@@ -257,17 +262,37 @@ public class LogExplorerController {
         response.setContentType("text/plain");
 
         String file = ServletRequestUtils.getStringParameter(request, "file", "");
+        boolean compressed = ServletRequestUtils.getBooleanParameter(request, "compressed", false);
         File logFile = sanitizeAndVerify(new File(localDir, file));
         Validate.isTrue(logFile.isFile());
 
-        if (logFile != null) {
-            // set response header to the log filename
-            response.setHeader("Content-Disposition", "attachment; filename=\"" + logFile.getName() + "\"");
-            response.setHeader("Content-Length", Long.toString(logFile.length()));
+        String outputFilename = logFile.getName();
+        File outputFile = logFile;
 
-            // Download the file thru the response object
-            FileCopyUtils.copy(logFile.toURI().toURL().openStream(), response.getOutputStream());
-        }
+        Optional<File> zipFile = Optional.empty();
+
+        if (compressed) {
+            zipFile = Optional.of(File.createTempFile(logFile.getName(), ".zip"));
+
+            ZipWriter zipWriter = new ZipWriter(zipFile.get());
+            zipWriter.writeRawInputStream(new FileInputStream(logFile), logFile.getName());
+            zipWriter.close();
+
+            response.setContentType("application/zip");
+
+            outputFilename = outputFilename.concat(".zip");
+            outputFile = zipFile.get();
+        } 
+
+
+        // set response header to the log filename
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + ServletUtil.urlEncode(outputFilename) + "\"");
+        response.setHeader("Content-Length", Long.toString(outputFile.length()));
+
+        // Download the file thru the response object
+        FileCopyUtils.copy(new FileInputStream(outputFile), response.getOutputStream());
+
+        zipFile.ifPresent(File::delete);
 
         return null;
     }
