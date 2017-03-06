@@ -475,7 +475,7 @@ public class MeterController {
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     @RequestMapping(value="/{id}", method=RequestMethod.DELETE)
     public String delete(FlashScope flash, @PathVariable int id, ModelMap model) {
-        String meterName = meterDao.getForId(id).getName();
+        String meterName = serverDatabaseCache.getAllPaosMap().get(id).getPaoName();
         try {
             deviceDao.removeDevice(id);
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.successful", meterName));
