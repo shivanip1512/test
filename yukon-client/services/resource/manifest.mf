@@ -21,7 +21,7 @@ Class-Path: ./
  jcfield401K.jar 
  jcpagelayout450K.jar 
  jcchart401K.jar 
- SqlServer.jar 
+ sqljdbc42.jar 
  ojdbc6.jar 
  jaxrpc.jar 
  jaxm-runtime.jar 

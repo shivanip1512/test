@@ -124,7 +124,7 @@ public enum JwsJnlp {
                 "spring-webmvc-portlet-4.2.0.RELEASE.jar",
                 "spring-websocket-4.2.0.RELEASE.jar",
                 "spring-xml-2.3.0.RELEASE.jar",
-                "SqlServer.jar",
+                "sqljdbc42.jar",
                 "stax2-api-3.1.4.jar",
                 "xbean-spring-4.5.jar",
                 "xercesImpl-2.11.0.jar",

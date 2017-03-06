@@ -4,7 +4,7 @@ Class-Path: ./
  common.jar 
  jradius-client.jar 
  ojdbc6.jar 
- SqlServer.jar 
+ sqljdbc42.jar 
  monitor.jar 
  yukonappserver.jar 
  servlet-api.jar 

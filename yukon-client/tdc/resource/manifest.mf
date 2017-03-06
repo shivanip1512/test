@@ -11,7 +11,7 @@ Class-Path: ./
  jcfield401K.jar 
  jcpagelayout450K.jar 
  ojdbc6.jar 
- SqlServer.jar 
+ sqljdbc42.jar 
  servlet-api.jar 
  ../log/ 
  ../export/ 

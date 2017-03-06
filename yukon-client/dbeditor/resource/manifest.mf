@@ -9,7 +9,7 @@ Class-Path:
  yukonappserver.jar 
  jcfield401K.jar 
  ojdbc6.jar 
- SqlServer.jar 
+ sqljdbc42.jar 
  servlet-api.jar 
  ../log/ 
  ../export/ 

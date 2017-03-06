@@ -11,7 +11,7 @@ Class-Path: ./
  yukonappserver.jar 
  jcpagelayout450K.jar 
  junit.jar 
- SqlServer.jar 
+ sqljdbc42.jar 
  ojdbc6.jar 
  ../log/ 
  ../export/ 

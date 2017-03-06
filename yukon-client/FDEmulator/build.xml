@@ -27,7 +27,7 @@
         <attribute name="Yukon-Details" value="${yukon.build.details}"/>
         <attribute name="Permissions" value="all-permissions"/>
         <attribute name="Main-Class" value="com.cannontech.fdemulator.common.FDEmulator"/>
-        <attribute name="Class-Path" value="./ common.jar yukonappserver.jar SqlServer.jar ../log/ ../export/"/>
+        <attribute name="Class-Path" value="./ common.jar yukonappserver.jar sqljdbc42.jar ../log/ ../export/"/>
       </manifest>
       <fileset dir="src/main/resources"/>
     </jar>
@@ -50,7 +50,7 @@
       <fileset file="${yukon.lib}/fdemulator.jar"/>
       <fileset file="${yukon.lib}/common.jar"/>
       <fileset file="${yukon.lib}/yukonappserver.jar"/>
-      <fileset file="${yukon.lib}/SqlServer.jar"/>
+      <fileset file="${yukon.lib}/sqljdbc42.jar"/>
       <fileset file="${yukon.lib}/guava-13.0.1.jar"/>
       <fileset file="${yukon.lib}/joda-time-2.3.jar"/>
       <fileset file="${yukon.lib}/log4j-1.2.17.jar"/>

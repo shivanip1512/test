@@ -7,7 +7,7 @@
 	</classpathentry>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="test/unit"/>
-	<classpathentry kind="lib" path="/third-party/SqlServer.jar">
+	<classpathentry kind="lib" path="/third-party/sqljdbc42.jar">
 		<attributes>
 			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
 		</attributes>

@@ -12,7 +12,7 @@ Class-Path: ./
  mx4j-rjmx.jar 
  vvr_tools.jar 
  yukonappserver.jar 
- SqlServer.jar 
+ sqljdbc42.jar 
  ojdbc6.jar 
  spring-aop-4.2.0.RELEASE.jar 
  spring-aspects-4.2.0.RELEASE.jar 

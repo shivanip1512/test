@@ -37,7 +37,7 @@ public class PoolManager {
     
     public static final String[] ALL_DRIVERS = { 
         "oracle.jdbc.OracleDriver",
-        "com.microsoft.jdbc.sqlserver.SQLServerDriver",
+        "com.microsoft.sqlserver.jdbc.SQLServerDriver",
         "net.sourceforge.jtds.jdbc.Driver"
     };
     

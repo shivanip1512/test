@@ -10,7 +10,7 @@ Class-Path: ./
  mx4j-remote.jar 
  mx4j-rimpl.jar 
  mx4j-rjmx.jar 
- SqlServer.jar 
+ sqljdbc42.jar 
  ojdbc6.jar 
  spring-aop-4.2.0.RELEASE.jar 
  spring-aspects-4.2.0.RELEASE.jar 
