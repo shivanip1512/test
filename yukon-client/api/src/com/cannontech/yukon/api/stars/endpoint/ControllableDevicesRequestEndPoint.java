@@ -21,6 +21,8 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.exception.StarsAccountNotFoundException;
 import com.cannontech.stars.dr.hardware.exception.DeviceMacAddressAlreadyExistsException;
+import com.cannontech.stars.dr.hardware.exception.DeviceMacAddressNotUpdatableException;
+import com.cannontech.stars.dr.hardware.exception.DeviceVendorUserIdNotUpdatableException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyAssignedException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceNotFoundOnAccountException;
@@ -245,6 +247,8 @@ public class ControllableDevicesRequestEndPoint {
         DeviceNotFoundOnAccount(StarsDeviceNotFoundOnAccountException.class), 
         SerialNumberAlreadyExists(StarsDeviceSerialNumberAlreadyExistsException.class), 
         MacAddressAlreadyExists(DeviceMacAddressAlreadyExistsException.class),
+        MacAddressNotUpdatable(DeviceMacAddressNotUpdatableException.class),
+        VendorUserIdNotUpdatable(DeviceVendorUserIdNotUpdatableException.class),
         InvalidArgument(StarsInvalidArgumentException.class), 
         InvalidDeviceType(StarsInvalidDeviceTypeException.class), 
         ClientRequestError(StarsClientRequestException.class);

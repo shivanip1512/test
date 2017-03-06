@@ -23,6 +23,8 @@ import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.hardware.builder.impl.HardwareTypeExtensionProvider;
 import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 import com.cannontech.stars.dr.hardware.exception.DeviceMacAddressAlreadyExistsException;
+import com.cannontech.stars.dr.hardware.exception.DeviceMacAddressNotUpdatableException;
+import com.cannontech.stars.dr.hardware.exception.DeviceVendorUserIdNotUpdatableException;
 import com.cannontech.util.Validator;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -109,12 +111,17 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
         String existingMacAddress = honeywellWifiThermostatDao.getHoneywellWifiThermostat(deviceId).getMacAddress();
 
         if (!existingMacAddress.equalsIgnoreCase(macAddress)) {
-            boolean isMacAddressUnique = honeywellWifiThermostatDao.isHoneywellMacAddressUnique(macAddress);
-            if (!isMacAddressUnique) {
-                throw new DeviceMacAddressAlreadyExistsException();
-            }
-            honeywellCommunicationService.registerDevice(macAddress, deviceVendorUserId);
+            throw new DeviceMacAddressNotUpdatableException();
         }
+
+        Integer existingDeviceVendorUserId =
+            honeywellWifiThermostatDao.getHoneywellWifiThermostat(deviceId).getDeviceVendorUserId();
+        
+        if (existingDeviceVendorUserId != deviceVendorUserId) {
+            throw new DeviceVendorUserIdNotUpdatableException();
+        }
+        
+        honeywellCommunicationService.registerDevice(macAddress, deviceVendorUserId);
         CompleteHoneywellWifiThermostat honeywellThermostat =
             paoPersistenceService.retreivePao(pao, CompleteHoneywellWifiThermostat.class);
         honeywellThermostat.setMacAddress(macAddress);

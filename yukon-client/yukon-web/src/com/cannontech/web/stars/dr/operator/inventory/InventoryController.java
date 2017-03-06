@@ -51,7 +51,6 @@ import com.cannontech.stars.database.db.hardware.Warehouse;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
-import com.cannontech.stars.dr.hardware.exception.DeviceMacAddressAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.exception.Lcr3102YukonDeviceCreationException;
 import com.cannontech.stars.dr.hardware.exception.StarsDeviceSerialNumberAlreadyExistsException;
 import com.cannontech.stars.dr.hardware.service.HardwareService;
@@ -234,6 +233,8 @@ public class InventoryController {
         } else if (type.isHoneywell()) {
             model.addAttribute("showMacAddress", true);
             model.addAttribute("showDeviceVendorUserId", true);
+            model.addAttribute("macAddressEditable", true);
+            model.addAttribute("deviceVendorUserIdEditable", true);
         }
 
         boolean showVoltage = !type.isZigbee() 
@@ -344,10 +345,7 @@ public class InventoryController {
                 result.rejectValue("serialNumber", key + "error.nonNumericSerialNumber");
                 break;
             }
-        } catch (DeviceMacAddressAlreadyExistsException e) {
-            result.rejectValue("macAddress",
-                "yukon.web.modules.operator.hardware.error.unavailable.macAddress");
-        }
+        } 
         if (result.hasErrors()) {
             return returnToEditWithErrors(userContext, model, flash, hardware, result);
         }

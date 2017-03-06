@@ -432,10 +432,6 @@ public class OperatorHardwareController {
                 break;
             }
             log.error("Unable to update hardware. ", e);
-        } catch (DeviceMacAddressAlreadyExistsException e) {
-            bindingResult.rejectValue("macAddress",
-                "yukon.web.modules.operator.hardware.error.unavailable.macAddress");
-            log.error("Unable to update hardware. ", e);
         }
         if (bindingResult.hasErrors()) {
             return returnToEditWithErrors(userContext, model, accountInfoFragment, flashScope, hardware, bindingResult);
@@ -731,6 +727,11 @@ public class OperatorHardwareController {
         if (!clazz.isMeter()) {
             model.addAttribute("showSerialNumber", true);
             model.addAttribute("serialNumberEditable", true);
+        }
+        
+        if (type.isHoneywell()) {
+            model.addAttribute("macAddressEditable", true);
+            model.addAttribute("deviceVendorUserIdEditable", true);
         }
     }
 

@@ -115,11 +115,37 @@ $(function() { updateServiceCompanyInfo();});
             </c:if>
             
             <c:if test="${showMacAddress}">
-                <tags:inputNameValue nameKey=".macAddress" path="macAddress" maxlength="23" size="25"/>
-            </c:if>
+                <c:choose>
+                   <c:when test="${macAddressEditable}">
+                       <tags:inputNameValue nameKey=".macAddress" path="macAddress" maxlength="23" size="25"/>
+                   </c:when>
+                   
+                   <c:otherwise>
+                       <tags:nameValue2 nameKey=".macAddress">
+                           <tags:bind path="macAddress">
+                               <form:hidden path="macAddress"/>
+                               ${fn:escapeXml(hardware.macAddress)}
+                           </tags:bind>
+                       </tags:nameValue2>
+                   </c:otherwise>
+                </c:choose>
+           </c:if>
             
             <c:if test="${showDeviceVendorUserId}">
-                <tags:inputNameValue nameKey=".deviceVendorUserId" path="deviceVendorUserId" maxlength="23" size="25"/>
+                <c:choose>
+                       <c:when test="${deviceVendorUserIdEditable}">
+                           <tags:inputNameValue nameKey=".deviceVendorUserId" path="deviceVendorUserId" maxlength="23" size="25"/>
+                       </c:when>
+                       
+                       <c:otherwise>
+                           <tags:nameValue2 nameKey=".deviceVendorUserId">
+                               <tags:bind path="deviceVendorUserId">
+                                   <form:hidden path="deviceVendorUserId"/>
+                                   ${fn:escapeXml(hardware.deviceVendorUserId)}
+                               </tags:bind>
+                           </tags:nameValue2>
+                       </c:otherwise>
+                    </c:choose>
             </c:if>
             
             <c:if test="${showFirmwareVersion}">
