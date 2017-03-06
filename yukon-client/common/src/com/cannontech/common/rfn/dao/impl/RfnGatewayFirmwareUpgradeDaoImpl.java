@@ -164,9 +164,9 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
         sql.append(  "ELSE TEMP.Pending");
         sql.append("END AS Pending,");
         sql.append("CASE");
-        sql.append(  "WHEN TEMP.Successful IS NULL THEN 0");
-        sql.append(  "ELSE TEMP.Successful");
-        sql.append("END AS Successful,");
+        sql.append(  "WHEN TEMP.Success IS NULL THEN 0");
+        sql.append(  "ELSE TEMP.Success");
+        sql.append("END AS Success,");
         sql.append("CASE");
         sql.append(  "WHEN TEMP.Failed IS NULL THEN 0");
         sql.append(  "ELSE Temp.Failed");
@@ -187,7 +187,7 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
         sql.append(   "FROM GatewayFirmwareUpdateEntry gfue");
         sql.append(   "WHERE UpdateStatus").eq_k(GatewayFirmwareUpdateStatus.ACCEPTED);
         sql.append(     "AND gfue.UpdateId = gfu.UpdateId");
-        sql.append(   "GROUP BY UpdateId) AS Successful,");
+        sql.append(   "GROUP BY UpdateId) AS Success,");
         
         // Number of failed gateways
         sql.append(  "(SELECT COUNT(EntryId)");
@@ -350,7 +350,7 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
             summary.setTotalGateways(rs.getInt("GatewayCount"));
             summary.setTotalUpdateServers(rs.getInt("UpdateServerCount"));
             summary.setGatewayUpdatesPending(rs.getInt("Pending"));
-            summary.setGatewayUpdatesSuccessful(rs.getInt("Successful"));
+            summary.setGatewayUpdatesSuccessful(rs.getInt("Success"));
             summary.setGatewayUpdatesFailed(rs.getInt("Failed"));
             
             return summary;
