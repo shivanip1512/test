@@ -1,19 +1,28 @@
 package com.cannontech.web.widget.meterInfo.model;
 
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.pao.PaoType;
 
 public class CreateMeterModel extends MeterModel {
     
     private PaoType type;
-    private boolean createPoints = true;
-    private Boolean copyPoints = false;
     private String serialNumber;
     private String manufacturer;
     private String model;
     private Integer address;
     private Integer portId;
     private int routeId;
+    private PointCreation pointCreation;
+    public static enum PointCreation implements DisplayableEnum {
+        NONE,
+        DEFAULT,
+        COPY;
 
+        @Override
+        public String getFormatKey() {
+            return "yukon.web.modules.amr.pointCreation." + name();
+        }
+    }
     public PaoType getType() {
         return type;
     }
@@ -22,22 +31,6 @@ public class CreateMeterModel extends MeterModel {
         this.type = type;
     }
 
-    public boolean isCreatePoints() {
-        return createPoints;
-    }
-
-    public void setCreatePoints(boolean createPoints) {
-        this.createPoints = createPoints;
-    }
-
-    public boolean isCopyPoints() {
-        return copyPoints;
-    }
-    
-    public void setCopyPoints(boolean copyPoints) {
-        this.copyPoints = copyPoints;
-    }
-    
     public String getSerialNumber() {
         return serialNumber;
     }
@@ -84,5 +77,27 @@ public class CreateMeterModel extends MeterModel {
 
     public void setPortId(Integer portId) {
         this.portId = portId;
+    }
+
+    public PointCreation getPointCreation() {
+        return pointCreation;
+    }
+
+    public void setPointCreation(PointCreation pointCreation) {
+        this.pointCreation = pointCreation;
+    }
+    
+    public boolean isCreatePoints() {
+        if(PointCreation.DEFAULT == getPointCreation()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isCopyPoints() {
+        if(PointCreation.COPY == getPointCreation()) {
+            return true;
+        }
+        return false;
     }
 }

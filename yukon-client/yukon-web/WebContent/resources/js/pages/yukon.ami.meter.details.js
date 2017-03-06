@@ -71,7 +71,9 @@ yukon.ami.meterDetails = (function () {
                 content.load(yukon.url('/meter/create'), function () {
                     content.dialog({
                         title: popupTitle, 
-                        width: 500, 
+                        width: 500,
+                        minWidth: 500,
+                        minHeight: 310,
                         dialogClass: 'ov',
                         buttons: yukon.ui.buttons({ okText: yg.text.create, event: 'yukon.ami.meterDetails.saveMeter' }),
                         modal: true});
@@ -85,7 +87,9 @@ yukon.ami.meterDetails = (function () {
                 content.load(yukon.url('/meter/copy/'+deviceId), function () {
                     content.dialog({
                         title: popupTitle, 
-                        width: 500, 
+                        width: 500,
+                        minWidth: 500,
+                        minHeight: 310,
                         dialogClass: 'ov',
                         buttons: yukon.ui.buttons({ okText: yg.text.create, event: 'yukon.ami.meterDetails.saveMeter' }),
                         modal: true});

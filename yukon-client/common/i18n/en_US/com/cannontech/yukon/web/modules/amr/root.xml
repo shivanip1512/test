@@ -22,6 +22,9 @@
     <entry key="yukon.web.modules.amr.create">Create Meter</entry>
     <entry key="yukon.web.modules.amr.copy">Copy Meter</entry>
     <entry key="yukon.web.modules.amr.delete">Delete Meter</entry>
+    <entry key="yukon.web.modules.amr.pointCreation.NONE">(none)</entry>
+    <entry key="yukon.web.modules.amr.pointCreation.DEFAULT">Default Points</entry>
+    <entry key="yukon.web.modules.amr.pointCreation.COPY">Copy Meter</entry>
     
     <entry key="yukon.web.modules.tools.deviceGroupUpload.pageName">Device Group</entry>
     <entry key="yukon.web.modules.amr.deviceGroupUpload.tab.title">Upload</entry>

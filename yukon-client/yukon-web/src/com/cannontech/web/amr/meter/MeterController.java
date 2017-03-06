@@ -88,6 +88,7 @@ import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.widget.meterInfo.model.CreateMeterModel;
+import com.cannontech.web.widget.meterInfo.model.CreateMeterModel.PointCreation;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
@@ -358,34 +359,21 @@ public class MeterController {
     @RequestMapping(value="save", method=RequestMethod.POST)
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.CREATE)
     public String save(@ModelAttribute("meter") CreateMeterModel meter, BindingResult result, HttpServletResponse resp, ModelMap model, LiteYukonUser user, FlashScope flash) throws Exception {
-        
         meterValidator.validate(meter, result);
-
         if (result.hasErrors()) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             setupModel(model);            
-            
             return "create.jsp";
         }
         
         SimpleDevice device = null;
         try {
-            if (meter.getType().isMct()) {
-                device = deviceCreationService.createCarrierDeviceByDeviceType(meter.getType(), meter.getName(), meter.getAddress(), meter.getRouteId(), meter.isCreatePoints());
-            }
-            else if (meter.getType().isRfMeter()) {
-                RfnIdentifier rfnId = new RfnIdentifier(meter.getSerialNumber(), meter.getManufacturer(), meter.getModel());
-                device = deviceCreationService.createRfnDeviceByDeviceType(meter.getType(), meter.getName(), rfnId, meter.isCreatePoints());
-            }
-            else {
-                device = deviceCreationService.createIEDDeviceByDeviceType(meter.getType(), meter.getName(),meter.getPortId(), meter.isCreatePoints());
-            }
+            device = createMeter(meter);
         }
         catch (DeviceCreationException e) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            setupModel(model);
             model.addAttribute("errorMessage", e.getMessage());
-            
+            setupModel(model);
             return "create.jsp";
         }
         
@@ -415,28 +403,7 @@ public class MeterController {
         String templateName = meterDao.getForId(deviceId).getName();
         SimpleDevice device = null;
         try {
-            if (meter.getType().isMct()) {
-                if (meter.isCopyPoints() && meter.isCreatePoints()) {
-                    device = deviceCreationService.createDeviceByTemplate(templateName, meter.getName(), meter.isCopyPoints());
-                } else {
-                    device = deviceCreationService.createCarrierDeviceByDeviceType(meter.getType(), meter.getName(), meter.getAddress(), meter.getRouteId(), meter.isCreatePoints());
-                }
-            }
-            else if (meter.getType().isRfMeter()) {
-                RfnIdentifier rfnId = new RfnIdentifier(meter.getSerialNumber(), meter.getManufacturer(), meter.getModel());
-                if (meter.isCopyPoints() && meter.isCreatePoints()) {
-                    device = deviceCreationService.createRfnDeviceByTemplate(templateName, meter.getName(), rfnId, meter.isCopyPoints());
-                } else {
-                    device = deviceCreationService.createRfnDeviceByDeviceType(meter.getType(), meter.getName(), rfnId, meter.isCreatePoints());
-                }
-            }
-            else {
-                if (meter.isCopyPoints() && meter.isCreatePoints()) {
-                    device = deviceCreationService.createDeviceByTemplate(templateName, meter.getName(), meter.isCopyPoints());
-                } else {
-                    device = deviceCreationService.createIEDDeviceByDeviceType(meter.getType(), meter.getName(),meter.getPortId(), meter.isCreatePoints());
-                }
-            }
+            device = copyMeter(meter, templateName);
         }
         catch (DeviceCreationException e) {
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
@@ -499,6 +466,8 @@ public class MeterController {
         
         Set<PaoType> mctMeterTypes = PaoType.getMctTypes();
         model.addAttribute("mctMeterTypes", mctMeterTypes);
+        
+        model.addAttribute("pointCreateValues", PointCreation.values());
     }
     
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.OWNER)
@@ -515,5 +484,37 @@ public class MeterController {
             flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.failure", id));
             return "redirect:/meter/home?deviceId="+id;
         }
+    }
+    
+    private SimpleDevice copyMeter(CreateMeterModel meter, String templateName) {
+        SimpleDevice device;
+        // create a new meter from a template meter and copy the templateName's points
+        if (meter.getPointCreation() == PointCreation.DEFAULT) {
+            device = createMeter(meter);
+        }
+        else if (meter.getType().isRfMeter()) {
+            RfnIdentifier rfnId = new RfnIdentifier(meter.getSerialNumber(), meter.getManufacturer(), meter.getModel());
+            device = deviceCreationService.createRfnDeviceByTemplate(templateName, meter.getName(), rfnId, meter.isCopyPoints());
+        } else {
+            device = deviceCreationService.createDeviceByTemplate(templateName, meter.getName(), meter.isCopyPoints());
+        }
+        return device;
+    }
+    
+    private SimpleDevice createMeter(CreateMeterModel meter) {
+        SimpleDevice device;
+        if (meter.getType().isMct()) {
+            device = deviceCreationService.createCarrierDeviceByDeviceType(meter.getType(), meter.getName(),
+                meter.getAddress(), meter.getRouteId(), meter.isCreatePoints());
+        } else if (meter.getType().isRfMeter()) {
+            RfnIdentifier rfnId = new RfnIdentifier(meter.getSerialNumber(), meter.getManufacturer(), meter.getModel());
+            device = deviceCreationService.createRfnDeviceByDeviceType(meter.getType(), meter.getName(), rfnId,
+                meter.isCreatePoints());
+        } else {
+            device = deviceCreationService.createIEDDeviceByDeviceType(meter.getType(), meter.getName(),
+                meter.getPortId(), meter.isCreatePoints());
+        }
+
+        return  device;
     }
 }

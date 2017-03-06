@@ -5,7 +5,6 @@
 
 <cti:msgScope paths="yukon.web.widgets.meterInformationWidget">
 <input id="device-id" type="hidden" value="${deviceId}">
-
 <cti:url var="action" value="/meter/copy/${deviceId}"/>
 <form:form id="meter-create-form" action="${action}" method="post" commandName="meter">
     <cti:csrfToken/>
@@ -16,11 +15,13 @@
     </c:if>
     <tags:nameValueContainer2 naturalWidth="false" tableClass="with-form-controls">
         <form:hidden id="meter-type" path="type"/>
-        <tags:nameValue2 nameKey=".copyPoints" nameClass="wsnw">
-            <tags:switchButton path="createPoints" onNameKey=".yes.label" offNameKey=".no.label"  toggleGroup="copyChoices" toggleAction="hide"/>
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".copyChoice" nameClass="wsnw" data-toggle-group="copyChoices">
-            <tags:switchButton path="copyPoints" onNameKey=".copy.points.label" offNameKey=".default.label" color="false"/>
+        <tags:nameValue2 nameKey=".createPoints" rowClass="js-not-time-of-day">
+            <div class="button-group">
+                <c:forEach var="enumType" items="${pointCreateValues}">
+                    <tags:radio path="pointCreation" value="${enumType}" key="${enumType}" 
+                        classes="yes" />
+                </c:forEach>
+            </div>
         </tags:nameValue2>
         <tags:inputNameValue nameKey=".deviceName" path="name" valueClass="full-width" maxlength="60" size="40" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE"/>
         <tags:inputNameValue nameKey=".meterNumber" path="meterNumber" maxlength="50" size="40" valueClass="js-meter-info-meter-number" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE"/>

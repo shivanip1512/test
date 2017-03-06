@@ -17,8 +17,13 @@
         <tags:nameValue2 nameKey=".type">
             <tags:selectWithItems items="${meterTypes}" path="type" id="meter-type" groupItems="true" onchange="yukon.ami.meterDetails.updateMeterTypeFields()"/>
         </tags:nameValue2>
-        <tags:nameValue2 nameKey=".createPoints" nameClass="wsnw">
-            <tags:switchButton path="createPoints" onNameKey=".yes.label" offNameKey=".no.label"/>
+        <tags:nameValue2 nameKey=".createPoints">
+            <div class="button-group">
+                <c:forEach var="enumType" items="${pointCreateValues}" begin="0" end="1">
+                    <tags:radio path="pointCreation" value="${enumType}" key="${enumType}" 
+                        classes="yes" />
+                </c:forEach>
+            </div>
         </tags:nameValue2>
         <tags:inputNameValue nameKey=".deviceName" path="name" valueClass="full-width" maxlength="60" size="40" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE"/>
         <tags:inputNameValue nameKey=".meterNumber" path="meterNumber" maxlength="50" size="40" valueClass="js-meter-info-meter-number" property="ENDPOINT_PERMISSION" minPermissionLevel="UPDATE"/>
