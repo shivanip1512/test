@@ -326,6 +326,7 @@ public class MeterController {
         
         setupModel(model);
         CreateMeterModel meter = new CreateMeterModel();
+        meter.setPointCreation(PointCreation.DEFAULT);
         model.addAttribute("meter", meter);
       
         return "create.jsp";
@@ -342,6 +343,7 @@ public class MeterController {
             meter.setModel(((RfnMeter)meterOriginal).getRfnIdentifier().getSensorModel());
         }
         setupCopyModel(model, meter);
+        meter.setPointCreation(PointCreation.COPY);
         model.addAttribute("meter", meter);
         return "copy.jsp";
     }
@@ -473,15 +475,15 @@ public class MeterController {
     @CheckPermissionLevel(property = YukonRoleProperty.ENDPOINT_PERMISSION, level = HierarchyPermissionLevel.OWNER)
     @RequestMapping(value="/{id}", method=RequestMethod.DELETE)
     public String delete(FlashScope flash, @PathVariable int id, ModelMap model) {
-        
+        String meterName = meterDao.getForId(id).getName();
         try {
             deviceDao.removeDevice(id);
-            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.successful", id));
+            flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.successful", meterName));
             return "redirect:/meter/start";
         }
         catch (Exception e) {
-            log.error("Unable to delete meter with id " + id, e);
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.failure", id));
+            log.error("Unable to delete meter with id " + meterName, e);
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.delete.failure", meterName));
             return "redirect:/meter/home?deviceId="+id;
         }
     }
