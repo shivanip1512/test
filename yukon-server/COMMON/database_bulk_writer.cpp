@@ -41,7 +41,7 @@ static const auto oracleColumnSpecification =
 std::string getTempTablePrefix(const DatabaseConnection::ClientType clientType)
 {
     if( clientType == DatabaseConnection::ClientType::Oracle )    return "Temp_";
-    if( clientType == DatabaseConnection::ClientType::SqlServer ) return "##";
+    if( clientType == DatabaseConnection::ClientType::SqlServer ) return "Temp_";
 
     throw DatabaseException{ "Unknown client type " + std::to_string(static_cast<unsigned>(clientType)) };
 }

@@ -34,7 +34,7 @@ BOOST_AUTO_TEST_CASE(test_temp_table_creation_sql)
 
         BOOST_CHECK_EQUAL(
             bw.getTempTableCreationSql(),
-            "create table ##TemporaryTableName ("
+            "create table Temp_TemporaryTableName ("
             "ColumnA SqlServerTypeA not null,"
             "ColumnB SqlServerTypeB not null,"
             "ColumnC SqlServerTypeC not null,"
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(test_temp_table_truncation_sql)
 
         BOOST_CHECK_EQUAL(
             bw.getTempTableTruncationSql(),
-            "truncate table ##TemporaryTableName");
+            "truncate table Temp_TemporaryTableName");
     }
 
     {
@@ -84,7 +84,7 @@ BOOST_AUTO_TEST_CASE(test_temp_table_insert_sql)
 
         BOOST_CHECK_EQUAL(
             bw.getInsertSql(7),
-            "INSERT INTO ##TemporaryTableName VALUES "
+            "INSERT INTO Temp_TemporaryTableName VALUES "
             "(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?),"
             "(?,?,?,?,?),(?,?,?,?,?),(?,?,?,?,?)");
     }
@@ -130,7 +130,7 @@ BOOST_AUTO_TEST_CASE(test_bulk_inserter_finalize_sql)
             "select @maxId = COALESCE(MAX(DestinationIdColumn), 0) from DestinationTableName;"
             "insert into"
             " DestinationTableName (DestinationIdColumn, ColumnA, ColumnB, ColumnC, ColumnD, ColumnE)"
-            " select @maxId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)), ColumnA, ColumnB, ColumnC, ColumnD, ColumnE FROM ##TemporaryTableName");
+            " select @maxId + ROW_NUMBER() OVER (ORDER BY (SELECT 1)), ColumnA, ColumnB, ColumnC, ColumnD, ColumnE FROM Temp_TemporaryTableName");
     }
 
     {
@@ -174,10 +174,10 @@ BOOST_AUTO_TEST_CASE(test_bulk_updater_finalize_sql)
             bu.getFinalizeSql(),
             "MERGE DestinationTableName"
             " USING ("
-                "SELECT ##TemporaryTableName.*"
-                " FROM ##TemporaryTableName"
+                "SELECT Temp_TemporaryTableName.*"
+                " FROM Temp_TemporaryTableName"
                 " JOIN ForeignKeyTableName"
-                " ON ##TemporaryTableName.ColumnA=ForeignKeyTableName.ColumnA) t"
+                " ON Temp_TemporaryTableName.ColumnA=ForeignKeyTableName.ColumnA) t"
             " ON DestinationTableName.ColumnA = t.ColumnA"
             " WHEN MATCHED THEN"
             " UPDATE SET ColumnB = t.ColumnB, ColumnC = t.ColumnC, ColumnD = t.ColumnD, ColumnE = t.ColumnE"
@@ -213,12 +213,12 @@ BOOST_AUTO_TEST_CASE(test_bulk_updater_get_rejected_rows_sql)
 
         BOOST_CHECK_EQUAL(
             bu.getRejectedRowsSql(),
-            "SELECT ##TemporaryTableName.ColumnA"
-            " FROM ##TemporaryTableName"
+            "SELECT Temp_TemporaryTableName.ColumnA"
+            " FROM Temp_TemporaryTableName"
             " WHERE NOT EXISTS ("
                 "SELECT ColumnA"
                 " FROM ForeignKeyTableName"
-                " WHERE ForeignKeyTableName.ColumnA = ##TemporaryTableName.ColumnA)");
+                " WHERE ForeignKeyTableName.ColumnA = Temp_TemporaryTableName.ColumnA)");
     }
 
     {
