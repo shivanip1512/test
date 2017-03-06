@@ -200,7 +200,7 @@ public class RfnDeviceCreationServiceImpl implements RfnDeviceCreationService {
     private void createStarsDevice(HardwareType type, YukonDevice device, RfnIdentifier rfnIdentifier, Hardware hardware, LiteYukonUser user) {
         if (hardware == null) {
             /** Attempt to stub out a stars devices for lcr archive messages */ 
-            String ecName = configurationSource.getString("RFN_ENERGY_COMPANY_NAME");
+            String ecName = configurationSource.getString(MasterConfigString.RFN_ENERGY_COMPANY_NAME);
             if (StringUtils.isEmpty(ecName)) {
                 throw new DeviceCreationException("RF Yukon systems with DR devices are required to specify the RFN_ENERGY_COMPANY_NAME configuration property in master.cfg","configurationProperty");
             }

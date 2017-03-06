@@ -13,6 +13,7 @@ import org.springframework.context.MessageSourceResolvable;
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.exception.CommandCompletionException;
 import com.cannontech.common.device.commands.impl.CommandRequestExecutionDefaults;
@@ -204,7 +205,7 @@ public class RfCommandStrategy implements LmHardwareCommandStrategy {
     public void sendBroadcastCommand(LmCommand command) {
         // On a Network Manager enabled system utilizing LCR devices for load control,
         // the following CPARM will be set; if not it will return null.
-        String rfnEcName = configurationSource.getString("RFN_ENERGY_COMPANY_NAME");
+        String rfnEcName = configurationSource.getString(MasterConfigString.RFN_ENERGY_COMPANY_NAME);
         if (rfnEcName != null) {
             log.debug("Sending RFN ExpressCom broadcast command: " + command.getType().toString());
 

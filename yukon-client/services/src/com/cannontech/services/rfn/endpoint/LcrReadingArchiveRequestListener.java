@@ -24,8 +24,6 @@ import com.cannontech.common.inventory.InventoryIdentifier;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.xml.SimpleXPathTemplate;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveRequest;
 import com.cannontech.dr.rfn.message.archive.RfnLcrArchiveResponse;
 import com.cannontech.dr.rfn.message.archive.RfnLcrReadingArchiveRequest;
@@ -63,8 +61,6 @@ public class LcrReadingArchiveRequestListener extends ArchiveRequestListenerBase
     @Autowired private InventoryBaseDao inventoryBaseDao;
     @Autowired private InventoryDao inventoryDao;
     @Autowired private LmHardwareCommandService commandService;
-    @Autowired private PaoDao paoDao;
-    @Autowired private PointDao pointDao;
     @Autowired private RfnLcrDataMappingService rfnLcrDataMappingService;
     @Autowired private RfnPerformanceVerificationService rfnPerformanceVerificationService;
     
