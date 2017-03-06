@@ -20,7 +20,7 @@ function setUrl(id) {
 <input class="js-popup-title" type="hidden" value="${fn:escapeXml(title)}"> 
 
 <div class="form-control clearfix">
-    <c:if test="${points.size() > 0 && points.size() == maxRowsDisplay}">
+    <c:if test="${points.size() == maxRowsDisplay}">
         <span class="detail">${resultLimit}</span>
     </c:if>
     <div class="fr">
