@@ -289,7 +289,12 @@ std::vector<unsigned char> DataStreamingRead(const std::vector<unsigned char>& r
 {
     streaming_metrics::metrics modelMetrics;
 
-    metric_response response { false };
+    const auto streamingEnabled = gConfigParms.isTrue("SIMULATOR_RFN_DATA_STREAMING_READ_STREAMING_ENABLED", true);
+    const auto channelsEnabled  = gConfigParms.isTrue("SIMULATOR_RFN_DATA_STREAMING_READ_CHANNELS_ENABLED", true);
+    const auto interval         = gConfigParms.getValueAsULong("SIMULATOR_RFN_DATA_STREAMING_READ_INTERVAL", 5);
+    const auto status = 0;  //  MetricStatus::OK
+
+    metric_response response { streamingEnabled };
 
     if( const auto models = Cti::mapFindRef(streaming_metrics::perType, rfnId.manufacturer) )
     {
@@ -297,7 +302,7 @@ std::vector<unsigned char> DataStreamingRead(const std::vector<unsigned char>& r
         {
             for( const auto metricId : *metrics )
             {
-                response.metrics.push_back(metric_response::channel{metricId, 5, 0, false});
+                response.metrics.push_back(metric_response::channel{metricId, interval, status, channelsEnabled});
             }
         }
     }
