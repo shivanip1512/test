@@ -88,7 +88,7 @@
                             <cti:pointStatus pointId="${point.pointID}" />
                         </td>
                         <td>
-                            <cti:pointValue pointId="${point.pointID}" format="VALUE"/>
+                            <cti:pointValue pointId="${point.pointID}" format="SHORT"/>
                         </td>
                         <td><cti:pointValue pointId="${point.pointID}" format="DATE"/></td>
                     </tr>
