@@ -355,8 +355,6 @@
     <Property Name="Value">transmitter\\repeater.xml</Property>
     <Property Name="Key">1047</Property>
     <Property Name="Value">loadmanagement\\lm_group_versacom.xml</Property>
-    <Property Name="Key">1192</Property>
-    <Property Name="Value">resource_index.xml</Property>
     <Property Name="Key">1111</Property>
     <Property Name="Value">meter\\rfn420fx.xml</Property>
     <Property Name="Key">1176</Property>

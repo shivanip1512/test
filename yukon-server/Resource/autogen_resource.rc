@@ -193,7 +193,6 @@
 1189       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\transmitter\\tcu5500.xml"
 1190       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\transmitter\\tnpp_terminal.xml"
 1191       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\transmitter\\wctp_terminal.xml"
-1192       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\resource_index.xml"
 2000       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\capcontrol\\points\\702x.xml"
 2001       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\capcontrol\\points\\802x.xml"
 2002       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\capcontrol\\points\\capbank.xml"
