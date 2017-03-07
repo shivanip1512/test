@@ -26,7 +26,7 @@
                     </xs:unique>
                 </xs:element>
             </xs:sequence>
-            <xs:attribute name="aaid" type="xs:string" use="required" />
+            <xs:attribute name="paoType" type="xs:string" use="required" />
             <xs:attribute name="changeGroup" type="xs:string" />
             <xs:attribute name="displayGroup" type="xs:string" />
             <xs:attribute name="displayName" type="xs:string" use="required" />
@@ -56,8 +56,8 @@
         <xs:simpleContent>
             <xs:extension base="xs:string">
                 <xs:attribute name="name" type="xs:string" use="required" />
-                <xs:attribute name="zzattributes" type="xs:string" />
-                <xs:attribute name="yyinit" type="xs:boolean" default="false" />
+                <xs:attribute name="attributes" type="xs:string" />
+                <xs:attribute name="init" type="xs:boolean" default="false" />
             </xs:extension>
         </xs:simpleContent>
     </xs:complexType>
@@ -79,7 +79,7 @@
             <xs:element name="point" type="pointType" maxOccurs="unbounded" minOccurs="0" />
         </xs:sequence>
         <xs:attribute name="name" type="xs:string" use="required" />
-        <xs:attribute name="zzenabled" type="xs:boolean" default="true" />
+        <xs:attribute name="enabled" type="xs:boolean" default="true" />
     </xs:complexType>
     <xs:complexType name="pointType">
         <xs:simpleContent>

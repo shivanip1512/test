@@ -1,2 +1,2 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="VIRTUAL_SYSTEM" displayGroup="Virtual" displayName="VIRTUAL SYSTEM" xsi:noNamespaceSchemaLocation="../pao.xsd"/>
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="VIRTUAL_SYSTEM" displayGroup="Virtual" displayName="VIRTUAL SYSTEM" xsi:noNamespaceSchemaLocation="../pao.xsd"/>

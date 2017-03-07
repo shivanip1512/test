@@ -1,32 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="SYSTEM" displayGroup="System" displayName="SYSTEM" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="SYSTEM" displayGroup="System" displayName="SYSTEM" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>SYSTEM.xml</pointFile>
     </pointFiles>
     <pointInfos>
-        <pointInfo name="Calc CPU Utilization" yyinit="true" zzattributes="CALC_CPU_UTILIZATION"/>
-        <pointInfo name="Calc Memory Utilization" yyinit="true" zzattributes="CALC_MEMORY_UTILIZATION"/>
-        <pointInfo name="CapControl CPU Utilization" yyinit="true" zzattributes="CAPCONTROL_CPU_UTILIZATION"/>
-        <pointInfo name="CapControl Memory Utilization" yyinit="true" zzattributes="CAPCONTROL_MEMORY_UTILIZATION"/>
-        <pointInfo name="Dispatch CPU Utilization" yyinit="true" zzattributes="DISPATCH_CPU_UTILIZATION"/>
-        <pointInfo name="Dispatch Memory Utilization" yyinit="true" zzattributes="DISPATCH_MEMORY_UTILIZATION"/>
-        <pointInfo name="FDR CPU Utilization" yyinit="true" zzattributes="FDR_CPU_UTILIZATION"/>
-        <pointInfo name="FDR Memory Utilization" yyinit="true" zzattributes="FDR_MEMORY_UTILIZATION"/>
-        <pointInfo name="Load Management CPU Utilization" yyinit="true" zzattributes="LOAD_MANAGEMENT_CPU_UTILIZATION"/>
-        <pointInfo name="Load Management Memory Utilization" yyinit="true" zzattributes="LOAD_MANAGEMENT_MEMORY_UTILIZATION"/>
-        <pointInfo name="MACS CPU Utilization" yyinit="true" zzattributes="MACS_CPU_UTILIZATION"/>
-        <pointInfo name="MACS Memory Utilization" yyinit="true" zzattributes="MACS_MEMORY_UTILIZATION"/>
-        <pointInfo name="Message Broker CPU Utilization" yyinit="true" zzattributes="MESSAGE_BROKER_CPU_UTILIZATION"/>
-        <pointInfo name="Message Broker Memory Utilization" yyinit="true" zzattributes="MESSAGE_BROKER_MEMORY_UTILIZATION"/>
-        <pointInfo name="Notification Server CPU Utilization" yyinit="true" zzattributes="NOTIFICATION_SERVER_CPU_UTILIZATION"/>
-        <pointInfo name="Notification Server Memory Utilization" yyinit="true" zzattributes="NOTIFICATION_SERVER_MEMORY_UTILIZATION"/>
-        <pointInfo name="Porter CPU Utilization" yyinit="true" zzattributes="PORTER_CPU_UTILIZATION"/>
-        <pointInfo name="Porter Memory Utilization" yyinit="true" zzattributes="PORTER_MEMORY_UTILIZATION"/>
-        <pointInfo name="Scanner CPU Utilization" yyinit="true" zzattributes="SCANNER_CPU_UTILIZATION"/>
-        <pointInfo name="Scanner Memory Utilization" yyinit="true" zzattributes="SCANNER_MEMORY_UTILIZATION"/>
-        <pointInfo name="Service Manager CPU Utilization" yyinit="true" zzattributes="SERVICE_MANAGER_CPU_UTILIZATION"/>
-        <pointInfo name="Service Manager Memory Utilization" yyinit="true" zzattributes="SERVICE_MANAGER_MEMORY_UTILIZATION"/>
-        <pointInfo name="Web Service CPU Utilization" yyinit="true" zzattributes="WEB_SERVICE_CPU_UTILIZATION"/>
-        <pointInfo name="Web Service Memory Utilization" yyinit="true" zzattributes="WEB_SERVICE_MEMORY_UTILIZATION"/>
+        <pointInfo name="Calc CPU Utilization" init="true" attributes="CALC_CPU_UTILIZATION"/>
+        <pointInfo name="Calc Memory Utilization" init="true" attributes="CALC_MEMORY_UTILIZATION"/>
+        <pointInfo name="CapControl CPU Utilization" init="true" attributes="CAPCONTROL_CPU_UTILIZATION"/>
+        <pointInfo name="CapControl Memory Utilization" init="true" attributes="CAPCONTROL_MEMORY_UTILIZATION"/>
+        <pointInfo name="Dispatch CPU Utilization" init="true" attributes="DISPATCH_CPU_UTILIZATION"/>
+        <pointInfo name="Dispatch Memory Utilization" init="true" attributes="DISPATCH_MEMORY_UTILIZATION"/>
+        <pointInfo name="FDR CPU Utilization" init="true" attributes="FDR_CPU_UTILIZATION"/>
+        <pointInfo name="FDR Memory Utilization" init="true" attributes="FDR_MEMORY_UTILIZATION"/>
+        <pointInfo name="Load Management CPU Utilization" init="true" attributes="LOAD_MANAGEMENT_CPU_UTILIZATION"/>
+        <pointInfo name="Load Management Memory Utilization" init="true" attributes="LOAD_MANAGEMENT_MEMORY_UTILIZATION"/>
+        <pointInfo name="MACS CPU Utilization" init="true" attributes="MACS_CPU_UTILIZATION"/>
+        <pointInfo name="MACS Memory Utilization" init="true" attributes="MACS_MEMORY_UTILIZATION"/>
+        <pointInfo name="Message Broker CPU Utilization" init="true" attributes="MESSAGE_BROKER_CPU_UTILIZATION"/>
+        <pointInfo name="Message Broker Memory Utilization" init="true" attributes="MESSAGE_BROKER_MEMORY_UTILIZATION"/>
+        <pointInfo name="Notification Server CPU Utilization" init="true" attributes="NOTIFICATION_SERVER_CPU_UTILIZATION"/>
+        <pointInfo name="Notification Server Memory Utilization" init="true" attributes="NOTIFICATION_SERVER_MEMORY_UTILIZATION"/>
+        <pointInfo name="Porter CPU Utilization" init="true" attributes="PORTER_CPU_UTILIZATION"/>
+        <pointInfo name="Porter Memory Utilization" init="true" attributes="PORTER_MEMORY_UTILIZATION"/>
+        <pointInfo name="Scanner CPU Utilization" init="true" attributes="SCANNER_CPU_UTILIZATION"/>
+        <pointInfo name="Scanner Memory Utilization" init="true" attributes="SCANNER_MEMORY_UTILIZATION"/>
+        <pointInfo name="Service Manager CPU Utilization" init="true" attributes="SERVICE_MANAGER_CPU_UTILIZATION"/>
+        <pointInfo name="Service Manager Memory Utilization" init="true" attributes="SERVICE_MANAGER_MEMORY_UTILIZATION"/>
+        <pointInfo name="Web Service CPU Utilization" init="true" attributes="WEB_SERVICE_CPU_UTILIZATION"/>
+        <pointInfo name="Web Service Memory Utilization" init="true" attributes="WEB_SERVICE_MEMORY_UTILIZATION"/>
     </pointInfos>
 </pao>

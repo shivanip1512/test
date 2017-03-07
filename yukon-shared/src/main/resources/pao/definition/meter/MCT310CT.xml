@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="MCT310CT" changeGroup="meter" displayGroup="MCT" displayName="MCT-310CT" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="MCT310CT" changeGroup="meter" displayGroup="MCT" displayName="MCT-310CT" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
-        <pointFile>MCT3XX.xml</pointFile>
+        <pointFile>MCT31X.xml</pointFile>
     </pointFiles>
     <tags>
         <tag name="COMMANDER_REQUESTS"/>
@@ -16,13 +16,13 @@
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Blink Count" yyinit="true" zzattributes="BLINK_COUNT"/>
-        <pointInfo name="Comm Status" zzattributes="COMM_STATUS"/>
-        <pointInfo name="kW" yyinit="true" zzattributes="DEMAND"/>
-        <pointInfo name="kWh" yyinit="true" zzattributes="USAGE"/>
-        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
+        <pointInfo name="Blink Count" init="true" attributes="BLINK_COUNT"/>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
+        <pointInfo name="kW" init="true" attributes="DEMAND"/>
+        <pointInfo name="kWh" init="true" attributes="USAGE"/>
+        <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="Over Flow Flag"/>
-        <pointInfo name="Power Fail" yyinit="true"/>
+        <pointInfo name="Power Fail" init="true"/>
         <pointInfo name="Short Power Fail Flag"/>
     </pointInfos>
     <commands>

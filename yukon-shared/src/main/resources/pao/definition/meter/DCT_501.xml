@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="DCT_501" changeGroup="meter" creatable="false" displayGroup="MCT" displayName="DCT-501" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="DCT_501" changeGroup="meter" creatable="false" displayGroup="MCT" displayName="DCT-501" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>DCT_501.xml</pointFile>
     </pointFiles>
@@ -19,10 +19,10 @@
         <pointInfo name="Analog #2"/>
         <pointInfo name="Analog #3"/>
         <pointInfo name="Analog #4"/>
-        <pointInfo name="Comm Status" zzattributes="COMM_STATUS"/>
-        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
+        <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="Over Flow"/>
-        <pointInfo name="Power Fail" yyinit="true"/>
+        <pointInfo name="Power Fail" init="true"/>
         <pointInfo name="Remote/Local Status"/>
         <pointInfo name="Short Power Fail Flag"/>
         <pointInfo name="Status Input 1"/>

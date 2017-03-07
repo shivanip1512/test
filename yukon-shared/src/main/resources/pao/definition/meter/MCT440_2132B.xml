@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="MCT440_2132B" changeGroup="meter" creatable="false" displayGroup="MCT" displayName="MCT-440-2132B" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="MCT440_2132B" changeGroup="meter" creatable="false" displayGroup="MCT" displayName="MCT-440-2132B" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>MCT44X.xml</pointFile>
     </pointFiles>
@@ -28,58 +28,58 @@
         <category type="timeZone"/>
     </configuration>
     <pointInfos>
-        <pointInfo name="Blink Count" yyinit="true" zzattributes="BLINK_COUNT"/>
-        <pointInfo name="Clock Error" yyinit="true" zzattributes="CLOCK_ERROR"/>
-        <pointInfo name="Comm Status" zzattributes="COMM_STATUS"/>
-        <pointInfo name="Current Phase A" yyinit="true" zzattributes="CURRENT_PHASE_A"/>
-        <pointInfo name="Current Phase B" yyinit="true" zzattributes="CURRENT_PHASE_B"/>
-        <pointInfo name="Current Without Voltage" yyinit="true" zzattributes="CURRENT_WITHOUT_VOLTAGE_FLAG"/>
-        <pointInfo name="Delivered kWh" yyinit="true" zzattributes="USAGE"/>
-        <pointInfo name="Disconnect Status" yyinit="true" zzattributes="DISCONNECT_STATUS"/>
-        <pointInfo name="Forward Inductive kVArh" yyinit="true" zzattributes="FORWARD_INDUCTIVE_KVARH"/>
-        <pointInfo name="Frozen kWh" yyinit="true" zzattributes="USAGE_FROZEN"/>
-        <pointInfo name="Frozen Max Volts" zzattributes="MAXIMUM_VOLTAGE_FROZEN"/>
-        <pointInfo name="Frozen Min Volts" zzattributes="MINIMUM_VOLTAGE_FROZEN"/>
-        <pointInfo name="Frozen Rate A kWh" yyinit="true"/>
-        <pointInfo name="Frozen Rate A Reverse kWh" yyinit="true"/>
-        <pointInfo name="Frozen Rate B kWh" yyinit="true"/>
-        <pointInfo name="Frozen Rate B Reverse kWh" yyinit="true"/>
-        <pointInfo name="Frozen Rate C kWh" yyinit="true"/>
-        <pointInfo name="Frozen Rate C Reverse kWh" yyinit="true"/>
-        <pointInfo name="Frozen Rate D kWh" yyinit="true"/>
-        <pointInfo name="Frozen Rate D Reverse kWh" yyinit="true"/>
-        <pointInfo name="Frozen Reactive Inductive Energy" yyinit="true"/>
-        <pointInfo name="Frozen Reverse kWh" yyinit="true" zzattributes="RECEIVED_KWH_FROZEN"/>
-        <pointInfo name="General Alarm" yyinit="true" zzattributes="GENERAL_ALARM_FLAG"/>
-        <pointInfo name="Internal Error" yyinit="true" zzattributes="INTERNAL_ERROR_FLAG"/>
-        <pointInfo name="Load Side Voltage Detected, Relay Open" yyinit="true" zzattributes="LOAD_SIDE_VOLTAGE_DETECTED_FLAG"/>
-        <pointInfo name="Low Battery" yyinit="true" zzattributes="LOW_BATTERY_WARNING"/>
-        <pointInfo name="Max Volts" zzattributes="MAXIMUM_VOLTAGE"/>
-        <pointInfo name="Meter Box Cover Removal" yyinit="true" zzattributes="METER_BOX_COVER_REMOVAL_FLAG"/>
-        <pointInfo name="Min Volts" zzattributes="MINIMUM_VOLTAGE"/>
-        <pointInfo name="Out of Voltage" yyinit="true" zzattributes="OUT_OF_VOLTAGE_FLAG"/>
-        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
-        <pointInfo name="Outages" yyinit="true" zzattributes="OUTAGE_LOG"/>
-        <pointInfo name="Power Factor Phase A" yyinit="true" zzattributes="POWER_FACTOR_PHASE_A"/>
-        <pointInfo name="Power Factor Phase B" yyinit="true" zzattributes="POWER_FACTOR_PHASE_B"/>
-        <pointInfo name="Power Fail" yyinit="true" zzattributes="POWER_FAIL_FLAG"/>
-        <pointInfo name="Rate A kWh" yyinit="true" zzattributes="USAGE_RATE_A"/>
-        <pointInfo name="Rate B kWh" yyinit="true" zzattributes="USAGE_RATE_B"/>
-        <pointInfo name="Rate C kWh" yyinit="true" zzattributes="USAGE_RATE_C"/>
-        <pointInfo name="Rate D kWh" yyinit="true" zzattributes="USAGE_RATE_D"/>
-        <pointInfo name="Received kWh" yyinit="true" zzattributes="RECEIVED_KWH"/>
-        <pointInfo name="Received kWh (Rate A kWh)" yyinit="true" zzattributes="RECEIVED_KWH_RATE_A"/>
-        <pointInfo name="Received kWh (Rate B kWh)" yyinit="true" zzattributes="RECEIVED_KWH_RATE_B"/>
-        <pointInfo name="Received kWh (Rate C kWh)" yyinit="true" zzattributes="RECEIVED_KWH_RATE_C"/>
-        <pointInfo name="Received kWh (Rate D kWh)" yyinit="true" zzattributes="RECEIVED_KWH_RATE_D"/>
+        <pointInfo name="Blink Count" init="true" attributes="BLINK_COUNT"/>
+        <pointInfo name="Clock Error" init="true" attributes="CLOCK_ERROR"/>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
+        <pointInfo name="Current Phase A" init="true" attributes="CURRENT_PHASE_A"/>
+        <pointInfo name="Current Phase B" init="true" attributes="CURRENT_PHASE_B"/>
+        <pointInfo name="Current Without Voltage" init="true" attributes="CURRENT_WITHOUT_VOLTAGE_FLAG"/>
+        <pointInfo name="Delivered kWh" init="true" attributes="USAGE"/>
+        <pointInfo name="Disconnect Status" init="true" attributes="DISCONNECT_STATUS"/>
+        <pointInfo name="Forward Inductive kVArh" init="true" attributes="FORWARD_INDUCTIVE_KVARH"/>
+        <pointInfo name="Frozen kWh" init="true" attributes="USAGE_FROZEN"/>
+        <pointInfo name="Frozen Max Volts" attributes="MAXIMUM_VOLTAGE_FROZEN"/>
+        <pointInfo name="Frozen Min Volts" attributes="MINIMUM_VOLTAGE_FROZEN"/>
+        <pointInfo name="Frozen Rate A kWh" init="true"/>
+        <pointInfo name="Frozen Rate A Reverse kWh" init="true"/>
+        <pointInfo name="Frozen Rate B kWh" init="true"/>
+        <pointInfo name="Frozen Rate B Reverse kWh" init="true"/>
+        <pointInfo name="Frozen Rate C kWh" init="true"/>
+        <pointInfo name="Frozen Rate C Reverse kWh" init="true"/>
+        <pointInfo name="Frozen Rate D kWh" init="true"/>
+        <pointInfo name="Frozen Rate D Reverse kWh" init="true"/>
+        <pointInfo name="Frozen Reactive Inductive Energy" init="true"/>
+        <pointInfo name="Frozen Reverse kWh" init="true" attributes="RECEIVED_KWH_FROZEN"/>
+        <pointInfo name="General Alarm" init="true" attributes="GENERAL_ALARM_FLAG"/>
+        <pointInfo name="Internal Error" init="true" attributes="INTERNAL_ERROR_FLAG"/>
+        <pointInfo name="Load Side Voltage Detected, Relay Open" init="true" attributes="LOAD_SIDE_VOLTAGE_DETECTED_FLAG"/>
+        <pointInfo name="Low Battery" init="true" attributes="LOW_BATTERY_WARNING"/>
+        <pointInfo name="Max Volts" attributes="MAXIMUM_VOLTAGE"/>
+        <pointInfo name="Meter Box Cover Removal" init="true" attributes="METER_BOX_COVER_REMOVAL_FLAG"/>
+        <pointInfo name="Min Volts" attributes="MINIMUM_VOLTAGE"/>
+        <pointInfo name="Out of Voltage" init="true" attributes="OUT_OF_VOLTAGE_FLAG"/>
+        <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
+        <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
+        <pointInfo name="Power Factor Phase A" init="true" attributes="POWER_FACTOR_PHASE_A"/>
+        <pointInfo name="Power Factor Phase B" init="true" attributes="POWER_FACTOR_PHASE_B"/>
+        <pointInfo name="Power Fail" init="true" attributes="POWER_FAIL_FLAG"/>
+        <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A"/>
+        <pointInfo name="Rate B kWh" init="true" attributes="USAGE_RATE_B"/>
+        <pointInfo name="Rate C kWh" init="true" attributes="USAGE_RATE_C"/>
+        <pointInfo name="Rate D kWh" init="true" attributes="USAGE_RATE_D"/>
+        <pointInfo name="Received kWh" init="true" attributes="RECEIVED_KWH"/>
+        <pointInfo name="Received kWh (Rate A kWh)" init="true" attributes="RECEIVED_KWH_RATE_A"/>
+        <pointInfo name="Received kWh (Rate B kWh)" init="true" attributes="RECEIVED_KWH_RATE_B"/>
+        <pointInfo name="Received kWh (Rate C kWh)" init="true" attributes="RECEIVED_KWH_RATE_C"/>
+        <pointInfo name="Received kWh (Rate D kWh)" init="true" attributes="RECEIVED_KWH_RATE_D"/>
         <pointInfo name="Recent kWh"/>
         <pointInfo name="Recent Received kWh"/>
-        <pointInfo name="Reverse Energy" yyinit="true" zzattributes="REVERSE_POWER_FLAG"/>
-        <pointInfo name="Tamper Flag Set" yyinit="true" zzattributes="TAMPER_FLAG"/>
-        <pointInfo name="Terminal Block Cover Removal" yyinit="true" zzattributes="TERMINAL_BLOCK_COVER_REMOVAL_FLAG"/>
-        <pointInfo name="Voltage Out of Limits" yyinit="true" zzattributes="VOLTAGE_OUT_OF_LIMITS_FLAG"/>
-        <pointInfo name="Voltage Phase A" yyinit="true" zzattributes="VOLTAGE_PHASE_A"/>
-        <pointInfo name="Voltage Phase B" yyinit="true" zzattributes="VOLTAGE_PHASE_B"/>
+        <pointInfo name="Reverse Energy" init="true" attributes="REVERSE_POWER_FLAG"/>
+        <pointInfo name="Tamper Flag Set" init="true" attributes="TAMPER_FLAG"/>
+        <pointInfo name="Terminal Block Cover Removal" init="true" attributes="TERMINAL_BLOCK_COVER_REMOVAL_FLAG"/>
+        <pointInfo name="Voltage Out of Limits" init="true" attributes="VOLTAGE_OUT_OF_LIMITS_FLAG"/>
+        <pointInfo name="Voltage Phase A" init="true" attributes="VOLTAGE_PHASE_A"/>
+        <pointInfo name="Voltage Phase B" init="true" attributes="VOLTAGE_PHASE_B"/>
     </pointInfos>
     <commands>
         <command name="Read Blink Count">
@@ -117,7 +117,7 @@
             <cmd text="getvalue kWh tou"/>
             <point name="Rate A kWh"/>
         </command>
-        <command name="Read TOU Rate A (Frozen)" zzenabled="false">
+        <command name="Read TOU Rate A (Frozen)" enabled="false">
             <cmd text="getvalue kWh tou frozen"/>
             <point name="Rate A kWh"/>
         </command>
@@ -125,7 +125,7 @@
             <cmd text="getvalue kWh tou"/>
             <point name="Rate B kWh"/>
         </command>
-        <command name="Read TOU Rate B (Frozen)" zzenabled="false">
+        <command name="Read TOU Rate B (Frozen)" enabled="false">
             <cmd text="getvalue kWh tou frozen"/>
             <point name="Rate B kWh"/>
         </command>
@@ -133,7 +133,7 @@
             <cmd text="getvalue kWh tou"/>
             <point name="Rate C kWh"/>
         </command>
-        <command name="Read TOU Rate C (Frozen)" zzenabled="false">
+        <command name="Read TOU Rate C (Frozen)" enabled="false">
             <cmd text="getvalue kWh tou frozen"/>
             <point name="Rate C kWh"/>
         </command>
@@ -141,7 +141,7 @@
             <cmd text="getvalue kWh tou"/>
             <point name="Rate D kWh"/>
         </command>
-        <command name="Read TOU Rate D (Frozen)" zzenabled="false">
+        <command name="Read TOU Rate D (Frozen)" enabled="false">
             <cmd text="getvalue kWh tou frozen"/>
             <point name="Rate D kWh"/>
         </command>
@@ -151,7 +151,7 @@
             <point name="Delivered kWh"/>
             <point name="Forward Inductive kVArh"/>
         </command>
-        <command name="Read Usage (Frozen)" zzenabled="false">
+        <command name="Read Usage (Frozen)" enabled="false">
             <cmd text="getvalue usage frozen"/>
             <point name="Received kWh"/>
             <point name="Delivered kWh"/>

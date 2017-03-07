@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="LCR6200_RFN" displayGroup="RFMESH" displayName="LCR-6200 RFN" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="LCR6200_RFN" displayGroup="RFMESH" displayName="LCR-6200 RFN" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>RFN_LCR.xml</pointFile>
     </pointFiles>
@@ -8,16 +8,16 @@
         <tag name="NETWORK_MANAGER_ATTRIBUTE_READS"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Blink Count" yyinit="true" zzattributes="BLINK_COUNT"/>
-        <pointInfo name="Control Status" yyinit="true" zzattributes="CONTROL_STATUS"/>
-        <pointInfo name="Recording Interval" yyinit="true" zzattributes="RECORDING_INTERVAL"/>
-        <pointInfo name="Relay 1 kW Load Size" yyinit="true" zzattributes="RELAY_1_LOAD_SIZE"/>
-        <pointInfo name="Relay 1 Remaining Control Time" yyinit="true" zzattributes="RELAY_1_REMAINING_CONTROL"/>
-        <pointInfo name="Relay 1 Run Time Data Log" yyinit="true" zzattributes="RELAY_1_RUN_TIME_DATA_LOG"/>
-        <pointInfo name="Relay 1 Shed Time Data Log" yyinit="true" zzattributes="RELAY_1_SHED_TIME_DATA_LOG"/>
-        <pointInfo name="Reporting Interval" yyinit="true" zzattributes="REPORTING_INTERVAL"/>
-        <pointInfo name="Service Status" yyinit="true" zzattributes="SERVICE_STATUS"/>
-        <pointInfo name="Total LUF Event Count" zzattributes="TOTAL_LUF_COUNT"/>
-        <pointInfo name="Total LUV Event Count" zzattributes="TOTAL_LUV_COUNT"/>
+        <pointInfo name="Blink Count" init="true" attributes="BLINK_COUNT"/>
+        <pointInfo name="Control Status" init="true" attributes="CONTROL_STATUS"/>
+        <pointInfo name="Recording Interval" init="true" attributes="RECORDING_INTERVAL"/>
+        <pointInfo name="Relay 1 kW Load Size" init="true" attributes="RELAY_1_LOAD_SIZE"/>
+        <pointInfo name="Relay 1 Remaining Control Time" init="true" attributes="RELAY_1_REMAINING_CONTROL"/>
+        <pointInfo name="Relay 1 Run Time Data Log" init="true" attributes="RELAY_1_RUN_TIME_DATA_LOG"/>
+        <pointInfo name="Relay 1 Shed Time Data Log" init="true" attributes="RELAY_1_SHED_TIME_DATA_LOG"/>
+        <pointInfo name="Reporting Interval" init="true" attributes="REPORTING_INTERVAL"/>
+        <pointInfo name="Service Status" init="true" attributes="SERVICE_STATUS"/>
+        <pointInfo name="Total LUF Event Count" attributes="TOTAL_LUF_COUNT"/>
+        <pointInfo name="Total LUV Event Count" attributes="TOTAL_LUV_COUNT"/>
     </pointInfos>
 </pao>

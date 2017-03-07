@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="CAPBANKCONTROLLER" changeGroup="cap" displayGroup="Volt/Var" displayName="CBC Versacom" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="CAPBANKCONTROLLER" changeGroup="cap" displayGroup="Volt/Var" displayName="CBC Versacom" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>CAP_CONTROL.xml</pointFile>
     </pointFiles>
@@ -9,6 +9,6 @@
         <tag name="ONE_WAY_DEVICE"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Capacitor Bank State" yyinit="true" zzattributes="CONTROL_POINT"/>
+        <pointInfo name="Capacitor Bank State" init="true" attributes="CONTROL_POINT"/>
     </pointInfos>
 </pao>

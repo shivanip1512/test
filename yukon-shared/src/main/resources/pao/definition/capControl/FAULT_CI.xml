@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="FAULT_CI" displayGroup="Grid Advisor" displayName="Faulted Circuit Indicator" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="FAULT_CI" displayGroup="Grid Advisor" displayName="Faulted Circuit Indicator" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>FAULT_CI.xml</pointFile>
     </pointFiles>
     <pointInfos>
-        <pointInfo name="Battery Voltage" yyinit="true"/>
-        <pointInfo name="BER" yyinit="true"/>
-        <pointInfo name="Current Survey" yyinit="true"/>
-        <pointInfo name="Device Temperature" yyinit="true"/>
-        <pointInfo name="Fault Status" yyinit="true" zzattributes="FAULT_STATUS"/>
+        <pointInfo name="Battery Voltage" init="true"/>
+        <pointInfo name="BER" init="true"/>
+        <pointInfo name="Current Survey" init="true"/>
+        <pointInfo name="Device Temperature" init="true"/>
+        <pointInfo name="Fault Status" init="true" attributes="FAULT_STATUS"/>
         <pointInfo name="Latitude"/>
         <pointInfo name="Longitude"/>
-        <pointInfo name="Momentary Count" yyinit="true"/>
-        <pointInfo name="Momentary Toggle" yyinit="true"/>
-        <pointInfo name="No 60Hz or Low Current" yyinit="true"/>
-        <pointInfo name="Nominal Amps" yyinit="true"/>
-        <pointInfo name="Peak Amps" yyinit="true"/>
-        <pointInfo name="Reed Switch Communication" yyinit="true"/>
-        <pointInfo name="RSSI" yyinit="true"/>
-        <pointInfo name="Signal Strength" yyinit="true"/>
+        <pointInfo name="Momentary Count" init="true"/>
+        <pointInfo name="Momentary Toggle" init="true"/>
+        <pointInfo name="No 60Hz or Low Current" init="true"/>
+        <pointInfo name="Nominal Amps" init="true"/>
+        <pointInfo name="Peak Amps" init="true"/>
+        <pointInfo name="Reed Switch Communication" init="true"/>
+        <pointInfo name="RSSI" init="true"/>
+        <pointInfo name="Signal Strength" init="true"/>
     </pointInfos>
 </pao>

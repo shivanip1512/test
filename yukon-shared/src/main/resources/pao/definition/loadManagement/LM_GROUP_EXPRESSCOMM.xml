@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="LM_GROUP_EXPRESSCOMM" changeGroup="lm" displayGroup="Demand Response" displayName="EXPRESSCOM GROUP" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="LM_GROUP_EXPRESSCOMM" changeGroup="lm" displayGroup="Demand Response" displayName="EXPRESSCOM GROUP" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>LM.xml</pointFile>
     </pointFiles>
@@ -7,6 +7,6 @@
         <tag name="LM_GROUP"/>
     </tags>
     <pointInfos>
-        <pointInfo name="CONTROL STATUS" zzattributes="LM_GROUP_STATUS"/>
+        <pointInfo name="CONTROL STATUS" attributes="LM_GROUP_STATUS"/>
     </pointInfos>
 </pao>

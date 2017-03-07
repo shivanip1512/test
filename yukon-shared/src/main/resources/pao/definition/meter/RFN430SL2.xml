@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="RFN430SL2" changeGroup="meter" displayGroup="RFMESH" displayName="RFN-430SL2" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFN430SL2" changeGroup="meter" displayGroup="RFMESH" displayName="RFN-430SL2" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>RFN.xml</pointFile>
     </pointFiles>
@@ -22,119 +22,119 @@
         <category type="rfnTempAlarm"/>
     </configuration>
     <pointInfos>
-        <pointInfo name="Alternate Mode Entry" zzattributes="ALTERNATE_MODE_ENTRY"/>
-        <pointInfo name="Amps Phase A" yyinit="true" zzattributes="CURRENT_PHASE_A"/>
-        <pointInfo name="Amps Phase B" yyinit="true" zzattributes="CURRENT_PHASE_B"/>
-        <pointInfo name="Amps Phase C" yyinit="true" zzattributes="CURRENT_PHASE_C"/>
-        <pointInfo name="ANSI Security Failed" zzattributes="ANSI_SECURITY_FAILED"/>
-        <pointInfo name="Bad Upgrade Security Param" zzattributes="BAD_UPGRADE_SECURITY_PARAM"/>
-        <pointInfo name="Blink Count" yyinit="true" zzattributes="RFN_BLINK_COUNT"/>
-        <pointInfo name="Blink Restore Count" yyinit="true" zzattributes="RFN_BLINK_RESTORE_COUNT"/>
+        <pointInfo name="Alternate Mode Entry" attributes="ALTERNATE_MODE_ENTRY"/>
+        <pointInfo name="Amps Phase A" init="true" attributes="CURRENT_PHASE_A"/>
+        <pointInfo name="Amps Phase B" init="true" attributes="CURRENT_PHASE_B"/>
+        <pointInfo name="Amps Phase C" init="true" attributes="CURRENT_PHASE_C"/>
+        <pointInfo name="ANSI Security Failed" attributes="ANSI_SECURITY_FAILED"/>
+        <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
+        <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
         <pointInfo name="Coincident Cumulative Peak kVAr"/>
-        <pointInfo name="Coincident Power Factor" zzattributes="POWER_FACTOR_COIN"/>
-        <pointInfo name="Configuration Error" zzattributes="CONFIGURATION_ERROR"/>
-        <pointInfo name="Current Waveform Distortion" zzattributes="CURRENT_WAVEFORM_DISTORTION"/>
-        <pointInfo name="Delivered kVAh (Rate A kVAh)" zzattributes="KVAH_RATE_A"/>
-        <pointInfo name="Delivered kVAh (Rate B kVAh)" zzattributes="KVAH_RATE_B"/>
-        <pointInfo name="Delivered kVAh (Rate C kVAh)" zzattributes="KVAH_RATE_C"/>
-        <pointInfo name="Delivered kVAh (Rate D kVAh)" zzattributes="KVAH_RATE_D"/>
-        <pointInfo name="Delivered kVAr Load Profile" zzattributes="DELIVERED_KVAR_LOAD_PROFILE"/>
-        <pointInfo name="Delivered kVArh" yyinit="true" zzattributes="KVARH"/>
-        <pointInfo name="Delivered kVArh (Rate A kVArh)" yyinit="true" zzattributes="KVARH_RATE_A"/>
-        <pointInfo name="Delivered kVArh (Rate B kVArh)" zzattributes="KVARH_RATE_B"/>
-        <pointInfo name="Delivered kVArh (Rate C kVArh)" zzattributes="KVARH_RATE_C"/>
-        <pointInfo name="Delivered kVArh (Rate D kVArh)" zzattributes="KVARH_RATE_D"/>
-        <pointInfo name="Delivered kW Load Profile" zzattributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
-        <pointInfo name="Delivered kWh" yyinit="true" zzattributes="USAGE,DELIVERED_KWH"/>
-        <pointInfo name="Delivered kWh per Interval" yyinit="true" zzattributes="DELIVERED_KWH_PER_INTERVAL"/>
-        <pointInfo name="Delivered Peak kVA (Rate A kVA)" zzattributes="PEAK_KVA_RATE_A"/>
-        <pointInfo name="Delivered Peak kVA (Rate B kVA)" zzattributes="PEAK_KVA_RATE_B"/>
-        <pointInfo name="Delivered Peak kVA (Rate C kVA)" zzattributes="PEAK_KVA_RATE_C"/>
-        <pointInfo name="Delivered Peak kVA (Rate D kVA)" zzattributes="PEAK_KVA_RATE_D"/>
-        <pointInfo name="Demand at Peak kVa Coincidental" zzattributes="DEMAND_PEAK_KVA_COIN"/>
-        <pointInfo name="Demand Overload" zzattributes="DEMAND_OVERLOAD"/>
-        <pointInfo name="Demand Reads And Reset" zzattributes="DEMAND_READS_AND_RESET"/>
-        <pointInfo name="Failed Upgrade Signature Verification" zzattributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
-        <pointInfo name="Inactive Phase Current Diagnostic Error" zzattributes="INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR"/>
-        <pointInfo name="kVA" zzattributes="DELIVERED_KVA"/>
-        <pointInfo name="kVAh" zzattributes="KVAH"/>
+        <pointInfo name="Coincident Power Factor" attributes="POWER_FACTOR_COIN"/>
+        <pointInfo name="Configuration Error" attributes="CONFIGURATION_ERROR"/>
+        <pointInfo name="Current Waveform Distortion" attributes="CURRENT_WAVEFORM_DISTORTION"/>
+        <pointInfo name="Delivered kVAh (Rate A kVAh)" attributes="KVAH_RATE_A"/>
+        <pointInfo name="Delivered kVAh (Rate B kVAh)" attributes="KVAH_RATE_B"/>
+        <pointInfo name="Delivered kVAh (Rate C kVAh)" attributes="KVAH_RATE_C"/>
+        <pointInfo name="Delivered kVAh (Rate D kVAh)" attributes="KVAH_RATE_D"/>
+        <pointInfo name="Delivered kVAr Load Profile" attributes="DELIVERED_KVAR_LOAD_PROFILE"/>
+        <pointInfo name="Delivered kVArh" init="true" attributes="KVARH"/>
+        <pointInfo name="Delivered kVArh (Rate A kVArh)" init="true" attributes="KVARH_RATE_A"/>
+        <pointInfo name="Delivered kVArh (Rate B kVArh)" attributes="KVARH_RATE_B"/>
+        <pointInfo name="Delivered kVArh (Rate C kVArh)" attributes="KVARH_RATE_C"/>
+        <pointInfo name="Delivered kVArh (Rate D kVArh)" attributes="KVARH_RATE_D"/>
+        <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
+        <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
+        <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
+        <pointInfo name="Delivered Peak kVA (Rate A kVA)" attributes="PEAK_KVA_RATE_A"/>
+        <pointInfo name="Delivered Peak kVA (Rate B kVA)" attributes="PEAK_KVA_RATE_B"/>
+        <pointInfo name="Delivered Peak kVA (Rate C kVA)" attributes="PEAK_KVA_RATE_C"/>
+        <pointInfo name="Delivered Peak kVA (Rate D kVA)" attributes="PEAK_KVA_RATE_D"/>
+        <pointInfo name="Demand at Peak kVa Coincidental" attributes="DEMAND_PEAK_KVA_COIN"/>
+        <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
+        <pointInfo name="Demand Reads And Reset" attributes="DEMAND_READS_AND_RESET"/>
+        <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
+        <pointInfo name="Inactive Phase Current Diagnostic Error" attributes="INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR"/>
+        <pointInfo name="kVA" attributes="DELIVERED_KVA"/>
+        <pointInfo name="kVAh" attributes="KVAH"/>
         <pointInfo name="kVAh Lagging"/>
         <pointInfo name="kVAh Lagging Rate A"/>
         <pointInfo name="kVAh Lagging Rate B"/>
         <pointInfo name="kVAh Lagging Rate C"/>
         <pointInfo name="kVAh Lagging Rate D"/>
-        <pointInfo name="kVAr" zzattributes="KVAR"/>
-        <pointInfo name="kW" zzattributes="DEMAND"/>
-        <pointInfo name="Low Battery Warning" zzattributes="LOW_BATTERY_WARNING"/>
-        <pointInfo name="Low Loss Potential" zzattributes="LOW_LOSS_POTENTIAL"/>
-        <pointInfo name="Mass Memory Error" zzattributes="MASS_MEMORY_ERROR"/>
-        <pointInfo name="Meter Reconfigure" zzattributes="METER_RECONFIGURE"/>
-        <pointInfo name="Metrology Communication Failure" zzattributes="METROLOGY_COMM_FAILURE"/>
-        <pointInfo name="Net kW Load Profile" zzattributes="NET_KW_LOAD_PROFILE"/>
-        <pointInfo name="Net kWh" yyinit="true" zzattributes="NET_KWH"/>
-        <pointInfo name="Net kWh (Rate A kWh)" zzattributes="NET_KWH_RATE_A"/>
-        <pointInfo name="Net kWh (Rate B kWh)" zzattributes="NET_KWH_RATE_B"/>
-        <pointInfo name="Net kWh (Rate C kWh)" zzattributes="NET_KWH_RATE_C"/>
-        <pointInfo name="Net kWh (Rate D kWh)" zzattributes="NET_KWH_RATE_D"/>
-        <pointInfo name="Net kWh per Interval" zzattributes="NET_KWH_PER_INTERVAL"/>
-        <pointInfo name="Non Volatile Mem Failure" zzattributes="NON_VOLATILE_MEM_FAILURE"/>
-        <pointInfo name="Outage Count" yyinit="true" zzattributes="RFN_OUTAGE_COUNT"/>
-        <pointInfo name="Outage Restore Count" yyinit="true" zzattributes="RFN_OUTAGE_RESTORE_COUNT"/>
-        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
-        <pointInfo name="Outages" yyinit="true" zzattributes="OUTAGE_LOG"/>
-        <pointInfo name="Peak kVA" zzattributes="PEAK_KVA"/>
+        <pointInfo name="kVAr" attributes="KVAR"/>
+        <pointInfo name="kW" attributes="DEMAND"/>
+        <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
+        <pointInfo name="Low Loss Potential" attributes="LOW_LOSS_POTENTIAL"/>
+        <pointInfo name="Mass Memory Error" attributes="MASS_MEMORY_ERROR"/>
+        <pointInfo name="Meter Reconfigure" attributes="METER_RECONFIGURE"/>
+        <pointInfo name="Metrology Communication Failure" attributes="METROLOGY_COMM_FAILURE"/>
+        <pointInfo name="Net kW Load Profile" attributes="NET_KW_LOAD_PROFILE"/>
+        <pointInfo name="Net kWh" init="true" attributes="NET_KWH"/>
+        <pointInfo name="Net kWh (Rate A kWh)" attributes="NET_KWH_RATE_A"/>
+        <pointInfo name="Net kWh (Rate B kWh)" attributes="NET_KWH_RATE_B"/>
+        <pointInfo name="Net kWh (Rate C kWh)" attributes="NET_KWH_RATE_C"/>
+        <pointInfo name="Net kWh (Rate D kWh)" attributes="NET_KWH_RATE_D"/>
+        <pointInfo name="Net kWh per Interval" attributes="NET_KWH_PER_INTERVAL"/>
+        <pointInfo name="Non Volatile Mem Failure" attributes="NON_VOLATILE_MEM_FAILURE"/>
+        <pointInfo name="Outage Count" init="true" attributes="RFN_OUTAGE_COUNT"/>
+        <pointInfo name="Outage Restore Count" init="true" attributes="RFN_OUTAGE_RESTORE_COUNT"/>
+        <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
+        <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
+        <pointInfo name="Peak kVA" attributes="PEAK_KVA"/>
         <pointInfo name="Peak kVA Lagging"/>
         <pointInfo name="Peak kVA Lagging Rate A"/>
         <pointInfo name="Peak kVA Lagging Rate B"/>
         <pointInfo name="Peak kVA Lagging Rate C"/>
         <pointInfo name="Peak kVA Lagging Rate D"/>
-        <pointInfo name="Peak kVAr" zzattributes="PEAK_KVAR"/>
-        <pointInfo name="Peak kW" yyinit="true" zzattributes="PEAK_DEMAND"/>
-        <pointInfo name="Peak kW (Rate A kW)" yyinit="true" zzattributes="PEAK_DEMAND_RATE_A"/>
-        <pointInfo name="Peak kW (Rate B kW)" zzattributes="PEAK_DEMAND_RATE_B"/>
-        <pointInfo name="Peak kW (Rate C kW)" zzattributes="PEAK_DEMAND_RATE_C"/>
-        <pointInfo name="Peak kW (Rate D kW)" zzattributes="PEAK_DEMAND_RATE_D"/>
-        <pointInfo name="Phase Angle Displacement" zzattributes="PHASE_ANGLE_DISPLACEMENT"/>
-        <pointInfo name="Phase Loss" zzattributes="PHASE_LOSS"/>
-        <pointInfo name="Polarity Cross-phase and Energy Flow Diagnostic" zzattributes="POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC"/>
-        <pointInfo name="Power Factor" zzattributes="POWER_FACTOR"/>
-        <pointInfo name="Power Failure" zzattributes="POWER_FAIL_FLAG"/>
-        <pointInfo name="Ram Error" zzattributes="RAM_ERROR"/>
-        <pointInfo name="Rate A kWh" yyinit="true" zzattributes="USAGE_RATE_A"/>
-        <pointInfo name="Rate B kWh" zzattributes="USAGE_RATE_B"/>
-        <pointInfo name="Rate C kWh" zzattributes="USAGE_RATE_C"/>
-        <pointInfo name="Rate D kWh" zzattributes="USAGE_RATE_D"/>
-        <pointInfo name="Received kVArh" yyinit="true" zzattributes="RECEIVED_KVARH"/>
-        <pointInfo name="Received kVArh (Rate A kVArh)" yyinit="true" zzattributes="RECEIVED_KVARH_RATE_A"/>
-        <pointInfo name="Received kVArh (Rate B kVArh)" zzattributes="RECEIVED_KVARH_RATE_B"/>
-        <pointInfo name="Received kVArh (Rate C kVArh)" zzattributes="RECEIVED_KVARH_RATE_C"/>
-        <pointInfo name="Received kVArh (Rate D kVArh)" zzattributes="RECEIVED_KVARH_RATE_D"/>
-        <pointInfo name="Received kW Load Profile" zzattributes="RECEIVED_KW_LOAD_PROFILE"/>
-        <pointInfo name="Received kWh" yyinit="true" zzattributes="RECEIVED_KWH"/>
-        <pointInfo name="Received kWh (Rate A kWh)" zzattributes="RECEIVED_KWH_RATE_A"/>
-        <pointInfo name="Received kWh (Rate B kWh)" zzattributes="RECEIVED_KWH_RATE_B"/>
-        <pointInfo name="Received kWh (Rate C kWh)" zzattributes="RECEIVED_KWH_RATE_C"/>
-        <pointInfo name="Received kWh (Rate D kWh)" zzattributes="RECEIVED_KWH_RATE_D"/>
-        <pointInfo name="Received kWh per Interval" zzattributes="RECEIVED_KWH_PER_INTERVAL"/>
-        <pointInfo name="Register Full-scale Exceeded" zzattributes="REGISTER_FULL_SCALE_EXCEEDED"/>
-        <pointInfo name="Reverse Rotation" zzattributes="REVERSE_POWER_FLAG"/>
-        <pointInfo name="RF Demand Reset Status" yyinit="true" zzattributes="RF_DEMAND_RESET_STATUS"/>
-        <pointInfo name="Rom Error" zzattributes="ROM_ERROR"/>
-        <pointInfo name="Season Change" zzattributes="SEASON_CHANGE"/>
-        <pointInfo name="SiteScan Error" zzattributes="SITESCAN_ERROR"/>
-        <pointInfo name="Sum kW Load Profile" zzattributes="SUM_KW_LOAD_PROFILE"/>
-        <pointInfo name="Sum kWh" yyinit="true" zzattributes="SUM_KWH"/>
-        <pointInfo name="Sum kWh (Rate A kWh)" yyinit="true" zzattributes="SUM_KWH_RATE_A"/>
-        <pointInfo name="Sum kWh (Rate B kWh)" zzattributes="SUM_KWH_RATE_B"/>
-        <pointInfo name="Sum kWh (Rate C kWh)" zzattributes="SUM_KWH_RATE_C"/>
-        <pointInfo name="Sum kWh (Rate D kWh)" zzattributes="SUM_KWH_RATE_D"/>
-        <pointInfo name="Sum kWh per Interval" zzattributes="SUM_KWH_PER_INTERVAL"/>
-        <pointInfo name="THD V or TDD I Error" zzattributes="THD_V_OR_TDD_I_ERROR"/>
-        <pointInfo name="Total Outage Count" yyinit="true" zzattributes="BLINK_COUNT"/>
-        <pointInfo name="TOU Schedule Error" zzattributes="TOU_SCHEDULE_ERROR"/>
-        <pointInfo name="Unprogrammed" zzattributes="UNPROGRAMMED"/>
-        <pointInfo name="Volts Phase A" yyinit="true" zzattributes="VOLTAGE_PHASE_A"/>
-        <pointInfo name="Volts Phase B" yyinit="true" zzattributes="VOLTAGE_PHASE_B"/>
-        <pointInfo name="Volts Phase C" yyinit="true" zzattributes="VOLTAGE_PHASE_C"/>
+        <pointInfo name="Peak kVAr" attributes="PEAK_KVAR"/>
+        <pointInfo name="Peak kW" init="true" attributes="PEAK_DEMAND"/>
+        <pointInfo name="Peak kW (Rate A kW)" init="true" attributes="PEAK_DEMAND_RATE_A"/>
+        <pointInfo name="Peak kW (Rate B kW)" attributes="PEAK_DEMAND_RATE_B"/>
+        <pointInfo name="Peak kW (Rate C kW)" attributes="PEAK_DEMAND_RATE_C"/>
+        <pointInfo name="Peak kW (Rate D kW)" attributes="PEAK_DEMAND_RATE_D"/>
+        <pointInfo name="Phase Angle Displacement" attributes="PHASE_ANGLE_DISPLACEMENT"/>
+        <pointInfo name="Phase Loss" attributes="PHASE_LOSS"/>
+        <pointInfo name="Polarity Cross-phase and Energy Flow Diagnostic" attributes="POLARITY_CROSS_PHASE_ENERGY_FLOW_DIAGNOSTIC"/>
+        <pointInfo name="Power Factor" attributes="POWER_FACTOR"/>
+        <pointInfo name="Power Failure" attributes="POWER_FAIL_FLAG"/>
+        <pointInfo name="Ram Error" attributes="RAM_ERROR"/>
+        <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A"/>
+        <pointInfo name="Rate B kWh" attributes="USAGE_RATE_B"/>
+        <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C"/>
+        <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D"/>
+        <pointInfo name="Received kVArh" init="true" attributes="RECEIVED_KVARH"/>
+        <pointInfo name="Received kVArh (Rate A kVArh)" init="true" attributes="RECEIVED_KVARH_RATE_A"/>
+        <pointInfo name="Received kVArh (Rate B kVArh)" attributes="RECEIVED_KVARH_RATE_B"/>
+        <pointInfo name="Received kVArh (Rate C kVArh)" attributes="RECEIVED_KVARH_RATE_C"/>
+        <pointInfo name="Received kVArh (Rate D kVArh)" attributes="RECEIVED_KVARH_RATE_D"/>
+        <pointInfo name="Received kW Load Profile" attributes="RECEIVED_KW_LOAD_PROFILE"/>
+        <pointInfo name="Received kWh" init="true" attributes="RECEIVED_KWH"/>
+        <pointInfo name="Received kWh (Rate A kWh)" attributes="RECEIVED_KWH_RATE_A"/>
+        <pointInfo name="Received kWh (Rate B kWh)" attributes="RECEIVED_KWH_RATE_B"/>
+        <pointInfo name="Received kWh (Rate C kWh)" attributes="RECEIVED_KWH_RATE_C"/>
+        <pointInfo name="Received kWh (Rate D kWh)" attributes="RECEIVED_KWH_RATE_D"/>
+        <pointInfo name="Received kWh per Interval" attributes="RECEIVED_KWH_PER_INTERVAL"/>
+        <pointInfo name="Register Full-scale Exceeded" attributes="REGISTER_FULL_SCALE_EXCEEDED"/>
+        <pointInfo name="Reverse Rotation" attributes="REVERSE_POWER_FLAG"/>
+        <pointInfo name="RF Demand Reset Status" init="true" attributes="RF_DEMAND_RESET_STATUS"/>
+        <pointInfo name="Rom Error" attributes="ROM_ERROR"/>
+        <pointInfo name="Season Change" attributes="SEASON_CHANGE"/>
+        <pointInfo name="SiteScan Error" attributes="SITESCAN_ERROR"/>
+        <pointInfo name="Sum kW Load Profile" attributes="SUM_KW_LOAD_PROFILE"/>
+        <pointInfo name="Sum kWh" init="true" attributes="SUM_KWH"/>
+        <pointInfo name="Sum kWh (Rate A kWh)" init="true" attributes="SUM_KWH_RATE_A"/>
+        <pointInfo name="Sum kWh (Rate B kWh)" attributes="SUM_KWH_RATE_B"/>
+        <pointInfo name="Sum kWh (Rate C kWh)" attributes="SUM_KWH_RATE_C"/>
+        <pointInfo name="Sum kWh (Rate D kWh)" attributes="SUM_KWH_RATE_D"/>
+        <pointInfo name="Sum kWh per Interval" attributes="SUM_KWH_PER_INTERVAL"/>
+        <pointInfo name="THD V or TDD I Error" attributes="THD_V_OR_TDD_I_ERROR"/>
+        <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
+        <pointInfo name="TOU Schedule Error" attributes="TOU_SCHEDULE_ERROR"/>
+        <pointInfo name="Unprogrammed" attributes="UNPROGRAMMED"/>
+        <pointInfo name="Volts Phase A" init="true" attributes="VOLTAGE_PHASE_A"/>
+        <pointInfo name="Volts Phase B" init="true" attributes="VOLTAGE_PHASE_B"/>
+        <pointInfo name="Volts Phase C" init="true" attributes="VOLTAGE_PHASE_C"/>
     </pointInfos>
 </pao>

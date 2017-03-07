@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="RFWMETER" changeGroup="rfw" displayGroup="RFMESH" displayName="RFW-Meter" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFWMETER" changeGroup="rfw" displayGroup="RFMESH" displayName="RFW-Meter" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>RFW.xml</pointFile>
     </pointFiles>
@@ -9,7 +9,7 @@
         <tag name="WATER_METER_DETAIL_DISPLAYABLE"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Water Usage" yyinit="true" zzattributes="USAGE_WATER"/>
-        <pointInfo name="Water Usage per Interval" yyinit="true" zzattributes="WATER_USAGE_PER_INTERVAL"/>
+        <pointInfo name="Water Usage" init="true" attributes="USAGE_WATER"/>
+        <pointInfo name="Water Usage per Interval" init="true" attributes="WATER_USAGE_PER_INTERVAL"/>
     </pointInfos>
 </pao>

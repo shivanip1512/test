@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="GWY800" creatable="false" displayGroup="RFMESH" displayName="GWY-800" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="GWY800" creatable="false" displayGroup="RFMESH" displayName="GWY-800" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>GATEWAY.xml</pointFile>
     </pointFiles>
@@ -7,8 +7,8 @@
         <tag name="DB_EDITOR_INCOMPATIBLE"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Connected Device Count" yyinit="true" zzattributes="CONNECTED_DEVICE_COUNT"/>
-        <pointInfo name="Data Streaming Load" yyinit="true" zzattributes="DATA_STREAMING_LOAD"/>
-        <pointInfo name="Streaming Device Count" yyinit="true" zzattributes="STREAMING_DEVICE_COUNT"/>
+        <pointInfo name="Connected Device Count" init="true" attributes="CONNECTED_DEVICE_COUNT"/>
+        <pointInfo name="Data Streaming Load" init="true" attributes="DATA_STREAMING_LOAD"/>
+        <pointInfo name="Streaming Device Count" init="true" attributes="STREAMING_DEVICE_COUNT"/>
     </pointInfos>
 </pao>

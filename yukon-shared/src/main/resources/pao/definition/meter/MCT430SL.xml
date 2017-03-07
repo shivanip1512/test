@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="MCT430SL" changeGroup="meter" displayGroup="MCT" displayName="MCT-430SL" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="MCT430SL" changeGroup="meter" displayGroup="MCT" displayName="MCT-430SL" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>MCT43X.xml</pointFile>
     </pointFiles>
@@ -30,47 +30,47 @@
         <category type="timeZone"/>
     </configuration>
     <pointInfos>
-        <pointInfo name="Average Power Factor" zzattributes="POWER_FACTOR"/>
-        <pointInfo name="Blink Count" yyinit="true"/>
-        <pointInfo name="Comm Status" zzattributes="COMM_STATUS"/>
-        <pointInfo name="IED Blink Count" yyinit="true" zzattributes="BLINK_COUNT"/>
-        <pointInfo name="IED Demand Reset Count" yyinit="true" zzattributes="IED_DEMAND_RESET_COUNT"/>
-        <pointInfo name="kVArh" yyinit="true"/>
-        <pointInfo name="kW-LP" yyinit="true" zzattributes="LOAD_PROFILE"/>
-        <pointInfo name="kW-LP (Channel 2)" zzattributes="PROFILE_CHANNEL_2"/>
-        <pointInfo name="kW-LP (Channel 3)" zzattributes="PROFILE_CHANNEL_3"/>
-        <pointInfo name="Last Interval kVAr" zzattributes="KVAR"/>
-        <pointInfo name="Last Interval kW" yyinit="true" zzattributes="DEMAND"/>
-        <pointInfo name="Neutral Current" zzattributes="NEUTRAL_CURRENT"/>
-        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
-        <pointInfo name="Peak kM (Coincidental)" zzattributes="PEAK_KVAR_COIN"/>
-        <pointInfo name="Peak kVAr (Rate A kVAr)" yyinit="true" zzattributes="PEAK_KVAR_RATE_A,PEAK_KVAR"/>
-        <pointInfo name="Peak kVAr (Rate B kVAr)" zzattributes="PEAK_KVAR_RATE_B"/>
-        <pointInfo name="Peak kVAr (Rate C kVAr)" zzattributes="PEAK_KVAR_RATE_C"/>
-        <pointInfo name="Peak kVAr (Rate D kVAr)" zzattributes="PEAK_KVAR_RATE_D"/>
+        <pointInfo name="Average Power Factor" attributes="POWER_FACTOR"/>
+        <pointInfo name="Blink Count" init="true"/>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
+        <pointInfo name="IED Blink Count" init="true" attributes="BLINK_COUNT"/>
+        <pointInfo name="IED Demand Reset Count" init="true" attributes="IED_DEMAND_RESET_COUNT"/>
+        <pointInfo name="kVArh" init="true"/>
+        <pointInfo name="kW-LP" init="true" attributes="LOAD_PROFILE"/>
+        <pointInfo name="kW-LP (Channel 2)" attributes="PROFILE_CHANNEL_2"/>
+        <pointInfo name="kW-LP (Channel 3)" attributes="PROFILE_CHANNEL_3"/>
+        <pointInfo name="Last Interval kVAr" attributes="KVAR"/>
+        <pointInfo name="Last Interval kW" init="true" attributes="DEMAND"/>
+        <pointInfo name="Neutral Current" attributes="NEUTRAL_CURRENT"/>
+        <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
+        <pointInfo name="Peak kM (Coincidental)" attributes="PEAK_KVAR_COIN"/>
+        <pointInfo name="Peak kVAr (Rate A kVAr)" init="true" attributes="PEAK_KVAR_RATE_A,PEAK_KVAR"/>
+        <pointInfo name="Peak kVAr (Rate B kVAr)" attributes="PEAK_KVAR_RATE_B"/>
+        <pointInfo name="Peak kVAr (Rate C kVAr)" attributes="PEAK_KVAR_RATE_C"/>
+        <pointInfo name="Peak kVAr (Rate D kVAr)" attributes="PEAK_KVAR_RATE_D"/>
         <pointInfo name="Peak kW (IED)"/>
-        <pointInfo name="Peak kW (Rate A kW)" yyinit="true" zzattributes="PEAK_DEMAND_RATE_A,PEAK_DEMAND"/>
-        <pointInfo name="Peak kW (Rate B kW)" zzattributes="PEAK_DEMAND_RATE_B"/>
-        <pointInfo name="Peak kW (Rate C kW)" zzattributes="PEAK_DEMAND_RATE_C"/>
-        <pointInfo name="Peak kW (Rate D kW)" zzattributes="PEAK_DEMAND_RATE_D"/>
-        <pointInfo name="Peak kW Frozen (Rate A kW)" zzattributes="PEAK_DEMAND_FROZEN_RATE_A,PEAK_DEMAND_FROZEN"/>
-        <pointInfo name="Phase A Current" zzattributes="CURRENT_PHASE_A"/>
-        <pointInfo name="Phase B Current" zzattributes="CURRENT_PHASE_B"/>
-        <pointInfo name="Phase C Current" zzattributes="CURRENT_PHASE_C"/>
-        <pointInfo name="Rate A kVArh" yyinit="true" zzattributes="KVARH,KVARH_RATE_A"/>
-        <pointInfo name="Rate A kWh" yyinit="true" zzattributes="USAGE_RATE_A"/>
-        <pointInfo name="Rate A kWh Frozen" zzattributes="USAGE_FROZEN"/>
-        <pointInfo name="Rate B kVArh" zzattributes="KVARH_RATE_B"/>
-        <pointInfo name="Rate B kWh" zzattributes="USAGE_RATE_B"/>
-        <pointInfo name="Rate C kVArh" zzattributes="KVARH_RATE_C"/>
-        <pointInfo name="Rate C kWh" zzattributes="USAGE_RATE_C"/>
-        <pointInfo name="Rate D kVArh" zzattributes="KVARH_RATE_D"/>
-        <pointInfo name="Rate D kWh" zzattributes="USAGE_RATE_D"/>
-        <pointInfo name="Total kWh" yyinit="true" zzattributes="USAGE"/>
-        <pointInfo name="Voltage Phase A" zzattributes="VOLTAGE_PHASE_A"/>
-        <pointInfo name="Voltage Phase B" zzattributes="VOLTAGE_PHASE_B"/>
-        <pointInfo name="Voltage Phase C" zzattributes="VOLTAGE_PHASE_C"/>
-        <pointInfo name="Voltage Profile" zzattributes="VOLTAGE_PROFILE"/>
+        <pointInfo name="Peak kW (Rate A kW)" init="true" attributes="PEAK_DEMAND_RATE_A,PEAK_DEMAND"/>
+        <pointInfo name="Peak kW (Rate B kW)" attributes="PEAK_DEMAND_RATE_B"/>
+        <pointInfo name="Peak kW (Rate C kW)" attributes="PEAK_DEMAND_RATE_C"/>
+        <pointInfo name="Peak kW (Rate D kW)" attributes="PEAK_DEMAND_RATE_D"/>
+        <pointInfo name="Peak kW Frozen (Rate A kW)" attributes="PEAK_DEMAND_FROZEN_RATE_A,PEAK_DEMAND_FROZEN"/>
+        <pointInfo name="Phase A Current" attributes="CURRENT_PHASE_A"/>
+        <pointInfo name="Phase B Current" attributes="CURRENT_PHASE_B"/>
+        <pointInfo name="Phase C Current" attributes="CURRENT_PHASE_C"/>
+        <pointInfo name="Rate A kVArh" init="true" attributes="KVARH,KVARH_RATE_A"/>
+        <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A"/>
+        <pointInfo name="Rate A kWh Frozen" attributes="USAGE_FROZEN"/>
+        <pointInfo name="Rate B kVArh" attributes="KVARH_RATE_B"/>
+        <pointInfo name="Rate B kWh" attributes="USAGE_RATE_B"/>
+        <pointInfo name="Rate C kVArh" attributes="KVARH_RATE_C"/>
+        <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C"/>
+        <pointInfo name="Rate D kVArh" attributes="KVARH_RATE_D"/>
+        <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D"/>
+        <pointInfo name="Total kWh" init="true" attributes="USAGE"/>
+        <pointInfo name="Voltage Phase A" attributes="VOLTAGE_PHASE_A"/>
+        <pointInfo name="Voltage Phase B" attributes="VOLTAGE_PHASE_B"/>
+        <pointInfo name="Voltage Phase C" attributes="VOLTAGE_PHASE_C"/>
+        <pointInfo name="Voltage Profile" attributes="VOLTAGE_PROFILE"/>
     </pointInfos>
     <commands>
         <command name="Cancel LP Request">
@@ -100,22 +100,22 @@
             <point name="Rate D kWh"/>
             <point name="Peak kW (Rate D kW)"/>
         </command>
-        <command name="Read Frozen Rate A kWh/Peak kW" zzenabled="false">
+        <command name="Read Frozen Rate A kWh/Peak kW" enabled="false">
             <cmd text="getvalue ied frozen kwha"/>
             <point name="Peak kW (Rate A kW)"/>
             <point name="Rate A kWh"/>
         </command>
-        <command name="Read Frozen Rate B kWh/Peak kW" zzenabled="false">
+        <command name="Read Frozen Rate B kWh/Peak kW" enabled="false">
             <cmd text="getvalue ied frozen kwhb"/>
             <point name="Rate B kWh"/>
             <point name="Peak kW (Rate B kW)"/>
         </command>
-        <command name="Read Frozen Rate C kWh/Peak kW" zzenabled="false">
+        <command name="Read Frozen Rate C kWh/Peak kW" enabled="false">
             <cmd text="getvalue ied frozen kwhc"/>
             <point name="Peak kW (Rate C kW)"/>
             <point name="Rate C kWh"/>
         </command>
-        <command name="Read Frozen Rate D kWh/Peak kW" zzenabled="false">
+        <command name="Read Frozen Rate D kWh/Peak kW" enabled="false">
             <cmd text="getvalue ied frozen kwhd"/>
             <point name="Rate D kWh"/>
             <point name="Peak kW (Rate D kW)"/>

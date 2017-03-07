@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="RFN440_2133TD" changeGroup="meter" creatable="false" displayGroup="RFMESH" displayName="RFN-440-2133TD" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFN440_2133TD" changeGroup="meter" creatable="false" displayGroup="RFMESH" displayName="RFN-440-2133TD" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>RFN.xml</pointFile>
     </pointFiles>
@@ -16,39 +16,39 @@
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Amps Phase A" yyinit="true" zzattributes="CURRENT_PHASE_A"/>
-        <pointInfo name="Amps Phase B" yyinit="true" zzattributes="CURRENT_PHASE_B"/>
-        <pointInfo name="Amps Phase C" yyinit="true" zzattributes="CURRENT_PHASE_C"/>
-        <pointInfo name="Blink Count" yyinit="true" zzattributes="RFN_BLINK_COUNT"/>
-        <pointInfo name="Blink Restore Count" yyinit="true" zzattributes="RFN_BLINK_RESTORE_COUNT"/>
-        <pointInfo name="Current Angle Phase A" zzattributes="CURRENT_ANGLE_PHASE_A"/>
-        <pointInfo name="Current Angle Phase B" zzattributes="CURRENT_ANGLE_PHASE_B"/>
-        <pointInfo name="Current Angle Phase C" zzattributes="CURRENT_ANGLE_PHASE_C"/>
-        <pointInfo name="Delivered kWh" yyinit="true" zzattributes="USAGE"/>
-        <pointInfo name="Delivered kWh per Interval" yyinit="true" zzattributes="USAGE_PER_INTERVAL"/>
-        <pointInfo name="Disconnect Status" yyinit="true" zzattributes="DISCONNECT_STATUS"/>
-        <pointInfo name="Forward Capacitive kVArh per Interval" yyinit="true" zzattributes="FORWARD_CAPACITIVE_KVARH_PER_INTERVAL"/>
-        <pointInfo name="Forward Inductive kVArh" yyinit="true" zzattributes="FORWARD_INDUCTIVE_KVARH"/>
-        <pointInfo name="Forward Inductive kVArh per Interval" yyinit="true" zzattributes="FORWARD_INDUCTIVE_KVARH_PER_INTERVAL"/>
-        <pointInfo name="Last Interval kW" yyinit="true" zzattributes="DEMAND"/>
-        <pointInfo name="Outage Count" yyinit="true" zzattributes="RFN_OUTAGE_COUNT"/>
-        <pointInfo name="Outage Restore Count" yyinit="true" zzattributes="RFN_OUTAGE_RESTORE_COUNT"/>
-        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
-        <pointInfo name="Outages" yyinit="true" zzattributes="OUTAGE_LOG"/>
-        <pointInfo name="Peak kW" yyinit="true" zzattributes="PEAK_DEMAND"/>
-        <pointInfo name="Rate A kWh" yyinit="true" zzattributes="USAGE_RATE_A"/>
-        <pointInfo name="Rate B kWh" yyinit="true" zzattributes="USAGE_RATE_B"/>
-        <pointInfo name="Rate C kWh" yyinit="true" zzattributes="USAGE_RATE_C"/>
-        <pointInfo name="Rate D kWh" yyinit="true" zzattributes="USAGE_RATE_D"/>
-        <pointInfo name="Received kWh" yyinit="true" zzattributes="RECEIVED_KWH"/>
-        <pointInfo name="Received kWh per Interval" zzattributes="RECEIVED_KWH_PER_INTERVAL"/>
-        <pointInfo name="Reverse Capacitive kVArh per Interval" yyinit="true" zzattributes="REVERSE_CAPACITIVE_KVARH_PER_INTERVAL"/>
-        <pointInfo name="Reverse Inductive kVArh" yyinit="true" zzattributes="REVERSE_INDUCTIVE_KVARH"/>
-        <pointInfo name="Reverse Inductive kVArh per Interval" yyinit="true" zzattributes="REVERSE_INDUCTIVE_KVARH_PER_INTERVAL"/>
-        <pointInfo name="RF Demand Reset Status" yyinit="true" zzattributes="RF_DEMAND_RESET_STATUS"/>
-        <pointInfo name="Total Outage Count" yyinit="true" zzattributes="BLINK_COUNT"/>
-        <pointInfo name="Volts Phase A" yyinit="true" zzattributes="VOLTAGE_PHASE_A"/>
-        <pointInfo name="Volts Phase B" yyinit="true" zzattributes="VOLTAGE_PHASE_B"/>
-        <pointInfo name="Volts Phase C" yyinit="true" zzattributes="VOLTAGE_PHASE_C"/>
+        <pointInfo name="Amps Phase A" init="true" attributes="CURRENT_PHASE_A"/>
+        <pointInfo name="Amps Phase B" init="true" attributes="CURRENT_PHASE_B"/>
+        <pointInfo name="Amps Phase C" init="true" attributes="CURRENT_PHASE_C"/>
+        <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
+        <pointInfo name="Current Angle Phase A" attributes="CURRENT_ANGLE_PHASE_A"/>
+        <pointInfo name="Current Angle Phase B" attributes="CURRENT_ANGLE_PHASE_B"/>
+        <pointInfo name="Current Angle Phase C" attributes="CURRENT_ANGLE_PHASE_C"/>
+        <pointInfo name="Delivered kWh" init="true" attributes="USAGE"/>
+        <pointInfo name="Delivered kWh per Interval" init="true" attributes="USAGE_PER_INTERVAL"/>
+        <pointInfo name="Disconnect Status" init="true" attributes="DISCONNECT_STATUS"/>
+        <pointInfo name="Forward Capacitive kVArh per Interval" init="true" attributes="FORWARD_CAPACITIVE_KVARH_PER_INTERVAL"/>
+        <pointInfo name="Forward Inductive kVArh" init="true" attributes="FORWARD_INDUCTIVE_KVARH"/>
+        <pointInfo name="Forward Inductive kVArh per Interval" init="true" attributes="FORWARD_INDUCTIVE_KVARH_PER_INTERVAL"/>
+        <pointInfo name="Last Interval kW" init="true" attributes="DEMAND"/>
+        <pointInfo name="Outage Count" init="true" attributes="RFN_OUTAGE_COUNT"/>
+        <pointInfo name="Outage Restore Count" init="true" attributes="RFN_OUTAGE_RESTORE_COUNT"/>
+        <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
+        <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
+        <pointInfo name="Peak kW" init="true" attributes="PEAK_DEMAND"/>
+        <pointInfo name="Rate A kWh" init="true" attributes="USAGE_RATE_A"/>
+        <pointInfo name="Rate B kWh" init="true" attributes="USAGE_RATE_B"/>
+        <pointInfo name="Rate C kWh" init="true" attributes="USAGE_RATE_C"/>
+        <pointInfo name="Rate D kWh" init="true" attributes="USAGE_RATE_D"/>
+        <pointInfo name="Received kWh" init="true" attributes="RECEIVED_KWH"/>
+        <pointInfo name="Received kWh per Interval" attributes="RECEIVED_KWH_PER_INTERVAL"/>
+        <pointInfo name="Reverse Capacitive kVArh per Interval" init="true" attributes="REVERSE_CAPACITIVE_KVARH_PER_INTERVAL"/>
+        <pointInfo name="Reverse Inductive kVArh" init="true" attributes="REVERSE_INDUCTIVE_KVARH"/>
+        <pointInfo name="Reverse Inductive kVArh per Interval" init="true" attributes="REVERSE_INDUCTIVE_KVARH_PER_INTERVAL"/>
+        <pointInfo name="RF Demand Reset Status" init="true" attributes="RF_DEMAND_RESET_STATUS"/>
+        <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
+        <pointInfo name="Volts Phase A" init="true" attributes="VOLTAGE_PHASE_A"/>
+        <pointInfo name="Volts Phase B" init="true" attributes="VOLTAGE_PHASE_B"/>
+        <pointInfo name="Volts Phase C" init="true" attributes="VOLTAGE_PHASE_C"/>
     </pointInfos>
 </pao>

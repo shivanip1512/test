@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="CAP_CONTROL_SUBBUS" changeGroup="cap" displayGroup="Volt/Var" displayName="Substation Bus" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="CAP_CONTROL_SUBBUS" changeGroup="cap" displayGroup="Volt/Var" displayName="Substation Bus" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>CAP_CONTROL.xml</pointFile>
     </pointFiles>
     <pointInfos>
-        <pointInfo name="Daily Operations" yyinit="true"/>
-        <pointInfo name="Estimated Power Factor" yyinit="true"/>
-        <pointInfo name="Estimated Var Load" yyinit="true"/>
-        <pointInfo name="Power Factor" yyinit="true" zzattributes="POWER_FACTOR"/>
+        <pointInfo name="Daily Operations" init="true"/>
+        <pointInfo name="Estimated Power Factor" init="true"/>
+        <pointInfo name="Estimated Var Load" init="true"/>
+        <pointInfo name="Power Factor" init="true" attributes="POWER_FACTOR"/>
     </pointInfos>
 </pao>

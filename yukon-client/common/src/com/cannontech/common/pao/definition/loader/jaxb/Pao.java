@@ -24,7 +24,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="pointInfos" type="{}pointInfosType" minOccurs="0"/>
  *         &lt;element name="commands" type="{}commandsType" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="aaid" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="paoType" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="changeGroup" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="displayGroup" type="{http://www.w3.org/2001/XMLSchema}string" />
  *       &lt;attribute name="displayName" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
@@ -53,8 +53,8 @@ public class Pao {
     protected DeviceCategories configuration;
     protected PointInfosType pointInfos;
     protected CommandsType commands;
-    @XmlAttribute(name = "aaid", required = true)
-    protected String aaid;
+    @XmlAttribute(name = "paoType", required = true)
+    protected String paoType;
     @XmlAttribute(name = "changeGroup")
     protected String changeGroup;
     @XmlAttribute(name = "displayGroup")
@@ -187,27 +187,27 @@ public class Pao {
     }
 
     /**
-     * Gets the value of the aaid property.
+     * Gets the value of the paoType property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getAaid() {
-        return aaid;
+    public String getPaoType() {
+        return paoType;
     }
 
     /**
-     * Sets the value of the aaid property.
+     * Sets the value of the paoType property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setAaid(String value) {
-        this.aaid = value;
+    public void setPaoType(String value) {
+        this.paoType = value;
     }
 
     /**

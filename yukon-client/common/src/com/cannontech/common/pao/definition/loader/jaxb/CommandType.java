@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="point" type="{}pointType" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="zzenabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
+ *       &lt;attribute name="enabled" type="{http://www.w3.org/2001/XMLSchema}boolean" default="true" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -42,8 +42,8 @@ public class CommandType {
     protected List<PointType> point;
     @XmlAttribute(name = "name", required = true)
     protected String name;
-    @XmlAttribute(name = "zzenabled")
-    protected Boolean zzenabled;
+    @XmlAttribute(name = "enabled")
+    protected Boolean enabled;
 
     /**
      * Gets the value of the cmd property.
@@ -128,31 +128,31 @@ public class CommandType {
     }
 
     /**
-     * Gets the value of the zzenabled property.
+     * Gets the value of the enabled property.
      * 
      * @return
      *     possible object is
      *     {@link Boolean }
      *     
      */
-    public boolean isZzenabled() {
-        if (zzenabled == null) {
+    public boolean isEnabled() {
+        if (enabled == null) {
             return true;
         } else {
-            return zzenabled;
+            return enabled;
         }
     }
 
     /**
-     * Sets the value of the zzenabled property.
+     * Sets the value of the enabled property.
      * 
      * @param value
      *     allowed object is
      *     {@link Boolean }
      *     
      */
-    public void setZzenabled(Boolean value) {
-        this.zzenabled = value;
+    public void setEnabled(Boolean value) {
+        this.enabled = value;
     }
 
 }

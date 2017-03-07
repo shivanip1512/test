@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="RFN_RELAY" creatable="false" displayGroup="RFMESH" displayName="RFN Relay" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFN_RELAY" creatable="false" displayGroup="RFMESH" displayName="RFN Relay" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>RFN_RELAY.xml</pointFile>
     </pointFiles>
@@ -11,13 +11,13 @@
         <tag name="RFN_EVENTS"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Bad Upgrade Security Param" zzattributes="BAD_UPGRADE_SECURITY_PARAM"/>
-        <pointInfo name="Blink Count" yyinit="true" zzattributes="RFN_BLINK_COUNT"/>
-        <pointInfo name="Blink Restore Count" yyinit="true" zzattributes="RFN_BLINK_RESTORE_COUNT"/>
-        <pointInfo name="Failed Upgrade Signature Verification" zzattributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
-        <pointInfo name="Outage Count" yyinit="true" zzattributes="RFN_OUTAGE_COUNT"/>
-        <pointInfo name="Outage Log" yyinit="true" zzattributes="OUTAGE_LOG"/>
-        <pointInfo name="Outage Restore Count" yyinit="true" zzattributes="RFN_OUTAGE_RESTORE_COUNT"/>
-        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
+        <pointInfo name="Bad Upgrade Security Param" attributes="BAD_UPGRADE_SECURITY_PARAM"/>
+        <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
+        <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
+        <pointInfo name="Outage Count" init="true" attributes="RFN_OUTAGE_COUNT"/>
+        <pointInfo name="Outage Log" init="true" attributes="OUTAGE_LOG"/>
+        <pointInfo name="Outage Restore Count" init="true" attributes="RFN_OUTAGE_RESTORE_COUNT"/>
+        <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
     </pointInfos>
 </pao>

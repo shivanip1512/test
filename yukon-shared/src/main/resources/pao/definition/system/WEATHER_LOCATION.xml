@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="WEATHER_LOCATION" displayName="WEATHER LOCATION" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="WEATHER_LOCATION" displayName="WEATHER LOCATION" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>WEATHER_LOCATION.xml</pointFile>
     </pointFiles>
@@ -7,7 +7,7 @@
         <tag name="DB_EDITOR_INCOMPATIBLE"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Relative Humidity" yyinit="true" zzattributes="HUMIDITY"/>
-        <pointInfo name="Temperature" yyinit="true" zzattributes="TEMPERATURE"/>
+        <pointInfo name="Relative Humidity" init="true" attributes="HUMIDITY"/>
+        <pointInfo name="Temperature" init="true" attributes="TEMPERATURE"/>
     </pointInfos>
 </pao>

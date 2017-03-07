@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="MCT360" changeGroup="meter" displayGroup="MCT" displayName="MCT-360" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="MCT360" changeGroup="meter" displayGroup="MCT" displayName="MCT-360" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>MCT360.xml</pointFile>
     </pointFiles>
@@ -15,16 +15,16 @@
         <tag name="USES_METER_NUMBER_FOR_MSP"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Comm Status" zzattributes="COMM_STATUS"/>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
         <pointInfo name="kVAh"/>
         <pointInfo name="kVArh"/>
         <pointInfo name="kW"/>
         <pointInfo name="kWh"/>
-        <pointInfo name="Last Interval kVAr" zzattributes="KVAR"/>
-        <pointInfo name="Last Interval kW" zzattributes="DEMAND"/>
+        <pointInfo name="Last Interval kVAr" attributes="KVAR"/>
+        <pointInfo name="Last Interval kW" attributes="DEMAND"/>
         <pointInfo name="Last Interval/Instantaneous kVA"/>
         <pointInfo name="Neutral Current"/>
-        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
+        <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="Over Flow Flag"/>
         <pointInfo name="Peak kVA (Rate A kVA)"/>
         <pointInfo name="Peak kVA (Rate B kVA)"/>
@@ -34,17 +34,17 @@
         <pointInfo name="Peak kVAr (Rate B kVAr)"/>
         <pointInfo name="Peak kVAr (Rate C kVAr)"/>
         <pointInfo name="Peak kVAr (Rate D kVAr)"/>
-        <pointInfo name="Peak kW (Rate A kW)" yyinit="true" zzattributes="PEAK_DEMAND"/>
+        <pointInfo name="Peak kW (Rate A kW)" init="true" attributes="PEAK_DEMAND"/>
         <pointInfo name="Peak kW (Rate B kW)"/>
         <pointInfo name="Peak kW (Rate C kW)"/>
         <pointInfo name="Peak kW (Rate D kW)"/>
         <pointInfo name="Phase A Voltage"/>
         <pointInfo name="Phase B Voltage"/>
         <pointInfo name="Phase C Voltage"/>
-        <pointInfo name="Power Fail" yyinit="true"/>
+        <pointInfo name="Power Fail" init="true"/>
         <pointInfo name="Rate A kVAh"/>
         <pointInfo name="Rate A kVArh"/>
-        <pointInfo name="Rate A kWh" yyinit="true"/>
+        <pointInfo name="Rate A kWh" init="true"/>
         <pointInfo name="Rate B kVAh"/>
         <pointInfo name="Rate B kVArh"/>
         <pointInfo name="Rate B kWh"/>
@@ -57,7 +57,7 @@
         <pointInfo name="Short Power Fail Flag"/>
         <pointInfo name="Status of A relay"/>
         <pointInfo name="Status of B relay"/>
-        <pointInfo name="Total kWh" yyinit="true" zzattributes="USAGE"/>
+        <pointInfo name="Total kWh" init="true" attributes="USAGE"/>
     </pointInfos>
     <commands>
         <command name="Read Current Demand">

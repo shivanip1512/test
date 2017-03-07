@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="ZIGBEE_ENDPOINT" displayGroup="Demand Response" displayName="ZigBee Endpoint" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="ZIGBEE_ENDPOINT" displayGroup="Demand Response" displayName="ZigBee Endpoint" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>ZIGBEE_ENDPOINT.xml</pointFile>
     </pointFiles>
@@ -8,6 +8,6 @@
         <tag name="DB_EDITOR_INCOMPATIBLE"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Commissioned State" yyinit="true" zzattributes="ZIGBEE_LINK_STATUS"/>
+        <pointInfo name="Commissioned State" init="true" attributes="ZIGBEE_LINK_STATUS"/>
     </pointInfos>
 </pao>

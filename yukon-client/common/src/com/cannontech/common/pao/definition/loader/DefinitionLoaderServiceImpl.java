@@ -95,7 +95,7 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
     public Map<PaoType, Map<Attribute, AttributeDefinition>> getPaoAttributeAttrDefinitionMap() {
         Map<PaoType, Map<Attribute, AttributeDefinition>> paoAttributeAttrDefinitionMap = new HashMap<>();
         for (Pao pao : fileLoader.getPaos()) {
-            PaoType paoType = PaoType.valueOf(pao.getAaid());
+            PaoType paoType = PaoType.valueOf(pao.getPaoType());
             if (paoAttributeAttrDefinitionMap.get(paoType) == null) {
                 paoAttributeAttrDefinitionMap.put(paoType, new HashMap<>());
             }
@@ -104,8 +104,8 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
                 Map<String, Point> allPoints = fileLoader.getPoints(pao.getPointFiles().getPointFile());
                 for (PointInfoType pointInfo : pao.getPointInfos().getPointInfo()) {
                     PointTemplate template = createPointTemplate(pointInfo.getName(), allPoints);
-                    if (pointInfo.getZzattributes() != null) {
-                        List<String> attributes = Arrays.asList(pointInfo.getZzattributes().split(","));
+                    if (pointInfo.getAttributes() != null) {
+                        List<String> attributes = Arrays.asList(pointInfo.getAttributes().split(","));
                         for (String attributeStr : attributes) {
                             BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributeStr);
                             AttributeDefinition definition = new AttributeDefinition(attribute, template, pointDao);
@@ -125,10 +125,10 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
         
         for(Pao pao: fileLoader.getPaos()) {
             if(pao.getPointFiles() != null) {
-                PaoType paoType = PaoType.valueOf(pao.getAaid());
+                PaoType paoType = PaoType.valueOf(pao.getPaoType());
                 Map<String, Point> allPoints =  fileLoader.getPoints(pao.getPointFiles().getPointFile());
                 for (PointInfoType pointInfo : pao.getPointInfos().getPointInfo()) {
-                    if(initOnly && !pointInfo.isYyinit()){
+                    if(initOnly && !pointInfo.isInit()){
                         continue;
                     }
                     PointTemplate template = createPointTemplate(pointInfo.getName(), allPoints);
@@ -145,7 +145,7 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
         SetMultimap<PaoType, Category> paoCategoryMap = HashMultimap.create();
         
         for(Pao pao: fileLoader.getPaos()){
-           PaoType paoType = PaoType.valueOf(pao.getAaid());
+           PaoType paoType = PaoType.valueOf(pao.getPaoType());
            if(pao.getConfiguration() != null){
                for(Category category: pao.getConfiguration().getCategory()){
                    paoCategoryMap.put(paoType, category);
@@ -162,10 +162,10 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
         for (Pao pao : fileLoader.getPaos()) {
             if(pao.getPointFiles() != null) {
                 Map<String, Point> allPoints = fileLoader.getPoints(pao.getPointFiles().getPointFile());
-                PaoType paoType = PaoType.valueOf(pao.getAaid());
+                PaoType paoType = PaoType.valueOf(pao.getPaoType());
                 if(pao.getCommands() != null){
                     for (CommandType command : pao.getCommands().getCommand()) {
-                        if(command != null && command.isZzenabled()){
+                        if(command != null && command.isEnabled()){
                             CommandDefinition commandDefinition = new CommandDefinition(command.getName());
                             for (CmdType cmd : command.getCmd()) {
                                 commandDefinition.addCommandString(cmd.getText());
@@ -189,7 +189,7 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
     public Map<PaoType, ImmutableBiMap<PaoTag, PaoTagDefinition>> getSupportedTagsByType() {
         Map<PaoType, ImmutableBiMap<PaoTag, PaoTagDefinition>> supportedTagsByType = new HashMap<>();
         for (Pao pao : fileLoader.getPaos()) {
-            PaoType paoType = PaoType.valueOf(pao.getAaid());
+            PaoType paoType = PaoType.valueOf(pao.getPaoType());
             ImmutableBiMap.Builder<PaoTag, PaoTagDefinition> tags = ImmutableBiMap.builder();
             if (pao.getTags() != null) {
                 for (TagType tag : pao.getTags().getTag()) {
@@ -220,7 +220,7 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
      * Creates PaoDefinition from jaxb object.
      */
     private PaoDefinition createPaoDefinition(Pao pao) {
-        PaoType paoType = PaoType.valueOf(pao.getAaid());
+        PaoType paoType = PaoType.valueOf(pao.getPaoType());
         // delete javaConstant?
         PaoDefinition paoDefinition = new PaoDefinitionImpl(paoType, pao.getDisplayName(), pao.getDisplayGroup(),
             paoType.name(), pao.getChangeGroup(), pao.isCreatable());

@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="NEUTRAL_MONITOR" displayGroup="Grid Advisor" displayName="Capacitor Bank Neutral Monitor" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="NEUTRAL_MONITOR" displayGroup="Grid Advisor" displayName="Capacitor Bank Neutral Monitor" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>NEUTRAL_MONITOR.xml</pointFile>
     </pointFiles>
     <pointInfos>
-        <pointInfo name="Battery Voltage" yyinit="true"/>
-        <pointInfo name="BER" yyinit="true"/>
+        <pointInfo name="Battery Voltage" init="true"/>
+        <pointInfo name="BER" init="true"/>
         <pointInfo name="Calibrated"/>
-        <pointInfo name="Current Survey" yyinit="true"/>
-        <pointInfo name="Device Temperature" yyinit="true"/>
+        <pointInfo name="Current Survey" init="true"/>
+        <pointInfo name="Device Temperature" init="true"/>
         <pointInfo name="High Alert Setpoint"/>
-        <pointInfo name="Max Current - Period" yyinit="true"/>
-        <pointInfo name="Max Current - Report" yyinit="true"/>
-        <pointInfo name="Min Current - Period" yyinit="true"/>
-        <pointInfo name="Min Current - Report" yyinit="true"/>
-        <pointInfo name="Over Current" yyinit="true"/>
+        <pointInfo name="Max Current - Period" init="true"/>
+        <pointInfo name="Max Current - Report" init="true"/>
+        <pointInfo name="Min Current - Period" init="true"/>
+        <pointInfo name="Min Current - Report" init="true"/>
+        <pointInfo name="Over Current" init="true"/>
         <pointInfo name="Period Rate"/>
-        <pointInfo name="Reed Switch Communication" yyinit="true"/>
+        <pointInfo name="Reed Switch Communication" init="true"/>
         <pointInfo name="Reset Alert Setpoint"/>
-        <pointInfo name="Reset Over Current" yyinit="true"/>
-        <pointInfo name="RSSI" yyinit="true"/>
-        <pointInfo name="Signal Strength" yyinit="true"/>
+        <pointInfo name="Reset Over Current" init="true"/>
+        <pointInfo name="RSSI" init="true"/>
+        <pointInfo name="Signal Strength" init="true"/>
     </pointInfos>
 </pao>

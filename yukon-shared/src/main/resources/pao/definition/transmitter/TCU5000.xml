@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="TCU5000" changeGroup="transmitter" displayGroup="Signal Transmitters" displayName="TCU-5000" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="TCU5000" changeGroup="transmitter" displayGroup="Signal Transmitters" displayName="TCU-5000" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>TCU5X.xml</pointFile>
     </pointFiles>
@@ -11,7 +11,7 @@
         <pointInfo name="Alarms"/>
         <pointInfo name="Clock fail"/>
         <pointInfo name="Clock unlock"/>
-        <pointInfo name="Comm Status" yyinit="true" zzattributes="COMM_STATUS"/>
+        <pointInfo name="Comm Status" init="true" attributes="COMM_STATUS"/>
         <pointInfo name="COP Reset"/>
         <pointInfo name="Local Operation"/>
         <pointInfo name="Message Verification"/>

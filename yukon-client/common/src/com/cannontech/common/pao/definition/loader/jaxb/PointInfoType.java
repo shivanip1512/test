@@ -18,8 +18,8 @@ import javax.xml.bind.annotation.XmlValue;
  *   &lt;simpleContent>
  *     &lt;extension base="&lt;http://www.w3.org/2001/XMLSchema>string">
  *       &lt;attribute name="name" use="required" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="zzattributes" type="{http://www.w3.org/2001/XMLSchema}string" />
- *       &lt;attribute name="yyinit" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
+ *       &lt;attribute name="attributes" type="{http://www.w3.org/2001/XMLSchema}string" />
+ *       &lt;attribute name="init" type="{http://www.w3.org/2001/XMLSchema}boolean" default="false" />
  *     &lt;/extension>
  *   &lt;/simpleContent>
  * &lt;/complexType>
@@ -37,10 +37,10 @@ public class PointInfoType {
     protected String value;
     @XmlAttribute(name = "name", required = true)
     protected String name;
-    @XmlAttribute(name = "zzattributes")
-    protected String zzattributes;
-    @XmlAttribute(name = "yyinit")
-    protected Boolean yyinit;
+    @XmlAttribute(name = "attributes")
+    protected String attributes;
+    @XmlAttribute(name = "init")
+    protected Boolean init;
 
     /**
      * Gets the value of the value property.
@@ -91,55 +91,55 @@ public class PointInfoType {
     }
 
     /**
-     * Gets the value of the zzattributes property.
+     * Gets the value of the attributes property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getZzattributes() {
-        return zzattributes;
+    public String getAttributes() {
+        return attributes;
     }
 
     /**
-     * Sets the value of the zzattributes property.
+     * Sets the value of the attributes property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setZzattributes(String value) {
-        this.zzattributes = value;
+    public void setAttributes(String value) {
+        this.attributes = value;
     }
 
     /**
-     * Gets the value of the yyinit property.
+     * Gets the value of the init property.
      * 
      * @return
      *     possible object is
      *     {@link Boolean }
      *     
      */
-    public boolean isYyinit() {
-        if (yyinit == null) {
+    public boolean isInit() {
+        if (init == null) {
             return false;
         } else {
-            return yyinit;
+            return init;
         }
     }
 
     /**
-     * Sets the value of the yyinit property.
+     * Sets the value of the init property.
      * 
      * @param value
      *     allowed object is
      *     {@link Boolean }
      *     
      */
-    public void setYyinit(Boolean value) {
-        this.yyinit = value;
+    public void setInit(Boolean value) {
+        this.init = value;
     }
 
 }

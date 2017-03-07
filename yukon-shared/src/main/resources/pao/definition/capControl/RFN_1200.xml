@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="RFN_1200" changeGroup="rfnda" creatable="false" displayGroup="RFMESH" displayName="RFN-1200" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFN_1200" changeGroup="rfnda" creatable="false" displayGroup="RFMESH" displayName="RFN-1200" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>RFN_1200.xml</pointFile>
     </pointFiles>
@@ -9,16 +9,16 @@
         <tag name="RFN_EVENTS"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Bad Upgrade Security Param" yyinit="true"/>
-        <pointInfo name="Blink Count" yyinit="true" zzattributes="RFN_BLINK_COUNT"/>
-        <pointInfo name="Blink Restore Count" yyinit="true" zzattributes="RFN_BLINK_RESTORE_COUNT"/>
-        <pointInfo name="DNP3 Address Changed" yyinit="true" zzattributes="DNP3_ADDRESS_CHANGED"/>
-        <pointInfo name="Failed Upgrade Signature Verification" yyinit="true"/>
-        <pointInfo name="Outage Count" yyinit="true" zzattributes="RFN_OUTAGE_COUNT"/>
-        <pointInfo name="Outage Restore Count" yyinit="true" zzattributes="RFN_OUTAGE_RESTORE_COUNT"/>
-        <pointInfo name="Outage Status" yyinit="true" zzattributes="OUTAGE_STATUS"/>
-        <pointInfo name="Outages" yyinit="true" zzattributes="OUTAGE_LOG"/>
-        <pointInfo name="Outstation DNP3 SerComm Locked" yyinit="true" zzattributes="OUTSTATION_DNP3_SERCOMM_LOCKED"/>
-        <pointInfo name="Time Sync Failed" yyinit="true" zzattributes="TIME_SYNC_FAILED"/>
+        <pointInfo name="Bad Upgrade Security Param" init="true"/>
+        <pointInfo name="Blink Count" init="true" attributes="RFN_BLINK_COUNT"/>
+        <pointInfo name="Blink Restore Count" init="true" attributes="RFN_BLINK_RESTORE_COUNT"/>
+        <pointInfo name="DNP3 Address Changed" init="true" attributes="DNP3_ADDRESS_CHANGED"/>
+        <pointInfo name="Failed Upgrade Signature Verification" init="true"/>
+        <pointInfo name="Outage Count" init="true" attributes="RFN_OUTAGE_COUNT"/>
+        <pointInfo name="Outage Restore Count" init="true" attributes="RFN_OUTAGE_RESTORE_COUNT"/>
+        <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
+        <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
+        <pointInfo name="Outstation DNP3 SerComm Locked" init="true" attributes="OUTSTATION_DNP3_SERCOMM_LOCKED"/>
+        <pointInfo name="Time Sync Failed" init="true" attributes="TIME_SYNC_FAILED"/>
     </pointInfos>
 </pao>

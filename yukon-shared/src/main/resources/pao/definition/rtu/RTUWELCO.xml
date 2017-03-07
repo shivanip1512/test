@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="RTUWELCO" changeGroup="rtu" displayGroup="RTU" displayName="RTU-WELCO" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RTUWELCO" changeGroup="rtu" displayGroup="RTU" displayName="RTU-WELCO" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <tags>
         <tag name="COMMANDER_REQUESTS"/>
         <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="0-127"/>

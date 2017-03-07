@@ -126,9 +126,9 @@ public class FileLoader {
             Point point = allPoints.get(pointInfo.getName());
             if (point == null) {
                 throw new PaoConfigurationException(
-                    "Unable to load :" + pao.getAaid() + " point=" + pointInfo.getName() + " doesn't exist in " + file);
+                    "Unable to load :" + pao.getPaoType() + " point=" + pointInfo.getName() + " doesn't exist in " + file);
             }else if (!point.isEnabled()) {
-                log.warn("Removing pointInfo :" + pao.getAaid() + " point=" + pointInfo.getName() + " is disabled in"
+                log.warn("Removing pointInfo :" + pao.getPaoType() + " point=" + pointInfo.getName() + " is disabled in"
                     + file);
                 it.remove();
             }
@@ -146,10 +146,10 @@ public class FileLoader {
                     String pointName = pointType.getName();
                     Point commandPoint = allPoints.get(pointType.getName());
                     if (commandPoint == null) {
-                        throw new PaoConfigurationException("Unable to load :" + pao.getAaid() + "command="
+                        throw new PaoConfigurationException("Unable to load :" + pao.getPaoType() + "command="
                             + command.getName() + " point=" + pointName + " doesn't exist in " + file);
                     }else if (!commandPoint.isEnabled()) {
-                        throw new PaoConfigurationException("Unable to load :" + pao.getAaid() + "command="
+                        throw new PaoConfigurationException("Unable to load :" + pao.getPaoType() + "command="
                             + command.getName() + " point=" + pointName + " is disabled in" + file);
                     }
                 }
@@ -170,12 +170,12 @@ public class FileLoader {
                 if (tag.isTagHasValue()) {
                     Object convertedValue = InputTypeFactory.convertPropertyValue(tag.getValueType(), value);
                     if (convertedValue == null) {
-                        throw new PaoConfigurationException(pao.getAaid() + " has invalid option for a tag="
+                        throw new PaoConfigurationException(pao.getPaoType() + " has invalid option for a tag="
                             + tagType.getName() + ". Unable to convert the value.");
                     }
                 } else {
                     if (StringUtils.isNotBlank(tagType.getOption())) {
-                        throw new PaoConfigurationException(pao.getAaid() + " has invalid option for a tag="
+                        throw new PaoConfigurationException(pao.getPaoType() + " has invalid option for a tag="
                             + tagType.getName() + ". This tag shouldn't have an option value.");
                     }
                 }

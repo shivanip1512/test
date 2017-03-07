@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="DNP_CBC_6510" changeGroup="cap" creatable="false" displayGroup="Volt/Var" displayName="CBC 6510" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="DNP_CBC_6510" changeGroup="cap" creatable="false" displayGroup="Volt/Var" displayName="CBC 6510" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>CAP_CONTROL.xml</pointFile>
     </pointFiles>
@@ -12,6 +12,6 @@
         <category type="dnp"/>
     </configuration>
     <pointInfos>
-        <pointInfo name="Capacitor Bank State" yyinit="true" zzattributes="CONTROL_POINT"/>
+        <pointInfo name="Capacitor Bank State" init="true" attributes="CONTROL_POINT"/>
     </pointInfos>
 </pao>

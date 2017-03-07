@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" aaid="SENTINEL" displayGroup="Electronic Meters" displayName="SENTINEL" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="SENTINEL" displayGroup="Electronic Meters" displayName="SENTINEL" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>SENTINEL.xml</pointFile>
     </pointFiles>
@@ -10,7 +10,7 @@
         <tag name="PORTER_COMMAND_REQUESTS"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Comm Status" zzattributes="COMM_STATUS"/>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
         <pointInfo name="Instantaneous Current Phase A"/>
         <pointInfo name="Instantaneous Current Phase B"/>
         <pointInfo name="Instantaneous Current Phase C"/>
@@ -18,15 +18,15 @@
         <pointInfo name="Instantaneous Voltage Phase A"/>
         <pointInfo name="Instantaneous Voltage Phase B"/>
         <pointInfo name="Instantaneous Voltage Phase C"/>
-        <pointInfo name="Last Interval kW" zzattributes="DEMAND"/>
+        <pointInfo name="Last Interval kW" attributes="DEMAND"/>
         <pointInfo name="Last Interval/Instantaneous kVA"/>
         <pointInfo name="Last Interval/Instantaneous kVAr"/>
         <pointInfo name="Load Profile Current Phase A"/>
         <pointInfo name="Load Profile Current Phase B"/>
         <pointInfo name="Load Profile Current Phase C"/>
         <pointInfo name="Load Profile kVA"/>
-        <pointInfo name="Load Profile kVAr" yyinit="true"/>
-        <pointInfo name="Load Profile kW" yyinit="true" zzattributes="LOAD_PROFILE"/>
+        <pointInfo name="Load Profile kVAr" init="true"/>
+        <pointInfo name="Load Profile kW" init="true" attributes="LOAD_PROFILE"/>
         <pointInfo name="Load Profile Neutral Current"/>
         <pointInfo name="Load Profile Voltage Phase A"/>
         <pointInfo name="Load Profile Voltage Phase B"/>
@@ -41,7 +41,7 @@
         <pointInfo name="Peak kVAr (Rate C kVAr)"/>
         <pointInfo name="Peak kVAr (Rate D kVAr)"/>
         <pointInfo name="Peak kVAr (Rate E kVAr)"/>
-        <pointInfo name="Peak kW (Rate A kW)" zzattributes="PEAK_DEMAND"/>
+        <pointInfo name="Peak kW (Rate A kW)" attributes="PEAK_DEMAND"/>
         <pointInfo name="Peak kW (Rate B kW)"/>
         <pointInfo name="Peak kW (Rate C kW)"/>
         <pointInfo name="Peak kW (Rate D kW)"/>
@@ -62,8 +62,8 @@
         <pointInfo name="Rate E kVArh"/>
         <pointInfo name="Rate E kWh"/>
         <pointInfo name="Total kVAh"/>
-        <pointInfo name="Total kVArh" yyinit="true"/>
-        <pointInfo name="Total kWh" yyinit="true" zzattributes="USAGE"/>
+        <pointInfo name="Total kVArh" init="true"/>
+        <pointInfo name="Total kWh" init="true" attributes="USAGE"/>
     </pointInfos>
     <commands>
         <command name="General Scan">
