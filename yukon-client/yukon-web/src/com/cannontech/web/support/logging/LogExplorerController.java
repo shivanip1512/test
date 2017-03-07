@@ -45,7 +45,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.CollationUtils;
 import com.cannontech.common.util.BinaryPrefix;
 import com.cannontech.common.util.BootstrapUtils;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.FileUtil;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
