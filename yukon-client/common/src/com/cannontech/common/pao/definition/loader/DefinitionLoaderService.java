@@ -22,6 +22,7 @@ public interface DefinitionLoaderService {
      * Reloads all pao definitions. This method should be used for testing only since all pao definitions are loaded on
      * the start-up.
      */
+    @Deprecated
     void reload();
 
     Map<PaoType, Map<Attribute, AttributeDefinition>> getPaoAttributeAttrDefinitionMap();

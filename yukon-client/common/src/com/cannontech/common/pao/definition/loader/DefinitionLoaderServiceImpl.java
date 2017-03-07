@@ -107,7 +107,7 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
                     if (pointInfo.getAttributes() != null) {
                         List<String> attributes = Arrays.asList(pointInfo.getAttributes().split(","));
                         for (String attributeStr : attributes) {
-                            BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributeStr);
+                            BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributeStr.trim());
                             AttributeDefinition definition = new AttributeDefinition(attribute, template, pointDao);
                             attrDefMap.put(attribute, definition);
                         }
@@ -221,10 +221,8 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
      */
     private PaoDefinition createPaoDefinition(Pao pao) {
         PaoType paoType = PaoType.valueOf(pao.getPaoType());
-        // delete javaConstant?
         PaoDefinition paoDefinition = new PaoDefinitionImpl(paoType, pao.getDisplayName(), pao.getDisplayGroup(),
-            paoType.name(), pao.getChangeGroup(), pao.isCreatable());
-        
+            pao.getChangeGroup(), pao.isCreatable());
         return paoDefinition;
     }
     

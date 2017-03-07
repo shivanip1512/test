@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -183,15 +182,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     
     @Override
     public PointTemplate getPointTemplateByTypeAndOffset(PaoType paoType, PointIdentifier pointIdentifier) { 
-        Optional<PointTemplate> optional = paoAllPointTemplateMap.get(paoType)
-                                                                 .stream()
-                                                                 .filter(x -> x.getPointIdentifier().equals(pointIdentifier))
-                                                                 .findFirst();
-        if (optional.isPresent()) {
-            return optional.get();
-        }
-
-        throw new NotFoundException("Point template not found for pao type: " + paoType + ", " + pointIdentifier);
+        return paoAllPointTemplateMap.get(paoType)
+                .stream()
+                .filter(x -> x.getPointIdentifier().equals(pointIdentifier))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Point template not found for pao type: " 
+                                                         + paoType + ", " + pointIdentifier));
     }
         
     @Override
@@ -374,15 +370,13 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     @Override
     public PointIdentifier getPointIdentifierByDefaultName(PaoType type, String defaultPointName)
             throws NotFoundException {
-
-        Optional<PointTemplate> optional = paoAllPointTemplateMap.get(type)
-                                                                 .stream()
-                                                                 .filter(x -> x.getName().equals(defaultPointName))
-                                                                 .findFirst();
-        if (optional.isPresent()) {
-            return optional.get().getPointIdentifier();
-        }
-        throw new NotFoundException("Could not find point identifier for" + type + "/" + defaultPointName);
+        return paoAllPointTemplateMap.get(type)
+                .stream()
+                .filter(x -> x.getName().equals(defaultPointName))
+                .findFirst()
+                .orElseThrow(() -> new NotFoundException("Could not find point identifier for" 
+                                                         + type + "/" + defaultPointName))
+                .getPointIdentifier();
     }
 
     @Override
@@ -414,14 +408,12 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
 
     @Override
     public boolean isDnpConfigurationType(PaoType paoType) {
-        Optional<Category> optional = paoCategoryMap.get(paoType)
-                                                    .stream()
-                                                    .filter(x -> CategoryType.DNP == x.getType())
-                                                    .findFirst();
-        if (optional.isPresent()) {
-            return true;
-        }
-        return false;
+        return paoCategoryMap.get(paoType)
+                .stream()
+                .filter(category -> CategoryType.DNP == category.getType())
+                .findFirst()
+                .map(foundCategory -> true)
+                .orElse(false);
     }
     
     

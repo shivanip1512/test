@@ -13,22 +13,21 @@ public class PaoDefinitionImpl implements PaoDefinition {
     private PaoType type = null;
     private String displayName = null;
     private String displayGroup = null;
-    private String javaConstant = null;
     private boolean changeable = false;
     private String changeGroup = null;
     private boolean createable = true;
 
-    public PaoDefinitionImpl(PaoType type, String displayName, String displayGroup,
-            String javaConstant, String changeGroup, boolean createable) {
+    public PaoDefinitionImpl(PaoType type, String displayName, String displayGroup, String changeGroup,
+            boolean createable) {
         this.type = type;
         this.displayName = displayName;
         this.displayGroup = displayGroup;
-        this.javaConstant = javaConstant;
         this.changeGroup = changeGroup;
         this.changeable = changeGroup != null;
         this.createable = createable;
     }
 
+    @Override
     public String getDisplayName() {
         return displayName;
     }
@@ -37,6 +36,7 @@ public class PaoDefinitionImpl implements PaoDefinition {
         this.displayName = displayName;
     }
 
+    @Override
     public PaoType getType() {
         return type;
     }
@@ -45,6 +45,7 @@ public class PaoDefinitionImpl implements PaoDefinition {
         this.type = type;
     }
 
+    @Override
     public boolean isChangeable() {
         return changeable;
     }
@@ -53,6 +54,7 @@ public class PaoDefinitionImpl implements PaoDefinition {
         this.changeable = changeable;
     }
 
+    @Override
     public String getDisplayGroup() {
         return displayGroup;
     }
@@ -60,15 +62,8 @@ public class PaoDefinitionImpl implements PaoDefinition {
     public void setDisplayGroup(String displayGroup) {
         this.displayGroup = displayGroup;
     }
-
-    public String getJavaConstant() {
-        return javaConstant;
-    }
-
-    public void setJavaConstant(String javaConstant) {
-        this.javaConstant = javaConstant;
-    }
-
+    
+    @Override
     public String getChangeGroup() {
         return changeGroup;
     }
@@ -86,10 +81,12 @@ public class PaoDefinitionImpl implements PaoDefinition {
         return createable;
     }
 
+    @Override
     public String toString() {
         return this.displayName;
     }
 
+    @Override
     public boolean equals(Object obj) {
         if (obj instanceof PaoDefinitionImpl == false) {
             return false;
@@ -101,24 +98,24 @@ public class PaoDefinitionImpl implements PaoDefinition {
         return new EqualsBuilder().append(type, paoDefinition.getType())
                                   .append(displayName, paoDefinition.getDisplayName())
                                   .append(displayGroup, paoDefinition.getDisplayGroup())
-                                  .append(javaConstant, paoDefinition.getJavaConstant())
                                   .append(changeGroup, paoDefinition.getChangeGroup())
                                   .append(changeable, paoDefinition.isChangeable())
                                   .append(createable, paoDefinition.isCreatable())
                                   .isEquals();
     }
 
+    @Override
     public int hashCode() {
         return new HashCodeBuilder(49, 69).append(type)
                                           .append(displayName)
                                           .append(displayGroup)
-                                          .append(javaConstant)
                                           .append(changeGroup)
                                           .append(changeable)
                                           .append(createable)
                                           .toHashCode();
     }
 
+    @Override
     public int compareTo(PaoDefinition o) {
 
         if (o == null) {

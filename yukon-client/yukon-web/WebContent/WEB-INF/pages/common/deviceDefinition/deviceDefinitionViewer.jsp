@@ -149,10 +149,6 @@
 					        <td>${deviceInfo.definition.type}</td>
 					    </tr>
 					    <tr>
-					        <td><i:inline key=".javaConstant"/></td>
-					        <td>${deviceInfo.definition.javaConstant}</td>
-					    </tr>
-					    <tr>
 					        <td><i:inline key=".changeGroup"/></td>
 					        <td>${deviceInfo.definition.changeGroup}</td>
 					    </tr>

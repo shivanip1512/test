@@ -15,8 +15,6 @@ public interface PaoDefinition extends Comparable<PaoDefinition> {
 
     public String getDisplayGroup();
 
-    public String getJavaConstant();
-
     public String getChangeGroup();
     
     public boolean isCreatable();

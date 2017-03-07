@@ -240,7 +240,6 @@
     <entry key="yukon.web.modules.support.deviceDef.filters.anyAttribute">Any Attribute</entry>
     <entry key="yukon.web.modules.support.deviceDef.filters.anyTag">Any Tag</entry>
     <entry key="yukon.web.modules.support.deviceDef.info.type">Type:</entry>
-    <entry key="yukon.web.modules.support.deviceDef.info.javaConstant">Java Constant:</entry>
     <entry key="yukon.web.modules.support.deviceDef.info.changeGroup">Change Group:</entry>
     <entry key="yukon.web.modules.support.deviceDef.info.points.index">#</entry>
     <entry key="yukon.web.modules.support.deviceDef.info.points.name">Points</entry>

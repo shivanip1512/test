@@ -40,13 +40,13 @@ import com.google.common.collect.SetMultimap;
 
     // ATTRIBUTES
     // ============================================
-    abstract Set<AttributeDefinition> getDefinedAttributes(PaoType paoType);
+     Set<AttributeDefinition> getDefinedAttributes(PaoType paoType);
 
     Multimap<PaoType, Attribute> getPaoTypeAttributesMultiMap();
 
     Map<PaoType, Map<Attribute, AttributeDefinition>> getPaoAttributeAttrDefinitionMap();
 
-    abstract <T extends Attribute> AttributeDefinition getAttributeLookup(PaoType paoType, T attribute)
+     <T extends Attribute> AttributeDefinition getAttributeLookup(PaoType paoType, T attribute)
             throws IllegalUseOfAttribute;
 
     /**
@@ -88,7 +88,7 @@ import com.google.common.collect.SetMultimap;
      * @param pao - Pao to get point templates for
      * @return An unmodifiable set of all point templates for the pao
      */
-    abstract Set<PointTemplate> getAllPointTemplates(PaoType paoType);
+     Set<PointTemplate> getAllPointTemplates(PaoType paoType);
 
     /**
      * Method to get all of the point templates for a given pao definition
@@ -96,7 +96,7 @@ import com.google.common.collect.SetMultimap;
      * @param paoDefiniton - Pao definition to get point templates for
      * @return A unmodifiable set of all point templates for the pao
      */
-    abstract Set<PointTemplate> getAllPointTemplates(PaoDefinition paoDefiniton);
+     Set<PointTemplate> getAllPointTemplates(PaoDefinition paoDefiniton);
 
     /**
      * Method to get all of the point templates for a given pao that should
@@ -106,7 +106,7 @@ import com.google.common.collect.SetMultimap;
      * @return A unmodifiable set of all point templates for the pao that should be
      *         initialized
      */
-    abstract Set<PointTemplate> getInitPointTemplates(PaoType paoType);
+     Set<PointTemplate> getInitPointTemplates(PaoType paoType);
 
     /**
      * Method to get all of the point templates for a given pao definition
@@ -116,7 +116,7 @@ import com.google.common.collect.SetMultimap;
      * @return A unmodifiable set of all point templates for the pao that should be
      *         initialized
      */
-    abstract Set<PointTemplate> getInitPointTemplates(PaoDefinition newDefinition);
+     Set<PointTemplate> getInitPointTemplates(PaoDefinition newDefinition);
 
     /**
      * Method to get a point template for a pao based on point type and offset
@@ -126,7 +126,7 @@ import com.google.common.collect.SetMultimap;
      * @param pointType - Type of point template
      * @return Point template for pao
      */
-    abstract PointTemplate getPointTemplateByTypeAndOffset(PaoType paoType, PointIdentifier pointIdentifier);
+     PointTemplate getPointTemplateByTypeAndOffset(PaoType paoType, PointIdentifier pointIdentifier);
 
     // COMMANDS
     // ============================================
@@ -160,7 +160,7 @@ import com.google.common.collect.SetMultimap;
 
     // DEFINITIONS
     // ============================================
-    abstract Set<PaoDefinition> getAllPaoDefinitions();
+     Set<PaoDefinition> getAllPaoDefinitions();
 
     /**
      * Method to get a map of pao display groups and their associated pao
@@ -169,7 +169,7 @@ import com.google.common.collect.SetMultimap;
      * @return An immutable map with key: display group name, value: list of
      *         pao display
      */
-    abstract ListMultimap<String, PaoDefinition> getPaoDisplayGroupMap();
+     ListMultimap<String, PaoDefinition> getPaoDisplayGroupMap();
 
     /**
      * Method used to get a pao definition for a pao
@@ -177,7 +177,7 @@ import com.google.common.collect.SetMultimap;
      * @param pao - Pao to get definition for
      * @return The pao's pao definition
      */
-    abstract PaoDefinition getPaoDefinition(PaoType paoType);
+     PaoDefinition getPaoDefinition(PaoType paoType);
 
     /**
      * Method to get a set of PaoDefinitions into which the given PAO can change.
@@ -186,7 +186,7 @@ import com.google.common.collect.SetMultimap;
      * @param paoDefinition - Definition of PAO to change
      * @return An immutable set of PaoDefinition
      */
-    abstract Set<PaoDefinition> getPaosThatPaoCanChangeTo(PaoDefinition paoDefinition);
+     Set<PaoDefinition> getPaosThatPaoCanChangeTo(PaoDefinition paoDefinition);
 
     /**
      * Takes an iterable of type T and returns a new List of items that support
