@@ -68,16 +68,18 @@ import com.cannontech.msp.beans.v5.multispeak.ElectricMeters;
 import com.cannontech.msp.beans.v5.multispeak.Meters;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
 import com.cannontech.msp.beans.v5.od_server.ObjectFactory;
-import com.cannontech.msp.beans.v5.od_server.PingURL;
-import com.cannontech.msp.beans.v5.od_server.PingURLResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.core.v5.CBClient;
+import com.cannontech.multispeak.client.core.v5.CDClient;
+import com.cannontech.multispeak.client.core.v5.DRClient;
 import com.cannontech.multispeak.client.core.v5.EAClient;
 import com.cannontech.multispeak.client.core.v5.MDMClient;
 import com.cannontech.multispeak.client.core.v5.MRClient;
 import com.cannontech.multispeak.client.core.v5.OAClient;
 import com.cannontech.multispeak.client.core.v5.ODClient;
+import com.cannontech.multispeak.client.core.v5.SCADAClient;
+import com.cannontech.multispeak.client.core.v5.NOTClient;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.dao.v5.MspObjectDao;
 import com.cannontech.multispeak.dao.v5.MultispeakGetAllServiceLocationsCallback;
@@ -87,11 +89,15 @@ public class MspObjectDaoImpl implements MspObjectDao {
     private static final Logger log = YukonLogManager.getLogger(MspObjectDaoImpl.class);
 
     @Autowired private CBClient cbClient;
+    @Autowired private CDClient cdClient;
+    @Autowired private DRClient drClient;
     @Autowired private EAClient eaClient;
     @Autowired private MDMClient mdmClient;
     @Autowired private OAClient oaClient;
     @Autowired private MRClient mrClient;
     @Autowired private ODClient odClient;
+    @Autowired private SCADAClient scadaClient;
+    @Autowired private NOTClient notClient;
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private ObjectFactory odObjectFactory;
     private SystemLogHelper _systemLogHelper = null;
@@ -125,7 +131,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     @Override
     public ErrorObject[] toErrorObject(List<ErrorObject> errorObjects) {
 
-        if (!errorObjects.isEmpty()) {
+        if (errorObjects != null && !errorObjects.isEmpty()) {
             ErrorObject[] errors = new ErrorObject[errorObjects.size()];
             errorObjects.toArray(errors);
             return errors;
@@ -247,18 +253,24 @@ public class MspObjectDaoImpl implements MspObjectDao {
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, service);
         if (service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
             cbClient.pingURL(mspVendor, endpointUrl);
+        } else if (service.contains(MultispeakDefines.CD_Server_STR)) {
+            cdClient.pingURL(mspVendor, endpointUrl);
+        } else if (service.contains(MultispeakDefines.DR_Server_STR)) {
+            drClient.pingURL(mspVendor, endpointUrl);
         } else if (service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
             eaClient.pingURL(mspVendor, endpointUrl);
         } else if (service.equalsIgnoreCase(MultispeakDefines.MDM_Server_STR)) {
             mdmClient.pingURL(mspVendor, endpointUrl);
-        } else if (service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
-            oaClient.pingURL(mspVendor, endpointUrl);
         } else if (service.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
             mrClient.pingURL(mspVendor, endpointUrl);
+        } else if (service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
+            oaClient.pingURL(mspVendor, endpointUrl);
+        } else if (service.contains(MultispeakDefines.NOT_Server_STR)) {
+            notClient.pingURL(mspVendor, endpointUrl);
         } else if (service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
-            PingURL pingURL = odObjectFactory.createPingURL();
-            PingURLResponse response = odClient.pingURL(mspVendor, endpointUrl, pingURL);
-            log.debug(response);
+            odClient.pingURL(mspVendor, endpointUrl);
+        } else if (service.contains(MultispeakDefines.SCADA_Server_STR)) {
+            scadaClient.pingURL(mspVendor, endpointUrl);
         } else {
             ErrorObject obj = new ErrorObject();
             obj.setReferenceID("-100");
@@ -269,10 +281,6 @@ public class MspObjectDaoImpl implements MspObjectDao {
         }
         List<ErrorObject> errorObjects = multispeakFuncs.getErrorObjectsFromResponse();
         ErrorObject[] objects = toErrorObject(errorObjects);
-        // TODO : same type of conditions will be added for all other services
-
-        // TODO : ErrorObject[] Array should be returned. We cannot fetch it from response, need to retrieve
-        // it from Header. Please refer YUK-15773
         return objects;
     }
     
@@ -296,17 +304,25 @@ public class MspObjectDaoImpl implements MspObjectDao {
         try {
             if (service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
                 methods = cbClient.getMethods(mspVendor, endpointUrl);
+            } else if (service.equalsIgnoreCase(MultispeakDefines.CD_Server_STR)) {
+                methods = cdClient.getMethods(mspVendor, endpointUrl);
             } else if (service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
                 methods = eaClient.getMethods(mspVendor, endpointUrl);
+            } else if (service.equalsIgnoreCase(MultispeakDefines.DR_Server_STR)) {
+                methods = drClient.getMethods(mspVendor, endpointUrl);
             } else if (service.equalsIgnoreCase(MultispeakDefines.MDM_Server_STR)) {
                 methods = mdmClient.getMethods(mspVendor, endpointUrl);
-            } else if (service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
-                methods = oaClient.getMethods(mspVendor, endpointUrl);
             } else if (service.equalsIgnoreCase(MultispeakDefines.MR_Server_STR)) {
                 methods = mrClient.getMethods(mspVendor, endpointUrl);
+            } else if (service.equalsIgnoreCase(MultispeakDefines.NOT_Server_STR)) {
+                methods = notClient.getMethods(mspVendor, endpointUrl);
+            } else if (service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
+                methods = oaClient.getMethods(mspVendor, endpointUrl);
+            } else if (service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
+                methods = odClient.getMethods(mspVendor, endpointUrl);
+            } else if (service.equalsIgnoreCase(MultispeakDefines.SCADA_Server_STR)) {
+                methods = scadaClient.getMethods(mspVendor, endpointUrl);
             }
-            
-            // TODO : same type of conditions will be added for all other services
         } catch (MultispeakWebServiceClientException e) {
             log.error("TargetService: " + endpointUrl + " - GetMethods (" + mspVendor.getCompanyName() + ") ");
             log.error("MultispeakWebServiceClientException: " + e.getMessage());

@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeterExchange;
@@ -16,7 +17,6 @@ import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
-import com.cannontech.multispeak.client.v5.UserDetailHolder;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v5.MspValidationService;
 import com.cannontech.multispeak.service.v5.MultispeakLMService;
@@ -58,8 +58,8 @@ public class NOT_ServerImpl implements NOT_Server {
     public List<ErrorObject> scadaAnalogsChangedNotification(List<SCADAAnalog> scadaAnalogs)
             throws MultispeakWebServiceException {
          init();
-
-          multispeakFuncs.getMultispeakVendorFromHeader();
+         LiteYukonUser user = multispeakFuncs.authenticateMsgHeader();
+         multispeakFuncs.getMultispeakVendorFromHeader();
         
         // multispeakEventLogService.methodInvoked("ScadaAnalogsChangedNotification", vendor.getCompanyName());
         // - stop logging this, it's occurring every minute or more
@@ -68,7 +68,7 @@ public class NOT_ServerImpl implements NOT_Server {
         for (SCADAAnalog scadaAnalog : scadaAnalogs) {
             ErrorObject errorObject = mspValidationService.isValidScadaAnalog(scadaAnalog);
             if (errorObject == null) {
-                errorObject = multispeakLMService.writeAnalogPointData(scadaAnalog, UserDetailHolder.getYukonUser());
+                errorObject = multispeakLMService.writeAnalogPointData(scadaAnalog, user);
             }
             if (errorObject != null) {
                 errorObjects.add(errorObject);

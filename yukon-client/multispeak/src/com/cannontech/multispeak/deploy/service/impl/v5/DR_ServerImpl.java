@@ -7,13 +7,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.multispeak.LoadManagementEvent;
 import com.cannontech.msp.beans.v5.multispeak.SubstationLoadControlStatus;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
-import com.cannontech.multispeak.client.v5.UserDetailHolder;
 import com.cannontech.multispeak.db.v5.MspLoadControl;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.v5.DR_Server;
@@ -56,7 +56,7 @@ public class DR_ServerImpl implements DR_Server {
     public List<ErrorObject> initiateLoadManagementEvents(List<LoadManagementEvent> theLMEvents)
             throws MultispeakWebServiceException {
         init();
-
+        LiteYukonUser user = multispeakFuncs.authenticateMsgHeader();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("InitiateLoadManagementEvents", vendor.getCompanyName());
 
@@ -73,7 +73,7 @@ public class DR_ServerImpl implements DR_Server {
                 for (ErrorObject err : errorObject2) {
                     errorObjects.add(err);
                 }
-                errorObject = multispeakLMService.control(mspLoadControl, UserDetailHolder.getYukonUser());
+                errorObject = multispeakLMService.control(mspLoadControl, user);
             }
             if (errorObject != null) {
                 errorObjects.add(errorObject);

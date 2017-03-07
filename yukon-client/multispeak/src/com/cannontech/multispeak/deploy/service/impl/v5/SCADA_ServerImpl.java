@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v5.multispeak.SCADAAnalog;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
-import com.cannontech.multispeak.client.v5.UserDetailHolder;
 import com.cannontech.multispeak.dao.v5.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.v5.MspScadaAnalogReturnList;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
@@ -52,12 +52,13 @@ public class SCADA_ServerImpl implements SCADA_Server {
     @Override
     public List<SCADAAnalog> getLatestSCADAAnalogs(String lastReceived) throws MultispeakWebServiceException {
         init();
+        LiteYukonUser user = multispeakFuncs.authenticateMsgHeader();
         MultispeakVendor mspVendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetLatestSCADAAnalogs", mspVendor.getCompanyName());
 
         Date timerStart = new Date();
 
-        MspScadaAnalogReturnList scadaAnalogList = mspRawPointHistoryDao.retrieveLatestScadaAnalogs(UserDetailHolder.getYukonUser());
+        MspScadaAnalogReturnList scadaAnalogList = mspRawPointHistoryDao.retrieveLatestScadaAnalogs(user);
         
         multispeakFuncs.updateResponseHeader(scadaAnalogList);
         List<SCADAAnalog> scadaAnalogs = scadaAnalogList.getScadaAnalogs();

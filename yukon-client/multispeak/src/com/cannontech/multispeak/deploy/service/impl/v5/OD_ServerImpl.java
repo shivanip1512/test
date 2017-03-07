@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfObjectRef;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.commontypes.ObjectRef;
@@ -28,9 +27,8 @@ public class OD_ServerImpl implements OD_Server {
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MultispeakMeterService multispeakMeterService;
 
-    private LiteYukonUser init() throws MultispeakWebServiceException {
+    private void init() throws MultispeakWebServiceException {
         multispeakFuncs.init();
-        return multispeakFuncs.authenticateMsgHeader();
     }
 
     @Override

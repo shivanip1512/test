@@ -20,15 +20,12 @@ import com.cannontech.common.events.loggers.OutageEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.YukonPao;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfEndDeviceState;
-import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.commontypes.ObjectRef;
 import com.cannontech.msp.beans.v5.enumerations.EndDeviceStateKind;
 import com.cannontech.msp.beans.v5.enumerations.EndDeviceStateType;
 import com.cannontech.msp.beans.v5.multispeak.EndDeviceState;
 import com.cannontech.msp.beans.v5.not_server.EndDeviceStatesNotification;
-import com.cannontech.msp.beans.v5.not_server.GetMethods;
-import com.cannontech.msp.beans.v5.not_server.GetMethodsResponse;
 import com.cannontech.msp.beans.v5.not_server.ObjectFactory;
 import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -87,10 +84,7 @@ public class OutageJmsMessageListener extends OutageJmsMessageService {
             if (mspVendor.getMspInterfaceMap().get(keyPair) != null) {
                 String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, MultispeakDefines.NOT_Server_STR);
                 try {
-                    GetMethods getMethods = objectFactory.createGetMethods();
-                    GetMethodsResponse getMethodsResponse = notClient.getMethods(mspVendor, endpointUrl, getMethods);
-                    ArrayOfString arrayOfMethods = getMethodsResponse.getArrayOfString();
-                    List<String> mspMethodNames = arrayOfMethods.getTheString();
+                    List<String> mspMethodNames = notClient.getMethods(mspVendor, endpointUrl);
                     // not sure where a static variable containing this method exists.. doing this for now
                     if (mspMethodNames.contains("EndDeviceStatesNotification")) {
                         supportsOutage.add(mspVendor);

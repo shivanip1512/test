@@ -209,8 +209,4 @@
         <bean class="com.cannontech.multispeak.client.MessageContextHolderInterceptor" />
     </sws:interceptors>
     
-    <sws:interceptors>
-        <bean class="com.cannontech.multispeak.client.RequestPasswordAuthenticationInterceptor" />
-    </sws:interceptors>
-    
 </beans>
