@@ -1,5 +1,7 @@
 #include "include/resource_ids.h"
 
+#include "autogen_resource.rc"
+
 /*
     Resource locations
 */
