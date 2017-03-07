@@ -279,10 +279,7 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     
     private PaoTagDefinition getSupportedTag(PaoType paoType, PaoTag tag) {
         Map<PaoTag, PaoTagDefinition> supportedTags = getSupportedTagsForPaoType(paoType);
-        if(supportedTags != null){
-            return supportedTags.get(tag);
-        }
-        return null;
+        return supportedTags.get(tag);
     }
     
     @Override

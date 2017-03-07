@@ -2,6 +2,7 @@ package com.cannontech.common.pao.definition.loader;
 
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -199,6 +200,17 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
             }
             supportedTagsByType.put(paoType, tags.build());
         }
+        
+        List<PaoType> typesWithoutAPaoFile = new LinkedList<>(Arrays.asList(PaoType.values()));
+        typesWithoutAPaoFile.removeAll(supportedTagsByType.keySet());
+        //ALPHA_A3, KV, KVII, MCT410GL, LM_CURTAIL_PROGRAM, LM_ENERGY_EXCHANGE_PROGRAM, ROUTE_CCU, ROUTE_TCU, 
+        //ROUTE_LCU, ROUTE_MACRO, ROUTE_VERSACOM, ROUTE_SERIES_5_LMI, ROUTE_RTC, LOCAL_DIRECT, LOCAL_SHARED, 
+        //LOCAL_RADIO, LOCAL_DIALUP, TSERVER_DIRECT, TCPPORT, UDPPORT, TSERVER_SHARED, TSERVER_RADIO, TSERVER_DIALUP, LOCAL_DIALBACK, DIALOUT_POOL
+        // Db editor attempts to get tags for device without a pao file (TSERVER_SHARED).
+        typesWithoutAPaoFile.forEach(type -> {
+            ImmutableBiMap.Builder<PaoTag, PaoTagDefinition> tags = ImmutableBiMap.builder();
+            supportedTagsByType.put(type, tags.build());
+        });
 
         return supportedTagsByType;
     }
