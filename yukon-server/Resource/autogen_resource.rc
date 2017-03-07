@@ -242,4 +242,4 @@
 2045       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\transmitter\\points\\digigateway.xml"
 2046       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\transmitter\\points\\tcu5x.xml"
 2047       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\transmitter\\points\\transmitter.xml"
-3000       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\resource_index.xml"
+3000       XML        "resource_index.xml"
