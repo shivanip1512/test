@@ -4,7 +4,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="dateTime" tagdir="/WEB-INF/tags/dateTime"%>
-<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="support" page="logMenu">
     <cti:msg2 key=".custom.title" var="dateDialogTitle"/>
