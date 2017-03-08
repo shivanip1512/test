@@ -458,9 +458,6 @@ public class DataStreamingConfigurationsController {
         DataStreamingConfigResult result;
         try {
             result = dataStreamingService.read(deviceId, user);
-            if(result.acceptedWithError()){
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError"));
-            }
             model.addAttribute("resultsId", result.getResultsId());
         } catch (DataStreamingConfigException e) {
             flash.setError(e.getMessageSourceResolvable());

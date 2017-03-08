@@ -332,11 +332,13 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     || result.getLastCommunicated().isBefore(oneWeekAgo);
                 result.setDisplayRemove(displayRemove);
                 //display read if status for one of the metrics is not OK
-                result.setDisplayRead(reportedConfig != null ? reportedConfig.getAttributes().stream()
-                                                                .filter(r -> r.getStatus() != DataStreamingMetricStatus.OK)
-                                                                .findFirst()
-                                                                .map(foundNotOkMetric -> true)
-                                                                .orElse(false) : false);
+                result.setDisplayRead(
+                    Optional.ofNullable(reportedConfig)
+                            .map(DataStreamingConfig::getAttributes)
+                            .map(List::stream)
+                            .map(s -> s.filter(r -> r.getStatus() != DataStreamingMetricStatus.OK).findFirst())
+                            .map(foundNotOkMetric -> true)
+                            .orElse(false));
                 results.add(result);
             }
         }

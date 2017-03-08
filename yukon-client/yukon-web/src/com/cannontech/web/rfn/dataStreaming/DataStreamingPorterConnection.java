@@ -59,10 +59,12 @@ public class DataStreamingPorterConnection {
         List<CommandRequestDevice> commands = devices.stream().map(device -> {
             CommandRequestDevice command = new CommandRequestDevice();
             command.setDevice(device);
-            if(CommandType.READ == commandType){
-                command.setCommandCallback(readCallback);   
-            }else if(CommandType.SEND == commandType){
-                command.setCommandCallback(sendCallback);   
+            if (CommandType.READ == commandType) {
+                command.setCommandCallback(readCallback);
+            } else if (CommandType.SEND == commandType) {
+                command.setCommandCallback(sendCallback);
+            } else {
+                throw new UnsupportedOperationException(commandType + " is not supported.");
             }
             return command;
         }).collect(Collectors.toList());
