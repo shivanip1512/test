@@ -117,7 +117,7 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
         Integer existingDeviceVendorUserId =
             honeywellWifiThermostatDao.getHoneywellWifiThermostat(deviceId).getDeviceVendorUserId();
         
-        if (existingDeviceVendorUserId != deviceVendorUserId) {
+        if (existingDeviceVendorUserId.intValue() != deviceVendorUserId.intValue()) {
             throw new DeviceVendorUserIdNotUpdatableException();
         }
         
