@@ -6,13 +6,14 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 
-<d:inline id="metadata_showAll" nameKey="showAll" okEvent="none" on="#showAll">
+<cti:msg2 key=".showAll.title" var="metadataShowAllDialogTitle"/>
+<div class="dn" id="metadata_showAll" title="${metadataShowAllDialogTitle}">
     <tags:nameValueContainer altRowOn="true">
         <c:forEach var="pair" items="${metadata}">
             <%@ include file="metadataRow.jspf" %>
         </c:forEach>
     </tags:nameValueContainer>
-</d:inline>
+</div>
 
 <c:choose>
     <c:when test="${not empty error}">
@@ -31,7 +32,7 @@
 
 <div class="action-area">
     <c:if test="${showAll}">
-        <a href="javascript:void(0);" class="showAll fl" id="showAll"><i:inline key=".showAll.label"/></a>
+        <a href="javascript:void(0);" class="showAll fl" id="showAll" data-popup="#metadata_showAll"><i:inline key=".showAll.label"/></a>
     </c:if>
     <tags:widgetActionRefresh method="render" nameKey="refresh" icon="icon-arrow-refresh"/>
 </div>

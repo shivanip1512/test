@@ -152,6 +152,7 @@
     
     <entry key="yukon.web.modules.adminSetup.security.importKeyFileDialog.title">Import Keyfile</entry>
     <entry key="yukon.web.modules.adminSetup.security.importKeyFileBtn.label">Import Keyfile</entry>
+    <entry key="yukon.web.modules.adminSetup.security.generateKeyFileBtn.label">Generate New Key</entry>
     <entry key="yukon.web.modules.adminSetup.security.generateHonewellKeyFileBtn.label">Generate New Key</entry>
    
     <entry key="yukon.web.modules.adminSetup.security.importHoneywellKeyFileDialog.title">Import Honeywell Keyfile</entry>

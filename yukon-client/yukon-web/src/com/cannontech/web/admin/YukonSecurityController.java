@@ -30,6 +30,7 @@ import org.apache.log4j.Logger;
 import org.bouncycastle.openssl.PEMWriter;
 import org.jdom2.JDOMException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -423,7 +424,7 @@ public class YukonSecurityController {
     @RequestMapping(method = RequestMethod.POST, value = "/config/security/importKeyFile")
     public String importKeyFile(HttpServletRequest request, ModelMap model, FileImportBindingBean fileImportBindingBean,
                                 BindingResult bindingResult, FlashScope flashScope, 
-                                YukonUserContext userContext) {
+                                YukonUserContext userContext, HttpServletResponse resp) {
         if (!ServletFileUpload.isMultipartContent(request)) {
             model.addAttribute("showDialog", "importKey");
             return view(request, model, new EncryptedRoute(), new EncryptionKey(), fileImportBindingBean, new HoneywellFileImportBindingBean(), flashScope, userContext);     
@@ -434,16 +435,15 @@ public class YukonSecurityController {
         fileImportBindingBean.setFile(dataFile);
 
         importFileValidator.validate(fileImportBindingBean, bindingResult);
-
         if (bindingResult.hasErrors()) {
-            model.addAttribute("showDialog", "importKey");
-            return view(request, model, new EncryptedRoute(), new EncryptionKey() ,fileImportBindingBean, new HoneywellFileImportBindingBean(), flashScope, userContext);
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            return "security/importKey.jsp";
         }
 
         boolean success = handleUploadedFile(fileImportBindingBean, flashScope);
         if (!success) {
-            model.addAttribute("showDialog", "importKey");
-            return view(request, model, new EncryptedRoute(), new EncryptionKey(),fileImportBindingBean, new HoneywellFileImportBindingBean(), flashScope, userContext); 
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            return "security/importKey.jsp";
         }
 
         return "redirect:view";

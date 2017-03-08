@@ -20,11 +20,12 @@
         </div>
     </div>
 	
-	<div id="honeywellPublicKeyStatus">
+	<div id="honeywellPublicKeyStatus" class="dn">
 		<tags:alertBox key='.honeywellPublicKey.notCreated'/>
 	</div>
-	
-    <d:inline nameKey="addKeyDialog" okEvent="addKeyFormSubmit" on="#addNewKeyBtn">
+    
+    <cti:msg2 key=".addKeyDialog.title" var="addDialogTitle"/>
+    <div class="dn" id="addNewKeyDialog" data-dialog data-title="${addDialogTitle}" data-event="addKeyFormSubmit">
      <form:form method="POST" commandName="encryptionKey" action="saveNewKey" autocomplete="off">
         <tags:nameValueContainer2>
                 <cti:csrfToken/>
@@ -37,25 +38,16 @@
                 </tags:nameValue2>
          </tags:nameValueContainer2>
       </form:form>
-    </d:inline>
-
-    <d:inline nameKey="importKeyFileDialog" okEvent="importKeyFileFormSubmit" on="#importKeyFileBtn">
-            <form:form method="POST" commandName="fileImportBindingBean" action="importKeyFile" autocomplete="off" enctype="multipart/form-data">
-               <tags:nameValueContainer2>
-                <cti:csrfToken/>
-                <tags:nameValue2 nameKey=".importKeyFile">
-                    <tags:bind path="file">
-                        <tags:file name="keyFile"/>
-                    </tags:bind>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".keyName">
-                    <tags:input path="name" size="50" />
-                </tags:nameValue2>
-               </tags:nameValueContainer2>
-            </form:form>
-    </d:inline>
+    </div>
     
-    <d:inline nameKey="importHoneywellKeyFileDialog" okEvent="importHoneywellKeyFileFormSubmit" on="#importHoneywellKeyFileBtn">
+    <div id="importKeyDialog" class="dn" data-dialog
+        data-title="<cti:msg2 key=".importKeyFileDialog.title"/>" 
+        data-event="importKeyFileFormSubmit" >
+        <jsp:include page="importKey.jsp"/>
+    </div>
+    
+    <cti:msg2 key=".importHoneywellKeyFileDialog.title" var="importHoneywellKeyDialogTitle"/>
+    <div class="dn" id="importHoneywellKeyDialog" data-dialog data-title="${importHoneywellKeyDialogTitle}" data-event="importHoneywellKeyFileFormSubmit">
             <form:form method="POST" commandName="honeywellFileImportBindingBean" action="importHoneywellKeyFile" autocomplete="off" enctype="multipart/form-data">
                 <tags:nameValueContainer2>
                 <cti:csrfToken/>
@@ -66,11 +58,10 @@
                 </tags:nameValue2>
                 </tags:nameValueContainer2>
             </form:form>
-    </d:inline> 
-    
-    <d:inline nameKey="viewPublicKeyDialog" okEvent="none" 
-        on="#viewPublicKeyBtn" options="{width: 600, 'buttons': [{text: 'Generate New Key', 'class': 'js-blocker2', click: function() { loadPublicKey(true);}},
-                                        {text: 'Cancel', click: function() { $(this).dialog('close'); } }]}">
+    </div>
+        
+    <cti:msg2 key=".viewPublicKeyDialog.title" var="viewPublicKeyDialogTitle"/>
+    <div class="dn" id="viewPublicKeyDialog" data-dialog data-title="${viewPublicKeyDialogTitle}" data-event="generatePublicKey" data-ok-text="<cti:msg2 key=".generateKeyFileBtn.label"/>">
         <div id="publicKeyStatus"></div>
         <div id="publicKeyExpiration"></div>
         <div id="publicKeyText">
@@ -78,7 +69,7 @@
             <textarea id="publicKeyTextArea" rows="17" cols="70"
                 readonly="readonly"></textarea>
         </div>
-    </d:inline>
+    </div>
 
     <div class="column-12-12">
         <div class="column one">
@@ -210,9 +201,9 @@
                     </table>
                 </c:if>
                 <div class="page-action-area">
-                    <cti:button id="addNewKeyBtn" nameKey="addKeyBtn" disabled="${blockingError}" />
-                    <cti:button id="importKeyFileBtn" nameKey="importKeyFileBtn" disabled="${blockingError}" />
-                    <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  classes="js-blocker2" />
+                    <cti:button id="addNewKeyBtn" nameKey="addKeyBtn" disabled="${blockingError}" data-popup="#addNewKeyDialog" />
+                    <cti:button id="importKeyFileBtn" nameKey="importKeyFileBtn" disabled="${blockingError}" data-popup="#importKeyDialog"/>
+                    <cti:button id="viewPublicKeyBtn" nameKey="viewPublicKeyBtn"  classes="js-blocker2" data-popup="#viewPublicKeyDialog"/>
                 </div>
             </tags:boxContainer2>
             <cti:checkRolesAndProperties value="HONEYWELL_SUPPORT_ENABLED">
@@ -235,7 +226,7 @@
                 
                   <div class="page-action-area">
                       <cti:button id="generateHonewellKeyFileBtn" nameKey="generateHonewellKeyFileBtn" />
-                      <cti:button id="importHoneywellKeyFileBtn" nameKey="importKeyFileBtn" />
+                      <cti:button id="importHoneywellKeyFileBtn" nameKey="importKeyFileBtn" data-popup="#importHoneywellKeyDialog"/>
                       <form:form method="POST" action="generateHoneywellCertificate" autocomplete="off" enctype="multipart/form-data">
                          <cti:csrfToken/>
                          <cti:button id="generateCertificate" nameKey="generateCertificate" type="submit" disabled="${!isPublicKeyGenerated}" />
@@ -248,7 +239,6 @@
     
     <script type="text/javascript">
     $(function(){
-    	$('#honeywellPublicKeyStatus').hide();
         if ("${showDialog}" == "addKey") {
             $('#honeywellPublicKeyDownloadStatus').hide();
             $('#addNewKeyBtn').trigger($.Event("click")); // Opens up addKey Dialog
@@ -272,6 +262,9 @@
     	$('#honeywellPublicKeyDownloadStatus').hide();
     });
     
+    $(document).on('generatePublicKey', function(event) {
+        loadPublicKey(true);
+    });
     
     function loadPublicKey(generateNewKey) {
         $('#honeywellPublicKeyDownloadStatus').hide();
@@ -327,17 +320,16 @@
     });
     
     $(document).on('importKeyFileFormSubmit', function(event) {
-        yukon.ui.blockPage();
-        $('#fileImportBindingBean').submit();
+        $('#fileImportBindingBean').ajaxSubmit({
+            error: function (xhr, status, error, $form) {
+                $('#importKeyDialog').html(xhr.responseText);
+            }
+        });
     });
     
     $(document).on('importHoneywellKeyFileFormSubmit', function(event) {
         yukon.ui.blockPage();
         $('#honeywellFileImportBindingBean').submit();
-    });
-    
-    $(document).on( "dialogopen", function( event, ui ) {
-        $('div.ui-dialog .user-message').hide(); 
     });
     
     </script>

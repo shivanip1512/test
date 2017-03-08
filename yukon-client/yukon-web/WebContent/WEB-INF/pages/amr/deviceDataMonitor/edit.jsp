@@ -223,18 +223,16 @@
 
     <cti:msg2 var="updateCreateTitleVerb" key=".${mode}.areYouSureTitleVerb"/>
     <cti:msg2 var="updateCreateMsgVerb" key=".${mode}.areYouSureMsgVerb"/>
-    <c:set var="nameKey" value="areYouSureUpdateOrCreateDialog"/>
-    <c:set var="options" value="{width: 550}"/>
-    <d:inline id="update-loading-dialog" okEvent="yukon:ami:ddm:save" 
-            nameKey="${nameKey}" options="${options}" arguments="${updateCreateTitleVerb}">
+    <cti:msg2 var="titleKey" key=".areYouSureUpdateOrCreateDialog.title" arguments="${updateCreateTitleVerb}"/>
+
+    <div class="dn" id="update-loading-dialog" data-dialog data-title="${titleKey}">
         <h3 class="error"><i:inline key="yukon.common.warning"/></h3>
         <cti:msg2 key=".areYouSureLoading" arguments="${updateCreateMsgVerb}"/>
-    </d:inline>
-    <d:inline id="update-missing-dialog" okEvent="yukon:ami:ddm:save" 
-            nameKey="${nameKey}" options="${options}" arguments="${updateCreateTitleVerb}">
+    </div>
+    <div class="dn" id="update-missing-dialog" data-dialog data-title="${titleKey}">
         <h3 class="error"><i:inline key="yukon.common.warning"/></h3>
         <cti:msg2 key=".areYouSureMissing" arguments="${updateCreateMsgVerb}"/>
-    </d:inline>
+    </div>
 
     <%-- update / enable_disable / delete / cancel --%>
     <div class="page-action-area">

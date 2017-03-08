@@ -7,14 +7,15 @@
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="support" page="logMenu">
-    <d:inline nameKey="custom" okEvent="customDateRangeSubmit" on="#customDateBtn">
+    <cti:msg2 key=".custom.title" var="dateDialogTitle"/>
+    <div class="dn" id="customDateDialog" data-dialog title="${dateDialogTitle}" data-event="customDateRangeSubmit">
         <form method="GET" id="customDateForm">
             <input type="hidden" name="file" value="${file}"/>
             <input type="hidden" name="sortBy" value="${sortBy}"/>
             <input type="hidden" name="show" value="custom"/>
             <dateTime:dateRange startName="customStart" endName="customEnd" startValue="${customStart}" endValue="${customEnd}" maxDate="${maxDate}" />
         </form>
-    </d:inline>
+    </div>
 
     <cti:dataGrid cols="2">
         <cti:dataGridCell>
@@ -24,7 +25,7 @@
                         <a href="<tags:logPageLink showParam="today"/>" id="todayBtn"><i:inline key=".today"/></a>&nbsp;|&nbsp;
                         <a href="<tags:logPageLink showParam="lastWeek"/>"  id="lastWeekBtn"><i:inline key=".oneWeek"/></a>&nbsp;|&nbsp;
                         <a href="<tags:logPageLink showParam="lastMonth"/>"  id="lastMonthBtn"><i:inline key=".oneMonth"/></a>&nbsp;|&nbsp;
-                        <a href="javascript:void(0);" id="customDateBtn"><i:inline key=".custom"/></a>
+                        <a href="javascript:void(0);" id="customDateBtn" data-popup="#customDateDialog"><i:inline key=".custom"/></a>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".sortBy">
                         <a href="<tags:logPageLink sortByParam="date"/>" id="dateBtn"><i:inline key=".date"/></a>&nbsp;|&nbsp;

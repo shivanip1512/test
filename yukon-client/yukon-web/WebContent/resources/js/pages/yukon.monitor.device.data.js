@@ -21,11 +21,14 @@ yukon.ami.ddm = (function () {
         /** Shows a update dialog based on the count_status. */
         _show_update_dialog = function () {
             var count_status = $('.js-supported-counts').attr('data-count-status');
-            $('#update-loading-dialog, #update-missing-dialog').find('.user-message').remove();
             if (count_status === 'loading') {
-                window['open_update-loading-dialog']();
+                var popup = $('#update-loading-dialog');
+                    popupTitle = popup.data('title');
+                popup.dialog({width:550, title:popupTitle, buttons: yukon.ui.buttons({ event: 'yukon:ami:ddm:save'})});
             } else if (count_status === 'missing') {
-                window['open_update-missing-dialog']();
+                var popup = $('#update-missing-dialog');
+                    popupTitle = popup.data('title');
+                popup.dialog({width:550, title:popupTitle, buttons: yukon.ui.buttons({ event: 'yukon:ami:ddm:save'})});
             } else if (count_status === 'none_missing') {
                 // sweet, let's just update this thing
                 _monitor_save();
@@ -644,6 +647,18 @@ yukon.ami.ddm = (function () {
                 $('.js-violations-calculating').removeClass('dn');
                 $('.js-calculating-disable').attr('disabled', true);
                 $('.js-calculating-warning').toggleClass('dn', false);
+            });
+            
+            $(document).on('click', '.js-open-settings-help', function () {
+                var popup = $('#settingsHelpDialog');
+                    popupTitle = popup.data('title');
+                    popup.dialog({width:550, title:popupTitle});
+            });
+            
+            $(document).on('click', '.js-open-processors-help', function () {
+                var popup = $('#processorsHelpDialog');
+                    popupTitle = popup.data('title');
+                    popup.dialog({width:550, title:popupTitle});
             });
 
             
