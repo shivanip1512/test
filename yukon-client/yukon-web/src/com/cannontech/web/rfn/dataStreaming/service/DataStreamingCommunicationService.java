@@ -64,7 +64,7 @@ public interface DataStreamingCommunicationService {
     /**
      * Sends a request for gateway data streaming information to Network Manager for the specified gateways.
      * When response is received, generates point data for
-     * DATA_STREAMING_LOAD,STREAMING_DEVICE_COUNT,CONNECTED_DEVICE_COUNT and sends it to dispatch.
+     * DATA_STREAMING_LOAD,STREAMING_ACTIVE_DEVICE_COUNT,STREAMING_CAPABLE_DEVICE_COUNT and sends it to dispatch.
      * 
      * @param shouldArchive - sets Pointdata.setTagsPointMustArchive to true or false.
      * @throws DataStreamingConfigException - if there was a connection problem sending the request.

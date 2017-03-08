@@ -204,8 +204,8 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
                 double connectedCount = streamingRfnDevices.size();
                 generatePointDataForDataStreaming(gateway, BuiltInAttribute.DATA_STREAMING_LOAD, info.getDataStreamingLoadingPercent(),
                     shouldArchive);
-                generatePointDataForDataStreaming(gateway, BuiltInAttribute.STREAMING_DEVICE_COUNT, streamingCount, shouldArchive);
-                generatePointDataForDataStreaming(gateway, BuiltInAttribute.CONNECTED_DEVICE_COUNT, connectedCount, shouldArchive);
+                generatePointDataForDataStreaming(gateway, BuiltInAttribute.STREAMING_ACTIVE_DEVICE_COUNT, streamingCount, shouldArchive);
+                generatePointDataForDataStreaming(gateway, BuiltInAttribute.STREAMING_CAPABLE_DEVICE_COUNT, connectedCount, shouldArchive);
             }
         } catch (ExecutionException e) {
             String errorMessage =

@@ -4584,10 +4584,10 @@
             </point>
         </points>
         <attributes>
-            <attribute name="CONNECTED_DEVICE_COUNT">
+            <attribute name="STREAMING_CAPABLE_DEVICE_COUNT">
                 <basicLookup point="Connected Device Count" />
             </attribute>
-            <attribute name="STREAMING_DEVICE_COUNT">
+            <attribute name="STREAMING_ACTIVE_DEVICE_COUNT">
                 <basicLookup point="Streaming Device Count" />
             </attribute>
             <attribute name="DATA_STREAMING_LOAD">
