@@ -30,6 +30,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -364,6 +365,27 @@ public class MeterEventsReportController {
         model.addAttribute("jobs", jobs);
         
         return "meterEventsReport/scheduledJobsTable.jsp";
+    }
+
+    @RequestMapping("/jobs/{jobId}/enable")
+    public String enableJob(@PathVariable int jobId, ModelMap model, FlashScope flashScope, YukonUserContext userContext) {
+        YukonJob job = jobManager.getJob(jobId);
+        ScheduledMeterEventsFileExportTask task = (ScheduledMeterEventsFileExportTask) jobManager.instantiateTask(job);
+        String jobName = task.getName();
+        jobManager.enableJob(job);
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".report.enableJobSuccess", jobName));
+        return "redirect:/amr/meterEventsReport/home";
+    }
+
+    @RequestMapping("/jobs/{jobId}/disable")
+    public String disableJob(@PathVariable int jobId, ModelMap model, FlashScope flashScope,
+            YukonUserContext userContext) {
+        YukonJob job = jobManager.getJob(jobId);
+        ScheduledMeterEventsFileExportTask task = (ScheduledMeterEventsFileExportTask) jobManager.instantiateTask(job);
+        String jobName = task.getName();
+        jobManager.disableJob(job);
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".report.disableJobSuccess", jobName));
+        return "redirect:/amr/meterEventsReport/home";
     }
 
     @RequestMapping("scheduledMeterEventsDialog")

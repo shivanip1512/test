@@ -49,6 +49,54 @@
                                     <cm:dropdown>
                                         <cm:dropdownOption classes="js-edit-job" data-job-id="${job.id}" icon="icon-pencil" key="components.button.edit.label"/>
                                         <cm:dropdownOption classes="js-view-job" icon="icon-script" key="components.button.history.label" href="${historyUrl}"/>
+                                        <c:choose>
+                                                <c:when
+                                                    test="${not(job.jobState eq 'RUNNING')}">
+
+                                                    <c:if
+                                                        test="${job.jobState eq 'DISABLED' or !job.jobState.active}">
+                                                        <cti:url
+                                                            var="enableUrl"
+                                                            value="/amr/waterLeakReport/jobs/${job.id}/enable" />
+                                                        <cm:dropdownOption
+                                                            id="enableScheduleItem_${job.id}"
+                                                            key="yukon.web.components.button.enable.label"
+                                                            data-href="${enableUrl}"
+                                                            icon="icon-accept" />
+                                                    </c:if>
+                                                    <c:if
+                                                        test="${job.jobState eq 'SCHEDULED'}">
+
+                                                        <cti:url
+                                                            var="disableUrl"
+                                                            value="/amr/waterLeakReport/jobs/${job.id}/disable" />
+                                                        <cm:dropdownOption
+                                                            id="disableScheduleItem_${job.id}"
+                                                            key="yukon.web.components.button.disable.label"
+                                                            data-href="${disableUrl}"
+                                                            icon="icon-delete" />
+                                                    </c:if>
+                                                    </c:when>
+                                                    <c:otherwise>
+
+                                                    <c:if
+                                                        test="${job.jobState eq 'DISABLED'}">
+                                                        <cm:dropdownOption
+                                                            id="enableScheduleItem_${job.id}"
+                                                            key="yukon.web.components.button.enable.label"
+                                                            icon="icon-accept"
+                                                            disabled="true" />
+                                                    </c:if>
+                                                    <c:if
+                                                        test="${not (job.jobState eq 'DISABLED')}">
+                                                        <cm:dropdownOption
+                                                            id="disableScheduleItem_${job.id}"
+                                                            key="yukon.web.components.button.disable.label"
+                                                            icon="icon-delete"
+                                                            disabled="true" />
+                                                    </c:if>
+                                                    </c:otherwise>
+                                        </c:choose>
                                         <cm:dropdownOption classes="js-delete-job" id="delete-job-${job.id}" data-job-id="${job.id}" icon="icon-cross" key="components.button.delete.label" data-ok-event="yukon.job.delete"/>
                                     </cm:dropdown>
                                     <d:confirm on="#delete-job-${job.id}" nameKey="confirmDelete" argument="${job.name}"/>

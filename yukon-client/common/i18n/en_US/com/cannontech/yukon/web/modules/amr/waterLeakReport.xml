@@ -32,6 +32,8 @@
     <entry key="yukon.web.modules.amr.waterLeakReport.report.leakScheduleDialog.title">Schedule Report {0}</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.schedule.hoursPrevious">Hours Previous</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.schedule.daysOffset">Days Offset</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.enableJobSuccess">Scheduled Water Leak Report "{0}" successfully enabled.</entry>
+    <entry key="yukon.web.modules.amr.waterLeakReport.report.disableJobSuccess">Scheduled Water Leak Report "{0}" successfully disabled.</entry>
     
     <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.DEVICE_NAME">Device Name</entry>
     <entry key="yukon.web.modules.amr.waterLeakReport.report.tableHeader.METER_NUMBER">Meter Number</entry>

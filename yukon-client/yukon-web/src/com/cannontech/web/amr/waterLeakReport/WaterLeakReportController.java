@@ -29,6 +29,7 @@ import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -343,6 +344,27 @@ public class WaterLeakReportController {
         }
         
         return null;
+    }
+
+    @RequestMapping("/jobs/{jobId}/enable")
+    public String enableJob(@PathVariable int jobId, ModelMap model, FlashScope flashScope, YukonUserContext userContext) {
+        YukonJob job = jobManager.getJob(jobId);
+        ScheduledWaterLeakFileExportTask task = (ScheduledWaterLeakFileExportTask) jobManager.instantiateTask(job);
+        String jobName = task.getName();
+        jobManager.enableJob(job);
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".enableJobSuccess", jobName));
+        return "redirect:/amr/waterLeakReport/report";
+    }
+
+    @RequestMapping("/jobs/{jobId}/disable")
+    public String disableJob(@PathVariable int jobId, ModelMap model, FlashScope flashScope,
+            YukonUserContext userContext) {
+        YukonJob job = jobManager.getJob(jobId);
+        ScheduledWaterLeakFileExportTask task = (ScheduledWaterLeakFileExportTask) jobManager.instantiateTask(job);
+        String jobName = task.getName();
+        jobManager.disableJob(job);
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".disableJobSuccess", jobName));
+        return "redirect:/amr/waterLeakReport/report";
     }
 
     @RequestMapping("delete")

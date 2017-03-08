@@ -61,7 +61,8 @@
     <entry key="yukon.web.modules.amr.meterEventsReport.report.schedulePopup.title">Schedule Report {0}</entry>
 	<entry key="yukon.web.modules.amr.meterEventsReport.report.scheduleButton">Schedule</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.report.scheduleButton">Update</entry>
-
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.enableJobSuccess">Scheduled Meter Event Report "{0}" successfully enabled.</entry>
+    <entry key="yukon.web.modules.amr.meterEventsReport.report.disableJobSuccess">Scheduled Meter Event Report "{0}" successfully disabled.</entry>
     <entry key="yukon.web.modules.amr.meterEventsReport.noEventTypes">No event types</entry>
 
 	<!-- jobs.jsp -->

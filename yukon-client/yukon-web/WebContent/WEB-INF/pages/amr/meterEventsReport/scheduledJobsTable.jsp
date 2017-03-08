@@ -50,6 +50,54 @@
                                     <cm:dropdown>
                                         <cm:dropdownOption key="components.button.history.label" 
                                             href="${historyUrl}" icon="icon-script"/>
+                                        <c:choose>
+                                                <c:when
+                                                    test="${not(job.jobState eq 'RUNNING')}">
+
+                                                    <c:if
+                                                        test="${job.jobState eq 'DISABLED' or !job.jobState.active}">
+                                                        <cti:url
+                                                            var="enableUrl"
+                                                            value="/amr/meterEventsReport/jobs/${job.id}/enable" />
+                                                        <cm:dropdownOption
+                                                            id="enableScheduleItem_${job.id}"
+                                                            key="yukon.web.components.button.enable.label"
+                                                            data-href="${enableUrl}"
+                                                            icon="icon-accept" />
+                                                    </c:if>
+                                                    <c:if
+                                                        test="${job.jobState eq 'SCHEDULED'}">
+
+                                                        <cti:url
+                                                            var="disableUrl"
+                                                            value="/amr/meterEventsReport/jobs/${job.id}/disable" />
+                                                        <cm:dropdownOption
+                                                            id="disableScheduleItem_${job.id}"
+                                                            key="yukon.web.components.button.disable.label"
+                                                            data-href="${disableUrl}"
+                                                            icon="icon-delete" />
+                                                    </c:if>
+                                                    </c:when>
+                                                    <c:otherwise>
+
+                                                    <c:if
+                                                        test="${job.jobState eq 'DISABLED'}">
+                                                        <cm:dropdownOption
+                                                            id="enableScheduleItem_${job.id}"
+                                                            key="yukon.web.components.button.enable.label"
+                                                            icon="icon-accept"
+                                                            disabled="true" />
+                                                    </c:if>
+                                                    <c:if
+                                                        test="${not (job.jobState eq 'DISABLED')}">
+                                                        <cm:dropdownOption
+                                                            id="disableScheduleItem_${job.id}"
+                                                            key="yukon.web.components.button.disable.label"
+                                                            icon="icon-delete"
+                                                            disabled="true" />
+                                                    </c:if>
+                                                    </c:otherwise>
+                                        </c:choose>
                                         <cm:dropdownOption key="components.button.delete.label"
                                             data-job-id="${job.id}"
                                             id="deleteScheduleItem_${job.id}"
