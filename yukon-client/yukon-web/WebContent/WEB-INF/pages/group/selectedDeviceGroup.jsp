@@ -112,7 +112,7 @@
                         <cti:msg2 var="editComposedLinkTitle" key=".editComposed.linkTitle"/>
                     
                         <cti:url var="editComposedGroupUrl" value="/group/composedGroup/build">
-                            <cti:param name="groupName" value="${fn:escapeXml(group.fullName)}" />
+                            <cti:param name="groupName" value="${group.fullName}" />
                         </cti:url>
                         <a title="${editComposedLinkTitle}" href="${editComposedGroupUrl}">${editComposedLinkText}</a>
                         
@@ -222,7 +222,7 @@
         <h3><cti:msg2 key=".generateReportsLabel"/></h3>
         <div class="groupEditorContentDetail stacked">
             <cti:url value="/amr/reports/groupDevicesReport" var="htmlUrl">
-                <cti:param name="groupName" value="${fn:escapeXml(group.fullName)}"/>
+                <cti:param name="groupName" value="${group.fullName}"/>
             </cti:url>
             <c:choose>
                 <c:when test="${childDeviceCount > 0}">

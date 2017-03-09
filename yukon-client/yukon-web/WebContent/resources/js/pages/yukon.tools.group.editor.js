@@ -27,7 +27,7 @@ yukon.tools.group.editor = (function () {
                 $('.ui-dialog').remove();
                 $('.js-error').addClass('dn');
                 var groupNameEncoded = encodeURIComponent(groupName);
-                var url = yukon.url('/group/editor/selectedDeviceGroup?groupName=' + groupName);
+                var url = yukon.url('/group/editor/selectedDeviceGroup?groupName=' + escape(groupName));
                 var redirectUrl = yukon.url('/group/editor/home?groupName=' + groupNameEncoded);
 
                 $.ajax({
