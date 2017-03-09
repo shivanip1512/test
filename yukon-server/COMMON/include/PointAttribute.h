@@ -551,8 +551,8 @@ public:
     static const Attribute  LowBatteryVoltage;
     static const Attribute  DebugEvent;
 
-    static const Attribute  ConnectedDeviceCount;
-    static const Attribute  StreamingDeviceCount;
+    static const Attribute  StreamingCapableDeviceCount;
+    static const Attribute  StreamingActiveDeviceCount;
     static const Attribute  DataStreamingLoad;
 
     static const Attribute  FirmwareVersion;

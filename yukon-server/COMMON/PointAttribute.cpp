@@ -508,8 +508,8 @@ const Attribute Attribute::TamperCableCut                                   = At
 const Attribute Attribute::LowBatteryVoltage                                = Attribute( "LOW_BATTERY_VOLTAGE" );
 const Attribute Attribute::DebugEvent                                       = Attribute( "DEBUG_EVENT" );
 
-const Attribute Attribute::ConnectedDeviceCount                             = Attribute( "CONNECTED_DEVICE_COUNT" );
-const Attribute Attribute::StreamingDeviceCount                             = Attribute( "STREAMING_DEVICE_COUNT" );
+const Attribute Attribute::StreamingCapableDeviceCount                      = Attribute( "STREAMING_CAPABLE_DEVICE_COUNT" );
+const Attribute Attribute::StreamingActiveDeviceCount                       = Attribute( "STREAMING_ACTIVE_DEVICE_COUNT" );
 const Attribute Attribute::DataStreamingLoad                                = Attribute( "DATA_STREAMING_LOAD" );
 
 const Attribute Attribute::FirmwareVersion                                  = Attribute( "FIRMWARE_VERSION" );
