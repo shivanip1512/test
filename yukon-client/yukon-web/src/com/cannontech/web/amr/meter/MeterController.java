@@ -402,7 +402,7 @@ public class MeterController {
             
             return "copy.jsp";
         }
-        String templateName = meterDao.getForId(deviceId).getName();
+        String templateName = serverDatabaseCache.getAllPaosMap().get(deviceId).getPaoName();
         SimpleDevice device = null;
         try {
             device = copyMeter(meter, templateName);
