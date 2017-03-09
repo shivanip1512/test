@@ -208,6 +208,18 @@ public class StrategyDaoImpl implements StrategyDao {
 
         return jdbcTemplate.query(sql, liteMapper);
     }
+    
+    @Override
+    public List<LiteCapControlStrategy> getLiteStrategiesWithoutSpecifiedAlgorithms(List<String> algorithms) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT StrategyId, StrategyName");
+        sql.append("FROM CapControlStrategy");
+        sql.append("WHERE ControlUnits").notIn(algorithms);
+        sql.append("ORDER BY StrategyName");
+
+        return jdbcTemplate.query(sql, liteMapper);
+    }
 
     @Override
     public CapControlStrategy getForId(int strategyId) {

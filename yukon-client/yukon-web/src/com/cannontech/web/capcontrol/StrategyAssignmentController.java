@@ -1,6 +1,7 @@
 
 package com.cannontech.web.capcontrol;
 
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.dao.StrategyDao;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.HolidayScheduleDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -76,7 +79,7 @@ public class StrategyAssignmentController {
         model.addAttribute("assignment", assignment);
         model.addAttribute("seasonSchedules", seasonSchedules.getAllSchedules());
         model.addAttribute("holidaySchedules", holidaySchedules.getAllHolidaySchedules());
-        model.addAttribute("strategies", strategyDao.getAllLiteStrategies());
+        addStrategiesToModel(pao, model);
         
         return "strategy/strat-assignment-popup.jsp";
     }
@@ -106,14 +109,24 @@ public class StrategyAssignmentController {
     }
     
     /** SEASONS FOR SCHEDULE */
-    @RequestMapping(value="strategy-assignment/schedule/{id}/seasons", method=RequestMethod.GET)
-    public String seasons(ModelMap model, @PathVariable int id) {
-        
+    @RequestMapping(value="strategy-assignment/{paoId}/schedule/{id}/seasons", method=RequestMethod.GET)
+    public String seasons(ModelMap model, @PathVariable int paoId, @PathVariable int id) {
         List<Season> seasons = seasonSchedules.getUserFriendlySeasonsForSchedule(id);
         model.addAttribute("seasons", seasons);
-        model.addAttribute("strategies", strategyDao.getAllLiteStrategies());
-        
+        LiteYukonPAObject pao = dbCache.getAllPaosMap().get(paoId);
+        addStrategiesToModel(pao, model);
         return "strategy/schedule-seasons.jsp";
+    }
+    
+    private void addStrategiesToModel(LiteYukonPAObject pao, ModelMap model) {
+        List<LiteCapControlStrategy> strategies;
+        //don't include IVVC strategies for feeders
+        if (pao.getPaoType().equals(PaoType.CAP_CONTROL_FEEDER)) {
+            strategies = strategyDao.getLiteStrategiesWithoutSpecifiedAlgorithms(Arrays.asList(ControlAlgorithm.INTEGRATED_VOLT_VAR.name()));
+        } else {
+            strategies = strategyDao.getAllLiteStrategies();
+        }
+        model.addAttribute("strategies", strategies);
     }
     
 }

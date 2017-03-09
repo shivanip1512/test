@@ -17,6 +17,12 @@ public interface StrategyDao {
      */
     List<LiteCapControlStrategy> getAllLiteStrategies();
 
+    /**
+     * Returns a List<LiteCapControlStrategy>, of any strategies without the specified control algorithms.  lites only contain names and id's.
+     * @return List<LiteCapControlStrategy>
+     */
+    List<LiteCapControlStrategy> getLiteStrategiesWithoutSpecifiedAlgorithms(List<String> algorithms);
+
     int add(String name);
 
     boolean delete(int strategyId);

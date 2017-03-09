@@ -179,10 +179,11 @@ yukon.da.common = (function () {
             /** User changed the season schedule, load season for schedule. */
             $(document).on('change', '.js-season-schedule-select', function () {
                 
-                var scheduleId = $(this).val();
+                var scheduleId = $(this).val(),
+                    paoId = $('#paoId').val();
                 
                 $.ajax({
-                    url: yukon.url('/capcontrol/strategy-assignment/schedule/' + scheduleId + '/seasons')
+                    url: yukon.url('/capcontrol/strategy-assignment/' + paoId + '/schedule/' + scheduleId + '/seasons')
                 }).done(function (seasons) {
                     $('.js-seasons-table tbody').html(seasons);
                 });
