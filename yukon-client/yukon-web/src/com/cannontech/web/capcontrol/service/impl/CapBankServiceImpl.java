@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.model.CompleteCapBank;
 import com.cannontech.common.pao.service.PaoPersistenceService;
@@ -33,6 +34,8 @@ import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.device.DeviceDirectCommSettings;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.capcontrol.service.CapBankService;
 import com.cannontech.web.capcontrol.service.CbcService;
 import com.cannontech.web.editor.CapControlCBC;
@@ -46,7 +49,7 @@ public class CapBankServiceImpl implements CapBankService {
     @Autowired private PointDao pointDao;
     @Autowired private CbcService cbcService;
     @Autowired private PaoPersistenceService paoPersistenceService;
-
+    @Autowired private DbChangeManager dbChangeManager;
     
     private Logger log = YukonLogManager.getLogger(getClass());
 
@@ -229,6 +232,8 @@ public class CapBankServiceImpl implements CapBankService {
                     log.warn("Exception while deleting points from CapBank", e);
                 }
         });
+        
+        dbChangeManager.processPaoDbChange(PaoIdentifier.of(capbankId, PaoType.CAPBANK), DbChangeType.UPDATE);
     }
 
 
