@@ -7,8 +7,8 @@
         <tag name="DB_EDITOR_INCOMPATIBLE"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Connected Device Count" init="true" attributes="CONNECTED_DEVICE_COUNT"/>
+        <pointInfo name="Connected Device Count" init="true" attributes="STREAMING_CAPABLE_DEVICE_COUNT"/>
         <pointInfo name="Data Streaming Load" init="true" attributes="DATA_STREAMING_LOAD"/>
-        <pointInfo name="Streaming Device Count" init="true" attributes="STREAMING_DEVICE_COUNT"/>
+        <pointInfo name="Streaming Device Count" init="true" attributes="STREAMING_ACTIVE_DEVICE_COUNT"/>
     </pointInfos>
 </pao>
