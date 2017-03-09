@@ -72,7 +72,7 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
 
     private static final String createDREventGroupUrlPart = "webapi/api/drEventGroups/";
     private static final String getGatewayByMacIdUrlPart = "webapi/api/gateways";
-    private static final String cancelDREventForDevicesUrlPart = "api/drEvents/optout/";
+    private static final String cancelDREventForDevicesUrlPart = "webapi/api/drEvents/optout/";
     private static final String removeDeviceFromDRGroupUrlPart = "WebAPI/api/drEventGroups/";
     private static final String drEventForGroupUrlPart = "WebAPI/api/drEvents";
     private static final String registerDeviceOnACLUrlPart = "WebAPI/api/accessControlList";
@@ -139,17 +139,17 @@ public class HoneywellCommunicationServiceImpl implements HoneywellCommunication
         log.debug("Cancelling DR event for devices " + thermostatIds);
         try {
             String url = getUrlBase() + cancelDREventForDevicesUrlPart + eventId + "/" + immediateCancel;
-            MultiValueMap<String, Object> body = new LinkedMultiValueMap<String, Object>();
-            body.add("deviceIds", thermostatIds.toArray());
+            String body = JsonUtils.toJson(thermostatIds.toArray());
+            
             UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(url);
 
             HttpEntity<?> requestEntity =
-                new HttpEntity<Object>(body, getHttpHeaders(url, HttpMethod.POST, body.toString()));
+                new HttpEntity<Object>(body, getHttpHeaders(url, HttpMethod.POST, body));
 
             HttpEntity<String> response =
                 restTemplate.exchange(builder.build().encode().toUri(), HttpMethod.POST, requestEntity, String.class);
             log.debug(response);
-        } catch (RestClientException ex) {
+        } catch (RestClientException | JsonProcessingException ex) {
             log.error("Cancel DR event for devices for Honeywell failed with message: \"" + ex.getMessage() + "\".");
             throw new HoneywellCommunicationException("Unable to cancel device. Message: \"" + ex.getMessage() + "\".");
         }

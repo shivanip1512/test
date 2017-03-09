@@ -149,7 +149,7 @@ public class HoneywellCommandStrategy implements LmHardwareCommandStrategy {
             if (event.getEventId() != null) {
                 honeywellCommunicationService.cancelDREventForDevices(
                     (List<Integer>) Collections.singletonList(honeywellThermostat.getThermostatId()),
-                    event.getEventId(), false);
+                    event.getEventId(), true);
             }
         }
     }
