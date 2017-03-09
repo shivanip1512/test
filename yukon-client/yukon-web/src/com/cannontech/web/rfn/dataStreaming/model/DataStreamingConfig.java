@@ -3,6 +3,7 @@ package com.cannontech.web.rfn.dataStreaming.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.builder.StandardToStringStyle;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.rfn.dataStreaming.DataStreamingMetricStatus;
 
 public class DataStreamingConfig implements Cloneable {
     
@@ -201,6 +203,17 @@ public class DataStreamingConfig implements Cloneable {
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
+    }
+    
+    public void removeAttributesWithStatusNotOk() {
+        Iterator<DataStreamingAttribute> it = getAttributes().listIterator();
+        while (it.hasNext()) {
+            DataStreamingAttribute attribute = it.next();
+            if (attribute.getStatus() != DataStreamingMetricStatus.OK) {
+                // removes attribute if status is not ok.
+                it.remove();
+            }
+        }
     }
     
     @Override

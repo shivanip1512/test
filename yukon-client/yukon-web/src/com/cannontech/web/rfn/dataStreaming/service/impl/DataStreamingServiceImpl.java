@@ -332,13 +332,11 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                     || result.getLastCommunicated().isBefore(oneWeekAgo);
                 result.setDisplayRemove(displayRemove);
                 //display read if status for one of the metrics is not OK
-                result.setDisplayRead(
-                    Optional.ofNullable(reportedConfig)
-                            .map(DataStreamingConfig::getAttributes)
-                            .map(List::stream)
-                            .map(s -> s.filter(r -> r.getStatus() != DataStreamingMetricStatus.OK).findFirst())
-                            .map(foundNotOkMetric -> true)
-                            .orElse(false));
+                result.setDisplayRead(reportedConfig != null ? reportedConfig.getAttributes().stream()
+                    .filter(r -> r.getStatus() != DataStreamingMetricStatus.OK)
+                    .findFirst()
+                    .map(foundNotOkMetric -> true)
+                    .orElse(false) : false);
                 results.add(result);
             }
         }
@@ -915,6 +913,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 BehaviorReport report = deviceIdToReport.get(deviceId);
                 DataStreamingConfig reportedConfig = convertBehaviorToConfig(report);
 
+                // If there is a discrepancy because of a metric status (CHANNEL_NOT_SUPPORTED, for example)
+                // the Accept button should exclude those metrics when creating the new behavior.            
+                Optional.ofNullable(reportedConfig).ifPresent(DataStreamingConfig::removeAttributesWithStatusNotOk);
+                 
                 if (report == null || !reportedConfig.isEnabled() || reportedConfig.getAttributes().isEmpty()) {
                     devicesIdsToUnassign.add(deviceId);
                     continue;
