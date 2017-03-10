@@ -109,7 +109,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.VOLTAGE         //metric 115
                 ),
         //S4-AD
-        RFN_530S4AD(PaoType.RFN530S4EAD,
+        RFN_530S4AD(PaoType.RFN530S4EAX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KWH,		  //metric 3	
@@ -118,7 +118,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 ),
         //S4-AT
-        RFN_530S4AT(PaoType.RFN530S4EAT,
+        RFN_530S4AT(PaoType.RFN530S4EAXR,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KWH,		  //metric 3
@@ -127,7 +127,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 ),
         //S4-AR
-        RFN_530S4AR(PaoType.RFN530S4EAT,
+        RFN_530S4AR(PaoType.RFN530S4EAXR,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KWH,		  //metric 3
@@ -136,7 +136,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 ),
         //S4-RD
-        RFN_530S4RD(PaoType.RFN530S4ERD,
+        RFN_530S4RD(PaoType.RFN530S4ERX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KVARH,       //metric 23
@@ -146,7 +146,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 ),
         //S4-RT
-        RFN_530S4RT(PaoType.RFN530S4ERT,
+        RFN_530S4RT(PaoType.RFN530S4ERXR,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KVARH,       //metric 23
@@ -156,7 +156,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 ),
         //S4-RR
-        RFN_530S4RR(PaoType.RFN530S4ERT,
+        RFN_530S4RR(PaoType.RFN530S4ERXR,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KVARH,       //metric 23

@@ -21,14 +21,14 @@ namespace Simulator {
 namespace streaming_metrics {
 
 using metrics = std::initializer_list<unsigned short>;
-// 1, 2, 100, 101, 102 RFN_530S4AD(PaoType.RFN530S4EAD,  //S4-AD
-// 1, 2, 100, 101, 102 RFN_530S4AR(PaoType.RFN530S4EAT,  //S4-AR
-// 1, 2, 100, 101, 102 RFN_530S4AT(PaoType.RFN530S4EAT,  //S4-AT
+// 1, 2, 100, 101, 102 RFN_530S4AD(PaoType.RFN530S4EAX,  //S4-AD
+// 1, 2, 100, 101, 102 RFN_530S4AR(PaoType.RFN530S4EAXR,  //S4-AR
+// 1, 2, 100, 101, 102 RFN_530S4AT(PaoType.RFN530S4EAXR,  //S4-AT
 const metrics streaming_s4_a = { 1, 2, 3, 100, 101, 102 };
 
-// 1, 2, 23, 43, 100, 101, 102 RFN_530S4RD(PaoType.RFN530S4ERD,  //S4-RD
-// 1, 2, 23, 43, 100, 101, 102 RFN_530S4RR(PaoType.RFN530S4ERT,  //S4-RR
-// 1, 2, 23, 43, 100, 101, 102 RFN_530S4RT(PaoType.RFN530S4ERT,  //S4-RT
+// 1, 2, 23, 43, 100, 101, 102 RFN_530S4RD(PaoType.RFN530S4ERX,  //S4-RD
+// 1, 2, 23, 43, 100, 101, 102 RFN_530S4RR(PaoType.RFN530S4ERXR,  //S4-RR
+// 1, 2, 23, 43, 100, 101, 102 RFN_530S4RT(PaoType.RFN530S4ERXR,  //S4-RT
 const metrics streaming_s4_r = { 1, 2, 23, 43, 100, 101, 102 };
 
 // 1, 2, 32, 33, 49, 50, 80, 100, 101, 102 RFN_430SL0(PaoType.RFN430SL0,  //Sentinel-L0
@@ -112,7 +112,7 @@ const std::map<std::string, std::map<std::string, const metrics>> perType {
 
 
 /* For the RFN_520 and RFN_530 meters below, there are cases where multiple manufacturer/model combinations
-* map to the same pao type, like the 'S4-AT' and 'S4-AR' model strings that both map to the PaoType 'RFN530S4EAT'.
+* map to the same pao type, like the 'S4-AT' and 'S4-AR' model strings that both map to the PaoType 'RFN530S4EAXR'.
 * This is intentional- multiple meter models are functionally the same in Yukon, this should not be changed. */
 /*
 RFN_510FL(PaoType.RFN510FL, "LGYR", "FocuskWh-500"),
@@ -134,12 +134,12 @@ RFN_530FAX(PaoType.RFN530FAX, "LGYR", "FocusAXT-530"),
 RFN_530FRX(PaoType.RFN530FRX, "LGYR", "FocusAXR-530"),
 
 RFN_530S4X(PaoType.RFN530S4X, "LGYR", "E650"),
-RFN_530S4AD(PaoType.RFN530S4EAD, "LGYR", "S4-AD"),
-RFN_530S4AT(PaoType.RFN530S4EAT, "LGYR", "S4-AT"),
-RFN_530S4AR(PaoType.RFN530S4EAT, "LGYR", "S4-AR"),
-RFN_530S4RD(PaoType.RFN530S4ERD, "LGYR", "S4-RD"),
-RFN_530S4RT(PaoType.RFN530S4ERT, "LGYR", "S4-RT"),
-RFN_530S4RR(PaoType.RFN530S4ERT, "LGYR", "S4-RR"),
+RFN_530S4AD(PaoType.RFN530S4EAX, "LGYR", "S4-AD"),
+RFN_530S4AT(PaoType.RFN530S4EAXR, "LGYR", "S4-AT"),
+RFN_530S4AR(PaoType.RFN530S4EAXR, "LGYR", "S4-AR"),
+RFN_530S4RD(PaoType.RFN530S4ERX, "LGYR", "S4-RD"),
+RFN_530S4RT(PaoType.RFN530S4ERXR, "LGYR", "S4-RT"),
+RFN_530S4RR(PaoType.RFN530S4ERXR, "LGYR", "S4-RR"),
 */
 
 

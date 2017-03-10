@@ -227,10 +227,10 @@ BOOST_AUTO_TEST_CASE(test_resolveDeviceType)
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-430sl4"),  TYPE_RFN430SL4);
 
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4x"),      TYPE_RFN530S4X);
-    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4ead"),    TYPE_RFN530S4EAD);
-    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4eat"),    TYPE_RFN530S4EAT);
-    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4erd"),    TYPE_RFN530S4ERD);
-    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4ert"),    TYPE_RFN530S4ERT);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4eax"),    TYPE_RFN530S4EAX);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4eaxr"),   TYPE_RFN530S4EAXR);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4erx"),    TYPE_RFN530S4ERX);
+    BOOST_CHECK_EQUAL(resolveDeviceType("rfn-530s4erxr"),   TYPE_RFN530S4ERXR);
 
     //  --- RF DA nodes ---
     BOOST_CHECK_EQUAL(resolveDeviceType("rfn-1200"),    TYPE_RFN1200);

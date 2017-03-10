@@ -35,10 +35,10 @@ typedef RfnCommercialDevice Rfn430sl2Device;
 typedef RfnCommercialDevice Rfn430sl3Device;
 typedef RfnCommercialDevice Rfn430sl4Device;
 typedef RfnCommercialDevice Rfn530s4xDevice;
-typedef RfnCommercialDevice Rfn530s4eadDevice;
-typedef RfnCommercialDevice Rfn530s4eatDevice;
-typedef RfnCommercialDevice Rfn530s4erdDevice;
-typedef RfnCommercialDevice Rfn530s4ertDevice;
+typedef RfnCommercialDevice Rfn530s4eaxDevice;
+typedef RfnCommercialDevice Rfn530s4eaxrDevice;
+typedef RfnCommercialDevice Rfn530s4erxDevice;
+typedef RfnCommercialDevice Rfn530s4erxrDevice;
 
 
 }

@@ -369,10 +369,10 @@ BOOST_AUTO_TEST_CASE(test_DeviceFactory)
         //  90
         { "rfn-520frxd",                    "class Cti::Devices::RfnResidentialVoltageDevice" },
         { "rfn-530s4x",                     "class Cti::Devices::RfnCommercialDevice" },
-        { "rfn-530s4ead",                   "class Cti::Devices::RfnCommercialDevice" },
-        { "rfn-530s4eat",                   "class Cti::Devices::RfnCommercialDevice" },
-        { "rfn-530s4erd",                   "class Cti::Devices::RfnCommercialDevice" },
-        { "rfn-530s4ert",                   "class Cti::Devices::RfnCommercialDevice" },
+        { "rfn-530s4eax",                   "class Cti::Devices::RfnCommercialDevice" },
+        { "rfn-530s4eaxr",                  "class Cti::Devices::RfnCommercialDevice" },
+        { "rfn-530s4erx",                   "class Cti::Devices::RfnCommercialDevice" },
+        { "rfn-530s4erxr",                  "class Cti::Devices::RfnCommercialDevice" },
 
         { "rtu-dart",                       "class Cti::Devices::DnpDevice" },
         { "rtu-dnp",                        "class Cti::Devices::DnpDevice" },

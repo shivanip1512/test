@@ -11948,16 +11948,16 @@
         </attributes>
     </pao>
     
-    <pao id="RFN530S4EAD" inherits="RFN530_S4_BASE">
-        <displayName>RFN-530S4eAD</displayName>
+    <pao id="RFN530S4EAX" inherits="RFN530_S4_BASE">
+        <displayName>RFN-530S4eAX</displayName>
     </pao>
     
-    <pao id="RFN530S4EAT" inherits="RFN530_S4_BASE, RFN530_TOU_RECORDING_ACTIVE, SUPPORTS_TOU_TAG">
-        <displayName>RFN-530S4eAT</displayName>
+    <pao id="RFN530S4EAXR" inherits="RFN530_S4_BASE, RFN530_TOU_RECORDING_ACTIVE, SUPPORTS_TOU_TAG">
+        <displayName>RFN-530S4eAXR</displayName>
     </pao>
     
-    <pao id="RFN530S4ERD" inherits="RFN530_S4_BASE">
-        <displayName>RFN-530S4eRD</displayName>
+    <pao id="RFN530S4ERX" inherits="RFN530_S4_BASE">
+        <displayName>RFN-530S4eRX</displayName>
         <points>
             <point type="Analog" offset="215">
                 <name>Sum kVArh</name>
@@ -12009,8 +12009,8 @@
         </attributes>
     </pao>
     
-    <pao id="RFN530S4ERT" inherits="RFN530_S4_BASE, RFN530_TOU_RECORDING_REACTIVE, SUPPORTS_TOU_TAG">
-        <displayName>RFN-530S4eRT</displayName>
+    <pao id="RFN530S4ERXR" inherits="RFN530_S4_BASE, RFN530_TOU_RECORDING_REACTIVE, SUPPORTS_TOU_TAG">
+        <displayName>RFN-530S4eRXR</displayName>
     </pao>
     
     <pao id="TRANSDATA_MARKV">

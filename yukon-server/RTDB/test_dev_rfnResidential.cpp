@@ -106,10 +106,10 @@ BOOST_AUTO_TEST_CASE( test_isDisconnectSupported )
     BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN430SL4) );
 
     BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4X) );
-    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4EAD) );
-    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4EAT) );
-    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4ERD) );
-    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4ERT) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4EAX) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4EAXR) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4ERX) );
+    BOOST_CHECK( ! test_RfnResidentialDevice::isDisconnectConfigSupported(TYPE_RFN530S4ERXR) );
 }
 
 BOOST_AUTO_TEST_CASE( test_putconfig_tou_schedule )

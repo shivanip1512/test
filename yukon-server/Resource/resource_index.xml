@@ -186,13 +186,13 @@
     <Property Name="Key">1154</Property>
     <Property Name="Value">system\\route_tap_paging.xml</Property>
     <Property Name="Key">1133</Property>
-    <Property Name="Value">meter\\rfn530s4eat.xml</Property>
+    <Property Name="Value">meter\\rfn530s4eaxr.xml</Property>
     <Property Name="Key">2019</Property>
     <Property Name="Value">meter\\points\\ipc420fd.xml</Property>
     <Property Name="Key">1075</Property>
     <Property Name="Value">meter\\mct310id.xml</Property>
     <Property Name="Key">1134</Property>
-    <Property Name="Value">meter\\rfn530s4erd.xml</Property>
+    <Property Name="Value">meter\\rfn530s4erx.xml</Property>
     <Property Name="Key">1082</Property>
     <Property Name="Value">meter\\mct370.xml</Property>
     <Property Name="Key">1120</Property>
@@ -348,7 +348,7 @@
     <Property Name="Key">1179</Property>
     <Property Name="Value">transmitter\\repeater_800.xml</Property>
     <Property Name="Key">1135</Property>
-    <Property Name="Value">meter\\rfn530s4ert.xml</Property>
+    <Property Name="Value">meter\\rfn530s4erxr.xml</Property>
     <Property Name="Key">1116</Property>
     <Property Name="Value">meter\\rfn430kv.xml</Property>
     <Property Name="Key">1178</Property>
@@ -388,7 +388,7 @@
     <Property Name="Key">1039</Property>
     <Property Name="Value">loadmanagement\\lm_group_honeywell.xml</Property>
     <Property Name="Key">1132</Property>
-    <Property Name="Value">meter\\rfn530s4ead.xml</Property>
+    <Property Name="Value">meter\\rfn530s4eax.xml</Property>
     <Property Name="Key">1004</Property>
     <Property Name="Value">capcontrol\\cap_control_special_area.xml</Property>
     <Property Name="Key">1028</Property>

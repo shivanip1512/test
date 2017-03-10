@@ -70,7 +70,7 @@ public enum RfnManufacturerModel {
     RFN_430SL4(PaoType.RFN430SL4, "SCH", "SENTINEL-L4"),
     
     /* For the RFN_520 and RFN_530 meters below, there are cases where multiple manufacturer/model combinations
-     * map to the same pao type, like the 'S4-AT' and 'S4-AR' model strings that both map to the PaoType 'RFN530S4EAT'.
+     * map to the same pao type, like the 'S4-AT' and 'S4-AR' model strings that both map to the PaoType 'RFN530S4EAXR'.
      * This is intentional- multiple meter models are functionally the same in Yukon, this should not be changed. */
     RFN_510FL(PaoType.RFN510FL, "LGYR", "FocuskWh-500"),
     RFN_520FAXD(PaoType.RFN520FAX, "LGYR", "FocusAXD-500"),
@@ -91,12 +91,12 @@ public enum RfnManufacturerModel {
     RFN_530FRX(PaoType.RFN530FRX, "LGYR", "FocusAXR-530"),
     
     RFN_530S4X(PaoType.RFN530S4X, "LGYR", "E650"),
-    RFN_530S4AD(PaoType.RFN530S4EAD, "LGYR", "S4-AD"),
-    RFN_530S4AT(PaoType.RFN530S4EAT, "LGYR", "S4-AT"),
-    RFN_530S4AR(PaoType.RFN530S4EAT, "LGYR", "S4-AR"),
-    RFN_530S4RD(PaoType.RFN530S4ERD, "LGYR", "S4-RD"),
-    RFN_530S4RT(PaoType.RFN530S4ERT, "LGYR", "S4-RT"),
-    RFN_530S4RR(PaoType.RFN530S4ERT, "LGYR", "S4-RR"),
+    RFN_530S4AD(PaoType.RFN530S4EAX, "LGYR", "S4-AD"),
+    RFN_530S4AT(PaoType.RFN530S4EAXR, "LGYR", "S4-AT"),
+    RFN_530S4AR(PaoType.RFN530S4EAXR, "LGYR", "S4-AR"),
+    RFN_530S4RD(PaoType.RFN530S4ERX, "LGYR", "S4-RD"),
+    RFN_530S4RT(PaoType.RFN530S4ERXR, "LGYR", "S4-RT"),
+    RFN_530S4RR(PaoType.RFN530S4ERXR, "LGYR", "S4-RR"),
     RFN_RELAY(PaoType.RFN_RELAY, "EATON", "RFRelay")
     ;
     

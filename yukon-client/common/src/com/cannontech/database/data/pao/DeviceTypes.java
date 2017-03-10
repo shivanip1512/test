@@ -233,10 +233,10 @@ public interface DeviceTypes extends TypeBase
     public final static int GWY800 = DEVICE_OFFSET + 174;
     
     public final static int RFN530S4X = DEVICE_OFFSET + 175; 
-    public final static int RFN530S4EAD = DEVICE_OFFSET + 176;
-    public final static int RFN530S4EAT = DEVICE_OFFSET + 177;
-    public final static int RFN530S4ERD = DEVICE_OFFSET + 178;
-    public final static int RFN530S4ERT = DEVICE_OFFSET + 179;
+    public final static int RFN530S4EAX = DEVICE_OFFSET + 176;
+    public final static int RFN530S4EAXR = DEVICE_OFFSET + 177;
+    public final static int RFN530S4ERX = DEVICE_OFFSET + 178;
+    public final static int RFN530S4ERXR = DEVICE_OFFSET + 179;
     
     public final static int RFN510FL = DEVICE_OFFSET + 180;
     public final static int RFN520FAX = DEVICE_OFFSET + 181;

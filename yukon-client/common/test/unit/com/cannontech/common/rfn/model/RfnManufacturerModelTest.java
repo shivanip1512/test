@@ -26,7 +26,7 @@ public class RfnManufacturerModelTest {
     			ImmutableList.of(RfnManufacturerModel.RFN_410CL));
     	
     	Assert.assertEquals(
-    			RfnManufacturerModel.getForType(PaoType.RFN530S4ERT), 
+    			RfnManufacturerModel.getForType(PaoType.RFN530S4ERXR), 
     			ImmutableList.of(
     					RfnManufacturerModel.RFN_530S4RT,
     					RfnManufacturerModel.RFN_530S4RR));

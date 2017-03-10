@@ -256,10 +256,10 @@ const DeviceLookup deviceFactory {
     { TYPE_RFN530FAX,    MakeDeviceFunc(makeDevice<Rfn530faxDevice>) },
     { TYPE_RFN530FRX,    MakeDeviceFunc(makeDevice<Rfn530frxDevice>) },
     { TYPE_RFN530S4X,    MakeDeviceFunc(makeDevice<Rfn530s4xDevice>) },
-    { TYPE_RFN530S4EAD,  MakeDeviceFunc(makeDevice<Rfn530s4eadDevice>) },
-    { TYPE_RFN530S4EAT,  MakeDeviceFunc(makeDevice<Rfn530s4eatDevice>) },
-    { TYPE_RFN530S4ERD,  MakeDeviceFunc(makeDevice<Rfn530s4erdDevice>) },
-    { TYPE_RFN530S4ERT,  MakeDeviceFunc(makeDevice<Rfn530s4ertDevice>) },
+    { TYPE_RFN530S4EAX,  MakeDeviceFunc(makeDevice<Rfn530s4eaxDevice>) },
+    { TYPE_RFN530S4EAXR, MakeDeviceFunc(makeDevice<Rfn530s4eaxrDevice>) },
+    { TYPE_RFN530S4ERX,  MakeDeviceFunc(makeDevice<Rfn530s4erxDevice>) },
+    { TYPE_RFN530S4ERXR, MakeDeviceFunc(makeDevice<Rfn530s4erxrDevice>) },
     //  RF DA devices
     { TYPE_RFN1200,      MakeDeviceFunc(makeDevice<RfDaDevice>) },
     //  RF water meters
