@@ -141,6 +141,8 @@
         </javac>
         <copy file="${srcdir}//com/cannontech/common/config/master.cfg"
         	todir="${destdir}/com/cannontech/common/config"/>
+    	<copy file="${srcdir}//com/cannontech/common/config/configuration.properties"
+    	        	todir="${destdir}/com/cannontech/common/config"/>
     </target>
 
     <!-- Run tests. This target must be supplied a halt and destdir property -->

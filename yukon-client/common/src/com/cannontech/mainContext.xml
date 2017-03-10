@@ -323,7 +323,8 @@
     </bean>
 
     <bean id="configurationSource" class="com.cannontech.common.config.MasterConfigHelper" factory-method="getConfiguration"/>
-
+	<bean id="configurationPropertiesLoader" class="com.cannontech.common.config.ConfigurationLoader"/>
+	
     <bean class="com.cannontech.common.config.dao.impl.RfnPointMappingDaoImpl"/>
     <bean class="com.cannontech.common.config.dao.impl.DeviceDefinitionDaoImpl"/>
 

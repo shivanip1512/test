@@ -69,6 +69,12 @@
 
     <bean class="com.cannontech.support.service.impl.SupportBundleFileWriter"> 
         <property name="zipDirectory" value="Other"/>
+        <property name="fileOrDirName" value="/Server/Config/configuration.properties"/>
+        <property name="name" value="configurationPropertiesFileSource"/>
+    </bean>  
+    
+    <bean class="com.cannontech.support.service.impl.SupportBundleFileWriter"> 
+        <property name="zipDirectory" value="Other"/>
         <property name="fileOrDirName" value="/Server/web/conf/server.xml"/>
         <property name="name" value="serverXmlFileSource"/>
     </bean>  

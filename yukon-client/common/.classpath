@@ -494,5 +494,10 @@
 	<classpathentry kind="lib" path="/third-party/mail-1.4.5.jar"/>
 	<classpathentry kind="lib" path="/third-party/azure-core-0.9.7.jar"/>
 	<classpathentry kind="lib" path="/third-party/azure-servicebus-0.9.7.jar"/>
+	<classpathentry kind="lib" path="/third-party/commons-configuration2-2.1.1.jar">
+		<attributes>
+			<attribute name="org.eclipse.jst.component.dependency" value="../"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

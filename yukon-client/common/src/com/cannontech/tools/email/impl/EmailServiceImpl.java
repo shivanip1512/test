@@ -1,6 +1,7 @@
 package com.cannontech.tools.email.impl;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
@@ -18,6 +19,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationLoader;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
@@ -25,8 +27,11 @@ import com.cannontech.tools.email.EmailService;
 
 public class EmailServiceImpl implements EmailService {
     private static final Logger log = YukonLogManager.getLogger(EmailServiceImpl.class);
-    
+    private static final String SMTP_AUTH_PROPERTY_NAME = "mail.smtp.auth";
+    private static final String SMTP_CONFIGURATION_KEY_ALIAS = "smtp";
+
     @Autowired private GlobalSettingDao globalSettingDao;
+    @Autowired private ConfigurationLoader configurationSource;
 
     @Override
     public void sendMessage(EmailMessage data) throws MessagingException {
@@ -104,28 +109,19 @@ public class EmailServiceImpl implements EmailService {
      */
     private Session getSession() throws MessagingException {
         Properties properties = new Properties();
-        
-        String smtpHost = getRequiredGlobalSettingsString(GlobalSettingType.SMTP_HOST);
-        properties.put("mail.smtp.host", smtpHost);
-        
-        Integer smtpPort = globalSettingDao.getNullableInteger(GlobalSettingType.SMTP_PORT);
-        if (smtpPort != null) {
-            properties.put("mail.smtp.port", smtpPort.toString());
+        String configSection = configurationSource.getConfigSectionName(SMTP_CONFIGURATION_KEY_ALIAS);
+        Map<String, String> smtpSettings = configurationSource.getConfigSettings().get(configSection);
+        if (smtpSettings != null) {
+            smtpSettings.forEach((key, value) -> properties.put(key, value));
         }
-        
-        boolean smtpTls = globalSettingDao.getBoolean(GlobalSettingType.SMTP_TLS_ENABLED);
-        if (smtpTls) {
-            properties.put("mail.smtp.starttls.enable", "true");
-        }
-        
         SmtpAuthenticator authenticator = new SmtpAuthenticator();
         if (authenticator.getPasswordAuthentication() != null) {
             // Make sure we use authentication.
-            properties.put("mail.smtp.auth", "true");
-            
+            properties.put(SMTP_AUTH_PROPERTY_NAME, "true");
+
             return Session.getInstance(properties, authenticator);
         }
-        
+
         return Session.getInstance(properties);
     }
     

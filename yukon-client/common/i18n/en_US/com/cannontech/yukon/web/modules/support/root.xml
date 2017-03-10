@@ -150,6 +150,7 @@
     <entry key="yukon.web.modules.support.supportBundle.writerName.jobTableCsvSource">Jobs</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.macScriptsCsvSource">MACS Scripts</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.masterConfigFileSource">master.cfg</entry>
+    <entry key="yukon.web.modules.support.supportBundle.writerName.configurationPropertiesFileSource">configuration.properties</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.serverXmlFileSource">server.xml</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.deviceDefinitionXmlSource">deviceDefinition.xml</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.rfnPointMappingXmlSource">rfnPointMappinng.xml</entry>
