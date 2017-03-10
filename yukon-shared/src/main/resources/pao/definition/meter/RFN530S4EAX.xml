@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFN530S4EAD" changeGroup="meter" displayGroup="RFMESH" displayName="RFN-530S4eAD" xsi:noNamespaceSchemaLocation="../pao.xsd">
+<pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFN530S4EAX" changeGroup="meter" displayGroup="RFMESH" displayName="RFN-530S4eAX" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>RFN.xml</pointFile>
     </pointFiles>
