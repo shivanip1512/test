@@ -253,9 +253,9 @@ public class MspObjectDaoImpl implements MspObjectDao {
         String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, service);
         if (service.equalsIgnoreCase(MultispeakDefines.CB_Server_STR)) {
             cbClient.pingURL(mspVendor, endpointUrl);
-        } else if (service.contains(MultispeakDefines.CD_Server_STR)) {
+        } else if (service.equalsIgnoreCase(MultispeakDefines.CD_Server_STR)) {
             cdClient.pingURL(mspVendor, endpointUrl);
-        } else if (service.contains(MultispeakDefines.DR_Server_STR)) {
+        } else if (service.equalsIgnoreCase(MultispeakDefines.DR_Server_STR)) {
             drClient.pingURL(mspVendor, endpointUrl);
         } else if (service.equalsIgnoreCase(MultispeakDefines.EA_Server_STR)) {
             eaClient.pingURL(mspVendor, endpointUrl);
@@ -265,11 +265,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
             mrClient.pingURL(mspVendor, endpointUrl);
         } else if (service.equalsIgnoreCase(MultispeakDefines.OA_Server_STR)) {
             oaClient.pingURL(mspVendor, endpointUrl);
-        } else if (service.contains(MultispeakDefines.NOT_Server_STR)) {
+        } else if (service.equalsIgnoreCase(MultispeakDefines.NOT_Server_STR)) {
             notClient.pingURL(mspVendor, endpointUrl);
         } else if (service.equalsIgnoreCase(MultispeakDefines.OD_Server_STR)) {
             odClient.pingURL(mspVendor, endpointUrl);
-        } else if (service.contains(MultispeakDefines.SCADA_Server_STR)) {
+        } else if (service.equalsIgnoreCase(MultispeakDefines.SCADA_Server_STR)) {
             scadaClient.pingURL(mspVendor, endpointUrl);
         } else {
             ErrorObject obj = new ErrorObject();
