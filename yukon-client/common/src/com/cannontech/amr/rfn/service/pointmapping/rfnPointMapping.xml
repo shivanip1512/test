@@ -2449,6 +2449,7 @@
 
         <point name="kW"> <!-- Instantaneous Watts-->
             <uom>W</uom>
+            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal"/>
         </point>
