@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     2/7/2017 1:00:02 PM                          */
+/* Created on:     3/10/2017 12:28:27 PM                        */
 /*==============================================================*/
 
 
@@ -4584,17 +4584,17 @@ INSERT INTO DeviceTypeCommand VALUES (-1203, -197, 'RFN-530S4x', 5, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1204, -198, 'RFN-530S4x', 6, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1262, -214, 'RFN-530S4x', 7, 'Y', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-1205, -193, 'RFN-530S4eAD', 1, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1263, -214, 'RFN-530S4eAD', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1205, -193, 'RFN-530S4eAX', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1263, -214, 'RFN-530S4eAX', 2, 'Y', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-1211, -193, 'RFN-530S4eAT', 1, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1264, -214, 'RFN-530S4eAT', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1211, -193, 'RFN-530S4eAXR', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1264, -214, 'RFN-530S4eAXR', 2, 'Y', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-1217, -193, 'RFN-530S4eRD', 1, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1265, -214, 'RFN-530S4eRD', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1217, -193, 'RFN-530S4eRX', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1265, -214, 'RFN-530S4eRX', 2, 'Y', -1);
 
-INSERT INTO DeviceTypeCommand VALUES (-1223, -193, 'RFN-530S4eRT', 1, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-1266, -214, 'RFN-530S4eRT', 2, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1223, -193, 'RFN-530S4eRXR', 1, 'Y', -1);
+INSERT INTO DeviceTypeCommand VALUES (-1266, -214, 'RFN-530S4eRXR', 2, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-1229, -212, 'LCR-3102', 16, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-1230, -213, 'LCR-3102', 17, 'Y', -1);

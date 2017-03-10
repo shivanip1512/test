@@ -27,6 +27,18 @@ DELETE FROM Point WHERE PointId IN (
     WHERE PointType = 'Status' AND PointOffset = 81 AND YP.Type IN ('RFW-201', 'RFW-205'));
 /* End YUK-16321 */
 
+/* Start YUK-16368 */
+UPDATE YukonPaobject SET Type = 'RFN-530S4eAX' WHERE Type ='RFN-530S4eAD';
+UPDATE YukonPaobject SET Type = 'RFN-530S4eAXR' WHERE Type ='RFN-530S4eAT';
+UPDATE YukonPaobject SET Type = 'RFN-530S4eRX' WHERE Type ='RFN-530S4eRD';
+UPDATE YukonPaobject SET Type = 'RFN-530S4eRXR' WHERE Type ='RFN-530S4eRT';
+
+UPDATE DeviceTypeCommand  SET DeviceType = 'RFN-530S4eAX' WHERE DeviceType = 'RFN-530S4eAD';
+UPDATE DeviceTypeCommand  SET DeviceType = 'RFN-530S4eAXR' WHERE DeviceType = 'RFN-530S4eAT';
+UPDATE DeviceTypeCommand  SET DeviceType = 'RFN-530S4eRX' WHERE DeviceType = 'RFN-530S4eRD';
+UPDATE DeviceTypeCommand  SET DeviceType = 'RFN-530S4eRXR' WHERE DeviceType = 'RFN-530S4eRT';
+/* End YUK-16368 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
