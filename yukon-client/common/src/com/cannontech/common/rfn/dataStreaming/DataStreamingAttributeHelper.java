@@ -580,7 +580,7 @@ public class DataStreamingAttributeHelper {
      * Gets all data streaming attributes supported by the specified type. If the type does not support data streaming,
      * an empty collection will be returned.
      */
-    public Collection<BuiltInAttribute> getSupportedAttributes(PaoType paoType) {
+    public Set<BuiltInAttribute> getSupportedAttributes(PaoType paoType) {
         return typeToSupportedAttributes.getOrDefault(paoType, Collections.emptySet());
     }
 

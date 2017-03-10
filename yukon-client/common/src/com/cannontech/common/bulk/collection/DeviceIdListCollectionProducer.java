@@ -1,6 +1,7 @@
 package com.cannontech.common.bulk.collection;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,7 +80,7 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
         return createDeviceCollection(idList, ids);
     }
     
-    public DeviceCollection createDeviceCollection(final List<Integer> deviceIds, String optionalIdsString) {
+    public DeviceCollection createDeviceCollection(final Collection<Integer> deviceIds, String optionalIdsString) {
         final String ids = optionalIdsString != null ? optionalIdsString : StringUtils.join(deviceIds, ",");
         
         return new ListBasedDeviceCollection() {

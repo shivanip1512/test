@@ -380,15 +380,35 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     private static Multimap<PaoType, Integer> asTypesToDeviceIds(List<SimpleDevice> devices) {
-        return Multimaps.transformValues(
-                Multimaps.index(devices, SimpleDevice::getDeviceType),
-                SimpleDevice::getDeviceId);        
+        // make a mutable copy
+        return ArrayListMultimap.create(
+                Multimaps.transformValues(
+                    Multimaps.index(devices, SimpleDevice::getDeviceType),
+                    SimpleDevice::getDeviceId));        
     }
 
     private static List<Integer> asDeviceIds(Collection<SimpleDevice> devices) {
         return devices.stream()
                     .map(SimpleDevice::getDeviceId)
                     .collect(toList());
+    }
+
+    private static Stream<DataStreamingAttribute> getEnabledDataStreamingAttributeStream(DataStreamingConfig config) {
+        return config.getAttributes().stream()
+                    .filter(DataStreamingAttribute::getAttributeOn);
+    }
+
+    private static List<DataStreamingAttribute> getEnabledDataStreamingAttributes(DataStreamingConfig config) {
+        return getEnabledDataStreamingAttributeStream(config).collect(toList());
+    }
+
+    private static Stream<BuiltInAttribute> getEnabledAttributeStream(DataStreamingConfig config) {
+        return getEnabledDataStreamingAttributeStream(config)
+                .map(DataStreamingAttribute::getAttribute);
+    }
+
+    private static Set<BuiltInAttribute> getEnabledAttributes(DataStreamingConfig config) {
+        return getEnabledAttributeStream(config).collect(toSet());
     }
 
     @Override
@@ -404,8 +424,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         
         // Remove devices from the list that don't support data streaming
         List<Integer> unsupportedDevices = removeDataStreamingUnsupportedDevices(devices);
-        Set<BuiltInAttribute> allConfigAttributes =
-            config.getAttributes().stream().map(DataStreamingAttribute::getAttribute).collect(toSet());
+        Set<BuiltInAttribute> allConfigAttributes = getEnabledAttributes(config);
         configInfo.addDeviceUnsupported(allConfigAttributes, unsupportedDevices, true);
         if (devices.isEmpty()) {
             // None of the selected devices support data streaming
@@ -421,16 +440,19 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         Multimap<Set<BuiltInAttribute>, PaoType> unsupportedAttributesPerType = 
                 getUnsupportedAttributesToTypes(config, devicesByType.keySet());
         
-        long attCount = config.getAttributes().stream().filter(DataStreamingAttribute::getAttributeOn).count();
+        // Remove devices from the list that don't support any of the selected attributes 
+        Collection<PaoType> typesSupportingNoAttributes = unsupportedAttributesPerType.removeAll(allConfigAttributes); 
+        Set<Integer> devicesSupportingNoAttributes = removeTypes(devicesByType, typesSupportingNoAttributes);
+        configInfo.addDeviceUnsupported(allConfigAttributes, devicesSupportingNoAttributes, true);
 
-        unsupportedAttributesPerType.asMap().forEach((unsupportedAttributes, unsupportedTypes) -> {
+        unsupportedAttributesPerType.asMap().forEach((unsupportedAttributes, unsupportedTypes) ->
             configInfo.addDeviceUnsupported(
                 unsupportedAttributes,
                 unsupportedTypes.stream()
-                    .flatMap(type -> devicesByType.get(type).stream())
+                    .map(devicesByType::get)
+                    .flatMap(Collection::stream)
                     .collect(toList()),
-                unsupportedAttributes.size() == attCount);
-        });
+                false));
 
         Multimap<DataStreamingConfig, DeviceTypeList> configAssignmentsByType = 
                 splitConfigForDevices(config, devicesByType, unsupportedAttributesPerType);
@@ -456,6 +478,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         // Build VerificationInfo from response message
         VerificationInformation verificationInfo = buildVerificationInformation(configInfo);
         return verificationInfo;
+    }
+
+    private static Set<Integer> removeTypes(Multimap<PaoType, Integer> devicesByType,
+            Collection<PaoType> typesSupportingNoAttributes) {
+        return typesSupportingNoAttributes.stream()
+                .map(devicesByType::removeAll)  // note! mutates devicesByType
+                .flatMap(Collection::stream)
+                .collect(toSet());
     }
 
     private ConfigResponseResult processConfigResponse(DeviceDataStreamingConfigResponse response) throws DataStreamingConfigException {
@@ -603,28 +633,16 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         Multimap<Set<BuiltInAttribute>, PaoType> unsupportedAttributesToTypes = ArrayListMultimap.create();
         for (PaoType paoType : paoTypes) {
             // get subset of supported config attributes
-            Collection<BuiltInAttribute> supportedAttributes =
-                dataStreamingAttributeHelper.getSupportedAttributes(paoType);
+            Set<BuiltInAttribute> configAttributes = getEnabledAttributes(config);
+            Set<BuiltInAttribute> supportedAttributes = dataStreamingAttributeHelper.getSupportedAttributes(paoType);
             // get any attributes in the config that are unsupported by the type
-            Set<BuiltInAttribute> unsupportedAttributes = getUnsupportedAttributes(config, supportedAttributes);
+            Set<BuiltInAttribute> unsupportedAttributes = Sets.difference(configAttributes, supportedAttributes);
             // check the map to see if we already have this exact list of unsupported attributes
             if (unsupportedAttributes.size() > 0) {
                 unsupportedAttributesToTypes.put(unsupportedAttributes, paoType);
             }
         }
         return unsupportedAttributesToTypes;
-    }
-
-    private Set<BuiltInAttribute> getUnsupportedAttributes(DataStreamingConfig config,
-            Collection<BuiltInAttribute> attributes) {
-        Set<BuiltInAttribute> unsupportedAttributes =
-            config.getAttributes().stream()
-                .filter(DataStreamingAttribute::getAttributeOn)
-                .map(DataStreamingAttribute::getAttribute)
-                .filter(attribute -> !attributes.contains(attribute))
-                .collect(Collectors.toSet());
-
-        return unsupportedAttributes;
     }
 
     private void removeUnsupportedAttributes(DataStreamingConfig config, Set<BuiltInAttribute> unsupportedAttributes) {
@@ -660,7 +678,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         if (isValidPorterConnection()) {
             DeviceCollection deviceCollection = createDeviceCollectionForIds(Lists.newArrayList(deviceId));
             int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
-            sendConfiguration(user, deviceCollection, requestSeqNumber, result, CommandType.READ);
+            sendConfiguration(user, deviceCollection, null, requestSeqNumber, result, CommandType.READ);
         }else {
             return createEmptyResult(createDeviceCollectionForIds(Lists.newArrayList(deviceId)), "Porter connection is invalid.");
         }
@@ -721,7 +739,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             }
             saveBehaviorReports(deviceIdToBehaviorReport);
             DeviceCollection deviceCollection = createDeviceCollectionForIds(deviceIds);
-            sendConfiguration(user, deviceCollection, requestSeqNumber, result, CommandType.SEND);
+            sendConfiguration(user, deviceCollection, null, requestSeqNumber, result, CommandType.SEND);
             return result;
         } else {
             return createEmptyResult(createDeviceCollectionForIds(deviceIds), "Porter connection is invalid.");
@@ -794,7 +812,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             saveBehaviorReports(deviceIdToBehaviorReport);
 
             deviceBehaviorDao.unassignBehavior(TYPE, deviceIds);
-            sendConfiguration(user, deviceCollection, requestSeqNumber, result, CommandType.SEND);
+            sendConfiguration(user, deviceCollection, null, requestSeqNumber, result, CommandType.SEND);
             // mark devices as "success"
             addDevicesToGroup(devicesIdsWithoutBehaviors, result.getSuccessGroup());
             return result;
@@ -858,6 +876,11 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             
             Multimap<Set<BuiltInAttribute>, PaoType> unsupportedAttributesPerType = 
                     getUnsupportedAttributesToTypes(config, devicesByType.keySet());
+
+            // Remove the devices that don't support any of the config's attributes
+            Set<BuiltInAttribute> enabledAttributes = getEnabledAttributes(config);
+            Collection<PaoType> typesSupportingNoAttributes = unsupportedAttributesPerType.removeAll(enabledAttributes);
+            Set<Integer> devicesSupportingNoAttributes = removeTypes(devicesByType, typesSupportingNoAttributes);
             
             Multimap<DataStreamingConfig, DeviceTypeList> configAssignmentsByType = 
                     splitConfigForDevices(config, devicesByType, unsupportedAttributesPerType);
@@ -880,7 +903,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             
             result.setConfig(config);
 
-            sendConfiguration(user, deviceCollection, requestSeqNumber, result, CommandType.SEND);
+            sendConfiguration(user, deviceCollection, devicesSupportingNoAttributes, requestSeqNumber, result, CommandType.SEND);
             return result;
         } else {
             return createEmptyResult(deviceCollection, "Porter connection is invalid.");
@@ -1046,7 +1069,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         processConfigResponse(response);
     }
 
-    private void sendConfiguration(LiteYukonUser user, DeviceCollection deviceCollection,
+    private void sendConfiguration(LiteYukonUser user, DeviceCollection deviceCollection, Set<Integer> devicesSupportingNoAttributes,
             int requestSeqNumber, DataStreamingConfigResult result, CommandType commandType) {
         log.info("Attempting to "+commandType+" configuration command to " + deviceCollection.getDeviceCount() + " devices.");
 
@@ -1062,6 +1085,9 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         result.setConfigCallback(callback);
         List<SimpleDevice> unsupportedDevices = new ArrayList<>();
         List<SimpleDevice> supportedDevices = getSupportedDevices(deviceCollection);
+        if (devicesSupportingNoAttributes != null) {
+            supportedDevices.removeIf(d -> devicesSupportingNoAttributes.contains(d.getDeviceId()));
+        }
         unsupportedDevices.addAll(allDevices);
         unsupportedDevices.removeAll(supportedDevices);
         if (!unsupportedDevices.isEmpty()) {
@@ -1206,8 +1232,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         Behavior behavior = new Behavior();
         behavior.setType(TYPE);
         // only enabled attributes are stored in the database
-        List<DataStreamingAttribute> attributes =
-            config.getAttributes().stream().filter(DataStreamingAttribute::getAttributeOn).collect(toList());
+        List<DataStreamingAttribute> attributes = getEnabledDataStreamingAttributes(config);
         behavior.addValue(CHANNELS_STRING, attributes.size());
         for (int i = 0; i < attributes.size(); i++) {
             BuiltInAttribute attribute = attributes.get(i).getAttribute();
@@ -1278,7 +1303,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         public List<GatewayLoading> gatewayLoading = new ArrayList<>();
         public boolean success = true;
 
-        public void addDeviceUnsupported(Set<BuiltInAttribute> attributes, List<Integer> deviceIds, boolean allAttributes) {
+        public void addDeviceUnsupported(Set<BuiltInAttribute> attributes, Collection<Integer> deviceIds, boolean allAttributes) {
             DeviceUnsupported unsupported = new DeviceUnsupported();
             unsupported.setAttributes(attributes);
             unsupported.setDeviceIds(deviceIds);

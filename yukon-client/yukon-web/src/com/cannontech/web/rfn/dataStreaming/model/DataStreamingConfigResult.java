@@ -114,10 +114,6 @@ public class DataStreamingConfigResult implements BackgroundProcessResultHolder 
         return getSuccessDeviceCollection().getDeviceCount();
     }
 
-    public int getUnsupporteddCount() {
-        return getUnsupportedDeviceCollection().getDeviceCount();
-    }
-   
     public DataStreamingConfigCallback getConfigCallback() {
         return configCallback;
     }
