@@ -7821,7 +7821,45 @@
                 <unitofmeasure value="kW" />
                 <decimalplaces value="3" />
             </point>
+            <point type="Analog" offset="319">
+                <name>Received kW</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kW" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="322">
+                <name>Received kVAr</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVAr" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="324">
+                <name>Delivered kVA</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVA" />
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="325">
+                <name>Received kVA</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="kVA" />
+                <decimalplaces value="3" />
+            </point>
         </points>
+        <attributes>
+            <attribute name="RECEIVED_DEMAND">
+                <basicLookup point="Received kW"/>
+            </attribute>
+            <attribute name="RECEIVED_KVAR">
+                <basicLookup point="Received kVAr"/>
+            </attribute>
+            <attribute name="DELIVERED_KVA">
+                <basicLookup point="Delivered kVA"/>
+            </attribute>
+            <attribute name="RECEIVED_KVA">
+                <basicLookup point="Received kVA"/>
+            </attribute>
+        </attributes>
         <tags>
             <tag name="THREE_PHASE_VOLTAGE" />
         </tags>

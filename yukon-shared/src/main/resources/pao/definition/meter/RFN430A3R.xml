@@ -41,6 +41,7 @@
         <pointInfo name="Configuration Error" attributes="CONFIGURATION_ERROR"/>
         <pointInfo name="Crystal Oscillator Error" attributes="CRYSTAL_OSCILLATOR_ERROR"/>
         <pointInfo name="Current Loss" attributes="CURRENT_LOSS"/>
+        <pointInfo name="Delivered kVA" attributes="DELIVERED_KVA"/>
         <pointInfo name="Delivered kVAh" attributes="KVAH"/>
         <pointInfo name="Delivered kVAr Load Profile" attributes="DELIVERED_KVAR_LOAD_PROFILE"/>
         <pointInfo name="Delivered kVArh" init="true" attributes="KVARH"/>
@@ -156,12 +157,15 @@
         <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D"/>
         <pointInfo name="Rate D Peak kVA"/>
         <pointInfo name="Rate D Peak kVAr" attributes="PEAK_KVAR_RATE_D"/>
+        <pointInfo name="Received kVA" attributes="RECEIVED_KVA"/>
         <pointInfo name="Received kVAh" attributes="RECEIVED_KVAH"/>
+        <pointInfo name="Received kVAr" attributes="RECEIVED_KVAR"/>
         <pointInfo name="Received kVArh"/>
         <pointInfo name="Received kVArh (Rate A kVArh)" attributes="RECEIVED_KVARH_RATE_A"/>
         <pointInfo name="Received kVArh (Rate B kVArh)" attributes="RECEIVED_KVARH_RATE_B"/>
         <pointInfo name="Received kVArh (Rate C kVArh)" attributes="RECEIVED_KVARH_RATE_C"/>
         <pointInfo name="Received kVArh (Rate D kVArh)" attributes="RECEIVED_KVARH_RATE_D"/>
+        <pointInfo name="Received kW" attributes="RECEIVED_DEMAND"/>
         <pointInfo name="Received kW Load Profile" attributes="RECEIVED_KW_LOAD_PROFILE"/>
         <pointInfo name="Received kWh" attributes="RECEIVED_KWH"/>
         <pointInfo name="Received kWh per Interval" attributes="RECEIVED_KWH_PER_INTERVAL"/>
