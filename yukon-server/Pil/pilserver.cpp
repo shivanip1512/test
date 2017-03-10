@@ -391,6 +391,8 @@ void PilServer::connectionThread()
         {
             if( !_listenerConnection.verifyConnection() )
             {
+                CtiServerExclusion guard(_server_exclusion);
+
                 CTILOG_INFO( dout, "[Re]starting listener, resetting connections" );
                 mConnectionTable.clear();
 
