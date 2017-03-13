@@ -436,4 +436,8 @@
     <entry key="yukon.web.modules.dev.systemMetricsSimulator.metrics.ARCHIVED_READINGS_COUNT">Archived Readings Count</entry>
     <entry key="yukon.web.modules.dev.systemMetricsSimulator.metrics.ARCHIVED_REQUESTS_PROCESSED">Archived Requests Processed</entry>
     <entry key="yukon.web.modules.dev.systemMetricsSimulator.updateSuccessful">System metric settings updated successfully.</entry>
+    
+    <entry key="yukon.web.modules.dev.paoDefinitionTesting.pageName">Pao Definition Testing</entry>
+    <entry key="yukon.web.modules.dev.paoDefinitionTesting.reloadSuccessful">Pao Definition Reload was successful</entry>
+    
 </properties>
