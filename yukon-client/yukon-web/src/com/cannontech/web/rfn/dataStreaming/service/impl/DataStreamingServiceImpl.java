@@ -402,13 +402,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return getEnabledDataStreamingAttributeStream(config).collect(toList());
     }
 
-    private static Stream<BuiltInAttribute> getEnabledAttributeStream(DataStreamingConfig config) {
-        return getEnabledDataStreamingAttributeStream(config)
-                .map(DataStreamingAttribute::getAttribute);
-    }
-
     private static Set<BuiltInAttribute> getEnabledAttributes(DataStreamingConfig config) {
-        return getEnabledAttributeStream(config).collect(toSet());
+        return getEnabledDataStreamingAttributeStream(config)
+                .map(DataStreamingAttribute::getAttribute)
+                .collect(toSet());
     }
 
     @Override
@@ -480,6 +477,12 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         return verificationInfo;
     }
 
+    /**
+     * Removes the specified types from the <code>devicesByType</code> list and returns them as a new Set of deviceIds.
+     * @param devicesByType
+     * @param typesSupportingNoAttributes
+     * @return
+     */
     private static Set<Integer> removeTypes(Multimap<PaoType, Integer> devicesByType,
             Collection<PaoType> typesSupportingNoAttributes) {
         return typesSupportingNoAttributes.stream()
