@@ -3518,7 +3518,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_late_absolute_time)
                 BOOST_CHECK_EQUAL(pd->getValue(), 1180.0000000000000);
                 BOOST_CHECK_EQUAL(pd->getType(), AnalogPointType);
                 // Time shouldn't be an issue because this is a canned message
-                BOOST_CHECK_EQUAL(pd->getTime(), CtiTime(1480476481));
+                BOOST_CHECK_EQUAL(pd->getTime(), CtiTime(1480476481 - 3600));   // thanks to Wayne and DST... expect breakage Nov 5, 2017
                 break;
             }
         }
@@ -3579,7 +3579,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_early_absolute_time)
                 BOOST_CHECK_EQUAL(pd->getValue(), 1036.0000000000000);
                 BOOST_CHECK_EQUAL(pd->getType(), AnalogPointType);
                 // Time shouldn't be an issue because this is a canned message
-                BOOST_CHECK_EQUAL(pd->getTime(), CtiTime(1480565462));
+                BOOST_CHECK_EQUAL(pd->getTime(), CtiTime(1480565462 - 3600));   // thanks to Wayne and DST... expect breakage Nov 5, 2017
                 break;
             }
         }
