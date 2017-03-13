@@ -211,6 +211,7 @@ public class JwsController {
         }
 
         addExtension(request, resourcesElem, JwsJnlp.BOUNCY_CASTLE);
+        addExtension(request, resourcesElem, JwsJnlp.SQL_SERVER_JDBC);
         addExtension(request, resourcesElem, JwsJnlp.CLIENT_LIBS);
 
         setJnlpProperty("user", user.getUsername(), resourcesElem);
