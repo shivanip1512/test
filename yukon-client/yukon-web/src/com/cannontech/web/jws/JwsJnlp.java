@@ -37,7 +37,7 @@ public enum JwsJnlp {
                   null, null, null,
                   "bcpkix-jdk15on-149.jar",
                   "bcprov-jdk15on-149.jar"),
-    SQL_SERVER_JDBC("sqlserver.jnlp",
+    SQL_SERVER_JDBC("sqlserver_jdbc.jnlp",
                     "SQL Server JDBC driver",
                     "SQL Server JDBC driver",
                     null, null, null,

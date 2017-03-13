@@ -106,7 +106,7 @@ public class JwsController {
     /**
      * This is exposed without login filter. No user available
      */
-    @RequestMapping("/{requestedJnlp:(?:client_libs|bc)\\.jnlp}")
+    @RequestMapping("/{requestedJnlp:(?:client_libs|bc|sqlserver_jdbc)\\.jnlp}")
     public void getExtensionJnlp(HttpServletRequest request, HttpServletResponse response,
             @PathVariable JwsJnlp requestedJnlp, @RequestParam("version-id") String requestedVersion)
             throws IOException {
