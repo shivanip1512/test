@@ -2455,11 +2455,13 @@
         </point>
         <point name="kVAr"> <!-- Instantaneous Var -->
             <uom>Var</uom>
+            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal"/>
         </point>
         <point name="kVA"> <!-- Instantaneous VA-->
             <uom>VA</uom>
+            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal"/>
         </point>
