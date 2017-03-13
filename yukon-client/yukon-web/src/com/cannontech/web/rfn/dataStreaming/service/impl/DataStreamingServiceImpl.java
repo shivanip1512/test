@@ -479,9 +479,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
 
     /**
      * Removes the specified types from the <code>devicesByType</code> list and returns them as a new Set of deviceIds.
-     * @param devicesByType
-     * @param typesSupportingNoAttributes
-     * @return
      */
     private static Set<Integer> removeTypes(Multimap<PaoType, Integer> devicesByType,
             Collection<PaoType> typesSupportingNoAttributes) {
