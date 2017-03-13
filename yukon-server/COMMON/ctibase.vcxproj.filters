@@ -261,6 +261,9 @@
     <ClCompile Include="database_bulk_writer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="xml_parsers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AttributeService.h">
@@ -633,6 +636,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\MessageCounter.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\xml_parsers.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

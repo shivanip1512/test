@@ -507,6 +507,7 @@
     </ClCompile>
     <ClCompile Include="xml.cpp">
     </ClCompile>
+    <ClCompile Include="xml_parsers.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\AttributeService.h" />
@@ -632,6 +633,7 @@
     <ClInclude Include="include\worker_thread.h" />
     <ClInclude Include="include\xfer.h" />
     <ClInclude Include="include\xml.h" />
+    <ClInclude Include="include\xml_parsers.h" />
     <ClInclude Include="include\yukon.h" />
   </ItemGroup>
   <ItemGroup>

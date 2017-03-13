@@ -1,9 +1,8 @@
 #include "precompiled.h"
 
 #include "MetricIdLookup.h"
-
+#include "resource_ids.h"
 #include "resource_helper.h"
-
 #include "resolvers.h"
 
 #include "cajun/reader.h"
@@ -19,7 +18,7 @@ void parseAttributeOverrides(const json::Array& attributeOverrides);
 
 void parseJsonFiles()
 {
-    DataBuffer raw = loadResourceFromLibrary( Resource_MetricIdToAttributeMapping, "JSON", "yukon-resource.dll" );
+    DataBuffer raw = loadResourceFromLibrary( METRIC_ID_TO_ATTRIBUTE_MAPPING_ID, "JSON", "yukon-resource.dll" );
 
     std::istringstream stream(std::string(raw.begin(), raw.end()));
 
