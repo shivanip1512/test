@@ -13,8 +13,8 @@
     <cti:msg2 key="yukon.web.modules.amr.create" var="popupTitle"/>
     <cti:msg2 key="yukon.web.modules.amr.copy" var="copyTitle"/>
     <div id="contentPopup" class="dn"
-        data-title1="${popupTitle}"
-        data-title2="${copyTitle}"></div>
+        data-create-title="${popupTitle}"
+        data-copy-title="${copyTitle}"></div>
 
     <input id="device-id" type="hidden" value="${deviceId}">
     

@@ -507,14 +507,14 @@ public class MeterController {
         SimpleDevice device;
         if (meter.getType().isMct()) {
             device = deviceCreationService.createCarrierDeviceByDeviceType(meter.getType(), meter.getName(),
-                meter.getAddress(), meter.getRouteId(), meter.isCreatePoints());
+                meter.getAddress(), meter.getRouteId(), true);
         } else if (meter.getType().isRfMeter()) {
             RfnIdentifier rfnId = new RfnIdentifier(meter.getSerialNumber(), meter.getManufacturer(), meter.getModel());
             device = deviceCreationService.createRfnDeviceByDeviceType(meter.getType(), meter.getName(), rfnId,
-                meter.isCreatePoints());
+                true);
         } else {
             device = deviceCreationService.createIEDDeviceByDeviceType(meter.getType(), meter.getName(),
-                meter.getPortId(), meter.isCreatePoints());
+                meter.getPortId(), true);
         }
 
         return  device;

@@ -51,5 +51,8 @@
 #contentPopup {
     overflow: visible !important;
 }
+span.button.yes {
+    margin-left: 0px !important;
+}
 </style>
 </cti:msgScope>

@@ -17,7 +17,7 @@
     
     <cti:msg2 key="yukon.web.modules.amr.create" var="popupTitle"/>
     <div id="contentPopup" class="dn"
-        data-title="${popupTitle}"></div>
+        data-create-title="${popupTitle}"></div>
     
     <div id="page-actions" class="dn">
         <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">

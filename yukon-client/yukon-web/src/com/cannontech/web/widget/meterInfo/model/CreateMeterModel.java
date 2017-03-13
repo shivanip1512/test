@@ -14,7 +14,6 @@ public class CreateMeterModel extends MeterModel {
     private int routeId;
     private PointCreation pointCreation;
     public static enum PointCreation implements DisplayableEnum {
-        NONE,
         DEFAULT,
         COPY;
 
@@ -87,13 +86,6 @@ public class CreateMeterModel extends MeterModel {
         this.pointCreation = pointCreation;
     }
     
-    public boolean isCreatePoints() {
-        if(PointCreation.DEFAULT == getPointCreation()) {
-            return true;
-        }
-        return false;
-    }
-
     public boolean isCopyPoints() {
         if(PointCreation.COPY == getPointCreation()) {
             return true;

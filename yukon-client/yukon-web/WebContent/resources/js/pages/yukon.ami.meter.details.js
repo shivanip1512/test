@@ -66,7 +66,7 @@ yukon.ami.meterDetails = (function () {
             
             $('.js-create-meter').click(function () {
                 var content = $('#contentPopup'),
-                popupTitle = content.data('title1');
+                popupTitle = content.data('create-title');
                 
                 content.load(yukon.url('/meter/create'), function () {
                     content.dialog({
@@ -82,7 +82,7 @@ yukon.ami.meterDetails = (function () {
             $('.js-copy-meter').click(function () {
                 var content = $('#contentPopup'),
                 deviceId = $('#device-id').val(),
-                popupTitle = content.data('title2');
+                popupTitle = content.data('copy-title');
                 
                 content.load(yukon.url('/meter/copy/'+deviceId), function () {
                     content.dialog({
