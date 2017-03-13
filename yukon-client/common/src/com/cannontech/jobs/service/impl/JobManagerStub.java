@@ -150,4 +150,9 @@ public class JobManagerStub implements JobManager {
         throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
     }
 
+    @Override
+    public Integer getLastestJobInJobGroup(int jobId) {
+        throw new JobManagerException(JOB_MANAGER_DISABLED_MSG);
+    }
+
 }

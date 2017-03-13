@@ -130,15 +130,15 @@ public class JobStatusDaoImpl implements JobStatusDao {
     }
     
     @Override
-    public Date findJobLastCompletedRunDate(int jobId) {
+    public Date findLastRunDateForJobGroup(int jobId) {
     	Date result = null;
     	try {
     		SqlStatementBuilder sql = new SqlStatementBuilder();
     		sql.append("SELECT MAX(js.StartTime) AS lastOkRun");
             sql.append("FROM JobStatus js");
             sql.append("JOIN Job j ON js.jobid = j.jobid");
-            sql.append("WHERE js.jobId").eq(jobId);
-            sql.append("AND js.JobState").in(JobRunStatus.getCompletedJobStateNames());
+            sql.append("WHERE js.jobId IN (select jobid from job where jobgroupid = (select jobgroupid from job where jobid").eq(jobId);
+            sql.append("))");
             result = jdbcTemplate.queryForObject(sql, new DateRowMapper());
     	} catch (EmptyResultDataAccessException e) {
     		return null;
@@ -152,5 +152,26 @@ public class JobStatusDaoImpl implements JobStatusDao {
         template.setTableName("JobStatus");
         template.setPrimaryKeyField("jobStatusId");
         template.setFieldMapper(jobStatusFieldMapper); 
+    }
+
+    @Override
+    public Integer findLastestJobInJobGroup(int jobId) {
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT jobid");
+            sql.append("FROM jobstatus");
+            sql.append("WHERE jobid IN (");
+            sql.append(   "SELECT jobid FROM job WHERE jobgroupid = (");
+            sql.append(      "SELECT jobgroupid from job WHERE jobid").eq(jobId);
+            sql.append(      ") ) AND starttime = (");
+            sql.append(         "SELECT max(starttime) FROM jobstatus WHERE jobid IN (");
+            sql.append(            "SELECT jobid FROM job WHERE jobgroupid = (");
+            sql.append(               "SELECT jobgroupid from job WHERE jobid").eq(jobId);
+            sql.append(          ")))");
+            
+            return jdbcTemplate.queryForInt(sql);
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
     }
 }

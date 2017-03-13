@@ -27,12 +27,17 @@ public interface JobStatusDao {
     public JobStatus<YukonJob> findLatestStatusByJobId(int jobId);
     
     /**
-     * Gets the most recent StopTime for given job whose status is 'COMPLETED'
+     * Gets the most recent StartTime for given job whose status is 'COMPLETED'
      */
     public Date findJobLastSuccessfulRunDate(int jobId);
     
     /**
-     * Gets the most recent StopTime for given job whose status is 'COMPLETED' or 'CANCELLED'
+     * Gets the most recent StartTime of the job belonging to job group of the given job id.  
      */
-    public Date findJobLastCompletedRunDate(int jobId);
+    public Date findLastRunDateForJobGroup(int jobId);
+    
+    /**
+     * Gets the job id of the latest executed or executing job belonging to the job group of the given job id.
+     */
+    public Integer findLastestJobInJobGroup(int jobId);
 }

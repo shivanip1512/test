@@ -22,7 +22,7 @@ public class LastRunDateHandler implements ScheduledGroupRequestExecutionUpdater
 	public String handle(ScheduledGroupRequestExecutionBundle execution, YukonUserContext userContext) {
 		int jobId = execution.getJobId();
 
-		Date lastRunDate = jobStatusDao.findJobLastCompletedRunDate(jobId);
+        Date lastRunDate = jobStatusDao.findLastRunDateForJobGroup(jobId);
 		if (lastRunDate != null) {
 		    return dateFormattingService.format(lastRunDate, DateFormatEnum.DATEHM, userContext);
 		}

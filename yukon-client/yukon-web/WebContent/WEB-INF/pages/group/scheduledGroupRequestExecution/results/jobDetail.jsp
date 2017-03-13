@@ -52,6 +52,7 @@
                 $('#noLastRunSpan').show();
                 $('#hasLastRunSpan').hide();
             }
+            enableHyperlinkforLastRun();
         };
     }
     
@@ -68,6 +69,19 @@
             }
         };
       }
+    
+    function enableHyperlinkforLastRun() {
+        if($("span.creCountForJob > span").text() > 0) {
+            $("a.jobLastRun").removeClass("disabled");
+        } else {
+            $("a.jobLastRun").addClass("disabled");
+        }
+    }
+    
+    $( document ).ready(function() {
+        enableHyperlinkforLastRun();
+    });
+    
 </script>
     
 <%-- JOB INFO --%>
@@ -175,16 +189,13 @@
                 </c:otherwise>
             </c:choose>
         
-            <span id="noLastRunSpan" style="${noLastRunSpanInitialStyle}" class="fl">
-                <cti:dataUpdaterValue type="SCHEDULED_GROUP_REQUEST_EXECUTION"
-                    identifier="${jobWrapper.job.id}/LAST_RUN_DATE/"/>
-            </span>
+            <span id="noLastRunSpan" style="${noLastRunSpanInitialStyle}" class="fl">${notApplicable}</span>
             
-            <span id="hasLastRunSpan" style="${hasLastRunSpanInitialStyle}" class="fl">
-                <cti:url var="lastRunUrl" value="/group/scheduledGroupRequestExecutionResults/viewLastRun">
-                    <cti:param name="jobId" value="${jobWrapper.job.id}"/>
-                </cti:url>
-                <a href="${lastRunUrl}"><cti:dataUpdaterValue type="SCHEDULED_GROUP_REQUEST_EXECUTION"
+            <span id="hasLastRunSpan" style="${hasLastRunSpanInitialStyle}" class="fl">            
+                 <cti:url var="lastRunUrl" value="/group/scheduledGroupRequestExecutionResults/viewLastRun">
+                     <cti:param name="jobId" value="${jobWrapper.job.id}"/>
+                 </cti:url>
+                 <a href="${lastRunUrl}" class="jobLastRun disabled"><cti:dataUpdaterValue type="SCHEDULED_GROUP_REQUEST_EXECUTION"
                     identifier="${jobWrapper.job.id}/LAST_RUN_DATE"/></a>
             </span>
             
@@ -219,13 +230,13 @@
                     <cti:param name="jobId" value="${jobWrapper.job.id}"/>
                 </cti:url>
                 <a href="${creListUrl}" class="fl">${executionsButtonText}</a> 
-                <span class="fl">&nbsp;(<cti:dataUpdaterValue type="SCHEDULED_GROUP_REQUEST_EXECUTION"
+                <span class="fl creCountForJob">&nbsp;(<cti:dataUpdaterValue type="SCHEDULED_GROUP_REQUEST_EXECUTION"
                     identifier="${jobWrapper.job.id}/CRE_COUNT_FOR_JOB" />)</span>
                 <tags:helpInfoPopup title="${executionsButtonText}">
                 	<cti:msg2 key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.popInfo.executions" />
             	</tags:helpInfoPopup>
             </form>
-        </tags:nameValue>
+        </tags:nameValue> 
     </tags:nameValueContainer>
 </tags:sectionContainer>
                 

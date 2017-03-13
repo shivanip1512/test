@@ -827,4 +827,9 @@ public class JobManagerImpl implements JobManager {
     public void setYukonJobDao(YukonJobDao yukonJobDao) {
         this.yukonJobDao = yukonJobDao;
     }
+
+    @Override
+    public Integer getLastestJobInJobGroup(int jobId) {
+        return jobStatusDao.findLastestJobInJobGroup(jobId);
+    }
 }

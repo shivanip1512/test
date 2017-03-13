@@ -130,10 +130,13 @@ public class ScheduledGroupRequestExecutionResultsController {
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
         ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(job, null, null, userContext);
         model.addAttribute("jobWrapper", jobWrapper);
-        
-        CommandRequestExecution lastCre = scheduledGreDao.findLatestCommandRequestExecutionForJobId(jobId, null);
-        model.addAttribute("lastCre", lastCre);
-        
+        Integer lastestJobId = jobManager.getLastestJobInJobGroup(jobId);
+        if(lastestJobId != null) {
+            CommandRequestExecution lastCre = scheduledGreDao.findLatestCommandRequestExecutionForJobId(lastestJobId, null);
+            model.addAttribute("lastCre", lastCre);
+        } else {
+            model.addAttribute("lastCre", null);
+        }
         boolean canManage = rolePropertyDao.checkProperty(YukonRoleProperty.MANAGE_SCHEDULES, userContext.getYukonUser());
         model.addAttribute("canManage", canManage);
         
@@ -143,7 +146,8 @@ public class ScheduledGroupRequestExecutionResultsController {
     // Note: this url should only be hit if it is know the job has a last cre, no protection for null lastCre here
     @RequestMapping("viewLastRun")
     public String viewLastRun(int jobId, ModelMap model) {
-        CommandRequestExecution lastCre = scheduledGreDao.findLatestCommandRequestExecutionForJobId(jobId, null);
+        Integer lastestJobId = jobManager.getLastestJobInJobGroup(jobId);
+        CommandRequestExecution lastCre = scheduledGreDao.findLatestCommandRequestExecutionForJobId(lastestJobId, null);
         model.addAttribute("commandRequestExecutionId", lastCre.getId());
         return "redirect:/common/commandRequestExecutionResults/detail";
     }

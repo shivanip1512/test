@@ -157,5 +157,11 @@ public interface JobManager {
      * This method sets a cron string for scheduled job to never run ({@link ScheduledRepeatingJob#NEVER_RUN_CRON_STRING}).
      */
     void unscheduleJob(ScheduledRepeatingJob job);
+    
+    /**
+     * This method returns the job id of the latest executed or executing job belonging to the job group of
+     * the given job id.
+     * */
+    Integer getLastestJobInJobGroup(int jobId);
 
 }
