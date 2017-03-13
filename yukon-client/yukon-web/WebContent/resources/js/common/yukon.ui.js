@@ -685,14 +685,14 @@ yukon.ui = (function () {
             if (options['delete'] && options.mode !== 'CREATE') {
                 // Delete Button
                 buttons.push({
-                    text : yg.text['delete'],
+                    text : yg.text.deleteButton,
                     click: function (ev) {
                         
                         var dialog = $(this).closest('.ui-dialog-content'),
                             target = options.target || dialog;
                         mod.confirm({
                             dialog : dialog,
-                            yesText: yg.text['delete'],
+                            yesText: yg.text.deleteButton,
                             noText: yg.text.cancel
                         });
                         dialog.off('yukon:ui:dialog:confirm').on('yukon:ui:dialog:confirm', function (ev) {

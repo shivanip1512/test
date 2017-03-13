@@ -17,6 +17,8 @@ yukon.da.schedules = (function () {
                 var link = $(this),
                     popup = $('#schedule-popup'),
                     id = link.data('scheduleId');
+                
+                yukon.ui.initDateTimePickers();
 
                 popup.load(yukon.url('/capcontrol/schedules/' + id), function () {
 
@@ -24,7 +26,7 @@ yukon.da.schedules = (function () {
                         title = popup.find('.js-popup-title')[0].value,
                         buttons = [],
                         deleteButton = {
-                            text: yg.text['delete'],
+                            text: yg.text.deleteButton,
                             click: function (ev) {
                                 yukon.ui.confirm({
                                     dialog: popup,
@@ -42,7 +44,6 @@ yukon.da.schedules = (function () {
                         buttons.splice(1,0, deleteButton);
                     }
 
-                    yukon.ui.initDateTimePickers();
 
                     popup.dialog({
                         title: title,
