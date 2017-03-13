@@ -17,13 +17,13 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
-import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncService;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncType;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 
 @CheckRoleProperty(YukonRoleProperty.ADMIN_MULTISPEAK_SETUP)
 @RequestMapping("/setup/deviceGroupSync/*")
@@ -33,31 +33,36 @@ public class MultispeakDeviceGroupSyncController {
     @Autowired MspDeviceGroupSyncHandler mspDeviceGroupSyncHandler;
 
     private MeterDao meterDao;
-    private MultispeakDeviceGroupSyncService multispeakDeviceGroupSyncService;
     private MultispeakFuncs multispeakFuncs;
 
 	// HOME
     @RequestMapping("home")
     public String home(ModelMap modelMap) {
+        
+        MultispeakDeviceGroupSyncProgress progress = null;
+        Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants = Maps.newLinkedHashMap();
 
-        MultispeakDeviceGroupSyncProgress progress = multispeakDeviceGroupSyncService.getProgress();
-
-        // start page
         MultispeakDeviceGroupSyncType[] deviceGroupSyncTypes = MultispeakDeviceGroupSyncType.values();
         modelMap.addAttribute("deviceGroupSyncTypes", deviceGroupSyncTypes);
 
-        Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants =
-            multispeakDeviceGroupSyncService.getLastSyncInstants();
-
+        MultispeakVendor mspVendor = getMspVendor();
+        if (mspVendor != null) {
+            progress = mspDeviceGroupSyncHandler.getDeviceGroupSyncService(mspVendor).getProgress();
+            // start page
+            lastSyncInstants =
+                mspDeviceGroupSyncHandler.getDeviceGroupSyncService(mspVendor).getLastSyncInstants();
+        } else {
+            lastSyncInstants.put(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, null);
+            lastSyncInstants.put(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, null);
+        }
         List<LastRunTimestampValue> lastRunTimestampValues = Lists.newArrayListWithCapacity(lastSyncInstants.size());
         for (Entry<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstantEntry : lastSyncInstants.entrySet()) {
-
             LastRunTimestampValue lastRunTimestampValue =
                 new LastRunTimestampValue(lastSyncInstantEntry.getKey(), lastSyncInstantEntry.getValue(), progress);
             lastRunTimestampValues.add(lastRunTimestampValue);
         }
-        modelMap.addAttribute("lastRunTimestampValues", lastRunTimestampValues);
 
+        modelMap.addAttribute("lastRunTimestampValues", lastRunTimestampValues);
         return "setup/deviceGroupSync/home.jsp";
     }
 	
@@ -85,29 +90,31 @@ public class MultispeakDeviceGroupSyncController {
 	// PROGRESS
 	@RequestMapping("progress")
     public String progress(ModelMap modelMap, FlashScope flashScope) {
-		
-		MultispeakDeviceGroupSyncProgress progress = multispeakDeviceGroupSyncService.getProgress();
-		
-		if (progress == null) {
-			return "redirect:home";
-		}
-		
-		modelMap.addAttribute("progress", progress);
-		
-		int meterCount = meterDao.getMeterCount();
-		modelMap.addAttribute("meterCount", meterCount);
-		
-		return "setup/deviceGroupSync/progress.jsp";
-	}
+
+        MultispeakDeviceGroupSyncProgress progress =
+            mspDeviceGroupSyncHandler.getDeviceGroupSyncService(getMspVendor()).getProgress();
+
+        if (progress == null) {
+            return "redirect:home";
+        }
+
+        modelMap.addAttribute("progress", progress);
+
+        int meterCount = meterDao.getMeterCount();
+        modelMap.addAttribute("meterCount", meterCount);
+
+        return "setup/deviceGroupSync/progress.jsp";
+    }
 	
 	// CANCEL
 	@RequestMapping(value="done", params="cancel")
     public String done(FlashScope flashScope) {
-        
-		multispeakDeviceGroupSyncService.getProgress().cancel();
-		
-		flashScope.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.deviceGroupSyncProgress.cancelOk"));
-		
+
+        mspDeviceGroupSyncHandler.getDeviceGroupSyncService(getMspVendor()).getProgress().cancel();
+
+        flashScope.setConfirm(new YukonMessageSourceResolvable(
+            "yukon.web.modules.adminSetup.deviceGroupSyncProgress.cancelOk"));
+
         return "redirect:progress";
     }
 	
@@ -124,12 +131,16 @@ public class MultispeakDeviceGroupSyncController {
 	}
     
     @Autowired
-    public void setMultispeakDeviceGroupSyncService(MultispeakDeviceGroupSyncService multispeakDeviceGroupSyncService) {
-		this.multispeakDeviceGroupSyncService = multispeakDeviceGroupSyncService;
-	}
-    
-    @Autowired
     public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
 		this.multispeakFuncs = multispeakFuncs;
 	}
+    
+    private MultispeakVendor getMspVendor() {
+        int vendorId = multispeakFuncs.getPrimaryCIS();
+        if (vendorId <= 0) {
+            return null;
+        }
+        MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
+        return mspVendor;
+    }
 }

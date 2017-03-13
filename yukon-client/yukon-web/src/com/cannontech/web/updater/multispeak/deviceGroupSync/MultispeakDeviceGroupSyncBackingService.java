@@ -14,9 +14,12 @@ import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.multispeak.client.MspDeviceGroupSyncHandler;
+import com.cannontech.multispeak.client.MultispeakFuncs;
+import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgressStatus;
-import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncService;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
@@ -28,12 +31,15 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
     
     private Map<MultispeakDeviceGroupSyncUpdaterTypeEnum, MultispeakDeviceGroupSyncUpdaterHandler> handlersMap;
     private ObjectFormattingService objectFormattingService;
-    private MultispeakDeviceGroupSyncService multispeakDeviceGroupSyncService;
     private MeterDao meterDao;
     private DateFormattingService dateFormattingService;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private ImmutableMap<MultispeakDeviceGroupSyncProgressStatus, String> statusStyleClassNameMap;
+    
+    @Autowired MspDeviceGroupSyncHandler mspDeviceGroupSyncHandler;
+    @Autowired MultispeakDao multispeakDao;
+    @Autowired MultispeakFuncs multispeakFuncs;
     
     @PostConstruct
     public void init() {
@@ -48,9 +54,14 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
     
     @Override
     public String getLatestValue(String updaterTypeStr, long afterDate, YukonUserContext userContext) {
+        int vendorId = multispeakFuncs.getPrimaryCIS();
+        MultispeakDeviceGroupSyncProgress progress = null;
 
-        MultispeakDeviceGroupSyncProgress progress = multispeakDeviceGroupSyncService.getProgress();
-        
+        if (vendorId > 0) {
+            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
+            progress = mspDeviceGroupSyncHandler.getDeviceGroupSyncService(mspVendor).getProgress();
+        }
+
         MultispeakDeviceGroupSyncUpdaterTypeEnum updaterType = MultispeakDeviceGroupSyncUpdaterTypeEnum.valueOf(updaterTypeStr);
         MultispeakDeviceGroupSyncUpdaterHandler handler = handlersMap.get(updaterType);
         
@@ -267,29 +278,31 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
 		return getLastCompletedSyncDateStr(type, userContext);
     }
     
-    private String getLastCompletedSyncDateStr(MultispeakDeviceGroupSyncTypeProcessorType type, YukonUserContext userContext) {
-    	
-    	Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants = multispeakDeviceGroupSyncService.getLastSyncInstants();
-		Instant instant = lastSyncInstants.get(type);
-		
-		if (instant == null) {
-			MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-			return messageSourceAccessor.getMessage("yukon.common.na");
-		}
-		
-		String dateStr = dateFormattingService.format(instant, DateFormatEnum.FULL, userContext);
-		return dateStr;
+    private String getLastCompletedSyncDateStr(MultispeakDeviceGroupSyncTypeProcessorType type,
+            YukonUserContext userContext) {
+        
+        int vendorId = multispeakFuncs.getPrimaryCIS();
+        Instant instant = null;
+        if (vendorId > 0) {
+            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
+            Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants =
+                mspDeviceGroupSyncHandler.getDeviceGroupSyncService(mspVendor).getLastSyncInstants();
+            instant = lastSyncInstants.get(type);
+        }
+
+        if (vendorId <= 0 || instant == null) {
+            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+            return messageSourceAccessor.getMessage("yukon.common.na");
+        }
+
+        String dateStr = dateFormattingService.format(instant, DateFormatEnum.FULL, userContext);
+        return dateStr;
     }
     
     @Autowired
     public void setObjectFormattingService(ObjectFormattingService objectFormattingService) {
     	this.objectFormattingService = objectFormattingService;
     }
-
-    @Autowired
-    public void setMultispeakDeviceGroupSyncService(MultispeakDeviceGroupSyncService multispeakDeviceGroupSyncService) {
-		this.multispeakDeviceGroupSyncService = multispeakDeviceGroupSyncService;
-	}
     
     @Autowired
     public void setMeterDao(MeterDao meterDao) {
