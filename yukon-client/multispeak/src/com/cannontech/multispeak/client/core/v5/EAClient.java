@@ -30,7 +30,7 @@ public class EAClient implements IEAClient {
      * @param webServiceTemplate
      */
     @Autowired
-    public EAClient(@Qualifier("webServiceTemplate") WebServiceTemplate webServiceTemplate) {
+    public EAClient(@Qualifier("webServiceTemplateV5") WebServiceTemplate webServiceTemplate) {
 
         this.webServiceTemplate = webServiceTemplate;
         messageSender = (HttpComponentsMessageSender) webServiceTemplate.getMessageSenders()[0];

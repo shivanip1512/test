@@ -30,7 +30,7 @@ public class OAClient implements IOAClient {
      * @param webServiceTemplate
      */
     @Autowired
-    public OAClient(@Qualifier("webServiceTemplate") WebServiceTemplate webServiceTemplate) {
+    public OAClient(@Qualifier("webServiceTemplateV5") WebServiceTemplate webServiceTemplate) {
 
         this.webServiceTemplate = webServiceTemplate;
         messageSender = (HttpComponentsMessageSender) webServiceTemplate.getMessageSenders()[0];

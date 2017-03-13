@@ -30,7 +30,7 @@ public class MDMClient implements IMDMClient {
      * @param webServiceTemplate
      */
     @Autowired
-    public MDMClient(@Qualifier("webServiceTemplate") WebServiceTemplate webServiceTemplate) {
+    public MDMClient(@Qualifier("webServiceTemplateV5") WebServiceTemplate webServiceTemplate) {
 
         this.webServiceTemplate = webServiceTemplate;
         messageSender = (HttpComponentsMessageSender) webServiceTemplate.getMessageSenders()[0];
