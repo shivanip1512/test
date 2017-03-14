@@ -9,6 +9,7 @@ Class-Path: ./
  commons-codec-1.9.jar 
  commons-beanutils-1.9.1.jar 
  commons-discovery-0.5.jar 
+ commons-configuration2-2.1.1.jar 
  xercesImpl-2.11.0.jar 
  ecs-1.4.2.jar 
  jdom-2.0.2.jar 
