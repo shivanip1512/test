@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration )
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)" );
+        BOOST_CHECK_EQUAL( rcv.description, "Temperature Alarm Request Status: Success (0)" );
 
         BOOST_CHECK_EQUAL( true, command.isSupported() );
     }
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration )
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
         BOOST_CHECK_EQUAL( rcv.description,
-                           "Status: Success (0)"
+                           "Temperature Alarm Request Status: Success (0)"
                            "\nState: Alarm Enabled (1)"
                            "\nHigh Temperature Threshold: 45 degrees (0x002d)"
                            "\nLow Temperature Threshold: 35 degrees (0x0023)"
@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration )
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "Status: Failure (1)" );
+        BOOST_CHECK_EQUAL( rcv.description, "Temperature Alarm Request Status: Failure (1)" );
 
         BOOST_CHECK_EQUAL( true, command.isSupported() );
     }
@@ -113,7 +113,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__SetConfiguration )
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "Status: Unsupported (2)" );
+        BOOST_CHECK_EQUAL( rcv.description, "Temperature Alarm Request Status: Unsupported (2)" );
 
         BOOST_CHECK_EQUAL( false, command.isSupported() );
     }
@@ -300,7 +300,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "Status: Failure (1)" );
+        BOOST_CHECK_EQUAL( rcv.description, "Temperature Alarm Request Status: Failure (1)" );
 
         BOOST_CHECK_EQUAL( true, command.isSupported() );
 
@@ -317,7 +317,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
+        BOOST_CHECK_EQUAL( rcv.description, "Temperature Alarm Request Status: Success (0)"
                                             "\nState: Alarm Enabled (1)"
                                             "\nHigh Temperature Threshold: 50 degrees (0x0032)"
                                             "\nLow Temperature Threshold: 40 degrees (0x0028)"
@@ -342,7 +342,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
+        BOOST_CHECK_EQUAL( rcv.description, "Temperature Alarm Request Status: Success (0)"
                                             "\nState: Alarm Enabled (1)"
                                             "\nHigh Temperature Threshold: -16 degrees (0xfff0)"
                                             "\nLow Temperature Threshold: -26 degrees (0xffe6)"
@@ -367,7 +367,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "Status: Success (0)"
+        BOOST_CHECK_EQUAL( rcv.description, "Temperature Alarm Request Status: Success (0)"
                                             "\nState: Alarm Enabled (1)"
                                             "\nHigh Temperature Threshold: 1 degree (0x0001)"
                                             "\nLow Temperature Threshold: -9 degrees (0xfff7)"
@@ -392,7 +392,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "Status: Unsupported (2)" );
+        BOOST_CHECK_EQUAL( rcv.description, "Temperature Alarm Request Status: Unsupported (2)" );
 
         BOOST_CHECK_EQUAL( false, command.isSupported() );
     }
@@ -403,7 +403,7 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_TemperatureAlarm__GetConfiguration )
 
         RfnCommandResult rcv = command.decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( rcv.description, "Status: Unsupported (2)" );
+        BOOST_CHECK_EQUAL( rcv.description, "Temperature Alarm Request Status: Unsupported (2)" );
 
         BOOST_CHECK_EQUAL( false, command.isSupported() );
     }

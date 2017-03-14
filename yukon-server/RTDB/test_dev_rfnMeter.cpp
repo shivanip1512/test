@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_no_tlv )
             const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
 
             const std::string exp =
-                    "Status: Success (0)";
+                    "Temperature Alarm Request Status: Success (0)";
 
             BOOST_CHECK_EQUAL(rcv.description, exp);
         }
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_success_returnMismatch 
             const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
 
             const std::string exp =
-                    "Status: Success (0)"
+                    "Temperature Alarm Request Status: Success (0)"
                     "\nState: Alarm Enabled (1)"
                     "\nHigh Temperature Threshold: 45 degrees (0x002d)"
                     "\nLow Temperature Threshold: 35 degrees (0x0023)"
@@ -266,7 +266,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_failure )
             const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
 
             const std::string exp =
-                    "Status: Failure (1)";
+                    "Temperature Alarm Request Status: Failure (1)";
 
             BOOST_CHECK_EQUAL(rcv.description, exp);
         }
@@ -329,7 +329,7 @@ BOOST_AUTO_TEST_CASE( putconfig_install_temperaturealarm_unsupported )
             const Cti::Devices::Commands::RfnCommandResult rcv = command->decodeCommand( decode_time, response );
 
             const std::string exp =
-                    "Status: Unsupported (2)";
+                    "Temperature Alarm Request Status: Unsupported (2)";
 
             BOOST_CHECK_EQUAL(rcv.description, exp);
         }

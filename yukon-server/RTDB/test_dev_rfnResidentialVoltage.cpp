@@ -887,7 +887,7 @@ BOOST_AUTO_TEST_CASE( test_dev_rfnResidentialVoltage_putconfig_install_groupMess
 
         Cti::Devices::Commands::RfnCommandResult cmdResult = command->decodeCommand( execute_time, response );
 
-        BOOST_CHECK_EQUAL( cmdResult.description, "Status: Success (0)" );
+        BOOST_CHECK_EQUAL( cmdResult.description, "Temperature Alarm Request Status: Success (0)" );
 
         dut.extractCommandResult(*command);
 

@@ -94,7 +94,7 @@ RfnCommandResult RfnTemperatureAlarmCommand::decodeResponseHeader( const CtiTime
 
     _commandStatus = statusDescription->first;
 
-    result.description += "Status: " + statusDescription->second + " (" + CtiNumStr(response[2]) + ")";
+    result.description += "Temperature Alarm Request Status: " + statusDescription->second + " (" + CtiNumStr(response[2]) + ")";
 
     return result;
 }
