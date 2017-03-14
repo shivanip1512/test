@@ -236,7 +236,9 @@ public class CapBankController {
         model.addAttribute("opMethods", BankOpState.values());
         model.addAttribute("bankSizes", CapBankSize.values());
         
-        Set<PaoType> cbcTypes = PaoType.getCbcTypes().stream().filter(cbcType -> paoDefinitionDao.getPaoDefinition(cbcType).isCreatable()).collect(Collectors.toSet());
+        List<PaoType> cbcTypes =
+            PaoType.getCbcTypes().stream().filter(cbcType -> paoDefinitionDao.getPaoDefinition(cbcType).isCreatable()).collect(
+                Collectors.toList());
         
         model.addAttribute("cbcTypes", cbcTypes);
         model.addAttribute("availablePorts", dbCache.getAllPorts());
