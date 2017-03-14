@@ -1195,10 +1195,15 @@ yukon.ui = (function () {
                 inputs.each(function (idx, input) {
                     $(input).toggleClass('vh', !enable);
                 });
-            } else {
+            } else if (action === 'readonly') {
                 inputs.each(function (idx, input) {
                     $(input).prop('readonly', !enable);
                     $(input).find('*').attr('readonly', !enable);
+                });
+            } else {
+                inputs.each(function (idx, input) {
+                    $(input).prop('disabled', !enable);
+                    $(input).find('*').attr('disabled', !enable);
                 });
             }
                 
