@@ -40,6 +40,7 @@
 
                 { "metricId" : 49, "attributeMagnitude" : 3, "attribute" : "DELIVERED_KVA" },
                 { "metricId" : 50, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVA" },
+                { "metricId" : 51, "attributeMagnitude" : 3, "attribute" : "PEAK_KVA" },
 
                 { "metricId" : 80, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR" },
                 { "metricId" : 81, "attributeMagnitude" : 3, "attribute" : "DELIVERED_POWER_FACTOR" },
