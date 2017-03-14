@@ -21,8 +21,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.dao.PaoLocationDao;
-import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
@@ -61,7 +59,6 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     @Autowired private GatewaySettingsValidator validator;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private GatewayEventLogService gatewayEventLogService;
-    @Autowired private PaoLocationDao paoLocationDao;
     
     @Autowired
     public GatewayInformationWidget(@Qualifier("widgetInput.deviceId")
@@ -141,11 +138,6 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(deviceId);
             
             gateway.setName(settings.getName());
-            if (settings.getLatitude() != null) {
-                gateway.setLocation(new PaoLocation(gateway.getPaoIdentifier(), settings.getLatitude(),
-                    settings.getLongitude()));
-            }
-            
             
             if(settings.isUseDefault()) {
                 updateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
@@ -169,10 +161,6 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
             gateway.setData(data);
             
             GatewayUpdateResult updateResult = rfnGatewayService.updateGateway(gateway, userContext.getYukonUser());
-            
-            if (settings.getLatitude() == null && settings.getLongitude() == null) {
-                paoLocationDao.delete(gateway.getPaoIdentifier().getPaoId());
-            }
             
             if (updateResult == GatewayUpdateResult.SUCCESSFUL) {
                 log.info("Gateway updated: " + gateway);

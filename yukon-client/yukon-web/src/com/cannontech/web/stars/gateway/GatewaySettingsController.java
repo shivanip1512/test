@@ -21,11 +21,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.creation.DeviceCreationException;
-import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.dao.PaoLocationDao;
-import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.model.GatewaySettings;
@@ -52,8 +49,6 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.gateway.model.GatewaySettingsValidator;
-import com.cannontech.web.tools.mapping.Location;
-import com.cannontech.web.tools.mapping.LocationValidator;
 
 @Controller
 @CheckRole(YukonRole.INVENTORY)
@@ -63,15 +58,12 @@ public class GatewaySettingsController {
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
     
     @Autowired private CronExpressionTagService cronService;
-    @Autowired private EndpointEventLogService endpointEventLogService;
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private GatewaySettingsValidator validator;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired private ServerDatabaseCache cache;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
-    @Autowired private LocationValidator locationValidator;
 
     @RequestMapping("/gateways/create")
     public String createDialog(ModelMap model) {
@@ -218,51 +210,6 @@ public class GatewaySettingsController {
             
             return "gateways/schedule.jsp";
         }
-    }
-    
-    /** Set location popup. */
-    @RequestMapping("/gateways/{id}/location/options")
-    public String location(ModelMap model, @PathVariable int id) {
-        
-        Location location = new Location();
-        location.setPaoId(id);
-        
-        PaoLocation paoLocation = paoLocationDao.getLocation(id);
-        if (paoLocation != null) {
-            location.setLatitude(paoLocation.getLatitude());
-            location.setLongitude(paoLocation.getLongitude());
-        }
-        
-        model.addAttribute("location", location);
-        
-        return "gateways/location.jsp";
-    }
-    
-    /** Set location. */ 
-    @RequestMapping("/gateways/{id}/location")
-    public String location(HttpServletResponse resp, ModelMap model, YukonUserContext userContext, FlashScope flash,
-            @PathVariable int id, @ModelAttribute Location location, BindingResult result) {
-        locationValidator.validate(location, result);
-        if (location.getLatitude() == null && location.getLongitude() == null) {
-            return "redirect:/stars/gateways/"+id;
-        }
-        if (result.hasErrors()) {
-            resp.setStatus(HttpStatus.BAD_REQUEST.value());
-            return "gateways/location.jsp";
-        }
-        LiteYukonPAObject pao = cache.getAllPaosMap().get(id);
-        PaoLocation paoLocation = new PaoLocation(pao.getPaoIdentifier(), location.getLatitude(), location.getLongitude());
-        paoLocationDao.save(new PaoLocation(pao.getPaoIdentifier(), location.getLatitude(), location.getLongitude()));
-        endpointEventLogService.locationUpdated(pao.getPaoIdentifier(), paoLocation, userContext.getYukonUser());
-        
-        // Success
-        model.clear();
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "detail.location.update.successful"));
-        Map<String, Object> json = new HashMap<>();
-        json.put("success", true);
-
-        return JsonUtils.writeResponse(resp, json);
-
     }
     
     /** Collect data popup. */

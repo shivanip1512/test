@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
+import com.cannontech.common.pao.dao.PaoLocationDao;
+import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.gateway.DataSequence;
 import com.cannontech.common.rfn.model.NmCommunicationException;
 import com.cannontech.common.rfn.model.RfnGateway;
@@ -30,6 +32,7 @@ import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.tools.mapping.Location;
 import com.cannontech.web.tools.mapping.service.PaoLocationService;
 import com.google.common.collect.Lists;
 
@@ -48,6 +51,7 @@ public class GatewayDetailController {
     @Autowired private GatewayControllerHelper helper;
     @Autowired private PaoLocationService paoLocationService;
     @Autowired private GatewayEventLogService gatewayEventLogService;
+    @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private PointDao pointDao;
     
     @RequestMapping("/gateways/{id}")
@@ -55,6 +59,14 @@ public class GatewayDetailController {
         
         RfnGateway gateway = rfnGatewayService.getGatewayByPaoId(id);
         model.addAttribute("gateway", gateway);
+        Location location = new Location();
+        location.setPaoId(id);
+        PaoLocation paoLocation = paoLocationDao.getLocation(id);
+        if (paoLocation != null) {
+            location.setLatitude(paoLocation.getLatitude());
+            location.setLongitude(paoLocation.getLongitude());
+        }
+        model.addAttribute("coordinates", location);
         helper.addText(model, userContext);
         
         if (gateway.getLocation() != null) {

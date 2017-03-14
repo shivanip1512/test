@@ -83,32 +83,6 @@
         
         <tr><td colspan="2">&nbsp;</td></tr>
         
-        <tr>
-            <td class="name">
-                <i:inline key=".detail.location.title"/>&nbsp;
-                <em class="subtle"><i:inline key=".optional"/></em>
-            </td>
-            <td class="value">
-                <cti:msg2 var="phLatitude" key=".latitude"/>
-                <cti:msg2 var="phLongitude" key=".longitude"/>
-                <spring:bind path="latitude">
-                    <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                    <form:input path="latitude" cssClass="M0 left ${clazz}" maxlength="10" size="10"
-                        placeholder="${phLatitude}" tabindex="9" title="${phLatitude}"/>
-                </spring:bind>
-                <spring:bind path="longitude">
-                    <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                    <form:input path="longitude" cssClass="M0 right ${clazz}" maxlength="11" size="11"
-                        placeholder="${phLongitude}" tabindex="10" title="${phLongitude}"/>
-                </spring:bind>
-                <spring:bind path="latitude">
-                    <c:if test="${status.error}"><form:errors path="latitude" cssClass="error" element="div"/></c:if>
-                </spring:bind>
-                <spring:bind path="longitude">
-                    <c:if test="${status.error}"><form:errors path="longitude" cssClass="error" element="div"/></c:if>
-                </spring:bind>
-            </td>
-        </tr>
         
     </tags:nameValueContainer2>
 

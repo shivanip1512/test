@@ -12,6 +12,7 @@
 <style>
 #gateway-location-container { height: 300px; }
 </style>
+<input type="hidden" class="js-device-id" value="${gateway.paoIdentifier.paoId}"/>
 
 <c:if test="${not empty geojson}"><cti:toJson id="gateway-geojson" object="${geojson}"/></c:if>
 
@@ -46,11 +47,6 @@
     
 <div id="gateway-collect-data-popup" class="dn"></div>
 
-<cti:url var="locationUrl" value="/stars/gateways/${gateway.paoIdentifier.paoId}/location/options"/>
-<div id="gateway-location-popup" class="dn" data-dialog 
-        data-event="yukon:assets:gateway:location:save"
-        data-title="<cti:msg2 key=".location.set"/>"
-        data-url="${locationUrl}"></div>
 
 <cti:checkRolesAndProperties value="INFRASTRUCTURE_ADMIN">
     <cti:url var="scheduleUrl" value="/stars/gateways/${gateway.paoIdentifier.paoId}/schedule/options"/>
@@ -71,10 +67,22 @@
     
     <div class="column two nogutter">
         <tags:sectionContainer2 nameKey="location" styleClass="stacked">
-            <div class="empty-list form-control ${not empty gateway.location ? 'dn' : ''}">
-                <i:inline key=".location.none"/>
-                <cti:button icon="icon-map-sat" nameKey="location.set" classes="fr M0" 
-                    data-popup="#gateway-location-popup"/>
+            <cti:msg2 var="latitudeLabel" key=".mapNetwork.location.latitude"/>
+            <cti:msg2 var="longitudeLabel" key=".mapNetwork.location.longitude"/>
+            <div class="dib js-view-display" style="padding-bottom:10px;">
+                <span style="padding-right:15px;">${latitudeLabel}:  <c:choose><c:when test="${coordinates.latitude != null}">${coordinates.latitude}</c:when><c:otherwise><cti:msg2 key=".mapNetwork.location.notSet"/></c:otherwise></c:choose> </span>
+                <span>${longitudeLabel}:  <c:choose><c:when test="${coordinates.longitude != null}">${coordinates.longitude}</c:when><c:otherwise><cti:msg2 key=".mapNetwork.location.notSet"/></c:otherwise></c:choose> </span>
+                <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="LIMITED">
+                    <cti:button renderMode="buttonImage" icon="icon-pencil" classes="fr js-edit-coordinates"/><br/>
+                </cti:checkRolesAndProperties>
+            </div>
+            <div class="dib js-edit-display dn" style="padding-bottom:10px;">
+                <span>${latitudeLabel}:  <tags:input path="coordinates.latitude" maxlength="10" size="10" inputClass="js-latitude-input" placeholder="${latitudeLabel}"/></span>
+                ${longitudeLabel}:  <tags:input path="coordinates.longitude" maxlength="11" size="11" inputClass="js-longitude-input" placeholder="${longitudeLabel}"/>
+                <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="LIMITED">
+                    <cti:button nameKey="save" classes="primary action fr js-save-coordinates dn js-edit-display"/><br/>
+                </cti:checkRolesAndProperties>
+                <div class="js-location-error error"></div>
             </div>
             <div id="gateway-location-container" class="${empty gateway.location ? 'dn' : ''}">
                 <div id="gateway-location" class="map" data-has-location="${not empty gateway.location}"></div>
@@ -227,5 +235,7 @@
 <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.shared.js"/>
 <cti:includeScript link="/resources/js/pages/yukon.assets.gateway.details.js"/>
 <cti:includeScript link="/resources/js/widgets/yukon.widget.gateway.info.js"/>
+<cti:includeScript link="/resources/js/pages/yukon.map.network.js"/>
+
 
 </cti:standardPage>
