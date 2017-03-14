@@ -53,6 +53,11 @@ BOOST_AUTO_TEST_CASE(test_GetMetricId_success)
 
         BOOST_CHECK_EQUAL(metricId, 13);
     }
+    {
+        const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::PeakDemand, TYPE_RFN530S4X);
+
+        BOOST_CHECK_EQUAL(metricId, 13);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(test_GetForAttribute_failure)
@@ -94,6 +99,13 @@ BOOST_AUTO_TEST_CASE(test_getAttribute_override)
 
     {
         const auto attrib = Cti::MetricIdLookup::GetAttribute(13, TYPE_RFN530S4EAX);
+
+        BOOST_CHECK(attrib == Attribute::PeakDemand);
+        BOOST_CHECK_EQUAL(attrib.getName(), "PEAK_DEMAND");
+    }
+
+    {
+        const auto attrib = Cti::MetricIdLookup::GetAttribute(13, TYPE_RFN530S4X);
 
         BOOST_CHECK(attrib == Attribute::PeakDemand);
         BOOST_CHECK_EQUAL(attrib.getName(), "PEAK_DEMAND");
