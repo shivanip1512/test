@@ -78,6 +78,7 @@ public class LoginFilter implements Filter {
                          "/jws/*.jar",
                          "/jws/bc.jnlp",
                          "/jws/client_libs.jnlp",
+                         "/jws/sqlserver_jdbc.jnlp",
                          "/common/images/*",
                          "/resources/favicon.ico",
                 		 "/dev/mockecobee/**");
