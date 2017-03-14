@@ -19,7 +19,7 @@
             <div class="button-group">
                 <c:forEach var="enumType" items="${pointCreateValues}">
                     <tags:radio path="pointCreation" value="${enumType}" key="${enumType}" 
-                        classes="yes" />
+                        classes="yes M0" />
                 </c:forEach>
             </div>
         </tags:nameValue2>
@@ -50,9 +50,6 @@
 <style>
 #contentPopup {
     overflow: visible !important;
-}
-span.button.yes {
-    margin-left: 0px !important;
 }
 </style>
 </cti:msgScope>
