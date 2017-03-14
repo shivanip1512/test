@@ -172,10 +172,10 @@ struct metric_response
     bool enabled;
     struct channel
     {
-        unsigned metricId : 16;
-        unsigned interval :  5;
-        unsigned error    :  4;
-        unsigned enabled  :  1;
+        unsigned metricId;
+        unsigned interval;
+        unsigned error;
+        unsigned enabled;
     };
 
     std::vector<channel> metrics;
