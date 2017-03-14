@@ -43,12 +43,19 @@ yukon.bulk.dataStreaming = (function () {
         configTypeRow = toggle.closest('tr'),
         newConfig = configTypeRow.find('.switch-btn-checkbox').prop('checked');
         if (newConfig) {
-            $('.js-attribute').each(function () {
-                var attOn = $(this).find('.switch-btn-checkbox').prop('checked');
-                if (attOn) {
-                    validConfig = true;
-                }
-            });
+            var numAttributesOn = $('.js-attribute .switch-btn-checkbox:checked').length,
+                offAttributes = $('.js-attribute .switch-btn-checkbox:not(":checked")');
+                maxNumAttributes = 8;
+            if (numAttributesOn >= maxNumAttributes) {
+                $('.js-too-many-attributes').show();
+                offAttributes.prop("disabled", true);
+            } else {
+                $('.js-too-many-attributes').hide();
+                offAttributes.prop("disabled", false);
+            }
+            if (numAttributesOn > 0 && numAttributesOn <= maxNumAttributes) {
+                validConfig = true;
+            }
         } else {
             var selectedConfig = $('#selectedConfiguration').val();
             if (selectedConfig > 0) {

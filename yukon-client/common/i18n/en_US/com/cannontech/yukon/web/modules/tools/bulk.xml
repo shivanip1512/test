@@ -382,6 +382,7 @@
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.dataStreamingNotSupported">None of the devices you have selected support Data Streaming.</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.deviceMatrix">All devices supported attributes</entry>
     <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.attributeMessage">Channels have to be enabled in the meter in order to stream data for associated attributes.</entry>
+    <entry key="yukon.web.modules.tools.bulk.dataStreaming.configure.tooManyAttributesMessage">Maximum of 8 attributes allowed for data streaming.</entry>
     <entry key="yukon.web.modules.tools.deviceType">Device Type</entry>
     
     <!-- REMOVE DATA STREAMING -->

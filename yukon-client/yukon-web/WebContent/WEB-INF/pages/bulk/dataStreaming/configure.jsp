@@ -48,6 +48,9 @@
                                 <div class="empty-list stacked">
                                     <i:inline key=".attributeMessage"/>
                                 </div>
+                                <div class="user-message info js-too-many-attributes">
+                                    <i:inline key=".tooManyAttributesMessage"/>
+                                </div>
                                 <c:forEach var="attribute" varStatus="status" items="${configuration.attributes}">
                                     <c:set var="idx" value="${status.index}" />
                                     <form:hidden path="attributes[${idx}].attribute" />
