@@ -36,7 +36,7 @@ public class YsmJmxQueryService {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ConfigurationSource config;
     
-    public Object get(ObjectName name, String attribute , JMXServiceURL serviceUrl, JMXConnector jmxConnector) throws Exception {
+    public Object get(ObjectName name, String attribute , JMXServiceURL serviceUrl, JMXConnector jmxConnector, BeanTypeForJMXConnector beanType) throws Exception {
         
         if (config.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE, false)) {
             try {
@@ -51,14 +51,19 @@ public class YsmJmxQueryService {
                 return null;
             } catch (Exception e) {
                 try {
-                    // Try to reconnect, maybe YSM was restarted.
-                    jmxConnector = JMXConnectorFactory.connect(serviceUrl, null);
-                    
-                    MBeanServerConnection mbeanConn = jmxConnector.getMBeanServerConnection();
+                    // Try to reconnect, maybe YSM or MessageBroker was restarted.
+                    MBeanServerConnection mbeanConn = null;
+                    if (beanType == BeanTypeForJMXConnector.QUEUE) {
+                        messageBrokerJmxConnector = JMXConnectorFactory.connect(serviceUrl, null);
+                        mbeanConn = messageBrokerJmxConnector.getMBeanServerConnection();
+                    } else if (beanType == BeanTypeForJMXConnector.SERVICE) {
+                        serviceManagerJmxConnector = JMXConnectorFactory.connect(serviceManagerServiceUrl, null);
+                        mbeanConn = serviceManagerJmxConnector.getMBeanServerConnection();
+                    }
                     Object object = mbeanConn.getAttribute(name, attribute);
-                    
                     return object;
                 } catch (Exception e2) {
+                    jmxConnector.close();
                     log.error("Could not retrieve value.", e2);
                     return null;
                 }
@@ -72,9 +77,9 @@ public class YsmJmxQueryService {
         
         Object returnObject = null;
         if (beanType == BeanTypeForJMXConnector.QUEUE) {
-            returnObject = get(name, attribute, messageBrokerServiceUrl, messageBrokerJmxConnector);
+            returnObject = get(name, attribute, messageBrokerServiceUrl, messageBrokerJmxConnector, beanType);
         } else if (beanType == BeanTypeForJMXConnector.SERVICE) {
-            returnObject = get(name, attribute, serviceManagerServiceUrl, serviceManagerJmxConnector);
+            returnObject = get(name, attribute, serviceManagerServiceUrl, serviceManagerJmxConnector, beanType);
         }
         if (returnObject == null) {
             return defaultValue;
