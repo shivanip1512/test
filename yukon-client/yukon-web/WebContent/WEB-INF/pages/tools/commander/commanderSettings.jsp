@@ -27,18 +27,8 @@
         <tags:nameValueContainer2>
             <tags:nameValue2
                 nameKey=".priority">
-                <input type="number" id="commandPriority" name="commandPriority"
-                        value="${priority}" />
-                <cti:msg2 key=".priority" var="cmdPriority"/>
-                <cti:list var="arguments">
-                        <cti:item value="${cmdPriority}" />
-                        <cti:item value="${minCmdPriority}"/>
-                        <cti:item value="${maxCmdPriority}"/>
-                </cti:list>
-                             
-                <div class="warning dn">
-                <i:inline key="yukon.web.input.error.outOfRangeInt" arguments="${arguments}"/>
-                   </div>
+                <input type="number" id="commandPriority" name="commandPriority" 
+                    min="${minCmdPriority}" max="${maxCmdPriority}" value="${priority}" />
             </tags:nameValue2> 
             <tags:nameValue2 nameKey=".queue_commands">
                 <label>

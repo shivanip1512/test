@@ -22,7 +22,7 @@ public enum UserPreferenceName implements DisplayableEnum {
     // Editable preferences
     ALERT_FLASH(InputTypeFactory.enumType(OnOff.class), OnOff.ON.name(), PreferenceType.EDITABLE),
     ALERT_SOUND(InputTypeFactory.enumType(OnOff.class), OnOff.OFF.name(), PreferenceType.EDITABLE),
-    COMMANDER_PRIORITY(InputTypeFactory.integerType(), String.valueOf(CommandPriority.minPriority), 
+    COMMANDER_PRIORITY(InputTypeFactory.integerType(), String.valueOf(CommandPriority.maxPriority), 
                                                         PreferenceType.EDITABLE), 
     COMMANDER_QUEUE_COMMAND(InputTypeFactory.booleanType(), Boolean.FALSE.toString(), PreferenceType.EDITABLE),
 

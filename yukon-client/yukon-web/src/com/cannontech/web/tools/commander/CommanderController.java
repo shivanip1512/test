@@ -296,7 +296,7 @@ public class CommanderController {
         Integer priority =
             Integer.valueOf(userPreferenceService.getPreference(user, UserPreferenceName.COMMANDER_PRIORITY));
         if (!CommandPriority.isCommandPriorityValid(priority)) {
-            priority = CommandPriority.minPriority;
+            priority = CommandPriority.maxPriority;
         }
         model.addAttribute("priority", priority);
         Boolean queueCmd =

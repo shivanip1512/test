@@ -171,16 +171,8 @@ $(document).ready(function(){
                                     </c:when>
                                     <c:when test="${prefName == 'COMMANDER_PRIORITY'}">
                                         <cti:button id="resetCommandPriorityBtn" data-value="${defaultVal}" icon="icon-arrow-swap" renderMode="buttonImage" />
-                                        &nbsp;<input type="number" id="commandPriority" name="commandPriority" value="${priority}" style='width:75px;'/>
-                                        <cti:list var="arguments">
-                                            <cti:item value="${cmdPriority}" />
-                                            <cti:item value="${minCmdPriority}" />
-                                            <cti:item value="${maxCmdPriority}" />
-                                        </cti:list>
-                                        <br>
-                                        <span class="warning dn">
-                                            <i:inline key="yukon.web.input.error.outOfRangeInt" arguments="${arguments}" />
-                                        </span>
+                                        &nbsp;<input type="number" id="commandPriority" name="commandPriority" style='width:75px;'
+                                            min="${minCmdPriority}" max="${maxCmdPriority}" value="${priority}" />
                                     </c:when>
                                     <c:when test="${prefName == 'COMMANDER_QUEUE_COMMAND'}">
                                         <cti:button classes="js-pref-default" data-value="${defaultVal}" icon="icon-arrow-swap" renderMode="buttonImage" />

@@ -110,28 +110,24 @@ yukon.userProfile = (function () {
     },
     
     _validateAndSetCommanderPriority = function (ev) {
+        
         var value = $('#commandPriority').val(),
             url = yukon.url('/user/updatePreference.json'),
             btn = $(this),
             row = btn.closest('tr'),
-            minPriority = 1,
-            maxPriority = 14,
-            params = {
-                userId: $('#user-id').val(),
-                prefName: row.data('type'),
-                prefValue: $('#commandPriority').val()
-            };
-        $('.warning').addClass('dn');
-        if (value < minPriority){
-            $('.warning').removeClass('dn');
-            $('#commandPriority').val(minPriority);
-            return;
-        }
-        if (value > maxPriority) {
+            minPriority = $('#commandPriority').attr('min'),
+            maxPriority = $('#commandPriority').attr('max')
+            ;
+        if (value < minPriority || value > maxPriority) {
             $('.warning').removeClass('dn');
             $('#commandPriority').val(maxPriority);
-            return;
         }
+        
+        var params = {
+            userId: $('#user-id').val(),
+            prefName: row.data('type'),
+            prefValue: $('#commandPriority').val()
+        };
         $.ajax({ type: 'post', url: url, data: params });
     },
 
