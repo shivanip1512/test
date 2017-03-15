@@ -222,7 +222,6 @@
         
         <!-- Initial Server Config Component -->
         <copy todir="${install.bag}/Initial Server Config/Config" file="${basedir}/yukon-install/resources/master.cfg" preservelastmodified="true"/>
-    	<copy todir="${install.bag}/Initial Server Config/Config" file="${basedir}/yukon-install/resources/configuration.properties" preservelastmodified="true"/>
 
         <!-- Config Properties Component -->
         <copy todir="${install.bag}/Config Properties" preservelastmodified="true">
@@ -233,7 +232,7 @@
         <!-- Common Directories Component -->
         <copy todir="${install.bag}/Common Directories/Config/Example" preservelastmodified="true">
             <fileset file="${basedir}/yukon-install/resources/master.cfg"/>
-        	<fileset file="${basedir}/yukon-install/resources/configuration.properties"/>
+            <fileset file="${basedir}/yukon-install/resources/configuration.properties"/>
             <fileset dir="${client.bag}/exampleXml"/>
         </copy>
         
