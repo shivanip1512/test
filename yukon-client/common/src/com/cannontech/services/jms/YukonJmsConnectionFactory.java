@@ -78,6 +78,12 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
             default: 
             case NORMAL: {
                 final String applicationName = BootstrapUtils.getApplicationName();
+                
+                if (applicationName.equals("MessageBroker")) {
+                    long waitForStartMillis = DEFAULT_WAIT_FOR_START_MILLIS;
+                    return new ActiveMQConnectionFactory("vm://YukonMessageBroker?create=false&waitForStart=" + waitForStartMillis);
+                }
+                
                 if (!CtiUtilities.isRunningAsClient()) {
                     String clientBrokerConnection = 
                             configurationSource.getString(JMS_CLIENT_BROKER_CONNECTION, serverListenConnection);
