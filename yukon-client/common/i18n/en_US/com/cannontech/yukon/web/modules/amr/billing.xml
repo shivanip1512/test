@@ -48,7 +48,8 @@
     <entry key="yukon.web.modules.amr.billing.jobs.delete.hoverText">Delete this schedule</entry>
     <entry key="yukon.web.modules.amr.billing.jobs.deletedSuccess">Successfully deleted scheduled billing export "{0}".</entry>
     <entry key="yukon.web.modules.amr.billing.jobs.noJobs">No scheduled billing file exports exist.</entry>
-    
+    <entry key="yukon.web.modules.amr.billing.jobs.enableJobSuccess">Scheduled Billing Export "{0}" successfully enabled.</entry>
+    <entry key="yukon.web.modules.amr.billing.jobs.disableJobSuccess">Scheduled Billing Export "{0}" successfully disabled.</entry>
 <!-- overview.jsp (dynamicBilling) -->
     <entry key="yukon.web.modules.amr.billing.DETAIL.title">Field Setup</entry>
     <entry key="yukon.web.modules.amr.billing.DETAIL.pageName">Billing Format Editor</entry>

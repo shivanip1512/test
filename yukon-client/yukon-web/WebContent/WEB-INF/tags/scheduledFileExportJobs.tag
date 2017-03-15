@@ -16,6 +16,7 @@
 <%@ attribute name="id" description="html id attribute on the table" %>
 <%@ attribute name="jobs" required="true" type="java.util.List" %>
 <%@ attribute name="jobType" required="true" type="com.cannontech.common.fileExportHistory.FileExportType" %>
+<%@ attribute name="fromURL" description="from URL to enable/disable job" %>
 
 <cti:msgScope paths="yukon.web.modules.tools.scheduledFileExport.jobs">
     <c:choose>
@@ -57,7 +58,7 @@
                                                         test="${job.jobState eq 'DISABLED' or !job.jobState.active}">
                                                         <cti:url
                                                             var="enableUrl"
-                                                            value="/amr/waterLeakReport/jobs/${job.id}/enable" />
+                                                            value="${fromURL}/jobs/${job.id}/enable" />
                                                         <cm:dropdownOption
                                                             id="enableScheduleItem_${job.id}"
                                                             key="yukon.web.components.button.enable.label"
@@ -69,7 +70,7 @@
 
                                                         <cti:url
                                                             var="disableUrl"
-                                                            value="/amr/waterLeakReport/jobs/${job.id}/disable" />
+                                                            value="${fromURL}/jobs/${job.id}/disable" />
                                                         <cm:dropdownOption
                                                             id="disableScheduleItem_${job.id}"
                                                             key="yukon.web.components.button.disable.label"

@@ -110,7 +110,7 @@
     </tags:sectionContainer2>
     
     <tags:sectionContainer2 nameKey="scheduledReports" hideEnabled="true">
-        <tags:scheduledFileExportJobs jobs="${jobs}" jobType="${jobType}" id="scheduled-reports"/>
+        <tags:scheduledFileExportJobs jobs="${jobs}" jobType="${jobType}" id="scheduled-reports" fromURL="/amr/waterLeakReport/"/>
     </tags:sectionContainer2>
     
 </cti:standardPage>

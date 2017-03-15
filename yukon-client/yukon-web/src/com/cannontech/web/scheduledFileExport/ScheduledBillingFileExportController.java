@@ -1,6 +1,5 @@
 package com.cannontech.web.scheduledFileExport;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,8 +19,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -48,6 +47,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.util.cronExpressionTag.CronException;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledBillingFileExportTask;
 import com.cannontech.web.scheduledFileExport.tasks.ScheduledFileExportTask;
@@ -69,7 +69,7 @@ public class ScheduledBillingFileExportController {
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private ToolsEventLogService toolsEventLogService;
     @Autowired private YukonUserContextMessageSourceResolver resolver;
-
+    private final static String baseKey = "yukon.web.modules.amr.billing.jobs";
     private static final int MAX_GROUPS_DISPLAYED = 2;
     private ScheduledFileExportValidator scheduledFileExportValidator;
 
@@ -203,6 +203,27 @@ public class ScheduledBillingFileExportController {
         return "jobs.jsp";
     }
 
+    @RequestMapping("/jobs/{jobId}/enable")
+    public String enableJob(@PathVariable int jobId, ModelMap model, FlashScope flashScope, YukonUserContext userContext) {
+        YukonJob job = jobManager.getJob(jobId);
+        ScheduledBillingFileExportTask task = (ScheduledBillingFileExportTask) jobManager.instantiateTask(job);
+        String jobName = task.getName();
+        jobManager.enableJob(job);
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".enableJobSuccess", jobName));
+        return "redirect:/billing/home";
+    }
+
+    @RequestMapping("/jobs/{jobId}/disable")
+    public String disableJob(@PathVariable int jobId, ModelMap model, FlashScope flashScope,
+            YukonUserContext userContext) {
+        YukonJob job = jobManager.getJob(jobId);
+        ScheduledBillingFileExportTask task = (ScheduledBillingFileExportTask) jobManager.instantiateTask(job);
+        String jobName = task.getName();
+        jobManager.disableJob(job);
+        flashScope.setConfirm(new YukonMessageSourceResolvable(baseKey + ".disableJobSuccess", jobName));
+        return "redirect:/billing/home";
+    }
+    
     @RequestMapping(value = "delete.json")
     public @ResponseBody Map<String, Object> delete(int jobId, YukonUserContext userContext) {
         
