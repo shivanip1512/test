@@ -1091,7 +1091,7 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
     // execute exceptions
     {
         const std::vector< RfnChannelConfigurationCommand::MetricIds > test_metrics = {
-            {   1,    2,    3,    4,    5,   13 }, // invalid Metric
+            {   1,    2,    3,    4,    5,   14 }, // invalid Metric
             {   1,    2,    3,    4,    5,    6,    7,    8,    9,   10,   11,   12,   21,   22,   23,    24,
                25,   26,   27,   28,   29,   30,   31,   32,   33,   34,   35,   36,   37,   41,   42,    43,
                44,   45,   46,   47,   48,   49,   50,   51,   52,   61,   62,   63,   64,   65,   66,    67,
@@ -1101,7 +1101,7 @@ BOOST_AUTO_TEST_CASE( test_RfnSetChannelSelectionCommand_exceptions )
         }; // 81 metrics
 
         const std::vector< RfnCommand::CommandException > exp = list_of
-                ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid metric id (13)" ))
+                ( RfnCommand::CommandException( ClientErrors::BadParameter, "Invalid metric id (14)" ))
                 ( RfnCommand::CommandException( ClientErrors::BadParameter, "Number of metrics 81, expected <= 80" ));
 
         std::vector< RfnCommand::CommandException > rcv;
