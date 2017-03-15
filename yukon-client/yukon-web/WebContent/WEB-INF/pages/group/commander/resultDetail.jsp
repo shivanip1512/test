@@ -68,7 +68,7 @@
             <cti:link href="/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults" class="small">
                 <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
             </cti:link>
-            <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" />
+            <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" unsupportedCollection="${result.unsupportedCollection}"/>
         </div>
         
         <%-- CRE ACTION --%>
