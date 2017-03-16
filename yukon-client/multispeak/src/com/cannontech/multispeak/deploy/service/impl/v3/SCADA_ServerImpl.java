@@ -30,9 +30,8 @@ public class SCADA_ServerImpl implements SCADA_Server {
     private final Logger log = YukonLogManager.getLogger(SCADA_ServerImpl.class);
     private final static String[] methods = new String[] { "PingURL", "GetMethods", "GetAllSCADAAnalogs", };
 
-    private LiteYukonUser init() throws MultispeakWebServiceException {
+    private void init() throws MultispeakWebServiceException {
         multispeakFuncs.init();
-        return multispeakFuncs.authenticateMsgHeader();
     }
 
     @Override
@@ -48,7 +47,8 @@ public class SCADA_ServerImpl implements SCADA_Server {
 
     @Override
     public List<ScadaAnalog> getAllSCADAAnalogs(String lastReceived) throws MultispeakWebServiceException {
-        LiteYukonUser user = init();
+        init();
+        LiteYukonUser user = multispeakFuncs.authenticateMsgHeader();
         MultispeakVendor mspVendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetAllSCADAAnalogs", mspVendor.getCompanyName());
 

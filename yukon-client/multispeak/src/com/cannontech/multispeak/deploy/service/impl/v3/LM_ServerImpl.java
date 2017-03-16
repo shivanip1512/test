@@ -30,9 +30,8 @@ public class LM_ServerImpl implements LM_Server
     @Autowired private MultispeakLMService multispeakLMService;
     @Autowired private MspValidationService mspValidationService;
     
-    private LiteYukonUser init() throws MultispeakWebServiceException{
+    private void init() throws MultispeakWebServiceException{
         multispeakFuncs.init();
-        return multispeakFuncs.authenticateMsgHeader();
     }
     
     @Override
@@ -57,8 +56,8 @@ public class LM_ServerImpl implements LM_Server
     @Override
     public List<ErrorObject> SCADAAnalogChangedNotification(
             List<ScadaAnalog> scadaAnalogs) throws MultispeakWebServiceException {
-        LiteYukonUser liteYukonUser = init();
-        
+        init();
+        LiteYukonUser liteYukonUser = multispeakFuncs.authenticateMsgHeader();
         // multispeakEventLogService.methodInvoked("SCADAAnalogChangedNotification", vendor.getCompanyName()); - stop logging this, it's occurring every minute or more
         
         List<ErrorObject> errorObjects = Lists.newArrayList();
@@ -78,6 +77,7 @@ public class LM_ServerImpl implements LM_Server
     public List<SubstationLoadControlStatus> getAllSubstationLoadControlStatuses()
             throws MultispeakWebServiceException {
         init();
+        multispeakFuncs.authenticateMsgHeader();
         return multispeakLMService.getActiveLoadControlStatus();
     } 
  
@@ -85,7 +85,8 @@ public class LM_ServerImpl implements LM_Server
     public ErrorObject initiateLoadManagementEvent(LoadManagementEvent theLMEvent)
             throws MultispeakWebServiceException {
 
-        LiteYukonUser liteYukonUser = init();
+        init();
+        LiteYukonUser liteYukonUser = multispeakFuncs.authenticateMsgHeader();
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("InitiateLoadManagementEvent", vendor.getCompanyName());
@@ -106,7 +107,8 @@ public class LM_ServerImpl implements LM_Server
     @Override
     public List<ErrorObject> initiateLoadManagementEvents(List<LoadManagementEvent> theLMEvents)
             throws MultispeakWebServiceException {
-        LiteYukonUser liteYukonUser = init();
+        init();
+        LiteYukonUser liteYukonUser = multispeakFuncs.authenticateMsgHeader();
 
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("InitiateLoadManagementEvents", vendor.getCompanyName());
