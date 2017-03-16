@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/10/2017 12:27:35 PM                        */
+/* Created on:     3/14/2017 11:03:13 PM                        */
 /*==============================================================*/
 
 
@@ -8785,7 +8785,7 @@ create table UserPreference  (
    PreferenceId         NUMBER                          not null,
    UserId               NUMBER                          not null,
    Name                 VARCHAR2(255)                   not null,
-   Value                VARCHAR2(255)                   not null,
+   Value                VARCHAR2(1275)                  not null,
    constraint PK_UserPreference primary key (PreferenceId)
 );
 

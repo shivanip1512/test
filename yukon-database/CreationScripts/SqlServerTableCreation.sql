@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/10/2017 12:28:27 PM                        */
+/* Created on:     3/14/2017 11:04:15 PM                        */
 /*==============================================================*/
 
 
@@ -9327,7 +9327,7 @@ create table UserPreference (
    PreferenceId         numeric              not null,
    UserId               numeric              not null,
    Name                 varchar(255)         not null,
-   Value                varchar(255)         not null,
+   Value                varchar(1275)        not null,
    constraint PK_UserPreference primary key (PreferenceId)
 )
 go
