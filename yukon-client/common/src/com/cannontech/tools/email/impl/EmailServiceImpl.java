@@ -19,7 +19,8 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.config.ConfigurationLoader;
+import com.cannontech.common.config.SmtpHelper;
+import com.cannontech.common.config.SmtpHelper.SmtpPropertyType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
@@ -28,10 +29,9 @@ import com.cannontech.tools.email.EmailService;
 public class EmailServiceImpl implements EmailService {
     private static final Logger log = YukonLogManager.getLogger(EmailServiceImpl.class);
     private static final String SMTP_AUTH_PROPERTY_NAME = "mail.smtp.auth";
-    private static final String SMTP_CONFIGURATION_KEY_ALIAS = "smtp";
 
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private ConfigurationLoader configurationSource;
+    @Autowired private SmtpHelper configurationSource;
 
     @Override
     public void sendMessage(EmailMessage data) throws MessagingException {
@@ -84,8 +84,8 @@ public class EmailServiceImpl implements EmailService {
             String username = authentication.getUserName();
             String password = authentication.getPassword();
 
-            String host = getRequiredGlobalSettingsString(GlobalSettingType.SMTP_HOST);
-            Integer portNum = globalSettingDao.getNullableInteger(GlobalSettingType.SMTP_PORT);
+            String host = configurationSource.getCommonProperty(SmtpPropertyType.HOST);
+            Integer portNum =  Integer.getInteger(configurationSource.getCommonProperty(SmtpPropertyType.PORT));
             if (portNum != null) {
                 transport.connect(host, portNum, username, password);
             } else {
@@ -109,8 +109,7 @@ public class EmailServiceImpl implements EmailService {
      */
     private Session getSession() throws MessagingException {
         Properties properties = new Properties();
-        String configSection = configurationSource.getConfigSectionName(SMTP_CONFIGURATION_KEY_ALIAS);
-        Map<String, String> smtpSettings = configurationSource.getConfigSettings().get(configSection);
+        Map<String, String> smtpSettings = configurationSource.getSmtpConfigSettings();
         if (smtpSettings != null) {
             smtpSettings.forEach((key, value) -> properties.put(key, value));
         }
@@ -118,7 +117,6 @@ public class EmailServiceImpl implements EmailService {
         if (authenticator.getPasswordAuthentication() != null) {
             // Make sure we use authentication.
             properties.put(SMTP_AUTH_PROPERTY_NAME, "true");
-
             return Session.getInstance(properties, authenticator);
         }
 

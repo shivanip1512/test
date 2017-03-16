@@ -324,6 +324,7 @@
 
     <bean id="configurationSource" class="com.cannontech.common.config.MasterConfigHelper" factory-method="getConfiguration"/>
     <bean id="configurationPropertiesLoader" class="com.cannontech.common.config.ConfigurationLoader"/>
+    <bean id="smtpHelper" class="com.cannontech.common.config.SmtpHelper"/>
 	
     <bean class="com.cannontech.common.config.dao.impl.RfnPointMappingDaoImpl"/>
     <bean class="com.cannontech.common.config.dao.impl.DeviceDefinitionDaoImpl"/>
