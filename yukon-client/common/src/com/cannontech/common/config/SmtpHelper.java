@@ -53,12 +53,12 @@ public class SmtpHelper {
         }
 
         private SmtpPropertyType(String type, GlobalSettingType globalSettingType) {
-            this.propertyName = type;
+            propertyName = type;
             this.globalSettingType = globalSettingType;
         }
 
         public String generateKey(SmtpProtocolType smtp) {
-            return "mail." + smtp.protocolName + "." + this.propertyName;
+            return "mail." + smtp.protocolName + "." + propertyName;
         }
     }
 
@@ -67,7 +67,7 @@ public class SmtpHelper {
         private String protocolName;
 
         private SmtpProtocolType(String protocol) {
-            this.setProtocolName(protocol);
+            setProtocolName(protocol);
         }
 
         public void setProtocolName(String protocolName) {
@@ -77,6 +77,9 @@ public class SmtpHelper {
 
     @PostConstruct
     public void setup() {
+        // Get section name for SMTP settings in the file
+        configSection = getConfigSectionName(SMTP_CONFIGURATION_KEY_ALIAS);
+        
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING,
             new DatabaseChangeEventListener() {
                 @Override
@@ -87,20 +90,27 @@ public class SmtpHelper {
                     reloadSettings();
                 }
             });
-        // Get section name for SMTP settings in the file
-        configSection = getConfigSectionName(SMTP_CONFIGURATION_KEY_ALIAS);
-        smtpConfigSettings.putAll(configurationLoader.getConfigSettings().get(configSection));
+        
+        smtpConfigSettings.putAll(loadConfigs());
         // update the cache with latest settings
         reloadSettings();
     }
-
+    
+    private Map<String, String> loadConfigs() {
+        Map<String, String> configs = configurationLoader.getConfigSettings().get(configSection);
+        if (configs == null) {
+            configs = new HashMap<>();
+        }
+        return configs;
+    }
+    
     /**
      * Updates the smtp settings into the cache for email notifications
      * Specifically updates the common properties settings to the cache either from File or global settings
      */
     private void reloadSettings() {
         smtpConfigSettings.invalidateAll();
-        smtpConfigSettings.putAll(configurationLoader.getConfigSettings().get(configSection));
+        smtpConfigSettings.putAll(loadConfigs());
         loadCommonProperty(SmtpPropertyType.HOST);
         loadCommonProperty(SmtpPropertyType.PORT);
         loadCommonProperty(SmtpPropertyType.START_TLS_ENABLED);
