@@ -62,23 +62,10 @@
         <div class="column two nogutter">
         <cti:msg2 var="locationHelp" key=".location.helpText"/>
         <tags:sectionContainer2 nameKey="location" helpText="${locationHelp}">
-            <cti:msg2 var="latitudeLabel" key=".location.latitude"/>
-            <cti:msg2 var="longitudeLabel" key=".location.longitude"/>
-            <div class="dib js-view-display" style="padding-bottom:10px;">
-                <span style="padding-right:15px;">${latitudeLabel}:  <c:choose><c:when test="${coordinates.latitude != null}">${coordinates.latitude}</c:when><c:otherwise><cti:msg2 key=".location.notSet"/></c:otherwise></c:choose> </span>
-                <span>${longitudeLabel}:  <c:choose><c:when test="${coordinates.longitude != null}">${coordinates.longitude}</c:when><c:otherwise><cti:msg2 key=".location.notSet"/></c:otherwise></c:choose> </span>
-                <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="LIMITED">
-                    <cti:button renderMode="buttonImage" icon="icon-pencil" classes="fr js-edit-coordinates"/><br/>
-                </cti:checkRolesAndProperties>
-            </div>
-            <div class="dib js-edit-display dn" style="padding-bottom:10px;">
-                <span>${latitudeLabel}:  <tags:input path="coordinates.latitude" maxlength="10" size="10" inputClass="js-latitude-input" placeholder="${latitudeLabel}"/></span>
-                ${longitudeLabel}:  <tags:input path="coordinates.longitude" maxlength="11" size="11" inputClass="js-longitude-input" placeholder="${longitudeLabel}"/>
-                <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="LIMITED">
-                    <cti:button nameKey="save" classes="primary action fr js-save-coordinates dn js-edit-display"/><br/>
-                </cti:checkRolesAndProperties>
-                <div class="js-location-error error"></div>
-            </div>
+        <cti:msg2 var="latitudeLabel" key=".location.latitude"/>
+        <cti:msg2 var="longitudeLabel" key=".location.longitude"/>
+        <cti:msg2 var="notSetLabel" key=".location.notSet"/>
+        <%@ include file="locationInput.jspf"%>
         <div id="map-network-container" class="${empty geojson.features ? 'dn' : ''}">
                 <div id="device-location" class="map" data-has-location="${not empty geojson.features}"></div>
                 <div class="buffered">
