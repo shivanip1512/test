@@ -170,8 +170,9 @@ $(document).ready(function(){
                                         </div>
                                     </c:when>
                                     <c:when test="${prefName == 'COMMANDER_PRIORITY'}">
+                                        <cti:msg2 key="yukon.web.modules.tools.commander.commandPriority.title" var="priorityRange" arguments="${minCmdPriority}-${maxCmdPriority}"/>
                                         <cti:button id="resetCommandPriorityBtn" data-value="${defaultVal}" icon="icon-arrow-swap" renderMode="buttonImage" />
-                                        &nbsp;<input type="number" id="commandPriority" name="commandPriority" style='width:75px;'
+                                        &nbsp;<input type="number" id="commandPriority" name="commandPriority" style='width:75px;' title="${priorityRange}"
                                             min="${minCmdPriority}" max="${maxCmdPriority}" value="${priority}" />
                                     </c:when>
                                     <c:when test="${prefName == 'COMMANDER_QUEUE_COMMAND'}">

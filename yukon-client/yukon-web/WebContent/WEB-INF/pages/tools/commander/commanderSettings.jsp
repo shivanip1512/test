@@ -6,6 +6,7 @@
 
 <cti:includeScript link="/resources/js/pages/yukon.tools.commander.js"/>
 <cti:msgScope paths="modules.tools.commander,yukon.common">
+<cti:msg2 key=".commandPriority.title" var="priorityRange" arguments="${minCmdPriority}-${maxCmdPriority}"/>
 <script>
     $('#commandPriority').bind('keyup mouseup', function () {
           var value = $('#commandPriority').val();
@@ -27,7 +28,7 @@
         <tags:nameValueContainer2>
             <tags:nameValue2
                 nameKey=".priority">
-                <input type="number" id="commandPriority" name="commandPriority" 
+                <input type="number" id="commandPriority" name="commandPriority" title="${priorityRange}"
                     min="${minCmdPriority}" max="${maxCmdPriority}" value="${priority}" />
             </tags:nameValue2> 
             <tags:nameValue2 nameKey=".queue_commands">
