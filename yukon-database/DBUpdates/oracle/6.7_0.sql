@@ -424,6 +424,10 @@ AND PaobjectId IN (
 );
 /* End YUK-16205 */
 
+/* Start YUK-16336 */
+ALTER TABLE UserPreference MODIFY Value VARCHAR(1275);
+/* End YUK-16336 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
