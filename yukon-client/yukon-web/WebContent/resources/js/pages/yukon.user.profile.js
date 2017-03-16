@@ -111,7 +111,7 @@ yukon.userProfile = (function () {
     
     _validateAndSetCommanderPriority = function (ev) {
         
-        var value = $('#commandPriority').val(),
+        var value = parseInt($('#commandPriority').val(), 20),
             url = yukon.url('/user/updatePreference.json'),
             btn = $(this),
             row = btn.closest('tr'),
