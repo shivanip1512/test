@@ -19,6 +19,7 @@
 
 #include "std_helper.h"
 #include "GlobalSettings.h"
+#include "CParms.h"
 
 #include <boost/optional.hpp>
 #include <boost/range/algorithm/for_each.hpp>
@@ -27,6 +28,8 @@
 #include <boost/range/adaptor/map.hpp>
 
 using Cti::Logging::Vector::Hex::operator<<;
+
+static unsigned delay;
 
 namespace Cti {
 namespace Messaging {
@@ -57,6 +60,8 @@ ActiveMQConnectionManager::~ActiveMQConnectionManager()
 void ActiveMQConnectionManager::start()
 {
     static_cast<CtiThread *>(gActiveMQConnection.get())->start();
+
+    delay = gConfigParms.getValueAsULong("ACTIVEMQ_TEMP_QUEUE_CREATION_DELAY_SECONDS");
 }
 
 void ActiveMQConnectionManager::close()
@@ -246,19 +251,23 @@ void ActiveMQConnectionManager::updateCallbacks()
 
 void ActiveMQConnectionManager::sendOutgoingMessages()
 {
-    EnvelopeQueue messages;
+    std::vector<std::unique_ptr<Envelope>> messages;
 
     {
         CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
 
-        messages.swap(_outgoingMessages);
+        const auto end = _outgoingMessages.upper_bound(time(nullptr));
+
+        for( auto itr = _outgoingMessages.begin(); itr != end; ++itr )
+        {
+            messages.emplace_back(std::move(itr->second));
+        }
+
+        _outgoingMessages.erase(_outgoingMessages.begin(), end);
     }
 
-    while( ! messages.empty() )
+    for( const auto &e : messages )
     {
-        auto e = std::move(messages.front());
-        messages.pop_front();
-
         auto message = e->extractMessage(*_producerSession);
 
         if( debugActivityInfo() )
@@ -270,9 +279,7 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
         {
             auto tempConsumer = std::make_unique<TempQueueConsumerWithCallback>();
 
-            tempConsumer->managedConsumer =
-                    ActiveMQ::createTempQueueConsumer(
-                            *_consumerSession);
+            tempConsumer->managedConsumer = std::make_unique<ActiveMQ::TempQueueConsumer>(*_consumerSession, e->replyListener->tempQueue);
 
             message->setCMSReplyTo(tempConsumer->managedConsumer->getDestination());
 
@@ -463,7 +470,7 @@ void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
 {
     MessageCallback callbackWrapper = DeserializationHelper<Msg>(callback);
 
-    gActiveMQConnection->enqueueOutgoingMessage(queue.name, std::move(message), TemporaryListener{ callbackWrapper, timeout, timedOut });
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, std::move(message), TemporaryListener{ gActiveMQConnection->makeTempQueue(), callbackWrapper, timeout, timedOut });
 }
 
 
@@ -477,7 +484,7 @@ void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
 {
     MessageCallback callbackWrapper = DeserializationHelper<Msg>(callback);
 
-    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, TemporaryListener{ callbackWrapper, timeout, timedOut });
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, TemporaryListener{ gActiveMQConnection->makeTempQueue(), callbackWrapper, timeout, timedOut });
 }
 
 
@@ -488,7 +495,7 @@ void ActiveMQConnectionManager::enqueueMessageWithCallback(
         std::chrono::seconds timeout,
         TimeoutCallback timedOut)
 {
-    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, TemporaryListener{ callback, timeout, timedOut });
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, TemporaryListener{ gActiveMQConnection->makeTempQueue(), callback, timeout, timedOut });
 }
 
 
@@ -526,7 +533,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
     {
         CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
 
-        _outgoingMessages.emplace_back(std::move(e));
+        _outgoingMessages.emplace(time(nullptr) + delay, std::move(e));
     }
 
     if( ! isRunning() )
@@ -569,7 +576,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
     {
         CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
 
-        _outgoingMessages.emplace_back(std::move(e));
+        _outgoingMessages.emplace(time(nullptr) + delay, std::move(e));
     }
 
     if( ! isRunning() )
@@ -596,6 +603,12 @@ ActiveMQ::QueueProducer &ActiveMQConnectionManager::getQueueProducer(cms::Sessio
     auto result = _producers.emplace(queueName, std::move(queueProducer));
 
     return *(result.first->second);
+}
+
+
+cms::TemporaryQueue* ActiveMQConnectionManager::makeTempQueue()
+{
+    return _consumerSession->createTemporaryQueue();
 }
 
 

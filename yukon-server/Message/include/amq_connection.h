@@ -17,6 +17,7 @@ class Message;
 class MessageProducer;
 class MessageListener;
 class Destination;
+class TemporaryQueue;
 }
 
 namespace Cti {
@@ -131,6 +132,7 @@ protected:
 
     struct TemporaryListener
     {
+        cms::TemporaryQueue *tempQueue;
         MessageCallback callback;
         std::chrono::seconds timeout;
         TimeoutCallback timedOut;
@@ -176,7 +178,7 @@ private:
         virtual ~Envelope() = default;
     };
 
-    using EnvelopeQueue = std::deque<std::unique_ptr<Envelope>>;
+    using EnvelopeQueue = std::multimap<time_t, std::unique_ptr<Envelope>>;
     CtiCriticalSection _outgoingMessagesMux;
     EnvelopeQueue      _outgoingMessages;
 
@@ -240,6 +242,7 @@ private:
 
     void sendOutgoingMessages();
     ActiveMQ::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
+    cms::TemporaryQueue* makeTempQueue();
 
     void dispatchIncomingMessages();
     void dispatchTempQueueReplies();
