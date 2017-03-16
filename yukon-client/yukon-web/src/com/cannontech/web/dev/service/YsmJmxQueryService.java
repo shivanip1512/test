@@ -36,7 +36,7 @@ public class YsmJmxQueryService {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ConfigurationSource config;
     
-    public Object get(ObjectName name, String attribute , JMXServiceURL serviceUrl, JMXConnector jmxConnector, BeanTypeForJMXConnector beanType) throws Exception {
+    public Object get(ObjectName name, String attribute, JMXConnector jmxConnector, BeanTypeForJMXConnector beanType) throws Exception {
         
         if (config.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE, false)) {
             try {
@@ -54,7 +54,7 @@ public class YsmJmxQueryService {
                     // Try to reconnect, maybe YSM or MessageBroker was restarted.
                     MBeanServerConnection mbeanConn = null;
                     if (beanType == BeanTypeForJMXConnector.QUEUE) {
-                        messageBrokerJmxConnector = JMXConnectorFactory.connect(serviceUrl, null);
+                        messageBrokerJmxConnector = JMXConnectorFactory.connect(messageBrokerServiceUrl, null);
                         mbeanConn = messageBrokerJmxConnector.getMBeanServerConnection();
                     } else if (beanType == BeanTypeForJMXConnector.SERVICE) {
                         serviceManagerJmxConnector = JMXConnectorFactory.connect(serviceManagerServiceUrl, null);
@@ -77,9 +77,9 @@ public class YsmJmxQueryService {
         
         Object returnObject = null;
         if (beanType == BeanTypeForJMXConnector.QUEUE) {
-            returnObject = get(name, attribute, messageBrokerServiceUrl, messageBrokerJmxConnector, beanType);
+            returnObject = get(name, attribute, messageBrokerJmxConnector, beanType);
         } else if (beanType == BeanTypeForJMXConnector.SERVICE) {
-            returnObject = get(name, attribute, serviceManagerServiceUrl, serviceManagerJmxConnector, beanType);
+            returnObject = get(name, attribute, serviceManagerJmxConnector, beanType);
         }
         if (returnObject == null) {
             return defaultValue;
