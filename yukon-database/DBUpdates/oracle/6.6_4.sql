@@ -39,6 +39,32 @@ UPDATE DeviceTypeCommand  SET DeviceType = 'RFN-530S4eRX' WHERE DeviceType = 'RF
 UPDATE DeviceTypeCommand  SET DeviceType = 'RFN-530S4eRXR' WHERE DeviceType = 'RFN-530S4eRT';
 /* End YUK-16368 */
 
+/* Start YUK-16116 */
+DELETE FROM DYNAMICPOINTDISPATCH WHERE POINTID IN ( 
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE PointType = 'Analog' AND PointOffset IN (80, 81, 82) AND YP.Type IN ('RFN-430A3D', 'RFN-430A3T', 'RFN-430A3K'));
+  
+DELETE FROM POINTUNIT WHERE POINTID IN ( 
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE PointType = 'Analog' AND PointOffset IN (80, 81, 82) AND YP.Type IN ('RFN-430A3D', 'RFN-430A3T', 'RFN-430A3K'));
+  
+DELETE FROM PointAlarming WHERE PointID IN ( 
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE PointType = 'Analog' AND PointOffset IN (80, 81, 82) AND YP.Type IN ('RFN-430A3D', 'RFN-430A3T', 'RFN-430A3K'));
+
+DELETE FROM DISPLAY2WAYDATA WHERE PointId IN ( 
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE PointType = 'Analog' AND PointOffset IN (80, 81, 82) AND YP.Type IN ('RFN-430A3D', 'RFN-430A3T', 'RFN-430A3K'));
+
+DELETE FROM POINTANALOG WHERE PointID IN ( 
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE PointType = 'Analog' AND PointOffset IN (80, 81, 82) AND YP.Type IN ('RFN-430A3D', 'RFN-430A3T', 'RFN-430A3K'));
+  
+DELETE FROM Point WHERE PointId IN ( 
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE PointType = 'Analog' AND PointOffset IN (80, 81, 82) AND YP.Type IN ('RFN-430A3D', 'RFN-430A3T', 'RFN-430A3K'));
+/* End YUK-16116 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
