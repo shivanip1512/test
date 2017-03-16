@@ -724,27 +724,6 @@
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
-        <point name="Power Factor Degrees Phase A">
-            <uom>PF degree</uom>
-			<multiplier value="0.1"/>
-            <modifiers match="equal">
-                <modifier>Phase A</modifier>
-            </modifiers>
-        </point>
-        <point name="Power Factor Degrees Phase B">
-            <uom>PF degree</uom>
-			<multiplier value="0.1"/>
-            <modifiers match="equal">
-                <modifier>Phase B</modifier>
-            </modifiers>
-        </point>
-        <point name="Power Factor Degrees Phase C">
-            <uom>PF degree</uom>
-			<multiplier value="0.1"/>
-            <modifiers match="equal">
-                <modifier>Phase C</modifier>
-            </modifiers>
-        </point>
     </pointGroup>
 
     <pointGroup><!-- RFN_L2_ELSTER_ALL -->
@@ -1537,22 +1516,22 @@
             </modifiers>
         </point>
 
-		<point name="Coincident kVAr">
-			<uom>Var</uom>
-			<multiplier value=".001"/>
-			<parseSiPrefix/>
-			<modifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 2</modifier>
-			</modifiers>
-			<baseUom>W</baseUom>
-			<baseModifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-			</baseModifiers>
-		</point>
+        <point name="Coincident kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </baseModifiers>
+        </point>
         <point name="Peak kVAr">
             <uom>Var</uom>
             <multiplier value=".001"/>
@@ -1782,6 +1761,30 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
+        <point name="Power Factor Degrees Phase A">
+            <uom>PF degree</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+        <point name="Power Factor Degrees Phase B">
+            <uom>PF degree</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Power Factor Degrees Phase C">
+            <uom>PF degree</uom>
+            <multiplier value="1.0"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
     </pointGroup><!-- ENDS GROUP: A3R, KV -->
 
 
@@ -1910,20 +1913,41 @@
         </point>
         <point name="Volt Degrees Phase A">
             <uom>V degree</uom>
-			<multiplier value="0.1"/>
+            <multiplier value="0.1"/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
         <point name="Volt Degrees Phase B">
             <uom>V degree</uom>
-			<multiplier value="0.1"/>
+            <multiplier value="0.1"/>
             <modifiers match="equal">
                 <modifier>Phase B</modifier>
             </modifiers>
         </point>
         <point name="Volt Degrees Phase C">
             <uom>V degree</uom>
+            <multiplier value="0.1"/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+            </modifiers>
+        </point>
+        <point name="Power Factor Degrees Phase A">
+            <uom>PF degree</uom>
+            <multiplier value="0.1"/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+            </modifiers>
+        </point>
+        <point name="Power Factor Degrees Phase B">
+            <uom>PF degree</uom>
+            <multiplier value="0.1"/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+            </modifiers>
+        </point>
+        <point name="Power Factor Degrees Phase C">
+            <uom>PF degree</uom>
             <multiplier value="0.1"/>
             <modifiers match="equal">
                 <modifier>Phase C</modifier>

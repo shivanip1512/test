@@ -7749,28 +7749,6 @@
                 <unitofmeasure value="Volts" />
                 <decimalplaces value="1" />
             </point>
-
-            <point type="Analog" offset="80">
-                <init>true</init>
-                <name>Power Factor Degrees Phase A</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="Degrees" />
-                <decimalplaces value="1" />
-            </point>
-            <point type="Analog" offset="81">
-                <init>true</init>
-                <name>Power Factor Degrees Phase B</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="Degrees" />
-                <decimalplaces value="1" />
-            </point>
-            <point type="Analog" offset="82">
-                <init>true</init>
-                <name>Power Factor Degrees Phase C</name>
-                <multiplier value="1.0" />
-                <unitofmeasure value="Degrees" />
-                <decimalplaces value="1" />
-            </point>
         </points>
         <attributes>
             <attribute name="CURRENT_PHASE_A">
@@ -8346,6 +8324,24 @@
                 <unitofmeasure value="kVAr" />
                 <decimalplaces value="3" />
             </point>
+            <point offset="80" type="Analog">
+                <name>Power Factor Degrees Phase A</name>
+                <multiplier value="1"/>
+                <unitofmeasure value="DEGREES"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point offset="81" type="Analog">
+                <name>Power Factor Degrees Phase B</name>
+                <multiplier value="1"/>
+                <unitofmeasure value="DEGREES"/>
+                <decimalplaces value="1"/>
+            </point>
+            <point offset="82" type="Analog">
+                <name>Power Factor Degrees Phase C</name>
+                <multiplier value="1"/>
+                <unitofmeasure value="DEGREES"/>
+                <decimalplaces value="1"/>
+            </point>
         </points>
         <attributes>
             <attribute name="PEAK_KVAR">
@@ -8380,6 +8376,15 @@
             </attribute>
             <attribute name="RECEIVED_KVARH_RATE_D">
                 <basicLookup point="Received kVArh (Rate D kVArh)" />
+            </attribute>
+            <attribute name="POWER_FACTOR_DEGREES_PHASE_A">
+                <basicLookup point="Power Factor Degrees Phase A" />
+            </attribute>
+            <attribute name="POWER_FACTOR_DEGREES_PHASE_B">
+                <basicLookup point="Power Factor Degrees Phase B" />
+            </attribute>
+            <attribute name="POWER_FACTOR_DEGREES_PHASE_C">
+                <basicLookup point="Power Factor Degrees Phase C" />
             </attribute>
         </attributes>
     </pao>
@@ -10353,13 +10358,13 @@
             </point>
         </points>
         <attributes>
-            <attribute name="POWER_FACTOR_PHASE_A">
+            <attribute name="POWER_FACTOR_ANGLE_PHASE_A">
                 <basicLookup point="Power Factor Degrees Phase A"/>
             </attribute>
-            <attribute name="POWER_FACTOR_PHASE_B">
+            <attribute name="POWER_FACTOR_ANGLE_PHASE_B">
                 <basicLookup point="Power Factor Degrees Phase B"/>
             </attribute>
-            <attribute name="POWER_FACTOR_PHASE_C">
+            <attribute name="POWER_FACTOR_ANGLE_PHASE_C">
                 <basicLookup point="Power Factor Degrees Phase C"/>
             </attribute>
         </attributes>

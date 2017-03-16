@@ -331,6 +331,9 @@ public:
     static const Attribute  PowerFactorCoincidental;
     static const Attribute  PowerFactorDelivered;
     static const Attribute  PowerFactorReceived;
+    static const Attribute  PowerFactorAnglePhaseA;
+    static const Attribute  PowerFactorAnglePhaseB;
+    static const Attribute  PowerFactorAnglePhaseC;
     static const Attribute  PowerFactorPhaseA;
     static const Attribute  PowerFactorPhaseB;
     static const Attribute  PowerFactorPhaseC;

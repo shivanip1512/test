@@ -451,6 +451,9 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KVA,   //metric 49
                 BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
+                BuiltInAttribute.POWER_FACTOR_ANGLE_PHASE_A, //metric 159
+                BuiltInAttribute.POWER_FACTOR_ANGLE_PHASE_B, //metric 160
+                BuiltInAttribute.POWER_FACTOR_ANGLE_PHASE_C, //metric 161
                 BuiltInAttribute.POWER_FACTOR_PHASE_A, //metric 162
                 BuiltInAttribute.POWER_FACTOR_PHASE_B, //metric 163
                 BuiltInAttribute.POWER_FACTOR_PHASE_C, //metric 164

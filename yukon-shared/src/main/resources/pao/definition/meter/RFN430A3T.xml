@@ -83,9 +83,6 @@
         <pointInfo name="Phase B kW"/>
         <pointInfo name="Phase C kW"/>
         <pointInfo name="Potential Indicator Warning" attributes="POTENTIAL_INDICATOR_WARNING"/>
-        <pointInfo name="Power Factor Degrees Phase A" init="true"/>
-        <pointInfo name="Power Factor Degrees Phase B" init="true"/>
-        <pointInfo name="Power Factor Degrees Phase C" init="true"/>
         <pointInfo name="Power Fail Data Save Error" attributes="POWER_FAIL_DATA_SAVE_ERROR"/>
         <pointInfo name="Power Failure" attributes="POWER_FAIL_FLAG"/>
         <pointInfo name="Pqm Test Failure Warning" attributes="PQM_TEST_FAILURE_WARNING"/>
