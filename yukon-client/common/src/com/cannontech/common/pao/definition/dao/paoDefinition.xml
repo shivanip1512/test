@@ -8326,19 +8326,19 @@
             </point>
             <point offset="80" type="Analog">
                 <name>Power Factor Degrees Phase A</name>
-                <multiplier value="1"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="DEGREES"/>
                 <decimalplaces value="1"/>
             </point>
             <point offset="81" type="Analog">
                 <name>Power Factor Degrees Phase B</name>
-                <multiplier value="1"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="DEGREES"/>
                 <decimalplaces value="1"/>
             </point>
             <point offset="82" type="Analog">
                 <name>Power Factor Degrees Phase C</name>
-                <multiplier value="1"/>
+                <multiplier value="0.1"/>
                 <unitofmeasure value="DEGREES"/>
                 <decimalplaces value="1"/>
             </point>
