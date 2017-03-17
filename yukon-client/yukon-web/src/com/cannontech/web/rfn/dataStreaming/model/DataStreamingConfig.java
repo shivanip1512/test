@@ -205,15 +205,21 @@ public class DataStreamingConfig implements Cloneable {
         this.enabled = enabled;
     }
     
-    public void removeAttributesWithStatusNotOk() {
+    /**
+     * Returns true if the attribute was removed.
+     */
+    public boolean removeAttributesWithStatusNotOk() {
+        boolean isAttributeRemoved = false;
         Iterator<DataStreamingAttribute> it = getAttributes().listIterator();
         while (it.hasNext()) {
             DataStreamingAttribute attribute = it.next();
             if (attribute.getStatus() != DataStreamingMetricStatus.OK) {
                 // removes attribute if status is not ok.
                 it.remove();
+                isAttributeRemoved = true;
             }
         }
+        return isAttributeRemoved;
     }
     
     @Override

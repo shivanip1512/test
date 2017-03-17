@@ -471,9 +471,7 @@ public class DataStreamingConfigurationsController {
     @CheckRoleProperty(YukonRoleProperty.RF_DATA_STREAMING)
     public String acceptDevice(ModelMap model, @PathVariable int deviceId, YukonUserContext userContext, FlashScope flash) {
         LiteYukonUser user = userContext.getYukonUser();
-
-        dataStreamingService.accept(Arrays.asList(deviceId), user);
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptSuccess"));
+        accept(Arrays.asList(deviceId), user, flash);
         return "redirect:/tools/dataStreaming/discrepancies";
     }
 
@@ -533,9 +531,30 @@ public class DataStreamingConfigurationsController {
         }
         LiteYukonUser user = userContext.getYukonUser();
 
-        dataStreamingService.accept(deviceList, user);
-        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptAllSuccess"));
+        accept(deviceList, user, flash);
         return "redirect:/tools/dataStreaming/discrepancies" + getSortingPagingParameters(sorting, paging);
+    }
+    
+    /**
+     * Accepts data streaming configuration, add a message to the flash scope (success/failure/errors).
+     */
+    private void accept(List<Integer> deviceList, LiteYukonUser user, FlashScope flash) {
+        try {
+            DataStreamingConfigResult result = dataStreamingService.accept(deviceList, user);
+            if (result.acceptedWithError()) {
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptAllResend",
+                    deviceList.size(), result.getTotalItems()));
+                if (result.getAcceptedWithErrorFailedDeviceCount() > 0) {
+                    flash.setError(
+                        new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptedWithError.resending",
+                            result.getAcceptedWithErrorFailedDeviceCount(), result.getTotalItems()));
+                }
+            } else {
+                flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "discrepancies.acceptAllSuccess"));
+            }
+        } catch (DataStreamingConfigException e) {
+            flash.setError(e.getMessageSourceResolvable());
+        }
     }
 
     private String getSortingPagingParameters(SortingParameters sorting, PagingParameters paging) {

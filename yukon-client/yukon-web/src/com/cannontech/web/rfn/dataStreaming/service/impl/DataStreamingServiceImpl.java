@@ -911,7 +911,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     @Override
-    public DataStreamingConfigResult accept(List<Integer> allDeviceIds, LiteYukonUser user){
+    public DataStreamingConfigResult accept(List<Integer> allDeviceIds, LiteYukonUser user) throws DataStreamingConfigException{
 
         DeviceCollection deviceCollection = createDeviceCollectionForIds(allDeviceIds);
         if (isValidPorterConnection()) {
@@ -931,14 +931,20 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             List<Integer> devicesIdsToUnassign = new ArrayList<>();
             Multimap<Integer, Integer> configIdsToDeviceIds = ArrayListMultimap.create();
 
+            List<Integer> devicesToResend = new ArrayList<>();
             for (int deviceId : allDeviceIds) {
 
                 BehaviorReport report = deviceIdToReport.get(deviceId);
                 DataStreamingConfig reportedConfig = convertBehaviorToConfig(report);
-
-                // If there is a discrepancy because of a metric status (CHANNEL_NOT_SUPPORTED, for example)
-                // the Accept button should exclude those metrics when creating the new behavior.            
-                Optional.ofNullable(reportedConfig).ifPresent(DataStreamingConfig::removeAttributesWithStatusNotOk);
+                
+                if(reportedConfig != null){
+                    // If there is a discrepancy because of a metric status (CHANNEL_NOT_SUPPORTED, for example)
+                    // the Accept button should exclude those metrics when creating the new behavior.
+                    boolean attributesRemoved = reportedConfig.removeAttributesWithStatusNotOk();
+                    if(attributesRemoved && !reportedConfig.getAttributes().isEmpty()){
+                        devicesToResend.add(deviceId);
+                    }
+                }
                  
                 if (report == null || !reportedConfig.isEnabled() || reportedConfig.getAttributes().isEmpty()) {
                     devicesIdsToUnassign.add(deviceId);
@@ -966,7 +972,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             log.debug("Assigning devices=" + configIdsToDeviceIds.values());
             log.debug("Unassigning devices=" + devicesIdsToUnassign);
             // assign behaviors
-            for (int configId : configIdsToDeviceIds.keys()) {
+            for (int configId : configIdsToDeviceIds.keySet()) {
                 deviceBehaviorDao.assignBehavior(configId, TYPE,
                     new ArrayList<>(configIdsToDeviceIds.get(configId)), false);
             }
@@ -979,6 +985,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             logService.acceptCompleted(result.getResultsId(), allDeviceIds.size(), configIdsToDeviceIds.size(),
                 devicesIdsToUnassign.size());
             
+            if(!devicesToResend.isEmpty()){
+                log.debug("Re-sending devices=" + devicesToResend);
+                return resend(devicesToResend, user);
+            }
             return result;
         } else {
             return createEmptyResult(deviceCollection, "Porter connection is invalid.");

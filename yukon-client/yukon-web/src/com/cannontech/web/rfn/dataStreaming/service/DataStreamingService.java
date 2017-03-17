@@ -109,9 +109,11 @@ public interface DataStreamingService extends DeviceBehaviorStrings{
      * 2. Attempts to figure if behavior exists matching the the behavior report.
      *    a. If behavior doesn't exist creates a new behavior
      * 3. Assigns device to behavior that was found/created
+     * 4. Re-sends config if behavior report has a not OK metric status
+     * @throws DataStreamingConfigException 
      * 
      */
-    DataStreamingConfigResult accept(List<Integer> deviceIds, LiteYukonUser user);
+    DataStreamingConfigResult accept(List<Integer> deviceIds, LiteYukonUser user) throws DataStreamingConfigException;
 
     /**
      * Gets any overloaded gateways
