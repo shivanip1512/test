@@ -62,9 +62,9 @@
                 
                 { "metricId" : 128, "attribute" : "NEUTRAL_CURRENT" },
 
-                { "metricId" : 159, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_ANGLE_PHASE_A" },
-                { "metricId" : 160, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_ANGLE_PHASE_B" },
-                { "metricId" : 161, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_ANGLE_PHASE_C" },
+                { "metricId" : 159, "attribute" : "POWER_FACTOR_ANGLE_PHASE_A" },
+                { "metricId" : 160, "attribute" : "POWER_FACTOR_ANGLE_PHASE_B" },
+                { "metricId" : 161, "attribute" : "POWER_FACTOR_ANGLE_PHASE_C" },
                 { "metricId" : 162, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_PHASE_A" },
                 { "metricId" : 163, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_PHASE_B" },
                 { "metricId" : 164, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_PHASE_C" },

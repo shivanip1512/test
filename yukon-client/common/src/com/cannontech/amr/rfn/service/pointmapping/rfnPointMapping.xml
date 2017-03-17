@@ -1934,21 +1934,21 @@
         </point>
         <point name="Power Factor Degrees Phase A">
             <uom>PF degree</uom>
-            <multiplier value="0.1"/>
+            <multiplier value="1.0"/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
             </modifiers>
         </point>
         <point name="Power Factor Degrees Phase B">
             <uom>PF degree</uom>
-            <multiplier value="0.1"/>
+            <multiplier value="1.0"/>
             <modifiers match="equal">
                 <modifier>Phase B</modifier>
             </modifiers>
         </point>
         <point name="Power Factor Degrees Phase C">
             <uom>PF degree</uom>
-            <multiplier value="0.1"/>
+            <multiplier value="1.0"/>
             <modifiers match="equal">
                 <modifier>Phase C</modifier>
             </modifiers>
