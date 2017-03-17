@@ -43,7 +43,7 @@ public class ConfigurationLoader {
 
     @PostConstruct
     public void init() throws MessagingException {
-        URL url = MasterConfigHelper.class.getClassLoader().getResource("configuration.properties");
+        URL url = ConfigurationLoader.class.getClassLoader().getResource("configuration.properties");
         if (url != null) {
             try {
                 configFileLocation = new File(url.toURI());

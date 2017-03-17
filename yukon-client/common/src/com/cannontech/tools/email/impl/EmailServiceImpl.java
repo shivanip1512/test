@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.SmtpHelper;
-import com.cannontech.common.config.SmtpHelper.SmtpPropertyType;
+import com.cannontech.common.config.SmtpPropertyType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.tools.email.EmailMessage;
@@ -85,7 +85,7 @@ public class EmailServiceImpl implements EmailService {
             String password = authentication.getPassword();
 
             String host = configurationSource.getCommonProperty(SmtpPropertyType.HOST);
-            Integer portNum =  Integer.getInteger(configurationSource.getCommonProperty(SmtpPropertyType.PORT));
+            Integer portNum = Integer.getInteger(configurationSource.getCommonProperty(SmtpPropertyType.PORT));
             if (portNum != null) {
                 transport.connect(host, portNum, username, password);
             } else {

@@ -1,16 +1,16 @@
-/**
- * 
- */
 package com.cannontech.common.config;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import javax.annotation.PostConstruct;
+import javax.mail.MessagingException;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -23,9 +23,8 @@ import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 
 /**
- * SmtpHelper sets up the SMTP configuration as and when changes are found
- * in the Global settings
- *
+ * SmtpHelper sets up the SMTP configuration on server startup
+ * When changes are found in the Global settings, it reloads the settings
  */
 public class SmtpHelper {
 
@@ -35,85 +34,49 @@ public class SmtpHelper {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private ConfigurationLoader configurationLoader;
 
+    // Assuming there are no more than 100 other settings
+    // See https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html
     private Cache<String, String> smtpConfigSettings = CacheBuilder.newBuilder().maximumSize(100).build();
+
+    // local helper copies of common properties
+    private volatile String cachedHost = null;
+    private volatile String cachedPort = null;
+    private volatile String cachedTls = null;
 
     private static final String SMTP_CONFIGURATION_KEY_ALIAS = "smtp";
     private String configSection = null;
-
-    public enum SmtpPropertyType {
-        HOST("host", GlobalSettingType.SMTP_HOST),
-        PORT("port", GlobalSettingType.SMTP_PORT),
-        START_TLS_ENABLED("starttls.enable", GlobalSettingType.SMTP_TLS_ENABLED);
-
-        private String propertyName;
-        private GlobalSettingType globalSettingType;
-
-        public GlobalSettingType getGlobalSettingType() {
-            return globalSettingType;
-        }
-
-        private SmtpPropertyType(String type, GlobalSettingType globalSettingType) {
-            propertyName = type;
-            this.globalSettingType = globalSettingType;
-        }
-
-        public String generateKey(SmtpProtocolType smtp) {
-            return "mail." + smtp.protocolName + "." + propertyName;
-        }
-    }
-
-    public enum SmtpProtocolType {
-        SMTP("smtp"), SMTPS("smtps");
-        private String protocolName;
-
-        private SmtpProtocolType(String protocol) {
-            setProtocolName(protocol);
-        }
-
-        public void setProtocolName(String protocolName) {
-            this.protocolName = protocolName;
-        }
-    }
 
     @PostConstruct
     public void setup() {
         // Get section name for SMTP settings in the file
         configSection = getConfigSectionName(SMTP_CONFIGURATION_KEY_ALIAS);
-        
+
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING,
             new DatabaseChangeEventListener() {
                 @Override
                 public void eventReceived(DatabaseChangeEvent event) {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Reloading cache for the smtp Settings");
-                    }
+                    log.info("Reloading cache for the smtp Settings");
                     reloadSettings();
                 }
             });
-        
-        smtpConfigSettings.putAll(loadConfigs());
+
         // update the cache with latest settings
         reloadSettings();
     }
-    
-    private Map<String, String> loadConfigs() {
-        Map<String, String> configs = configurationLoader.getConfigSettings().get(configSection);
-        if (configs == null) {
-            configs = new HashMap<>();
-        }
-        return configs;
-    }
-    
+
     /**
      * Updates the smtp settings into the cache for email notifications
      * Specifically updates the common properties settings to the cache either from File or global settings
      */
     private void reloadSettings() {
         smtpConfigSettings.invalidateAll();
-        smtpConfigSettings.putAll(loadConfigs());
-        loadCommonProperty(SmtpPropertyType.HOST);
-        loadCommonProperty(SmtpPropertyType.PORT);
-        loadCommonProperty(SmtpPropertyType.START_TLS_ENABLED);
+        Map<String, String> smtpConfig = configurationLoader.getConfigSettings().get(configSection);
+        if (!CollectionUtils.isEmpty(smtpConfig)) {
+            smtpConfigSettings.putAll(smtpConfig);
+        }
+        cachedHost = loadCommonProperty(SmtpPropertyType.HOST);
+        cachedPort = loadCommonProperty(SmtpPropertyType.PORT);
+        cachedTls = loadCommonProperty(SmtpPropertyType.START_TLS_ENABLED);
     }
 
     /**
@@ -125,69 +88,61 @@ public class SmtpHelper {
      * @param propertyType contains HOST/PORT/START_TLS_ENABLED values
      * @returns the final value of HOST/PORT/START_TLS_ENABLED properties set
      */
-    public void loadCommonProperty(SmtpPropertyType propertyType) {
-
-        // Check in global settings
-        String smtpPropertyValue = globalSettingDao.getString(propertyType.getGlobalSettingType());
-        boolean isKeyFoundInConfigFile = false;
-        String smtpKey = propertyType.generateKey(SmtpProtocolType.SMTP);
-        String smtpsKey = propertyType.generateKey(SmtpProtocolType.SMTPS);
-
-        // Check host name in file
-        Map<String, String> configFileSmtpSettings = configurationLoader.getConfigSettings().get(configSection);
-        if (configFileSmtpSettings != null) {
-            if (!smtpPropertyValue.isEmpty()
-                && (configFileSmtpSettings.containsKey(smtpKey) || configFileSmtpSettings.containsKey(smtpKey))) {
-                // Log the occurrence of Global settings being overridden by the configuration file settings
-                log.info("Overwriting Global settings for SMTP " + propertyType.propertyName
-                    + " with the configuration file settings.");
-
-                // Add the setting to the settings map
-                if (configFileSmtpSettings.containsKey(smtpsKey)) {
-                    smtpPropertyValue = configFileSmtpSettings.get(smtpsKey);
-                    isKeyFoundInConfigFile = true;
-                } else if (configFileSmtpSettings.containsKey(smtpKey)) {
-                    smtpPropertyValue = configFileSmtpSettings.get(smtpKey);
-                    isKeyFoundInConfigFile = true;
-                }
+    public String loadCommonProperty(SmtpPropertyType propertyType) {
+        String smtpPropertyValue = null;
+        Set<String> keys = smtpConfigSettings.asMap().keySet();
+        for (String key : keys) {
+            if (Pattern.matches(propertyType.getRegEx(), key.toLowerCase())) {
+                // key already exists for smtp or smtps
+                smtpPropertyValue = smtpConfigSettings.getIfPresent(key);
+                log.info(propertyType.getPropertyName()
+                    + " key found in configuration settings, overriding the global setting with value : "
+                    + smtpPropertyValue);
+                break;
             }
         }
-        if (!isKeyFoundInConfigFile) {
-            if (smtpConfigSettings == null) {
-                configFileSmtpSettings = new HashMap<>();
-            }
-            // Set the Global Config setting in the smtp settings
-            if (isSmtpsProtocolEnabled()) {
-                smtpConfigSettings.put(smtpsKey, smtpPropertyValue);
-            } else {
-                smtpConfigSettings.put(smtpKey, smtpPropertyValue);
-            }
+
+        if (smtpPropertyValue == null) { // not in configSettings, load from global settings
+            smtpPropertyValue = globalSettingDao.getString(propertyType.getGlobalSettingType());
+            // TODO : During testing with gmail smtp server this logic can be tested.
+            smtpConfigSettings.put(propertyType.getKey(isSmtpsProtocolEnabled()), smtpPropertyValue);
         }
+        return smtpPropertyValue;
     }
 
     /**
-     * Gets the property value from the settings cache for HOST/PORT/START_TLS_ENABLED properties
-     * If the properties are not set, logs an error message in the webserver logs
+     * Helper method to return specific SmptPropetyType values.
      * 
-     * @param propertyType contains HOST/PORT/START_TLS_ENABLED values
-     * @returns the final value of HOST/PORT/START_TLS_ENABLED properties set
+     * @param propertyType
+     * @returns the property value
+     * @throws MessagingException if no configuration for the host is found in file/global settings
      */
-    public String getCommonProperty(SmtpPropertyType propertyType) {
-        String smtpValue = smtpConfigSettings.getIfPresent(propertyType.generateKey(SmtpProtocolType.SMTP));
-        String smtpsValue = smtpConfigSettings.getIfPresent(propertyType.generateKey(SmtpProtocolType.SMTPS));
-        if (smtpValue == null && smtpsValue == null) {
-            log.error(" No SMTP property " + propertyType.propertyName
-                + "configuration found in configuration.properties file and global settings");
-            // TODO : Event logging might be needed here
+    public String getCommonProperty(SmtpPropertyType propertyType) throws MessagingException {
+        String value = null;
+        switch (propertyType) {
+        case HOST:
+            value = cachedHost;
+            if (StringUtils.isEmpty(value)) {
+                // The SMTP host name must be configured in configuration.properties file or in the GlobalSettings 
+                throw new MessagingException("No " + propertyType
+                    + " defined in configuration.properties file or in the GlobalSettings table in the database.");
+            }
+        case PORT:
+            value = cachedPort;
+        case START_TLS_ENABLED:
+            value = cachedTls;
         }
-        if (smtpValue != null) {
-            return smtpValue;
-        } else if (smtpsValue != null) {
-            return smtpsValue;
-        }
-        return null;
+
+        return value;
     }
 
+    /**
+     * Returns the actual section name found in the config file for the sectionAlias passed
+     * If not found, it means the section with that name is not found so return the alias
+     * 
+     * @param sectionAlias string to match in the section name of file
+     * @returns the actual section name in file or alias
+     */
     public String getConfigSectionName(String sectionAlias) {
         for (String section : configurationLoader.getConfigSettings().keySet()) {
             if (section.contains(sectionAlias)) {
@@ -199,9 +154,10 @@ public class SmtpHelper {
 
     /**
      * Returns if SMTPS is to be used for setting up global setting properties
+     * 
      * @returns true if smtps protocol is to be used
      */
-    public boolean isSmtpsProtocolEnabled() {
+    private boolean isSmtpsProtocolEnabled() {
         String username = globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME);
         String password = globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD);
 

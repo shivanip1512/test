@@ -112,8 +112,8 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
     public GlobalSetting getSetting(GlobalSettingType type) {
         GlobalSetting setting = cache.get(type);
 
-        if (setting == null) {
-            // Not in cache, Look in Db
+        if (setting == null || setting.getValue() == null) {
+            // Not in cache or contains a default value with null, Look in Db
             setting = findSetting(type);
             if (setting == null) {
                 // Not in Db. Need to create one for cache
