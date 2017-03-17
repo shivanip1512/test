@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import javax.jms.JMSException;
 import javax.jms.Message;
@@ -33,8 +34,8 @@ public class AmqListenerConnection extends AmqConnectionBase<AmqConsumerTranspor
     private final List<AmqServerConnection> serverConnectionList;
     private final Map<Destination, Instant> requestTimeMap;
 
-    public AmqListenerConnection(String name, String queueName) {
-        super(name, queueName);
+    public AmqListenerConnection(String name, String queueName, ConnectionFactory connectionFactory) {
+        super(name, queueName, connectionFactory);
         setManagedConnection(true);
         inboundConnectionEvent = new InboundConnectionEvent();
         serverConnectionList = new LinkedList<AmqServerConnection>();

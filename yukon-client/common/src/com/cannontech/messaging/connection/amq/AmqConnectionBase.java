@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.jms.BytesMessage;
+import javax.jms.ConnectionFactory;
 import javax.jms.ExceptionListener;
 import javax.jms.JMSException;
 import javax.jms.MessageListener;
@@ -56,23 +57,15 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
         this("AMQConn_" + conID.getAndIncrement());
     }
 
-    protected AmqConnectionBase(String name, String queueName) {
+    protected AmqConnectionBase(String name, String queueName, ConnectionFactory connectionFactory) {
         this(name);
+        this.connectionService = new AmqConnectionFactoryService(connectionFactory);
         setQueueName(queueName);
     }
 
     protected abstract T createTransport() throws TransportException;
 
     protected abstract AmqConnectionMonitor createConnectionMonitor(T transport, MessageListener listener);
-
-    protected ActiveMQConnection createConnection() throws MessagingConnectionException, InterruptedException {
-        try {
-            return getConnectionService().createConnection();
-        }
-        catch (JMSException e) {
-            throw new MessagingConnectionException("Unable to create a connection to the ActiveMQ broker", e);
-        }
-    }
 
     @Override
     protected void connect() {
@@ -250,9 +243,6 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
     }
 
     public AmqConnectionFactoryService getConnectionService() {
-        if (connectionService == null) {
-            connectionService = AmqConnectionFactoryService.getDefaultService();
-        }
         return connectionService;
     }
 
@@ -271,10 +261,6 @@ public abstract class AmqConnectionBase<T extends AmqTransport> extends Connecti
         catch (Exception e) {
             throw new MessagingConnectionException("Error while retrieving broker URI");
         }
-    }
-
-    public void setConnectionService(AmqConnectionFactoryService connectionSvc) {
-        this.connectionService = connectionSvc;
     }
 
     public String getQueueName() {

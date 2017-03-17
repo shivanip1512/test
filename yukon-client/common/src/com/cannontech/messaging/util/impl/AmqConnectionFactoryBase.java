@@ -36,10 +36,6 @@ public class AmqConnectionFactoryBase {
         return connectionFactory;
     }
 
-    public void setConnectionFactory(javax.jms.ConnectionFactory connectionFactory) {
-        this.connectionFactory = connectionFactory;
-    }
-
     public MessageFactory getMessageFactory() {
         return messageFactory;
     }

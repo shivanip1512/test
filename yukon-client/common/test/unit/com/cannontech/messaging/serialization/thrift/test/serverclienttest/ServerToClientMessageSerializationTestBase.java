@@ -29,9 +29,6 @@ public abstract class ServerToClientMessageSerializationTestBase extends Message
 
     public ServerToClientMessageSerializationTestBase() {
         recievedMessages = new LinkedList<Message>();
-
-        AmqConnectionFactoryService.getDefaultService()
-            .setFactory(new ActiveMQConnectionFactory("tcp://localhost:61616"));
     }
 
     @Override
@@ -88,9 +85,13 @@ public abstract class ServerToClientMessageSerializationTestBase extends Message
     }
 
     public Connection createClientConnection() {
+        ActiveMQConnectionFactory connectionFactory = null;
+
+        connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
+
         AmqClientConnection client = null;
 
-        client = new AmqClientConnection("", "com.eaton.eas.yukon.conntest");
+        client = new AmqClientConnection("", "com.eaton.eas.yukon.conntest", connectionFactory);
         client.setMessageFactory(messageFactory);
 
         return client;
