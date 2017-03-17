@@ -14,6 +14,7 @@
                 { "metricId" : 11, "attributeMagnitude" : 3, "attribute" : "USAGE_FROZEN" },
                 { "metricId" : 12, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KWH_FROZEN" },
 
+                { "metricId" : 13, "attributeMagnitude" : 3, "attribute" : "SUM_PEAK_DEMAND" },
 
                 { "metricId" : 21, "attributeMagnitude" : 3, "attribute" : "KVARH" },
                 { "metricId" : 22, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVARH" },
