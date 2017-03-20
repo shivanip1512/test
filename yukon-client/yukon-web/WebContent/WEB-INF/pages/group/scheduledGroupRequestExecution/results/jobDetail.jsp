@@ -208,7 +208,7 @@
         <%-- last results --%>
         <tags:nameValue name="${lastResultsText}">
             <amr:scheduledGroupRequestExecutionJobLastRunStats jobId="${jobWrapper.job.id}"
-                hasStatsInitially="${not empty lastCre}"/>
+                hasStatsInitially="${not empty jobWrapper.lastRun}"/>
         </tags:nameValue>
         
         <%-- next run --%>

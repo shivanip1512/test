@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
+import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledOneTimeJob;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
@@ -159,9 +160,8 @@ public interface JobManager {
     void unscheduleJob(ScheduledRepeatingJob job);
     
     /**
-     * This method returns the job id of the latest executed or executing job belonging to the job group of
-     * the given job id.
-     * */
-    Integer getLastestJobInJobGroup(int jobId);
+     * Gets most recent JobStatus for the job belonging to the job group of the given jobId.
+     */
+    public JobStatus<YukonJob> getLatestStatusByJobId(int jobId);
 
 }

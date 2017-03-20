@@ -829,7 +829,7 @@ public class JobManagerImpl implements JobManager {
     }
 
     @Override
-    public Integer getLastestJobInJobGroup(int jobId) {
-        return jobStatusDao.findLastestJobInJobGroup(jobId);
+    public JobStatus<YukonJob> getLatestStatusByJobId(int jobId) {
+        return jobStatusDao.findLatestStatusByJobId(jobId);
     }
 }

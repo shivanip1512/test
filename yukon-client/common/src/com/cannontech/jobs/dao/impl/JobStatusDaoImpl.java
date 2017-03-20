@@ -13,11 +13,10 @@ import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.DateRowMapper;
 import com.cannontech.database.FieldMapper;
+import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.TypeRowMapper;
-import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.dao.JobStatusDao;
@@ -95,16 +94,14 @@ public class JobStatusDaoImpl implements JobStatusDao {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT * FROM (");
-            sql.append("SELECT jobStatusId, js.jobId, startTime, stopTime, jobState, message,");
-            sql.append("beanName, disabled, userId, jobGroupId, locale, timezone, themeName,");
-            sql.append("ROW_NUMBER() OVER (PARTITION BY js.jobid ORDER BY js.StartTime DESC) rn");
-            sql.append("FROM JobStatus js");
-            sql.append("JOIN Job j on js.JobId = j.JobId");
-            sql.append("WHERE js.jobid").eq(jobId);
-            sql.append(") numberedRows");
-            sql.append("WHERE numberedRows.rn <= 1");
-            sql.append("ORDER BY numberedRows.rn");
-            
+            sql.append(    "SELECT jobStatusId, js.jobId, startTime, stopTime, jobState, message, beanName, disabled,");
+            sql.append(         "userId, jobGroupId,locale, timezone, themeName, ROW_NUMBER() ");
+            sql.append(         "OVER (PARTITION BY j.jobGroupId ORDER BY js.StartTime DESC) rn");
+            sql.append(    "FROM JobStatus js JOIN Job j on js.JobId = j.JobId");
+            sql.append(    "WHERE jobGroupId = (SELECT jobGroupId FROM Job WHERE jobId").eq(jobId).append(")");
+            sql.append(     ") numberedRows");
+            sql.append("WHERE numberedRows.rn <= 1 ORDER BY numberedRows.rn");
+              
             JobStatusRowMapper<YukonJob> mapper = new JobStatusRowMapper<YukonJob>(yukonJobBaseRowMapper);
             return jdbcTemplate.queryForObject(sql, mapper);
         } catch (IncorrectResultSizeDataAccessException e) {
@@ -129,49 +126,11 @@ public class JobStatusDaoImpl implements JobStatusDao {
         }
     }
     
-    @Override
-    public Date findLastRunDateForJobGroup(int jobId) {
-    	Date result = null;
-    	try {
-    		SqlStatementBuilder sql = new SqlStatementBuilder();
-    		sql.append("SELECT MAX(js.StartTime) AS lastOkRun");
-            sql.append("FROM JobStatus js");
-            sql.append("JOIN Job j ON js.jobid = j.jobid");
-            sql.append("WHERE js.jobId IN (select jobid from job where jobgroupid = (select jobgroupid from job where jobid").eq(jobId);
-            sql.append("))");
-            result = jdbcTemplate.queryForObject(sql, new DateRowMapper());
-    	} catch (EmptyResultDataAccessException e) {
-    		return null;
-    	}
-    	return result;
-    }
-    
     @PostConstruct
     public void init() throws Exception {
         template = new SimpleTableAccessTemplate<JobStatus<?>>(jdbcTemplate, nextValueHelper);
         template.setTableName("JobStatus");
         template.setPrimaryKeyField("jobStatusId");
         template.setFieldMapper(jobStatusFieldMapper); 
-    }
-
-    @Override
-    public Integer findLastestJobInJobGroup(int jobId) {
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT jobid");
-            sql.append("FROM jobstatus");
-            sql.append("WHERE jobid IN (");
-            sql.append(   "SELECT jobid FROM job WHERE jobgroupid = (");
-            sql.append(      "SELECT jobgroupid from job WHERE jobid").eq(jobId);
-            sql.append(      ") ) AND starttime = (");
-            sql.append(         "SELECT max(starttime) FROM jobstatus WHERE jobid IN (");
-            sql.append(            "SELECT jobid FROM job WHERE jobgroupid = (");
-            sql.append(               "SELECT jobgroupid from job WHERE jobid").eq(jobId);
-            sql.append(          ")))");
-            
-            return jdbcTemplate.queryForInt(sql);
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
     }
 }

@@ -34,7 +34,9 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.dao.impl.JobDisabledStatus;
+import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
+import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 
@@ -216,7 +218,11 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
     
     @Override
     public ScheduledGroupExecutionCounts getExecutionCountsForJobId(int jobId) {
-        Integer lastestJobId = jobManager.getLastestJobInJobGroup(jobId);
+        JobStatus<YukonJob> latestJob = jobManager.getLatestStatusByJobId(jobId);
+        int jobIdToQuery = jobId;
+        if(latestJob != null) {
+            jobIdToQuery = latestJob.getJob().getId();
+        }
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(CASE WHEN CRER.ErrorCode !=0 THEN 1 END) failureCount");
         sql.append(", COUNT(CASE WHEN CRER.ErrorCode =0 THEN 1 END) successCount");
@@ -228,7 +234,7 @@ public class ScheduledGroupRequestExecutionDaoImpl implements ScheduledGroupRequ
         sql.append(         "SELECT CRE2.CommandRequestExecId, ROW_NUMBER() OVER (ORDER BY CRE2.StartTime DESC) RN");
         sql.append(         "FROM ScheduledGrpCommandRequest SGCR");
         sql.append(             "JOIN CommandRequestExec CRE2 ON (SGCR.CommandRequestExecContextId = CRE2.CommandRequestExecContextId)");
-        sql.append(         "WHERE SGCR.JobID").eq(lastestJobId);
+        sql.append(         "WHERE SGCR.JobID").eq(jobIdToQuery);
         sql.append(     ") INSIDER");
         sql.append(     "WHERE INSIDER.RN = 1)");
         

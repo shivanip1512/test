@@ -19,7 +19,7 @@ public interface JobStatusDao {
     public List<JobStatus<YukonJob>> getAllStatus(Date start, Date end);
     
     /**
-     * Get most recent JobStatus for givin jobId. 
+     * Get most recent JobStatus for given jobId. 
      * 
      * NOTE: Assumes valid jobId. If no status is found for jobId, assumption
      * will be made that the job has not run yet.
@@ -31,13 +31,4 @@ public interface JobStatusDao {
      */
     public Date findJobLastSuccessfulRunDate(int jobId);
     
-    /**
-     * Gets the most recent StartTime of the job belonging to job group of the given job id.  
-     */
-    public Date findLastRunDateForJobGroup(int jobId);
-    
-    /**
-     * Gets the job id of the latest executed or executing job belonging to the job group of the given job id.
-     */
-    public Integer findLastestJobInJobGroup(int jobId);
 }

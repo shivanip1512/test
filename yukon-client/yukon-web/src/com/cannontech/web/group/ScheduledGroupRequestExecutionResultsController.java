@@ -40,6 +40,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
+import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
@@ -130,9 +131,10 @@ public class ScheduledGroupRequestExecutionResultsController {
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(jobId);
         ScheduledGroupRequestExecutionJobWrapper jobWrapper = scheduledGroupRequestExecutionJobWrapperFactory.createJobWrapper(job, null, null, userContext);
         model.addAttribute("jobWrapper", jobWrapper);
-        Integer lastestJobId = jobManager.getLastestJobInJobGroup(jobId);
-        if(lastestJobId != null) {
-            CommandRequestExecution lastCre = scheduledGreDao.findLatestCommandRequestExecutionForJobId(lastestJobId, null);
+        JobStatus<YukonJob> lastestJob = jobManager.getLatestStatusByJobId(jobId);
+        if (lastestJob != null) {
+            CommandRequestExecution lastCre =
+                scheduledGreDao.findLatestCommandRequestExecutionForJobId(lastestJob.getJob().getId(), null);
             model.addAttribute("lastCre", lastCre);
         } else {
             model.addAttribute("lastCre", null);
@@ -146,8 +148,9 @@ public class ScheduledGroupRequestExecutionResultsController {
     // Note: this url should only be hit if it is know the job has a last cre, no protection for null lastCre here
     @RequestMapping("viewLastRun")
     public String viewLastRun(int jobId, ModelMap model) {
-        Integer lastestJobId = jobManager.getLastestJobInJobGroup(jobId);
-        CommandRequestExecution lastCre = scheduledGreDao.findLatestCommandRequestExecutionForJobId(lastestJobId, null);
+        JobStatus<YukonJob> lastestJob = jobManager.getLatestStatusByJobId(jobId);
+        CommandRequestExecution lastCre =
+            scheduledGreDao.findLatestCommandRequestExecutionForJobId(lastestJob.getJob().getId(), null);
         model.addAttribute("commandRequestExecutionId", lastCre.getId());
         return "redirect:/common/commandRequestExecutionResults/detail";
     }

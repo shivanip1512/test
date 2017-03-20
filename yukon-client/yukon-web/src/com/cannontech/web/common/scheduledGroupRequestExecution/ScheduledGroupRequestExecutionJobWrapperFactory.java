@@ -18,7 +18,9 @@ import com.cannontech.amr.scheduledGroupRequestExecution.tasks.ScheduledGroupReq
 import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.jobs.dao.JobStatusDao;
+import com.cannontech.jobs.model.JobStatus;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
+import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.user.YukonUserContext;
@@ -77,7 +79,11 @@ public class ScheduledGroupRequestExecutionJobWrapperFactory {
 		}
 		
         public Date getLastRun() {
-            return jobStatusDao.findLastRunDateForJobGroup(this.job.getId());
+            JobStatus<YukonJob> lastRunJob = jobManager.getLatestStatusByJobId(this.job.getId());
+            if(lastRunJob == null) {
+                return null;
+            }
+            return lastRunJob.getStartTime();
         }
 		
 		public Date getNextRun() {
