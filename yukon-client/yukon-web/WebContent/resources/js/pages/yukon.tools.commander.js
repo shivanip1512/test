@@ -403,14 +403,15 @@ yukon.tools.commander = (function () {
                     _logRequestUnAuthorized(i, result.unAuthorizedCommand[i]);
                     _logError(i,result.unAuthorizedErrorMsg);
                 }
-                // Update the recent target
-                _updateTarget(target,result.recentTargets, params);
-                
+                // Update the recent targets
+                _updateTarget(target, result.recentTargets, params);
             }).fail(function (xhr, status, errorThrown) {
                 var 
                 requests = xhr.responseJSON.requests,
-                reason = xhr.responseJSON.reason;
-                
+                reason = xhr.responseJSON.reason,
+                recentTargets = xhr.responseJSON.recentTargets;
+                // Update the recent targets
+                _updateTarget(target, recentTargets, params);
                 for (var i in requests) {
                     _logRequest(requests[i].request);
                     _logError(requests[i].request.id, reason);
