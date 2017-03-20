@@ -5,16 +5,20 @@ import org.apache.commons.validator.routines.InetAddressValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.Errors;
 
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.rfn.model.GatewaySettings;
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.web.tools.mapping.Location;
 import com.cannontech.web.tools.mapping.LocationValidator;
 
 public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
     
     @Autowired private LocationValidator locationValidator;
+    @Autowired private PaoDao paoDao;
 
     
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
@@ -35,6 +39,13 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
         }
         
         YukonValidationUtils.checkExceedsMaxLength(errors, "name", settings.getName(), 60);
+        
+        if (!errors.hasFieldErrors("name")) {
+            LiteYukonPAObject unique = paoDao.findUnique(settings.getName(), PaoType.RFN_GATEWAY);
+            if (unique != null) {
+                errors.rejectValue("name", baseKey + "name.unique");
+            }
+        }
         
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "ipAddress", baseKey + "ipAddress.required");
         if (StringUtils.isNoneBlank(settings.getIpAddress())) {

@@ -858,11 +858,13 @@ public class DevEventLogCreationService {
                String paoName = devEventLog.getIndicatorString() + "Gateway";
                String serial = "1111111111";
                String ipAddress = "127.0.0.1";
+               String gatewayName = "Test Gateway";
                String adminUser = "Admin";
                String superUser = "Super";
                
                gatewayEventLogService.createdGateway(user, paoName, serial, ipAddress, adminUser, superUser);
                gatewayEventLogService.createdGatewayAutomatically(paoName, serial);
+               gatewayEventLogService.gatewayCreationFailed(user, gatewayName, ipAddress, adminUser, superUser);
                gatewayEventLogService.updatedGateway(user, paoName, serial, ipAddress, adminUser, superUser);
                gatewayEventLogService.deletedGateway(user, paoName, serial);
                gatewayEventLogService.sentCertificateUpdate(user, "fake.pkg.nm", "fakeCertificate", 1);

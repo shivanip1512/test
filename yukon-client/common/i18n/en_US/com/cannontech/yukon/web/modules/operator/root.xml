@@ -114,6 +114,7 @@
     <entry key="yukon.web.modules.operator.gateways.error.FAILED">An internal error occurred in Network Manager.</entry>
     <entry key="yukon.web.modules.operator.gateways.create.error">Could not create gateway.</entry>
     <entry key="yukon.web.modules.operator.gateways.name.required">Name is required.</entry>
+    <entry key="yukon.web.modules.operator.gateways.name.unique">Gateway name should be unique.</entry>
     <entry key="yukon.web.modules.operator.gateways.username.required">Username is required.</entry>
     <entry key="yukon.web.modules.operator.gateways.password.required">Password is required.</entry>
     <entry key="yukon.web.modules.operator.gateways.updateserver.url.required">Server URL is required when not using defaults.</entry>

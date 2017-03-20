@@ -123,10 +123,10 @@ public class GatewaySettingsController {
             json.put("gateway", gateway);
 
             return JsonUtils.writeResponse(resp, json);
-            
         } catch (NmCommunicationException e) {
-            
-            log.info("Failed to create gateway. Settings: " + settings, e);
+            log.error("Failed to create gateway. Settings: " + settings, e);
+            gatewayEventLogService.gatewayCreationFailed(userContext.getYukonUser(), settings.getName(),
+                settings.getIpAddress(), settings.getAdmin().getUsername(), settings.getSuperAdmin().getUsername());
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.CREATE);
             String errorMsg = accessor.getMessage(baseKey + "error.comm");
@@ -134,7 +134,9 @@ public class GatewaySettingsController {
             
             return "../widget/gatewayInformationWidget/settings.jsp";
         } catch (GatewayUpdateException e) {
-            
+            log.error("Failed to create gateway. Settings: " + settings, e);
+            gatewayEventLogService.gatewayCreationFailed(userContext.getYukonUser(), settings.getName(),
+                settings.getIpAddress(), settings.getAdmin().getUsername(), settings.getSuperAdmin().getUsername());
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.CREATE);
             String errorMsg = accessor.getMessage(baseKey + "error." + e.getReason().name());
@@ -142,7 +144,9 @@ public class GatewaySettingsController {
             
             return "../widget/gatewayInformationWidget/settings.jsp";
         } catch (DeviceCreationException e) {
-            
+            log.error("Failed to create gateway. Settings: " + settings, e);
+            gatewayEventLogService.gatewayCreationFailed(userContext.getYukonUser(), settings.getName(),
+                settings.getIpAddress(), settings.getAdmin().getUsername(), settings.getSuperAdmin().getUsername());
             resp.setStatus(HttpStatus.BAD_REQUEST.value());
             model.addAttribute("mode", PageEditMode.CREATE);
             String errorMsg = accessor.getMessage(e.getMessageSourceResolvable());

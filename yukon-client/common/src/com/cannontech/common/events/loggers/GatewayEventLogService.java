@@ -15,6 +15,13 @@ public interface GatewayEventLogService {
                                String superAdminUser);
     
     @YukonEventLog(category="system.rfn.gateway")
+    public void gatewayCreationFailed(@Arg(ArgEnum.username) LiteYukonUser user,
+                                      @Arg(ArgEnum.gatewayName) String gatewayName,
+                                      @Arg(ArgEnum.ipAddress) String ipAddress,
+                                      String adminUser,
+                                      String superAdminUser);
+    
+    @YukonEventLog(category="system.rfn.gateway")
     public void createdGatewayAutomatically(@Arg(ArgEnum.paoName) String paoName,
                                             @Arg(ArgEnum.serialNumber) String serialNumber);
     
