@@ -2,13 +2,10 @@ package com.cannontech.multispeak.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +15,6 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.PersistedSystemValueDao;
-import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.msp.beans.v3.Meter;
 import com.cannontech.msp.beans.v3.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakFuncs;
@@ -28,8 +24,8 @@ import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.dao.MultispeakGetAllServiceLocationsCallback;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncType;
+import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessor;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
-import com.cannontech.multispeak.service.v3.MultispeakDeviceGroupSyncTypeProcessor;
 import com.cannontech.multispeak.service.v3.MultispeakMeterService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.base.Function;
@@ -37,28 +33,17 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 public class MultispeakDeviceGroupSyncServiceImpl extends MultispeakDeviceGroupSyncServiceBase {
-
-	private ScheduledExecutor scheduledExecutor;
-	private MspObjectDao mspObjectDao;
-	private MultispeakFuncs multispeakFuncs;
-	private MultispeakDao multispeakDao;
-	private MeterDao meterDao;
-	private MultispeakMeterService multispeakMeterService;
-	private PersistedSystemValueDao persistedSystemValueDao;
+    
+    @Autowired private MspObjectDao mspObjectDao;
+    @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private MultispeakDao multispeakDao;
+    @Autowired private MeterDao meterDao;
+    @Autowired private MultispeakMeterService multispeakMeterService;
+    @Autowired private PersistedSystemValueDao persistedSystemValueDao;
+    
+    @Resource(name = "globalScheduledExecutor") private ScheduledExecutor scheduledExecutor;
 	
 	private Logger log = YukonLogManager.getLogger(MultispeakDeviceGroupSyncServiceImpl.class);
-	private static final String SUBSTATION_SYNC_LOG_STRING = "SubstationDeviceGroupSync";
-    private static final String BILLING_CYCLE_LOG_STRING = "BillingCycleDeviceGroupSync";
-    private Map<MultispeakDeviceGroupSyncTypeProcessorType, MultispeakDeviceGroupSyncTypeProcessor> processorMap;
-	
-	// INIT
-	@PostConstruct
-	public void init() {
-		
-		processorMap = Maps.newLinkedHashMap();
-		processorMap.put(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, new SubstationSyncTypeProcessor());
-		processorMap.put(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, new BillingCycleSyncTypeProcessor());
-	}
 
 	// START
 	@Override
@@ -132,7 +117,7 @@ public class MultispeakDeviceGroupSyncServiceImpl extends MultispeakDeviceGroupS
     				
         	    	// loop per msp meter
     				for (Meter mspMeter : mspMeterMap.values()) {
-    					
+    				    
     					// kill before processing another meter if canceled
     	    			if (progress.isCanceled()) {
     	    				return;
@@ -151,8 +136,16 @@ public class MultispeakDeviceGroupSyncServiceImpl extends MultispeakDeviceGroupS
     	    			Set<MultispeakDeviceGroupSyncTypeProcessorType> processorsTypes = type.getProcessorTypes();
     	    			for (MultispeakDeviceGroupSyncTypeProcessorType processorType : processorsTypes) {
     	    				
-    	    				MultispeakDeviceGroupSyncTypeProcessor processor = processorMap.get(processorType);
-    	    				boolean added = processor.processMeterSync(mspVendor, mspServiceLocation, mspMeter, yukonMeter);
+                            MultispeakDeviceGroupSyncTypeProcessor processor = processorMap.get(processorType);
+                            String deviceGroupSyncValue = null;
+                            if (processor.equals(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION)) {
+                                if (mspMeter.getUtilityInfo() != null) {
+                                    deviceGroupSyncValue = mspMeter.getUtilityInfo().getSubstationName();
+                                }
+                            } else if (processor.equals(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)) {
+                                deviceGroupSyncValue = mspServiceLocation.getBillingCycle();
+                            }
+    	    				boolean added = processor.processMeterSync(mspVendor, deviceGroupSyncValue, yukonMeter);
     	    				
     	    				if (added) {
     	    					progress.incrementChangeCount(processorType);
@@ -184,82 +177,5 @@ public class MultispeakDeviceGroupSyncServiceImpl extends MultispeakDeviceGroupS
 		};
 		
 		scheduledExecutor.execute(runner);
-	}
-	
-	// PROCESSORS
-	private class SubstationSyncTypeProcessor implements MultispeakDeviceGroupSyncTypeProcessor {
-		
-		@Override
-		public boolean processMeterSync(MultispeakVendor mspVendor, ServiceLocation mspServiceLocation, Meter mspMeter, YukonMeter yukonMeter) {
-
-			boolean added = false;
-			if (mspMeter.getUtilityInfo() != null) {
-				String substationName = mspMeter.getUtilityInfo().getSubstationName();
-				if (StringUtils.isNotBlank(substationName)) {
-					added = multispeakMeterService.updateSubstationGroup(substationName, yukonMeter.getMeterNumber(), yukonMeter, SUBSTATION_SYNC_LOG_STRING, mspVendor);
-				}
-			}
-			return added;
-		}
-		
-		@Override
-		public PersistedSystemValueKey getPersistedSystemValueKey() {
-			return PersistedSystemValueKey.MSP_SUBSTATION_DEVICE_GROUP_SYNC_LAST_COMPLETED;
-		}
-	}
-	
-	private class BillingCycleSyncTypeProcessor implements MultispeakDeviceGroupSyncTypeProcessor {
-		
-		@Override
-		public boolean processMeterSync(MultispeakVendor mspVendor, ServiceLocation mspServiceLocation, Meter mspMeter, YukonMeter yukonMeter) {
-			
-			boolean added = false;
-			String billingCycleName = mspServiceLocation.getBillingCycle();
-			if (StringUtils.isNotBlank(billingCycleName)) {
-				added = multispeakMeterService.updateBillingCyle(billingCycleName, yukonMeter.getMeterNumber(), yukonMeter, BILLING_CYCLE_LOG_STRING, mspVendor);
-			}
-			return added;
-		}
-		
-		@Override
-		public PersistedSystemValueKey getPersistedSystemValueKey() {
-			return PersistedSystemValueKey.MSP_BILLING_CYCLE_DEVICE_GROUP_SYNC_LAST_COMPLETED;
-		}
-	}	
-
-	
-	@Resource(name="globalScheduledExecutor")
-	public void setScheduledExecutor(ScheduledExecutor scheduledExecutor) {
-		this.scheduledExecutor = scheduledExecutor;
-	}
-	
-    @Autowired
-    public void setMspObjectDao(MspObjectDao mspObjectDao) {
-		this.mspObjectDao = mspObjectDao;
-	}
-    
-    @Autowired
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-		this.multispeakFuncs = multispeakFuncs;
-	}
-    
-    @Autowired
-    public void setMultispeakDao(MultispeakDao multispeakDao) {
-		this.multispeakDao = multispeakDao;
-	}
-	
-	@Autowired
-	public void setMeterDao(MeterDao meterDao) {
-		this.meterDao = meterDao;
-	}
-	
-	@Autowired
-	public void setMultispeakMeterService(MultispeakMeterService multispeakMeterService) {
-		this.multispeakMeterService = multispeakMeterService;
-	}
-	
-	@Autowired
-	public void setPersistedSystemValueDao(PersistedSystemValueDao persistedSystemValueDao) {
-		this.persistedSystemValueDao = persistedSystemValueDao;
-	}
+    }
 }

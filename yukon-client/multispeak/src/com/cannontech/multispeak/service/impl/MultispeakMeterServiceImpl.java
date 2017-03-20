@@ -149,6 +149,7 @@ import com.cannontech.multispeak.event.MeterReadEvent;
 import com.cannontech.multispeak.event.MultispeakEvent;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
+import com.cannontech.multispeak.service.MultispeakMeterServiceBase;
 import com.cannontech.multispeak.service.v3.MultispeakMeterService;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -171,7 +172,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
-public class MultispeakMeterServiceImpl implements MultispeakMeterService, MessageListener {
+public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase implements MultispeakMeterService, MessageListener {
 
     private static final Logger log = YukonLogManager.getLogger(MultispeakMeterServiceImpl.class);
 
@@ -2121,25 +2122,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
     }
 
     /**
-     * Updates the billingCycle device group.
-     * The exact parent group to update is configured in MultiSpeak global settings.
-     */
-    @Override
-    public boolean updateBillingCyle(String newBilling, String meterNumber, YukonDevice yukonDevice,
-            String mspMethod, MultispeakVendor mspVendor) {
-
-        if (!StringUtils.isBlank(newBilling)) {
-
-            // Remove from all billing membership groups
-            DeviceGroup billingCycledeviceGroup = multispeakFuncs.getBillingCycleDeviceGroup();
-            StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(billingCycledeviceGroup);
-            return updatePrefixGroup(newBilling, meterNumber, yukonDevice, mspMethod, mspVendor, deviceGroupParent);
-        }
-
-        return false;
-    }
-
-    /**
     * Updates an alternate device grouping.
     * The exact parent group to update is configured by MSP_ALTGROUP_EXTENSION.
     * This functionality was added specifically for DEMCO.
@@ -2160,59 +2142,6 @@ public class MultispeakMeterServiceImpl implements MultispeakMeterService, Messa
             }
         }
         return false;
-    }
-
-    /**
-     * Updates the CIS Substation device group.
-     * This group (should be) completely managed by MultiSpeak processing.
-     */
-    @Override
-    public boolean updateSubstationGroup(String substationName, String meterNumber, YukonDevice yukonDevice,
-            String mspMethod, MultispeakVendor mspVendor) {
-
-        if (!StringUtils.isBlank(substationName)) {
-
-            // Remove from all substation membership groups
-            DeviceGroup substationNameDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.CIS_SUBSTATION);
-            StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(substationNameDeviceGroup);
-            return updatePrefixGroup(substationName, meterNumber, yukonDevice, mspMethod, mspVendor, deviceGroupParent);
-        }
-        return false;
-    }
-
-    /**
-     * Removes meter from all immediate descendants of deviceGroupParent. Adds
-     * meter to a subgroup of deviceGroupParent called groupName. If groupName
-     * does not exist, a new group will be created.
-     * @return true if added to new prefix group.
-     */
-    private boolean updatePrefixGroup(String groupName, String meterNumber, YukonDevice yukonDevice,
-            String mspMethod, MultispeakVendor mspVendor, StoredDeviceGroup deviceGroupParent) {
-        boolean alreadyInGroup = false;
-
-        Set<StoredDeviceGroup> deviceGroups = deviceGroupMemberEditorDao.getGroupMembership(deviceGroupParent, yukonDevice);
-        for (StoredDeviceGroup deviceGroup : deviceGroups) {
-            if (deviceGroup.getName().equalsIgnoreCase(groupName)) {
-                log.debug("MeterNumber(" + meterNumber + ") - Already in group:  " + groupName);
-                alreadyInGroup = true;
-            } else {
-                int numAffected = deviceGroupMemberEditorDao.removeDevices(deviceGroup, yukonDevice);
-                if (numAffected > 0) {
-                    multispeakEventLogService.removeMeterFromGroup(meterNumber, deviceGroup.getFullName(), mspMethod, mspVendor.getCompanyName());
-                    systemLog(mspMethod, "MeterNumber(" + meterNumber + ") - Removed from Group: " + deviceGroup.getFullName() + ".", mspVendor);
-                }
-            }
-        }
-
-        if (!alreadyInGroup) {
-            StoredDeviceGroup deviceGroup = deviceGroupEditorDao.getGroupByName(deviceGroupParent, groupName, true);
-            int numAffected = deviceGroupMemberEditorDao.addDevice(deviceGroup, yukonDevice);
-            if (numAffected > 0) {
-                multispeakEventLogService.addMeterToGroup(meterNumber, deviceGroup.getFullName(), mspMethod, mspVendor.getCompanyName());
-                systemLog(mspMethod, "MeterNumber(" + meterNumber+ ") - Added to Group: " + deviceGroup.getFullName() + ".", mspVendor);
-            }
-        }
-        return !alreadyInGroup;
     }
 
     /**
