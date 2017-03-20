@@ -101,7 +101,7 @@ public class DeviceConfigServiceImpl implements DeviceConfigService {
         GroupCommandResult result = groupCommandExecutor.getResult(key);
         result.setHandleUnsupported(true);
         result.setUnsupportedCollection(unsupportedCollection);
-
+        result.setDeviceCollection(deviceCollection);
         return key;
     }
 

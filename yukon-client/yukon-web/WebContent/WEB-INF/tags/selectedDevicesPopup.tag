@@ -8,10 +8,6 @@
 <%@ attribute name="deviceCollection" type="java.lang.Object" 
               description="The device collection: any implementation of the DeviceCollection interface.
                            Either 'deviceCollection' or 'groupName' are required and only one should be used." %>
-
-<%@ attribute name="unsupportedCollection" type="java.lang.Object" 
-              description="unsupportedCollection : Collection of unSupported Devices." %>
-
 <%@ attribute name="groupName"
               description="The device group name, used when referencing a device group based collection.
                            Either 'deviceCollection' or 'groupName' are required and only one should be used." %>
@@ -28,23 +24,10 @@
 <cti:msg2 var="targetTitle" key="yukon.common.device.bulk.selectedDevicesPopup.warning"/>
 
 <%-- CREATE URL --%>
-
-<jsp:useBean id="totalDeviceCollection" class="java.util.LinkedHashMap"/>
-<c:if test="${not empty pageScope.deviceCollection}">
-    <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
-        <c:set target="${totalDeviceCollection}" property="${deviceCollectionParam.key}" value="${fn:escapeXml(deviceCollectionParam.value)}" />
-    </c:forEach>
-</c:if>
-<c:if test="${not empty pageScope.unsupportedCollection}">
-    <c:forEach var="unsupportedDeviceCollectionParam" items="${unsupportedCollection.collectionParameters}">
-        <c:set target="${totalDeviceCollection}" property="${unsupportedDeviceCollectionParam.key}" value="${fn:escapeXml(unsupportedDeviceCollectionParam.value)}"/>
-    </c:forEach>
-</c:if>
-
 <c:choose>
-    <c:when test="${not empty pageScope.deviceCollection || not empty pageScope.unsupportedCollection}">
+    <c:when test="${not empty pageScope.deviceCollection}">
         <c:url var="url" value="/bulk/selectedDevicesTableForDeviceCollection">
-             <c:forEach var="deviceCollectionParam" items="${totalDeviceCollection}">
+            <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
                 <c:param name="${deviceCollectionParam.key}" value="${fn:escapeXml(deviceCollectionParam.value)}"/>
             </c:forEach>
         </c:url>

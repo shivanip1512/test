@@ -29,7 +29,7 @@ public enum GroupCommandResultFieldEnum {
     COMPLETED_ITEMS(new ResultAccessor<GroupCommandResult>() {
         public Object getValue(GroupCommandResult groupCommandResult) {
             
-            return (groupCommandResult.getResultHolder().getSuccessfulDevices().size() + groupCommandResult.getResultHolder().getFailedDevices().size());
+            return (groupCommandResult.getResultHolder().getSuccessfulDevices().size() + groupCommandResult.getResultHolder().getFailedDevices().size() + groupCommandResult.getUnsupportedCollection().getDeviceCount());
         }
     }),
     
