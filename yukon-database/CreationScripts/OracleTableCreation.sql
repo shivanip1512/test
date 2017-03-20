@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/14/2017 11:03:13 PM                        */
+/* Created on:     3/20/2017 1:25:22 AM                         */
 /*==============================================================*/
 
 
@@ -9445,6 +9445,7 @@ INSERT INTO YukonListEntry VALUES (2024, 1005, 0, 'UtilityPRO G3', 1319);
 INSERT INTO YukonListEntry VALUES (2025, 1005, 0, 'ecobee Smart Si', 1329);
 INSERT INTO YukonListEntry VALUES (2026, 1005, 0, 'ecobee3', 1330);
 INSERT INTO YukonListEntry VALUES (2027, 1005, 0, 'ecobee Smart', 1331);
+INSERT INTO YukonListEntry VALUES (2028, 1005, 0, 'ecobee3 Lite', 1336);
 
 INSERT INTO YukonListEntry VALUES (2030, 1005, 0, 'Honeywell Wi-Fi 9000', 1332);
 INSERT INTO YukonListEntry VALUES (2031, 1005, 0, 'Honeywell Wi-Fi VisionPRO 8000', 1333);
