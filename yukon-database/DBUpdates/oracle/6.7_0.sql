@@ -428,6 +428,10 @@ AND PaobjectId IN (
 ALTER TABLE UserPreference MODIFY Value VARCHAR(1275);
 /* End YUK-16336 */
 
+/* Start YUK-16411 */
+INSERT INTO YukonListEntry VALUES ((SELECT MAX(EntryId)+1 FROM YukonListEntry WHERE EntryId < 10000), 1005, 0, 'ecobee3 Lite', 1336);
+/* End YUK-16411 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
