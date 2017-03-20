@@ -10,13 +10,17 @@ public enum SmtpPropertyType {
     private String propertyName;
     private GlobalSettingType globalSettingType;
 
+    private SmtpPropertyType(String type, GlobalSettingType globalSettingType) {
+        this.propertyName = type;
+        this.globalSettingType = globalSettingType;
+    }
+
     public GlobalSettingType getGlobalSettingType() {
         return globalSettingType;
     }
 
-    private SmtpPropertyType(String type, GlobalSettingType globalSettingType) {
-        this.setPropertyName(type);
-        this.globalSettingType = globalSettingType;
+    public String getPropertyName() {
+        return propertyName;
     }
 
     protected String getRegEx() {
@@ -31,11 +35,4 @@ public enum SmtpPropertyType {
         }
     }
 
-    public String getPropertyName() {
-        return propertyName;
-    }
-
-    public void setPropertyName(String propertyName) {
-        this.propertyName = propertyName;
-    }
 }

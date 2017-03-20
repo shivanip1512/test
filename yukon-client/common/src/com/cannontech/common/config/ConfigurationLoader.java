@@ -78,8 +78,7 @@ public class ConfigurationLoader {
                         SubnodeConfiguration sObj = iniConfiguration.getSection(sectionName);
                         if (sObj.getKeys() != null) {
                             sObj.getKeys().forEachRemaining(propertyName -> {
-                                // Replace .. with . as the INI config library adds extra period in the key
-                                // string
+                                // Replace .. with . as the INI config library adds extra period in the key string
                                 String key = propertyName.replace("..", ".");
                                 settings.put(key, sObj.getString(propertyName));
                                 log.debug("property : " + key + " = " + sObj.getString(propertyName));
@@ -90,9 +89,9 @@ public class ConfigurationLoader {
                 });
             }
         } catch (FileNotFoundException e) {
-            log.info("No custom configuration.properties file.");
+            log.warn("No custom configuration.properties file.");
         } catch (ConfigurationException | IOException e) {
-            log.info("Problem in setting up the custom configuration.properties file");
+            log.warn("Problem in setting up the custom configuration.properties file");
         }
     }
 

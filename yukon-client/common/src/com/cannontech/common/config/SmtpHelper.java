@@ -44,18 +44,15 @@ public class SmtpHelper {
     private volatile String cachedTls = null;
 
     private static final String SMTP_CONFIGURATION_KEY_ALIAS = "smtp";
-    private String configSection = null;
 
     @PostConstruct
     public void setup() {
         // Get section name for SMTP settings in the file
-        configSection = getConfigSectionName(SMTP_CONFIGURATION_KEY_ALIAS);
 
         asyncDynamicDataSource.addDatabaseChangeEventListener(DbChangeCategory.GLOBAL_SETTING,
             new DatabaseChangeEventListener() {
                 @Override
                 public void eventReceived(DatabaseChangeEvent event) {
-                    log.info("Reloading cache for the smtp Settings");
                     reloadSettings();
                 }
             });
@@ -68,22 +65,22 @@ public class SmtpHelper {
      * Updates the smtp settings into the cache for email notifications
      * Specifically updates the common properties settings to the cache either from File or global settings
      */
-    private void reloadSettings() {
+    public void reloadSettings() {
         smtpConfigSettings.invalidateAll();
-        Map<String, String> smtpConfig = configurationLoader.getConfigSettings().get(configSection);
+        Map<String, String> smtpConfig = configurationLoader.getConfigSettings().get(SMTP_CONFIGURATION_KEY_ALIAS);
         if (!CollectionUtils.isEmpty(smtpConfig)) {
             smtpConfigSettings.putAll(smtpConfig);
         }
         cachedHost = loadCommonProperty(SmtpPropertyType.HOST);
         cachedPort = loadCommonProperty(SmtpPropertyType.PORT);
         cachedTls = loadCommonProperty(SmtpPropertyType.START_TLS_ENABLED);
+        log.info("Reloaded cache for the smtp Settings.");
     }
 
     /**
      * Merges the properties from File and Global settings
      * If File contains HOST/PORT/START_TLS_ENABLED , then these settings are taken from file
      * If not, then global settings current value is set on the settings for HOST/PORT/START_TLS_ENABLED
-     * In case global settings are considered, SMTP/SMTPS protocol specific properties are set
      * 
      * @param propertyType contains HOST/PORT/START_TLS_ENABLED values
      * @returns the final value of HOST/PORT/START_TLS_ENABLED properties set
@@ -104,8 +101,10 @@ public class SmtpHelper {
 
         if (smtpPropertyValue == null) { // not in configSettings, load from global settings
             smtpPropertyValue = globalSettingDao.getString(propertyType.getGlobalSettingType());
-            // TODO : During testing with gmail smtp server this logic can be tested.
-            smtpConfigSettings.put(propertyType.getKey(isSmtpsProtocolEnabled()), smtpPropertyValue);
+            // TODO : During testing with gmail smtp server this logic can be tested. For now we are setting mail.smtp.*
+            // TODO : YUK-16427 Should address this issue
+            // smtpConfigSettings.put(propertyType.getKey(isSmtpsProtocolEnabled()), smtpPropertyValue);
+            smtpConfigSettings.put(propertyType.getKey(false), smtpPropertyValue);
         }
         return smtpPropertyValue;
     }
@@ -123,49 +122,20 @@ public class SmtpHelper {
         case HOST:
             value = cachedHost;
             if (StringUtils.isEmpty(value)) {
-                // The SMTP host name must be configured in configuration.properties file or in the GlobalSettings 
+                // The SMTP host name must be configured in configuration.properties file or in the GlobalSettings.
                 throw new MessagingException("No " + propertyType
                     + " defined in configuration.properties file or in the GlobalSettings table in the database.");
             }
+            break;
         case PORT:
             value = cachedPort;
+            break;
         case START_TLS_ENABLED:
             value = cachedTls;
+            break;
         }
 
         return value;
-    }
-
-    /**
-     * Returns the actual section name found in the config file for the sectionAlias passed
-     * If not found, it means the section with that name is not found so return the alias
-     * 
-     * @param sectionAlias string to match in the section name of file
-     * @returns the actual section name in file or alias
-     */
-    public String getConfigSectionName(String sectionAlias) {
-        for (String section : configurationLoader.getConfigSettings().keySet()) {
-            if (section.contains(sectionAlias)) {
-                return section;
-            }
-        }
-        return sectionAlias;
-    }
-
-    /**
-     * Returns if SMTPS is to be used for setting up global setting properties
-     * 
-     * @returns true if smtps protocol is to be used
-     */
-    private boolean isSmtpsProtocolEnabled() {
-        String username = globalSettingDao.getString(GlobalSettingType.SMTP_USERNAME);
-        String password = globalSettingDao.getString(GlobalSettingType.SMTP_PASSWORD);
-
-        if (!StringUtils.isBlank(username) && !StringUtils.isBlank(password)) {
-            log.info("SMTP username and password are set, use SMTPS protocol for Emails");
-            return true;
-        }
-        return false;
     }
 
     public Map<String, String> getSmtpConfigSettings() {
