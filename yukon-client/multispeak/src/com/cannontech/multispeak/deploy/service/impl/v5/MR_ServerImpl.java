@@ -138,18 +138,12 @@ public class MR_ServerImpl implements MR_Server{
         List<MeterReading> meterReads = new ArrayList<MeterReading>();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         MspMeterReadReturnList mspMeterReadReturnList = null;
-        List<String> meterNbrList = new ArrayList<String>();
         multispeakEventLogService.methodInvoked("GetMeterReadingsByMeterIDs", vendor.getCompanyName());
         
         if (mspValidationService.isValidMeterCount(meterIDs, vendor.getMaxReturnRecords())) {
-            // TODO Spring 3.1.3 is not compatible with java 8 (lambda) so need to use above code instead of
-            // below code
-            meterNbrList = meterIDs.stream().map(new Function<MeterID, String>() {
-                @Override
-                public String apply(MeterID meterID) {
-                    return meterID.getMeterName();
-                }
-            }).collect(Collectors.toList());
+
+            List<String> meterNbrList =
+                meterIDs.stream().map(meterID -> meterID.getMeterName()).collect(Collectors.toList());
 
             // Retrieve meter reads for all meters.
             mspMeterReadReturnList =
@@ -213,18 +207,13 @@ public class MR_ServerImpl implements MR_Server{
         List<MeterReading> meterReadings = new ArrayList<MeterReading>();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         MspMeterReadReturnList mspMeterReadReturnList = null;
-        List<String> meterNbrList = new ArrayList<String>();
         multispeakEventLogService.methodInvoked("GetLatestMeterReadingsByMeterIDs", vendor.getCompanyName());
         
         if (mspValidationService.isValidMeterCount(meterIDs, vendor.getMaxReturnRecords())) {
-            // TODO Spring 3.1.3 is not compatible with java 8 (lambda) so need to use above code instead of below code
-            meterNbrList = meterIDs.stream().map(new Function<MeterID, String>() {
-                @Override
-                public String apply(MeterID meterID) {
-                    return meterID.getMeterName();
-                }
-            }).collect(Collectors.toList());
-            
+
+            List<String> meterNbrList =
+                meterIDs.stream().map(meterID -> meterID.getMeterName()).collect(Collectors.toList());
+
             mspMeterReadReturnList =
                     mspRawPointHistoryDao.retrieveLatestMeterReads(ReadBy.METER_NUMBERS, meterNbrList, null,
                         vendor.getMaxReturnRecords());
@@ -359,18 +348,9 @@ public class MR_ServerImpl implements MR_Server{
 
         if (isValidMeterCount) {
 
-            /*
-             * List<String> mspMeters =
-             * meterIDs.stream().map(meterID -> meterID.getMeterName()).collect(Collectors.toList());
-             */
-            // TODO Spring 3.1.3 is not compatible with java 8 (lambda) so need to use above code instead of below code
-            List<String> mspMeters = meterIDs.stream().map(new Function<MeterID, String>() {
+            List<String> mspMeters =
+                meterIDs.stream().map(meterID -> meterID.getMeterName()).collect(Collectors.toList());
 
-                @Override
-                public String apply(MeterID meterID) {
-                    return meterID.getMeterName();
-                }
-            }).collect(Collectors.toList());
             // TODO template name can come from objectID or primaryIdentifier value (objectGuid is mandatory)
             if (formattedBlockTemplateID != null && formattedBlockTemplateID.getObjectGUID() != null) {
                 blockTemplateName = formattedBlockTemplateID.getObjectGUID();
@@ -617,18 +597,9 @@ public class MR_ServerImpl implements MR_Server{
         List<ErrorObject> errorObject = new ArrayList<ErrorObject>();
 
         if (objectIDs != null) {
-            /*
-             * List<String> mspMeters = meterIDs.stream().map(meterID ->
-             * meterID.getMeterName()).collect(Collectors.toList());
-             */
-            // TODO Spring 3.1.3 is not compatible with java 8 (lambda) so need
-            // to use above code instead of below code
-            List<String> groupIDs = objectIDs.stream().map(new Function<ObjectID, String>() {
-                @Override
-                public String apply(ObjectID objectID) {
-                    return objectID.getObjectGUID();
-                }
-            }).collect(Collectors.toList());
+
+            List<String> groupIDs =
+                objectIDs.stream().map(ObjectID -> ObjectID.getObjectGUID()).collect(Collectors.toList());
 
             for (String groupID : groupIDs) {
                 ErrorObject errorObj = multispeakMeterService.deleteMeterGroups(groupID, vendor);
@@ -711,20 +682,8 @@ public class MR_ServerImpl implements MR_Server{
             hasFatalErrors = true;
         }
 
-        /*
-        * Set<String> meterNumbers = meterIDs.stream().map(MeterID ->
-        * meterID.getMeterName()).collect(Collectors.toSet());
-        */
-       // TODO Spring 3.1.3 is not compatible with java 8 (lambda) so need to
-       // use above code instead of below code
-       Set<String> meterNumbers = meterIDs.stream().map(new Function<MeterID, String>() {
+        Set<String> meterNumbers = meterIDs.stream().map(meterID -> meterID.getMeterName()).collect(Collectors.toSet());
 
-           @Override
-           public String apply(MeterID meterID) {
-               return meterID.getMeterName();
-           }
-       }).collect(Collectors.toSet());
-        
         Map<String, PaoIdentifier> paoIdsByMeterNumber =
                 paoDao.findPaoIdentifiersByMeterNumber(meterNumbers);
         Map<PaoIdentifier, String> meterNumbersByPaoId =

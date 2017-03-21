@@ -2,7 +2,6 @@ package com.cannontech.multispeak.endpoints.v5;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -394,21 +393,9 @@ public class MRServiceEndPoint {
         // Other option is:
         // demandResetEvents.get(0).getMeterGroups().getElectricMeterGroups().getMeterGroup().get(0).getMeterIDs().getMeterID().get(0).getMeterName();
                 
-        /*
-         * List<MeterIDs> meterIDs =
-         * demandResetEvents().stream().map(DemandResetEvent ->
-         * DemandResetEvent.getMeterIDs()).collect(Collectors.toList());
-         */
-        // TODO Spring 3.1.3 is not compatible with java 8 (lambda) so need to
-        // use above code instead of below code
-        List<MeterIDs> meterIDs = demandResetEvents.stream().map(new Function<DemandResetEvent, MeterIDs>() {
-
-                               @Override
-                               public MeterIDs apply(
-                                       DemandResetEvent demandResetEvent) {
-                                   return demandResetEvent.getMeterIDs();
-                               }
-                           }).collect(Collectors.toList());
+        List<MeterIDs> meterIDs =
+            demandResetEvents.stream().map(DemandResetEvent -> DemandResetEvent.getMeterIDs()).collect(
+                Collectors.toList());
 
         List<MeterID> meterIDList = new ArrayList<MeterID>();
        

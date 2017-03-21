@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -2315,19 +2314,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             final String transactionID, final String responseUrl) {
         
         ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
-        /*
-         * List<String> mspMeters =
-         * meterIDs.stream().map(meterID -> meterID.getMeterName()).collect(Collectors.toList());
-         */
-        // TODO Spring 3.1.3 is not compatible with java 8 (lambda) so need to use above code instead of below code
-        List<String> mspMeters = meterIDs.stream().map(new Function<MeterID, String>() {
 
-            @Override
-            public String apply(MeterID meterID) {
-                return meterID.getMeterName();
-            }
-        }).collect(Collectors.toList());
-        
+        List<String> mspMeters = meterIDs.stream().map(meterID -> meterID.getMeterName()).collect(Collectors.toList());
+
         log.info("Received " + mspMeters.size() + " Meter(s) for MeterReading from " + mspVendor.getCompanyName());
         multispeakEventLogService.initiateMeterReadRequest(mspMeters.size(), "InitiateMeterReadingsByMeterIDs", mspVendor.getCompanyName());
         List<YukonMeter> allPaosToRead = Lists.newArrayListWithCapacity(mspMeters.size());
@@ -2591,23 +2580,11 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     }
     
     @Override
-    public List<ErrorObject> initiateEndDeviceEventMonitoring(MultispeakVendor mspVendor,
-            List<MeterID> meterIDs) {
-        /*
-         * List<String> mspMeters = meterIDs.stream().map(meterID ->
-         * meterID.getMeterName()).collect(Collectors.toList());
-         */
-        // TODO Spring 3.1.3 is not compatible with java 8 (lambda) so need to
-        // use above code instead of below code
-        List<String> mspMeters = meterIDs.stream().map(new Function<MeterID, String>() {
-            @Override
-            public String apply(MeterID meterID) {
-                return meterID.getMeterName();
-            }
-        }).collect(Collectors.toList());
+    public List<ErrorObject> initiateEndDeviceEventMonitoring(MultispeakVendor mspVendor, List<MeterID> meterIDs) {
 
-        return addToGroup(mspMeters, SystemGroupEnum.USAGE_MONITORING,
-                          "InitiateEndDeviceEventMonitoring", mspVendor);
+        List<String> mspMeters = meterIDs.stream().map(meterID -> meterID.getMeterName()).collect(Collectors.toList());
+
+        return addToGroup(mspMeters, SystemGroupEnum.USAGE_MONITORING, "InitiateEndDeviceEventMonitoring", mspVendor);
     }
     
     @Override
@@ -2660,48 +2637,26 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     }
    
     @Override
-    public List<ErrorObject> setDisconnectedStatus(MultispeakVendor mspVendor,
-            List<MeterID> meterIDs) {
+    public List<ErrorObject> setDisconnectedStatus(MultispeakVendor mspVendor, List<MeterID> meterIDs) {
         boolean disable = globalSettingDao.getBoolean(GlobalSettingType.MSP_DISABLE_DISCONNECT_STATUS);
 
-        /*
-         * List<String> mspMeters = meterIDs.stream().map(meterID ->
-         * meterID.getMeterName()).collect(Collectors.toList());
-         */
-        // TODO Spring 3.1.3 is not compatible with java 8 (lambda) so need to
-        // use above code instead of below code
-        List<String> mspMeters = meterIDs.stream().map(new Function<MeterID, String>() {
-            @Override
-            public String apply(MeterID meterID) {
-                return meterID.getMeterName();
-            }
-        }).collect(Collectors.toList());
+        List<String> mspMeters = meterIDs.stream().map(meterID -> meterID.getMeterName()).collect(Collectors.toList());
 
-        return addToGroupAndDisable(mspMeters, SystemGroupEnum.DISCONNECTED_STATUS,
-                                    "SetDisconnectedStatus", mspVendor, disable);
+        return addToGroupAndDisable(mspMeters, SystemGroupEnum.DISCONNECTED_STATUS, "SetDisconnectedStatus", mspVendor,
+            disable);
     }
-    
+
     @Override
     public List<ErrorObject> clearDisconnectedStatus(MultispeakVendor mspVendor,
             List<MeterID> meterIDs) {
         // For the cancel method, the MSP_DISABLE_DISCONNECT_STATUS setting
         // shall be reversed to "undo" the disable.
         boolean enable = globalSettingDao.getBoolean(GlobalSettingType.MSP_DISABLE_DISCONNECT_STATUS);
-        /*
-         * List<String> mspMeters = meterIDs.stream().map(meterID ->
-         * meterID.getMeterName()).collect(Collectors.toList());
-         */
-        // TODO Spring 3.1.3 is not compatible with java 8 (lambda) so need to
-        // use above code instead of below code
-        List<String> mspMeters = meterIDs.stream().map(new Function<MeterID, String>() {
-            @Override
-            public String apply(MeterID meterID) {
-                return meterID.getMeterName();
-            }
-        }).collect(Collectors.toList());
 
-        return removeFromGroupAndEnable(mspMeters, SystemGroupEnum.DISCONNECTED_STATUS,
-                                        "CancelDisconnectedStatus", mspVendor, enable);
+        List<String> mspMeters = meterIDs.stream().map(meterID -> meterID.getMeterName()).collect(Collectors.toList());
+
+        return removeFromGroupAndEnable(mspMeters, SystemGroupEnum.DISCONNECTED_STATUS, "CancelDisconnectedStatus",
+            mspVendor, enable);
     }
 
     @Override

@@ -5,9 +5,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-
 import javax.xml.namespace.QName;
 
 import org.apache.commons.lang3.StringUtils;
@@ -344,32 +341,12 @@ public class MspObjectDaoImpl implements MspObjectDao {
             OtherContactInformation otherContactInformation = new OtherContactInformation();
             List<OtherContactItem> otherContactItems = otherContactInformation.getOtherContactItem();
 
-            // TODO : Please uncomment this part of code while merging with trunk.
-            // Due to absence of Spring 4, lambda expression will not work here
-
-            /*
-             * facilityNameValues.forEach((facilityName, facilityValue) -> {
-             * OtherContactItem otherContactItem = new OtherContactItem();
-             * otherContactItem.setDetails(facilityName);
-             * otherContactItem.setInfoType(facilityValue);
-             * otherContactItems.add(otherContactItem);
-             * });
-             */
-
-            // TODO : Please remove this part of code(foreach) while merging with trunk.
-            if (facilityNameValues != null) {
-                facilityNameValues.forEach(new BiConsumer<String, String>() {
-                    @Override
-                    public void accept(String facilityName, String facilityValue) {
-
-                        OtherContactItem otherContactItem = new OtherContactItem();
-                        otherContactItem.setDetails(facilityValue);
-                        otherContactItem.setInfoType(facilityName);
-                        otherContactItems.add(otherContactItem);
-
-                    }
-                });
-            }
+            facilityNameValues.forEach((facilityName, facilityValue) -> {
+                OtherContactItem otherContactItem = new OtherContactItem();
+                otherContactItem.setDetails(facilityName);
+                otherContactItem.setInfoType(facilityValue);
+                otherContactItems.add(otherContactItem);
+            });
 
             contactInfo.setOtherContactInformation(otherContactInformation);
             contactInfoReferable.setContactInfo(contactInfo);
@@ -407,36 +384,15 @@ public class MspObjectDaoImpl implements MspObjectDao {
             ArrayOfCustomerID arrayOfCustomerID = new ArrayOfCustomerID();
             List<ObjectID> objectIDs = arrayOfCustomerID.getCustomerID();
 
-            // TODO : Please uncomment this part of code while merging with trunk.
-            // Due to absence of Spring 4, lambda expression will not work here
-
-            /*
-             * customerIDs.forEach(customerID -> {
-             * ObjectID objectID = new ObjectID();
-             * objectID.setObjectGUID(customerID);
-             * SingleIdentifier singleIdentifier = new SingleIdentifier();
-             * singleIdentifier.setIdentifierName(MultispeakDefines.CUSTOMER_ID);
-             * singleIdentifier.setValue(customerID);
-             * objectID.setPrimaryIdentifier(singleIdentifier);
-             * objectIDs.add(objectID);
-             * });
-             */
-            // TODO : Please remove this part of code(foreach) while merging with trunk.
-            if (customerIDs != null) {
-                customerIDs.forEach(new Consumer<String>() {
-                    @Override
-                    public void accept(String customerID) {
-                        ObjectID objectID = new ObjectID();
-                        objectID.setObjectGUID(customerID);
-                        SingleIdentifier singleIdentifier = new SingleIdentifier();
-                        singleIdentifier.setIdentifierName(MultispeakDefines.CUSTOMER_ID);
-                        singleIdentifier.setValue(customerID);
-                        objectID.setPrimaryIdentifier(singleIdentifier);
-
-                        objectIDs.add(objectID);
-                    }
-                });
-            }
+            customerIDs.forEach(customerID -> {
+                ObjectID objectID = new ObjectID();
+                objectID.setObjectGUID(customerID);
+                SingleIdentifier singleIdentifier = new SingleIdentifier();
+                singleIdentifier.setIdentifierName(MultispeakDefines.CUSTOMER_ID);
+                singleIdentifier.setValue(customerID);
+                objectID.setPrimaryIdentifier(singleIdentifier);
+                objectIDs.add(objectID);
+            });
 
             getMetersByCustomerIDs.setArrayOfCustomerID(arrayOfCustomerID);
 
@@ -468,35 +424,16 @@ public class MspObjectDaoImpl implements MspObjectDao {
             ArrayOfAccountID arrayOfAccountID = new ArrayOfAccountID();
             List<ObjectID> objectIDs = arrayOfAccountID.getAccountID();
 
-            // TODO : Please uncomment this part of code while merging with trunk.
-            // Due to absence of Spring 4, lambda expression will not work here
+            accoundIDs.forEach(accountID -> {
+                ObjectID objectID = new ObjectID();
+                objectID.setObjectGUID(accountID);
+                SingleIdentifier singleIdentifier = new SingleIdentifier();
+                singleIdentifier.setIdentifierName(MultispeakDefines.ACCOUNT_ID);
+                singleIdentifier.setValue(accountID);
+                objectID.setPrimaryIdentifier(singleIdentifier);
+                objectIDs.add(objectID);
+            });
 
-            /*
-             * accoundIDs.forEach(accountID -> {
-             * ObjectID objectID = new ObjectID();
-             * objectID.setObjectGUID(accountID);
-             * SingleIdentifier singleIdentifier = new SingleIdentifier();
-             * singleIdentifier.setIdentifierName(MultispeakDefines.ACCOUNT_ID);
-             * singleIdentifier.setValue(accountID);
-             * objectID.setPrimaryIdentifier(singleIdentifier);
-             * objectIDs.add(objectID);
-             * });
-             */
-            // TODO : Please remove this part of code(foreach) while merging with trunk.
-            if (accoundIDs != null) {
-                accoundIDs.forEach(new Consumer<String>() {
-                    @Override
-                    public void accept(String accountID) {
-                        ObjectID objectID = new ObjectID();
-                        objectID.setObjectGUID(accountID);
-                        SingleIdentifier singleIdentifier = new SingleIdentifier();
-                        singleIdentifier.setIdentifierName(MultispeakDefines.ACCOUNT_ID);
-                        singleIdentifier.setValue(accountID);
-                        objectID.setPrimaryIdentifier(singleIdentifier);
-                        objectIDs.add(objectID);
-                    }
-                });
-            }
             getMetersByAccountIDs.setArrayOfAccountID(arrayOfAccountID);
 
             GetMetersByAccountIDsResponse response =
@@ -633,24 +570,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
             ArrayOfString arrayOfDoaminNames = new ArrayOfString();
             List<String> domainNamesList = arrayOfDoaminNames.getTheString();
 
-            // TODO : Please uncomment this part of code while merging with trunk.
-            // Due to absence of Spring 4, lambda expression will not work here
+            domainNames.forEach(domainName -> {
+                domainNamesList.add(domainName);
+            });
 
-            /*
-             * domainNames.forEach(domainName -> {
-             * domainNamesList.add(domainName);
-             * });
-             */
-            // TODO : Please remove this part of code(foreach) while merging with trunk.
-            if (domainNames != null) {
-                domainNames.forEach(new Consumer<String>() {
-                    @Override
-                    public void accept(String domainName) {
-                        domainNamesList.add(domainName);
-                    }
-                });
-            }
-           getDomainsByDomainNames.setArrayOfString(arrayOfDoaminNames);
+            getDomainsByDomainNames.setArrayOfString(arrayOfDoaminNames);
 
             GetDomainsByDomainNamesResponse response =
                 cbClient.getDomainsByDomainNames(mspVendor, endpointUrl, getDomainsByDomainNames);
@@ -659,35 +583,16 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 if (arrayOfDomain != null) {
                     List<Domain> domains = arrayOfDomain.getDomain();
 
-                    // TODO : Please uncomment this part of code while merging with trunk.
-                    // Due to absence of Spring 4, lambda expression will not work here
-
-                    /*
-                     * domains.forEach(domain -> {
-                     * DomainMembers domainMembers = domain.getDomainMembers();
-                     * if (domainMembers != null) {
-                     * List<DomainMember> domainMembersList = domainMembers.getDomainMember();
-                     * if (!domainMembersList.isEmpty()) {
-                     * allDomainMembers.addAll(domainMembersList);
-                     * }
-                     * }
-                     * });
-                     */
-                    // TODO : Please remove this part of code(foreach) while merging with trunk.
-                    domains.forEach(new Consumer<Domain>() {
-                        @Override
-                        public void accept(Domain domain) {
-                            DomainMembers domainMembers = domain.getDomainMembers();
-                            if (domainMembers != null) {
-                                List<DomainMember> domainMembersList = domainMembers.getDomainMember();
-                                if (!domainMembersList.isEmpty()) {
-                                    domainMembersList.forEach(domainMember -> {
-                                        substationNames.add(domainMember.getDescription());
-                                    });
-                                }
+                    domains.forEach(domain -> {
+                        DomainMembers domainMembers = domain.getDomainMembers();
+                        if (domainMembers != null) {
+                            List<DomainMember> domainMembersList = domainMembers.getDomainMember();
+                            if (!domainMembersList.isEmpty()) {
+                                domainMembersList.addAll(domainMembersList);
                             }
                         }
                     });
+
                 }
             }
         } catch (MultispeakWebServiceClientException e) {
@@ -706,38 +611,17 @@ public class MspObjectDaoImpl implements MspObjectDao {
             ArrayOfNetworkModelRef arrayOfNetworkModelRef = new ArrayOfNetworkModelRef();
             List<NetworkModelRef> networkModelRefList = arrayOfNetworkModelRef.getNetworkModelRef();
 
-            // TODO : Please uncomment this part of code while merging with trunk.
-            // Due to absence of Spring 4, lambda expression will not work here
+            locations.forEach(location -> {
+                NetworkModelRef networkModelRef = new NetworkModelRef();
+                networkModelRef.setNoun(new QName("http://www.multispeak.org/V5.0/commonTypes", "objectRef", "com"));
+                networkModelRef.setPrimaryIdentifierValue(location);
+                networkModelRef.setValue(location);
+                networkModelRef.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
+                networkModelRef.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
+                networkModelRefList.add(networkModelRef);
+            });
 
-            /*
-             * locations.forEach(location -> {
-             * NetworkModelRef networkModelRef = new NetworkModelRef();
-             * networkModelRef.setNoun(new QName("http://www.multispeak.org/V5.0/commonTypes", "objectRef",
-             * "com"));
-             * networkModelRef.setPrimaryIdentifierValue(location);
-             * networkModelRef.setValue(location);
-             * networkModelRef.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
-             * networkModelRef.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
-             * networkModelRefList.add(networkModelRef);
-             * });
-             */
-            // TODO : Please remove this part of code(foreach) while merging with trunk.
-            if (locations != null) {
-                locations.forEach(new Consumer<String>() {
-                    @Override
-                    public void accept(String location) {
-                        NetworkModelRef networkModelRef = new NetworkModelRef();
-                        networkModelRef.setNoun(new QName("http://www.multispeak.org/V5.0/commonTypes", "objectRef",
-                            "com"));
-                        networkModelRef.setPrimaryIdentifierValue(location);
-                        networkModelRef.setValue(location);
-                        networkModelRef.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
-                        networkModelRef.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
-                        networkModelRefList.add(networkModelRef);
-                    }
-                });
-            }
-          getMetersByNetworkModelRefs.setArrayOfNetworkModelRef(arrayOfNetworkModelRef);
+            getMetersByNetworkModelRefs.setArrayOfNetworkModelRef(arrayOfNetworkModelRef);
 
             GetMetersByNetworkModelRefsResponse response =
                 cbClient.getMetersByNetworkModelRef(mspVendor, endpointUrl, getMetersByNetworkModelRefs);
@@ -768,34 +652,15 @@ public class MspObjectDaoImpl implements MspObjectDao {
             ArrayOfMeterID arrayOfMeterID = new ArrayOfMeterID();
             List<MeterID> meterIds = arrayOfMeterID.getMeterID();
 
-            // TODO : Please uncomment this part of code while merging with trunk.
-            // Due to absence of Spring 4, lambda expression will not work here
+            meterNumbers.forEach(meterNumber -> {
+                MeterID meterID = new MeterID();
+                meterID.setMeterName(meterNumber);
+                meterID.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
+                meterID.setServiceType(ServiceKind.ELECTRIC);
+                meterID.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
+                meterIds.add(meterID);
+            });
 
-            /*
-             * meterNumbers.forEach(meterNumber -> {
-             * MeterID meterID = new MeterID();
-             * meterID.setMeterName(meterNumber);
-             * meterID.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
-             * meterID.setServiceType(ServiceKind.ELECTRIC);
-             * meterID.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
-             * meterIds.add(meterID);
-             * });
-             */
-
-            // TODO : Please remove this part of code(foreach) while merging with trunk.
-            if (meterNumbers != null) {
-                meterNumbers.forEach(new Consumer<String>() {
-                    @Override
-                    public void accept(String meterNumber) {
-                        MeterID meterID = new MeterID();
-                        meterID.setMeterName(meterNumber);
-                        meterID.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
-                        meterID.setServiceType(ServiceKind.ELECTRIC);
-                        meterID.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
-                        meterIds.add(meterID);
-                    }
-                });
-            }
             getCustomersByMeterIDs.setArrayOfMeterID(arrayOfMeterID);
 
             GetCustomersByMeterIDsResponse getCustomersByMeterIDsResponse =
