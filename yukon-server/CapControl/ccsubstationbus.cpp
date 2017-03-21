@@ -9,6 +9,11 @@
 #include "MsgVerifyBanks.h"
 #include "Exceptions.h"
 
+#include <boost/range/algorithm/sort.hpp>
+#include <boost/range/adaptor/filtered.hpp>
+#include <boost/range/algorithm_ext/push_back.hpp>
+#include <boost/range/adaptor/map.hpp>
+
 using Cti::CapControl::PointResponse;
 using Cti::CapControl::PointResponsePtr;
 using Cti::CapControl::PointResponseKey;
@@ -6004,11 +6009,75 @@ CtiCCCapBankPtr CtiCCSubstationBus::getMonitorPointParentBankAndFeeder( const Ct
     return nullptr;
 }
 
-bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+
+namespace   // anon
 {
 
-    bool retVal = false;
-    CtiRequestMsg* request = NULL;
+using Value = std::pair< CtiCCCapBankPtr, CtiCCFeederPtr >;
+
+std::vector< Value >
+    orderBanksForMultiVoltVar( const CtiFeeder_vec & feederCollection, int action )
+{
+    using Key   = std::pair< float, float >;    // bank(Close|Trip)Order, feederDisplayOrder
+
+    std::map<Key, Value>    order;
+
+    float ( CtiCCCapBank::* ordering )() const =
+        ( action == CtiCCCapBank::Close )
+                ?   & CtiCCCapBank::getCloseOrder
+                :   & CtiCCCapBank::getTripOrder;
+
+    for ( const CtiCCFeederPtr & feeder : feederCollection )
+    {
+        for ( const CtiCCCapBankPtr & bank : feeder->getAllCapBanks() )
+        {
+            order.insert( std::make_pair(
+                            std::make_pair( ( bank->*ordering )(), feeder->getDisplayOrder() ), 
+                            std::make_pair( bank, feeder ) ) );
+        }
+    }
+
+    const std::set< int >   openStates
+    {
+        CtiCCCapBank::Open,
+        CtiCCCapBank::OpenQuestionable
+    };
+
+    const std::set< int >   closeStates
+    {
+        CtiCCCapBank::Close,
+        CtiCCCapBank::CloseQuestionable
+    };
+
+    const std::set< int > & filterStates = 
+        ( action == CtiCCCapBank::Close )
+            ?   openStates
+            :   closeStates;
+
+    auto filter =
+        [ &filterStates ]( const Value & blob ) -> bool
+        {
+            return filterStates.count( blob.first->getControlStatus() );
+        };
+
+    std::vector< Value >   possibleBanks;
+
+    boost::push_back( possibleBanks,
+                      order | boost::adaptors::map_values
+                            | boost::adaptors::filtered( filter ) );
+
+    return possibleBanks;
+}
+
+}
+
+
+bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChanges, EventLogEntries &ccEvents, CtiMultiMsg_vec& pilMessages)
+{
+    CtiRequestMsg * request = nullptr;
+    CtiCCCapBankPtr bank    = nullptr;
+    CtiCCFeederPtr  feeder  = nullptr;
+
     CtiTime currentDateTime;
 
     StrategyManager::SharedPtr  strategy = getStrategy();
@@ -6019,251 +6088,236 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
 
     if ( getStrategy()->getMethodType() == ControlStrategy::IndividualFeeder )
     {
-        for (long i = 0; i < _ccfeeders.size();i++)
+        for ( CtiCCFeederPtr currentFeeder : _ccfeeders )
         {
-            CtiCCFeederPtr currentFeeder = (CtiCCFeederPtr)_ccfeeders[i];
-            if (currentFeeder->getCurrentVarLoadPointId() > 0)
+            if ( request )
             {
-
-                double lagLevel = (isPeakTime(currentDateTime)?currentFeeder->getStrategy()->getPeakVARLag():currentFeeder->getStrategy()->getOffPeakVARLag());
-                double leadLevel = (getPeakTimeFlag()?currentFeeder->getStrategy()->getPeakVARLead():currentFeeder->getStrategy()->getOffPeakVARLead());
-                if( !_IGNORE_NOT_NORMAL_FLAG ||
-                    ( currentFeeder->getCurrentVarPointQuality() == NormalQuality &&
-                      currentFeeder->getCurrentVoltPointQuality() == NormalQuality ) )
-                {
-                    if( currentFeeder->getCurrentVarLoadPointValue() > lagLevel )
-                    {
-                        //select bank to open...make sure volt points stay in range though.
-                        std::vector <CtiCCMonitorPointPtr>& monPoints = currentFeeder->getMultipleMonitorPoints();
-                        for (int j = 0; j < monPoints.size(); j++)
-                        {
-                            CtiCCMonitorPoint & pt = *monPoints[j];
-                            CtiCCCapBankPtr bank = currentFeeder->getMonitorPointParentBank(pt);
-                            if (bank->getControlStatus() == CtiCCCapBank::Open ||
-                                bank->getControlStatus() == CtiCCCapBank::OpenQuestionable )
-                            {
-                                try
-                                {
-                                    PointResponse pResponse = bank->getPointResponse(pt);
-
-                                    const double value = pt.getValue() + pResponse.getDelta();
-
-                                    double upperBound = upperLimit;
-                                    double lowerBound = lowerLimit;
-
-                                    if ( pt.getOverrideStrategy() )
-                                    {
-                                        upperBound = pt.getUpperBandwidth();
-                                        lowerBound = pt.getLowerBandwidth();
-                                    }
-
-                                    if ( ( lowerBound <= value && value <= upperBound )
-                                            || value < upperBound )
-                                    {
-                                        CTILOG_INFO(dout, "Attempting to Improve PF on Feeder: "<<getPaoName()<<" CapBank: "<<bank->getPaoName());
-
-                                        if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
-                                        {
-                                            CTILOG_DEBUG(dout, "MULTIVOLT: MonitorPoint->bankID/pointID: "<<pt.getDeviceId()<<"/"<<pt.getPointId()<<" Parent CapBank: "<<bank->getPaoName() <<" selected to Close");
-                                        }
-                                        //Check other monitor point responses using this potential capbank
-                                        if (currentFeeder->areOtherMonitorPointResponsesOk(pt.getPointId(), bank, CtiCCCapBank::Close))
-                                        {
-                                            double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
-                                                                       ? currentFeeder->getCurrentVoltLoadPointValue()
-                                                                       : currentFeeder->getCurrentVarLoadPointValue();
-
-                                            string text = currentFeeder->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, currentFeeder->getCurrentVarLoadPointValue());
-                                            request = currentFeeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, text, currentFeeder->getCurrentVarLoadPointValue(),
-                                                                                              currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
-
-                                             currentFeeder->updatePointResponsePreOpValues(bank);
-                                        }
-                                    }
-                                }
-                                catch (NotFoundException& e)
-                                {
-                                    CTILOG_WARN(dout, "PointResponse not found. CapBank: "<< bank->getPaoName() <<  " pointId: " << pt.getPointId());
-                                }
-                            }
-                            if (request != NULL)
-                            {
-                                break;
-                            }
-
-                        }
-
-                    }
-                    else if ( currentFeeder->getCurrentVarLoadPointValue() < leadLevel )
-                    {
-                        //select bank to open...make sure volt points stay in range though.
-                        std::vector <CtiCCMonitorPointPtr>& monPoints = currentFeeder->getMultipleMonitorPoints();
-                        for (int j = 0; j < monPoints.size(); j++)
-                        {
-                            CtiCCMonitorPoint & pt = *monPoints[j];
-                            CtiCCCapBankPtr bank = currentFeeder->getMonitorPointParentBank(pt);
-                            if (bank->getControlStatus() == CtiCCCapBank::Close ||
-                                bank->getControlStatus() == CtiCCCapBank::CloseQuestionable )
-                            {
-                                try
-                                {
-                                    PointResponse pResponse = bank->getPointResponse(pt);
-
-                                    const double value = pt.getValue() - pResponse.getDelta();
-
-                                    double upperBound = upperLimit;
-                                    double lowerBound = lowerLimit;
-
-                                    if ( pt.getOverrideStrategy() )
-                                    {
-                                        upperBound = pt.getUpperBandwidth();
-                                        lowerBound = pt.getLowerBandwidth();
-                                    }
-
-                                    if ( ( lowerBound <= value && value <= upperBound )
-                                            || value > lowerBound )
-                                    {
-                                        CTILOG_INFO(dout, "Attempting to Improve PF on Feeder: "<<getPaoName()<<" CapBank: "<<bank->getPaoName());
-
-                                        if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
-                                        {
-                                            CTILOG_DEBUG(dout, "MULTIVOLT: MonitorPoint->bankID/pointID: "<<pt.getDeviceId()<<"/"<<pt.getPointId()<<" Parent CapBank: "<<bank->getPaoName() <<" selected to Open");
-                                        }
-                                        //Check other monitor point responses using this potential capbank
-                                        if (currentFeeder->areOtherMonitorPointResponsesOk(pt.getPointId(), bank, CtiCCCapBank::Open))
-                                        {
-                                            double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
-                                                                       ? currentFeeder->getCurrentVoltLoadPointValue()
-                                                                       : currentFeeder->getCurrentVarLoadPointValue();
-
-                                            string text = currentFeeder->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, currentFeeder->getCurrentVarLoadPointValue());
-                                            request = currentFeeder->createIncreaseVarRequest(bank, pointChanges, ccEvents, text, currentFeeder->getCurrentVarLoadPointValue(),
-                                                                                              currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
-
-                                             currentFeeder->updatePointResponsePreOpValues(bank);
-                                        }
-                                    }
-                                }
-                                catch (NotFoundException& e)
-                                {
-                                    CTILOG_WARN(dout, "PointResponse not found. CapBank: "<< bank->getPaoName() <<  " pointId: " << pt.getPointId());
-                                }
-
-                            }
-                            if (request != NULL)
-                            {
-                                break;
-                            }
-
-                        }
-
-                    }
-                    else
-                    {
-                        //nothing.  var load within limits...
-                    }
-                }
-                if (request != NULL)
-                {
-                    break;
-                }
+                // We have a request -- we're done
+                break;
             }
-            else
+
+            if ( currentFeeder->getCurrentVarLoadPointId() <= 0 )
             {
-               if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
+               if ( _CC_DEBUG & CC_DEBUG_MULTIVOLT )
                {
-                   CTILOG_DEBUG(dout, "MULTIVOLT: Var Information NOT available for Feeder: "<<currentFeeder->getPaoName());
+                   CTILOG_DEBUG( dout, "MULTIVOLT: Var Information NOT available for Feeder: " << currentFeeder->getPaoName() );
                }
+               continue;
             }
-        }
-        if( request != NULL )
-        {
-            pilMessages.push_back(request);
-            setOperationSentWaitFlag(true);
-            //setLastCapBankControlledDeviceId( bestBank->getPAOId());
-            setVarValueBeforeControl(getCurrentVarLoadPointValue());
-            figureEstimatedVarLoadPointValue();
-            if( getEstimatedVarLoadPointId() > 0 )
+
+            if( !_IGNORE_NOT_NORMAL_FLAG ||
+                ( currentFeeder->getCurrentVarPointQuality() == NormalQuality &&
+                  currentFeeder->getCurrentVoltPointQuality() == NormalQuality ) )
             {
-                pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+                double lagLevel  = ( peakTime ? currentFeeder->getStrategy()->getPeakVARLag() : currentFeeder->getStrategy()->getOffPeakVARLag() );
+                double leadLevel = ( peakTime ? currentFeeder->getStrategy()->getPeakVARLead() : currentFeeder->getStrategy()->getOffPeakVARLead() );
+
+                if( currentFeeder->getCurrentVarLoadPointValue() > lagLevel )
+                {
+                    for ( auto bankFeederPairs : orderBanksForMultiVoltVar( { currentFeeder }, CtiCCCapBank::Close ) )
+                    {
+                        bank    = bankFeederPairs.first;
+                        feeder  = bankFeederPairs.second;
+
+                        for ( CtiCCMonitorPointPtr monitor : bank->getMonitorPoint() )
+                        {
+                            try
+                            {
+                                PointResponse response = bank->getPointResponse( *monitor );
+
+                                const double value = monitor->getValue() + response.getDelta();
+
+                                double upperBound = upperLimit;
+                                double lowerBound = lowerLimit;
+
+                                if ( monitor->getOverrideStrategy() )
+                                {
+                                    upperBound = monitor->getUpperBandwidth();
+                                    lowerBound = monitor->getLowerBandwidth();
+                                }
+
+                                if ( ( lowerBound <= value && value <= upperBound )
+                                        || value < upperBound )
+                                {
+                                    CTILOG_INFO( dout, "Attempting to Improve PF on Feeder: " << feeder->getPaoName() << " CapBank: " << bank->getPaoName() );
+
+                                    if ( _CC_DEBUG & CC_DEBUG_MULTIVOLT )
+                                    {
+                                        CTILOG_DEBUG( dout, "MULTIVOLT: MonitorPoint->bankID/pointID: " << monitor->getDeviceId() << "/" << monitor->getPointId() << " Parent CapBank: " << bank->getPaoName() << " selected to Close" );
+                                    }
+
+                                    //Check other monitor point responses using this potential capbank
+
+                                    if ( feeder->areOtherMonitorPointResponsesOk( monitor->getPointId(), bank, CtiCCCapBank::Close ) )
+                                    {
+                                        double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
+                                                                   ? feeder->getCurrentVoltLoadPointValue()
+                                                                   : feeder->getCurrentVarLoadPointValue();
+
+                                        std::string text = feeder->createTextString( getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, feeder->getCurrentVarLoadPointValue() );
+
+                                        request = feeder->createDecreaseVarRequest( bank, pointChanges, ccEvents, text, feeder->getCurrentVarLoadPointValue(),
+                                                                                    feeder->getPhaseAValue(), feeder->getPhaseBValue(), feeder->getPhaseCValue() );
+
+                                        feeder->updatePointResponsePreOpValues( bank );
+
+                                        break;  // end our search
+                                    }
+                                }
+                            }
+                            catch ( NotFoundException & e )
+                            {
+                                CTILOG_WARN( dout, "PointResponse not found. CapBank: " << bank->getPaoName() << " pointId: " << monitor->getPointId() );
+                            }
+                        }
+                        if ( request )
+                        {
+                            break;
+                        }
+                    }
+                }
+                else if ( currentFeeder->getCurrentVarLoadPointValue() < leadLevel )
+                {
+                    for ( auto bankFeederPairs : orderBanksForMultiVoltVar( { currentFeeder }, CtiCCCapBank::Open ) )
+                    {
+                        bank    = bankFeederPairs.first;
+                        feeder  = bankFeederPairs.second;
+
+                        for ( CtiCCMonitorPointPtr monitor : bank->getMonitorPoint() )
+                        {
+                            try
+                            {
+                                PointResponse response = bank->getPointResponse( *monitor );
+
+                                const double value = monitor->getValue() - response.getDelta();
+
+                                double upperBound = upperLimit;
+                                double lowerBound = lowerLimit;
+
+                                if ( monitor->getOverrideStrategy() )
+                                {
+                                    upperBound = monitor->getUpperBandwidth();
+                                    lowerBound = monitor->getLowerBandwidth();
+                                }
+
+                                if ( ( lowerBound <= value && value <= upperBound )
+                                        || value > lowerBound )
+                                {
+                                    CTILOG_INFO( dout, "Attempting to Improve PF on Feeder: " << feeder->getPaoName() << " CapBank: " << bank->getPaoName() );
+
+                                    if ( _CC_DEBUG & CC_DEBUG_MULTIVOLT )
+                                    {
+                                        CTILOG_DEBUG( dout, "MULTIVOLT: MonitorPoint->bankID/pointID: " << monitor->getDeviceId() << "/" << monitor->getPointId() << " Parent CapBank: " << bank->getPaoName() << " selected to Open" );
+                                    }
+
+                                    //Check other monitor point responses using this potential capbank
+
+                                    if ( feeder->areOtherMonitorPointResponsesOk( monitor->getPointId(), bank, CtiCCCapBank::Open ) )
+                                    {
+                                        double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
+                                                                    ? feeder->getCurrentVoltLoadPointValue()
+                                                                    : feeder->getCurrentVarLoadPointValue();
+
+                                        std::string text = feeder->createTextString( getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, feeder->getCurrentVarLoadPointValue() );
+
+                                        request = feeder->createIncreaseVarRequest( bank, pointChanges, ccEvents, text, feeder->getCurrentVarLoadPointValue(),
+                                                                                    feeder->getPhaseAValue(), feeder->getPhaseBValue(), feeder->getPhaseCValue() );
+
+                                        feeder->updatePointResponsePreOpValues( bank );
+
+                                        break;  // end our search
+                                    }
+                                }
+                            }
+                            catch ( NotFoundException & e )
+                            {
+                                CTILOG_WARN( dout, "PointResponse not found. CapBank: " << bank->getPaoName() << " pointId: " << monitor->getPointId() );
+                            }
+                        }
+                        if ( request )
+                        {
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    //nothing.  var load within limits...
+                }
             }
-
-            retVal = true;
         }
-
     }
     else
     {
-        if (getCurrentVarLoadPointId() > 0)
+        if ( getCurrentVarLoadPointId() > 0 )
         {
-
             CtiCCFeederPtr  parentFeeder = nullptr;
 
-            double lagLevel = (isPeakTime(currentDateTime)?getStrategy()->getPeakVARLag():getStrategy()->getOffPeakVARLag());
-            double leadLevel = (getPeakTimeFlag()?getStrategy()->getPeakVARLead():getStrategy()->getOffPeakVARLead());
             if( !_IGNORE_NOT_NORMAL_FLAG ||
                 ( getCurrentVarPointQuality() == NormalQuality &&
                   getCurrentVoltPointQuality() == NormalQuality ) )
             {
+                double lagLevel  = ( peakTime ? getStrategy()->getPeakVARLag() : getStrategy()->getOffPeakVARLag() );
+                double leadLevel = ( peakTime ? getStrategy()->getPeakVARLead() : getStrategy()->getOffPeakVARLead() );
+
                 if( getCurrentVarLoadPointValue() > lagLevel )
                 {
-                    //select bank to open...make sure volt points stay in range though.
-                    std::vector <CtiCCMonitorPointPtr>& monPoints = getMultipleMonitorPoints();
-                    for (int i = 0; i < monPoints.size(); i++)
+                    for ( auto bankFeederPairs : orderBanksForMultiVoltVar( getCCFeeders(), CtiCCCapBank::Close ) )
                     {
-                        CtiCCMonitorPoint & pt = *monPoints[i];
-                        CtiCCCapBankPtr bank = getMonitorPointParentBankAndFeeder(pt, parentFeeder);
+                        bank    = bankFeederPairs.first;
+                        feeder  = bankFeederPairs.second;
 
-                        if ( bank && parentFeeder )
+                        for ( CtiCCMonitorPointPtr monitor : bank->getMonitorPoint() )
                         {
-                            if (bank->getControlStatus() == CtiCCCapBank::Open ||
-                                bank->getControlStatus() == CtiCCCapBank::OpenQuestionable )
+                            try
                             {
-                                try
+                                PointResponse response = bank->getPointResponse( *monitor );
+
+                                const double value = monitor->getValue() + response.getDelta();
+
+                                double upperBound = upperLimit;
+                                double lowerBound = lowerLimit;
+
+                                if ( monitor->getOverrideStrategy() )
                                 {
-                                    PointResponse pResponse = bank->getPointResponse(pt);
-
-                                    const double value = pt.getValue() + pResponse.getDelta();
-
-                                    double upperBound = upperLimit;
-                                    double lowerBound = lowerLimit;
-
-                                    if ( pt.getOverrideStrategy() )
-                                    {
-                                        upperBound = pt.getUpperBandwidth();
-                                        lowerBound = pt.getLowerBandwidth();
-                                    }
-
-                                    if ( ( lowerBound <= value && value <= upperBound )
-                                            || value < upperBound )
-                                    {
-                                        CTILOG_INFO(dout, "Attempting to Improve PF on Sub: "<<getPaoName()<<" CapBank: "<<bank->getPaoName());
-
-                                        if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
-                                        {
-                                            CTILOG_DEBUG(dout, "MULTIVOLT: MonitorPoint->bankID/pointID: "<<pt.getDeviceId()<<"/"<<pt.getPointId()<<" Parent CapBank: "<<bank->getPaoName() <<" selected to Close");
-                                        }
-                                        //Check other monitor point responses using this potential capbank
-                                        if (areOtherMonitorPointResponsesOk(pt.getPointId(), bank, CtiCCCapBank::Close))
-                                        {
-                                            double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
-                                                                        ? getCurrentVoltLoadPointValue()
-                                                                        : getCurrentVarLoadPointValue();
-
-                                            string text = parentFeeder->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
-                                            request =  parentFeeder->createDecreaseVarRequest(bank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
-
-                                            updatePointResponsePreOpValues(bank);
-                                        }
-                                    }
+                                    upperBound = monitor->getUpperBandwidth();
+                                    lowerBound = monitor->getLowerBandwidth();
                                 }
-                                catch (NotFoundException& e)
+
+                                if ( ( lowerBound <= value && value <= upperBound )
+                                        || value < upperBound )
                                 {
-                                    CTILOG_WARN(dout, "PointResponse not found. CapBank: "<< bank->getPaoName() <<  " pointId: " << pt.getPointId());
+                                    CTILOG_INFO( dout, "Attempting to Improve PF on Sub: " << getPaoName() << " CapBank: " << bank->getPaoName() );
+
+                                    if ( _CC_DEBUG & CC_DEBUG_MULTIVOLT )
+                                    {
+                                        CTILOG_DEBUG( dout, "MULTIVOLT: MonitorPoint->bankID/pointID: " << monitor->getDeviceId() << "/" << monitor->getPointId() << " Parent CapBank: " << bank->getPaoName() << " selected to Close" );
+                                    }
+
+                                    //Check other monitor point responses using this potential capbank
+
+                                    if ( areOtherMonitorPointResponsesOk( monitor->getPointId(), bank, CtiCCCapBank::Close ) )
+                                    {
+                                        double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
+                                                                    ? getCurrentVoltLoadPointValue()
+                                                                    : getCurrentVarLoadPointValue();
+
+                                        std::string text = feeder->createTextString( getStrategy()->getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue() );
+
+                                        request = feeder->createDecreaseVarRequest( bank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
+                                                                                    getPhaseAValue(), getPhaseBValue(), getPhaseCValue() );
+                                        updatePointResponsePreOpValues( bank );
+
+                                        break;  // end our search
+                                    }
                                 }
                             }
+                            catch ( NotFoundException & e )
+                            {
+                                CTILOG_WARN( dout, "PointResponse not found. CapBank: " << bank->getPaoName() << " pointId: " << monitor->getPointId() );
+                            }
                         }
-                        if (request != NULL)
+                        if ( request )
                         {
                             break;
                         }
@@ -6271,69 +6325,67 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
                 }
                 else if ( getCurrentVarLoadPointValue() < leadLevel )
                 {
-                    //select bank to open...make sure volt points stay in range though.
-                    std::vector <CtiCCMonitorPointPtr>& monPoints = getMultipleMonitorPoints();
-                    for (int i = 0; i < monPoints.size(); i++)
+                    for ( auto bankFeederPairs : orderBanksForMultiVoltVar( getCCFeeders(), CtiCCCapBank::Open ) )
                     {
-                        CtiCCMonitorPoint & pt = *monPoints[i];
-                        CtiCCCapBankPtr bank = getMonitorPointParentBankAndFeeder(pt, parentFeeder);
+                        bank    = bankFeederPairs.first;
+                        feeder  = bankFeederPairs.second;
 
-                        if ( bank && parentFeeder)
+                        for ( CtiCCMonitorPointPtr monitor : bank->getMonitorPoint() )
                         {
-                            if (bank->getControlStatus() == CtiCCCapBank::Close ||
-                                bank->getControlStatus() == CtiCCCapBank::CloseQuestionable )
+                            try
                             {
-                                try
+                                PointResponse response = bank->getPointResponse( *monitor );
+
+                                const double value = monitor->getValue() - response.getDelta();
+
+                                double upperBound = upperLimit;
+                                double lowerBound = lowerLimit;
+
+                                if ( monitor->getOverrideStrategy() )
                                 {
-                                    PointResponse pResponse = bank->getPointResponse(pt);
-
-                                    const double value = pt.getValue() - pResponse.getDelta();
-
-                                    double upperBound = upperLimit;
-                                    double lowerBound = lowerLimit;
-
-                                    if ( pt.getOverrideStrategy() )
-                                    {
-                                        upperBound = pt.getUpperBandwidth();
-                                        lowerBound = pt.getLowerBandwidth();
-                                    }
-
-                                    if ( ( lowerBound <= value && value <= upperBound )
-                                            || value > lowerBound )
-                                    {
-                                        CTILOG_INFO(dout, "Attempting to Improve PF on Sub: "<<getPaoName()<<" CapBank: "<<bank->getPaoName());
-
-                                        if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
-                                        {
-                                            CTILOG_DEBUG(dout, "MULTIVOLT: MonitorPoint->bankID/pointID: "<<pt.getDeviceId()<<"/"<<pt.getPointId()<<" Parent CapBank: "<<bank->getPaoName() <<" selected to Open");
-                                        }
-                                        //Check other monitor point responses using this potential capbank
-                                        if (areOtherMonitorPointResponsesOk(pt.getPointId(), bank, CtiCCCapBank::Open))
-                                        {
-                                            double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
-                                                                        ? getCurrentVoltLoadPointValue()
-                                                                        : getCurrentVarLoadPointValue();
-
-                                            string text = parentFeeder->createTextString(getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
-                                            request = parentFeeder->createIncreaseVarRequest(bank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
-
-                                            updatePointResponsePreOpValues(bank);
-                                        }
-                                    }
+                                    upperBound = monitor->getUpperBandwidth();
+                                    lowerBound = monitor->getLowerBandwidth();
                                 }
-                                catch (NotFoundException& e)
+                                
+                                if ( ( lowerBound <= value && value <= upperBound )
+                                        || value > lowerBound )
                                 {
-                                    CTILOG_WARN(dout, "PointResponse not found. CapBank: "<< bank->getPaoName() <<  " pointId: " << pt.getPointId());
+                                    CTILOG_INFO( dout, "Attempting to Improve PF on Sub: " << getPaoName() << " CapBank: " << bank->getPaoName() );
+
+                                    if ( _CC_DEBUG & CC_DEBUG_MULTIVOLT )
+                                    {
+                                        CTILOG_DEBUG( dout, "MULTIVOLT: MonitorPoint->bankID/pointID: " << monitor->getDeviceId() << "/" << monitor->getPointId() << " Parent CapBank: " << bank->getPaoName() << " selected to Open" );
+                                    }
+
+                                    //Check other monitor point responses using this potential capbank
+
+                                    if ( areOtherMonitorPointResponsesOk( monitor->getPointId(), bank, CtiCCCapBank::Open ) )
+                                    {
+                                        double controlValue = ( getStrategy()->getUnitType() != ControlStrategy::Volts )
+                                                                    ? getCurrentVoltLoadPointValue()
+                                                                    : getCurrentVarLoadPointValue();
+
+                                        std::string text = feeder->createTextString( getStrategy()->getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue() );
+
+                                        request = feeder->createIncreaseVarRequest( bank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
+                                                                                    getPhaseAValue(), getPhaseBValue(), getPhaseCValue() );
+
+                                        updatePointResponsePreOpValues( bank );
+
+                                        break;  // end our search
+                                    }
                                 }
                             }
+                            catch ( NotFoundException & e )
+                            {
+                                CTILOG_WARN( dout, "PointResponse not found. CapBank: " << bank->getPaoName() << " pointId: " << monitor->getPointId() );
+                            }
                         }
-                        if (request != NULL)
+                        if ( request )
                         {
                             break;
                         }
-
                     }
-
                 }
                 else
                 {
@@ -6348,23 +6400,31 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
                CTILOG_DEBUG(dout, "MULTIVOLT: Var Information NOT available for Sub: "<<getPaoName());
            }
         }
-
-        if( request != NULL )
-        {
-            pilMessages.push_back(request);
-            setOperationSentWaitFlag(true);
-            //setLastCapBankControlledDeviceId( bestBank->getPAOId());
-            setVarValueBeforeControl(getCurrentVarLoadPointValue());
-            figureEstimatedVarLoadPointValue();
-            if( getEstimatedVarLoadPointId() > 0 )
-            {
-                pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
-            }
-
-            retVal = true;
-        }
     }
-    return retVal;
+
+    if ( request != NULL )
+    {
+        pilMessages.push_back( request );
+
+        setOperationSentWaitFlag( true );
+        setVarValueBeforeControl( getCurrentVarLoadPointValue() );
+        setLastFeederControlled( feeder->getPaoId());
+        setCurrentDailyOperationsAndSendMsg( getCurrentDailyOperations() + 1, pointChanges );
+
+        figureEstimatedVarLoadPointValue();
+        if ( getEstimatedVarLoadPointId() > 0 )
+        {
+            pointChanges.push_back(new CtiPointDataMsg(getEstimatedVarLoadPointId(),getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));
+        }
+
+        feeder->setLastCapBankControlledDeviceId( bank->getPaoId() );
+        feeder->setRecentlyControlledFlag( true );
+        feeder->setVarValueBeforeControl( feeder->getCurrentVarLoadPointValue() );
+
+        return true;
+    }
+
+    return false;
 }
 
 

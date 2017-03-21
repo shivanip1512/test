@@ -313,10 +313,6 @@ private:
     long _totaloperations;
     CtiTime _laststatuschangetime;
     long _tagscontrolstatus;
-    long _originalfeederid;
-    float _originalswitchingorder;
-    float _originalcloseorder;
-    float _originaltriporder;
 
     //verification info
     std::string _additionalFlags;
