@@ -35,15 +35,15 @@ public interface ScheduledGroupRequestExecutionDao {
 	 */
 	public int getDistinctCreCountByJobId(int jobId, Date startTime, Date stopTime);
 	
-	/**
-     * This query gives you the success, fail, and total counts for any given jobId. 
-     * It is counting up failures and successes from the CommandRequestExecResult table (by looking at
-     * whether or not the execution's ErrorCode was zero) and is getting the max RequestCount (total)
-     * from the CommandRequestExec table. Getting the max like this is needed because we are joining 
-     * the CRE table with the CRER table and hence have not one row to select the RequestCount from,
-     * but many rows. Using the max function is the way we chose to get that value here instead of
+    /**
+     * This query gives you the success, fail, and total counts for the latest job belonging to the job
+     * group of the given jobId. It is counting up failures and successes from the CommandRequestExecResult
+     * table (by looking at whether or not the execution's ErrorCode was zero) and is getting the max
+     * RequestCount (total) from the CommandRequestExec table. Getting the max like this is needed because
+     * we are joining the CRE table with the CRER table and hence have not one row to select the RequestCount
+     * from, but many rows. Using the max function is the way we chose to get that value here instead of
      * writing a separate query to get that value on its own.
-	 */
+     */
 	public ScheduledGroupExecutionCounts getExecutionCountsForJobId(int jobId);
 
 	/**
