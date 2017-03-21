@@ -24,11 +24,13 @@ yukon.da.schedules = (function () {
 
                     var mode = popup.find('form').data('mode'),
                         title = popup.find('.js-popup-title')[0].value,
+                        confirmText = popup.find('.js-confirm-delete')[0].value,
                         buttons = [],
                         deleteButton = {
                             text: yg.text.deleteButton,
                             click: function (ev) {
                                 yukon.ui.confirm({
+                                    confirmText: confirmText,
                                     dialog: popup,
                                     event: 'yukon:da:schedules:delete',
                                 });
