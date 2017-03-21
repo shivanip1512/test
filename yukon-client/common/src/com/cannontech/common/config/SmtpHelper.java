@@ -39,9 +39,9 @@ public class SmtpHelper {
     private Cache<String, String> smtpConfigSettings = CacheBuilder.newBuilder().maximumSize(100).build();
 
     // local helper copies of common properties
-    private volatile String cachedHost = null;
-    private volatile String cachedPort = null;
-    private volatile String cachedTls = null;
+    private volatile String cachedHost;
+    private volatile String cachedPort;
+    private volatile String cachedTls;
 
     private static final String SMTP_CONFIGURATION_KEY_ALIAS = "smtp";
 
@@ -101,7 +101,8 @@ public class SmtpHelper {
 
         if (smtpPropertyValue == null) { // not in configSettings, load from global settings
             smtpPropertyValue = globalSettingDao.getString(propertyType.getGlobalSettingType());
-            // TODO : During testing with gmail smtp server this logic can be tested. For now we are setting mail.smtp.*
+            // TODO : During testing with gmail smtp server this logic can be tested. For now we are setting
+            // mail.smtp.*
             // TODO : YUK-16427 Should address this issue
             // smtpConfigSettings.put(propertyType.getKey(isSmtpsProtocolEnabled()), smtpPropertyValue);
             smtpConfigSettings.put(propertyType.getKey(false), smtpPropertyValue);
@@ -122,7 +123,8 @@ public class SmtpHelper {
         case HOST:
             value = cachedHost;
             if (StringUtils.isEmpty(value)) {
-                // The SMTP host name must be configured in configuration.properties file or in the GlobalSettings.
+                // The SMTP host name must be configured in configuration.properties file or in the
+                // GlobalSettings.
                 throw new MessagingException("No " + propertyType
                     + " defined in configuration.properties file or in the GlobalSettings table in the database.");
             }

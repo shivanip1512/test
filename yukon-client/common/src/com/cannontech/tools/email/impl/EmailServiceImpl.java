@@ -78,27 +78,31 @@ public class EmailServiceImpl implements EmailService {
     private void send(final MimeMessage message, Session session) throws MessagingException {
         SmtpAuthenticator authenticator = new SmtpAuthenticator();
         PasswordAuthentication authentication = authenticator.getPasswordAuthentication();
-        
-        if (authentication != null) {
-            Transport transport = session.getTransport("smtps");
-            String username = authentication.getUserName();
-            String password = authentication.getPassword();
 
-            String host = configurationSource.getCommonProperty(SmtpPropertyType.HOST);
-            Integer portNum = Integer.getInteger(configurationSource.getCommonProperty(SmtpPropertyType.PORT));
-            if (portNum != null) {
-                transport.connect(host, portNum, username, password);
-            } else {
-                transport.connect(host, username, password);
+        if (authentication != null) {
+            try {
+                Transport transport = session.getTransport("smtps");
+                String username = authentication.getUserName();
+                String password = authentication.getPassword();
+
+                String host = configurationSource.getCommonProperty(SmtpPropertyType.HOST);
+                String port = configurationSource.getCommonProperty(SmtpPropertyType.PORT);
+                if (!StringUtils.isEmpty(port)) {
+                    transport.connect(host, Integer.parseInt(port), username, password);
+                } else {
+                    transport.connect(host, username, password);
+                }
+                // Doesn't seem to be necessary. API says it should be called to update headers, but it is expensive so only call if needed.
+                // message.saveChanges();
+                transport.sendMessage(message, message.getAllRecipients());
+                log.debug("Message Sent: " + message.toString());
+            } catch (NumberFormatException ne) {
+                log.error("Unable to send email message, SMTP port number is invalid");
             }
-            
-//            Doesn't seem to be necessary. API says it should be called to update headers, but it is expensive so only call if needed.
-//            message.saveChanges();
-            transport.sendMessage(message, message.getAllRecipients());
         } else {
             Transport.send(message);
+            log.debug("Message Sent: " + message.toString());
         }
-        log.debug("Message Sent: " + message.toString());
     }
     
     /**

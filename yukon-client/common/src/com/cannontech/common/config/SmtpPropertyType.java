@@ -24,7 +24,7 @@ public enum SmtpPropertyType {
     }
 
     protected String getRegEx() {
-        return "mail.smtp??." + getPropertyName();
+        return "mail.smtps?." + getPropertyName();
     }
 
     public String getKey(boolean isSmpts) {
