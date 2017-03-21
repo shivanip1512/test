@@ -181,7 +181,7 @@
                                                 </c:otherwise>
                                             </c:choose>
                                         </td>
-                                        <td class="remove-column">
+                                        <td class="dib">
                                             <c:choose>
                                                 <c:when test="${key.currentlyUsed}">
                                                     <cti:msg2 key=".deleteKeyBtnDisabledTitle" var="title"/>

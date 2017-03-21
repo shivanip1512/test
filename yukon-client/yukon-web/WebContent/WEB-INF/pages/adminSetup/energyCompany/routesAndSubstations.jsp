@@ -123,7 +123,7 @@
 	                                <c:forEach items="${ecSubstations}" var="substation" >
 	                                    <tr>
 	                                        <td><spring:escapeBody htmlEscape="true">${substation.substationName}</spring:escapeBody></td>
-	                                        <td class="remove-column">
+	                                        <td class="dib">
                                                 <cti:button nameKey="remove" renderMode="image" type="submit" name="removeSubstation" value="${substation.substationID}" icon="icon-cross"/>
 	                                        </td>
 	                                    </tr>
