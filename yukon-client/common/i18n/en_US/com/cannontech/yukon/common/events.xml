@@ -257,7 +257,9 @@
     
     <entry key="yukon.common.events.system.rfn.gateway.createdGatewayAutomatically">Gateway {1} created with Serial number={2} via Network Manager.</entry>
     
-    <entry key="yukon.common.events.system.rfn.gateway.gatewayCreationFailed">Gateway creation initiated by {1} failed. Gateway settings: Name={2}, IP Adders={3}, Admin={4}, Super Admin={5}</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.gatewayCreationFailed">Gateway creation initiated by {1} failed. Gateway settings: Name={2}, IP Adderss={3}, Admin={4}, Super Admin={5}</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.gatewayCreationFailed.4">Admin Username</entry>
+    <entry key="yukon.common.events.system.rfn.gateway.gatewayCreationFailed.5">Super Admin Username</entry>
     
     <entry key="yukon.common.events.system.rfn.gateway.updatedGateway">Gateway {2} updated with Serial number={3}, IP Address={4}, Admin={5}, Super Admin={6} by {1}.</entry>
     <entry key="yukon.common.events.system.rfn.gateway.updatedGateway.5">Admin Username</entry>

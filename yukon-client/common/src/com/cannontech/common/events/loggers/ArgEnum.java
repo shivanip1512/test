@@ -28,7 +28,7 @@ public enum ArgEnum {
     eventSource,
     failureCount,
     fileName, 
-    gatewayName,
+    gatewayName, //Zigbee gateway, not RF gateway
     gearName,
     globalSettingType,
     globalSettingValue,
