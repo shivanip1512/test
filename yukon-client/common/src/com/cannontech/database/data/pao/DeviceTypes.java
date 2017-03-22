@@ -229,6 +229,7 @@ public interface DeviceTypes extends TypeBase
     
     public final static int ECOBEE_3 = DEVICE_OFFSET + 172;
     public final static int ECOBEE_SMART = DEVICE_OFFSET + 173;
+    public final static int ECOBEE_3_Lite = DEVICE_OFFSET + 196;
     
     public final static int GWY800 = DEVICE_OFFSET + 174;
     
@@ -398,6 +399,7 @@ public interface DeviceTypes extends TypeBase
     public static final String[] STRING_WEATHER_LOCATION = {"WEATHER LOCATION"};
     public static final String[] STRING_ECOBEE_SMART_SI = {"ecobee Smart Si"};
     public static final String[] STRING_ECOBEE_3 = {"ecobee3"};
+    public static final String[] STRING_ECOBEE_3_Lite = {"ecobee3 Lite"};
     public static final String[] STRING_RFN_GATEWAY = {"RFN Gateway"};
     public static final String[] STRING_RFN_GATEWAY_2 = {"RFN Gateway 2"};
     public static final String[] STRING_HONEYWELL_9000 = {"Honeywell Wi-Fi 9000"};

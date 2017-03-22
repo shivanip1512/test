@@ -236,5 +236,6 @@
 
     <entry key="yukon.common.pao.ECOBEE_SMART_SI">ecobee Smart Si</entry>
     <entry key="yukon.common.pao.ECOBEE_3">ecobee3</entry>
+    <entry key="yukon.common.pao.ECOBEE_3_Lite">ecobee3 Lite</entry>
     <entry key="yukon.common.pao.ECOBEE_SMART">ecobee Smart</entry>
 </properties>

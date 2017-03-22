@@ -4451,6 +4451,11 @@
     <pao id="ECOBEE_3" inherits="ECOBEE">
         <displayName>ecobee3</displayName>
     </pao>
+
+    <pao id="ECOBEE_3_Lite" inherits="ECOBEE">
+        <displayName>ecobee3 Lite</displayName>
+    </pao>
+
     <pao id="ECOBEE_SMART" inherits="ECOBEE">
         <displayName>ecobee Smart</displayName>
     </pao>
