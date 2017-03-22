@@ -425,7 +425,7 @@ AND PaobjectId IN (
 /* End YUK-16205 */
 
 /* Start YUK-16336 */
-ALTER TABLE UserPreference MODIFY Value VARCHAR(1275);
+ALTER TABLE UserPreference MODIFY Value VARCHAR2(1275);
 /* End YUK-16336 */
 
 /**************************************************************/
