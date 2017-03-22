@@ -98,8 +98,4 @@ public class ConfigurationLoader {
     public Map<String, Map<String, String>> getConfigSettings() {
         return configSettings;
     }
-
-    public static void setConfigFileLocation(File configFileLocation) {
-        ConfigurationLoader.configFileLocation = configFileLocation;
-    }
 }

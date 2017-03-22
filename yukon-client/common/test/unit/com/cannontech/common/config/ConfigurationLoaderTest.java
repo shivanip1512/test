@@ -36,7 +36,7 @@ public class ConfigurationLoaderTest {
         } catch (URISyntaxException e) {
             file = new File(getClass().getResource("configuration.properties").getPath());
         }
-        configurationLoader.setConfigFileLocation(file);
+        ReflectionTestUtils.setField(configurationLoader, "configFileLocation", file);
         configurationLoader.loadConfigurationProperties();
     }
 
