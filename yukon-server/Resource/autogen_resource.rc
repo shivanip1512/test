@@ -164,7 +164,6 @@
 1160       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\system\\virtual_system.xml"
 1161       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\system\\weather_location.xml"
 1162       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\thermostat\\ecobee_3.xml"
-1162       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\thermostat\\ecobee_3_lite.xml"
 1163       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\thermostat\\ecobee_smart.xml"
 1164       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\thermostat\\ecobee_smart_si.xml"
 1165       XML        "..\\..\\yukon-shared\\src\\main\\resources\\pao\\definition\\thermostat\\honeywell_9000.xml"
