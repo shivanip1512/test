@@ -339,7 +339,7 @@ BOOST_AUTO_TEST_CASE(test_isKnownUnsupportedDevice)
     BOOST_CHECK(isKnownUnsupportedDevice("lcr-6600 rfn"));
     BOOST_CHECK(isKnownUnsupportedDevice("weather location"));
     BOOST_CHECK(isKnownUnsupportedDevice("ecobee3"));
-    BOOST_CHECK(isKnownUnsupportedDevice("ecobee3 lite");
+    BOOST_CHECK(isKnownUnsupportedDevice("ecobee3 lite"));
     BOOST_CHECK(isKnownUnsupportedDevice("ecobee smart"));
     BOOST_CHECK(isKnownUnsupportedDevice("ecobee smart si"));
     BOOST_CHECK(isKnownUnsupportedDevice("ltc"));
