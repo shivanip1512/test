@@ -341,13 +341,14 @@ public class MspObjectDaoImpl implements MspObjectDao {
             OtherContactInformation otherContactInformation = new OtherContactInformation();
             List<OtherContactItem> otherContactItems = otherContactInformation.getOtherContactItem();
 
-            facilityNameValues.forEach((facilityName, facilityValue) -> {
-                OtherContactItem otherContactItem = new OtherContactItem();
-                otherContactItem.setDetails(facilityName);
-                otherContactItem.setInfoType(facilityValue);
-                otherContactItems.add(otherContactItem);
-            });
-
+            if (facilityNameValues != null) {
+                facilityNameValues.forEach((facilityName, facilityValue) -> {
+                    OtherContactItem otherContactItem = new OtherContactItem();
+                    otherContactItem.setDetails(facilityValue);
+                    otherContactItem.setInfoType(facilityName);
+                    otherContactItems.add(otherContactItem);
+                });
+            }
             contactInfo.setOtherContactInformation(otherContactInformation);
             contactInfoReferable.setContactInfo(contactInfo);
             contactInfoReferableList.add(contactInfoReferable);
@@ -384,16 +385,17 @@ public class MspObjectDaoImpl implements MspObjectDao {
             ArrayOfCustomerID arrayOfCustomerID = new ArrayOfCustomerID();
             List<ObjectID> objectIDs = arrayOfCustomerID.getCustomerID();
 
-            customerIDs.forEach(customerID -> {
-                ObjectID objectID = new ObjectID();
-                objectID.setObjectGUID(customerID);
-                SingleIdentifier singleIdentifier = new SingleIdentifier();
-                singleIdentifier.setIdentifierName(MultispeakDefines.CUSTOMER_ID);
-                singleIdentifier.setValue(customerID);
-                objectID.setPrimaryIdentifier(singleIdentifier);
-                objectIDs.add(objectID);
-            });
-
+            if (customerIDs != null) {
+                customerIDs.forEach(customerID -> {
+                    ObjectID objectID = new ObjectID();
+                    objectID.setObjectGUID(customerID);
+                    SingleIdentifier singleIdentifier = new SingleIdentifier();
+                    singleIdentifier.setIdentifierName(MultispeakDefines.CUSTOMER_ID);
+                    singleIdentifier.setValue(customerID);
+                    objectID.setPrimaryIdentifier(singleIdentifier);
+                    objectIDs.add(objectID);
+                });
+            }
             getMetersByCustomerIDs.setArrayOfCustomerID(arrayOfCustomerID);
 
             GetMetersByCustomerIDsResponse response =
@@ -424,16 +426,17 @@ public class MspObjectDaoImpl implements MspObjectDao {
             ArrayOfAccountID arrayOfAccountID = new ArrayOfAccountID();
             List<ObjectID> objectIDs = arrayOfAccountID.getAccountID();
 
-            accoundIDs.forEach(accountID -> {
-                ObjectID objectID = new ObjectID();
-                objectID.setObjectGUID(accountID);
-                SingleIdentifier singleIdentifier = new SingleIdentifier();
-                singleIdentifier.setIdentifierName(MultispeakDefines.ACCOUNT_ID);
-                singleIdentifier.setValue(accountID);
-                objectID.setPrimaryIdentifier(singleIdentifier);
-                objectIDs.add(objectID);
-            });
-
+            if (accoundIDs != null) {
+                accoundIDs.forEach(accountID -> {
+                    ObjectID objectID = new ObjectID();
+                    objectID.setObjectGUID(accountID);
+                    SingleIdentifier singleIdentifier = new SingleIdentifier();
+                    singleIdentifier.setIdentifierName(MultispeakDefines.ACCOUNT_ID);
+                    singleIdentifier.setValue(accountID);
+                    objectID.setPrimaryIdentifier(singleIdentifier);
+                    objectIDs.add(objectID);
+                });
+            }
             getMetersByAccountIDs.setArrayOfAccountID(arrayOfAccountID);
 
             GetMetersByAccountIDsResponse response =
@@ -570,10 +573,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
             ArrayOfString arrayOfDoaminNames = new ArrayOfString();
             List<String> domainNamesList = arrayOfDoaminNames.getTheString();
 
-            domainNames.forEach(domainName -> {
-                domainNamesList.add(domainName);
-            });
-
+            if (domainNames != null) {
+                domainNames.forEach(domainName -> {
+                    domainNamesList.add(domainName);
+                });
+            }
             getDomainsByDomainNames.setArrayOfString(arrayOfDoaminNames);
 
             GetDomainsByDomainNamesResponse response =
@@ -588,7 +592,9 @@ public class MspObjectDaoImpl implements MspObjectDao {
                         if (domainMembers != null) {
                             List<DomainMember> domainMembersList = domainMembers.getDomainMember();
                             if (!domainMembersList.isEmpty()) {
-                                domainMembersList.addAll(domainMembersList);
+                                domainMembersList.forEach(domainMember -> {
+                                    substationNames.add(domainMember.getDescription());
+                                });
                             }
                         }
                     });
@@ -611,16 +617,17 @@ public class MspObjectDaoImpl implements MspObjectDao {
             ArrayOfNetworkModelRef arrayOfNetworkModelRef = new ArrayOfNetworkModelRef();
             List<NetworkModelRef> networkModelRefList = arrayOfNetworkModelRef.getNetworkModelRef();
 
-            locations.forEach(location -> {
-                NetworkModelRef networkModelRef = new NetworkModelRef();
-                networkModelRef.setNoun(new QName("http://www.multispeak.org/V5.0/commonTypes", "objectRef", "com"));
-                networkModelRef.setPrimaryIdentifierValue(location);
-                networkModelRef.setValue(location);
-                networkModelRef.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
-                networkModelRef.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
-                networkModelRefList.add(networkModelRef);
-            });
-
+            if (locations != null) {
+                locations.forEach(location -> {
+                    NetworkModelRef networkModelRef = new NetworkModelRef();
+                    networkModelRef.setNoun(new QName("http://www.multispeak.org/V5.0/commonTypes", "objectRef", "com"));
+                    networkModelRef.setPrimaryIdentifierValue(location);
+                    networkModelRef.setValue(location);
+                    networkModelRef.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
+                    networkModelRef.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
+                    networkModelRefList.add(networkModelRef);
+                });
+            }
             getMetersByNetworkModelRefs.setArrayOfNetworkModelRef(arrayOfNetworkModelRef);
 
             GetMetersByNetworkModelRefsResponse response =
@@ -652,15 +659,16 @@ public class MspObjectDaoImpl implements MspObjectDao {
             ArrayOfMeterID arrayOfMeterID = new ArrayOfMeterID();
             List<MeterID> meterIds = arrayOfMeterID.getMeterID();
 
-            meterNumbers.forEach(meterNumber -> {
-                MeterID meterID = new MeterID();
-                meterID.setMeterName(meterNumber);
-                meterID.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
-                meterID.setServiceType(ServiceKind.ELECTRIC);
-                meterID.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
-                meterIds.add(meterID);
-            });
-
+            if (meterNumbers != null) {
+                meterNumbers.forEach(meterNumber -> {
+                    MeterID meterID = new MeterID();
+                    meterID.setMeterName(meterNumber);
+                    meterID.setRegisteredName(MultispeakDefines.REGISTERED_NAME);
+                    meterID.setServiceType(ServiceKind.ELECTRIC);
+                    meterID.setSystemName(MultispeakDefines.MSP_APPNAME_YUKON);
+                    meterIds.add(meterID);
+                });
+            }
             getCustomersByMeterIDs.setArrayOfMeterID(arrayOfMeterID);
 
             GetCustomersByMeterIDsResponse getCustomersByMeterIDsResponse =
