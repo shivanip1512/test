@@ -42,6 +42,9 @@ import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
+import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
+import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatus;
 import com.cannontech.dr.service.RuntimeCalcService;
 import com.cannontech.dr.service.impl.DatedRuntimeStatus;
@@ -59,6 +62,7 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
     @Autowired private RawPointHistoryDao rphDao;
     @Autowired private RuntimeCalcService runtimeCalcService;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
+    @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
     private static final int runtimePointOffset = 5;
     
     @PostConstruct
@@ -90,6 +94,8 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
             } else {
                 startOfCalcRange = null;
             }
+            Instant lastCommTime = dataListener.getLastProcessedMessageTime().toInstant();
+            updateAssetAvailability(thermostat.getPaoIdentifier(), lastCommTime, startOfCalcRange);
             
             ListMultimap<PaoIdentifier, PointValueQualityHolder> stateDataMultimap = 
                     rphDao.getAttributeData(Collections.singleton(thermostat), 
@@ -165,7 +171,7 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
         // Only allow updates up until the date-time where we have received messages, or have cleared the queue completely.
         DateTime lastEmptyQueueTime = dataListener.getLastEmptyQueueTime();
         DateTime lastProcessedMessageTime = dataListener.getLastProcessedMessageTime();
-        
+
         // Cannot determine a safe end of runtime calculation range unless we know the most recent time messages were
         // processed.
         if (lastEmptyQueueTime == null && lastProcessedMessageTime == null) {
@@ -257,4 +263,28 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
         return filter;
     }
     
+    private void updateAssetAvailability(PaoIdentifier paoIdentifier, Instant lastCommTime, Instant lastRuntime) {
+        if (lastCommTime != null || lastRuntime != null) {
+            AllRelayCommunicationTimes commTimes = 
+                    dynamicLcrCommunicationsDao.findAllRelayCommunicationTimes(Collections.singleton(paoIdentifier.getPaoId())).get(paoIdentifier.getPaoId());
+            Instant currentLastCommTime = commTimes == null ? null : commTimes.getLastCommunicationTime();
+            Instant currentLastRuntime = commTimes == null ? null : commTimes.getLastNonZeroRuntime();
+
+            boolean shouldUpdate = false;
+            AssetAvailabilityPointDataTimes times = new AssetAvailabilityPointDataTimes(paoIdentifier.getPaoId());
+            if (currentLastCommTime == null || (lastCommTime != null && lastCommTime.isAfter(currentLastCommTime))) {
+                times.setLastCommunicationTime(lastCommTime);
+                shouldUpdate = true;
+            }
+
+            if (currentLastRuntime == null || (lastRuntime != null && lastRuntime.isAfter(currentLastRuntime))) {
+                times.setRelayRuntime(1, lastCommTime);
+                shouldUpdate = true;
+            }
+
+            if (shouldUpdate) {
+                dynamicLcrCommunicationsDao.insertData(times);
+            }
+        }
+    }
 }
