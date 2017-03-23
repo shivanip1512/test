@@ -6013,7 +6013,11 @@ CtiCCCapBankPtr CtiCCSubstationBus::getMonitorPointParentBankAndFeeder( const Ct
 namespace   // anon
 {
 
-using Value = std::pair< CtiCCCapBankPtr, CtiCCFeederPtr >;
+struct Value
+{
+    CtiCCCapBankPtr bank;
+    CtiCCFeederPtr  feeder;
+};
 
 std::vector< Value >
     orderBanksForMultiVoltVar( const CtiFeeder_vec & feederCollection, int action )
@@ -6022,7 +6026,7 @@ std::vector< Value >
 
     std::map<Key, Value>    order;
 
-    float ( CtiCCCapBank::* ordering )() const =
+    auto ordering =
         ( action == CtiCCCapBank::Close )
                 ?   & CtiCCCapBank::getCloseOrder
                 :   & CtiCCCapBank::getTripOrder;
@@ -6031,33 +6035,30 @@ std::vector< Value >
     {
         for ( const CtiCCCapBankPtr & bank : feeder->getAllCapBanks() )
         {
-            order.insert( std::make_pair(
-                            std::make_pair( ( bank->*ordering )(), feeder->getDisplayOrder() ), 
-                            std::make_pair( bank, feeder ) ) );
+            order.emplace<Key, Value>( { ( bank->*ordering )(), feeder->getDisplayOrder() },
+                                       { bank, feeder } );
         }
     }
 
-    const std::set< int >   openStates
-    {
-        CtiCCCapBank::Open,
-        CtiCCCapBank::OpenQuestionable
-    };
-
-    const std::set< int >   closeStates
-    {
-        CtiCCCapBank::Close,
-        CtiCCCapBank::CloseQuestionable
-    };
-
-    const std::set< int > & filterStates = 
-        ( action == CtiCCCapBank::Close )
-            ?   openStates
-            :   closeStates;
-
     auto filter =
-        [ &filterStates ]( const Value & blob ) -> bool
+        [ action ]( const Value & blob ) -> bool
         {
-            return filterStates.count( blob.first->getControlStatus() );
+            switch ( blob.bank->getControlStatus() )
+            {
+                case CtiCCCapBank::Open:
+                case CtiCCCapBank::OpenQuestionable:
+                {
+                    return action == CtiCCCapBank::Close;
+                }
+
+                case CtiCCCapBank::Close:
+                case CtiCCCapBank::CloseQuestionable:
+                {
+                    return action == CtiCCCapBank::Open;
+                }
+            }
+
+            return false;
         };
 
     std::vector< Value >   possibleBanks;
@@ -6116,8 +6117,8 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
                 {
                     for ( auto bankFeederPairs : orderBanksForMultiVoltVar( { currentFeeder }, CtiCCCapBank::Close ) )
                     {
-                        bank    = bankFeederPairs.first;
-                        feeder  = bankFeederPairs.second;
+                        bank    = bankFeederPairs.bank;
+                        feeder  = bankFeederPairs.feeder; 
 
                         for ( CtiCCMonitorPointPtr monitor : bank->getMonitorPoint() )
                         {
@@ -6180,8 +6181,8 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
                 {
                     for ( auto bankFeederPairs : orderBanksForMultiVoltVar( { currentFeeder }, CtiCCCapBank::Open ) )
                     {
-                        bank    = bankFeederPairs.first;
-                        feeder  = bankFeederPairs.second;
+                        bank    = bankFeederPairs.bank;
+                        feeder  = bankFeederPairs.feeder; 
 
                         for ( CtiCCMonitorPointPtr monitor : bank->getMonitorPoint() )
                         {
@@ -6264,8 +6265,8 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
                 {
                     for ( auto bankFeederPairs : orderBanksForMultiVoltVar( getCCFeeders(), CtiCCCapBank::Close ) )
                     {
-                        bank    = bankFeederPairs.first;
-                        feeder  = bankFeederPairs.second;
+                        bank    = bankFeederPairs.bank;
+                        feeder  = bankFeederPairs.feeder;
 
                         for ( CtiCCMonitorPointPtr monitor : bank->getMonitorPoint() )
                         {
@@ -6327,8 +6328,8 @@ bool CtiCCSubstationBus::analyzeBusForVarImprovement(CtiMultiMsg_vec& pointChang
                 {
                     for ( auto bankFeederPairs : orderBanksForMultiVoltVar( getCCFeeders(), CtiCCCapBank::Open ) )
                     {
-                        bank    = bankFeederPairs.first;
-                        feeder  = bankFeederPairs.second;
+                        bank    = bankFeederPairs.bank;
+                        feeder  = bankFeederPairs.feeder;
 
                         for ( CtiCCMonitorPointPtr monitor : bank->getMonitorPoint() )
                         {

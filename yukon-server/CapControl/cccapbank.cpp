@@ -2130,11 +2130,3 @@ const string CtiCCCapBank::FixedOperationalState = "Fixed";
 const string CtiCCCapBank::UninstalledState = "Uninstalled";
 const string CtiCCCapBank::StandAloneState = "StandAlone";
 
-const int CtiCCCapBank::Open = STATEZERO;
-const int CtiCCCapBank::Close = STATEONE;
-const int CtiCCCapBank::OpenQuestionable = STATETWO;
-const int CtiCCCapBank::CloseQuestionable = STATETHREE;
-const int CtiCCCapBank::OpenFail = STATEFOUR;
-const int CtiCCCapBank::CloseFail = STATEFIVE;
-const int CtiCCCapBank::OpenPending = STATESIX;
-const int CtiCCCapBank::ClosePending = STATESEVEN;

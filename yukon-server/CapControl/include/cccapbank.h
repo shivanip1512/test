@@ -266,23 +266,14 @@ public:
     static const std::string StandAloneState;
 
     //Possible states
-    static const int Open;
-    static const int Close;
-    static const int OpenQuestionable;
-    static const int CloseQuestionable;
-    static const int OpenFail;
-    static const int CloseFail;
-    static const int OpenPending;
-    static const int ClosePending;
-
-    /*typedef enum
-    {
-        Normal = 0,
-        Partial = 1,
-        Significant = 2,
-        AbnormalQuality = 3
-    } CtiCCControlStatusQaulity;
-    */
+    static constexpr int Open               = STATEZERO;
+    static constexpr int Close              = STATEONE;
+    static constexpr int OpenQuestionable   = STATETWO;
+    static constexpr int CloseQuestionable  = STATETHREE;
+    static constexpr int OpenFail           = STATEFOUR;
+    static constexpr int CloseFail          = STATEFIVE;
+    static constexpr int OpenPending        = STATESIX;
+    static constexpr int ClosePending       = STATESEVEN;
 
 private:
 
