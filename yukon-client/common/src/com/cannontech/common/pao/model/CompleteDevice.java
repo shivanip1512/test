@@ -5,7 +5,7 @@ import com.cannontech.common.pao.annotation.YukonPao;
 import com.cannontech.common.pao.annotation.YukonPaoField;
 import com.google.common.base.Objects;
 
-@YukonPao(idColumnName = "DeviceId", paoTypes = { PaoType.ECOBEE_SMART_SI, PaoType.ECOBEE_3, PaoType.ECOBEE_SMART, PaoType.ECOBEE_3_Lite })
+@YukonPao(idColumnName = "DeviceId", paoTypes = { PaoType.ECOBEE_SMART_SI, PaoType.ECOBEE_3, PaoType.ECOBEE_SMART, PaoType.ECOBEE_3_LITE })
 public class CompleteDevice extends CompleteYukonPao {
     private boolean alarmInhibit = false;
     private boolean controlInhibit = false;

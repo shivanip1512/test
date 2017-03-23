@@ -59,7 +59,7 @@ public interface YukonListEntryTypes
     public static final int YUK_DEF_ID_DEV_TYPE_LCR_4700      = 1328;
     public static final int YUK_DEF_ID_DEV_TYPE_ECOBEE_SMART_SI = 1329;
     public static final int YUK_DEF_ID_DEV_TYPE_ECOBEE_3        = 1330;
-    public static final int YUK_DEF_ID_DEV_TYPE_ECOBEE_3_Lite = 1336;
+    public static final int YUK_DEF_ID_DEV_TYPE_ECOBEE_3_LITE = 1336;
     public static final int YUK_DEF_ID_DEV_TYPE_ECOBEE_SMART    = 1331;
     public static final int YUK_DEF_ID_DEV_TYPE_HONEYWELL_9000 = 1332;
     public static final int YUK_DEF_ID_DEV_TYPE_HONEYWELL_VISIONPRO_8000 = 1333;

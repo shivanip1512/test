@@ -29,7 +29,7 @@ public class EcobeeBuilder implements HardwareTypeExtensionProvider {
     private static final ImmutableMap<HardwareType, PaoType> hardwareTypeToPaoType = ImmutableMap.<HardwareType, PaoType> builder()
             .put(HardwareType.ECOBEE_SMART_SI, PaoType.ECOBEE_SMART_SI)
             .put(HardwareType.ECOBEE_3, PaoType.ECOBEE_3)
-            .put(HardwareType.ECOBEE_3_Lite, PaoType.ECOBEE_3_Lite)
+            .put(HardwareType.ECOBEE_3_LITE, PaoType.ECOBEE_3_LITE)
             .put(HardwareType.ECOBEE_SMART, PaoType.ECOBEE_SMART)
             .build();
     

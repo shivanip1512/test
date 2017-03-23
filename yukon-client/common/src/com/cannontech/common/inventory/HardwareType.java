@@ -70,7 +70,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     ECOBEE_SMART_SI(YUK_DEF_ID_DEV_TYPE_ECOBEE_SMART_SI, TWO_WAY_RECEIVER, THERMOSTAT, ECOBEE, false, true, false),
     ECOBEE_3(YUK_DEF_ID_DEV_TYPE_ECOBEE_3, TWO_WAY_RECEIVER, THERMOSTAT, ECOBEE, false, true, false),
     ECOBEE_SMART(YUK_DEF_ID_DEV_TYPE_ECOBEE_SMART, TWO_WAY_RECEIVER, THERMOSTAT, ECOBEE, false, true, false),
-    ECOBEE_3_Lite(YUK_DEF_ID_DEV_TYPE_ECOBEE_3_Lite, TWO_WAY_RECEIVER, THERMOSTAT, ECOBEE, false, true, false),
+    ECOBEE_3_LITE(YUK_DEF_ID_DEV_TYPE_ECOBEE_3_LITE, TWO_WAY_RECEIVER, THERMOSTAT, ECOBEE, false, true, false),
     HONEYWELL_9000(YUK_DEF_ID_DEV_TYPE_HONEYWELL_9000, TWO_WAY_RECEIVER, THERMOSTAT, HONEYWELL, false, true, false),
     HONEYWELL_VISIONPRO_8000(YUK_DEF_ID_DEV_TYPE_HONEYWELL_VISIONPRO_8000, TWO_WAY_RECEIVER, THERMOSTAT, HONEYWELL, false, true, false),
     HONEYWELL_FOCUSPRO(YUK_DEF_ID_DEV_TYPE_HONEYWELL_FOCUSPRO, TWO_WAY_RECEIVER, THERMOSTAT, HONEYWELL, false, true, false),
@@ -187,7 +187,7 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
         schedulableTypes = schedulableBuilder.build();
         manualAdjustmentTypes = manualAdjustmentBuilder.build();
         
-        ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI, ECOBEE_3, ECOBEE_SMART, ECOBEE_3_Lite);
+        ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI, ECOBEE_3, ECOBEE_SMART, ECOBEE_3_LITE);
         honeywellTypes = ImmutableSet.of(HONEYWELL_9000, HONEYWELL_FOCUSPRO, HONEYWELL_VISIONPRO_8000, HONEYWELL_THERMOSTAT);
     }
     

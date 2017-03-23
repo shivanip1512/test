@@ -259,7 +259,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     
     ECOBEE_SMART_SI(DeviceTypes.ECOBEE_SMART_SI, "ecobee Smart Si", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     ECOBEE_3(DeviceTypes.ECOBEE_3, "ecobee3", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
-    ECOBEE_3_Lite(DeviceTypes.ECOBEE_3_Lite, "ecobee3 Lite", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
+    ECOBEE_3_LITE(DeviceTypes.ECOBEE_3_LITE, "ecobee3 Lite", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     ECOBEE_SMART(DeviceTypes.ECOBEE_SMART, "ecobee Smart", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     HONEYWELL_9000(DeviceTypes.HONEYWELL_9000, "Honeywell Wi-Fi 9000", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
     HONEYWELL_VISIONPRO_8000(DeviceTypes.HONEYWELL_VISIONPRO_8000, "Honeywell Wi-Fi VisionPRO 8000", PaoCategory.DEVICE, PaoClass.THERMOSTAT),
@@ -653,7 +653,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         b.addAll(repeaterTypes);
         routableTypes = b.build();
         
-        ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI, ECOBEE_3, ECOBEE_SMART);
+        ecobeeTypes = ImmutableSet.of(ECOBEE_SMART_SI, ECOBEE_3, ECOBEE_SMART, ECOBEE_3_LITE);
         honeywellTypes = ImmutableSet.of(HONEYWELL_9000, HONEYWELL_FOCUSPRO, HONEYWELL_VISIONPRO_8000, HONEYWELL_THERMOSTAT);
         
         b = ImmutableSet.builder();

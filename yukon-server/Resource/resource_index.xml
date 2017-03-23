@@ -98,7 +98,7 @@
     <Property Name="Key">1162</Property>
     <Property Name="Value">thermostat\\ecobee_3.xml</Property>
     <Property Name="Key">1192</Property>
-    <Property Name="Value">thermostat\\ecobee_3_lite.xml</Property>
+    <Property Name="Value">thermostat\\ECOBEE_3_LITE.xml</Property>
     
     <Property Name="Key">1024</Property>
     <Property Name="Value">capcontrol\\phase_operated.xml</Property>

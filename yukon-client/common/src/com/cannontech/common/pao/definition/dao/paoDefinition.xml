@@ -4452,7 +4452,7 @@
         <displayName>ecobee3</displayName>
     </pao>
 
-    <pao id="ECOBEE_3_Lite" inherits="ECOBEE">
+    <pao id="ECOBEE_3_LITE" inherits="ECOBEE">
         <displayName>ecobee3 Lite</displayName>
     </pao>
 
