@@ -9,5 +9,9 @@
         <cti:csrfToken/>
         
         <cti:button type="submit" label="Reload Pao Definition"/>
+        
+        <cti:url var="reloadOverrideUrl" value="reloadOverrideFile"/>
+        <cti:button href="${reloadOverrideUrl}" label="Reload Override File"/>
+        
     </form:form>
 </cti:standardPage>

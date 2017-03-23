@@ -26,4 +26,11 @@ public class PaoDefinitionTestingController {
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.paoDefinitionTesting.reloadSuccessful"));
         return "redirect:paoDefinition";
     }
+    
+    @RequestMapping("reloadOverrideFile")
+    public String reloadOverrideFile(FlashScope flash) {
+        //paoDefinitionDao.reload();
+        flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.paoDefinitionTesting.reloadOverrideSuccessful"));
+        return "redirect:paoDefinition";
+    }
 }
