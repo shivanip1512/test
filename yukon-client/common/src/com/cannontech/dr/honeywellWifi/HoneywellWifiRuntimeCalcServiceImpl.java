@@ -94,8 +94,6 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
             } else {
                 startOfCalcRange = null;
             }
-            Instant lastCommTime = dataListener.getLastProcessedMessageTime().toInstant();
-            updateAssetAvailability(thermostat.getPaoIdentifier(), lastCommTime, startOfCalcRange);
             
             ListMultimap<PaoIdentifier, PointValueQualityHolder> stateDataMultimap = 
                     rphDao.getAttributeData(Collections.singleton(thermostat), 
@@ -124,6 +122,14 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
             }
             Map<DateTime, Integer> runtimeSeconds = runtimeCalcService.getHourlyRuntimeSeconds(statuses);
             
+            runtimeSeconds.entrySet().stream()
+                                     .filter(entry -> entry.getValue() > 0)
+                                     .map(entry -> entry.getKey())
+                                     .max(DateTime::compareTo)
+                                     .ifPresent(lastRuntimeDate -> {
+                                         updateAssetAvailability(thermostat.getPaoIdentifier(), null, lastRuntimeDate.toInstant());
+                                     });
+
             // Throw away any values prior to start of calculation range (if applicable), since that runtime is already
             // recorded.
             // Throw away the value for the last hour of the calculation range, since it is probably a partial hour. It

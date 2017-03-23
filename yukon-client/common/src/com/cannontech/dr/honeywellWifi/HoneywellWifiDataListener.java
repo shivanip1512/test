@@ -236,6 +236,7 @@ public class HoneywellWifiDataListener {
     private void processMessage(HoneywellWifiData data) {
         HoneywellWifiDataProcessor strategy = dataTypeToProcessingStrategy.get(data.getType());
         if (strategy != null) {
+            strategy.updateAssetAvailability(data);
             strategy.processData(data);
         } else {
             throw new IllegalStateException("No strategy found for message with type " + data.getType());

@@ -10,9 +10,14 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.StringUtils;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
+import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
+import com.cannontech.dr.honeywellWifi.azure.event.ConnectionStatusEvent;
+import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
 
@@ -22,7 +27,7 @@ public abstract class AbstractHoneywellWifiDataProcessor implements HoneywellWif
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private AttributeService attributeService;
     @Autowired private HoneywellWifiThermostatDao honeywellWifiDao;
-    
+    @Autowired private DynamicLcrCommunicationsDao dynamicLcrCommunicationsDao;
     /**
      * @param macId The formatted or unformatted (colon-less) MAC ID.
      * @return The PaoIdentifer for the Honeywell Wifi thermostat with the specified MAC ID. 
@@ -67,5 +72,27 @@ public abstract class AbstractHoneywellWifiDataProcessor implements HoneywellWif
                 try { Thread.sleep(5000); } catch (InterruptedException e1) { /*ignore interruption*/ }
             }
         }
+    }
+    
+    public void updateAssetAvailability(HoneywellWifiData data) {
+        log.debug("Processing connection status message" + data);
+        if(!(data instanceof ConnectionStatusEvent)) {
+            throw new IllegalArgumentException("Invalid data object passed to processor: " + data.getType());
+        }
+        
+        ConnectionStatusEvent dataEvent = (ConnectionStatusEvent) data;
+        Instant time = dataEvent.getMessageWrapper().getDate();
+        
+        try {
+            PaoIdentifier thermostat = getThermostatByMacId(dataEvent.getMacId());
+
+            AssetAvailabilityPointDataTimes assetAvailabilityPointDataTimes = new AssetAvailabilityPointDataTimes(thermostat.getPaoId());
+            assetAvailabilityPointDataTimes.setLastCommunicationTime(time);
+            dynamicLcrCommunicationsDao.insertData(assetAvailabilityPointDataTimes);
+
+        } catch (NotFoundException e) {
+            log.info("Honeywell connection status message received for unknown device with MAC ID " + dataEvent.getMacId());
+        }
+        
     }
 }
