@@ -67,9 +67,6 @@
     
     <div class="column two nogutter">
         <tags:sectionContainer2 nameKey="location" styleClass="stacked">
-            <cti:msg2 var="latitudeLabel" key=".mapNetwork.location.latitude"/>
-            <cti:msg2 var="longitudeLabel" key=".mapNetwork.location.longitude"/>
-            <cti:msg2 var="notSetLabel" key=".mapNetwork.location.notSet"/>
             <%@ include file="../mapNetwork/locationInput.jspf"%>        
             <div id="gateway-location-container" class="${empty gateway.location ? 'dn' : ''}">
                 <div id="gateway-location" class="map" data-has-location="${not empty gateway.location}"></div>

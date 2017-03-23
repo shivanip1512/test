@@ -62,9 +62,6 @@
         <div class="column two nogutter">
         <cti:msg2 var="locationHelp" key=".location.helpText"/>
         <tags:sectionContainer2 nameKey="location" helpText="${locationHelp}">
-        <cti:msg2 var="latitudeLabel" key=".location.latitude"/>
-        <cti:msg2 var="longitudeLabel" key=".location.longitude"/>
-        <cti:msg2 var="notSetLabel" key=".location.notSet"/>
         <%@ include file="locationInput.jspf"%>
         <div id="map-network-container" class="${empty geojson.features ? 'dn' : ''}">
                 <div id="device-location" class="map" data-has-location="${not empty geojson.features}"></div>

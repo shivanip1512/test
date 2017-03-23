@@ -725,6 +725,10 @@ yukon.map.network = (function () {
                     }
 
                 });
+                
+                $(document).on('click', '.js-edit-coordinates', function() {
+                    _map.addInteraction(_deviceDragInteraction);
+                });
 
             }
             
