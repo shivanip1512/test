@@ -3,7 +3,6 @@ package com.cannontech.web.rfn.dataStreaming.model;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -209,17 +208,7 @@ public class DataStreamingConfig implements Cloneable {
      * Returns true if the attribute was removed.
      */
     public boolean removeAttributesWithStatusNotOk() {
-        boolean isAttributeRemoved = false;
-        Iterator<DataStreamingAttribute> it = getAttributes().listIterator();
-        while (it.hasNext()) {
-            DataStreamingAttribute attribute = it.next();
-            if (attribute.getStatus() != DataStreamingMetricStatus.OK) {
-                // removes attribute if status is not ok.
-                it.remove();
-                isAttributeRemoved = true;
-            }
-        }
-        return isAttributeRemoved;
+        return getAttributes().removeIf(a -> a.getStatus() != DataStreamingMetricStatus.OK);
     }
     
     @Override
