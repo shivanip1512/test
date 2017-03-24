@@ -17,6 +17,8 @@ public interface HoneywellWifiDataProcessor {
      * Process a HoneywellWifiData message of the supported type.
      */
     void processData(HoneywellWifiData data);
-
+    /**
+     * Update a HoneywellWell device assetAvailability.
+     */
     void updateAssetAvailability(HoneywellWifiData data);
 }
