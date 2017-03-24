@@ -76,18 +76,17 @@ public abstract class AbstractHoneywellWifiDataProcessor implements HoneywellWif
     public void updateAssetAvailability(HoneywellWifiData data) {
         log.debug("Updating asset availability for Honeywell Device: " + data);
         
-        HoneywellWifiData dataEvent = data;
-        Instant time = dataEvent.getMessageWrapper().getDate();
+        Instant time = data.getMessageWrapper().getDate();
         
         try {
-            PaoIdentifier thermostat = getThermostatByMacId(dataEvent.getMacId());
+            PaoIdentifier thermostat = getThermostatByMacId(data.getMacId());
 
             AssetAvailabilityPointDataTimes assetAvailabilityPointDataTimes = new AssetAvailabilityPointDataTimes(thermostat.getPaoId());
             assetAvailabilityPointDataTimes.setLastCommunicationTime(time);
             dynamicLcrCommunicationsDao.insertData(assetAvailabilityPointDataTimes);
 
         } catch (NotFoundException e) {
-            log.info("Unable to update asset availability for unkown device with MAC ID " + dataEvent.getMacId());
+            log.info("Unable to update asset availability for unkown device with MAC ID " + data.getMacId());
         }
         
     }
