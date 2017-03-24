@@ -390,9 +390,9 @@ public class MultispeakController {
                 }
             }
         }
-        for (String endpointURL : multispeak.getMspInterfaces()) {
+        for (MultispeakInterface multispeakInterface : multispeak.getMspInterfaceList()) {
             try {
-                new URL(endpointURL);
+                new URL(multispeakInterface.getMspEndpoint());
             } catch (MalformedURLException e) {
                 messages.add(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.invalidURL"));
             }
@@ -525,7 +525,6 @@ public class MultispeakController {
         multispeak.setPaoNameUsesExtension(StringUtils.isNotBlank(paoNameAliasExtension));
         MultispeakMeterLookupFieldEnum mspMeterLookupField = multispeakFuncs.getMeterLookupField();
         multispeak.setMeterLookupField(mspMeterLookupField);
-        multispeak.setInterfacesMap(mspVendor.getMspInterfaceMap());
         map.addAttribute("mspVersionList", mspVersionList);
         map.addAttribute("multispeak", multispeak);
     }

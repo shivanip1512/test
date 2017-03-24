@@ -48,7 +48,6 @@
         </cti:displayForPageEditModes>
         <c:set var="tableClass" value="${viewMode ? '' : 'with-form-controls'}" />
         <form:hidden id="actionService" path="service" />
-        <form:hidden id="serviceVersion" path="serviceVersion" />
         <form:hidden id="vendorID" path="mspVendor.vendorID" />
         <tags:sectionContainer2 nameKey="setup" styleClass="stacked-lg">
             <c:if test="${!noVendorsExist || createMode}">

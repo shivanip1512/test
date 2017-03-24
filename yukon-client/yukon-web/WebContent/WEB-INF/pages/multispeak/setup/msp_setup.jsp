@@ -41,7 +41,6 @@
         </cti:displayForPageEditModes>
         <c:set var="tableClass" value="${viewMode ? '' : 'with-form-controls'}" />
         <form:hidden id="actionService" path="service" />
-        <form:hidden id="serviceVersion" path="serviceVersion" />
         <form:hidden id="vendorID" path="mspVendor.vendorID" />
         <form:hidden id="userName" path="mspVendor.userName" />
         <form:hidden id="password" path="mspVendor.password" />
