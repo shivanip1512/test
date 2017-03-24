@@ -23,4 +23,6 @@ public interface HoneywellWifiData {
     void setMessageWrapper(HoneywellWifiMessageWrapper wrapper);
     
     HoneywellWifiDataType getType();
+
+    String getMacId();
 }

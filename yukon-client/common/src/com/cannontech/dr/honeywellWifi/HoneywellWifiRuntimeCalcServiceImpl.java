@@ -121,13 +121,13 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
                 statuses.add(getRuntimeStatusFromPoint(pointValue));
             }
             Map<DateTime, Integer> runtimeSeconds = runtimeCalcService.getHourlyRuntimeSeconds(statuses);
-            
+            //Updating last non zero runtime for thermostat
             runtimeSeconds.entrySet().stream()
                                      .filter(entry -> entry.getValue() > 0)
                                      .map(entry -> entry.getKey())
                                      .max(DateTime::compareTo)
                                      .ifPresent(lastRuntimeDate -> {
-                                         updateAssetAvailability(thermostat.getPaoIdentifier(), null, lastRuntimeDate.toInstant());
+                                         updateAssetAvailability(thermostat.getPaoIdentifier(), lastRuntimeDate.toInstant());
                                      });
 
             // Throw away any values prior to start of calculation range (if applicable), since that runtime is already
@@ -269,28 +269,9 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
         return filter;
     }
     
-    private void updateAssetAvailability(PaoIdentifier paoIdentifier, Instant lastCommTime, Instant lastRuntime) {
-        if (lastCommTime != null || lastRuntime != null) {
-            AllRelayCommunicationTimes commTimes = 
-                    dynamicLcrCommunicationsDao.findAllRelayCommunicationTimes(Collections.singleton(paoIdentifier.getPaoId())).get(paoIdentifier.getPaoId());
-            Instant currentLastCommTime = commTimes == null ? null : commTimes.getLastCommunicationTime();
-            Instant currentLastRuntime = commTimes == null ? null : commTimes.getLastNonZeroRuntime();
-
-            boolean shouldUpdate = false;
-            AssetAvailabilityPointDataTimes times = new AssetAvailabilityPointDataTimes(paoIdentifier.getPaoId());
-            if (currentLastCommTime == null || (lastCommTime != null && lastCommTime.isAfter(currentLastCommTime))) {
-                times.setLastCommunicationTime(lastCommTime);
-                shouldUpdate = true;
-            }
-
-            if (currentLastRuntime == null || (lastRuntime != null && lastRuntime.isAfter(currentLastRuntime))) {
-                times.setRelayRuntime(1, lastCommTime);
-                shouldUpdate = true;
-            }
-
-            if (shouldUpdate) {
-                dynamicLcrCommunicationsDao.insertData(times);
-            }
-        }
+    private void updateAssetAvailability(PaoIdentifier paoIdentifier, Instant lastRuntime) {
+        AssetAvailabilityPointDataTimes newTimes = new AssetAvailabilityPointDataTimes(paoIdentifier.getPaoId());
+        newTimes.setRelayRuntime(1, lastRuntime);
+        dynamicLcrCommunicationsDao.insertData(newTimes);
     }
 }

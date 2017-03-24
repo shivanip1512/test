@@ -1,5 +1,6 @@
 package com.cannontech.dr.honeywellWifi.azure.event;
 
+import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 
 /**
@@ -12,4 +13,8 @@ public class UnknownEvent extends AbstractHoneywellWifiData {
         return HoneywellWifiDataType.UNKNOWN;
     }
 
+    @Override
+    public String getMacId() {
+        throw new MethodNotImplementedException();
+    }
 }

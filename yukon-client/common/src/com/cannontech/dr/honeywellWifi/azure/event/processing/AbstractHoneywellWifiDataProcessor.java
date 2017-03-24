@@ -16,7 +16,6 @@ import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
-import com.cannontech.dr.honeywellWifi.azure.event.ConnectionStatusEvent;
 import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.stars.dr.hardware.dao.HoneywellWifiThermostatDao;
@@ -75,12 +74,9 @@ public abstract class AbstractHoneywellWifiDataProcessor implements HoneywellWif
     }
     
     public void updateAssetAvailability(HoneywellWifiData data) {
-        log.debug("Processing connection status message" + data);
-        if(!(data instanceof ConnectionStatusEvent)) {
-            throw new IllegalArgumentException("Invalid data object passed to processor: " + data.getType());
-        }
+        log.debug("Updating asset availability for Honeywell Device: " + data);
         
-        ConnectionStatusEvent dataEvent = (ConnectionStatusEvent) data;
+        HoneywellWifiData dataEvent = data;
         Instant time = dataEvent.getMessageWrapper().getDate();
         
         try {
@@ -91,7 +87,7 @@ public abstract class AbstractHoneywellWifiDataProcessor implements HoneywellWif
             dynamicLcrCommunicationsDao.insertData(assetAvailabilityPointDataTimes);
 
         } catch (NotFoundException e) {
-            log.info("Honeywell connection status message received for unknown device with MAC ID " + dataEvent.getMacId());
+            log.info("Unable to update asset availability for unkown device with MAC ID " + dataEvent.getMacId());
         }
         
     }
