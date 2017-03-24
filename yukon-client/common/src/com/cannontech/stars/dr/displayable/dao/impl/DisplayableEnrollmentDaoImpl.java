@@ -207,9 +207,9 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
 		}
 		
 		EnrollmentInService inService = EnrollmentInService.OUTOFSERVICE;
-		if (enrolled) {
-	        if(hardware.getHardwareType().isZigbee() || hardware.getHardwareType().isEcobee() || hardware.getHardwareType().isHoneywell()) {
-	            inService = EnrollmentInService.NA;
+        if (enrolled) {
+            if (hardware.getHardwareType().isZigbee()) {
+                inService = EnrollmentInService.NA;
 	        } else {
 	            boolean isInService = enrollmentDao.isInService(inventoryId);
 	            inService = EnrollmentInService.determineInService(isInService);
