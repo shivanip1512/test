@@ -187,8 +187,6 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sql.append("SELECT Availability, COUNT(Availability) AS count");
         sql.append("FROM (SELECT DISTINCT lmbase.ManufacturerSerialNumber as serial_num,");
         sql.append("(SELECT CASE WHEN inv.DeviceId=0 THEN").appendArgument_k(AssetAvailabilityCombinedStatus.ACTIVE);
-        sql.append("ELSE (SELECT CASE WHEN AddressingGroupID IN (SELECT DeviceId FROM LMGroupHoneywellWiFi) THEN").appendArgument_k(
-            AssetAvailabilityCombinedStatus.ACTIVE);
         sql.append("ELSE (SELECT CASE WHEN lmbase.InventoryId IN ");
         sql.append("(SELECT DISTINCT ib.InventoryId FROM InventoryBase ib ");
         sql.append("JOIN OptOutEvent ooe ON ooe.InventoryId = ib.InventoryId WHERE ooe.StartDate").lt(currentTime);
