@@ -13,20 +13,23 @@ yukon.admin.multispeak = (function () {
 	 var
 	    _initialized = false;
 	    mod = {
-	    		enableEndpointValue : function (isNew, selected, mspInterface) {
-	    				if (mspInterface !== 'NOT_Server') {
-	    					if(document.getElementById(mspInterface+"3.0") != null) {
-	    						document.getElementById(mspInterface+"3.0").disabled = !selected;
+	    		enableEndpointValue : function (selected, mspInterface) {
+	    			
+	    					if(document.getElementById("interfaceURL"+mspInterface+"V3") != null) {
+	    						document.getElementById("interfaceURL"+mspInterface+"V3").disabled = !selected;
+	    					} else if(document.getElementById("interfaceURL"+mspInterface+"V5") != null) {
+	    						document.getElementById("interfaceURL"+mspInterface+"V5").disabled = !selected;
 	    					}
-	    	                $('.'+mspInterface).prop('disabled', !selected);
-	    				}
 	    				if (document.getElementById("select"+mspInterface) != null) {
 	    				   document.getElementById("select"+mspInterface).disabled = !selected;
 	    				}
-	    				if(mspInterface == 'LM_Server') {
-	    					mspInterface = "DR_Server";
+	    				if(document.getElementById("ping"+mspInterface) != null){
+	    					document.getElementById("ping"+mspInterface).disabled = !selected;
 	    				}
-	    	            document.getElementById(mspInterface+"5.0").disabled = !selected;
+	    				if(document.getElementById("getMethods"+mspInterface) != null){
+	    					document.getElementById("getMethods"+mspInterface).disabled = !selected;
+	    				}
+	    				
 	            },
 	            
 	            enableExtension: function (selected) {
@@ -35,22 +38,33 @@ yukon.admin.multispeak = (function () {
 	            },
 	            
 	            executeRequest : function (service, call, version) {
-	            	document.mspForm.version.value = version;
-	            	document.mspForm.actionService.value = service;
-  	                document.mspForm.action = yukon.url("/multispeak/setup/" + call);
-	                document.mspForm.submit();
+	            	$('#actionService').val(service);
+	            	var formData = $('#mspForm').serialize();
+	                $.ajax({
+	                    url: yukon.url('/multispeak/setup/' + call + '/' + version),
+	                    type: 'post',
+	                    data: formData 
+	                }).done(function(data) {
+	                	$('#results').css('color', data.resultColor);
+	                	$('#results').val(data.MSP_RESULT_MSG);
+	                }).fail(function(data) {
+	                    $('#start-simulator').removeAttr("disabled");
+	                    if (data.hasError) {
+	                        $('#taskStatusMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
+	                    } else {
+	                        $('#taskStatusMessage').hide();
+	                    }
+	                });
 	            },
 	            
 	            vendorChanged : function () {
-	            	
-	            	document.mspForm.action = yukon.url("/multispeak/setup/vendorHome");
+	            	document.mspForm.action = yukon.url("/multispeak/setup/vendorHome/"+ $('#mspVendorId').val());
 	                document.mspForm.submit();
 	            },
 	            
 	            showHideData : function (id, showData) {
 	               $('#'+id).attr('type', showData ? 'text' : 'password');   
 	            },
-
 	            
 	            /**
 	             * Initializes the module, hooking up event handlers to components.
@@ -63,9 +77,13 @@ yukon.admin.multispeak = (function () {
 	 	                var isSelected = targetRow.find('.switch-btn-checkbox').prop('checked');
 	 	               yukon.admin.multispeak.showHideData(id, !isSelected);
 	 	            });
+	            	 $('#vendor-edit').click(function(ev) {
+	 	                	document.mspForm.action = yukon.url("/multispeak/setup/editVendorSetup/"+ $('#mspVendorId').val());
+	 	                    document.mspForm.submit();
+	                 });
 	            	 
 	            	 $(document).on('yukon:multispeak:vendor:delete', function () {
-	            		 $('#delete-form').submit();
+	            		 $('#delete-vendor').submit();
 	                 });
 	                if (_initialized) return;
 	                _initialized = true;

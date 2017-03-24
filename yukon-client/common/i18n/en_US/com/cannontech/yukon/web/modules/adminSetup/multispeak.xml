@@ -130,8 +130,7 @@
     <entry key="yukon.web.modules.adminSetup.interfaces.mspVersion3">3.0</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.mspVersion5">5.0</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.confirmDelete.title">Confirm Delete</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.confirmDelete.message">Are you sure you want to delete this interface?</entry>
-    
+    <entry key="yukon.web.modules.adminSetup.interfaces.confirmDelete.message">Are you sure you want to delete "{0}"?</entry>
     <entry key="yukon.web.modules.adminSetup.interfaces.title">MultiSpeak Interface Setup</entry>
     <!-- <entry key="yukon.web.modules.adminSetup.interfaces.home.tab.title">Setup</entry> -->
     

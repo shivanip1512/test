@@ -63,14 +63,14 @@ public class MultispeakDefines {
          */
         MSP_SERVER_INTERFACES = new ArrayList<>();
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(MR_Server_STR, MultiSpeakVersion.V3));
-        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(MR_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(OD_Server_STR, MultiSpeakVersion.V3));
-        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(OD_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(CD_Server_STR, MultiSpeakVersion.V3));
-        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(CD_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(LM_Server_STR, MultiSpeakVersion.V3));
-        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(DR_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(SCADA_Server_STR, MultiSpeakVersion.V3));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(MR_Server_STR, MultiSpeakVersion.V5));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(OD_Server_STR, MultiSpeakVersion.V5));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(CD_Server_STR, MultiSpeakVersion.V5));
+        MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(DR_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(SCADA_Server_STR, MultiSpeakVersion.V5));
         MSP_SERVER_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_STR, MultiSpeakVersion.V5));
 
@@ -79,15 +79,14 @@ public class MultispeakDefines {
          * implmented by the other vendor.
          */
         MSP_CLIENT_INTERFACES = new ArrayList<>();
-        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(CB_Server_STR, MultiSpeakVersion.V5));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(CB_Server_STR, MultiSpeakVersion.V3));
-        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(OA_Server_STR, MultiSpeakVersion.V5));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(CB_Server_STR, MultiSpeakVersion.V5));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(OA_Server_STR, MultiSpeakVersion.V3));
-        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(EA_Server_STR, MultiSpeakVersion.V5));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(OA_Server_STR, MultiSpeakVersion.V5));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(EA_Server_STR, MultiSpeakVersion.V3));
-        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(MDM_Server_STR, MultiSpeakVersion.V5));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(EA_Server_STR, MultiSpeakVersion.V5));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(MDM_Server_STR, MultiSpeakVersion.V3));
-        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(CB_CD_STR, MultiSpeakVersion.V5));
+        MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(MDM_Server_STR, MultiSpeakVersion.V5));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(CB_CD_STR, MultiSpeakVersion.V3));
         MSP_CLIENT_INTERFACES.add(MultispeakVendor.buildMapKey(NOT_Server_STR, MultiSpeakVersion.V5));
     }

@@ -5,7 +5,9 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-<cti:standardPage module="adminSetup"  page="interfaces">
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<cti:standardPage module="adminSetup"  page="interfaces.${mode}">
+<tags:setFormEditMode mode="${mode}" />
 <cti:msg2 var="pingTitle" key=".ping"/>
 <cti:msg2 var="getMethods" key=".getMethods"/>
 <cti:includeScript link="/resources/js/pages/yukon.admin.multispeak.js" />
@@ -15,7 +17,8 @@
     </cti:linkTab>
     
     <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.interfaces.vendor.tab.title">
-        <c:url value="/multispeak/setup/vendorHome" />
+        <c:set var="vendorId" value="0" />
+        <c:url value="/multispeak/setup/vendorHome/${vendorId}" />
     </cti:linkTab>
 
     <cti:checkGlobalSetting setting="MSP_LM_MAPPING_SETUP">
@@ -30,66 +33,60 @@
 </cti:linkTabbedContainer>
     <c:set var="interfaceListLength" value="${fn:length(possibleInterfaces)}" />
     <cti:url var="saveUrl" value="/multispeak/setup/save"/>
-    <form name="mspForm" method="post" action="${saveUrl}">
+    <form:form modelAttribute="multispeak" id="mspForm" name="mspForm" method="post" action="${saveUrl}" commandName="multispeak">
         <cti:csrfToken/>
-        <input type="hidden" name="actionEndpoint">
-        <input type="hidden" name="actionService">
-        <input type="hidden" name="version">
-        <tags:sectionContainer2 nameKey="setup">
+        <c:set var="viewMode" value="${false}" />
+        <cti:displayForPageEditModes modes="VIEW">
+            <c:set var="viewMode" value="${true}" />
+        </cti:displayForPageEditModes>
+        <c:set var="tableClass" value="${viewMode ? '' : 'with-form-controls'}" />
+        <form:hidden id="actionService" path="service" />
+        <form:hidden id="serviceVersion" path="serviceVersion" />
+        <form:hidden id="vendorID" path="mspVendor.vendorID" />
+        <form:hidden id="userName" path="mspVendor.userName" />
+        <form:hidden id="password" path="mspVendor.password" />
+        <form:hidden id="userName" path="mspVendor.outUserName" />
+        <form:hidden id="password" path="mspVendor.outPassword" />
+        <tags:sectionContainer2 nameKey="setup" styleClass="stacked-lg">
             <div class="column-12-12 clearfix">
                 <div class="column one">
-                    <tags:nameValueContainer2>
-                                <input type="hidden" name="mspVendorId" value="${defaultMspVendor.vendorID}">
-                                <input type="hidden" name="mspUserName" value="${defaultMspVendor.userName}">
-                                <input type="hidden" name="mspPassword" value="${defaultMspVendor.password}">
-                                <input type="hidden" name="mspAppName" value="${defaultMspVendor.appName}">
-                                <input type="hidden" name="outUserName" value="${defaultMspVendor.outUserName}">
-                                <input type="hidden" name="outPassword" value="${defaultMspVendor.outPassword}">
-                                <tags:nameValue2 nameKey=".companyName">
-                                    <input type="hidden" name="mspCompanyName" value="${defaultMspVendor.companyName}">
-                                        <span>${fn:escapeXml(defaultMspVendor.companyName)}</span>
-                                </tags:nameValue2>
-                                <tags:nameValue2 nameKey=".appName">
-                                   <span>${fn:escapeXml(defaultMspVendor.appName)}</span>
-                                </tags:nameValue2>
+                    <tags:nameValueContainer2 tableClass="natural-width ${tableClass}">
+                        <c:if test="${showRoleProperties}">
+                            <tags:nameValue2 nameKey=".companyName">
+                                <tags:input path="mspVendor.companyName" maxlength="32" readonly="true"/>
+                            </tags:nameValue2>
+                            <tags:nameValue2 nameKey=".appName">
+                                <tags:input path="mspVendor.appName" maxlength="32" readonly="true"/>
+                            </tags:nameValue2>
+                        </c:if>
                     </tags:nameValueContainer2>
                 </div>
                 
                 <div class="column two nogutter">
-                    <tags:nameValueContainer2>
+                    <tags:nameValueContainer2 tableClass="natural-width ${tableClass}">
                         <c:if test="${showRoleProperties}">
                             <tags:nameValue2 nameKey=".primaryCIS">
-                                <select title="<cti:msg2 key=".primaryCIS.title"/>" name="mspPrimaryCIS">
-                                    <option selected value='0'>(none)</option>
-                                    <c:forEach var="mspVendorEntry" items="${mspCISVendorList}">
-                                        <option <c:if test="${mspVendorEntry.vendorID == primaryCIS}">selected</c:if> value='<c:out value="${mspVendorEntry.vendorID}"/>'> 
-                                            <c:out value="${mspVendorEntry.companyName}"/> <c:if test="${mspVendorEntry.appName != ''}">(<c:out value="${mspVendorEntry.appName}"/>)</c:if>
-                                        </option>
-                                    </c:forEach>
-                                  </select>
+                            <tags:selectWithItems path="mspPrimaryCIS"
+                                items="${mspCISVendorList}"
+                                itemLabel="companyName" itemValue="vendorID"
+                                inputClass="with-option-hiding" />
                             </tags:nameValue2>
                             
                             <tags:nameValue2 nameKey=".deviceNameAlias">
-                                <select name="mspPaoNameAlias">
-                                    <c:forEach var="mspPaoNameAliasEntry" items="${mspVendor.paoNameAliases}" varStatus="status">
-                                        <option <c:if test="${mspPaoNameAliasEntry == paoNameAlias}">selected</c:if> value='<c:out value="${mspPaoNameAliasEntry}"/>'> <c:out value="${mspPaoNameAliasEntry}"/></option>
-                                    </c:forEach>
-                                </select>
+                                <tags:selectWithItems id="paoNameAlias" path="paoNameAlias" items="${paoNameAliases}" 
+                                inputClass="with-option-hiding"/>
                             </tags:nameValue2>
                             
                             <tags:nameValue2 nameKey=".useExtension">
-                                <input id="mspPaoNameUsesExtension" type="checkbox" <c:if test="${paoNameUsesExtension}">checked</c:if> name='mspPaoNameUsesExtension' value='true' onclick='yukon.admin.multispeak.enableExtension(this.checked);'>
-                                <tags:nameValue2 nameKey=".extensionName">
-                                    <input id="mspPaoNameAliasExtension" type="text" <c:if test="${!paoNameUsesExtension}">disabled</c:if> name="mspPaoNameAliasExtension" value="${paoNameAliasExtension}">
-                                </tags:nameValue2>
+                            <tags:switchButton path="paoNameUsesExtension" offClasses="M0"
+                                toggleGroup="mspPaoNameAliasExtension" toggleAction="hide" inputClass="js-use-offset" />
+                            
+                            <tags:input path="paoNameAliasExtension" size="6" toggleGroup="mspPaoNameAliasExtension"/>
                             </tags:nameValue2>
                             
                             <tags:nameValue2 nameKey=".meterLookupField">
-                                <select title="<cti:msg2 key=".meterLookupField.title"/>" name="mspMeterLookupField">
-                                    <c:forEach var="mspMeterLookupFieldEntry" items="${mspVendor.meterLookupFields}">
-                                        <option <c:if test="${mspMeterLookupFieldEntry == meterLookupField}">selected</c:if> value='<c:out value="${mspMeterLookupFieldEntry}"/>'> <c:out value="${mspMeterLookupFieldEntry}"/></option>
-                                    </c:forEach>
-                                </select>
+                                <tags:selectWithItems id="meterLookupField" path="meterLookupField" items="${meterLookupFields}" 
+                                inputClass="with-option-hiding"/>
                             </tags:nameValue2>
                         </c:if>
                     </tags:nameValueContainer2>
@@ -97,112 +94,57 @@
                 </div>
             </div>
         </tags:sectionContainer2>
-            
+        <!-- Interfaces -->
         <tags:sectionContainer2 nameKey="mspInterfaces">
-        <table class="compact-results-table row-highlighting">
-         <tbody>
-         <tr style="border-bottom: solid 1px #ccc;"><td colspan="4"><b><i:inline key=".version3"/></b></td></tr>
-             <c:set var="interfacesMap" value="${mspVendor.mspInterfaceMap}" scope="page"/>
-                 <c:forEach var="mspPossibleInterface" items="${possibleInterfaces}" varStatus="status" step="2">
-				     <c:set var="version" value="${mspPossibleInterface}5" scope="page" />
-                     <c:set var="interfaceValue" value="${interfacesMap[mspPossibleInterface]}" scope="page" />    
-                     <c:choose>
-                         <c:when test="${mspPossibleInterface.right.version== '5.0'}"> 
-                             <c:set var="notInterface" value="${mspPossibleInterface}" scope="page" />
-                             <c:set var="notInterfaceValue" value="${interfaceValue}" scope="page" />
-                         </c:when>
-                         <c:otherwise>
-                        
-                      <tr>
+            <table class="compact-results-table row-highlighting">
+                <tbody>
+                    <tr style="border-bottom: solid 1px #ccc;"><td colspan="4"><b><i:inline key=".version3"/></b></td></tr>
+                    <c:forEach var="multispeakInterface" items="${multispeak.mspInterfaceList}" varStatus="i">
+                        <c:if test="${i.index == 5}">
+                           <tr style="border-bottom: solid 1px #ccc;"><td colspan="4"><b><i:inline key=".version5"/></b></td></tr>
+                        </c:if>
+                        <tr>
+                            <td>
+                              <c:out value="${multispeakInterface.mspInterface}"/>
+                              <tags:hidden path="mspInterfaceList[${i.index}].mspInterface"/>
+                              <tags:hidden path="mspInterfaceList[${i.index}].vendorID"/>
+                            </td>
                         <td>
-                              <input type="hidden" name='mspInterface' value="${mspPossibleInterface.key}"/>
-                              <c:out value="${mspPossibleInterface.key}"/>
+                        <tags:input id="${multispeakInterface.mspInterface}" path="mspInterfaceList[${i.index}].mspEndpoint" size="40" /> 
                         </td>
                         <td>
-                            <input id="<c:out value="${mspPossibleInterface.key}${mspPossibleInterface.right.version}"/>" type="text" name="mspEndpoint" size="30" 
-                                value='<c:out value="${interfaceValue.mspEndpoint}" default="${defaultURL}"/>'
-                                <c:if test="${disabled}">disabled</c:if>>
-                        </td>
-                        <td>
-                                <span>${mspPossibleInterface.right.version}</span>
+                                <span>${multispeakInterface.version.version}</span>
+                                <tags:hidden path="mspInterfaceList[${i.index}].version"/>
                         </td>
                             <td>       
-                            <div class="button-group fr wsnw oh">
-                                    <cti:button icon="icon-ping" id="${mspPossibleInterface.left}" classes="${mspPossibleInterface.key}" name="pingURL" renderMode="buttonImage" title="${pingTitle}" disabled="${disabled}"
-                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${mspPossibleInterface.right}');"/>
-                                    <cti:button icon="icon-application-view-columns" id="${mspPossibleInterface.key}" classes="${mspPossibleInterface.key}" name="getMethods" renderMode="buttonImage" title="${getMethods}" disabled="${disabled}"
-                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${mspPossibleInterface.right}');"/>
+                                <div class="button-group fr wsnw oh">
+                                    <cti:button icon="icon-ping" id="${multispeakInterface.mspInterface}" name="pingURL" renderMode="buttonImage" title="${pingTitle}" disabled="${disabled}"
+                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${multispeakInterface.version}');"/>
+                                    <cti:button icon="icon-application-view-columns" id="${multispeakInterface.mspInterface}" name="getMethods" renderMode="buttonImage" title="${getMethods}" disabled="${disabled}"
+                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${multispeakInterface.version}');"/>
                                 </div>
                             </td>
-                       <c:if test="${status.first}">
+                       <c:if test="${i.index == 0}">
                        <c:set var="interfaceListLength" value="${fn:length(possibleInterfaces)}" />
                                 <td rowspan='${interfaceListLength+3}'>
-                                    <textarea cols="50" rows="${interfaceListLength*2+3}" name="Results" readonly wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>
+                                    <textarea cols="50" rows="${interfaceListLength*2+3}" name="Results" id="results" readonly wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>
                                 </td>
                       </c:if>
-                      </tr>
-                      </c:otherwise>
-                      </c:choose>
+                 </tr>
                 </c:forEach>
-                <tr style="border-bottom: solid 1px #ccc;"><td colspan="4"><b><i:inline key=".version5"/></b></td></tr>
-                
-             <c:set var="interfacesMap" value="${mspVendor.mspInterfaceMap}" scope="page"/>
-                 <c:forEach var="mspPossibleInterface" items="${possibleInterfaces}" varStatus="status" step="2" begin="1">
-				     <c:set var="version" value="${mspPossibleInterface}5" scope="page" />
-                     <c:set var="interfaceValue" value="${interfacesMap[mspPossibleInterface]}" scope="page" />    
-                     <c:if test="${mspPossibleInterface.right.version!= '3.0'}">
-                      <tr>
-                        <td>
-                        <input type="hidden" name='mspInterface' value="${mspPossibleInterface.key}"/>
-                              <c:out value="${mspPossibleInterface.key}"/>
-                        </td>
-                        <td>
-                            <input id="<c:out value="${mspPossibleInterface.key}${mspPossibleInterface.right.version}"/>" type="text" name="mspEndpoint" size="30" 
-                                value='<c:out value="${interfaceValue.mspEndpoint}" default="${defaultURL}"/>'>
-                        </td>
-                        <td>
-                                <span>${mspPossibleInterface.right.version}</span>
-                        </td>
-                            <td>       
-                            <div class="button-group fr wsnw oh">
-                                    <cti:button icon="icon-ping" id="${mspPossibleInterface.left}" classes="${mspPossibleInterface.key}" name="pingURL" renderMode="buttonImage" title="${pingTitle}" disabled="${disabled}"
-                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${mspPossibleInterface.right}');"/>
-                                    <cti:button icon="icon-application-view-columns" id="${mspPossibleInterface.key}" classes="${mspPossibleInterface.key}" name="getMethods" renderMode="buttonImage" title="${getMethods}" disabled="${disabled}"
-                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${mspPossibleInterface.right}');"/>
-                                </div>
-                            </td>
-                      </tr>
-                      
-                      </c:if>
-                </c:forEach>
-                <tr>
-                      <td>
-                      <input type="hidden" name='mspInterface' value="${notInterface.key}"/>
-                              <c:out value="${notInterface.key}"/>
-                        </td>
-                        <td>
-                            <input id="<c:out value="${notInterface.key}${notInterface.right.version}"/>" type="text" name="mspEndpoint" size="30" 
-                                value='<c:out value="${notInterfaceValue.mspEndpoint}" default="${defaultURL}"/>'>
-                        </td>
-                        <td>
-                                <span>${notInterface.right.version}</span>
-                        </td>
-                            <td>       
-                            <div class="button-group fr wsnw oh">
-                                    <cti:button icon="icon-ping" id="${notInterface.left}" classes="${notInterface.key}" name="pingURL" renderMode="buttonImage" title="${pingTitle}" disabled="${disabled}"
-                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${notInterface.right}');"/>
-                                    <cti:button icon="icon-application-view-columns" id="${notInterface.key}" classes="${notInterface.key}" name="getMethods" renderMode="buttonImage" title="${getMethods}" disabled="${disabled}"
-                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${notInterface.right}');"/>
-                                </div>
-                            </td>
-                      </tr>
                 </tbody>
          </table>
         </tags:sectionContainer2>
             
         <div class="page-action-area">
-            <cti:button type="submit" nameKey="save" classes="primary action" busy="true"/>
-                <cti:button type="submit" name="Cancel" value="Cancel" busy="true" nameKey="cancel"/>
+            <cti:displayForPageEditModes modes="VIEW">
+                <cti:url var="editUrl" value="/multispeak/setup/editYukonSetup" />
+                <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
+            </cti:displayForPageEditModes>
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
+                <cti:button type="submit" nameKey="save" classes="primary action" busy="true"/>
+                <cti:button nameKey="cancel" href="javascript:window.history.back()"/>
+            </cti:displayForPageEditModes>
         </div>
-    </form>
+    </form:form>
 </cti:standardPage>
