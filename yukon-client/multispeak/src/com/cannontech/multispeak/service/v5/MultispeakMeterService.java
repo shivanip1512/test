@@ -4,7 +4,6 @@ import java.util.List;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.msp.beans.v5.multispeak.MeterGroup;
 import com.cannontech.msp.beans.v5.commontypes.ErrorObject;
 import com.cannontech.msp.beans.v5.commontypes.MeterID;
 import com.cannontech.msp.beans.v5.enumerations.EndDeviceStateKind;
@@ -12,7 +11,7 @@ import com.cannontech.msp.beans.v5.enumerations.RCDStateKind;
 import com.cannontech.msp.beans.v5.multispeak.ConnectDisconnectEvent;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeterExchange;
-import com.cannontech.msp.beans.v5.multispeak.MeterReading;
+import com.cannontech.msp.beans.v5.multispeak.MeterGroup;
 import com.cannontech.msp.beans.v5.multispeak.ObjectDeletion;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
 import com.cannontech.multispeak.block.v5.Block;
@@ -169,13 +168,6 @@ public interface MultispeakMeterService {
     public List<ErrorObject> cdEvent(MultispeakVendor mspVendor, 
             List<ConnectDisconnectEvent> cdEvents,
             String transactionID, String responseURL) throws MultispeakWebServiceException;
-    
-    /**
-     * This is a workaround method for SEDC.  This method is used to perform an actual meter interrogation and then return
-     * the collected reading if message received within 2 minutes.
-     * @throws MultispeakWebServiceException
-     */
-    public MeterReading getLatestReadingInterrogate(MultispeakVendor mspVendor, YukonMeter meter, String responseUrl);
     
     /**
      * Initiate reads for all meterIds and fire ReadingChangedNotification on

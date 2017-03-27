@@ -5,9 +5,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
@@ -90,18 +88,12 @@ import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
-import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.Disconnect410State;
 import com.cannontech.database.db.point.stategroup.OutageStatus;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
 import com.cannontech.database.db.point.stategroup.RfnDisconnectStatusState;
-import com.cannontech.message.porter.message.Request;
-import com.cannontech.message.porter.message.Return;
-import com.cannontech.message.util.Message;
-import com.cannontech.message.util.MessageEvent;
-import com.cannontech.message.util.MessageListener;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfCDStateChange;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfEndDeviceState;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfFormattedBlock;
@@ -149,8 +141,6 @@ import com.cannontech.multispeak.dao.v5.MspMeterDao;
 import com.cannontech.multispeak.dao.v5.MspObjectDao;
 import com.cannontech.multispeak.data.v5.MspErrorObjectException;
 import com.cannontech.multispeak.data.v5.MspLoadActionCode;
-import com.cannontech.multispeak.event.MultispeakEvent;
-import com.cannontech.multispeak.event.v5.MeterReadEvent;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceClientException;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
 import com.cannontech.multispeak.service.MultispeakMeterServiceBase;
@@ -176,7 +166,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 
-public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase implements MultispeakMeterService, MessageListener {
+public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase implements MultispeakMeterService {
 
     private static final Logger log = YukonLogManager.getLogger(MultispeakMeterServiceImpl.class);
 
@@ -209,8 +199,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Autowired private MeterReadProcessingService meterReadProcessingService;
     @Autowired private NOTClient notClient;
     @Autowired  private ObjectFactory objectFactory;
-    
-    private static Map<Long, MultispeakEvent> eventsMap = Collections.synchronizedMap(new HashMap<Long, MultispeakEvent>());
 
     private static final String EXTENSION_DEVICE_TEMPLATE_STRING = "AMRMeterType";
 
@@ -226,17 +214,12 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     private static final String METER_UNINSTALL_STRING = "MetersUninstalledNotification";
     private static final String SERV_LOC_CHANGED_STRING = "ServiceLocationsChangedNotification";
 
-    /** Singleton incrementor for messageIDs to send to porter connection */
-    private static long messageID = 1;
-
     /**
-     * Get the static instance of Multispeak (this) object. Adds a message
-     * listener to the pil connection instance.
+     * Get the static instance of Multispeak (this) object.
      */
     @PostConstruct
     public void initialize() throws Exception {
         log.info("New MSP instance created");
-        porterConnection.addMessageListener(this);
 
         ConfigurationSource configurationSource = MasterConfigHelper.getConfiguration();
         Builder<EndDeviceStateKind, Integer> builder = ImmutableMultimap.builder();
@@ -1869,48 +1852,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     }
 
     @Override
-    public void messageReceived(MessageEvent e) {
-        Message in = e.getMessage();
-        if (in instanceof Return) {
-            final Return returnMsg = (Return) in;
-            final MultispeakEvent event = getEventsMap().get(new Long(returnMsg.getUserMessageID()));
-
-            if (event != null) {
-
-                Runnable eventRunner = new Runnable() {
-
-                    @Override
-                    public void run() {
-
-                        log.info("Message Received [ID:"+ returnMsg.getUserMessageID() + 
-                                     " DevID:" + returnMsg.getDeviceID() + 
-                                     " Command:" + returnMsg.getCommandString() +
-                                     " Result:" + returnMsg.getResultString() + 
-                                     " Status:" + returnMsg.getStatus() +
-                                     " More:" + returnMsg.getExpectMore()+"]");
-
-                        if (returnMsg.getExpectMore() == 0) {
-
-                            log.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
-
-                            boolean doneProcessing = event.messageReceived(returnMsg);
-                            if (doneProcessing) {
-                                getEventsMap().remove(new Long(event.getPilMessageID()));
-                            }
-                        }
-                    }
-                };
-
-                eventRunner.run();
-            }
-        }
-    }
-
-    private static Map<Long, MultispeakEvent> getEventsMap() {
-        return eventsMap;
-    }
-
-    @Override
     public RCDStateKind CDMeterState(final MultispeakVendor mspVendor, final YukonMeter meter) throws MultispeakWebServiceException {
 
         log.info("Received " + meter.getMeterNumber() + " for CDDeviceStates from " + mspVendor.getCompanyName());
@@ -2227,88 +2168,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         this.porterConnection = porterConnection;
     }
 
-    /**
-     * This method still does not support attributes. 
-     * The issue is that SEDC does not support the ability to receive ReadingChangedNotification messages. 
-     * Therefore, just for them, we initiate a real time read, wait, and return. 
-     * This DOES need to be changed in future versions.
-     */
-    @Override
-    public MeterReading getLatestReadingInterrogate(MultispeakVendor mspVendor, YukonMeter meter, String responseUrl) {
-        long id = generateMessageID();
-        MeterReadEvent event = new MeterReadEvent(mspVendor, id, meter, responseUrl);
-
-        getEventsMap().put(new Long(id), event);
-        
-        String commandStr = "getvalue kwh";
-        if (DeviceTypesFuncs.isMCT4XX(meter.getPaoIdentifier().getPaoType())) {
-            commandStr = "getvalue peak"; // getvalue peak returns the peak kW and the total kWh
-        }
-
-        final String meterNumber = meter.getMeterNumber();
-        log.info("Received " + meterNumber + " for LatestReadingInterrogate from " + mspVendor.getCompanyName());
-        multispeakEventLogService.initiateMeterRead(meterNumber, meter, "N/A", "GetLatestMeterReadingsByMeterIDs",
-            mspVendor.getCompanyName());
-
-        // Writes a request to pil for the meter and commandStr using the id for mspVendor.
-        commandStr += " update noqueue";
-        Request pilRequest = new Request(meter.getPaoIdentifier().getPaoId(), commandStr, id);
-        pilRequest.setPriority(13);
-        porterConnection.write(pilRequest);
-
-        systemLog("GetLatestReadingByMeterNo", "(ID:" + meter.getPaoIdentifier().getPaoId() + ") MeterNumber ("
-            + meterNumber + ") - " + commandStr, mspVendor);
-
-        synchronized (event) {
-            boolean timeout = !waitOnEvent(event, mspVendor.getRequestMessageTimeout());
-            if (timeout) {
-                mspObjectDao.logMSPActivity("GetLatestReadingByMeterNo",
-                                            "MeterNumber (" + meterNumber + ") - Reading Timed out after " + 
-                                            (mspVendor.getRequestMessageTimeout() / 1000) + " seconds.  No reading collected.",
-                                            mspVendor.getCompanyName());
-            }
-        }
-
-        return event.getDevice().getMeterRead();
-    }
-    
-
-    /**
-     * generate a unique messageId, don't let it be negative
-     */
-    private synchronized long generateMessageID() {
-        if (++messageID == Long.MAX_VALUE) {
-            messageID = 1;
-        }
-        return messageID;
-    }
-    
-    /**
-     * Returns true if event processes without timing out, false if event times
-     * out.
-     * @param event
-     * @return
-     */
-    private boolean waitOnEvent(MultispeakEvent event, long timeout) {
-
-        long millisTimeOut = 0; //
-        while (!event.isPopulated() && millisTimeOut < timeout) // quit after
-                                                                // timeout
-        {
-            try {
-                Thread.sleep(10);
-                millisTimeOut += 10;
-            } catch (InterruptedException e) {
-                log.error(e);
-            }
-        }
-        if (millisTimeOut >= timeout) {// this broke the loop, more than likely,
-                                       // have to kill it sometime
-            return false;
-        }
-        return true;
-    }
-    
     @Override
     public synchronized List<ErrorObject> meterReadEvent(final MultispeakVendor mspVendor, List<MeterID> meterIDs,
             final String transactionID, final String responseUrl) {
