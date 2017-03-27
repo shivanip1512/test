@@ -6,7 +6,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * A light class for simple summary of dashboards with basic details. Doesn't contain any information about associated
  * widgets.
  */
-public class DashboardDescription {
+public class LightDashboard {
     private int dashboardId;
     private String name;
     private String description;
