@@ -225,6 +225,9 @@
     <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_VOLTAGE_PHASE_A">Minimum Voltage (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_VOLTAGE_PHASE_B">Minimum Voltage (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MINIMUM_VOLTAGE_PHASE_C">Minimum Voltage (Phase C)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.AVERAGE_VOLTAGE_PHASE_A">Average Voltage (Phase A)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.AVERAGE_VOLTAGE_PHASE_B">Average Voltage (Phase B)</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.AVERAGE_VOLTAGE_PHASE_C">Average Voltage (Phase C)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE_PHASE_A">Maximum Voltage (Phase A)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE_PHASE_B">Maximum Voltage (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.MAXIMUM_VOLTAGE_PHASE_C">Maximum Voltage (Phase C)</entry>
@@ -401,6 +404,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.FORWARD_CAPACITIVE_KVARH_PER_INTERVAL">Forward Capacitive kVArh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_INDUCTIVE_KVARH_PER_INTERVAL">Reverse Inductive kVArh per Interval</entry>
     <entry key="yukon.common.attribute.builtInAttribute.REVERSE_CAPACITIVE_KVARH_PER_INTERVAL">Reverse Capacitive kVArh per Interval</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NET_KVARH">Net kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH">Net Delivered kVArh</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH_RATE_A">Net Delivered kVArh Rate A</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_DELIVERED_KVARH_RATE_B">Net Delivered kVArh Rate B</entry>

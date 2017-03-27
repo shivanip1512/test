@@ -293,7 +293,7 @@
         <paoType value="RFN530S4ERX" />
         <paoType value="RFN530S4ERXR" />
         
-<!-- existed for all + requested for ALL -->
+<!-- Does not apply to RFN-520 or RFN-530 Focus meters -->
         <point name="Delivered kW"> 
             <uom>W</uom>
             <multiplier value=".001"/>
@@ -303,6 +303,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
+<!-- Does not apply to RFN-530S4e meters -->
         <point name="Delivered kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -312,6 +313,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
+<!-- existed for all + requested for ALL -->
         <point name="Received kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -782,33 +784,6 @@
                 <modifier>Quadrant 3</modifier>
             </modifiers>
         </point>
-        <point name="Received kVAr">
-            <uom>Var</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Delivered kVA">
-            <uom>VA</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Received kVA">
-            <uom>VA</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-            </modifiers>
-        </point>
     </pointGroup>
 
 
@@ -979,28 +954,6 @@
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
                 <modifier>Harmonic</modifier>
-            </modifiers>
-        </point>
-        <point name="kVAh Sum">
-            <uom>VAh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Harmonic</modifier>
-            </modifiers>
-        </point>
-        <point name="Power Factor">
-            <uom>PF</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
         <point name="Coincident Power Factor">
@@ -1389,6 +1342,37 @@
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
+<!-- The following only applies to A3K -->
+        <point name="Delivered kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+            </modifiers>
+        </point>
+        <point name="kVAh Sum">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Harmonic</modifier>
+            </modifiers>
+        </point>
     </pointGroup>
 
     <pointGroup>
@@ -1758,6 +1742,15 @@
             <modifiers match="equal">
                 <modifier>Max</modifier>
                 <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Received kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
@@ -3193,17 +3186,6 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Sum kVArh">
-            <uom>Varh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
         <point name="Net kVArh">
             <uom>Varh</uom>
             <multiplier value=".001"/>
@@ -3231,17 +3213,6 @@
             <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Sum kVAh">
-            <uom>VAh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
@@ -3351,6 +3322,29 @@
                 <modifier>Quadrant 4</modifier>
                 <modifier>Max</modifier>
                 <modifier>Previous</modifier>
+            </modifiers>
+        </point>
+<!-- The following do not apply to RFN520FAX or RFN520FAXD -->
+        <point name="Sum kVArh">
+            <uom>Varh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
+        <point name="Sum kVAh">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
     </pointGroup>
@@ -3674,18 +3668,6 @@
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
                 <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
-        <point name="Net kVAh">
-            <uom>VAh</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 2</modifier>
-                <modifier>Quadrant 3</modifier>
-                <modifier>Quadrant 4</modifier>
-                <modifier>Net Flow</modifier>
             </modifiers>
         </point>
         <point name="kVAh Leading (Q1 + Q3)">
@@ -4642,6 +4624,48 @@
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase Neutral->Ground</modifier>
+            </modifiers>
+        </point>
+<!-- The following only applies to RFN530S4ERX and RFN530S4ERXR -->
+        <point name="Net kVAh">
+            <uom>VAh</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 3</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Net Flow</modifier>
+            </modifiers>
+        </point>
+    </pointGroup>
+
+    <pointGroup>
+        <paoType value="RFN530S4X" />
+        
+        <point name="Avg Voltage Phase A">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase A</modifier>
+                <modifier>Avg</modifier>
+            </modifiers>
+        </point>
+        <point name="Avg Voltage Phase B">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase B</modifier>
+                <modifier>Avg</modifier>
+            </modifiers>
+        </point>
+        <point name="Avg Voltage Phase C">
+            <uom>V</uom>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Phase C</modifier>
+                <modifier>Avg</modifier>
             </modifiers>
         </point>
     </pointGroup>

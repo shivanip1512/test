@@ -31,7 +31,6 @@
         <pointInfo name="Configuration Error" attributes="CONFIGURATION_ERROR"/>
         <pointInfo name="Crystal Oscillator Error" attributes="CRYSTAL_OSCILLATOR_ERROR"/>
         <pointInfo name="Current Loss" attributes="CURRENT_LOSS"/>
-        <pointInfo name="Delivered kVA" attributes="DELIVERED_KVA"/>
         <pointInfo name="Delivered kW" init="true" attributes="DEMAND"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
@@ -78,8 +77,6 @@
         <pointInfo name="Power Failure" attributes="POWER_FAIL_FLAG"/>
         <pointInfo name="Pqm Test Failure Warning" attributes="PQM_TEST_FAILURE_WARNING"/>
         <pointInfo name="Ram Error" attributes="RAM_ERROR"/>
-        <pointInfo name="Received kVA" attributes="RECEIVED_KVA"/>
-        <pointInfo name="Received kVAr" attributes="RECEIVED_KVAR"/>
         <pointInfo name="Received kW" attributes="RECEIVED_DEMAND"/>
         <pointInfo name="Received kW Load Profile" attributes="RECEIVED_KW_LOAD_PROFILE"/>
         <pointInfo name="Received kWh" attributes="RECEIVED_KWH"/>

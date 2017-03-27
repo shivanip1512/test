@@ -39,7 +39,6 @@
         <pointInfo name="Current Phase C" attributes="CURRENT_PHASE_C"/>
         <pointInfo name="Delivered kW" init="true" attributes="DEMAND"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
-        <pointInfo name="Delivered kWh" init="true" attributes="DELIVERED_KWH"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Demand Reads And Reset" attributes="DEMAND_READS_AND_RESET"/>
@@ -62,11 +61,12 @@
         <pointInfo name="Low Battery Warning" attributes="LOW_BATTERY_WARNING"/>
         <pointInfo name="Low Loss Potential" attributes="LOW_LOSS_POTENTIAL"/>
         <pointInfo name="Measurement Error" attributes="MEASUREMENT_ERROR"/>
+        <pointInfo name="Net kVAh" attributes="NET_KVAH"/>
         <pointInfo name="Net kVAh (Rate A kVAh)" attributes="NET_KVAH_RATE_A"/>
         <pointInfo name="Net kVAh (Rate B kVAh)" attributes="NET_KVAH_RATE_B"/>
         <pointInfo name="Net kVAh (Rate C kVAh)" attributes="NET_KVAH_RATE_C"/>
         <pointInfo name="Net kVAh (Rate D kVAh)" attributes="NET_KVAH_RATE_D"/>
-        <pointInfo name="Net kVArh" attributes="NET_DELIVERED_KVARH"/>
+        <pointInfo name="Net kVArh" attributes="NET_KVARH"/>
         <pointInfo name="Net kVArh (Rate A kVArh)" attributes="NET_DELIVERED_KVARH_RATE_A"/>
         <pointInfo name="Net kVArh (Rate B kVArh)" attributes="NET_DELIVERED_KVARH_RATE_B"/>
         <pointInfo name="Net kVArh (Rate C kVArh)" attributes="NET_DELIVERED_KVARH_RATE_C"/>

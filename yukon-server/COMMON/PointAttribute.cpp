@@ -342,6 +342,9 @@ const Attribute Attribute::VoltagePhaseC                                    = At
 const Attribute Attribute::MinimumVoltagePhaseA                             = Attribute( "MINIMUM_VOLTAGE_PHASE_A" );
 const Attribute Attribute::MinimumVoltagePhaseB                             = Attribute( "MINIMUM_VOLTAGE_PHASE_B" );
 const Attribute Attribute::MinimumVoltagePhaseC                             = Attribute( "MINIMUM_VOLTAGE_PHASE_C" );
+const Attribute Attribute::AverageVoltagePhaseA                             = Attribute( "AVERAGE_VOLTAGE_PHASE_A" );
+const Attribute Attribute::AverageVoltagePhaseB                             = Attribute( "AVERAGE_VOLTAGE_PHASE_B" );
+const Attribute Attribute::AverageVoltagePhaseC                             = Attribute( "AVERAGE_VOLTAGE_PHASE_C" );
 const Attribute Attribute::MaximumVoltagePhaseA                             = Attribute( "MAXIMUM_VOLTAGE_PHASE_A" );
 const Attribute Attribute::MaximumVoltagePhaseB                             = Attribute( "MAXIMUM_VOLTAGE_PHASE_B" );
 const Attribute Attribute::MaximumVoltagePhaseC                             = Attribute( "MAXIMUM_VOLTAGE_PHASE_C" );
@@ -405,6 +408,7 @@ const Attribute Attribute::NetkWLoadProfile                                 = At
 const Attribute Attribute::SumkVALoadProfile                                = Attribute( "SUM_KVA_LOAD_PROFILE" );
 const Attribute Attribute::SumkVArLoadProfile                               = Attribute( "SUM_KVAR_LOAD_PROFILE" );
 
+const Attribute Attribute::NetkVArh                                         = Attribute( "NET_KVARH" );
 const Attribute Attribute::NetDeliveredkVArh                                = Attribute( "NET_DELIVERED_KVARH" );
 const Attribute Attribute::NetDeliveredkVArhRateA                           = Attribute( "NET_DELIVERED_KVARH_RATE_A" );
 const Attribute Attribute::NetDeliveredkVArhRateB                           = Attribute( "NET_DELIVERED_KVARH_RATE_B" );

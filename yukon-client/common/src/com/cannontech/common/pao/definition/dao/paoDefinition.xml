@@ -8329,19 +8329,19 @@
                 <unitofmeasure value="kVAr" />
                 <decimalplaces value="3" />
             </point>
-            <point offset="80" type="Analog">
+            <point type="Analog" offset="80" >
                 <name>Power Factor Degrees Phase A</name>
                 <multiplier value="1"/>
                 <unitofmeasure value="Degrees"/>
                 <decimalplaces value="1"/>
             </point>
-            <point offset="81" type="Analog">
+            <point type="Analog" offset="81">
                 <name>Power Factor Degrees Phase B</name>
                 <multiplier value="1"/>
                 <unitofmeasure value="Degrees"/>
                 <decimalplaces value="1"/>
             </point>
-            <point offset="82" type="Analog">
+            <point type="Analog" offset="82">
                 <name>Power Factor Degrees Phase C</name>
                 <multiplier value="1"/>
                 <unitofmeasure value="Degrees"/>
@@ -11284,6 +11284,24 @@
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3" />
             </point>
+            <point type="Analog" offset="343">
+                <name>Avg Voltage Phase A</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="344">
+                <name>Avg Voltage Phase B</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="345">
+                <name>Avg Voltage Phase C</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+                <decimalplaces value="3" />
+            </point>
             <point type="Analog" offset="333">
                 <name>Max Voltage Phase A</name>
                 <multiplier value="1.0"/>
@@ -11633,6 +11651,15 @@
             </attribute>
             <attribute name="MINIMUM_VOLTAGE_PHASE_C">
                 <basicLookup point="Min Voltage Phase C"/>
+            </attribute>
+            <attribute name="AVERAGE_VOLTAGE_PHASE_A">
+                <basicLookup point="Avg Voltage Phase A"/>
+            </attribute>
+            <attribute name="AVERAGE_VOLTAGE_PHASE_B">
+                <basicLookup point="Avg Voltage Phase B"/>
+            </attribute>
+            <attribute name="AVERAGE_VOLTAGE_PHASE_C">
+                <basicLookup point="Avg Voltage Phase C"/>
             </attribute>
             <attribute name="MAXIMUM_VOLTAGE_PHASE_A">
                 <basicLookup point="Max Voltage Phase A"/>
@@ -12037,6 +12064,12 @@
                 <unitofmeasure value="kVArh"/>
                 <decimalplaces value="3" />
             </point>
+            <point type="Analog" offset="341">
+                <name>Net kVAh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVah"/>
+                <decimalplaces value="3" />
+            </point>
         </points>
         <attributes>
             <attribute name="SUM_KVARH">
@@ -12051,14 +12084,39 @@
             <attribute name="SUM_PEAK_KVA">
                 <basicLookup point="Sum Peak kVA"/>
             </attribute>
-            <attribute name="NET_DELIVERED_KVARH">
+            <attribute name="NET_KVARH">
                 <basicLookup point="Net kVArh"/>
+            </attribute>
+            <attribute name="NET_KVAH">
+                <basicLookup point="Net kVAh"/>
             </attribute>
         </attributes>
     </pao>
     
     <pao id="RFN530S4ERXR" inherits="RFN530_S4_BASE, RFN530_TOU_RECORDING_REACTIVE, SUPPORTS_TOU_TAG">
         <displayName>RFN-530S4eRXR</displayName>
+        <points>
+            <point type="Analog" offset="341">
+                <name>Net kVAh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVah"/>
+                <decimalplaces value="3" />
+            </point>
+            <point type="Analog" offset="166">
+                <name>Net kVArh</name>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="kVArh"/>
+                <decimalplaces value="3" />
+            </point>
+        </points>
+        <attributes>
+            <attribute name="NET_KVAH">
+                <basicLookup point="Net kVAh"/>
+            </attribute>
+            <attribute name="NET_KVARH">
+                <basicLookup point="Net kVArh"/>
+            </attribute>
+        </attributes>
     </pao>
     
     <pao id="TRANSDATA_MARKV">

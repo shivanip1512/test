@@ -20,6 +20,7 @@
                 { "metricId" : 22, "attributeMagnitude" : 3, "attribute" : "RECEIVED_KVARH" },
                 { "metricId" : 23, "attributeMagnitude" : 3, "attribute" : "SUM_KVARH" },
 
+                { "metricId" : 24, "attributeMagnitude" : 3, "attribute" : "NET_KVARH" },
                 { "metricId" : 25, "attributeMagnitude" : 3, "attribute" : "FORWARD_INDUCTIVE_KVARH" },
                 { "metricId" : 26, "attributeMagnitude" : 3, "attribute" : "REVERSE_INDUCTIVE_KVARH" },
 
@@ -59,6 +60,10 @@
 
                 { "metricId" : 114, "attribute" : "MAXIMUM_VOLTAGE" },
                 { "metricId" : 115, "attribute" : "VOLTAGE" },
+
+                { "metricId" : 119, "attribute" : "AVERAGE_VOLTAGE_PHASE_A" },
+                { "metricId" : 120, "attribute" : "AVERAGE_VOLTAGE_PHASE_B" },
+                { "metricId" : 121, "attribute" : "AVERAGE_VOLTAGE_PHASE_C" },
                 
                 { "metricId" : 128, "attribute" : "NEUTRAL_CURRENT" },
 

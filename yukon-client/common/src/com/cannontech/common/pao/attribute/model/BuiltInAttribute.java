@@ -212,6 +212,9 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     MINIMUM_VOLTAGE_PHASE_A("Minimum Voltage (Phase A)", AttributeGroup.VOLTAGE),
     MINIMUM_VOLTAGE_PHASE_B("Minimum Voltage (Phase B)", AttributeGroup.VOLTAGE),
     MINIMUM_VOLTAGE_PHASE_C("Minimum Voltage (Phase C)", AttributeGroup.VOLTAGE),
+    AVERAGE_VOLTAGE_PHASE_A("Average Voltage (Phase A)", AttributeGroup.VOLTAGE),
+    AVERAGE_VOLTAGE_PHASE_B("Average Voltage (Phase B)", AttributeGroup.VOLTAGE),
+    AVERAGE_VOLTAGE_PHASE_C("Average Voltage (Phase C)", AttributeGroup.VOLTAGE),
     MAXIMUM_VOLTAGE_PHASE_A("Maximum Voltage (Phase A)", AttributeGroup.VOLTAGE),
     MAXIMUM_VOLTAGE_PHASE_B("Maximum Voltage (Phase B)", AttributeGroup.VOLTAGE),
     MAXIMUM_VOLTAGE_PHASE_C("Maximum Voltage (Phase C)", AttributeGroup.VOLTAGE),
@@ -276,6 +279,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SUM_KVA_LOAD_PROFILE("Sum kVA Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
     SUM_KVAR_LOAD_PROFILE("Sum kVAr Load Profile", AttributeGroup.PROFILE, false),   //calculated, not readable
 
+    NET_KVARH("Net kVArh", AttributeGroup.REACTIVE),
     NET_DELIVERED_KVARH("Net Delivered kVArh", AttributeGroup.REACTIVE),
     NET_DELIVERED_KVARH_RATE_A("Net Delivered kVArh Rate A", AttributeGroup.REACTIVE),
     NET_DELIVERED_KVARH_RATE_B("Net Delivered kVArh Rate B", AttributeGroup.REACTIVE),

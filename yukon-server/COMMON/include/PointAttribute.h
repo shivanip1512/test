@@ -385,6 +385,9 @@ public:
     static const Attribute  MinimumVoltagePhaseA;
     static const Attribute  MinimumVoltagePhaseB;
     static const Attribute  MinimumVoltagePhaseC;
+    static const Attribute  AverageVoltagePhaseA;
+    static const Attribute  AverageVoltagePhaseB;
+    static const Attribute  AverageVoltagePhaseC;
     static const Attribute  MaximumVoltagePhaseA;
     static const Attribute  MaximumVoltagePhaseB;
     static const Attribute  MaximumVoltagePhaseC;
@@ -448,6 +451,7 @@ public:
     static const Attribute  SumkVALoadProfile;
     static const Attribute  SumkVArLoadProfile;
 
+    static const Attribute  NetkVArh;
     static const Attribute  NetDeliveredkVArh;
     static const Attribute  NetDeliveredkVArhRateA;
     static const Attribute  NetDeliveredkVArhRateB;

@@ -41,7 +41,6 @@
         <pointInfo name="Configuration Error" attributes="CONFIGURATION_ERROR"/>
         <pointInfo name="Crystal Oscillator Error" attributes="CRYSTAL_OSCILLATOR_ERROR"/>
         <pointInfo name="Current Loss" attributes="CURRENT_LOSS"/>
-        <pointInfo name="Delivered kVA" attributes="DELIVERED_KVA"/>
         <pointInfo name="Delivered kVAh" attributes="KVAH"/>
         <pointInfo name="Delivered kVAr Load Profile" attributes="DELIVERED_KVAR_LOAD_PROFILE"/>
         <pointInfo name="Delivered kVArh" init="true" attributes="KVARH"/>
@@ -66,7 +65,6 @@
         <pointInfo name="Improper Meter Engine Operation Warning" attributes="IMPROPER_METER_ENGINE_OPERATION_WARNING"/>
         <pointInfo name="Internal Communication Error" attributes="INTERNAL_COMMUNICATION_ERROR"/>
         <pointInfo name="Invalid Service" attributes="INVALID_SERVICE"/>
-        <pointInfo name="kVAh Sum" attributes="SUM_KVAH"/>
         <pointInfo name="Line Frequency Warning" attributes="LINE_FREQUENCY_WARNING"/>
         <pointInfo name="Load Side Voltage Is Missing" attributes="LOAD_SIDE_VOLTAGE_IS_MISSING"/>
         <pointInfo name="Loss Of All Current" attributes="LOSS_OF_ALL_CURRENT"/>
@@ -113,7 +111,6 @@
         <pointInfo name="Phase C kW"/>
         <pointInfo name="Phase C Power Factor" attributes="POWER_FACTOR_PHASE_C"/>
         <pointInfo name="Potential Indicator Warning" attributes="POTENTIAL_INDICATOR_WARNING"/>
-        <pointInfo name="Power Factor" attributes="POWER_FACTOR"/>
         <pointInfo name="Power Factor Degrees Phase A" init="true" attributes="POWER_FACTOR_ANGLE_PHASE_A"/>
         <pointInfo name="Power Factor Degrees Phase B" init="true" attributes="POWER_FACTOR_ANGLE_PHASE_B"/>
         <pointInfo name="Power Factor Degrees Phase C" init="true" attributes="POWER_FACTOR_ANGLE_PHASE_C"/>
@@ -157,7 +154,6 @@
         <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D"/>
         <pointInfo name="Rate D Peak kVA"/>
         <pointInfo name="Rate D Peak kVAr" attributes="PEAK_KVAR_RATE_D"/>
-        <pointInfo name="Received kVA" attributes="RECEIVED_KVA"/>
         <pointInfo name="Received kVAh" attributes="RECEIVED_KVAH"/>
         <pointInfo name="Received kVAr" attributes="RECEIVED_KVAR"/>
         <pointInfo name="Received kVArh"/>
@@ -183,8 +179,6 @@
         <pointInfo name="Service Disconnect Switch Open" attributes="SERVICE_DISCONNECT_SWITCH_OPEN"/>
         <pointInfo name="Service Disconnect Switch Sensor Error" attributes="SERVICE_DISCONNECT_SWITCH_SENSOR_ERROR"/>
         <pointInfo name="Stuck Switch" attributes="STUCK_SWITCH"/>
-        <pointInfo name="Sum kVA Load Profile" attributes="SUM_KVA_LOAD_PROFILE"/>
-        <pointInfo name="Sum kVAh per Interval" attributes="SUM_KVAH_PER_INTERVAL"/>
         <pointInfo name="Sum kVAr Load Profile" attributes="SUM_KVAR_LOAD_PROFILE"/>
         <pointInfo name="Sum kVArh" attributes="SUM_KVARH"/>
         <pointInfo name="Sum kVArh per Interval" attributes="SUM_KVARH_PER_INTERVAL"/>

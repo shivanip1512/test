@@ -110,7 +110,6 @@ public class DataStreamingAttributeHelper {
                 ),
         //S4-AD
         RFN_530S4AD(PaoType.RFN530S4EAX,
-                BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KWH,		  //metric 3	
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
@@ -119,7 +118,6 @@ public class DataStreamingAttributeHelper {
                 ),
         //S4-AT
         RFN_530S4AT(PaoType.RFN530S4EAXR,
-                BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KWH,		  //metric 3
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
@@ -128,7 +126,6 @@ public class DataStreamingAttributeHelper {
                 ),
         //S4-AR
         RFN_530S4AR(PaoType.RFN530S4EAXR,
-                BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KWH,		  //metric 3
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
@@ -137,30 +134,36 @@ public class DataStreamingAttributeHelper {
                 ),
         //S4-RD
         RFN_530S4RD(PaoType.RFN530S4ERX,
-                BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.SUM_KWH,         //metric 3
                 BuiltInAttribute.SUM_KVARH,       //metric 23
+                BuiltInAttribute.NET_KVARH,       //metric 24
                 BuiltInAttribute.SUM_KVAH,        //metric 43
+                BuiltInAttribute.NET_KVAH,        //metric 44
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 ),
         //S4-RT
         RFN_530S4RT(PaoType.RFN530S4ERXR,
-                BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.SUM_KWH,         //metric 3
                 BuiltInAttribute.SUM_KVARH,       //metric 23
+                BuiltInAttribute.NET_KVARH,       //metric 24
                 BuiltInAttribute.SUM_KVAH,        //metric 43
+                BuiltInAttribute.NET_KVAH,        //metric 44
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 ),
         //S4-RR
         RFN_530S4RR(PaoType.RFN530S4ERXR,
-                BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.SUM_KWH,         //metric 3
                 BuiltInAttribute.SUM_KVARH,       //metric 23
+                BuiltInAttribute.NET_KVARH,       //metric 24
                 BuiltInAttribute.SUM_KVAH,        //metric 43
+                BuiltInAttribute.NET_KVAH,        //metric 44
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -170,28 +173,20 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KVARH,       //metric 23
-                /*Var Hour Net*/				     //metric 24
+                /*Var Hour Net*/                  //metric 24
                 BuiltInAttribute.SUM_KVAH,        //metric 43
-                BuiltInAttribute.NET_KVAH,        //metric 44
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
-                /*Average Voltage Phase A*/       //metric 119
-                /*Average Voltage Phase B*/       //metric 120
-                /*Average Voltage Phase C*/       //metric 121
+                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
+                BuiltInAttribute.AVERAGE_VOLTAGE_PHASE_A, //metric 119
+                BuiltInAttribute.AVERAGE_VOLTAGE_PHASE_B, //metric 120
+                BuiltInAttribute.AVERAGE_VOLTAGE_PHASE_C  //metric 121
                 ),
         //Focus AXD-500
         RFN_520FAXD(PaoType.RFN520FAX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
-                BuiltInAttribute.SUM_KVAH,        //metric 43
-                BuiltInAttribute.VOLTAGE,         //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -200,14 +195,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXT(PaoType.RFN520FAX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
-                BuiltInAttribute.SUM_KVAH,        //metric 43
-                BuiltInAttribute.VOLTAGE,         //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -216,14 +204,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXR(PaoType.RFN520FAX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
-                BuiltInAttribute.SUM_KVAH,        //metric 43
-                BuiltInAttribute.VOLTAGE,         //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -232,16 +213,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXD_SD(PaoType.RFN520FAXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
-                BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
-                //  Even though the RF node firmware supports polyphase voltages, 
-                //    the Focus Disconnect meters are singlephase and do not. 
-                //BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                //BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                //BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -250,16 +222,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXT_SD(PaoType.RFN520FAXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
-                BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
-                //  Even though the RF node firmware supports polyphase voltages, 
-                //    the Focus Disconnect meters are singlephase and do not. 
-                //BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                //BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                //BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -268,16 +231,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXR_SD(PaoType.RFN520FAXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
-                BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
-                //  Even though the RF node firmware supports polyphase voltages, 
-                //    the Focus Disconnect meters are singlephase and do not. 
-                //BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                //BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                //BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -287,17 +241,9 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXT(PaoType.RFN520FRX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.RECEIVED_KVAR,   //metric 33
                 BuiltInAttribute.SUM_KVARH,       //metric 23
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
-                BuiltInAttribute.VOLTAGE,         //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -306,17 +252,9 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXR(PaoType.RFN520FRX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.RECEIVED_KVAR,   //metric 33
                 BuiltInAttribute.SUM_KVARH,       //metric 23
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
-                BuiltInAttribute.VOLTAGE,         //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -325,19 +263,9 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXD_SD(PaoType.RFN520FRXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.RECEIVED_KVAR,   //metric 33
                 BuiltInAttribute.SUM_KVARH,       //metric 23
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
-                //  Even though the RF node firmware supports polyphase voltages, 
-                //    the Focus Disconnect meters are singlephase and do not. 
-                //BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                //BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                //BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -346,19 +274,9 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXT_SD(PaoType.RFN520FRXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.RECEIVED_KVAR,   //metric 33
                 BuiltInAttribute.SUM_KVARH,       //metric 23
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
-                //  Even though the RF node firmware supports polyphase voltages, 
-                //    the Focus Disconnect meters are singlephase and do not. 
-                //BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                //BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                //BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -367,19 +285,9 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXR_SD(PaoType.RFN520FRXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.RECEIVED_KVAR,   //metric 33
                 BuiltInAttribute.SUM_KVARH,       //metric 23
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
-                //  Even though the RF node firmware supports polyphase voltages, 
-                //    the Focus Disconnect meters are singlephase and do not. 
-                //BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                //BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                //BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
                 /*Average Voltage Phase C*/       //metric 121
@@ -390,11 +298,6 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.RECEIVED_DEMAND, //metric 6
-                BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.RECEIVED_KVAR,   //metric 33
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
-                BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.POWER_FACTOR_PHASE_A, //metric 162
                 BuiltInAttribute.POWER_FACTOR_PHASE_B, //metric 163
                 BuiltInAttribute.POWER_FACTOR_PHASE_C, //metric 164
@@ -408,11 +311,6 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.RECEIVED_DEMAND, //metric 6
-                BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.RECEIVED_KVAR,   //metric 33
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
-                BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.POWER_FACTOR_PHASE_A, //metric 162
                 BuiltInAttribute.POWER_FACTOR_PHASE_B, //metric 163
                 BuiltInAttribute.POWER_FACTOR_PHASE_C, //metric 164
@@ -426,15 +324,12 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.RECEIVED_DEMAND, //metric 6
-                BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.RECEIVED_KVAR,   //metric 33
                 BuiltInAttribute.DELIVERED_KVA,   //metric 49
                 BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.POWER_FACTOR_PHASE_A, //metric 162
                 BuiltInAttribute.POWER_FACTOR_PHASE_B, //metric 163
                 BuiltInAttribute.POWER_FACTOR_PHASE_C, //metric 164
-                BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.DELIVERED_POWER_FACTOR,//metric 81
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
@@ -446,18 +341,15 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.RECEIVED_DEMAND, //metric 6
+                BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.KVAR,            //metric 32
                 BuiltInAttribute.RECEIVED_KVAR,   //metric 33
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
-                BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.POWER_FACTOR_ANGLE_PHASE_A, //metric 159
                 BuiltInAttribute.POWER_FACTOR_ANGLE_PHASE_B, //metric 160
                 BuiltInAttribute.POWER_FACTOR_ANGLE_PHASE_C, //metric 161
                 BuiltInAttribute.POWER_FACTOR_PHASE_A, //metric 162
                 BuiltInAttribute.POWER_FACTOR_PHASE_B, //metric 163
                 BuiltInAttribute.POWER_FACTOR_PHASE_C, //metric 164
-                BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.DELIVERED_POWER_FACTOR,//metric 81
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
@@ -465,28 +357,14 @@ public class DataStreamingAttributeHelper {
                 ),
         //Sentinel-L0
         RFN_430SL0(PaoType.RFN430SL0,
-                BuiltInAttribute.DELIVERED_KWH,   //metric 1
-                BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.RECEIVED_KVAR,   //metric 33
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
-                BuiltInAttribute.POWER_FACTOR,    //metric 80
-                BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
-                BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
-                BuiltInAttribute.DEMAND           //metric 200
-                /*Var*/                           //metric 201
-                /*VA*/                            //metric 202
+                BuiltInAttribute.DELIVERED_KWH   //metric 1
                 ),
         //Sentinel-L1
         RFN_430SL1(PaoType.RFN430SL1,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.RECEIVED_KVAR,   //metric 33
                 BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
@@ -500,9 +378,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.RECEIVED_KVAR,   //metric 33
                 BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
@@ -516,9 +392,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.RECEIVED_KVAR,   //metric 33
                 BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
@@ -532,9 +406,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.RECEIVED_KVAR,   //metric 33
                 BuiltInAttribute.DELIVERED_KVA,   //metric 49
-                BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
