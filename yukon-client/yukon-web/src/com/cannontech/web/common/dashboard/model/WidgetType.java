@@ -44,7 +44,11 @@ public enum WidgetType implements DisplayableEnum {
     
     @Override
     public String getFormatKey() {
-        return formatKeyBase + name();
+        return formatKeyBase + name() + ".name";
+    }
+    
+    public String getDescriptionKey() {
+        return formatKeyBase + name() + ".description";
     }
     
     public DashboardScope getScope() {
