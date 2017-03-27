@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.dashboard.model.Dashboard;
-import com.cannontech.web.common.dashboard.model.LightDashboard;
+import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
 
 /**
@@ -29,27 +29,27 @@ public interface DashboardService {
     /**
      * Get a list of dashboards owned by the user.
      */
-    List<LightDashboard> getOwnedDashboards(int userId);
+    List<LiteDashboard> getOwnedDashboards(int userId);
     
     /**
      * Get a list of dashboards favorited by the user.
      */
-    List<LightDashboard> getFavorites(int userId);
+    List<LiteDashboard> getFavorites(int userId);
     
     /**
      * Get a list of favorite dashboards for a particular page type.
      */
-    List<LightDashboard> getFavoritesForPage(int userId, DashboardPageType type);
+    List<LiteDashboard> getFavoritesForPage(int userId, DashboardPageType type);
     
     /**
      * Get a list of dashboards that are visible to the specified user.
      */
-    List<LightDashboard> getVisible(int userId);
+    List<LiteDashboard> getVisible(int userId);
     
     /**
      * Get a list of all dashboards with no owner assigned.
      */
-    List<LightDashboard> getAllOwnerless();
+    List<LiteDashboard> getAllOwnerless();
     
     /**
      * Sets the default dashboard for the specified users and dashboard page type.

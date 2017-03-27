@@ -7,7 +7,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 /**
  * The complete representation of a dashboard, including associated widgets.
- * @see LightDashboard LightDashboard, a lighter dashboard object.
+ * @see LiteDashboard LightDashboard, a lighter dashboard object.
  */
 public class Dashboard {
     private int dashboardId;
