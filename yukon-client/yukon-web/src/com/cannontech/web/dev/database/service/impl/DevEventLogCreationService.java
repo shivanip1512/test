@@ -890,7 +890,7 @@ public class DevEventLogCreationService {
         DISCONNECT(DisconnectEventLogService.class, 6),
         ECOBEE(EcobeeEventLogService.class, 3),
         ENDPOINT(EndpointEventLogService.class, 2),
-        GATEWAY(GatewayEventLogService.class, 6),
+        GATEWAY(GatewayEventLogService.class, 7),
         HARDWARE(HardwareEventLogService.class, 23),
         INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),
         METERING(MeteringEventLogService.class, 12),
