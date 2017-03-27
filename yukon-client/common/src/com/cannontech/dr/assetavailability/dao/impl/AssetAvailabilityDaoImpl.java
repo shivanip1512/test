@@ -57,8 +57,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
          * LastNonZeroRuntime,Availability for those inventory that belongs to the passed load group.
          * Availability is considered as
          * 1. Active - If the device is in oneway its always considered active. If its a two way device and
-         * its LastNonZeroRuntime greater than the runtimeWindowEnd. Honeywell wifi thermostats are always
-         * considered as active
+         * its LastNonZeroRuntime greater than the runtimeWindowEnd.
          * 2. Inactive - If LastCommunication is greater than communication window then its Inactive.
          * 3. OptedOut - If the inventory is in OptOutEvent table with StartDate less than current time and
          * stopDate greater than currentTime and eventState as START_OPT_OUT_SENT. Then that inventory is
@@ -118,8 +117,6 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sqlCommon.append(getTable().getSql());
         sqlCommon.append(")END");
         sqlCommon.append(getTable().getSql());
-        sqlCommon.append(")END");
-        sqlCommon.append(getTable().getSql());
         sqlCommon.append(")  AS availability");
         sqlCommon.append("FROM LMHardwareBase lmbase , ApplianceBase appbase,LMHardwareConfiguration hdconf,"
             + "InventoryBase inv");
@@ -175,8 +172,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
          * status(Availability) is found.
          * Availability is considered as
          *  1. Active - If the device is in oneway its always considered active. If its a two way device and
-         *  its LastNonZeroRuntime greater than the runtimeWindowEnd. Honeywell wifi thermostats are always
-         *  considered as active
+         *  its LastNonZeroRuntime greater than the runtimeWindowEnd.
          *  2. Inactive - If LastCommunication is greater than communication window then its Inactive.
          *  3. OptedOut - If the inventory is in OptOutEvent table with StartDate less than current time and
          *  stopDate greater than currentTime and eventState as START_OPT_OUT_SENT. Then that inventory is
@@ -198,7 +194,6 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         sql.append("WHEN LastCommunication").gt(communicatingWindowEnd);
         sql.append("THEN").appendArgument_k(AssetAvailabilityCombinedStatus.INACTIVE);
         sql.append("ELSE").appendArgument_k(AssetAvailabilityCombinedStatus.UNAVAILABLE).append("END");
-        sql.append(getTable().getSql()).append(")END");
         sql.append(getTable().getSql());
         sql.append(")END");
         sql.append(getTable().getSql());
