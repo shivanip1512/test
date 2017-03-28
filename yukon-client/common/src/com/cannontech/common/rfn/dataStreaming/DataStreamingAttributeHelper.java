@@ -186,6 +186,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXD(PaoType.RFN520FAX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
@@ -195,6 +196,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXT(PaoType.RFN520FAX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
@@ -204,6 +206,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXR(PaoType.RFN520FAX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
@@ -213,6 +216,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXD_SD(PaoType.RFN520FAXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
@@ -222,6 +226,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXT_SD(PaoType.RFN520FAXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
@@ -231,6 +236,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FAXR_SD(PaoType.RFN520FAXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 /*Average Voltage Phase A*/       //metric 119
                 /*Average Voltage Phase B*/       //metric 120
@@ -241,6 +247,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXT(PaoType.RFN520FRX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
@@ -252,6 +259,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXR(PaoType.RFN520FRX,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
@@ -263,6 +271,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXD_SD(PaoType.RFN520FRXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
@@ -274,6 +283,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXT_SD(PaoType.RFN520FRXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
@@ -285,6 +295,7 @@ public class DataStreamingAttributeHelper {
         RFN_520FRXR_SD(PaoType.RFN520FRXD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
+                BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE          //metric 115
@@ -298,9 +309,6 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.RECEIVED_DEMAND, //metric 6
-                BuiltInAttribute.POWER_FACTOR_PHASE_A, //metric 162
-                BuiltInAttribute.POWER_FACTOR_PHASE_B, //metric 163
-                BuiltInAttribute.POWER_FACTOR_PHASE_C, //metric 164
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -311,9 +319,6 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.RECEIVED_DEMAND, //metric 6
-                BuiltInAttribute.POWER_FACTOR_PHASE_A, //metric 162
-                BuiltInAttribute.POWER_FACTOR_PHASE_B, //metric 163
-                BuiltInAttribute.POWER_FACTOR_PHASE_C, //metric 164
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -344,9 +349,6 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.KVAR,            //metric 32
                 BuiltInAttribute.RECEIVED_KVAR,   //metric 33
-                BuiltInAttribute.POWER_FACTOR_ANGLE_PHASE_A, //metric 159
-                BuiltInAttribute.POWER_FACTOR_ANGLE_PHASE_B, //metric 160
-                BuiltInAttribute.POWER_FACTOR_ANGLE_PHASE_C, //metric 161
                 BuiltInAttribute.POWER_FACTOR_PHASE_A, //metric 162
                 BuiltInAttribute.POWER_FACTOR_PHASE_B, //metric 163
                 BuiltInAttribute.POWER_FACTOR_PHASE_C, //metric 164

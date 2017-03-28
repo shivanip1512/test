@@ -10195,24 +10195,6 @@
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3" />
             </point>
-            <point type="Analog" offset="343">
-                <name>Avg Voltage Phase A</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3" />
-            </point>
-            <point type="Analog" offset="344">
-                <name>Avg Voltage Phase B</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3" />
-            </point>
-            <point type="Analog" offset="345">
-                <name>Avg Voltage Phase C</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3" />
-            </point>
             <point type="Analog" offset="330">
                 <name>Min Voltage Phase A</name>
                 <multiplier value="1.0"/>
