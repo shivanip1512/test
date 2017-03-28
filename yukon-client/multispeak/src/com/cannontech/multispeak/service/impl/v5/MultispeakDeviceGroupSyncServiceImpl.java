@@ -144,7 +144,7 @@ public class MultispeakDeviceGroupSyncServiceImpl extends MultispeakDeviceGroupS
 
                             MultispeakDeviceGroupSyncTypeProcessor processor = processorMap.get(processorType);
                             String deviceGroupSyncValue = null;
-                            if (processor.equals(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION)) {
+                            if (processorType.equals(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION)) {
                                 ElectricLocationFields electricLocationFields = mspMeter.getElectricLocationFields();
                                 if (electricLocationFields != null) {
                                     SubstationRef substationRef = electricLocationFields.getSubstationRef();
@@ -152,7 +152,7 @@ public class MultispeakDeviceGroupSyncServiceImpl extends MultispeakDeviceGroupS
                                         deviceGroupSyncValue = substationRef.getSubstationName();
                                     }
                                 }
-                            } else if (processor.equals(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)) {
+                            } else if (processorType.equals(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE)) {
                                 deviceGroupSyncValue = mspMeter.getBillingCycle();
                             }
                             boolean added = processor.processMeterSync(mspVendor, deviceGroupSyncValue, yukonMeter);
