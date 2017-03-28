@@ -39,7 +39,8 @@ public class ConnectionStatusEvent extends AbstractHoneywellWifiData {
     public Integer getDeviceId() {
         return deviceId;
     }
-
+    
+    @Override
     public String getMacId() {
         return macId;
     }

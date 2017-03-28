@@ -45,7 +45,8 @@ public class ApplicationAccessAddedEvent extends AbstractHoneywellWifiData {
     public Integer getLocationId() {
         return locationId;
     }
-
+    
+    @Override
     public String getMacId() {
         return macId;
     }

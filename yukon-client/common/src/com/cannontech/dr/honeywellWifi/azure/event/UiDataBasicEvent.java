@@ -151,6 +151,7 @@ public class UiDataBasicEvent extends AbstractHoneywellWifiData {
         return deviceId;
     }
 
+    @Override
     public String getMacId() {
         return macId;
     }
