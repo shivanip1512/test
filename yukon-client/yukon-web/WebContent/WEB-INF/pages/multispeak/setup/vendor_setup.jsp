@@ -19,8 +19,7 @@
 
         <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.interfaces.vendor.tab.title"
             initiallySelected="${true}">
-            <c:set var="vendorId" value="0" />
-            <c:url value="/multispeak/setup/vendorHome/${vendorId}" />
+            <c:url value="/multispeak/setup/vendorHome" />
         </cti:linkTab>
 
         <cti:checkGlobalSetting setting="MSP_LM_MAPPING_SETUP">
@@ -134,13 +133,13 @@
             <c:when test="${!noVendorsExist || createMode}">
                 <tags:sectionContainer2 nameKey="mspInterfaces">
                     <!-- Interfaces -->
-                    <table class="compact-results-table row-highlighting">
+                    <table class="compact-results-table row-highlighting full-width">
                         <thead>
                             <tr>
                                 <th><i:inline key=".interface"/></th>
                                 <th><i:inline key=".url"/></th>
                                 <th><i:inline key=".version"/></th>
-                                <th><i:inline key=".actions"/></th>
+                                <th style="padding: 0px;"><i:inline key=".actions"/></th>
                                 <th><i:inline key=".results"/></th>
                             </tr>
                         </thead>

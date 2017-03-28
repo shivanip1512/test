@@ -111,16 +111,24 @@ public class MultispeakController {
 
     }
 
+    @RequestMapping("vendorHome")
+    public String vendorHome(HttpServletRequest request, ModelMap map, @ModelAttribute Multispeak multispeak) {
+
+        return redirectVendorSetup(null, map, multispeak);
+
+    }
+
     @RequestMapping("vendorHome/{vendorId}")
     public String vendorHome(HttpServletRequest request, ModelMap map, @ModelAttribute Multispeak multispeak,
             @PathVariable Integer vendorId) {
 
-        MultispeakVendor mspVendor = null;
-        if (multispeak == null) {
-            multispeak = new Multispeak();
-        }
+        return redirectVendorSetup(vendorId, map, multispeak);
 
-        if (vendorId != null && vendorId != 0) {
+    }
+
+    private String redirectVendorSetup(Integer vendorId, ModelMap map, Multispeak multispeak) {
+        MultispeakVendor mspVendor = null;
+        if (vendorId != null) {
             mspVendor = multispeakDao.getMultispeakVendor(vendorId);
         }
         if (mspVendor == null && multispeakDao.getMultispeakVendors(true) != null
@@ -533,6 +541,9 @@ public class MultispeakController {
             Multispeak multispeak, boolean isCreateNew) {
         boolean showRoleProperties = false;
         boolean noVendorsExist = false;
+        if (multispeak == null) {
+            multispeak = new Multispeak();
+        }
         List<MultiSpeakVersion> mspVersionList =
             new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V5));
         List<MultiSpeakVersion> mspVersion5 = new ArrayList<>(Arrays.asList(MultiSpeakVersion.V5));

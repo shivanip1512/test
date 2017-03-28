@@ -12,8 +12,7 @@
     </cti:linkTab>
     
     <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.interfaces.vendor.tab.title">
-        <c:set var="vendorId" value="0" />
-        <c:url value="/multispeak/setup/vendorHome/${vendorId}" />
+        <c:url value="/multispeak/setup/vendorHome" />
     </cti:linkTab>
 
     <cti:checkGlobalSetting setting="MSP_LM_MAPPING_SETUP">
