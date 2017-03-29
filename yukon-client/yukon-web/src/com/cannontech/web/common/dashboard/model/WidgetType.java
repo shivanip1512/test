@@ -7,9 +7,9 @@ import com.cannontech.common.i18n.DisplayableEnum;
  */
 public enum WidgetType implements DisplayableEnum {
     //Main Dashboard
-    FAVORITES(DashboardScope.GENERAL, WidgetCategory.OTHER),
-    MONITOR_SUBSCRIPTIONS(DashboardScope.GENERAL, WidgetCategory.OTHER),
-    MESSAGING_STATISTICS(DashboardScope.GENERAL, WidgetCategory.OTHER),
+    FAVORITES(DashboardScope.GENERAL, WidgetCategory.OTHER, "favoritesWidget", "image-coming-soon"),
+    MONITOR_SUBSCRIPTIONS(DashboardScope.GENERAL, WidgetCategory.OTHER, "subscribedMonitorsWidget", "image-monitor-subscriptions"),
+    MESSAGING_STATISTICS(DashboardScope.GENERAL, WidgetCategory.OTHER, "messagingStatisticsWidget", "image-coming-soon"),
     /*
     //AMI Dashboard
     MONITORS(DashboardScope.GENERAL, WidgetCategory.AMI),
@@ -35,11 +35,15 @@ public enum WidgetType implements DisplayableEnum {
     
     private DashboardScope scope;
     private WidgetCategory category;
+    private String beanName;
+    private String imageName;
     
     //TODO: do we need to allow multiple scopes or categories?
-    private WidgetType(DashboardScope scope, WidgetCategory category) {
+    private WidgetType(DashboardScope scope, WidgetCategory category, String beanName, String imageName) {
         this.scope = scope;
         this.category = category;
+        this.beanName = beanName;
+        this.imageName = imageName;
     }
     
     @Override
@@ -57,5 +61,13 @@ public enum WidgetType implements DisplayableEnum {
     
     public WidgetCategory getCategory() {
         return category;
+    }
+    
+    public String getBeanName() {
+        return beanName;
+    }
+    
+    public String getImageName() {
+        return imageName;
     }
 }

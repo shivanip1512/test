@@ -1333,9 +1333,36 @@ License: http://creativecommons.org/licenses/by/3.0/
     opacity: 0.5; 
 }
 
+.icon-drag { background-image: url(../Icons/Drag.png); }
+
+
 
 
 /* jquery ui icons */
 .ui-icon.excel { background-image: url(../Icons/icons.png) !important; background-position: -128px -256px; }
 .ui-icon.pdf { background-image: url(../Icons/icons.png) !important; background-position: -464px -240px; }
 .ui-icon.refresh { background-image: url(../Icons/icons.png) !important; background-position: -448px -336px; }
+
+
+/* dashboard images */
+.dashboard-image {
+    background-image: url(../Icons/dashboardImages.png);
+    background-repeat: no-repeat;
+    display: inline-block;
+    float: left;
+    height: 150px;
+    image-rendering: pixelated;
+    line-height: 150px;
+    margin-top: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+    margin-left: 0px;
+    max-width: 150px;
+    overflow: hidden;
+    text-indent: -9999px;
+    width: 150px;
+    border: 1px solid #ccc;
+}
+
+.image-coming-soon { background-position: -150px 0px; }
+.image-monitor-subscriptions { background-position: 0px 0px; }

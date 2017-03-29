@@ -1678,6 +1678,64 @@
             </description>
         </attribute>
     </tag>
+    
+    <tag>
+        <name>dashboardImage</name>
+        <tag-class>com.cannontech.web.i18n.DashboardImageTag</tag-class>
+        <dynamic-attributes>true</dynamic-attributes>
+        <body-content>empty</body-content>
+        <description>
+            Outputs span with icon background optionally wrapped in an anchor tag.
+            'icon' is the only required attribute.  'nameKey' can be used to 
+            specify hover text.
+        </description>
+        <attribute>
+            <name>image</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Class name of image to use.  See 'icons.css' for image class names. Assumes 150px image. 
+            </description>
+        </attribute>
+        <attribute>
+            <name>nameKey</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Base i18n key used to find optional ".hoverText" for icon element title attribute. 
+            </description>
+        </attribute>
+        <attribute>
+            <name>title</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                Icon element title attribute. 
+            </description>
+        </attribute>
+        <attribute>
+            <name>id</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Id for generated span element, defaults to 'icon_X' where X is a random number. </description>
+        </attribute>
+        <attribute>
+            <name>href</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                'href' for anchor element. If not specified, no anchor element is generated.
+            </description>
+        </attribute>
+        <attribute>
+            <name>classes</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>
+                CSS class names applied to generated span element.
+            </description>
+        </attribute>
+    </tag>
 
     <tag>
         <name>button</name>

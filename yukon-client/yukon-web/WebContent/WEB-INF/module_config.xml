@@ -949,6 +949,16 @@
       <page name="dashboard" type="BASIC" hideFavorite="true"/>
     </pages>
   </module>
+  
+    <module name="dashboards">
+    <skin name="STANDARD" />
+    <pages>
+      <page name="manage" type="BASIC"/>
+      <page name="admin" type="BASIC"/>
+      <page name="view" type="BASIC"/>
+      <page name="edit" type="BASIC"/>
+    </pages>
+  </module>
 
     <module name="adminSetup">
         <skin name="STANDARD" />

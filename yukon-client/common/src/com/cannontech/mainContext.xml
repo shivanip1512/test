@@ -271,6 +271,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/commandScheduleWidget</value>
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/deviceReconfigMonitorsWidget</value>
                 <value>classpath:com/cannontech/yukon/web/modules/widgets/systemActionsMenuWidget</value>
+                <value>classpath:com/cannontech/yukon/web/modules/dashboards/root</value>
             </list>
         </constructor-arg>
     </bean>
