@@ -28,8 +28,11 @@ public enum GroupCommandResultFieldEnum {
     
     COMPLETED_ITEMS(new ResultAccessor<GroupCommandResult>() {
         public Object getValue(GroupCommandResult groupCommandResult) {
-            
-            return (groupCommandResult.getResultHolder().getSuccessfulDevices().size() + groupCommandResult.getResultHolder().getFailedDevices().size() + groupCommandResult.getUnsupportedCollection().getDeviceCount());
+            int completedItems = groupCommandResult.getResultHolder().getSuccessfulDevices().size() + groupCommandResult.getResultHolder().getFailedDevices().size();
+            if (groupCommandResult.getUnsupportedCollection() != null) {
+                completedItems += groupCommandResult.getUnsupportedCollection().getDeviceCount();
+            }
+            return completedItems;
         }
     }),
     
