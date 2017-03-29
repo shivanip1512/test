@@ -950,7 +950,7 @@
     </pages>
   </module>
   
-    <module name="dashboards">
+    <module name="dashboard">
     <skin name="STANDARD" />
     <pages>
       <page name="manage" type="BASIC"/>

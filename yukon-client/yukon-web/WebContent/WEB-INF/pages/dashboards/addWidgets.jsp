@@ -12,7 +12,7 @@
             <table class="compact-results-table full-width">
                 <c:forEach var="widgetCategory" items="${widgetCategories}">
                     <tr>
-                    <td style="width: 200px;"><a><i:inline key=".widgetCategory.${widgetCategory}"/></a></td>
+                    <td style="width: 200px;"><a><i:inline key="${widgetCategory.formatKey}"/></a></td>
                     <td><span class="badge">15</span></td>
                     </tr>
                 </c:forEach>
