@@ -292,17 +292,7 @@
         <paoType value="RFN530S4EAXR" />
         <paoType value="RFN530S4ERX" />
         <paoType value="RFN530S4ERXR" />
-        
-<!-- Does not apply to RFN-520 or RFN-530 Focus meters -->
-        <point name="Delivered kW"> 
-            <uom>W</uom>
-            <multiplier value=".001"/>
-            <parseSiPrefix/>
-            <modifiers match="equal">
-                <modifier>Quadrant 1</modifier>
-                <modifier>Quadrant 4</modifier>
-            </modifiers>
-        </point>
+
 <!-- Does not apply to RFN-530S4e meters -->
         <point name="Delivered kWh">
             <uom>Wh</uom>
@@ -314,6 +304,15 @@
             </modifiers>
         </point>
 <!-- existed for all + requested for ALL -->
+        <point name="Delivered kW"> 
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
         <point name="Received kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>
@@ -1017,94 +1016,94 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-		<point name="Coincident Peak kW">
-			<uom>W</uom>
-			<multiplier value=".001" />
-			<parseSiPrefix />
-			<modifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-			</modifiers>
-			<baseUom>PF</baseUom>
-			<baseModifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 2</modifier>
-			</baseModifiers>
-		</point>
-		<point name="Rate A Coincident Peak kW">
-			<uom>W</uom>
-			<multiplier value=".001" />
-			<parseSiPrefix />
-			<modifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-				<modifier>TOU Rate A</modifier>
-			</modifiers>
-			<baseUom>PF</baseUom>
-			<baseModifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 2</modifier>
-				<modifier>TOU Rate A</modifier>
-			</baseModifiers>
-		</point>
-		<point name="Rate B Coincident Peak kW">
-			<uom>W</uom>
-			<multiplier value=".001" />
-			<parseSiPrefix />
-			<modifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-				<modifier>TOU Rate B</modifier>
-			</modifiers>
-			<baseUom>PF</baseUom>
-			<baseModifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 2</modifier>
-				<modifier>TOU Rate B</modifier>
-			</baseModifiers>
-		</point>
-		<point name="Rate C Coincident Peak kW">
-			<uom>W</uom>
-			<multiplier value=".001" />
-			<parseSiPrefix />
-			<modifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-				<modifier>TOU Rate C</modifier>
-			</modifiers>
-			<baseUom>PF</baseUom>
-			<baseModifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 2</modifier>
-				<modifier>TOU Rate C</modifier>
-			</baseModifiers>
-		</point>
-		<point name="Rate D Coincident Peak kW">
-			<uom>W</uom>
-			<multiplier value=".001" />
-			<parseSiPrefix />
-			<modifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-				<modifier>TOU Rate D</modifier>
-			</modifiers>
-			<baseUom>PF</baseUom>
-			<baseModifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 2</modifier>
-				<modifier>TOU Rate D</modifier>
-			</baseModifiers>
-		</point>
+        <point name="Coincident Peak kW">
+            <uom>W</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+            <baseUom>PF</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate A Coincident Peak kW">
+            <uom>W</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+            <baseUom>PF</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate A</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate B Coincident Peak kW">
+            <uom>W</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+            <baseUom>PF</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate B</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate C Coincident Peak kW">
+            <uom>W</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+            <baseUom>PF</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate C</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate D Coincident Peak kW">
+            <uom>W</uom>
+            <multiplier value=".001" />
+            <parseSiPrefix />
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+            <baseUom>PF</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>TOU Rate D</modifier>
+            </baseModifiers>
+        </point>
         <point name="Rate A Coincident Power Factor">
             <uom>PF</uom>
             <multiplier value=".001"/>
@@ -1181,94 +1180,94 @@
                 <modifier>Quadrant 4</modifier>
             </baseModifiers>
         </point>
-		<point name="Coincident kVA">
-			<uom>VA</uom>
-			<multiplier value=".001"/>
-			<parseSiPrefix/>
-			<modifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-			</modifiers>
-			<baseUom>W</baseUom>
-			<baseModifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-			</baseModifiers>
-		</point>
-		<point name="Rate A Coincident kVA">
-			<uom>VA</uom>
-			<multiplier value=".001"/>
-			<parseSiPrefix/>
-			<modifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-				<modifier>TOU Rate A</modifier>
-			</modifiers>
-			<baseUom>W</baseUom>
-			<baseModifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-				<modifier>TOU Rate A</modifier>
-			</baseModifiers>
-		</point>
-		<point name="Rate B Coincident kVA">
-			<uom>VA</uom>
-			<multiplier value=".001"/>
-			<parseSiPrefix/>
-			<modifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-				<modifier>TOU Rate B</modifier>
-			</modifiers>
-			<baseUom>W</baseUom>
-			<baseModifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-				<modifier>TOU Rate B</modifier>
-			</baseModifiers>
-		</point>
-		<point name="Rate C Coincident kVA">
-			<uom>VA</uom>
-			<multiplier value=".001"/>
-			<parseSiPrefix/>
-			<modifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-				<modifier>TOU Rate C</modifier>
-			</modifiers>
-			<baseUom>W</baseUom>
-			<baseModifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-				<modifier>TOU Rate C</modifier>
-			</baseModifiers>
-		</point>
-		<point name="Rate D Coincident kVA">
-			<uom>VA</uom>
-			<multiplier value=".001"/>
-			<parseSiPrefix/>
-			<modifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-				<modifier>TOU Rate D</modifier>
-			</modifiers>
-			<baseUom>W</baseUom>
-			<baseModifiers match="equal">
-				<modifier>Max</modifier>
-				<modifier>Quadrant 1</modifier>
-				<modifier>Quadrant 4</modifier>
-				<modifier>TOU Rate D</modifier>
-			</baseModifiers>
-		</point>
+        <point name="Coincident kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate A Coincident kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate A</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate A</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate B Coincident kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate B</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate B</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate C Coincident kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate C</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate C</modifier>
+            </baseModifiers>
+        </point>
+        <point name="Rate D Coincident kVA">
+            <uom>VA</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate D</modifier>
+            </modifiers>
+            <baseUom>W</baseUom>
+            <baseModifiers match="equal">
+                <modifier>Max</modifier>
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>TOU Rate D</modifier>
+            </baseModifiers>
+        </point>
 
         <point name="Phase A Power Factor">
             <uom>PF</uom>
