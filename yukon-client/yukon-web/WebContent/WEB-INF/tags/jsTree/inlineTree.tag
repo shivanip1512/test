@@ -13,6 +13,7 @@
 <%@ attribute name="styleClass" %>
 <%@ attribute name="maxHeight" type="java.lang.Integer" description="The max-height in pixels for the internal tree div. Example: maxHeight='300'. Defaults is 500." %>
 <%@ attribute name="dataJson" description="A dictionary starting with attributes of the root node." %>
+<%@ attribute name="scrollToHighlighted" type="java.lang.Boolean" %>
 
 <cti:includeScript link="JQUERY_TREE"/>
 <cti:includeScript link="JQUERY_TREE_HELPERS"/>
@@ -78,7 +79,9 @@
                 if (initially_select) {
                     this.selectKey(initially_select);
                     this.getNodeByKey(initially_select).makeVisible();
-                    this.activateKey(initially_select);
+                    <c:if test="${not empty pageScope.scrollToHighlighted and scrollToHighlighted}">
+                        this.activateKey(initially_select);
+                    </c:if>
                 //or open all of the first level children
                 } else {
                     var root = this.getRoot();

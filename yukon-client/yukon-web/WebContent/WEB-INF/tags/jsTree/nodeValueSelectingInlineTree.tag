@@ -20,6 +20,7 @@
 <%@ attribute name="includeControlBar"  required="false"    type="java.lang.Boolean"%>
 <%@ attribute name="styleClass"         required="false"    type="java.lang.String"%>
 <%@ attribute name="displayCheckboxes"  required="false"    type="java.lang.Boolean"%>
+<%@ attribute name="scrollToHighlighted" required="false"   type="java.lang.Boolean" %>
 
 <c:set var="treeParams" value="{onActivate:recordNameValue_${id}}"/>
 <c:if test="${displayCheckboxes}">
@@ -95,4 +96,5 @@
                     maxHeight="${pageScope.maxHeight}"
                     highlightNodePath="${pageScope.highlightNodePath}"
                     includeControlBar="${pageScope.includeControlBar}" 
+                    scrollToHighlighted="${pageScope.scrollToHighlighted}"
                     styleClass="${pageScope.styleClass}"/>

@@ -43,7 +43,8 @@
                         id="selectGroupTree" 
                         dataJson="${allGroupsDataJson}" 
                         maxHeight="400" 
-                        highlightNodePath="${extSelectedNodePath}"
+                        highlightNodePath="${extSelectedNodePath}"                         
+                        scrollToHighlighted="true"
                         includeControlBar="true"/>
             </tags:boxContainer>
         </div>
