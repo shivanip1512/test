@@ -176,14 +176,24 @@ size_t locateRegex(const std::string &src, const boost::regex &pattern, size_t *
 }
 
 
-void removeRegex(std::string &src, const boost::regex& re)
+void removeRegexAllMatches(std::string &src, const boost::regex& re)
 {
     src = boost::regex_replace(src, re, "");
 }
 
-void removeRegex(std::string &src, const char *re)
+void removeRegexAllMatches(std::string &src, const char *re)
 {
     src = boost::regex_replace(src, boost::regex(re), "");
+}
+
+void removeRegexFirstMatch(std::string &src, const boost::regex& re)
+{
+    src = boost::regex_replace(src, re, "", boost::match_default | boost::format_all | boost::format_first_only);
+}
+
+void removeRegexFirstMatch(std::string &src, const char *re)
+{
+    src = boost::regex_replace(src, boost::regex(re), "", boost::match_default | boost::format_all | boost::format_first_only);
 }
 
 void removeString(std::string &src, const std::string &pattern)

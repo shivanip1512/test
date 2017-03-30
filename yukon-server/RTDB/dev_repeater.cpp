@@ -614,7 +614,7 @@ YukonError_t Repeater900Device::decodePutConfigRole(const INMESS &InMessage, con
 
     if( containsString(cmdStr, ": ") )
     {
-        removeRegex(cmdStr, "( [0-9]+)+ *:");
+        removeRegexFirstMatch(cmdStr, "( [0-9]+)+ *:");
         if( containsRegex(cmdStr, "( [0-9]+)+") )
         {
             //We stripped one, another still exists. We need to re-submit this.

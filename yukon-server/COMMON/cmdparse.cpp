@@ -72,7 +72,8 @@ using Cti::locateRegex;
 using Cti::containsRegex;
 using Cti::containsString;
 using Cti::icontainsString;
-using Cti::removeRegex;
+using Cti::removeRegexAllMatches;
+using Cti::removeRegexFirstMatch;
 using Cti::is_char;
 
 CtiCommandParser::CtiCommandParser(const string str) :
@@ -146,8 +147,8 @@ void  CtiCommandParser::parse()
 
     if( containsRegex(CmdStr, "^ *pil ") || containsRegex(CmdStr, "^ *command ") )
     {
-        removeRegex(CmdStr, "^ *pil ");
-        removeRegex(CmdStr, "^ *command ");
+        removeRegexAllMatches(CmdStr, "^ *pil ");
+        removeRegexAllMatches(CmdStr, "^ *command ");
     }
 
     CtiTokenizer    tok(CmdStr);
@@ -170,7 +171,7 @@ void  CtiCommandParser::parse()
                 serial = strtoul(strnum.c_str(), &p, 10);
             }
             _cmd["serial"] = CtiParseValue( serial );
-            removeRegex(CmdStr, regexp);
+            removeRegexAllMatches(CmdStr, regexp);
         }
     }
 
@@ -208,7 +209,7 @@ void  CtiCommandParser::parse()
         {
             _cmd["device"] = CtiParseValue(token.substr(13, token.length() - 14), -1 );
 
-            removeRegex(CmdStr, re_name);
+            removeRegexAllMatches(CmdStr, re_name);
         }
         else if(!(token = matchRegex(CmdStr, re_id)).empty())
         {
@@ -219,25 +220,25 @@ void  CtiCommandParser::parse()
             {
                 _cmd["device"] = CtiParseValue( atoi(token.c_str()) );
             }
-            removeRegex(CmdStr, re_id);
+            removeRegexAllMatches(CmdStr, re_id);
         }
         else if(!(token = matchRegex(CmdStr, re_grp)).empty())
         {
             _cmd["group"] = CtiParseValue(token.substr(14, token.length() - 15), -1 );
 
-            removeRegex(CmdStr, re_grp);
+            removeRegexAllMatches(CmdStr, re_grp);
         }
         else if(!(token = matchRegex(CmdStr, re_altg)).empty())
         {
             _cmd["altgroup"] = CtiParseValue(token.substr(17, token.length() - 18), -1 );
 
-            removeRegex(CmdStr, re_altg);
+            removeRegexAllMatches(CmdStr, re_altg);
         }
         else if(!(token = matchRegex(CmdStr, re_billg)).empty())
         {
             _cmd["billgroup"] = CtiParseValue(token.substr(18, token.length() - 19), -1 );
 
-            removeRegex(CmdStr, re_altg);
+            removeRegexAllMatches(CmdStr, re_altg);
         }
         else if(!(token = matchRegex(CmdStr, re_rtename)).empty())
         {
@@ -250,17 +251,17 @@ void  CtiCommandParser::parse()
 
             _cmd["route"] = CtiParseValue(token.substr(nameStart, token.length() - nameStart - 1), -1 );
 
-            removeRegex(CmdStr, re_rtename);
+            removeRegexAllMatches(CmdStr, re_rtename);
         }
         else if(!(token = matchRegex(CmdStr, re_rteid)).empty())
         {
-            removeRegex(token,  boost::regex("select route *id "));
+            removeRegexAllMatches(token,  boost::regex("select route *id "));
 
             if(!token.empty())   // get the value
             {
                 _cmd["route"] = CtiParseValue( atoi(token.c_str()) );
             }
-            removeRegex(CmdStr, re_rteid);
+            removeRegexAllMatches(CmdStr, re_rteid);
         }
         else if(!(token = matchRegex(CmdStr, re_ptname)).empty())
         {
@@ -273,7 +274,7 @@ void  CtiCommandParser::parse()
 
             _cmd["point"] = CtiParseValue(token.substr(nameStart, token.length() - nameStart - 1), -1 );
 
-            removeRegex(CmdStr, re_ptname);
+            removeRegexAllMatches(CmdStr, re_ptname);
         }
         else if( !(token = matchRegex(CmdStr, re_ptid)).empty())
         {
@@ -287,7 +288,7 @@ void  CtiCommandParser::parse()
 
             _cmd["point"] = CtiParseValue( atoi(token.c_str()) );
 
-            removeRegex(CmdStr, re_ptid);
+            removeRegexAllMatches(CmdStr, re_ptid);
         }
         else
         {
@@ -1251,7 +1252,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
             {
                 string latch_relays;
 
-                removeRegex(token, " latch relays? ");
+                removeRegexAllMatches(token, " latch relays? ");
 
                 if( containsString(token, "a") )
                 {
@@ -3677,7 +3678,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                                         }
                                     }
 
-                                    removeRegex(vcrangestr, "[0-9]*-[0-9]*,?");
+                                    removeRegexFirstMatch(vcrangestr, "[0-9]*-[0-9]*,?");
 
                                     if(loopcnt++ > 256)
                                     {
@@ -4326,7 +4327,7 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
                             }
                         }
 
-                        removeRegex(vcrangestr, "[0-9]*-[0-9]*,?");
+                        removeRegexFirstMatch(vcrangestr, "[0-9]*-[0-9]*,?");
 
                         if(loopcnt++ > 256)
                         {
@@ -4363,7 +4364,7 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
                             }
                         }
 
-                        removeRegex(xcrangestr, "[0-9]*-[0-9]*,?");
+                        removeRegexFirstMatch(xcrangestr, "[0-9]*-[0-9]*,?");
 
                         if(loopcnt++ > 256)
                         {
@@ -4412,7 +4413,7 @@ void CtiCommandParser::resolveProtocolType(const string &_CmdStr)
                             }
                         }
 
-                        removeRegex(xcprefixrange, "[0-9]*-[0-9]*,?");
+                        removeRegexFirstMatch(xcprefixrange, "[0-9]*-[0-9]*,?");
 
                         if(loopcnt++ > 256)
                         {
@@ -4700,7 +4701,7 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
 
         if(!(temp = matchRegex(CmdStr,  btpCmd ) ).empty() )
         {
-            removeRegex(temp, "btp ");
+            removeRegexAllMatches(temp, "btp ");
 
             std::string alertLevel;
             if(! (alertLevel = matchRegex(temp, "\\w*")).empty() )
@@ -5238,7 +5239,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     if(!(token = matchRegex(CmdStr, " data( (0x)?[0-9a-f]+)+")).empty())
     {
 
-        removeRegex(token, " data");
+        removeRegexAllMatches(token, " data");
         if(!(str = matchRegex(token, "( (0x)?[0-9a-f][0-9a-f])+")).empty())
         {
             _cmd["xcdata"] = CtiParseValue( str );
@@ -5489,13 +5490,13 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
 
             if(!(valStr = matchRegex(CmdStr, " p[ =]*[0-9]+( *, *[0-9]+)*")).empty())
             {
-                removeRegex(valStr, " p[ =]*");
+                removeRegexAllMatches(valStr, " p[ =]*");
                 _cmd["xca_program"] = CtiParseValue( valStr );
                 programtemp = valStr;
             }
             if(!(valStr = matchRegex(CmdStr, " r[ =]*[0-9]+( *, *[0-9]+)*")).empty())
             {
-                removeRegex(valStr, " r[ =]*");
+                removeRegexAllMatches(valStr, " r[ =]*");
                 _cmd["xca_splinter"] = CtiParseValue( valStr );
 
                 splintertemp = valStr;
@@ -6484,7 +6485,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 // Assume seconds is the input here!
                 if(!(temp = matchRegex(CmdStr, " f1[ =]+" + str_num)).empty())
                 {
-                    removeRegex(temp, " f1[ =]+");
+                    removeRegexAllMatches(temp, " f1[ =]+");
                     if(!(valStr = matchRegex(temp, re_num)).empty())
                     {
                         iValue = atoi(valStr.c_str());
@@ -6493,7 +6494,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 }
                 if(!(temp = matchRegex(CmdStr, " f2[ =]+" + str_num)).empty())
                 {
-                    removeRegex(temp, " f2[ =]+");
+                    removeRegexAllMatches(temp, " f2[ =]+");
                     if(!(valStr = matchRegex(temp, re_num)).empty())
                     {
                         iValue = atoi(valStr.c_str());
@@ -6502,7 +6503,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 }
                 if(!(temp = matchRegex(CmdStr, " f3[ =]+" + str_num)).empty())
                 {
-                    removeRegex(temp, " f3[ =]+");
+                    removeRegexAllMatches(temp, " f3[ =]+");
                     if(!(valStr = matchRegex(temp, re_num)).empty())
                     {
                         iValue = atoi(valStr.c_str());
@@ -6511,7 +6512,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
                 }
                 if(!(temp = matchRegex(CmdStr, " f4[ =]+" + str_num)).empty())
                 {
-                    removeRegex(temp, " f4[ =]+");
+                    removeRegexAllMatches(temp, " f4[ =]+");
                     if(!(valStr = matchRegex(temp, re_num)).empty())
                     {
                         iValue = atoi(valStr.c_str());
@@ -6529,7 +6530,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
             }
             else if(!(temp = matchRegex(CmdStr, " lorm0[ =]+" + str_num)).empty())
             {
-                removeRegex(temp, " lorm0[ =]+");
+                removeRegexAllMatches(temp, " lorm0[ =]+");
                 if(!(valStr = matchRegex(temp, re_num)).empty())
                 {
                     iValue = atoi(valStr.c_str());
@@ -6538,7 +6539,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
             }
             else if(!(temp = matchRegex(CmdStr, " horm0[ =]+" + str_num)).empty())
             {
-                removeRegex(temp, " horm0[ =]+");
+                removeRegexAllMatches(temp, " horm0[ =]+");
                 if(!(valStr = matchRegex(temp, re_num)).empty())
                 {
                     iValue = atoi(valStr.c_str());
@@ -6547,7 +6548,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
             }
             else if(!(temp = matchRegex(CmdStr, " lorm1[ =]+" + str_num)).empty())
             {
-                removeRegex(temp, " lorm1[ =]+");
+                removeRegexAllMatches(temp, " lorm1[ =]+");
                 if(!(valStr = matchRegex(temp, re_num)).empty())
                 {
                     iValue = atoi(valStr.c_str());
@@ -6556,7 +6557,7 @@ void CtiCommandParser::doParsePutConfigSA(const string &_CmdStr)
             }
             else if(!(temp = matchRegex(CmdStr, " horm1[ =]+" + str_num)).empty())
             {
-                removeRegex(temp, " horm1[ =]+");
+                removeRegexAllMatches(temp, " horm1[ =]+");
                 if(!(valStr = matchRegex(temp, re_num)).empty())
                 {
                     iValue = atoi(valStr.c_str());
