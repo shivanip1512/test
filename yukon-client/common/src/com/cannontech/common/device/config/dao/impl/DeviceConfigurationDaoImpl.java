@@ -876,7 +876,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         params.addValue("DeviceConfigCategoryItemId", deviceConfigCategoryItemId);
         params.addValue("DeviceConfigCategoryId", categoryId);
         params.addValue("ItemName", item.getFieldName());
-        params.addValue("ItemValue", item.getValue());
+        params.addValueSafe("ItemValue", item.getValue());
         
         jdbcTemplate.update(sql);
     }
