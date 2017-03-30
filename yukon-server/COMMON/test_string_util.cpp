@@ -81,4 +81,38 @@ BOOST_AUTO_TEST_CASE(test_toAscii)
     BOOST_CHECK_EQUAL('9', toAscii(9));
 }
 
+BOOST_AUTO_TEST_CASE(test_removeRegexAllMatches)
+{
+    using Cti::removeRegexAllMatches;
+
+    std::string input( "850000-501999999,540000000-540099999,550001001-551999999,590000000-590109999" );
+
+    removeRegexAllMatches( input,"[0-9]*-[0-9]*,?" );
+
+    BOOST_CHECK_EQUAL( "", input );
+}
+
+BOOST_AUTO_TEST_CASE(test_removeRegexFirstMatch)
+{
+    using Cti::removeRegexFirstMatch;
+
+    std::string input( "850000-501999999,540000000-540099999,550001001-551999999,590000000-590109999" );
+
+    removeRegexFirstMatch( input,"[0-9]*-[0-9]*,?" );
+
+    BOOST_CHECK_EQUAL( "540000000-540099999,550001001-551999999,590000000-590109999", input );
+
+    removeRegexFirstMatch( input,"[0-9]*-[0-9]*,?" );
+
+    BOOST_CHECK_EQUAL( "550001001-551999999,590000000-590109999", input );
+
+    removeRegexFirstMatch( input,"[0-9]*-[0-9]*,?" );
+
+    BOOST_CHECK_EQUAL( "590000000-590109999", input );
+
+    removeRegexFirstMatch( input,"[0-9]*-[0-9]*,?" );
+
+    BOOST_CHECK_EQUAL( "", input );
+}
+
 BOOST_AUTO_TEST_SUITE_END()
