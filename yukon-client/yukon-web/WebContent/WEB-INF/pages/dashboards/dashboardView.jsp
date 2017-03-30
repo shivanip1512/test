@@ -13,12 +13,12 @@
     <div class="column-12-12">
         <div class="column one">
             <c:forEach var="widget" items="${dashboard.column1Widgets}">
-                <tags:widget bean="${widget.type.beanName}"/>
+                <tags:widget bean="${widget.type.beanName}" paramMap="${widget.parameters}"/>
             </c:forEach>
         </div>
         <div class="column two nogutter">
             <c:forEach var="widget" items="${dashboard.column2Widgets}">
-                <tags:widget bean="${widget.type.beanName}"/>
+                <tags:widget bean="${widget.type.beanName}" paramMap="${widget.parameters}"/>
             </c:forEach>        
         </div>
     </div>

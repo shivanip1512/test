@@ -10,6 +10,8 @@ public enum WidgetType implements DisplayableEnum {
     FAVORITES(DashboardScope.GENERAL, WidgetCategory.OTHER, "favoritesWidget", "image-coming-soon"),
     MONITOR_SUBSCRIPTIONS(DashboardScope.GENERAL, WidgetCategory.OTHER, "subscribedMonitorsWidget", "image-monitor-subscriptions"),
     MESSAGING_STATISTICS(DashboardScope.GENERAL, WidgetCategory.OTHER, "messagingStatisticsWidget", "image-coming-soon"),
+    
+    TREND(DashboardScope.DEVICE_SPECIFIC, WidgetCategory.AMI, "csrTrendWidget", "image-coming-soon"), 
     /*
     //AMI Dashboard
     MONITORS(DashboardScope.GENERAL, WidgetCategory.AMI),
