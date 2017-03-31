@@ -64,9 +64,8 @@ public class DataDownloadServiceImpl implements DataDownloadService {
         try (FileWriter output = new FileWriter(file)) {
             
             DateTimeFormatter timeFormatter = DateTimeFormat.forPattern("MM/dd/yyyy HH:mm:ss").withZone(timeZone);
-            String headerFormat = "%s,%s,%s,%s,%s,%s,%s,%s\n";
-            String dataFormat = "%s,%s,%s,%s,%s,%s,%d,%s\n";
-            output.write(String.format(headerFormat, "Serial Number", 
+            String format = "%s,%s,%s,%s,%s,%s,%s,%s\n";
+            output.write(String.format(format, "Serial Number", 
                     "Date", 
                     "Outdoor Temp",
                     "Indoor Temp", 
@@ -93,20 +92,20 @@ public class DataDownloadServiceImpl implements DataDownloadService {
                     
                     for (EcobeeDeviceReading deviceReading : deviceReadings.getReadings()) {
                         String dateStr = timeFormatter.print(deviceReading.getDate());
-                        int runtimeSeconds = deviceReading.getRuntimeSeconds();
-                        if (0 > runtimeSeconds) {
+                        Integer runtimeSeconds = deviceReading.getRuntimeSeconds();
+                        if (runtimeSeconds != null && 0 > runtimeSeconds) {
                             log.debug("runtimeSeconds=" + runtimeSeconds + ", converting to absolute value");
                             runtimeSeconds = Math.abs(runtimeSeconds);
                         }
                         
-                        String dataRow = String.format(dataFormat,
+                        String dataRow = String.format(format,
                             deviceReadings.getSerialNumber(),
                             dateStr,
                             formatNullable(deviceReading.getOutdoorTempInF()),
                             formatNullable(deviceReading.getIndoorTempInF()),
                             formatNullable(deviceReading.getSetCoolTempInF()),
                             formatNullable(deviceReading.getSetHeatTempInF()),
-                            runtimeSeconds,
+                            formatNullable(runtimeSeconds),
                             deviceReading.getEventActivity());
                         
                         output.write(dataRow);
@@ -129,4 +128,7 @@ public class DataDownloadServiceImpl implements DataDownloadService {
         return num == null ? "" : new DecimalFormat("#.#").format(num);
     }
     
+    private static String formatNullable(Integer num) {
+        return num == null ? "" : num.toString();
+    }
 }

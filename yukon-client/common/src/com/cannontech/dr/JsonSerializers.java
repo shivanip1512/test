@@ -266,11 +266,23 @@ public interface JsonSerializers {
             Float outdoorTemp = StringUtils.isEmpty(split[4]) ? null : Float.parseFloat(split[4]);
             Float coolSetPoint = StringUtils.isEmpty(split[5]) ? null : Float.parseFloat(split[5]);
             Float heatSetPoint = StringUtils.isEmpty(split[6]) ? null : Float.parseFloat(split[6]);
-            int coolRuntime = StringUtils.isEmpty(split[7]) ? 0 : Integer.parseInt(split[7]);
-            int heatRuntime = StringUtils.isEmpty(split[8]) ? 0 : Integer.parseInt(split[8]);
-
+            
+            Integer coolRuntime = StringUtils.isEmpty(split[7]) ? null : Integer.parseInt(split[7]);
+            Integer heatRuntime = StringUtils.isEmpty(split[8]) ? null : Integer.parseInt(split[8]);
+            
+            Integer runtime;
+            // Add the values if they're both non-null
+            if (coolRuntime != null && heatRuntime != null) {
+                runtime = coolRuntime + heatRuntime;
+            // If only one is non-null, use that value. Otherwise return null.
+            } else if (coolRuntime == null){
+                runtime = heatRuntime;
+            } else {
+                runtime = coolRuntime;
+            }
+            
             return new RuntimeReportRow(thermostatTime, eventName, indoorTemp, outdoorTemp, coolSetPoint, heatSetPoint,
-                coolRuntime + heatRuntime);
+                runtime);
         }
     }
 

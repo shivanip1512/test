@@ -139,9 +139,9 @@ public class DeviceAttributeReadEcobeeStrategy implements DeviceAttributeReadStr
             ecobeeDevices.put(ecobeeSerialNumber, pao);
         }
 
-        // Set end of range at 15 minutes before current time (which is about the most recent data ecobee will have)
+        // Set end of range at 1 hour before current time (which is about the most recent data ecobee will have)
         MutableDateTime mutableDateTime = new MutableDateTime();
-        mutableDateTime.addMinutes(-15);
+        mutableDateTime.addHours(-1);;
         Instant end = mutableDateTime.toInstant();
 
         // Set start of range at the start of the current day.

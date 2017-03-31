@@ -2,7 +2,6 @@ package com.cannontech.dr.ecobee.service.impl;
 
 import static com.cannontech.dr.ecobee.service.EcobeeCommunicationService.*;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -20,7 +19,6 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.point.stategroup.TrueFalse;
-import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.ecobee.model.EcobeeDeviceReading;
@@ -58,6 +56,13 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
             Float outdoorTempToUpdate = null;
             Integer runtime = 0;
             for (EcobeeDeviceReading reading : readings) {
+                //If the data is incomplete, just skip this reading. Don't record point values that may be wrong for
+                //runtime and control status
+                if (!reading.isComplete()) {
+                    shouldUpdateRuntime = false;
+                    continue;
+                }
+                
                 if (lastReading == null || reading.getDate().isAfter(lastReading)) {
                     lastReading = reading.getDate();
                 }
@@ -78,10 +83,14 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
                     setPointValue(pointValues, paoIdentifier, BuiltInAttribute.COOL_SET_TEMPERATURE, startDate,
                         reading.getSetCoolTempInF());
                 }
-                if (reading.getRuntimeSeconds() != 0 && lastRuntime == null || reading.getDate().isAfter(lastRuntime)) {
+                if (reading.getRuntimeSeconds() != null && reading.getRuntimeSeconds() != 0 
+                        && (lastRuntime == null || reading.getDate().isAfter(lastRuntime))) {
                     lastRuntime = reading.getDate();
                 }
-                runtime += reading.getRuntimeSeconds();
+                if (reading.getRuntimeSeconds() != null) {
+                    runtime += reading.getRuntimeSeconds();
+                }
+                
                 TrueFalse controlStatus = checkEventActivity(reading.getEventActivity());
                 setPointValue(pointValues, paoIdentifier, BuiltInAttribute.CONTROL_STATUS, reading.getDate(),
                     controlStatus.getRawState());
@@ -117,28 +126,11 @@ public class EcobeePointUpdateServiceImpl implements EcobeePointUpdateService {
     }
     
     private void updateAssetAvailability(PaoIdentifier paoIdentifier, Instant lastCommTime, Instant lastRuntime) {
-        if (lastCommTime != null || lastRuntime != null) {
-            AllRelayCommunicationTimes commTimes = 
-                    dynamicLcrCommunicationsDao.findAllRelayCommunicationTimes(Collections.singleton(paoIdentifier.getPaoId())).get(paoIdentifier.getPaoId());
-            Instant currentLastCommTime = commTimes == null ? null : commTimes.getLastCommunicationTime();
-            Instant currentLastRuntime = commTimes == null ? null : commTimes.getLastNonZeroRuntime();
-
-            boolean shouldUpdate = false;
-            AssetAvailabilityPointDataTimes times = new AssetAvailabilityPointDataTimes(paoIdentifier.getPaoId());
-            if (currentLastCommTime == null || (lastCommTime != null && lastCommTime.isAfter(currentLastCommTime))) {
-                times.setLastCommunicationTime(lastCommTime);
-                shouldUpdate = true;
-            }
-
-            if (currentLastRuntime == null || (lastRuntime != null && lastRuntime.isAfter(currentLastRuntime))) {
-                times.setRelayRuntime(1, lastCommTime);
-                shouldUpdate = true;
-            }
-
-            if (shouldUpdate) {
-                dynamicLcrCommunicationsDao.insertData(times);
-            }
-        }
+        // Don't worry about null values or if this is the latest data. The dao handles all of that.
+        AssetAvailabilityPointDataTimes times = new AssetAvailabilityPointDataTimes(paoIdentifier.getPaoId());
+        times.setLastCommunicationTime(lastCommTime);
+        times.setRelayRuntime(1, lastRuntime);
+        dynamicLcrCommunicationsDao.insertData(times);
     }
 
     private void setPointValue(Set<PointValueHolder> pointValues, PaoIdentifier paoIdentifier,

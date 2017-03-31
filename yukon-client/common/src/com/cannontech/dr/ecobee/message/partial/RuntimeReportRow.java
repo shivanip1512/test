@@ -17,11 +17,10 @@ public class RuntimeReportRow {
     private final Float outdoorTemp;
     private final Float coolSetPoint;
     private final Float heatSetPoint;
-    private final int runtime;
+    private final Integer runtime;
 
-    public RuntimeReportRow(LocalDateTime thermostatTime, String eventName, Float indoorTemp, 
-            Float outdoorTemp, Float coolSetPoint,
-                            Float heatSetPoint, int runtime) {
+    public RuntimeReportRow(LocalDateTime thermostatTime, String eventName, Float indoorTemp, Float outdoorTemp, 
+                            Float coolSetPoint, Float heatSetPoint, Integer runtime) {
         this.thermostatTime = thermostatTime;
         this.eventName = eventName;
         this.indoorTemp = indoorTemp;
@@ -51,7 +50,7 @@ public class RuntimeReportRow {
         return heatSetPoint;
     }
 
-    public int getRuntime() {
+    public Integer getRuntime() {
         return runtime;
     }
 
