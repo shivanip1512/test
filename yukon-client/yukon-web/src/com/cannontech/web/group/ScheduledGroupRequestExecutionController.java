@@ -51,6 +51,7 @@ import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
@@ -63,6 +64,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagService;
 import com.cannontech.web.amr.util.cronExpressionTag.CronExpressionTagState;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputUtil;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -90,7 +92,14 @@ public class ScheduledGroupRequestExecutionController {
     private YukonJobDefinition<ScheduledGroupRequestExecutionTask> scheduledGroupRequestExecutionJobDefinition;
 
     @RequestMapping("home")
-    public ModelAndView home(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    public ModelAndView home(HttpServletRequest request, HttpServletResponse response, FlashScope flashScope)
+            throws ServletException {
+        int editJobId = ServletRequestUtils.getIntParameter(request, "editJobId", 0);
+        if (editJobId != 0 && jobManager.getJob(editJobId).isDeleted()) {
+            flashScope.setError(new YukonMessageSourceResolvable(
+                "yukon.web.modules.tools.schedules.VIEW.results.jobDetail.error.editDeletedJob"));
+            return new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/detail?jobId=" + editJobId);
+        }
 
         ModelAndView mav = new ModelAndView("scheduledGroupRequestExecution/home.jsp");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -115,7 +124,6 @@ public class ScheduledGroupRequestExecutionController {
         PageEditMode pageEditMode = PageEditMode.CREATE;
 
         // edit existing job
-        int editJobId = ServletRequestUtils.getIntParameter(request, "editJobId", 0);
         boolean editMode = false;
         if (editJobId > 0) {
             editMode = true;
@@ -225,7 +233,14 @@ public class ScheduledGroupRequestExecutionController {
     }
 
     @RequestMapping("schedule")
-    public ModelAndView schedule(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    public ModelAndView schedule(HttpServletRequest request, HttpServletResponse response, FlashScope flashScope)
+            throws ServletException {
+        int editJobId = ServletRequestUtils.getIntParameter(request, "editJobId", 0);
+        if (editJobId != 0 && jobManager.getJob(editJobId).isDeleted()) {
+            flashScope.setError(new YukonMessageSourceResolvable(
+                "yukon.web.modules.tools.schedules.VIEW.results.jobDetail.error.editDeletedJob"));
+            return new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/detail?jobId=" + editJobId);
+        }
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
@@ -233,9 +248,6 @@ public class ScheduledGroupRequestExecutionController {
         String requestTypeStr = ServletRequestUtils.getRequiredStringParameter(request, "requestType");
         DeviceRequestType requestType = DeviceRequestType.valueOf(requestTypeStr);
         String formUniqueId = ServletRequestUtils.getRequiredStringParameter(request, "formUniqueId");
-
-        // edit job
-        int editJobId = ServletRequestUtils.getIntParameter(request, "editJobId", 0);
 
         // validate cron
         String cronExpression = null;
@@ -557,12 +569,16 @@ public class ScheduledGroupRequestExecutionController {
     }
 
     @RequestMapping(value = "toggleJobEnabled", method = RequestMethod.POST)
-    public ModelAndView toggleJobEnabled(HttpServletRequest request, HttpServletResponse response)
+    public ModelAndView toggleJobEnabled(HttpServletRequest request, HttpServletResponse response, FlashScope flashScope)
             throws ServletException {
+        int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
+        if (toggleJobId != 0 && jobManager.getJob(toggleJobId).isDeleted()) {
+            flashScope.setError(new YukonMessageSourceResolvable(
+                "yukon.web.modules.tools.schedules.VIEW.results.jobDetail.error.editDeletedJob"));
+            return new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/detail?jobId=" + toggleJobId);
+        }
 
         ModelAndView mav = new ModelAndView("redirect:home");
-
-        int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
 
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
 
@@ -579,9 +595,18 @@ public class ScheduledGroupRequestExecutionController {
     }
 
     @RequestMapping("toggleJob")
-    public void toggleJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    public @ResponseBody Map<String, Object> toggleJob(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException {
         int toggleJobId = ServletRequestUtils.getRequiredIntParameter(request, "toggleJobId");
+        Map<String, Object> json = new HashMap<>();
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(toggleJobId);
+        if (jobManager.getJob(toggleJobId).isDeleted()) {
+            json.put("error",
+                messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.VIEW.results.jobDetail.error.editDeletedJob"));
+            return json;
+        }
 
         if (job.isDisabled()) {
             jobManager.enableJob(job);
@@ -589,7 +614,7 @@ public class ScheduledGroupRequestExecutionController {
             jobManager.disableJob(job);
         }
 
-        response.setStatus(HttpStatus.NO_CONTENT.value());
+        return null;
     }
 
     @RequestMapping("startDialog")
@@ -631,8 +656,14 @@ public class ScheduledGroupRequestExecutionController {
         Map<String, Object> json = new HashMap<>();
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
         int toggleJobId = Integer.parseInt(request.getParameter("toggleJobId"));
+        if (jobManager.getJob(toggleJobId).isDeleted()) {
+            json.put("error",
+                messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.VIEW.results.jobDetail.error.editDeletedJob"));
+            return json;
+        }
 
         String jobId = request.getParameter("toggleJobId");
 
@@ -647,12 +678,10 @@ public class ScheduledGroupRequestExecutionController {
         try {
             jobManager.startJob(job, cronExpression);
         } catch (ScheduleException e) {
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
             json.put("error", messageSourceAccessor.getMessage("yukon.common.device.schedules.home.pastDate"));
         }
 
         return json;
-
     }
 
     @RequestMapping("cancelScheduledJob")
@@ -677,12 +706,18 @@ public class ScheduledGroupRequestExecutionController {
      * (not really a hard delete, but set Job.Disabled = 'D' to hide it)
      */
     @RequestMapping(value = "deleteJob", method = RequestMethod.POST)
-    public ModelAndView deleteJob(HttpServletRequest request, HttpServletResponse response) throws ServletException {
-
+    public ModelAndView deleteJob(HttpServletRequest request, HttpServletResponse response, FlashScope flashScope)
+            throws ServletException {
+        int deleteJobId = ServletRequestUtils.getRequiredIntParameter(request, "deleteJobId");
+        if (deleteJobId != 0 && jobManager.getJob(deleteJobId).isDeleted()) {
+            flashScope.setError(new YukonMessageSourceResolvable(
+                "yukon.web.modules.tools.schedules.VIEW.results.jobDetail.error.editDeletedJob"));
+            return new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/detail?jobId=" + deleteJobId);
+        }
+        
         ModelAndView mav = new ModelAndView("redirect:/group/scheduledGroupRequestExecutionResults/jobs");
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        int deleteJobId = ServletRequestUtils.getRequiredIntParameter(request, "deleteJobId");
-
+        
         ScheduledRepeatingJob job = scheduledRepeatingJobDao.getById(deleteJobId);
         String jobName = job.getJobProperties().get("name");
         jobManager.deleteJob(job);

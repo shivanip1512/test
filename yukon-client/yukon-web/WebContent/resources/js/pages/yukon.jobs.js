@@ -30,7 +30,8 @@ yukon.jobs = (function () {
                 return;
             }
             
-            $(".js-schedule-toggle").click(function(e){                
+            $(".js-schedule-toggle").click(function(e){
+                $('#errorMessages').html("");
                 var selection = $(this);
                 var jobId = selection.data('jobId');
                 //submit toggle request
@@ -38,10 +39,17 @@ yukon.jobs = (function () {
                      url: yukon.url('/group/scheduledGroupRequestExecution/toggleJob'),
                      dataType: 'json',
                      data: { 'toggleJobId': jobId }
-                });
+                }).done(function (data) {
+                    if (data.error) {
+                        displayErrors(data.error);
+                    } else {
+                        window.location.reload();
+                    }
+                });;
             });
             
-            $(".js-schedule-start-now").click(function(e){                
+            $(".js-schedule-start-now").click(function(e){
+                $('#errorMessages').html("");
                 var selection = $(this);
                 var jobId = selection.data('jobId');
 
@@ -58,6 +66,7 @@ yukon.jobs = (function () {
             });
             
             $(document).on('yukon:schedule:cancel', function (ev) {
+                $('#errorMessages').html("");
                 var jobId = $(ev.target).data('jobId');
                 ev.preventDefault();
                 //close the dialog
@@ -67,10 +76,13 @@ yukon.jobs = (function () {
                      url: yukon.url('/group/scheduledGroupRequestExecution/cancelJob'),
                      dataType: 'json',
                      data: { 'toggleJobId': jobId }
+                }).done(function () {
+                    window.location.reload();
                 });
             });
             
             $(document).on('yukon:schedule:cancelScheduled', function (ev) {
+                $('#errorMessages').html("");
                 var jobId = $(ev.target).data('jobId');
                 ev.preventDefault();
                 //close the dialog
@@ -86,6 +98,7 @@ yukon.jobs = (function () {
             });
             
             $(document).on('yukon:schedule:start', function (ev) {
+                $('#errorMessages').html("");
                 var jobId = $(ev.target).data('jobId');
                 //set future start if date time was selected
                 var dateTimeVisible = $('#' + jobId + '-cron-exp-one-time').is(":visible"); 
