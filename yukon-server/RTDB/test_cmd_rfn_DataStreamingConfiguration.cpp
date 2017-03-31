@@ -177,14 +177,9 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_globally_disable
             0x05,        //  metric ID 3 status
             0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
 
-        try
-        {
-            RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
-            BOOST_FAIL("Did not throw");
-        }
-        catch( const Cti::YukonErrorException& e )
-        {
-            const std::string desc_exp =
+        const RfnCommandResult rcv = cmd.decodeCommand(execute_time, response);
+
+        const std::string desc_exp =
 R"SQUID(json{
 "streamingEnabled" : false,
 "configuredMetrics" : [
@@ -209,8 +204,7 @@ R"SQUID(json{
 "sequence" : 3735928559
 })SQUID";
 
-            BOOST_CHECK_EQUAL(e.error_description, desc_exp);
-        }
+        BOOST_CHECK_EQUAL(rcv.description, desc_exp);
     }
 }
 
@@ -364,7 +358,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_global_disable)
             0x00, 0x05,  //  metric ID 1
             0x01,        //  metric ID 1 enable/disable
             0x05,        //  metric ID 1 interval
-            0x00,        //  metric ID 1 status
+            0x05,        //  metric ID 1 status, CHANNEL_NOT_SUPPORTED - which is fine when data streaming is disabled
             0x00, 0x73,  //  metric ID 2
             0x00,        //  metric ID 2 enable/disable
             0x0f,        //  metric ID 2 interval
@@ -385,7 +379,7 @@ R"SQUID(json{
     "attribute" : "DEMAND",
     "interval" : 5,
     "enabled" : true,
-    "status" : "OK"
+    "status" : "CHANNEL_NOT_SUPPORTED"
   },
   {
     "attribute" : "VOLTAGE",

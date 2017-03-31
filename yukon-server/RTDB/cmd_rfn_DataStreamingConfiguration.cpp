@@ -127,7 +127,8 @@ std::string RfnDataStreamingConfigurationCommand::createJson(const ConfigRespons
                 "\n    \"enabled\" : " << (metric.enabled ? "true" : "false") << ","
                 "\n    \"status\" : \"" << statusString << "\"\n  }";
 
-            if( metric.enabled && metric.status )
+            //  We only consider a metric's status when 1) streaming is globally enabled and 2) streaming is enabled for this specific channel
+            if( response.streamingEnabled && metric.enabled && metric.status )
             {
                 seenUnsupportedChannel |= (metric.status == 5);
                 seenDisabledChannel    |= (metric.status == 7);
