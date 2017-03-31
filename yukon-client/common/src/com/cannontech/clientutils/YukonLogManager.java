@@ -270,6 +270,7 @@ public class YukonLogManager {
             
             //Inherited from AppenderSkeleton. Calls once options are set
             rfnAppender.activateOptions();
+            rfnCommsLogger.removeAllAppenders();
             rfnCommsLogger.addAppender(rfnAppender);
         }
         return rfnCommsLogger;
