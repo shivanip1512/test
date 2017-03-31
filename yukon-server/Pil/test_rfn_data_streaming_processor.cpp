@@ -7,6 +7,7 @@
 #include "pt_analog.h"
 #include "dev_rfnResidential.h"
 #include "dev_rfnCommercial.h"
+#include "dev_rfn_LgyrFocus_al.h"
 
 #include "rtdb_test_helpers.h"
 
@@ -80,12 +81,22 @@ struct test_Rfn430sl1Device : Cti::Devices::Rfn430sl1Device
     }
 };
 
+struct test_Rfn510flDevice : Cti::Devices::Rfn510flDevice
+{
+    test_Rfn510flDevice(std::string& name)
+    {
+        _name = name;
+        setDeviceType(TYPE_RFN510FL);
+    }
+};
+
 struct test_DeviceManager : CtiDeviceManager
 {
     std::map<int, CtiDeviceSPtr> devices {
         { 123, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS GARGANTUAN (123)"s) },
         {  49, boost::make_shared<test_Rfn410flDevice>("JIMMY JOHNS VITO (49)"s) },
-        { 499, boost::make_shared<test_Rfn430sl1Device>("JIMMY JOHNS TURKEY TOM (499)"s) }};
+        { 499, boost::make_shared<test_Rfn430sl1Device>("JIMMY JOHNS TURKEY TOM (499)"s) },
+        { 500, boost::make_shared<test_Rfn510flDevice>("JIMMY JOHNS ITALIAN NIGHT CLUB (500)"s) }};
 
     test_DeviceManager()
     {
@@ -108,6 +119,10 @@ struct test_DeviceManager : CtiDeviceManager
         if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "TURKEY TOM" } )
         {
             return devices[499];
+        }
+        if( rfnId == Cti::RfnIdentifier{ "JIMMY", "JOHNS", "ITALIAN NIGHT CLUB" } )
+        {
+            return devices[500];
         }
 
         return nullptr;
@@ -389,6 +404,31 @@ BOOST_AUTO_TEST_CASE(test_processDeviceReport)
             BOOST_CHECK_EQUAL(pdatum->getId(), 499073);  
             BOOST_CHECK_EQUAL(pdatum->getType(), 1);  //  Analog
             BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS TURKEY TOM (499) / Analog73 = -2999999900.000000 @ 02/07/2152 01:28:15");
+        }
+    }
+    {
+        test_RfDataStreamingProcessor::DeviceReport r {
+            { "JIMMY", "JOHNS", "ITALIAN NIGHT CLUB" },
+            {   
+                {   115,
+                    make_time_point(2016, 7, 14, 5, 15, 27),
+                    120.55,
+                    NormalQuality } } };
+
+        auto pdata = p.processDeviceReport(r);
+
+        BOOST_REQUIRE_EQUAL(pdata.size(), 1);
+
+        auto pdata_itr = pdata.begin();
+
+        {
+            auto& pdatum = *pdata_itr++;
+
+            BOOST_CHECK_CLOSE(pdatum->getValue(), 120.55, 1e-8);
+            BOOST_CHECK_EQUAL(pdatum->getTime(), CtiTime( CtiDate( 14, 7, 2016 ), 1, 15, 27 ));
+            BOOST_CHECK_EQUAL(pdatum->getId(), 500214);  //  device ID 500, point offset 214
+            BOOST_CHECK_EQUAL(pdatum->getType(), 1);  //  Analog
+            BOOST_CHECK_EQUAL(pdatum->getString(), "JIMMY JOHNS ITALIAN NIGHT CLUB (500) / Analog214 = 120.550000 @ 07/14/2016 01:15:27");
         }
     }
     {
