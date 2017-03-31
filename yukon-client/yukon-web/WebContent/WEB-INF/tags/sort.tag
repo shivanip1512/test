@@ -15,7 +15,7 @@
     <c:set var="classes" value="${classes} ${column.dir}"/>
 </c:if>
 <th <c:if test="${not empty pageScope.colspan}">colspan="${colspan}"</c:if>>
-<a class="sortable ${pageScope.classes}" data-sort="${column.param}" <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
+<a class="wsnw sortable ${pageScope.classes}" data-sort="${column.param}" <c:forEach items="${pageScope.attrs}" var="attr">${attr.key}="${attr.value}"</c:forEach>>
 ${fn:escapeXml(column.text)}<cti:icon icon="icon-blank"/>
 </a>
 </th>

@@ -26,10 +26,10 @@
                     <cti:url var="gatewayUrl" value="/stars/gateways/${result.gateway.paoIdentifier.paoId}"/>
                     <tr>
                         <td><input class="js-select-all-item" type="checkbox" name="selectedResult" value="${result.meter.paoIdentifier.paoId}"></td>
-                        <td class="wrbw" style="max-width:100px;"><cti:paoDetailUrl yukonPao="${result.meter}">${result.meter.name}</cti:paoDetailUrl></td>
+                        <td><cti:paoDetailUrl yukonPao="${result.meter}">${result.meter.name}</cti:paoDetailUrl></td>
                         <td>${result.meter.paoIdentifier.paoType.paoTypeName}</td>
                         <td>${result.meter.rfnIdentifier.sensorSerialNumber}</td>
-                        <td class="wrbw" style="max-width:100px;">
+                        <td>
                             <a href="${gatewayUrl}">${fn:escapeXml(result.gateway.name)}</a>
                         </td>
                         <td><fmt:formatNumber pattern="###.##%" value="${result.gateway.data.dataStreamingLoadingPercent / 100}"/></td>
