@@ -140,6 +140,7 @@ const MetricInfo metricInfos[] = {
         { 164,  TouRates,  "PF Phase C"                            },
 
         { 200,  TouRates,  "Watts"                                 },
+        { 201,  TouRates,  "Vars"                                  },
 
         { 256,  TouRates,  "Time in Seconds"                       },
         { 257,  None,      "Temperature in Centigrade"             }};
