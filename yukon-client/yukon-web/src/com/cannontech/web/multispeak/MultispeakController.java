@@ -49,7 +49,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.editor.Multispeak;
+import com.cannontech.web.editor.MultispeakModel;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @RequestMapping("/setup/*")
@@ -77,7 +77,7 @@ public class MultispeakController {
         mspVendor = multispeakDao.getMultispeakVendor(defaultMspVendor.getVendorID());
         map.addAttribute("defaultMspVendor", defaultMspVendor);
         map.addAttribute("mode", PageEditMode.VIEW);
-        Multispeak multispeak = new Multispeak();
+        MultispeakModel multispeak = new MultispeakModel();
         setUpModel(map, multispeak, mspVendor, false);
         return "setup/msp_setup.jsp";
     }
@@ -88,7 +88,7 @@ public class MultispeakController {
         mspVendor = multispeakDao.getMultispeakVendor(defaultMspVendor.getVendorID());
         map.addAttribute("defaultMspVendor", defaultMspVendor);
         map.addAttribute("mode", PageEditMode.EDIT);
-        Multispeak multispeak = new Multispeak();
+        MultispeakModel multispeak = new MultispeakModel();
         multispeak.setMspVendor(defaultMspVendor);
         setUpModel(map, multispeak, mspVendor, false);
 
@@ -97,13 +97,13 @@ public class MultispeakController {
     }
 
     @RequestMapping("editVendorSetup/{vendorId}")
-    public String editVendorSetup(HttpServletRequest request, ModelMap map, @ModelAttribute Multispeak multispeak,
+    public String editVendorSetup(HttpServletRequest request, ModelMap map, @ModelAttribute MultispeakModel multispeak,
             @PathVariable int vendorId) {
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
         map.addAttribute("defaultMspVendor", defaultMspVendor);
         map.addAttribute("mode", PageEditMode.EDIT);
         if (multispeak == null) {
-            multispeak = new Multispeak();
+            multispeak = new MultispeakModel();
         }
         multispeak.setMspVendor(mspVendor);
         addSystemModelAndViewObjects(map, mspVendor, true, multispeak, false);
@@ -112,21 +112,21 @@ public class MultispeakController {
     }
 
     @RequestMapping("vendorHome")
-    public String vendorHome(HttpServletRequest request, ModelMap map, @ModelAttribute Multispeak multispeak) {
+    public String vendorHome(HttpServletRequest request, ModelMap map, @ModelAttribute MultispeakModel multispeak) {
 
         return redirectVendorSetup(null, map, multispeak);
 
     }
 
     @RequestMapping("vendorHome/{vendorId}")
-    public String vendorHome(HttpServletRequest request, ModelMap map, @ModelAttribute Multispeak multispeak,
+    public String vendorHome(HttpServletRequest request, ModelMap map, @ModelAttribute MultispeakModel multispeak,
             @PathVariable Integer vendorId) {
 
         return redirectVendorSetup(vendorId, map, multispeak);
 
     }
 
-    private String redirectVendorSetup(Integer vendorId, ModelMap map, Multispeak multispeak) {
+    private String redirectVendorSetup(Integer vendorId, ModelMap map, MultispeakModel multispeak) {
         MultispeakVendor mspVendor = null;
         if (vendorId != null) {
             mspVendor = multispeakDao.getMultispeakVendor(vendorId);
@@ -142,7 +142,7 @@ public class MultispeakController {
 
     @RequestMapping(value = "save", method = RequestMethod.POST, params = "!Cancel")
     public String save(HttpServletRequest request, ModelMap map, FlashScope flashScope,
-            @ModelAttribute Multispeak multispeak) {
+            @ModelAttribute MultispeakModel multispeak) {
         MultispeakVendor mspVendor = buildMspVendor(request, multispeak);
         // Validate the request parameters before continuing on.
         boolean isValid =
@@ -186,7 +186,7 @@ public class MultispeakController {
     @RequestMapping("create")
     public String create(ModelMap model) {
 
-        Multispeak multispeak = new Multispeak();
+        MultispeakModel multispeak = new MultispeakModel();
         model.addAttribute("mode", PageEditMode.CREATE);
         addSystemModelAndViewObjects(model, null, true, multispeak, true);
         model.addAttribute("multispeak", multispeak);
@@ -195,7 +195,7 @@ public class MultispeakController {
 
     @RequestMapping("pingURL/{serviceVersion}")
     @ResponseBody
-    public Map<String, Object> pingURL(HttpServletRequest request, ModelMap map, @ModelAttribute Multispeak multispeak,
+    public Map<String, Object> pingURL(HttpServletRequest request, ModelMap map, @ModelAttribute MultispeakModel multispeak,
             @PathVariable String serviceVersion) {
         Map<String, Object> json = new HashMap<>();
 
@@ -248,7 +248,7 @@ public class MultispeakController {
     @RequestMapping("getMethods/{serviceVersion}")
     @ResponseBody
     public Map<String, Object> getMethods(HttpServletRequest request, ModelMap map,
-            @ModelAttribute Multispeak multispeak, @PathVariable String serviceVersion) {
+            @ModelAttribute MultispeakModel multispeak, @PathVariable String serviceVersion) {
         Map<String, Object> json = new HashMap<>();
         String mspService = multispeak.getService();
         MultiSpeakVersion version = MultiSpeakVersion.valueOf(serviceVersion);
@@ -303,7 +303,7 @@ public class MultispeakController {
         return json;
     }
 
-    private MultispeakVendor buildMspVendor(HttpServletRequest request, Multispeak multispeak) {
+    private MultispeakVendor buildMspVendor(HttpServletRequest request, MultispeakModel multispeak) {
         List<MultispeakInterface> mspInterfaces = new ArrayList<>();
         Integer vendorId = multispeak.getMspVendor().getVendorID();
         MultispeakVendor multispeakVendor = multispeak.getMspVendor();
@@ -353,7 +353,7 @@ public class MultispeakController {
         return mspVendor;
     }
 
-    private boolean isValidMspRequest(Multispeak multispeak, FlashScope flashScope) {
+    private boolean isValidMspRequest(MultispeakModel multispeak, FlashScope flashScope) {
         MultispeakVendor multispeakVendor = multispeak.getMspVendor();
         List<MessageSourceResolvable> messages = new ArrayList<MessageSourceResolvable>();
 
@@ -411,7 +411,7 @@ public class MultispeakController {
     }
 
     private void addOrUpdateMspVendor(HttpServletRequest request, MultispeakVendor mspVendor, FlashScope flashScope,
-            boolean add, Multispeak multispeak) {
+            boolean add, MultispeakModel multispeak) {
 
         if (add) {
             multispeakDao.addMultispeakVendor(mspVendor);
@@ -428,7 +428,7 @@ public class MultispeakController {
         }
     }
 
-    private void updateRolePropertyValues(HttpServletRequest request, Multispeak multispeak) {
+    private void updateRolePropertyValues(HttpServletRequest request, MultispeakModel multispeak) {
 
         int oldMspPrimaryCIS = multispeakFuncs.getPrimaryCIS();
         int mspPrimaryCIS = multispeak.getMspPrimaryCIS();
@@ -490,7 +490,7 @@ public class MultispeakController {
 
     }
 
-    private void setUpModel(ModelMap map, Multispeak multispeak, MultispeakVendor mspVendor, boolean ignoreCannon) {
+    private void setUpModel(ModelMap map, MultispeakModel multispeak, MultispeakVendor mspVendor, boolean ignoreCannon) {
         boolean showRoleProperties = false;
         boolean noVendorsExist = false;
         List<MultiSpeakVersion> mspVersionList =
@@ -518,7 +518,26 @@ public class MultispeakController {
 
         Map<Pair<String, MultiSpeakVersion>, MultispeakInterface> interfaceMap = mspVendor.getMspInterfaceMap();
         MultispeakDefines.getPossibleInterfaces(mspVendor).forEach(
-            multispeakInterface -> mspInterfaceList.add(interfaceMap.get(multispeakInterface)));
+            multispeakInterface -> {
+                if (interfaceMap.containsKey(multispeakInterface)) {
+                    mspInterfaceList.add(interfaceMap.get(multispeakInterface));
+                } else {
+                    MultispeakInterface mspInterface = new MultispeakInterface();
+                    mspInterface.setInterfaceEnabled(false);
+
+                    mspInterface.setMspInterface(multispeakInterface.getLeft());
+                    mspInterface.setVendorID(mspVendor.getVendorID());
+                    if (multispeakInterface.getRight() == MultiSpeakVersion.V3) {
+                        mspInterface.setMspEndpoint(mspVendor.getUrl() + multispeakInterface.getLeft() + "Soap");
+                    } else {
+                        mspInterface.setMspEndpoint(mspVendor.getUrl() + multispeakInterface.getRight() + "/"
+                            + multispeakInterface.getLeft());
+                    }
+                    mspInterface.setVersion(multispeakInterface.getRight());
+                    mspInterfaceList.add(mspInterface);
+                }
+            });
+
         // Try to get the values from the request first, then get from the system.
         // If these values were just updated, the db change may not have been received/processed yet and
         // the values returned from multispeakFuncs may be outdated.
@@ -538,11 +557,11 @@ public class MultispeakController {
     }
 
     private void addSystemModelAndViewObjects(ModelMap map, MultispeakVendor mspVendor, boolean ignoreCannon,
-            Multispeak multispeak, boolean isCreateNew) {
+            MultispeakModel multispeak, boolean isCreateNew) {
         boolean showRoleProperties = false;
         boolean noVendorsExist = false;
         if (multispeak == null) {
-            multispeak = new Multispeak();
+            multispeak = new MultispeakModel();
         }
         List<MultiSpeakVersion> mspVersionList =
             new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V5));

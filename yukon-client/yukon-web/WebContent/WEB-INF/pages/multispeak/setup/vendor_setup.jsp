@@ -137,9 +137,9 @@
                         <thead>
                             <tr>
                                 <th><i:inline key=".interface"/></th>
-                                <th><i:inline key=".url"/></th>
+                                <th style="width: 332px;"><i:inline key=".url"/></th>
                                 <th><i:inline key=".version"/></th>
-                                <th style="padding: 0px;"><i:inline key=".actions"/></th>
+                                <th><i:inline key=".actions"/></th>
                                 <th><i:inline key=".results"/></th>
                             </tr>
                         </thead>
@@ -160,7 +160,7 @@
                                                 <span class="checkBoxLabel"><spring:escapeBody htmlEscape="true">${mspPossibleInterfacev3.mspInterface}</spring:escapeBody></span>
                                                 <form:hidden path="mspInterfaceList[${status.index}].vendorID" /> <form:hidden
                                                     path="mspInterfaceList[${status.index}].mspInterface" /></td>
-                                            <td><tags:input
+                                            <td class="wbba"><tags:input
                                                     id="interfaceURL${mspPossibleInterfacev3.mspInterface}${mspPossibleInterfacev3.version}"
                                                     path="mspInterfaceList[${status.index}].mspEndpoint" size="40" /></td>
                                             <td><tags:selectWithItems
@@ -189,7 +189,7 @@
                                                 <span class="checkBoxLabel"><spring:escapeBody htmlEscape="true">${mspPossibleInterfacev5.mspInterface}</spring:escapeBody></span>
                                                 <form:hidden path="mspInterfaceList[${status.index+1}].vendorID" /> <form:hidden
                                                     path="mspInterfaceList[${status.index+1}].mspInterface" /></td>
-                                            <td><tags:input
+                                            <td class="wbba"><tags:input
                                                     id="interfaceURL${mspPossibleInterfacev5.mspInterface}${mspPossibleInterfacev5.version}"
                                                     path="mspInterfaceList[${status.index+1}].mspEndpoint" size="40" />
                                             </td>
@@ -219,7 +219,7 @@
                                                 <span class="checkBoxLabel"><spring:escapeBody htmlEscape="true">${mspPossibleInterfacev3.mspInterface}</spring:escapeBody></span>
                                                 <form:hidden path="mspInterfaceList[${status.index}].vendorID" /> <form:hidden
                                                     path="mspInterfaceList[${status.index}].mspInterface" /></td>
-                                            <td><tags:input
+                                            <td class="wbba"><tags:input
                                                     id="interfaceURL${mspPossibleInterfacev3.mspInterface}${mspPossibleInterfacev3.version}"
                                                     disabled="${!mspPossibleInterfacev3.interfaceEnabled}"
                                                     path="mspInterfaceList[${status.index}].mspEndpoint" size="40" /></td>
@@ -262,7 +262,7 @@
                                         <span class="checkBoxLabel"><spring:escapeBody htmlEscape="true">${mspSingleInterface.mspInterface}</spring:escapeBody></span>
                                         <form:hidden path="mspInterfaceList[${stat.index}].vendorID" /> <form:hidden
                                             path="mspInterfaceList[${stat.index}].mspInterface" /></td>
-                                    <td><tags:input
+                                    <td class="wbba"><tags:input
                                             id="interfaceURL${mspSingleInterface.mspInterface}${mspSingleInterface.version}"
                                             disabled="${!mspSingleInterface.interfaceEnabled}"
                                             path="mspInterfaceList[${stat.index}].mspEndpoint" size="40" /></td>
@@ -316,11 +316,8 @@
                     data-ok-event="yukon:multispeak:vendor:delete" />
                 <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${mspVendor.companyName}"/>
             </cti:displayForPageEditModes>
-            <cti:displayForPageEditModes modes="EDIT">
+            <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button nameKey="cancel" href="javascript:window.history.back()"/>
-            </cti:displayForPageEditModes>
-            <cti:displayForPageEditModes modes="CREATE">
-                <cti:button type="reset" name="Cancel" value="Cancel" nameKey="cancel" />
             </cti:displayForPageEditModes>
         </div>
     </form:form>

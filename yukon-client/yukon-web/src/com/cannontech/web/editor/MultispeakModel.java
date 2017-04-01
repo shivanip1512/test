@@ -7,13 +7,17 @@ import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.db.MultispeakInterface;
 
-public class Multispeak {
-
+public class MultispeakModel {
+    /*
+     * Fields specific to "Cannon"
+     * vendor:mspPrimaryCIS,paoNameAlias,paoNameAliasExtension,paoNameUsesExtension and meterLookupField
+     */
     private Integer mspPrimaryCIS;
     private MspPaoNameAliasEnum paoNameAlias;
     private String paoNameAliasExtension;
     private Boolean paoNameUsesExtension;
     private MultispeakMeterLookupFieldEnum meterLookupField;
+    
     private String resultMsg;
     private String resultColor;
     private MultispeakVendor mspVendor;

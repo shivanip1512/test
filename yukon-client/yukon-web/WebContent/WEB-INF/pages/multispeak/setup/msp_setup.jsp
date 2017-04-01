@@ -141,7 +141,8 @@
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
                 <cti:button type="submit" nameKey="save" classes="primary action" busy="true"/>
-                <cti:button nameKey="cancel" href="javascript:window.history.back()"/>
+                <cti:url var="viewUrl" value="/multispeak/setup/home?mspVendorId=${multispeak.mspVendor.vendorID}"/>
+                <cti:button nameKey="cancel" href="${viewUrl}"/>
             </cti:displayForPageEditModes>
         </div>
     </form:form>

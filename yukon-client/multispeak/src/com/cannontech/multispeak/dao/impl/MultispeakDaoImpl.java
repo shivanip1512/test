@@ -211,24 +211,6 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         }
     }
 
-    private synchronized void updateMultispeakInterface(MultispeakInterface mspInterface) {
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            SqlParameterSink sink = sql.update(MSPINTERFACE_TABLENAME);
-            sink.addValue("VendorID", mspInterface.getVendorID());
-            sink.addValue("Interface", mspInterface.getMspInterface().trim());
-            sink.addValue("Endpoint", mspInterface.getMspEndpoint().trim());
-            sink.addValue("Version", mspInterface.getVersion());
-            sql.append("WHERE VendorID").eq(mspInterface.getVendorID());
-            sql.append(" AND Interface").eq(mspInterface.getMspInterface());
-            sql.append(" AND Version").eq(mspInterface.getVersion());
-            jdbcTemplate.update(sql);
-            clearMultispeakVendorCache();
-        } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("No Multispeak Interface was inserted.");
-        }
-    }
-
     @Override
     public synchronized void updateMultispeakVendor(final MultispeakVendor mspVendor) {
         transactionTemplate.execute(new TransactionCallbackWithoutResult() {
@@ -256,8 +238,9 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                     throw new NotFoundException("Multispeak Vendor not updated for vendorID " + mspVendor.getVendorID() + ".");
                 }
                 if (mspVendor.getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
+                    deleteMultispeakInterface(mspVendor.getVendorID().intValue());
                     for (MultispeakInterface mspInterface : mspVendor.getMspInterfaces()) {
-                        updateMultispeakInterface(mspInterface);
+                        addMultispeakInterfaces(mspInterface);
                     }
                 } else {
                     deleteMultispeakInterface(mspVendor.getVendorID().intValue());
