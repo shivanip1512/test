@@ -25,6 +25,7 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDat
         
         Instant eventInstant = instantOf(event);
         PointQuality pointQuality = PointQuality.Normal;
+        Instant eventStart = null;
         
         if (eventInstant.getMillis() == 0) {  
             //outage was too long, and firmware unable to know what time really is
@@ -38,12 +39,13 @@ public class RfnRestoreEventArchiveRequestProcessor extends RfnEventConditionDat
             try {
                 Long start = getLongEventData(event, RfnConditionDataType.EVENT_START_TIME);
                 Long end = eventInstant.getMillis();
+                eventStart = new Instant(start);
                 durationInSeconds = (end - start) / 1000;
                 outageLogPointQuality = PointQuality.Normal;
             } catch (InvalidEventMessageException e) {
                 // Old firmware doesn't include the EVENT_START_TIME meta-data, so just use the invalid value set above for the duration if we get here
             }
-            rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_LOG, eventInstant, durationInSeconds, outageLogPointQuality, now);
+            rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_LOG, eventStart, durationInSeconds, outageLogPointQuality, now);
         }
         
         rfnMeterEventService.processAttributePointData(device, pointDatas, BuiltInAttribute.OUTAGE_STATUS, eventInstant, OutageStatus.GOOD.getRawState(), pointQuality, now);
