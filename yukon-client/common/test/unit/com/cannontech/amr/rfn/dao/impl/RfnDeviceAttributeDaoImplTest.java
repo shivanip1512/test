@@ -29,6 +29,6 @@ public class RfnDeviceAttributeDaoImplTest {
 
         Assert.assertEquals((Integer)  5, rfnDeviceAttributeDao.getMetricIdForAttribute(BuiltInAttribute.DEMAND, PaoType.RFN420CL));
         
-        Assert.assertEquals((Integer)200, rfnDeviceAttributeDao.getMetricIdForAttribute(BuiltInAttribute.DEMAND, PaoType.RFN430SL0));
+        Assert.assertEquals((Integer)200, rfnDeviceAttributeDao.getMetricIdForAttribute(BuiltInAttribute.DEMAND, PaoType.RFN430SL1));
     }
 }
