@@ -31,7 +31,6 @@ import com.cannontech.amr.deviceread.dao.DeviceAttributeReadService;
 import com.cannontech.amr.deviceread.dao.WaitableDeviceAttributeReadCallback;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.PlcMeter;
 import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.search.dao.MeterSearchDao;
@@ -48,7 +47,6 @@ import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
-import com.cannontech.common.bulk.service.ChangeDeviceTypeService.ChangeDeviceTypeInfo;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigHelper;
@@ -70,8 +68,6 @@ import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.InsufficientMultiSpeakDataException;
-import com.cannontech.common.model.Route;
-import com.cannontech.common.model.Substation;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
@@ -82,7 +78,6 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoPointIdentifier;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -92,11 +87,8 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
-import com.cannontech.core.substation.dao.SubstationDao;
-import com.cannontech.core.substation.dao.SubstationToRouteMappingDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.point.stategroup.Disconnect410State;
 import com.cannontech.database.db.point.stategroup.OutageStatus;
 import com.cannontech.database.db.point.stategroup.PointStateHelper;
@@ -158,7 +150,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
@@ -200,8 +191,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Autowired private PointDao pointDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
-    @Autowired private SubstationDao substationDao;
-    @Autowired private SubstationToRouteMappingDao substationToRouteMappingDao;
+ 
     @Autowired private TransactionTemplate transactionTemplate;
     @Autowired private ObjectFactory objectFactory;
     @Autowired private OAClient oaClient;
@@ -1267,7 +1257,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
     @Override
     public List<ErrorObject> initiateUsageMonitoring(MultispeakVendor mspVendor, List<String> meterNos) {
-        return addToGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "InitiateUsageMonitoring", mspVendor);
+        return addMetersToGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "InitiateUsageMonitoring", mspVendor);
     }
 
     @Override
@@ -1409,42 +1399,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     }
     
     /**
-     * Returns an rfnIdentifier representing the serialNumber and manufacturer/model from templateMeter.
-     * If templateMeter has blank values, then we will attempt to parse the manufacturer/model values from the template name.
-     *  This is useful if the templateName matches the "standard" *RfnTemplate_manufacturer_model naming convention
-     * @param templateMeter
-     * @param serialNumber
-     * @return
-     */
-    private RfnIdentifier buildNewMeterRfnIdentifier(RfnMeter templateMeter, String serialNumber) {
-
-        String manufacturer = templateMeter.getRfnIdentifier().getSensorManufacturer();
-        String model = templateMeter.getRfnIdentifier().getSensorModel();
-        
-        if (StringUtils.isBlank(manufacturer) || StringUtils.isBlank(model)) {
-            // if either is empty, attempt to parse from the templateMeter.paoName
-            String templatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
-            
-            // Format is *RfnTemplate_manufacturer_model
-            String nameToStripRfnIdentifierFrom = templateMeter.getName();
-            String rfnIdentifierPart = StringUtils.removeStart(nameToStripRfnIdentifierFrom, templatePrefix);
-            
-            // TODO this needs to be fixed to support the water_node (basically the third part containing an underscore.
-            String[] manufacturerModel = StringUtils.split(rfnIdentifierPart, "_");
-            
-            if (manufacturerModel.length == 2) {
-                manufacturer= manufacturerModel[0];
-                model = manufacturerModel[1];
-            } else {
-                // TODO - make better error object
-                throw new MspErrorObjectException(new ErrorObject());
-            }
-        }
-        
-        return new RfnIdentifier(serialNumber, manufacturer, model);
-    }
-    
-    /**
      * Check for existing meter in system and update if found.
      * @throws NotFoundException if existing meter is not found in system.
      * @throws MspErrorObjectException when templateName is not a valid YukonPaobject Name. Or if changeType cannot be processed.
@@ -1453,24 +1407,28 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             throws NotFoundException, MspErrorObjectException {
 
         YukonMeter meter = null;
+        // Get meter address from mspMeter.communicationsAddress.value
+        String mspAddress =
+            (mspMeter.getNameplate() != null && mspMeter.getNameplate().getTransponderID() != null)
+                ? mspMeter.getNameplate().getTransponderID().trim() : null;
         MultispeakMeterLookupFieldEnum multispeakMeterLookupFieldEnum = multispeakFuncs.getMeterLookupField();
 
         switch (multispeakMeterLookupFieldEnum) {
         case METER_NUMBER:
-            meter = getMeterByMeterNumber(mspMeter);
+            meter = getMeterByMeterNumber(mspMeter.getMeterNo().trim());
             break;
         case ADDRESS:
-            meter = getMeterBySerialNumberOrAddress(mspMeter);
+            meter = getMeterBySerialNumberOrAddress(mspAddress);
             break;
         case DEVICE_NAME:
             meter = getMeterByPaoName(mspMeter, mspVendor);
             break;
         case AUTO_METER_NUMBER_FIRST:
             try { // Lookup by MeterNo
-                meter = getMeterByMeterNumber(mspMeter);
+                meter = getMeterByMeterNumber(mspMeter.getMeterNo().trim());
             } catch (NotFoundException e) { // Doesn't exist by MeterNumber
                 try { // Lookup by Address
-                    meter = getMeterBySerialNumberOrAddress(mspMeter);
+                    meter = getMeterBySerialNumberOrAddress(mspAddress);
                 } catch (NotFoundException e2) { // Doesn't exist by Address
                     meter = getMeterByPaoName(mspMeter, mspVendor);
                     // Not Found Exception thrown in the end if never found
@@ -1483,10 +1441,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 meter = getMeterByPaoName(mspMeter, mspVendor);
             } catch (NotFoundException e) { // Doesn't exist by Device name
                 try { // Lookup by Meter Number
-                    meter = getMeterByMeterNumber(mspMeter);
+                    meter = getMeterByMeterNumber(mspMeter.getMeterNo().trim());
                 } catch (NotFoundException e2) {
                     // Lookup by Address
-                    meter = getMeterBySerialNumberOrAddress(mspMeter);
+                    meter = getMeterBySerialNumberOrAddress(mspAddress);
                     // Not Found Exception thrown in the end if never found
                 }
             }
@@ -1564,102 +1522,23 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
      * @throws MspErrorObjectException when error changing the type
      * @return Returns the updated existingMeter object (in case of major paoType change) 
      */
-    private YukonMeter verifyAndUpdateType(YukonMeter templateMeter, YukonMeter existingMeter, String serialOrAddress, String mspMethod, MultispeakVendor mspVendor)
-            throws MspErrorObjectException {
+    private YukonMeter verifyAndUpdateType(YukonMeter templateMeter, YukonMeter existingMeter, String serialOrAddress,
+            String mspMethod, MultispeakVendor mspVendor) throws MspErrorObjectException {
         PaoType originalType = existingMeter.getPaoType();
         if (templateMeter.getPaoType() != originalType) {
             // PROBLEM, types do not match!
             // Attempt to change type
             try {
-                ChangeDeviceTypeService.ChangeDeviceTypeInfo changeInfo;
-                if (templateMeter.getPaoType().isRfn()) {
-                    RfnIdentifier rfnIdentifier = buildNewMeterRfnIdentifier((RfnMeter)templateMeter, serialOrAddress);
-                    changeInfo = new ChangeDeviceTypeInfo(rfnIdentifier);
-                } else {
-                    changeInfo = new ChangeDeviceTypeInfo(Integer.parseInt(serialOrAddress), 0); // route will be updated later as part of route locate
-                }
-                
-                changeDeviceTypeService.changeDeviceType(new SimpleDevice(existingMeter), templateMeter.getPaoType(), changeInfo);
-                existingMeter = meterDao.getForId(existingMeter.getDeviceId()); // reload the meter in case we've changed base classes
-                
-                // Extra logging to SystemLog, can be removed with completion of MultiSpeak EventLogs
-                systemLog(mspMethod, "MeterNumber (" + existingMeter.getMeterNumber() + ") - Changed DeviceType from:" + originalType + 
-                          " to:" + templateMeter.getPaoIdentifier().getPaoType() + ").", mspVendor);
-                multispeakEventLogService.deviceTypeUpdated(originalType, existingMeter, mspMethod, mspVendor.getCompanyName());
+                updateDeviceType(templateMeter, existingMeter, serialOrAddress, mspMethod, mspVendor);
             } catch (ProcessingException | NumberFormatException e) {
-                ErrorObject errorObject = mspObjectDao.getErrorObject(existingMeter.getMeterNumber(), "Error: " + e.getMessage(),
-                                                                      "Meter", "ChangeDeviceType", mspVendor.getCompanyName());
+                ErrorObject errorObject =
+                    mspObjectDao.getErrorObject(existingMeter.getMeterNumber(), "Error: " + e.getMessage(), "Meter",
+                        "ChangeDeviceType", mspVendor.getCompanyName());
                 // return errorObject; couldn't save the change type
                 throw new MspErrorObjectException(errorObject);
             }
         }
         return existingMeter;
-    }
-
-    /**
-     * Check if paoName of meter is different than new paoName. 
-     * If different, paoName is updated.
-     */
-    private void verifyAndUpdatePaoName(String newPaoName, YukonMeter existingMeter, String mspMethod, MultispeakVendor mspVendor) {
-        String originalName = existingMeter.getName();
-        if (!originalName.equalsIgnoreCase(newPaoName)) {
-            // UPDATE PAONAME
-            // Shouldn't fail, if PaoName already exists, a uniqueness value will be added.
-            newPaoName = getNewUniquePaoName(newPaoName);
-            deviceDao.changeName(existingMeter, newPaoName);
-            existingMeter.setName(newPaoName); // update local object with new name.
-            multispeakEventLogService.paoNameUpdated(originalName,  existingMeter, mspMethod, mspVendor.getCompanyName());
-        }
-    }
-
-    /**
-     * Check if meterNumber of meter is different than new meterNumber.
-     * If different, meterNumber is updated.
-     */
-    private void verifyAndUpdateMeterNumber(String newMeterNumber, YukonMeter existingMeter, String mspMethod, MultispeakVendor mspVendor) {
-        String originalMeterNumber = existingMeter.getMeterNumber(); 
-        if (!originalMeterNumber.equalsIgnoreCase(newMeterNumber)) {
-            // UPDATE METER NUMBER
-            // Shouldn't fail, if Meter Number already exists, we end up with duplicates
-            deviceDao.changeMeterNumber(existingMeter, newMeterNumber);
-            existingMeter.setMeterNumber(newMeterNumber); // update local object with new meter number.
-            multispeakEventLogService.meterNumberUpdated(originalMeterNumber, existingMeter, mspMethod, mspVendor.getCompanyName());
-        }
-    }
-
-    /**
-     * For Rfn, check if rfnIdentifier of meter is different than new serialNumber (and model/manufacturer of templateMeter).
-     *  If different, rfnIdentifier is updated. 
-     * For Plc, check if address of meter is different than new address. 
-     *  If different, address is updated.
-     */
-    private void verifyAndUpdateAddressOrSerial(String newSerialOrAddress, YukonMeter templateMeter,
-            YukonMeter existingMeter, String mspMethod, MultispeakVendor mspVendor) {
-        if (existingMeter.getPaoType().isRfn()) {
-            RfnIdentifier newMeterRfnIdentifier = buildNewMeterRfnIdentifier((RfnMeter)templateMeter, newSerialOrAddress);
-
-            // Check if different first, then update only if change needed
-            if (!((RfnMeter) existingMeter).getRfnIdentifier().getSensorSerialNumber().equals(newMeterRfnIdentifier.getSensorSerialNumber())) {
-                String originalSerialNumber = ((RfnMeter) existingMeter).getRfnIdentifier().getSensorSerialNumber();
-                RfnDevice deviceToUpdate = new RfnDevice(existingMeter.getName(), existingMeter, newMeterRfnIdentifier);
-                rfnDeviceDao.updateDevice(deviceToUpdate);
-                existingMeter = new RfnMeter(existingMeter, newMeterRfnIdentifier, existingMeter.getMeterNumber(), existingMeter.getName(), existingMeter.isDisabled()); // update local object with new RfnIdentifier
-                multispeakEventLogService.serialNumberOrAddressUpdated(originalSerialNumber, existingMeter, mspMethod, mspVendor.getCompanyName());
-                // UPDATE SERIAL NUMBER (model, manufacturer)
-                // MAY FAIL IF RFNIdentifier ALREADY EXISTS FOR ANOTHER METER
-            }
-
-        } else if (templateMeter.getPaoType().isMct()) {
-            // Check if different first, then update only if change needed
-            if (!existingMeter.getSerialOrAddress().equals(newSerialOrAddress)) {
-                String originalAddress = existingMeter.getSerialOrAddress();
-                // UPDATE CARRIER ADDRESS
-                // WILL NOT FAIL IF ADDRESS IS ALREADY IN USE BY ANOTHER DEVICE!
-                deviceUpdateService.changeAddress(existingMeter, Integer.valueOf(newSerialOrAddress));
-                ((PlcMeter)existingMeter).setAddress(newSerialOrAddress); // update local object with new address.
-                multispeakEventLogService.serialNumberOrAddressUpdated(originalAddress, existingMeter, mspMethod, mspVendor.getCompanyName());
-            }
-        }
     }
 
     /**
@@ -1678,93 +1557,12 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
         String meterNumber = meterToUpdate.getMeterNumber();
 
-        // Verify substation name
+        // Get substation name
         String substationName = getSubstationNameFromMspObjects(mspMeter, mspServiceLocation, mspVendor);
-        if (StringUtils.isBlank(substationName)) {
-            // change logging here.
-            // No route updates made (if PLC). No substation group updates.
-            multispeakEventLogService.substationNotFound("", meterNumber, mspMethod, mspVendor.getCompanyName());
-            systemLog(mspMethod,"MeterNumber(" + meterNumber + ") - substation name not provided, route locate and substation assignement not completed.", mspVendor);
-        } else {
-
-            // update the substation group
-            boolean addedToGroup = updateSubstationGroup(substationName, meterNumber, meterToUpdate, mspMethod, mspVendor);
-
-            if (meterToUpdate.getPaoType().isPlc()) {
-                if (addedToGroup || ((PlcMeter)meterToUpdate).getRouteId() == 0) {
-                    // If the substation changed, we should attempt to update the route info too.
-                    // Update route (_after_ meter is enabled).
-                    verifyAndUpdateRoute(meterToUpdate, mspVendor, substationName, mspMethod);
-                }
-            }
-        }
+        // Validate, verify and update substationName
+        checkAndUpdateSubstationName(substationName, meterNumber, mspMethod, mspVendor, meterToUpdate);
     }
 
-    /**
-     * Checks if substationName is in Yukon.
-     * If not found, or if no routes associated with substation, then return with no processing.
-     * If found, and routes exist, assigns (first) route to meter.
-     * Then initiates route locate.
-     * If only one route found, assigns to meter but locate is skipped.
-     * Returns with no processing for non PLC types.
-     * @param meterToUpdate- the meter to update routing for
-     * @param mspVendor
-     * @param substationName - the substationName to lookup routeMappings for
-     * @param meterNumber - for logging
-     */
-    private void verifyAndUpdateRoute(YukonMeter meterToUpdate, MultispeakVendor mspVendor, String substationName, String mspMethod) {
-
-        // not valid for RFN meter types
-        if (!(meterToUpdate instanceof PlcMeter)) {
-            return;
-        }
-
-        String meterNumber = meterToUpdate.getMeterNumber();
-        
-        try {
-            // get routes
-            Substation substation = substationDao.getByName(substationName);
-            List<Route> routes = substationToRouteMappingDao.getRoutesBySubstationId(substation.getId());
-
-            if (routes.isEmpty()) {
-                multispeakEventLogService.routeNotFound(substationName, ((PlcMeter)meterToUpdate).getRoute(), meterNumber, mspMethod, mspVendor.getCompanyName());
-                systemLog(mspMethod, "MeterNumber(" + meterNumber + ") - No Routes for substation (" + substationName + "), using route from existing device.", mspVendor);
-            } else { // routes exist
-
-                // initally set route to first sub mapping
-                int originalRouteId = ((PlcMeter) meterToUpdate).getRouteId();
-                Route initialRoute = routes.get(0);
-                
-                if (originalRouteId != initialRoute.getId()) {
-                    deviceUpdateService.changeRoute(meterToUpdate, initialRoute.getId());
-                    ((PlcMeter) meterToUpdate).setRouteId(initialRoute.getId());
-                    ((PlcMeter) meterToUpdate).setRoute(initialRoute.getName()); // update local object with initiate route
-                    
-                    if (routes.size() == 1) { // no need to run route discovery if we only have one route.
-                        multispeakEventLogService.routeUpdated(initialRoute.getName(), meterNumber, mspMethod, mspVendor.getCompanyName());
-                        systemLog(mspMethod, "MeterNumber(" + meterNumber + ") - Only one route associated with substation, assigned route and skipping route discovery.", mspVendor);
-                    }
-                }
-                
-                if (routes.size() > 1) { // run route discovery
-                    LiteYukonUser liteYukonUser = UserUtils.getYukonUser();
-                    
-                    ImmutableList<Integer> routeIds = PaoUtils.asPaoIdList(routes);
-                    ImmutableList<String> routeNames = PaoUtils.asPaoNames(routes);
-                    
-                    multispeakEventLogService.routeUpdatedByDiscovery(initialRoute.getName(), meterNumber, StringUtils.join(routeNames, ","), mspMethod, mspVendor.getCompanyName());
-                    deviceUpdateService.routeDiscovery(meterToUpdate, routeIds, liteYukonUser);
-                    systemLog(mspMethod, "MeterNumber(" + meterNumber + ") - Route discovery started on: " + StringUtils.join(routeNames, ",") + ".", mspVendor);
-                }
-            }
-
-        } catch (NotFoundException e) { // bad sub name
-            multispeakEventLogService.substationNotFound(substationName, meterNumber, mspMethod, mspVendor.getCompanyName());
-            systemLog(mspMethod, "MeterNumber(" + meterNumber + ") - substation name " + substationName + " not found in Yukon, no route changes will occur.", mspVendor);
-            log.warn(e);
-        }
-    }
-    
     /**
      * Helper method to return a Meter object for PaoName PaoName is looked up
      * based on PaoNameAlias
@@ -1772,23 +1570,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     private YukonMeter getMeterByPaoName(Meter mspMeter, MultispeakVendor mspVendor) {
         String paoName = getPaoNameFromMspMeter(mspMeter, mspVendor);
         return meterDao.getForPaoName(paoName);
-    }
-
-    /**
-     * Helper method to return a PLC Meter object for Address
-     * Address to look up is from mspMeter.Nameplate.TransponderID
-     */
-    private YukonMeter getMeterBySerialNumberOrAddress(Meter mspMeter) {
-        String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
-        return mspMeterDao.getForSerialNumberOrAddress(mspAddress);
-    }
-
-    /**
-     * Helper method to return a Meter object for Meter Number
-     */
-    private YukonMeter getMeterByMeterNumber(Meter mspMeter) throws NotFoundException {
-        String mspMeterNo = mspMeter.getMeterNo().trim();
-        return meterDao.getForMeterNumber(mspMeterNo);
     }
 
     @Override
@@ -1799,10 +1580,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             // Lookup meter in Yukon by msp meter number
             YukonMeter meter;
             try {
-                meter = getMeterByMeterNumber(mspMeter);
+                meter = getMeterByMeterNumber(mspMeter.getMeterNo().trim());
 
                 // Added meter to Inventory
-                addToGroup(meter, SystemGroupEnum.INVENTORY, METER_REMOVE_STRING, mspVendor);
+                addMeterToGroup(meter, SystemGroupEnum.INVENTORY, METER_REMOVE_STRING, mspVendor);
                 if (!meter.isDisabled()) {// enabled
                     meter.setDisabled(true);    //update local object reference
                     deviceDao.disableDevice(meter);
@@ -1868,7 +1649,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                                 for (Meter mspMeter : mspMeters) {
                                     try {
-                                        YukonMeter meter = getMeterByMeterNumber(mspMeter);
+                                        YukonMeter meter = getMeterByMeterNumber(mspMeter.getMeterNo().trim());
                                         
                                         // MeterNumber should not have changed, nor transponderId...only paoName possibly
                                         String newPaoName = getPaoNameFromMspMeter(mspMeter, mspVendor);
@@ -1940,7 +1721,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                         validateMspMeter(mspMeter, mspVendor, METER_CHANGED_STRING);
 
                         try {
-                            YukonMeter meterToChange = getMeterByMeterNumber(mspMeter);
+                            YukonMeter meterToChange = getMeterByMeterNumber(mspMeter.getMeterNo().trim());
                             YukonMeter templateMeter = getYukonMeterForTemplate(mspMeter, mspVendor, false); // throws MspErrorObjectException
                             if (templateMeter == null) {
                                 // If no template found, just use this meter as the template (meaning, same meter, no type changes).
@@ -2145,35 +1926,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     }
 
     /**
-     * Helper method to remove meter from systemGroup
-     */
-    private void removeFromGroup(YukonMeter meter, SystemGroupEnum systemGroup, String mspMethod, MultispeakVendor mspVendor) {
-
-        DeviceGroup deviceGroup = deviceGroupEditorDao.getSystemGroup(systemGroup);
-        int numAffected = deviceGroupMemberEditorDao.removeDevices((StoredDeviceGroup) deviceGroup, Collections.singletonList(meter));
-        if (numAffected > 0) {
-            String basePath = deviceGroupEditorDao.getFullPath(systemGroup);
-            multispeakEventLogService.removeMeterFromGroup(meter.getMeterNumber(), basePath, mspMethod, mspVendor.getCompanyName());
-        }
-    }
-
-    /**
-     * Helper method to add meter to systemGroup
-     */
-    private void addToGroup(YukonMeter meter, SystemGroupEnum systemGroup, String mspMethod, MultispeakVendor mspVendor) {
-
-        DeviceGroup deviceGroup = deviceGroupEditorDao.getSystemGroup(systemGroup);
-        int numAffected = deviceGroupMemberEditorDao.addDevice((StoredDeviceGroup) deviceGroup, meter);
-        if (numAffected > 0) {
-            String basePath = deviceGroupEditorDao.getFullPath(systemGroup);
-            multispeakEventLogService.addMeterToGroup(meter.getMeterNumber(), basePath, mspMethod, mspVendor.getCompanyName());
-        }
-    }
-
-    /**
      * Helper method to add meterNos to systemGroup
      */
-    private List<ErrorObject> addToGroup(List<String> meterNos, SystemGroupEnum systemGroup,
+    private List<ErrorObject> addMetersToGroup(List<String> meterNos, SystemGroupEnum systemGroup,
             String mspMethod, MultispeakVendor mspVendor) {
         return addToGroupAndDisable(meterNos, systemGroup, mspMethod, mspVendor, false);
     }
@@ -2193,7 +1948,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 if (disable && !meter.isDisabled()) {
                     deviceDao.disableDevice(meter);
                 }
-                addToGroup(meter, systemGroup, mspMethod, mspVendor);
+                addMeterToGroup(meter, systemGroup, mspMethod, mspVendor);
             } catch (NotFoundException e) {
                 multispeakEventLogService.meterNotFound(meterNumber, mspMethod, mspVendor.getCompanyName());
                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber,
@@ -2438,32 +2193,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                                                   mspVendor.getCompanyName());
             throw new MspErrorObjectException(errorObject);
         }
-    }
-
-    /**
-     * Returns an "unused" paoName for newPaoName. 
-     * If a meter already exists with newPaoName, then a numeric incremented value will be appended to the newPaoName.
-     */
-    private String getNewUniquePaoName(String newPaoName) {
-
-        int retryCount = 0;
-        String tempPaoName = newPaoName;
-        boolean found = false;
-        do {
-            try {
-                if (retryCount > 0) {
-                    tempPaoName = newPaoName + " (" + retryCount + ")";
-                }
-                // Try to find if a meter already exists with this paoName
-                meterDao.getForPaoName(tempPaoName);
-                retryCount++;
-            } catch (NotFoundException e) {
-                // this is good!
-                found = true;
-            }
-        } while (!found);
-
-        return tempPaoName;
     }
 
     /**
