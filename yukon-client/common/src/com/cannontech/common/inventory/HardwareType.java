@@ -302,6 +302,13 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
     
     /**
+     * Returns true if route has to be displayed.
+     */
+    public boolean showRoute() {
+        return !isZigbee() && !isRf() && !isEcobee() && !isHoneywell() && !isTwoWayPlcLcr();
+    }
+
+    /**
      * Returns true if this hardware type is a thermostat.
      */
     public boolean isThermostat() {
