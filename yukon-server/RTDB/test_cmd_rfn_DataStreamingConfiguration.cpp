@@ -79,7 +79,7 @@ R"SQUID(json{
 
 BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_430Sentinel)
 {
-    RfnDataStreamingGetMetricsListCommand cmd { TYPE_RFN430SL0 };
+    RfnDataStreamingGetMetricsListCommand cmd { TYPE_RFN430SL1 };
 
     // execute
     {
@@ -95,17 +95,25 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingGetMetricsListCommand_430Sentinel)
     {
         const std::vector<unsigned char> response{
         0x85,       //  command code
-            0x03,  //  number of metrics
+            0x05,  //  number of metrics
             0x01,  //  data streaming on/off
             0x00, 0xc8,  //  metric ID 1
             0x01,          //  metric ID 1 enable/disable
             0x05,          //  metric ID 1 interval
             0x00,          //  metric ID 1 status
-            0x00, 0x73,  //  metric ID 2
+            0x00, 0xc9,  //  metric ID 2
+            0x01,          //  metric ID 1 enable/disable
+            0x05,          //  metric ID 1 interval
+            0x00,          //  metric ID 1 status
+            0x00, 0xca,  //  metric ID 3
+            0x01,          //  metric ID 1 enable/disable
+            0x05,          //  metric ID 1 interval
+            0x00,          //  metric ID 1 status
+            0x00, 0x73,  //  metric ID 4
             0x00,          //  metric ID 2 enable/disable
             0x0f,          //  metric ID 2 interval
             0x01,          //  metric ID 2 status
-            0x00, 0x50,  //  metric ID 3
+            0x00, 0x50,  //  metric ID 5
             0x01,          //  metric ID 3 enable/disable
             0x1e,          //  metric ID 3 interval
             0x02,          //  metric ID 3 status
@@ -119,6 +127,18 @@ R"SQUID(json{
 "configuredMetrics" : [
   {
     "attribute" : "DEMAND",
+    "interval" : 5,
+    "enabled" : true,
+    "status" : "OK"
+  },
+  {
+    "attribute" : "KVAR",
+    "interval" : 5,
+    "enabled" : true,
+    "status" : "OK"
+  },
+  {
+    "attribute" : "DELIVERED_KVA",
     "interval" : 5,
     "enabled" : true,
     "status" : "OK"

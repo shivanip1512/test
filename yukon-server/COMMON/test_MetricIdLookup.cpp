@@ -44,9 +44,19 @@ BOOST_AUTO_TEST_CASE(test_GetMetricId_success)
         BOOST_CHECK_EQUAL(metricId, 5);
     }
     {
-        const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::Demand, TYPE_RFN430SL0);
+        const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::Demand, TYPE_RFN430SL1);
 
         BOOST_CHECK_EQUAL(metricId, 200);
+    }
+    {
+        const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::kVAr, TYPE_RFN430SL1);
+
+        BOOST_CHECK_EQUAL(metricId, 201);
+    }
+    {
+        const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::DeliveredkVA, TYPE_RFN430SL1);
+
+        BOOST_CHECK_EQUAL(metricId, 202);
     }
     {
         const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::PeakDemand, TYPE_RFN530S4EAX);
@@ -91,7 +101,7 @@ BOOST_AUTO_TEST_CASE(test_getAttribute_override)
     }
 
     {
-        const auto attrib = Cti::MetricIdLookup::GetAttribute(200, TYPE_RFN430SL0);
+        const auto attrib = Cti::MetricIdLookup::GetAttribute(200, TYPE_RFN430SL1);
 
         BOOST_CHECK(attrib == Attribute::Demand);
         BOOST_CHECK_EQUAL(attrib.getName(), "DEMAND");
