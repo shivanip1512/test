@@ -469,7 +469,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_disable_one)
             0x01,  //  data streaming ON
             0x00, 0x50,  //  metric ID 1
             0x00,        //  metric ID 1 enable/disable
-            0x1e         //  metric ID 1 interval
+            0x00         //  metric ID 1 interval
         };
 
         BOOST_CHECK_EQUAL_RANGES(rcv, exp);
@@ -555,7 +555,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_enable_one_disable_o
             0x05,        //  metric ID 1 interval
             0x00, 0x50,  //  metric ID 2
             0x00,        //  metric ID 2 enable/disable
-            0x1e         //  metric ID 2 interval
+            0x00         //  metric ID 2 interval
         };
 
         BOOST_CHECK_EQUAL_RANGES(rcv, exp);
@@ -697,7 +697,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_channel_
             0x05,        //  metric ID 1 interval
             0x00, 0x50,  //  metric ID 2
             0x00,        //  metric ID 2 enable/disable
-            0x1e         //  metric ID 2 interval
+            0x00         //  metric ID 2 interval
         };
 
         BOOST_CHECK_EQUAL_RANGES(rcv, exp);
@@ -772,7 +772,7 @@ BOOST_AUTO_TEST_CASE(test_RfnDataStreamingSetMetricsCommand_discrepancy_channel_
             0x05,        //  metric ID 1 interval
             0x00, 0x50,  //  metric ID 2
             0x00,        //  metric ID 2 enable/disable
-            0x1e         //  metric ID 2 interval
+            0x00         //  metric ID 2 interval
         };
 
         BOOST_CHECK_EQUAL_RANGES(rcv, exp);

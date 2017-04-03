@@ -219,7 +219,7 @@ DeviceCommand::Bytes RfnDataStreamingSetMetricsCommand::getCommandData()
     {
         insertValue_bEndian<2>(commandData, s.metricId);
         commandData.push_back(s.interval > 0);
-        commandData.push_back(s.interval ? s.interval : 30);
+        commandData.push_back(s.interval);  //  Disable sends an interval of 0, which is "don't change" on the node
     }
 
     return commandData;

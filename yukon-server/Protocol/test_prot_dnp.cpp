@@ -893,6 +893,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_generate_operation_already_execut
 
 BOOST_AUTO_TEST_CASE(test_prot_dnp_integrity_scan_with_time)
 {
+    Cti::Test::set_to_central_timezone();
+
     DnpProtocol dnp;
 
     BOOST_CHECK_EQUAL(true, dnp.isTransactionComplete());
@@ -3477,7 +3479,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_late_absolute_time)
     dnp.setAddresses(2, 1);
     dnp.setName("Test DNP device");
     dnp.setCommand(DnpProtocol::Command_UnsolicitedInbound);
-    dnp.setConfigData(2, DNP::TimeOffset::Local, false, false, true, false, false, false);
+    //  Set to UTC so timestamp interpretation doesn't wiggle over DST changes
+    dnp.setConfigData(2, DNP::TimeOffset::Utc, false, false, true, false, false, false);
 
     // Actual data from OpenDNP simulating a CBC-8024
     const byte_str response(
@@ -3517,8 +3520,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_late_absolute_time)
             case 12:
                 BOOST_CHECK_EQUAL(pd->getValue(), 1180.0000000000000);
                 BOOST_CHECK_EQUAL(pd->getType(), AnalogPointType);
-                // Time shouldn't be an issue because this is a canned message
-                BOOST_CHECK_EQUAL(pd->getTime(), CtiTime(1480476481 - 3600));   // thanks to Wayne and DST... expect breakage Nov 5, 2017
+                BOOST_CHECK_EQUAL(pd->getTime(), CtiTime(1480454881));
                 break;
             }
         }
@@ -3538,7 +3540,8 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_early_absolute_time)
     dnp.setAddresses(2, 1);
     dnp.setName("Test DNP device");
     dnp.setCommand(DnpProtocol::Command_UnsolicitedInbound);
-    dnp.setConfigData(2, DNP::TimeOffset::Local, false, false, true, false, false, false);
+    //  Set to UTC so timestamp interpretation doesn't wiggle over DST changes
+    dnp.setConfigData(2, DNP::TimeOffset::Utc, false, false, true, false, false, false);
 
     // Actual data from OpenDNP simulating a CBC-8024
     const byte_str response(
@@ -3578,8 +3581,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_early_absolute_time)
             case 12:
                 BOOST_CHECK_EQUAL(pd->getValue(), 1036.0000000000000);
                 BOOST_CHECK_EQUAL(pd->getType(), AnalogPointType);
-                // Time shouldn't be an issue because this is a canned message
-                BOOST_CHECK_EQUAL(pd->getTime(), CtiTime(1480565462 - 3600));   // thanks to Wayne and DST... expect breakage Nov 5, 2017
+                BOOST_CHECK_EQUAL(pd->getTime(), CtiTime(1480543862));
                 break;
             }
         }
