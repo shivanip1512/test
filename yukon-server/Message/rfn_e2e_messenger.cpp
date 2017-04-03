@@ -375,17 +375,23 @@ void E2eMessenger::handleNetworkManagerResponseMsg(const SerializedMessage &msg,
 
 void E2eMessenger::sendE2eDt(const Request &req, const ApplicationServiceIdentifiers asid, Confirm::Callback callback, TimeoutCallback timeout)
 {
-    gE2eMessenger->serializeAndQueue(req, callback, timeout, asid);
+    gE2eMessenger->serializeAndQueue(req, asid, callback, timeout);
+}
+
+
+void E2eMessenger::sendE2eDt(const Request &req, const ApplicationServiceIdentifiers asid)
+{
+    gE2eMessenger->serializeAndQueue(req, asid);
 }
 
 
 void E2eMessenger::sendE2eAp_Dnp(const Request &req, Confirm::Callback callback, TimeoutCallback timeout)
 {
-    gE2eMessenger->serializeAndQueue(req, callback, timeout, ApplicationServiceIdentifiers::E2EAP_DNP3);
+    gE2eMessenger->serializeAndQueue(req, ApplicationServiceIdentifiers::E2EAP_DNP3, callback, timeout);
 }
 
 
-void E2eMessenger::serializeAndQueue(const Request &req, Confirm::Callback callback, TimeoutCallback timeout, const ApplicationServiceIdentifiers asid)
+E2eDataRequestMsg E2eMessenger::createMessageFromRequest(const Request& req, const ApplicationServiceIdentifiers asid)
 {
     E2eDataRequestMsg msg;
 
@@ -395,8 +401,15 @@ void E2eMessenger::serializeAndQueue(const Request &req, Confirm::Callback callb
     msg.protocol      = E2eMsg::Application;
     msg.payload       = req.payload;
 
-    msg.header =
-        Rfn::SessionInfoManager::getNmHeader( req.groupId, req.expiration, req.priority );
+    msg.header = Rfn::SessionInfoManager::getNmHeader( req.groupId, req.expiration, req.priority );
+
+    return msg;
+}
+
+
+void E2eMessenger::serializeAndQueue(const Request &req, const ApplicationServiceIdentifiers asid, Confirm::Callback callback, TimeoutCallback timeout)
+{
+    E2eDataRequestMsg msg = createMessageFromRequest(req, asid);
 
     SerializedMessage serialized;
 
@@ -423,6 +436,20 @@ void E2eMessenger::serializeAndQueue(const Request &req, Confirm::Callback callb
             {
                 timeout();
             });
+}
+
+
+void E2eMessenger::serializeAndQueue(const Request &req, const ApplicationServiceIdentifiers asid)
+{
+    E2eDataRequestMsg msg = createMessageFromRequest(req, asid);
+
+    SerializedMessage serialized;
+
+    e2eMessageFactory.serialize(msg, serialized);
+
+    ActiveMQConnectionManager::enqueueMessage(
+        ActiveMQ::Queues::OutboundQueue::NetworkManagerE2eDataRequest,
+        serialized);
 }
 
 

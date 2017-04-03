@@ -20,7 +20,7 @@ struct test_E2eMessenger : Cti::Messaging::Rfn::E2eMessenger
         indicationHandler = callback;
     }
 
-    void serializeAndQueue(const Request &req, Confirm::Callback callback, TimeoutCallback timeout, const Cti::Messaging::Rfn::ApplicationServiceIdentifiers asid) override
+    void serializeAndQueue(const Request &req, const Cti::Messaging::Rfn::ApplicationServiceIdentifiers asid, Confirm::Callback callback, TimeoutCallback timeout) override
     {
         messages.push_back(req);
 

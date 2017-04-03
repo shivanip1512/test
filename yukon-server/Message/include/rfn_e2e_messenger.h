@@ -71,13 +71,16 @@ public:
     static void registerDnpHandler  (Indication::Callback callback, const RfnIdentifier rfnid);
 
     static void sendE2eDt    (const Request &req, const ApplicationServiceIdentifiers asid, Confirm::Callback callback, TimeoutCallback timeout);
+    static void sendE2eDt    (const Request &req, const ApplicationServiceIdentifiers asid);
     static void sendE2eAp_Dnp(const Request &req, Confirm::Callback callback, TimeoutCallback timeout);
 
     static void cancelByGroupId(const long groupId);
 
 protected:
 
-    virtual void serializeAndQueue(const Request &req, Confirm::Callback callback, TimeoutCallback timeout, const ApplicationServiceIdentifiers asid);
+    E2eDataRequestMsg createMessageFromRequest(const Request &req, const ApplicationServiceIdentifiers asid);
+    virtual void serializeAndQueue(const Request &req, const ApplicationServiceIdentifiers asid, Confirm::Callback callback, TimeoutCallback timeout);
+    virtual void serializeAndQueue(const Request &req, const ApplicationServiceIdentifiers asid);
     virtual void setE2eDtHandler(Indication::Callback callback);
     virtual void processTimeouts();
 
