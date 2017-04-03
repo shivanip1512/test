@@ -189,8 +189,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
         public void processRow(YukonResultSet rs) throws SQLException {
             int categoryId = rs.getInt("DeviceConfigCategoryId");
             String itemName = rs.getString("ItemName");
-            String itemValue = rs.getString("ItemValue");
-            
+            String itemValue = rs.getStringSafe("ItemValue");
             DeviceConfigCategoryItem item = new DeviceConfigCategoryItem(categoryId, itemName, itemValue);
             
             itemsByCategoryId.put(item.getCategoryId(), item);
@@ -884,7 +883,7 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
     private void updateCategoryItem(DeviceConfigCategoryItem item) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink params = sql.update("DeviceConfigCategoryItem");
-        params.addValue("ItemValue", item.getValue());
+        params.addValueSafe("ItemValue", item.getValue());
         
         sql.append("WHERE ItemName").eq(item.getFieldName());
         sql.append("AND DeviceConfigCategoryId").eq(item.getCategoryId());
