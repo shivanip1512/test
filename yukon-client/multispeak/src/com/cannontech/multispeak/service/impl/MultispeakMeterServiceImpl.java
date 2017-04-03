@@ -1264,12 +1264,12 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     public List<ErrorObject> cancelDisconnectedStatus(MultispeakVendor mspVendor, List<String> meterNos) {
         // For the cancel method, the MSP_DISABLE_DISCONNECT_STATUS setting shall be reversed to "undo" the disable.
         boolean enable = globalSettingDao.getBoolean(GlobalSettingType.MSP_DISABLE_DISCONNECT_STATUS);
-        return removeFromGroupAndEnable(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "CancelDisconnectedStatus", mspVendor, enable);
+        return removeMetersFromGroupAndEnable(meterNos, SystemGroupEnum.DISCONNECTED_STATUS, "CancelDisconnectedStatus", mspVendor, enable);
     }
 
     @Override
     public List<ErrorObject> cancelUsageMonitoring(MultispeakVendor mspVendor, List<String> meterNos) {
-        return removeFromGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "CancelUsageMonitoring", mspVendor);
+        return removeMetersFromGroup(meterNos, SystemGroupEnum.USAGE_MONITORING, "CancelUsageMonitoring", mspVendor);
     }
 
     @Override
@@ -1966,16 +1966,16 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     /**
      * Helper method to remove meterNos from systemGroup
      */
-    private List<ErrorObject> removeFromGroup(List<String> meterNos, SystemGroupEnum systemGroup, String mspMethod,
+    private List<ErrorObject> removeMetersFromGroup(List<String> meterNos, SystemGroupEnum systemGroup, String mspMethod,
             MultispeakVendor mspVendor) {
-        return removeFromGroupAndEnable(meterNos, systemGroup, mspMethod, mspVendor, false);
+        return removeMetersFromGroupAndEnable(meterNos, systemGroup, mspMethod, mspVendor, false);
     }
 
     /**
      * Helper method to remove meterNos from systemGroup
      * @param disable - when true, the meter will be enabled. Else no change.
      */
-    private List<ErrorObject> removeFromGroupAndEnable(List<String> meterNos, SystemGroupEnum systemGroup, String mspMethod,
+    private List<ErrorObject> removeMetersFromGroupAndEnable(List<String> meterNos, SystemGroupEnum systemGroup, String mspMethod,
             MultispeakVendor mspVendor, boolean enable) {
 
         ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
