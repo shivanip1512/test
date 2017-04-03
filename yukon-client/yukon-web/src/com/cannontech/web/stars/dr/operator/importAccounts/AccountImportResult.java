@@ -51,7 +51,8 @@ public class AccountImportResult implements Completable {
         "USER_GROUP",
         "COMPANY_NAME",
         "IVR_PIN",
-        "IVR_USERNAME"
+        "IVR_USERNAME",
+        "CUST_ALT_TRACK_NO"
     };
     
     public final String[] HW_COLUMNS = {
@@ -99,6 +100,7 @@ public class AccountImportResult implements Completable {
     public final int COL_COMPANY_NAME = 22;
     public final int COL_IVR_PIN = 23;
     public final int COL_IVR_USERNAME = 24;
+    public final int COL_CUST_ALT_TRACK_NO = 25;
     
     // Column indices of the generic hardware info file
     public final int COL_HW_ACCOUNT_NO = 0;
@@ -117,6 +119,7 @@ public class AccountImportResult implements Completable {
     public final int COL_DEVICE_VENDOR_USER_ID = 13;
     public final int COL_OPTION_PARAMS = 14;
     public final int COL_DEVICE_LABEL = 15;
+    
     
     public final String UNENROLL_CASE = "UNENROLL";
     

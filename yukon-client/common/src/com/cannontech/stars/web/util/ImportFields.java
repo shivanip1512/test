@@ -37,6 +37,7 @@ public class ImportFields {
 	public static final int IDX_TRFM_SIZE = acct_idx++;
 	public static final int IDX_SERV_VOLT = acct_idx++;
 	public static final int IDX_ACCOUNT_ACTION = acct_idx++;
+    public static final int IDX_CUSTOMER_ALT_TRACK_NO = acct_idx++;
 	public static final int NUM_ACCOUNT_FIELDS = acct_idx;
 	
 	// Inventory fields

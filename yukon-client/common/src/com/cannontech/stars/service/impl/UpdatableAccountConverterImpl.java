@@ -169,7 +169,10 @@ public class UpdatableAccountConverterImpl implements UpdatableAccountConverter 
                 // don't set
             }
         }
-
+        
+        if (!StringUtils.isEmpty(custFields[ImportFields.IDX_CUSTOMER_ALT_TRACK_NO])) {
+            acctDto.setAltTrackingNumber(custFields[ImportFields.IDX_CUSTOMER_ALT_TRACK_NO]);
+        }
     }
 
     @Autowired

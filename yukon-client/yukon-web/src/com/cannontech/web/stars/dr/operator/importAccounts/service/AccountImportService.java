@@ -1296,7 +1296,10 @@ public class AccountImportService {
             fields[ImportFields.IDX_IVR_PIN] = columns[ colIdx[result.COL_IVR_PIN] ];
         }
         if (colIdx[result.COL_IVR_USERNAME] >= 0 && colIdx[result.COL_IVR_USERNAME] < columns.length) {
-            fields[ImportFields.IDX_IVR_USERNAME] = columns[ colIdx[result.COL_IVR_USERNAME] ];
+            fields[ImportFields.IDX_IVR_USERNAME] = columns[colIdx[result.COL_IVR_USERNAME]];
+        }
+        if (colIdx[result.COL_CUST_ALT_TRACK_NO] >= 0 && colIdx[result.COL_CUST_ALT_TRACK_NO] < columns.length) {
+            fields[ImportFields.IDX_CUSTOMER_ALT_TRACK_NO] = columns[colIdx[result.COL_CUST_ALT_TRACK_NO]];
         }
     }
     

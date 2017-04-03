@@ -34,7 +34,7 @@ public class ImportFileCreater {
         RandomAccountInfoGenerator randomInfo = new RandomAccountInfoGenerator();
 
         writeCsvLine(writer, "ACCOUNT_NO", "Cust_Action", "FIRST_NAME", "LAST_NAME", "HOME_PHONE", "WORK_PHONE",
-            "EMAIL", "STREET_ADDR1", "STREET_ADDR2", "CITY", "STATE", "ZIP_CODE", "Username", "Password", "User_Group");
+            "EMAIL", "STREET_ADDR1", "STREET_ADDR2", "CITY", "STATE", "ZIP_CODE", "Username", "Password", "User_Group", "Cust_Alt_Track_No");
 
         for (int i = 0; i < numAccounts; i++) {
             int accountNum = startAccountNum + i;

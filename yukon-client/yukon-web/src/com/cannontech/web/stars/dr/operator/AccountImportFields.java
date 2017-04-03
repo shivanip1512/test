@@ -26,7 +26,8 @@ public enum AccountImportFields {
     USER_GROUP("c"),
     COMPANY_NAME(null),
     IVR_PIN(null),
-    IVR_USERNAME(null);
+    IVR_USERNAME(null),
+    CUST_ALT_TRACK_NO(null);
     
     private String legendKey;
     
