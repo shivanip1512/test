@@ -186,7 +186,7 @@
 	<entry key="yukon.web.modules.operator.accountImport.accountField.description.COMPANY_NAME">Name of company (commercial customer). Maximum number of characters is 80.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.accountField.description.IVR_PIN">The IVR pin number of the account. Must be numeric. Maximum number of digits is 19.</entry>
 	<entry key="yukon.web.modules.operator.accountImport.accountField.description.IVR_USERNAME">The IVR username of the account. Must be numeric. Maximum number of digits is 19.</entry>
-    <entry key="yukon.web.modules.operator.accountImport.accountField.description.CUST_ALT_TRACK_NO">The alternate tracking number of the account. Must be numeric. Maximum number of digits is 64.</entry>
+    <entry key="yukon.web.modules.operator.accountImport.accountField.description.CUST_ALT_TRACK_NO">The alternate tracking number of the customer account. Maximum number of characters is 64.</entry>
 	
     <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.a.label">a.</entry> 
     <entry key="yukon.web.modules.operator.accountImport.accountFieldLegend.a.text">This field is required to insert, update, or remove a customer account in STARS.</entry>
