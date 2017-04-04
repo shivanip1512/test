@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -125,7 +126,7 @@ public class DeviceFilterCollectionProducer implements DeviceCollectionProducer,
             public List<SimpleDevice> getDevices(int start, int size) {
                 SearchResults<YukonMeter> searchResult = meterSearchDao.search(filterBys, orderBy, start, size);
                 List<YukonMeter> resultList = searchResult.getResultList();
-                List<SimpleDevice> result = PaoUtils.asSimpleDeviceListFromPaos(resultList);
+                List<SimpleDevice> result = PaoUtils.asSimpleDeviceListFromPaos(resultList).stream().collect(Collectors.toList());
                 return result;
             }
             
