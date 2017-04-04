@@ -706,7 +706,7 @@ public class OperatorHardwareController {
         boolean showVoltage = !type.isZigbee() && !clazz.isGateway() && !clazz.isThermostat();
         model.addAttribute("showVoltage", showVoltage);
 
-        if (!clazz.isMeter() && type.showRoute()) {
+        if (type.showRoute()) {
             model.addAttribute("showRoute", true);
         }
 

@@ -153,6 +153,9 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
                 SA_205,
                 SA_305, 
                 SA_SIMPLE,
+                EXPRESSSTAT,
+                COMMERCIAL_EXPRESSSTAT,
+                EXPRESSSTAT_HEAT_PUMP,
                 UTILITY_PRO,
                 UTILITY_PRO_G2,
                 UTILITY_PRO_G3);
@@ -302,10 +305,10 @@ public enum HardwareType implements DatabaseRepresentationSource, DisplayableEnu
     }
     
     /**
-     * Returns true if route has to be displayed.
+     * Type must be routable. And only show (inventory) route for one way devices.
      */
     public boolean showRoute() {
-        return !isZigbee() && !isRf() && !isEcobee() && !isHoneywell() && !isTwoWayPlcLcr();
+        return isRoutable() && !isTwoWayPlcLcr();
     }
 
     /**

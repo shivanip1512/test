@@ -242,8 +242,7 @@ public class InventoryController {
                 && !clazz.isThermostat();
         model.addAttribute("showVoltage", showVoltage);
 
-        // Hide route for meters, zigbee devices, and RF devices
-        if (!clazz.isMeter() && type.showRoute()) {
+        if (type.showRoute()) {
             model.addAttribute("showRoute", true);
         }
 
@@ -467,8 +466,7 @@ public class InventoryController {
                 && !clazz.isThermostat();
         model.addAttribute("showVoltage", showVoltage);
 
-        // Hide route for meters and zigbee devices
-        if (!clazz.isMeter() && type.showRoute()) {
+        if (type.showRoute()) {
             model.addAttribute("showRoute", true);
         }
 
