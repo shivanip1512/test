@@ -1499,6 +1499,15 @@
             </modifiers>
         </point>
 
+        <point name="kVAr">
+            <uom>Var</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+            </modifiers>
+        </point>
         <point name="Coincident kVAr">
             <uom>Var</uom>
             <multiplier value=".001"/>
