@@ -637,6 +637,12 @@
         <unitofmeasure value="KW"/>
         <decimalplaces value="3"/>
     </point>
+    <point offset="172" type="Analog">
+        <name>Delivered Power Factor</name>
+        <multiplier value="1.0"/>
+        <unitofmeasure value="PF"/>
+        <decimalplaces value="3"/>
+    </point>
     <point offset="176" type="Analog">
         <name>Phase A kW</name>
         <multiplier value="1"/>

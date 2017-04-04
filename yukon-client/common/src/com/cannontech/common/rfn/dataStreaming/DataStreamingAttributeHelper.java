@@ -332,13 +332,12 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KVA,   //metric 49
                 BuiltInAttribute.RECEIVED_KVA,    //metric 50
                 BuiltInAttribute.SUM_KVAH,        //metric 43
-                BuiltInAttribute.POWER_FACTOR_PHASE_A, //metric 162
-                BuiltInAttribute.POWER_FACTOR_PHASE_B, //metric 163
-                BuiltInAttribute.POWER_FACTOR_PHASE_C, //metric 164
-                BuiltInAttribute.DELIVERED_POWER_FACTOR,//metric 81
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
+                BuiltInAttribute.POWER_FACTOR_PHASE_A,  //metric 162
+                BuiltInAttribute.POWER_FACTOR_PHASE_B,  //metric 163
+                BuiltInAttribute.POWER_FACTOR_PHASE_C   //metric 164
                 ),
         //Elster A3R
         RFN_430A3R(PaoType.RFN430A3R,
@@ -349,13 +348,13 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.SUM_KVARH,       //metric 23
                 BuiltInAttribute.KVAR,            //metric 32
                 BuiltInAttribute.RECEIVED_KVAR,   //metric 33
-                BuiltInAttribute.POWER_FACTOR_PHASE_A, //metric 162
-                BuiltInAttribute.POWER_FACTOR_PHASE_B, //metric 163
-                BuiltInAttribute.POWER_FACTOR_PHASE_C, //metric 164
                 BuiltInAttribute.DELIVERED_POWER_FACTOR,//metric 81
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
+                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
+                BuiltInAttribute.POWER_FACTOR_PHASE_A,  //metric 162
+                BuiltInAttribute.POWER_FACTOR_PHASE_B,  //metric 163
+                BuiltInAttribute.POWER_FACTOR_PHASE_C   //metric 164
                 ),
         //Sentinel-L0
         RFN_430SL0(PaoType.RFN430SL0,

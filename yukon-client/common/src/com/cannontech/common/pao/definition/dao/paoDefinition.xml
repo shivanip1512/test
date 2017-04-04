@@ -8347,6 +8347,12 @@
                 <unitofmeasure value="Degrees"/>
                 <decimalplaces value="1"/>
             </point>
+            <point type="Analog" offset="172">
+                <name>Delivered Power Factor</name>
+                <multiplier value="1.0" />
+                <unitofmeasure value="PF" />
+                <decimalplaces value="3" />
+            </point>
         </points>
         <attributes>
             <attribute name="PEAK_KVAR">
@@ -8390,6 +8396,9 @@
             </attribute>
             <attribute name="POWER_FACTOR_ANGLE_PHASE_C">
                 <basicLookup point="Power Factor Degrees Phase C" />
+            </attribute>
+            <attribute name="DELIVERED_POWER_FACTOR">
+                <basicLookup point="Delivered Power Factor" />
             </attribute>
         </attributes>
     </pao>
