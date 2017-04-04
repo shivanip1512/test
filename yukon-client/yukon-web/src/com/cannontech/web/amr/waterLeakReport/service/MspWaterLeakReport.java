@@ -27,6 +27,6 @@ public abstract class MspWaterLeakReport {
      * @param paoId - paoid
      * @param mspVendor - Multispeak CB client
      */
-    protected abstract String getCisDetails(ModelMap model, YukonUserContext userContext, int paoId,
+    public abstract String getCisDetails(ModelMap model, YukonUserContext userContext, int paoId,
             MultispeakVendor mspVendor);
 }

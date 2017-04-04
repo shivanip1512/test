@@ -37,7 +37,7 @@ public class MspWaterLeakReportV3 extends MspWaterLeakReport {
     }
 
     @Override
-    protected String getCisDetails(ModelMap model, YukonUserContext userContext, int paoId, MultispeakVendor mspVendor) {
+    public String getCisDetails(ModelMap model, YukonUserContext userContext, int paoId, MultispeakVendor mspVendor) {
 
         MspMeterAccountInfo mspMeterAccountInfo = mspMeterAccountInfoMap.getIfPresent(paoId);
         if (mspMeterAccountInfo == null) {

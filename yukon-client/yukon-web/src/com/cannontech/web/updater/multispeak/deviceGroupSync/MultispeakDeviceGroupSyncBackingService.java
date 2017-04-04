@@ -14,7 +14,6 @@ import com.cannontech.common.i18n.ObjectFormattingService;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
-import com.cannontech.multispeak.client.MspDeviceGroupSyncHandler;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
@@ -22,6 +21,7 @@ import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgressStatus;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.multispeak.MspHandler;
 import com.cannontech.web.updater.UpdateBackingService;
 import com.cannontech.web.updater.multispeak.deviceGroupSync.handler.MultispeakDeviceGroupSyncUpdaterHandler;
 import com.google.common.collect.ImmutableMap;
@@ -36,8 +36,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     
     private ImmutableMap<MultispeakDeviceGroupSyncProgressStatus, String> statusStyleClassNameMap;
-    
-    @Autowired MspDeviceGroupSyncHandler mspDeviceGroupSyncHandler;
+    @Autowired private MspHandler mspHandler;
     @Autowired MultispeakDao multispeakDao;
     @Autowired MultispeakFuncs multispeakFuncs;
     
@@ -59,7 +58,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
 
         if (vendorId > 0) {
             MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
-            progress = mspDeviceGroupSyncHandler.getDeviceGroupSyncService(mspVendor).getProgress();
+            progress = mspHandler.getDeviceGroupSyncService(mspVendor).getProgress();
         }
 
         MultispeakDeviceGroupSyncUpdaterTypeEnum updaterType = MultispeakDeviceGroupSyncUpdaterTypeEnum.valueOf(updaterTypeStr);
@@ -286,7 +285,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         if (vendorId > 0) {
             MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
             Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants =
-                mspDeviceGroupSyncHandler.getDeviceGroupSyncService(mspVendor).getLastSyncInstants();
+                mspHandler.getDeviceGroupSyncService(mspVendor).getLastSyncInstants();
             instant = lastSyncInstants.get(type);
         }
 

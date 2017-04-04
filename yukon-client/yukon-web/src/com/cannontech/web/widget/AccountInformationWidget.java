@@ -23,8 +23,8 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.multispeak.MspHandler;
 import com.cannontech.web.security.annotation.CheckRole;
-import com.cannontech.web.widget.accountInformation.MspAccountInformationHandler;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -41,7 +41,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private MultispeakCustomerInfoService multispeakCustomerInfoService;
     @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private MspAccountInformationHandler mspAccountInfo;
+    @Autowired private MspHandler mspHandler;
     
     
    @Autowired
@@ -71,7 +71,7 @@ public class AccountInformationWidget extends WidgetControllerBase{
         MultispeakVendor mspPrimaryCISVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
         
         if (mspPrimaryCISVendor.getVendorID() > 0) {
-            return mspAccountInfo.getMspInformation(meter, mspPrimaryCISVendor, mav, userContext);
+            return mspHandler.getMspInformation(meter, mspPrimaryCISVendor, mav, userContext);
         }
         return mav;
     }

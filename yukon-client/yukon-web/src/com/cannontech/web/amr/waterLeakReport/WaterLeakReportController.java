@@ -63,7 +63,6 @@ import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -87,13 +86,13 @@ import com.cannontech.web.amr.util.cronExpressionTag.handler.CustomCronTagStyleH
 import com.cannontech.web.amr.waterLeakReport.model.SortBy;
 import com.cannontech.web.amr.waterLeakReport.model.WaterLeakReportFilter;
 import com.cannontech.web.amr.waterLeakReport.model.WaterMeterLeak;
-import com.cannontech.web.amr.waterLeakReport.service.MspWaterLeakReportHandler;
 import com.cannontech.web.amr.waterLeakReport.service.WaterMeterLeakService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.input.DatePropertyEditorFactory;
 import com.cannontech.web.input.DatePropertyEditorFactory.BlankMode;
+import com.cannontech.web.multispeak.MspHandler;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportHelper;
 import com.cannontech.web.scheduledFileExport.ScheduledFileExportJobData;
 import com.cannontech.web.scheduledFileExport.service.ScheduledFileExportService;
@@ -133,7 +132,7 @@ public class WaterLeakReportController {
     @Autowired private JobManager jobManager;
     @Autowired private ScheduledFileExportHelper exportHelper;
     @Autowired private DeviceCollectionService deviceCollectionService;
-    @Autowired private MspWaterLeakReportHandler mspWaterLeakReportHandler;
+    @Autowired private MspHandler mspHandler;
     
     private ScheduledFileExportValidator scheduledFileExportValidator;
     private final static String baseKey = "yukon.web.modules.amr.waterLeakReport.report";
@@ -420,7 +419,7 @@ public class WaterLeakReportController {
 
         MultispeakVendor mspPrimaryCISVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
         if (mspPrimaryCISVendor.getVendorID() > 0) {
-            return mspWaterLeakReportHandler.getCisDetails(model, userContext, paoId, mspPrimaryCISVendor);
+            return mspHandler.getCisDetails(model, userContext, paoId, mspPrimaryCISVendor);
         }
         return "";
     }
@@ -712,21 +711,6 @@ public class WaterLeakReportController {
             });
         Ordering<WaterMeterLeak> result = dateOrdering.compound(getMeterNameComparator());
         return result;
-    }
-
-    /**
-     * Returns the MultiSpeak Vendor that represents the Primary CIS.
-     * If no vendor is defined, or if it's "Yukon", then return null
-     */
-    private MultispeakVendor getPrimaryCISVendor() {
-        CisDetailRolePropertyEnum cisDetail = globalSettingDao.getEnum(GlobalSettingType.CIS_DETAIL_TYPE, CisDetailRolePropertyEnum.class);
-        if (cisDetail == CisDetailRolePropertyEnum.MULTISPEAK) {
-            int vendorId = multispeakFuncs.getPrimaryCIS();
-            if (vendorId > MultispeakVendor.CANNON_MSP_VENDORID) {
-                return multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-            }
-        }
-        return null;
     }
 
     @InitBinder

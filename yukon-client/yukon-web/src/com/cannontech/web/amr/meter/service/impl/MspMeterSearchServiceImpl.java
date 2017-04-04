@@ -45,18 +45,16 @@ public class MspMeterSearchServiceImpl implements MspMeterSearchService {
     public void loadMspSearchFields(int vendorId) {
         if (vendorId > 0) {
             MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
-            
-            MultispeakInterface cb_server_v3 = mspVendor.getMspInterfaceMap()
-                    .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR,  MultiSpeakVersion.V3));
-            
-            if (cb_server_v3 != null) {
-                mspSearchFields = fieldsProviderV3.loadMspSearchFields(mspVendor, methodResultProviderMapV3.keySet());
-            } else {
-                MultispeakInterface cb_server_v5 = mspVendor.getMspInterfaceMap()
-                        .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR,  MultiSpeakVersion.V5));
-                
-                if (cb_server_v5 != null) {
-                    mspSearchFields = fieldsProviderV5.loadMspSearchFields(mspVendor, methodResultProviderMapV5.keySet());
+
+            MultiSpeakVersion cisVersion = multispeakFuncs.getPrimaryCISVersion(mspVendor);
+            if (cisVersion != null) {
+                if (cisVersion == MultiSpeakVersion.V3) {
+                    mspSearchFields =
+                        fieldsProviderV3.loadMspSearchFields(mspVendor, methodResultProviderMapV3.keySet());
+
+                } else if (cisVersion == MultiSpeakVersion.V5) {
+                    mspSearchFields =
+                        fieldsProviderV5.loadMspSearchFields(mspVendor, methodResultProviderMapV5.keySet());
                 }
             }
             

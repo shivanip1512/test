@@ -289,4 +289,26 @@ public abstract class MultispeakFuncsBase implements MultiSpeakVersionable {
         }
         return endpointUrl;
     }
+
+    /**
+     * Helper method to return the CB_Server MultispeakVersion for primaryCIS
+     * Returns null if mspVendor doesn't support any version of CB_Server.
+     * Performs lookup in version order, returning first found.
+     */
+    public MultiSpeakVersion getPrimaryCISVersion(MultispeakVendor mspVendor) {
+        MultispeakInterface cb_server_v3 = mspVendor.getMspInterfaceMap()
+                .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR,  MultiSpeakVersion.V3));
+        
+        if (cb_server_v3 != null) {
+            return cb_server_v3.getVersion();
+        } else {
+            MultispeakInterface cb_server_v5 = mspVendor.getMspInterfaceMap()
+                    .get(MultispeakVendor.buildMapKey(MultispeakDefines.CB_Server_STR,  MultiSpeakVersion.V5));
+            
+            if (cb_server_v5 != null) {
+                return cb_server_v5.getVersion();
+            }
+        }
+        return null;
+    }
 }

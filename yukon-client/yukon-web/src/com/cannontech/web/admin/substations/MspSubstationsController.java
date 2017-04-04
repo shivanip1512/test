@@ -23,7 +23,7 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.admin.substations.service.MspObjectDaoHandler;
+import com.cannontech.web.multispeak.MspHandler;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
@@ -33,7 +33,7 @@ public class MspSubstationsController {
 
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private MultispeakDao multispeakDao;
-    @Autowired private MspObjectDaoHandler mspObjectDaoHandler;
+    @Autowired MspHandler mspHandler;
     @Autowired private SubstationDao substationDao;
 
     @RequestMapping("choose")
@@ -50,7 +50,7 @@ public class MspSubstationsController {
         
         // mspSubstationNames
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-        List<String> mspSubstationNames = mspObjectDaoHandler.getMspSubstationName(mspVendor);
+        List<String> mspSubstationNames = mspHandler.getMspSubstationName(mspVendor);
         
         // make MspSubstation list. Don't show those that already exists (case insensitive)
         List<MspSubstation> mspSubstations = new ArrayList<MspSubstation>();
@@ -66,7 +66,7 @@ public class MspSubstationsController {
             
             MspSubstation mspSubstation = new MspSubstation(mspSubstationName, show);
             if (!(PaoUtils.isValidPaoName(mspSubstationName))) {
-                mspObjectDaoHandler.invalidSubstationName(mspVendor, mspSubstationName);
+                mspHandler.invalidSubstationName(mspVendor, mspSubstationName);
                 continue;
             }
             mspSubstations.add(mspSubstation);

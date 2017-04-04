@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.multispeak.client.MspDeviceGroupSyncHandler;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
@@ -21,6 +20,7 @@ import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncType;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncTypeProcessorType;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
+import com.cannontech.web.multispeak.MspHandler;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -30,8 +30,7 @@ import com.google.common.collect.Maps;
 public class MultispeakDeviceGroupSyncController {
     
     @Autowired MultispeakDao multispeakDao;
-    @Autowired MspDeviceGroupSyncHandler mspDeviceGroupSyncHandler;
-
+    @Autowired MspHandler mspHandler;
     private MeterDao meterDao;
     private MultispeakFuncs multispeakFuncs;
 
@@ -47,10 +46,10 @@ public class MultispeakDeviceGroupSyncController {
 
         MultispeakVendor mspVendor = getMspVendor();
         if (mspVendor != null) {
-            progress = mspDeviceGroupSyncHandler.getDeviceGroupSyncService(mspVendor).getProgress();
+            progress = mspHandler.getDeviceGroupSyncService(mspVendor).getProgress();
             // start page
             lastSyncInstants =
-                mspDeviceGroupSyncHandler.getDeviceGroupSyncService(mspVendor).getLastSyncInstants();
+                    mspHandler.getDeviceGroupSyncService(mspVendor).getLastSyncInstants();
         } else {
             lastSyncInstants.put(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, null);
             lastSyncInstants.put(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, null);
@@ -79,7 +78,7 @@ public class MultispeakDeviceGroupSyncController {
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
         MultispeakDeviceGroupSyncType multispeakDeviceGroupSyncType = MultispeakDeviceGroupSyncType.valueOf(deviceGroupSyncType);
          
-        mspDeviceGroupSyncHandler.startDeviceGroupSync(mspVendor, multispeakDeviceGroupSyncType, userContext);
+        mspHandler.startDeviceGroupSync(mspVendor, multispeakDeviceGroupSyncType, userContext);
 
     
             flashScope.setConfirm(new YukonMessageSourceResolvable(
@@ -92,7 +91,7 @@ public class MultispeakDeviceGroupSyncController {
     public String progress(ModelMap modelMap, FlashScope flashScope) {
 
         MultispeakDeviceGroupSyncProgress progress =
-            mspDeviceGroupSyncHandler.getDeviceGroupSyncService(getMspVendor()).getProgress();
+                mspHandler.getDeviceGroupSyncService(getMspVendor()).getProgress();
 
         if (progress == null) {
             return "redirect:home";
@@ -110,7 +109,7 @@ public class MultispeakDeviceGroupSyncController {
 	@RequestMapping(value="done", params="cancel")
     public String done(FlashScope flashScope) {
 
-        mspDeviceGroupSyncHandler.getDeviceGroupSyncService(getMspVendor()).getProgress().cancel();
+	    mspHandler.getDeviceGroupSyncService(getMspVendor()).getProgress().cancel();
 
         flashScope.setConfirm(new YukonMessageSourceResolvable(
             "yukon.web.modules.adminSetup.deviceGroupSyncProgress.cancelOk"));
