@@ -527,12 +527,8 @@ public class MultispeakController {
 
                     mspInterface.setMspInterface(multispeakInterface.getLeft());
                     mspInterface.setVendorID(mspVendor.getVendorID());
-                    if (multispeakInterface.getRight() == MultiSpeakVersion.V3) {
-                        mspInterface.setMspEndpoint(mspVendor.getUrl() + multispeakInterface.getLeft() + "Soap");
-                    } else {
-                        mspInterface.setMspEndpoint(mspVendor.getUrl() + multispeakInterface.getRight() + "/"
-                            + multispeakInterface.getLeft());
-                    }
+                    mspInterface.setMspEndpoint(mspVendor.getUrl()
+                        + multispeakInterface.getRight().toString().toLowerCase() + "/" + multispeakInterface.getLeft());
                     mspInterface.setVersion(multispeakInterface.getRight());
                     mspInterfaceList.add(mspInterface);
                 }
