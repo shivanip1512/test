@@ -21,7 +21,7 @@
     <entry key="yukon.common.device.bulk.bulkHome.legacyImporter">Legacy Importer</entry>
     <entry key="yukon.common.device.bulk.bulkHome.legacyImporter.description">The old importer for AMI devices.</entry>
     <entry key="yukon.common.device.bulk.bulkHome.voltVarImporter">Volt/Var Importer</entry>
-    <entry key="yukon.common.device.bulk.bulkHome.voltVarImporter.description">Import a file to create Substations, Feeders, Cap Banks ect.</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.voltVarImporter.description">Import a file to create Substations, Feeders, Cap Banks, etc.</entry>
     <entry key="yukon.common.device.bulk.bulkHome.assetsImporter">Account Importer</entry>
     <entry key="yukon.common.device.bulk.bulkHome.assetsImporter.description">Import a file to create Accounts, Switches, Thermostats.</entry>
 
