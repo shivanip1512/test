@@ -129,6 +129,7 @@
         <pointInfo name="Tamper Detect" attributes="TAMPER_FLAG"/>
         <pointInfo name="Time Adjustment" attributes="TIME_ADJUSTMENT"/>
         <pointInfo name="Total Outage Count" init="true" attributes="BLINK_COUNT"/>
+        <pointInfo name="TOU Schedule Change" attributes="TOU_SCHEDULE_CHANGE"/>
         <pointInfo name="Unconfigured" attributes="UNCONFIGURED"/>
         <pointInfo name="Under Voltage" attributes="UNDER_VOLTAGE"/>
         <pointInfo name="Under Voltage Measured" attributes="UNDER_VOLTAGE_MEASURED"/>

@@ -6986,7 +6986,15 @@
                 </archive>
                 <stategroup value="Event Status" />
             </point>
-
+            <point type="Status" offset="90">
+                <name>TOU Schedule Change</name>
+                <archive>
+                    <type>ON_CHANGE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <stategroup value="Event Status" />
+            </point>
+            
             <point type="CalcAnalog" offset="0">
                 <init>true</init>
                 <name>Total Outage Count</name>
@@ -7205,6 +7213,9 @@
             </attribute>
             <attribute name="TIME_ADJUSTMENT">
                 <basicLookup point="Time Adjustment" />
+            </attribute>
+            <attribute name="TOU_SCHEDULE_CHANGE">
+                <basicLookup point="TOU Schedule Change" />
             </attribute>
             <attribute name="UNCONFIGURED">
                 <basicLookup point="Unconfigured" />
@@ -9172,14 +9183,6 @@
                 </archive>
                 <stategroup value="Event Status" />
             </point>
-            <point type="Status" offset="90">
-                <name>TOU Schedule Change</name>
-                <archive>
-                    <type>ON_CHANGE</type>
-                    <interval>ZERO</interval>
-                </archive>
-                <stategroup value="Event Status" />
-            </point>
             <point type="Status" offset="67">
                 <name>TOU Schedule Error</name>
                 <archive>
@@ -9296,9 +9299,6 @@
             </attribute>
             <attribute name="THD_V_OR_TDD_I_ERROR">
                 <basicLookup point="THD V or TDD I Error" />
-            </attribute>
-            <attribute name="TOU_SCHEDULE_CHANGE">
-                <basicLookup point="TOU Schedule Change" />
             </attribute>
             <attribute name="TOU_SCHEDULE_ERROR">
                 <basicLookup point="TOU Schedule Error" />
