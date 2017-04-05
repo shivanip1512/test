@@ -66,33 +66,12 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.VOLTAGE           //metric 115
                 ),
         //TODO Focus AXT?
-        //Focus AXR
-        RFN_410FX(PaoType.RFN410FX,
-                BuiltInAttribute.DELIVERED_KWH,   //metric 1
-                BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.VOLTAGE         //metric 115
-                ),
-        //Focus AXD-SD and Focus AXR-SD (as 410FD)
-        RFN_410FD(PaoType.RFN410FD,
-                BuiltInAttribute.DELIVERED_KWH,   //metric 1
-                BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.VOLTAGE          //metric 115
-                ),
         //Focus AXR-SD
         RFN_420FD(PaoType.RFN420FD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
-                ),
-        //FocuskWh (as 410FL)
-        RFN_410FL(PaoType.RFN410FL,
-                BuiltInAttribute.DELIVERED_KWH,   //metric 1
-                BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,           //metric 5
-                BuiltInAttribute.VOLTAGE         //metric 115
                 ),
         //FocuskWh (as 420FL)
         RFN_420FL(PaoType.RFN420FL,
