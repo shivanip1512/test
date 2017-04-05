@@ -3420,7 +3420,7 @@
         </point>
         <point name="Power Factor Degrees">
             <uom>PF degree</uom>
-            <multiplier value=".001"/>
+            <multiplier value="0.1"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
