@@ -11311,24 +11311,6 @@
                 <unitofmeasure value="Volts"/>
                 <decimalplaces value="3" />
             </point>
-            <point type="Analog" offset="343">
-                <name>Avg Voltage Phase A</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3" />
-            </point>
-            <point type="Analog" offset="344">
-                <name>Avg Voltage Phase B</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3" />
-            </point>
-            <point type="Analog" offset="345">
-                <name>Avg Voltage Phase C</name>
-                <multiplier value="1.0"/>
-                <unitofmeasure value="Volts"/>
-                <decimalplaces value="3" />
-            </point>
             <point type="Analog" offset="333">
                 <name>Max Voltage Phase A</name>
                 <multiplier value="1.0"/>
@@ -11678,15 +11660,6 @@
             </attribute>
             <attribute name="MINIMUM_VOLTAGE_PHASE_C">
                 <basicLookup point="Min Voltage Phase C"/>
-            </attribute>
-            <attribute name="AVERAGE_VOLTAGE_PHASE_A">
-                <basicLookup point="Avg Voltage Phase A"/>
-            </attribute>
-            <attribute name="AVERAGE_VOLTAGE_PHASE_B">
-                <basicLookup point="Avg Voltage Phase B"/>
-            </attribute>
-            <attribute name="AVERAGE_VOLTAGE_PHASE_C">
-                <basicLookup point="Avg Voltage Phase C"/>
             </attribute>
             <attribute name="MAXIMUM_VOLTAGE_PHASE_A">
                 <basicLookup point="Max Voltage Phase A"/>
