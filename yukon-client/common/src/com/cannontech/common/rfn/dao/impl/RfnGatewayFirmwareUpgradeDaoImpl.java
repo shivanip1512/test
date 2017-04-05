@@ -15,6 +15,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.clientutils.YukonLogManager;
@@ -246,6 +247,9 @@ public class RfnGatewayFirmwareUpgradeDaoImpl implements RfnGatewayFirmwareUpgra
                     gatewayData = gatewayDataCache.get(gateway.getPaoIdentifier());
                 
                 String updateServerUrl = gatewayData.getUpdateServerUrl();
+                if (StringUtils.isEmpty(updateServerUrl)) {
+                    updateServerUrl = globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER);
+                }
                 String releaseVersion = gatewayData.getReleaseVersion();
                 String availableVersion = serverUrlToAvailableFirmware.get(updateServerUrl);
                 FirmwareUpdateServerInfo info = new FirmwareUpdateServerInfo(updateServerUrl, releaseVersion, availableVersion);

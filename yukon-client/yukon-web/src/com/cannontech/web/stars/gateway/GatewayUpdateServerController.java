@@ -177,15 +177,21 @@ public class GatewayUpdateServerController {
     @CheckRoleProperty(YukonRoleProperty.INFRASTRUCTURE_CREATE_AND_UPDATE)
     @RequestMapping(value = "/gateways/firmware-upgrade", method=RequestMethod.GET)
     public String firmwareUpgrade(ModelMap model, YukonUserContext userContext) {
-
         try {
             List<GatewayUpdateModel> gateways =
-                rfnGatewayService.getAllGatewaysWithUpdateServer()
-                                 .stream()
-                                 .filter(this::isGatewayUpgradeable)
-                                 .sorted()
-                                 .map(gateway -> GatewayUpdateModel.of(gateway))
-                                 .collect(Collectors.toList());
+                rfnGatewayService.getAllGatewaysWithUpdateServer().stream().filter(this::isGatewayUpgradeable).sorted().map(
+                    new Function<RfnGateway, GatewayUpdateModel>() {
+
+                        @Override
+                        public GatewayUpdateModel apply(RfnGateway gateway) {
+                            GatewayUpdateModel updateServer = GatewayUpdateModel.of(gateway);
+                            if (StringUtils.isEmpty(updateServer.getUpdateServerUrl())) {
+                                updateServer.setUpdateServerUrl(globalSettingDao.getString(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER));
+                            }
+
+                            return updateServer;
+                        }
+                    }).collect(Collectors.toList());
 
             GatewayUpdateModelList springGateways = new GatewayUpdateModelList(gateways);
             model.addAttribute("gateways", springGateways);
