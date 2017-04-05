@@ -493,6 +493,7 @@ const Attribute Attribute::TableCrcError                                    = At
 const Attribute Attribute::THDVorTDDIError                                  = Attribute( "THD_V_OR_TDD_I_ERROR" );
 const Attribute Attribute::TimeAdjustment                                   = Attribute( "TIME_ADJUSTMENT" );
 const Attribute Attribute::TimeSyncFailed                                   = Attribute( "TIME_SYNC_FAILED" );
+const Attribute Attribute::TOUScheduleChange                                = Attribute( "TOU_SCHEDULE_CHANGE" );
 const Attribute Attribute::TOUScheduleError                                 = Attribute( "TOU_SCHEDULE_ERROR" );
 const Attribute Attribute::Unconfigured                                     = Attribute( "UNCONFIGURED" );
 const Attribute Attribute::Unprogrammed                                     = Attribute( "UNPROGRAMMED" );

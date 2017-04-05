@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-stylesheet type="text/xsl" href="paoDefinition.xsl"?>
 <!-- RF Devices: highest Analog OFFSET=357 @ 2016-08-12 -->
-<!-- RF Devices: highest Status OFFSET=89 @ 2014-04-30T -->
+<!-- RF Devices: highest Status OFFSET=90 @ 2014-04-30T -->
 
 <!--  Point Name naming convention: 
     [Net|Sum] [Delivered|Received] [Peak] [UOM] [Frozen] [Rate #|Phase X|Channel #]
@@ -9172,6 +9172,14 @@
                 </archive>
                 <stategroup value="Event Status" />
             </point>
+            <point type="Status" offset="90">
+                <name>TOU Schedule Change</name>
+                <archive>
+                    <type>ON_CHANGE</type>
+                    <interval>ZERO</interval>
+                </archive>
+                <stategroup value="Event Status" />
+            </point>
             <point type="Status" offset="67">
                 <name>TOU Schedule Error</name>
                 <archive>
@@ -9288,6 +9296,9 @@
             </attribute>
             <attribute name="THD_V_OR_TDD_I_ERROR">
                 <basicLookup point="THD V or TDD I Error" />
+            </attribute>
+            <attribute name="TOU_SCHEDULE_CHANGE">
+                <basicLookup point="TOU Schedule Change" />
             </attribute>
             <attribute name="TOU_SCHEDULE_ERROR">
                 <basicLookup point="TOU Schedule Error" />

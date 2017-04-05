@@ -312,6 +312,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.TIME_SYNC_FAILED">Time Sync Failed</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOTAL_LUF_COUNT">Total LUF Event Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOTAL_LUV_COUNT">Total LUV Event Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TOU_SCHEDULE_CHANGE">TOU Schedule Change</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TOU_SCHEDULE_ERROR">TOU Schedule Error</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNCONFIGURED">Unconfigured</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNPROGRAMMED">Unprogrammed</entry>

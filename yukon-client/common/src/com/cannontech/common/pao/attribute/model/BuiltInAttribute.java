@@ -367,6 +367,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     THD_V_OR_TDD_I_ERROR("THD V or TDD I Error", AttributeGroup.RFN_OTHER_EVENT, false),
     TIME_ADJUSTMENT("Time Adjustment", AttributeGroup.RFN_OTHER_EVENT, false),
     TIME_SYNC_FAILED("Time Sync Failed", AttributeGroup.RFN_OTHER_EVENT, false),
+    TOU_SCHEDULE_CHANGE("TOU Schedule Change", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     TOU_SCHEDULE_ERROR("TOU Schedule Error", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     UNCONFIGURED("Unconfigured", AttributeGroup.RFN_SOFTWARE_EVENT, false),
     UNPROGRAMMED("Unprogrammed", AttributeGroup.RFN_SOFTWARE_EVENT, false),

@@ -2154,6 +2154,11 @@
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Event Status"/>
     </point>
+    <point offset="90" type="Status">
+        <name>TOU Schedule Change</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="Event Status"/>
+    </point>
     <point offset="1000" type="Status">
         <name>Outage Status</name>
         <archive interval="ZERO" type="ON_CHANGE"/>

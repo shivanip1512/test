@@ -536,6 +536,7 @@ public:
     static const Attribute  THDVorTDDIError;
     static const Attribute  TimeAdjustment;
     static const Attribute  TimeSyncFailed;
+    static const Attribute  TOUScheduleChange;
     static const Attribute  TOUScheduleError;
     static const Attribute  Unconfigured;
     static const Attribute  Unprogrammed;
