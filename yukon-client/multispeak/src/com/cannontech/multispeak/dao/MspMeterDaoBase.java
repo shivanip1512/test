@@ -47,7 +47,7 @@ public class MspMeterDaoBase {
      * 
      * @param meterSupportType to indicate if meter is AMR or CD supported meter
      * @param lastReceived search criteria , last meter number received
-     * @return
+     * @returns SqlStatementBuilder with the SQL query formed 
      */
     public SqlStatementBuilder buildSqlStatementByMeterSupportType(MeterSupportType meterSupportType,
             String lastReceived) {
@@ -82,7 +82,7 @@ public class MspMeterDaoBase {
     }
 
     /**
-     * Returns true is meterNumber is a disconnect meter.
+     * Returns true if meterNumber is a disconnect meter.
      */
     public boolean isCDSupportedMeter(String meterNumber) {
         Collection<PaoType> collection = getIntegratedDisconnectPaoDefinitions();
@@ -136,8 +136,6 @@ public class MspMeterDaoBase {
 
     /**
      * Helper method to return a collection of PaoTypes that support "integrated" disconnect capabilities.
-     * 
-     * @return
      */
     private Collection<PaoType> getIntegratedDisconnectPaoDefinitions() {
         Set<PaoDefinition> discCollar = paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_COLLAR_COMPATIBLE);
