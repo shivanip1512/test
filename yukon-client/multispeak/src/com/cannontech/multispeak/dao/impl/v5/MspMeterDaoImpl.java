@@ -2,27 +2,17 @@ package com.cannontech.multispeak.dao.impl.v5;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.amr.meter.dao.impl.MeterRowMapper;
-import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
-import com.cannontech.common.pao.definition.model.PaoDefinition;
-import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.CollectionRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
-import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -36,32 +26,20 @@ import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.Module;
 import com.cannontech.msp.beans.v5.multispeak.Modules;
 import com.cannontech.multispeak.client.MultispeakDefines;
+import com.cannontech.multispeak.dao.MeterSupportType;
+import com.cannontech.multispeak.dao.MspMeterDaoBase;
 import com.cannontech.multispeak.dao.v5.MspMeterDao;
 import com.cannontech.multispeak.data.v5.MspCDDeviceReturnList;
 import com.cannontech.multispeak.data.v5.MspMeterReturnList;
-import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
-import com.google.common.base.Function;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Lists;
 
-public final class MspMeterDaoImpl implements MspMeterDao {
+public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private MeterRowMapper meterRowMapper;
 
-    private static String selectSql;
-
-    static {
-        selectSql =
-            "SELECT PaobjectId, Type, PaoName, MeterNumber, Address, DisconnectAddress, "
-                + "SerialNumber, Manufacturer, Model " + "FROM YukonPaobject pao "
-                + "JOIN DeviceMeterGroup dmg ON pao.paobjectId = dmg.deviceId "
-                + "LEFT JOIN DeviceCarrierSettings dcs ON pao.PAObjectID = dcs.DEVICEID "
-                + "LEFT JOIN DeviceMCT400Series mct ON pao.paobjectId = mct.deviceId "
-                + "LEFT JOIN RFNAddress rfn ON pao.PAObjectID = rfn.DeviceId";
-    };
+   
 
     private static final YukonRowMapper<ElectricMeter> mspMeterRowMapper = new YukonRowMapper<ElectricMeter>() {
         @Override
@@ -82,23 +60,7 @@ public final class MspMeterDaoImpl implements MspMeterDao {
     @Override
     public MspMeterReturnList getAMRSupportedMeters(String lastReceived, int maxRecords) {
 
-        boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(selectSql);
-        if (lastReceived != null) {
-            sql.append("WHERE MeterNumber").gt(lastReceived);
-        }
-        if (excludeDisabled) {
-            if (StringUtils.containsIgnoreCase(sql.getSql(), "WHERE ")) {
-                sql.append("AND");
-            } else {
-                sql.append("WHERE");
-            }
-            sql.append("DisableFlag").eq_k(YNBoolean.NO);
-        }
-
-        sql.append("ORDER BY METERNUMBER");
+        SqlStatementBuilder sql = buildSqlStatementByMeterSupportType(MeterSupportType.AMR_SUPPORTED, lastReceived);
         List<ElectricMeter> mspMeters = new ArrayList<ElectricMeter>();
         CollectionRowCallbackHandler<ElectricMeter> crcHandler =
             new CollectionRowCallbackHandler<ElectricMeter>(mspMeterRowMapper, mspMeters);
@@ -112,21 +74,7 @@ public final class MspMeterDaoImpl implements MspMeterDao {
     @Override
     public MspMeterReturnList getCDSupportedMeters(String lastReceived, int maxRecords) {
 
-        boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
-        Collection<PaoType> collection = getIntegratedDisconnectPaoDefinitions();
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(selectSql);
-        sql.append("WHERE (pao.type IN (").appendArgumentList(collection).append(")");
-        sql.append(" OR (DisconnectAddress IS NOT NULL) )");
-        if (lastReceived != null) {
-            sql.append("AND MeterNumber").gt(lastReceived);
-        }
-        if (excludeDisabled) {
-            sql.append("AND DisableFlag").eq_k(YNBoolean.NO);
-        }
-        sql.append("ORDER BY MeterNumber");
-
+        SqlStatementBuilder sql = buildSqlStatementByMeterSupportType(MeterSupportType.CD_SUPPORTED, lastReceived);
         List<ElectricMeter> mspMeters = new ArrayList<ElectricMeter>();
         CollectionRowCallbackHandler<ElectricMeter> crcHandler =
             new CollectionRowCallbackHandler<ElectricMeter>(mspMeterRowMapper, mspMeters);
@@ -141,21 +89,7 @@ public final class MspMeterDaoImpl implements MspMeterDao {
     @Override
     public MspCDDeviceReturnList getAllCDDevices(String lastReceived, int maxRecords) {
 
-        boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
-        Collection<PaoType> collection = getIntegratedDisconnectPaoDefinitions();
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(selectSql);
-        sql.append("WHERE (pao.type IN (").appendArgumentList(collection).append(")");
-        sql.append(" OR (DisconnectAddress IS NOT NULL) )");
-        if (lastReceived != null) {
-            sql.append("AND MeterNumber").gt(lastReceived);
-        }
-        if (excludeDisabled) {
-            sql.append("AND DisableFlag").eq_k(YNBoolean.NO);
-        }
-        sql.append("ORDER BY MeterNumber");
-
+        SqlStatementBuilder sql = buildSqlStatementByMeterSupportType(MeterSupportType.CD_SUPPORTED, lastReceived);
         List<CDDevice> mspCDMeters = new ArrayList<CDDevice>();
         CollectionRowCallbackHandler<CDDevice> crcHandler =
             new CollectionRowCallbackHandler<CDDevice>(mspCDDeviceRowMapper, mspCDMeters);
@@ -167,65 +101,6 @@ public final class MspMeterDaoImpl implements MspMeterDao {
         return mspCDDeviceReturnList;
     }
 
-    /**
-     * Returns true is meterNumber is a disconnect meter.
-     * 
-     * @return
-     */
-    @Override
-    public boolean isCDSupportedMeter(String meterNumber) {
-        Collection<PaoType> collection = getIntegratedDisconnectPaoDefinitions();
-
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append(selectSql);
-            sql.append("WHERE (pao.type IN (").appendArgumentList(collection).append(")");
-            sql.append(" OR (DisconnectAddress IS NOT NULL) )");
-            sql.append("AND METERNUMBER").eq(meterNumber);
-
-            List<ElectricMeter> cdMeters = yukonJdbcTemplate.query(sql, mspMeterRowMapper);
-            return !cdMeters.isEmpty();
-        } catch (IncorrectResultSizeDataAccessException e) {
-            // No results simply mean that the meterNumber is not a CD supported meter
-            if (e.getActualSize() > 0)
-                return true;
-            return false;
-        }
-    }
-
-    @Override
-    public YukonMeter getMeterForMeterNumber(String meterNumber) {
-
-        boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
-
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(meterRowMapper.getSql());
-        sql.append("WHERE UPPER(dmg.MeterNumber)").eq(meterNumber.toUpperCase());
-        if (excludeDisabled) {
-            sql.append("AND ypo.DisableFlag").eq(YNBoolean.NO);
-        }
-
-        try {
-            YukonMeter yukonMeter = yukonJdbcTemplate.queryForObject(sql, meterRowMapper);
-            return yukonMeter;
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("no meter matches " + meterNumber);
-        }
-    }
-
-    @Override
-    public YukonMeter getForSerialNumberOrAddress(String serialNumberOrAddress) {
-        try {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append(meterRowMapper.getSql());
-            sql.append("WHERE dcs.Address").eq(serialNumberOrAddress);
-            sql.append("OR SerialNumber").eq(serialNumberOrAddress);
-            YukonMeter meter = yukonJdbcTemplate.queryForObject(sql, meterRowMapper);
-            return meter;
-        } catch (EmptyResultDataAccessException e) {
-            throw new NotFoundException("Unknown physical address or rfn sensorSerialNumber " + serialNumberOrAddress);
-        }
-    }
 
     /**
      * Creates a CD Device object.
@@ -377,34 +252,5 @@ public final class MspMeterDaoImpl implements MspMeterDao {
         CommunicationsAddress communicationsAddress = new CommunicationsAddress();
         communicationsAddress.setValue(address);
         return communicationsAddress;
-    }
-
-    /**
-     * Helper method to return a collection of PaoTypes that support "integrated" disconnect capabilities.
-     * 
-     * @return
-     */
-    private Collection<PaoType> getIntegratedDisconnectPaoDefinitions() {
-        Set<PaoDefinition> discCollar = paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_COLLAR_COMPATIBLE);
-        Set<PaoDefinition> disc410 = paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_410);
-        Set<PaoDefinition> disc310 = paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_310);
-        Set<PaoDefinition> disc213 = paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_213);
-        Set<PaoDefinition> discRfn = paoDefinitionDao.getPaosThatSupportTag(PaoTag.DISCONNECT_RFN);
-
-        List<PaoDefinition> discIntegrated = Lists.newArrayList();
-        discIntegrated.addAll(disc410);
-        discIntegrated.addAll(disc310);
-        discIntegrated.addAll(disc213);
-        discIntegrated.addAll(discRfn);
-        discIntegrated.removeAll(discCollar); // Remove disconnect collar compatible
-
-        Collection<PaoType> collection = Collections2.transform(discIntegrated, new Function<PaoDefinition, PaoType>() {
-            @Override
-            public PaoType apply(PaoDefinition paoDefinition) {
-                return paoDefinition.getType();
-            }
-        });
-
-        return collection;
     }
 }

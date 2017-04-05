@@ -240,17 +240,12 @@ public class MultispeakMeterServiceBase {
                 RfnIdentifier rfnIdentifier = buildNewMeterRfnIdentifier((RfnMeter) templateMeter, serialOrAddress);
                 changeInfo = new ChangeDeviceTypeInfo(rfnIdentifier);
             } else {
-                changeInfo = new ChangeDeviceTypeInfo(Integer.parseInt(serialOrAddress), 0); // route will be
-                                                                                             // updated later
-                                                                                             // as part of
-                                                                                             // route locate
+                changeInfo = new ChangeDeviceTypeInfo(Integer.parseInt(serialOrAddress), 0); // route will be updated later as part of route locate
             }
             changeDeviceTypeService.changeDeviceType(new SimpleDevice(existingMeter), templateMeter.getPaoType(),
                 changeInfo);
-            existingMeter = meterDao.getForId(existingMeter.getDeviceId()); // reload the meter in case we've
-                                                                            // changed base classes
-            multispeakEventLogService.deviceTypeUpdated(originalType, existingMeter, mspMethod,
-                mspVendor.getCompanyName());
+            existingMeter = meterDao.getForId(existingMeter.getDeviceId()); // reload the meter in case we've changed base classes
+            multispeakEventLogService.deviceTypeUpdated(originalType, existingMeter, mspMethod, mspVendor.getCompanyName());
         }
         return existingMeter;
     }
@@ -310,8 +305,7 @@ public class MultispeakMeterServiceBase {
                 rfnDeviceDao.updateDevice(deviceToUpdate);
                 existingMeter =
                     new RfnMeter(existingMeter, newMeterRfnIdentifier, existingMeter.getMeterNumber(),
-                        existingMeter.getName(), existingMeter.isDisabled()); // update local object with new
-                                                                              // RfnIdentifier
+                        existingMeter.getName(), existingMeter.isDisabled()); // update local object with new RfnIdentifier
                 multispeakEventLogService.serialNumberOrAddressUpdated(originalSerialNumber, existingMeter, mspMethod,
                     mspVendor.getCompanyName());
                 // UPDATE SERIAL NUMBER (model, manufacturer)
@@ -325,8 +319,7 @@ public class MultispeakMeterServiceBase {
                 // UPDATE CARRIER ADDRESS
                 // WILL NOT FAIL IF ADDRESS IS ALREADY IN USE BY ANOTHER DEVICE!
                 deviceUpdateService.changeAddress(existingMeter, Integer.valueOf(newSerialOrAddress));
-                ((PlcMeter) existingMeter).setAddress(newSerialOrAddress); // update local object with new
-                                                                           // address.
+                ((PlcMeter) existingMeter).setAddress(newSerialOrAddress); // update local object with new address.
                 multispeakEventLogService.serialNumberOrAddressUpdated(originalAddress, existingMeter, mspMethod,
                     mspVendor.getCompanyName());
             }
@@ -403,8 +396,7 @@ public class MultispeakMeterServiceBase {
                 if (originalRouteId != initialRoute.getId()) {
                     deviceUpdateService.changeRoute(meterToUpdate, initialRoute.getId());
                     ((PlcMeter) meterToUpdate).setRouteId(initialRoute.getId());
-                    ((PlcMeter) meterToUpdate).setRoute(initialRoute.getName()); // update local object with
-                                                                                 // initiate route
+                    ((PlcMeter) meterToUpdate).setRoute(initialRoute.getName()); // update local object with initiate route
 
                     if (routes.size() == 1) { // no need to run route discovery if we only have one route.
                         multispeakEventLogService.routeUpdated(initialRoute.getName(), meterNumber, mspMethod,
