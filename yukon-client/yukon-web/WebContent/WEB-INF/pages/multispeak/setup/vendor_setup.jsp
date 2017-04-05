@@ -317,7 +317,8 @@
                 <d:confirm on=".js-delete" nameKey="confirmDelete" argument="${mspVendor.companyName}"/>
             </cti:displayForPageEditModes>
             <cti:displayForPageEditModes modes="EDIT,CREATE">
-                <cti:button nameKey="cancel" href="javascript:window.history.back()"/>
+            <cti:url var="vendorHomeUrl" value="/multispeak/setup/vendorHome"/>
+                <cti:button nameKey="cancel" href="${vendorHomeUrl}"/>
             </cti:displayForPageEditModes>
         </div>
     </form:form>

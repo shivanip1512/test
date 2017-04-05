@@ -1,7 +1,5 @@
 package com.cannontech.web.multispeak;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,14 +13,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DuplicateException;
@@ -50,6 +49,7 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.editor.MultispeakModel;
+import com.cannontech.web.multispeak.validators.MultispeakValidator;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @RequestMapping("/setup/*")
@@ -64,6 +64,7 @@ public class MultispeakController {
     @Autowired private MspMeterSearchService mspMeterSearchService;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private GlobalSettingUpdateDao globalSettingUpdateDao;
+    @Autowired private MultispeakValidator multispeakValidator;
 
     private MultispeakVendor defaultMspVendor;
 
@@ -77,8 +78,7 @@ public class MultispeakController {
         mspVendor = multispeakDao.getMultispeakVendor(defaultMspVendor.getVendorID());
         map.addAttribute("defaultMspVendor", defaultMspVendor);
         map.addAttribute("mode", PageEditMode.VIEW);
-        MultispeakModel multispeak = new MultispeakModel();
-        setUpModel(map, multispeak, mspVendor, false);
+        setUpModel(map, mspVendor, false);
         return "setup/msp_setup.jsp";
     }
 
@@ -88,9 +88,7 @@ public class MultispeakController {
         mspVendor = multispeakDao.getMultispeakVendor(defaultMspVendor.getVendorID());
         map.addAttribute("defaultMspVendor", defaultMspVendor);
         map.addAttribute("mode", PageEditMode.EDIT);
-        MultispeakModel multispeak = new MultispeakModel();
-        multispeak.setMspVendor(defaultMspVendor);
-        setUpModel(map, multispeak, mspVendor, false);
+        setUpModel(map, mspVendor, false);
 
         return "setup/msp_setup.jsp";
 
@@ -140,23 +138,22 @@ public class MultispeakController {
         return "setup/vendor_setup.jsp";
     }
 
-    @RequestMapping(value = "save", method = RequestMethod.POST, params = "!Cancel")
-    public String save(HttpServletRequest request, ModelMap map, FlashScope flashScope,
-            @ModelAttribute MultispeakModel multispeak) {
-        MultispeakVendor mspVendor = buildMspVendor(request, multispeak);
+    @RequestMapping(value = "save", method = RequestMethod.POST)
+    public String save(HttpServletRequest request, ModelMap map, RedirectAttributes redirectAttributes,
+            FlashScope flashScope, @ModelAttribute("multispeak") MultispeakModel multispeak, BindingResult result) {
+        boolean isCreateNew = multispeak.getMspVendor().getVendorID() == null;
         // Validate the request parameters before continuing on.
-        boolean isValid =
-            (mspVendor.getAppName().equals(MultispeakDefines.MSP_APPNAME_YUKON)) ? isValidMspRequest(multispeak,
-                flashScope) : true;
-        if (isValid) {
-            try {
-                boolean isCreateNew = multispeak.getMspVendor().getVendorID() == null;
-                addOrUpdateMspVendor(request, mspVendor, flashScope, isCreateNew, multispeak);
-            } catch (DuplicateException e) {
-                flashScope.setError(new YukonMessageSourceResolvable(
-                    "yukon.web.modules.adminSetup.interfaces.exception", e.getMessage()));
-            }
+        multispeakValidator.validate(multispeak, result);
+        if (result.hasErrors()) {
+            return bindAndForward(multispeak, result, redirectAttributes, isCreateNew);
+        }
+        MultispeakVendor mspVendor = buildMspVendor(request, multispeak);
 
+        try {
+            addOrUpdateMspVendor(request, mspVendor, flashScope, isCreateNew, multispeak);
+        } catch (DuplicateException e) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.exception",
+                e.getMessage()));
         }
 
         map.addAttribute("mspVendorId", mspVendor.getVendorID());
@@ -164,6 +161,21 @@ public class MultispeakController {
             return "redirect:home";
         } else {
             return "redirect:vendorHome/" + mspVendor.getVendorID();
+        }
+    }
+
+    private String bindAndForward(MultispeakModel multispeak, BindingResult result, RedirectAttributes attrs,
+            Boolean isCreateNew) {
+
+        attrs.addFlashAttribute("multispeak", multispeak);
+        attrs.addFlashAttribute("org.springframework.validation.BindingResult.multispeak", result);
+        if (isCreateNew) {
+            return "redirect:create";
+        } else if (multispeak.getMspVendor().getVendorID() != null
+            && multispeak.getMspVendor().getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
+            return "redirect:editYukonSetup";
+        } else {
+            return "redirect:editVendorSetup/" + multispeak.getMspVendor().getVendorID();
         }
     }
 
@@ -186,17 +198,15 @@ public class MultispeakController {
     @RequestMapping("create")
     public String create(ModelMap model) {
 
-        MultispeakModel multispeak = new MultispeakModel();
         model.addAttribute("mode", PageEditMode.CREATE);
-        addSystemModelAndViewObjects(model, null, true, multispeak, true);
-        model.addAttribute("multispeak", multispeak);
+        addSystemModelAndViewObjects(model, null, true, null, true);
         return "setup/vendor_setup.jsp";
     }
 
     @RequestMapping("pingURL/{serviceVersion}")
     @ResponseBody
-    public Map<String, Object> pingURL(HttpServletRequest request, ModelMap map, @ModelAttribute MultispeakModel multispeak,
-            @PathVariable String serviceVersion) {
+    public Map<String, Object> pingURL(HttpServletRequest request, ModelMap map,
+            @ModelAttribute MultispeakModel multispeak, @PathVariable String serviceVersion) {
         Map<String, Object> json = new HashMap<>();
 
         String mspService = multispeak.getService();
@@ -353,63 +363,6 @@ public class MultispeakController {
         return mspVendor;
     }
 
-    private boolean isValidMspRequest(MultispeakModel multispeak, FlashScope flashScope) {
-        MultispeakVendor multispeakVendor = multispeak.getMspVendor();
-        List<MessageSourceResolvable> messages = new ArrayList<MessageSourceResolvable>();
-
-        String companyName = multispeakVendor.getCompanyName();
-        if (StringUtils.isBlank(companyName)) {
-            messages.add(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.invalidCompanyName"));
-        }
-
-        Long mspMaxInitiateRequestObjects = multispeakVendor.getMaxInitiateRequestObjects();
-        if (mspMaxInitiateRequestObjects == null) {
-            messages.add(new YukonMessageSourceResolvable(
-                "yukon.web.modules.adminSetup.interfaces.invalidMaxInitiateRequestObjects"));
-        }
-
-        Long requestMessageTimeout = multispeakVendor.getRequestMessageTimeout();
-        if (requestMessageTimeout == null) {
-            messages.add(new YukonMessageSourceResolvable(
-                "yukon.web.modules.adminSetup.interfaces.invalidRequestMessageTimeout"));
-        }
-
-        Integer maxReturnRecords = multispeakVendor.getMaxReturnRecords();
-        if (maxReturnRecords == null) {
-            messages.add(new YukonMessageSourceResolvable(
-                "yukon.web.modules.adminSetup.interfaces.invalidMaxReturnRecords"));
-        }
-
-        String defaultTemplateName = multispeakVendor.getTemplateNameDefault();
-        if (defaultTemplateName == null) {
-            messages.add(new YukonMessageSourceResolvable(
-                "yukon.web.modules.adminSetup.interfaces.invalidTemplateNameDefault"));
-        }
-
-        if (multispeakVendor.getVendorID() != null
-            && multispeakVendor.getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
-            boolean mspPaoNameUsesExtension = multispeak.getPaoNameUsesExtension(); // if not found, then it
-                                                                                    // wasn't checked
-            if (mspPaoNameUsesExtension) { // if using extensions, then must have an extension name
-                String mspPaoNameAliasExtension = multispeak.getPaoNameAliasExtension();
-                if (StringUtils.isBlank(mspPaoNameAliasExtension)) {
-                    messages.add(new YukonMessageSourceResolvable(
-                        "yukon.web.modules.adminSetup.interfaces.invalidPaoNameAliasExtension"));
-                }
-            }
-        }
-        for (MultispeakInterface multispeakInterface : multispeak.getMspInterfaceList()) {
-            try {
-                new URL(multispeakInterface.getMspEndpoint());
-            } catch (MalformedURLException e) {
-                messages.add(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.invalidURL"));
-            }
-        }
-
-        flashScope.setError(messages);
-        return (messages.size() == 0);
-    }
-
     private void addOrUpdateMspVendor(HttpServletRequest request, MultispeakVendor mspVendor, FlashScope flashScope,
             boolean add, MultispeakModel multispeak) {
 
@@ -490,9 +443,19 @@ public class MultispeakController {
 
     }
 
-    private void setUpModel(ModelMap map, MultispeakModel multispeak, MultispeakVendor mspVendor, boolean ignoreCannon) {
+    private void setUpModel(ModelMap map, MultispeakVendor mspVendor, boolean ignoreCannon) {
         boolean showRoleProperties = false;
         boolean noVendorsExist = false;
+        Object modelMultispeak = map.get("multispeak");
+        MultispeakModel multispeak = null;
+        if (modelMultispeak instanceof MultispeakModel) {
+            multispeak = (MultispeakModel) modelMultispeak;
+        }
+
+        if (multispeak == null) {
+            multispeak = new MultispeakModel();
+        }
+        multispeak.setMspVendor(defaultMspVendor);
         List<MultiSpeakVersion> mspVersionList =
             new ArrayList<>(Arrays.asList(MultiSpeakVersion.V3, MultiSpeakVersion.V5));
         if (mspVendor != null) {
@@ -519,19 +482,19 @@ public class MultispeakController {
         Map<Pair<String, MultiSpeakVersion>, MultispeakInterface> interfaceMap = mspVendor.getMspInterfaceMap();
         MultispeakDefines.getPossibleInterfaces(mspVendor).forEach(
             multispeakInterface -> {
-                if (interfaceMap.containsKey(multispeakInterface)) {
-                    mspInterfaceList.add(interfaceMap.get(multispeakInterface));
-                } else {
-                    MultispeakInterface mspInterface = new MultispeakInterface();
-                    mspInterface.setInterfaceEnabled(false);
-
+                MultispeakInterface mspInterface = interfaceMap.get(multispeakInterface);
+                if (mspInterface == null) {
+                    mspInterface = new MultispeakInterface();
                     mspInterface.setMspInterface(multispeakInterface.getLeft());
                     mspInterface.setVendorID(mspVendor.getVendorID());
                     mspInterface.setMspEndpoint(mspVendor.getUrl()
                         + multispeakInterface.getRight().toString().toLowerCase() + "/" + multispeakInterface.getLeft());
                     mspInterface.setVersion(multispeakInterface.getRight());
-                    mspInterfaceList.add(mspInterface);
+                    mspInterface.setInterfaceEnabled(false);
+                } else {
+                    mspInterface.setInterfaceEnabled(true);
                 }
+                mspInterfaceList.add(mspInterface);
             });
 
         // Try to get the values from the request first, then get from the system.
@@ -556,6 +519,11 @@ public class MultispeakController {
             MultispeakModel multispeak, boolean isCreateNew) {
         boolean showRoleProperties = false;
         boolean noVendorsExist = false;
+        Object modelMultispeak = map.get("multispeak");
+        if (modelMultispeak instanceof MultispeakModel) {
+            multispeak = (MultispeakModel) modelMultispeak;
+        }
+
         if (multispeak == null) {
             multispeak = new MultispeakModel();
         }

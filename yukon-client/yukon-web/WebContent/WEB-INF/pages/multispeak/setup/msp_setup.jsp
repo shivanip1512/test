@@ -34,6 +34,7 @@
     <cti:url var="saveUrl" value="/multispeak/setup/save"/>
     <form:form modelAttribute="multispeak" id="mspForm" name="mspForm" method="post" action="${saveUrl}" commandName="multispeak">
         <cti:csrfToken/>
+        <c:set var="rowsCount" value="0"/>
         <c:set var="viewMode" value="${false}" />
         <cti:displayForPageEditModes modes="VIEW">
             <c:set var="viewMode" value="${true}" />
@@ -94,6 +95,8 @@
         </tags:sectionContainer2>
         <!-- Interfaces -->
         <tags:sectionContainer2 nameKey="mspInterfaces">
+         <div class="column-12-1-11 clearfix">
+                <div class="column one">
             <table class="compact-results-table row-highlighting">
                 <tbody>
                     <tr style="border-bottom: solid 1px #ccc;"><td colspan="4"><b><i:inline key=".version3"/></b></td></tr>
@@ -101,13 +104,16 @@
                         <c:if test="${i.index == 5}">
                            <tr style="border-bottom: solid 1px #ccc;"><td colspan="4"><b><i:inline key=".version5"/></b></td></tr>
                         </c:if>
-                        <tr>
+                        <c:choose>
+                        <c:when test="${multispeakInterface.interfaceEnabled && viewMode}">
+                        <tr><c:set var="resultsCount" value="${resultsCount + 1}"/>
                             <td>
                               <c:out value="${multispeakInterface.mspInterface}"/>
                               <tags:hidden path="mspInterfaceList[${i.index}].mspInterface"/>
                               <tags:hidden path="mspInterfaceList[${i.index}].vendorID"/>
+                              <tags:hidden path="mspInterfaceList[${i.index}].interfaceEnabled"/>
                             </td>
-                        <td>
+                        <td class="wbba" style="width: 332px;">
                         <tags:input id="${multispeakInterface.mspInterface}" path="mspInterfaceList[${i.index}].mspEndpoint" size="40" /> 
                         </td>
                         <td>
@@ -122,16 +128,48 @@
                                     onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${multispeakInterface.version}');"/>
                                 </div>
                             </td>
-                       <c:if test="${i.index == 0}">
-                       <c:set var="interfaceListLength" value="${fn:length(possibleInterfaces)}" />
-                                <td rowspan='${interfaceListLength+3}'>
-                                    <textarea cols="50" rows="${interfaceListLength*2+3}" name="Results" id="results" readonly wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>
-                                </td>
-                      </c:if>
-                 </tr>
+                     </tr>
+                     </c:when>
+                     <c:otherwise>
+                     <cti:displayForPageEditModes modes="EDIT">
+                     <tr><c:set var="resultsCount" value="${resultsCount + 1}"/>
+                            <td>
+                              <c:out value="${multispeakInterface.mspInterface}"/>
+                              <tags:hidden path="mspInterfaceList[${i.index}].mspInterface"/>
+                              <tags:hidden path="mspInterfaceList[${i.index}].vendorID"/>
+                              <tags:hidden path="mspInterfaceList[${i.index}].interfaceEnabled"/>
+                            </td>
+                        <td class="wbba" style="width: 332px;">
+                        <tags:input id="${multispeakInterface.mspInterface}" path="mspInterfaceList[${i.index}].mspEndpoint" size="40" /> 
+                        </td>
+                        <td>
+                                <span>${multispeakInterface.version.version}</span>
+                                <tags:hidden path="mspInterfaceList[${i.index}].version"/>
+                        </td>
+                            <td>       
+                                <div class="button-group fr wsnw oh">
+                                    <cti:button icon="icon-ping" id="${multispeakInterface.mspInterface}" name="pingURL" renderMode="buttonImage" title="${pingTitle}" disabled="${disabled}"
+                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${multispeakInterface.version}');"/>
+                                    <cti:button icon="icon-application-view-columns" id="${multispeakInterface.mspInterface}" name="getMethods" renderMode="buttonImage" title="${getMethods}" disabled="${disabled}"
+                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${multispeakInterface.version}');"/>
+                                </div>
+                            </td>
+                     </tr>
+                     </cti:displayForPageEditModes>
+                     </c:otherwise>
+                     </c:choose>
                 </c:forEach>
                 </tbody>
          </table>
+         </div>
+         <div class="column two nogutter"> <tags:nameValueContainer2></tags:nameValueContainer2>
+         </div>
+         <div class="column three nogutter">
+         <tags:nameValueContainer2><br>
+             <textarea cols="53" rows="${resultsCount * 2 + 1}" name="Results" id="results" readonly wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>
+             </tags:nameValueContainer2>
+         </div>
+         </div>
         </tags:sectionContainer2>
             
         <div class="page-action-area">
@@ -139,7 +177,7 @@
                 <cti:url var="editUrl" value="/multispeak/setup/editYukonSetup" />
                 <cti:button nameKey="edit" icon="icon-pencil" href="${editUrl}"/>
             </cti:displayForPageEditModes>
-            <cti:displayForPageEditModes modes="EDIT,CREATE">
+            <cti:displayForPageEditModes modes="EDIT">
                 <cti:button type="submit" nameKey="save" classes="primary action" busy="true"/>
                 <cti:url var="viewUrl" value="/multispeak/setup/home?mspVendorId=${multispeak.mspVendor.vendorID}"/>
                 <cti:button nameKey="cancel" href="${viewUrl}"/>
