@@ -34,7 +34,6 @@
     <cti:url var="saveUrl" value="/multispeak/setup/save"/>
     <form:form modelAttribute="multispeak" id="mspForm" name="mspForm" method="post" action="${saveUrl}" commandName="multispeak">
         <cti:csrfToken/>
-        <c:set var="rowsCount" value="0"/>
         <c:set var="viewMode" value="${false}" />
         <cti:displayForPageEditModes modes="VIEW">
             <c:set var="viewMode" value="${true}" />
