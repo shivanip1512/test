@@ -67,7 +67,7 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
     @PostConstruct
     public void init() {
         //Schedule calculateRuntimes() every 6 hours, with the first run 1 minute after the honeywell services init.
-        scheduledExecutor.scheduleAtFixedRate(this::calculateRuntimes, 1, 1, TimeUnit.MINUTES);
+        scheduledExecutor.scheduleAtFixedRate(this::calculateRuntimes, 1, 6*60, TimeUnit.MINUTES);
         log.info("Initialized HoneywellWifiRuntimeCalcService");
     }
     
