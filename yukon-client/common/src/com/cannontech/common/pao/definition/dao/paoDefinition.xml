@@ -11693,6 +11693,16 @@
             <attribute name="PEAK_DEMAND_FROZEN_RATE_D">
                 <basicLookup point="Peak kW Frozen (Rate D kW)"/>
             </attribute>
+            
+            <!-- Overriding the USAGE attribute to map to Delivered kWh. (The RFN530_S4_BASE overrides USAGE with the Sum kWh point, so we need to "undo" that.  -->
+            <attribute name="USAGE">
+                <basicLookup point="Delivered kWh" />
+            </attribute>
+
+            <!-- Overriding the USAGE attribute to map to Peak kW. (The RFN530_S4_BASE overrides PEAK_DEMAND with the Sum Peak kW point, so we need to "undo" that.  -->
+            <attribute name="PEAK_DEMAND">
+                <basicLookup point="Peak kW"/>
+            </attribute>
         </attributes>
     </pao>
     
