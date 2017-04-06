@@ -46,6 +46,9 @@
     <entry key="yukon.web.modules.dashboard.widgetType.TREND.name">Trends</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.TREND.description">Displays trends for a specific device.</entry>    
     
+    <!-- Widget Parameters -->
+    <entry key="yukon.web.modules.dashboard.widgetParameter.trendDevice">Device</entry>
+    
     <!-- Visibility -->
     <entry key="yukon.web.modules.dashboard.visibility.SYSTEM">System</entry>
     <entry key="yukon.web.modules.dashboard.visibility.PRIVATE">Private</entry>
@@ -57,5 +60,10 @@
     <entry key="yukon.web.modules.dashboard.widgetCategory.DR">Demand Response</entry>
     <entry key="yukon.web.modules.dashboard.widgetCategory.IVVC">Volt/Var</entry>
     <entry key="yukon.web.modules.dashboard.widgetCategory.OTHER">Other</entry>
+    
+    <!-- Exceptions -->
+    <entry key="yukon.web.modules.dashboard.exception.missingParameters">Widget is missing inputs: {0}</entry>
+    <entry key="yukon.web.modules.dashboard.exception.nonIntDeviceId">Device ID is not an integer: {0}</entry>
+    
     
 </properties>

@@ -1,6 +1,15 @@
 package com.cannontech.web.common.dashboard.model;
 
+import java.util.Arrays;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.web.common.dashboard.widget.validator.MeterPickerValidator;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
 
 /**
  * Enum of the types of widgets that can be displayed on customizable dashboards.
@@ -11,7 +20,7 @@ public enum WidgetType implements DisplayableEnum {
     MONITOR_SUBSCRIPTIONS(DashboardScope.GENERAL, WidgetCategory.OTHER, "subscribedMonitorsWidget", "image-monitor-subscriptions"),
     MESSAGING_STATISTICS(DashboardScope.GENERAL, WidgetCategory.OTHER, "messagingStatisticsWidget", "image-coming-soon"),
     
-    TREND(DashboardScope.DEVICE_SPECIFIC, WidgetCategory.AMI, "csrTrendWidget", "image-coming-soon"), 
+    TREND(DashboardScope.GENERAL, WidgetCategory.AMI, "csrTrendWidget", "image-coming-soon"), 
     /*
     //AMI Dashboard
     MONITORS(DashboardScope.GENERAL, WidgetCategory.AMI),
@@ -21,7 +30,7 @@ public enum WidgetType implements DisplayableEnum {
     //Meter Detail
     METER_INFORMATION(DashboardScope.DEVICE_SPECIFIC, WidgetCategory.AMI),
     METER_READINGS(DashboardScope.DEVICE_SPECIFIC, WidgetCategory.AMI),
-    TREND(DashboardScope.DEVICE_SPECIFIC, WidgetCategory.AMI), //for device-specific dashboard
+    DEVICE_TREND(DashboardScope.DEVICE_SPECIFIC, WidgetCategory.AMI), //for device-specific dashboard
     DISCONNECT(DashboardScope.DEVICE_SPECIFIC, WidgetCategory.AMI),
     CIS_INFORMATION(DashboardScope.DEVICE_SPECIFIC, WidgetCategory.AMI),
     OUTAGES(DashboardScope.DEVICE_SPECIFIC, WidgetCategory.AMI),
@@ -33,7 +42,28 @@ public enum WidgetType implements DisplayableEnum {
     */
     ;
     
-    private static String formatKeyBase = "yukon.web.modules.dashboard.widgetType.";
+    private static final String formatKeyBase = "yukon.web.modules.dashboard.widgetType.";
+    private static final Multimap<WidgetType, String> widgetSpecificJavascript;
+    private static final Multimap<WidgetType, String> widgetSpecificCss;
+    private static final Multimap<WidgetType, WidgetParameter> widgetParameters;
+    
+    static {
+        widgetSpecificJavascript = ImmutableListMultimap.of(
+            MESSAGING_STATISTICS, "yukon.support.systemHealth.js"
+        );
+        
+        widgetSpecificCss = ImmutableListMultimap.of(
+            //Add specialized CSS (that only needs to be loaded when the widget is present)
+        );
+        
+        widgetParameters = ImmutableListMultimap.of(
+            TREND, new WidgetParameter("trendDevice", WidgetInputType.METER_PICKER, MeterPickerValidator.get())
+        );
+    }
+    
+    public static Stream<WidgetType> stream() {
+        return Arrays.stream(values());
+    }
     
     private DashboardScope scope;
     private WidgetCategory category;
@@ -57,6 +87,13 @@ public enum WidgetType implements DisplayableEnum {
         return formatKeyBase + name() + ".description";
     }
     
+    /**
+     * @return The help text key, if help text is defined for this widget.
+     */
+    public String getHelpTextKey() {
+        return formatKeyBase + name() + ".helpText";
+    }
+    
     public DashboardScope getScope() {
         return scope;
     }
@@ -71,5 +108,36 @@ public enum WidgetType implements DisplayableEnum {
     
     public String getImageName() {
         return imageName;
+    }
+    
+    /**
+     * @return The names of javscript libraries required by this widget.
+     */
+    public Set<String> getRequiredJavascript() {
+        return ImmutableSet.copyOf(widgetSpecificJavascript.get(this));
+    }
+    
+    /**
+     * @return The names of css libraries required by this widget.
+     */
+    public Set<String> getRequiredCss() {
+        return ImmutableSet.copyOf(widgetSpecificCss.get(this));
+    }
+    
+    /**
+     * @return The names of the user-specified parameters required by this widget.
+     */
+    public Set<String> getParameterNames() {
+        return widgetParameters.get(this)
+                               .stream()
+                               .map(WidgetParameter::getName)
+                               .collect(Collectors.toSet());
+    }
+    
+    /**
+     * @return The set of user-specified parameters required by this widget.
+     */
+    public Set<WidgetParameter> getParameters() {
+        return ImmutableSet.copyOf(widgetParameters.get(this));
     }
 }
