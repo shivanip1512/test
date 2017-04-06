@@ -8,6 +8,8 @@
 #include "streamBuffer.h"
 #include "boostutil.h"
 
+using namespace std::string_literals;
+
 namespace Cti {
 
 template<class StreamBufferT>
@@ -154,6 +156,12 @@ template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::op
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const CtiNumStr& numstr) { swapOrAppend(numstr.toString()); return static_cast<StreamBufferT&>(*this); }
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const CtiDate& date)     { swapOrAppend(date.asString());   return static_cast<StreamBufferT&>(*this); }
 template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const CtiTime& time)     { swapOrAppend(time.asString());   return static_cast<StreamBufferT&>(*this); }
+
+template<class StreamBufferT> StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const std::chrono::seconds seconds) 
+{ 
+    swapOrAppend(std::to_string(seconds.count()) + " seconds"s);   
+    return static_cast<StreamBufferT&>(*this); 
+}
 
 template<class StreamBufferT>
 StreamBufferT& StreamBufferBase<StreamBufferT>::operator<< (const Cti::Loggable& loggable)

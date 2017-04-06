@@ -3,11 +3,13 @@
 #include "dlldefs.h"
 #include "loggable.h"
 
+#include <boost/scoped_ptr.hpp>
+#include <boost/range/iterator_range.hpp>
+
 #include <string>
 #include <sstream>
 #include <iomanip>
-#include <boost/scoped_ptr.hpp>
-#include <boost/range/iterator_range.hpp>
+#include <chrono>
 
 class CtiNumStr;
 class CtiDate;
@@ -76,6 +78,7 @@ public:
     StreamBufferT& operator<< (const CtiNumStr& numstr);
     StreamBufferT& operator<< (const CtiDate& date);
     StreamBufferT& operator<< (const CtiTime& time);
+    StreamBufferT& operator<< (const std::chrono::seconds val);
 
     StreamBufferT& operator<< (const Loggable& loggable);
 
