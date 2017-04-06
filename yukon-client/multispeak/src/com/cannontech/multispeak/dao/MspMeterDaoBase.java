@@ -25,7 +25,7 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 public class MspMeterDaoBase {
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate = null;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private MeterRowMapper meterRowMapper;
@@ -43,18 +43,16 @@ public class MspMeterDaoBase {
     };
 
     /**
-     * Gets the SQL query to search for the meters of AMR/CD support type
+     * Gets the SQL query to search for the meters of AMR support type
      * 
-     * @param meterSupportType to indicate if meter is AMR or CD supported meter
      * @param lastReceived search criteria , last meter number received
-     * @returns SqlStatementBuilder with the SQL query formed 
+     * @returns SqlStatementBuilder with the SQL query formed
      */
-    public SqlStatementBuilder buildSqlStatementByMeterSupportType(MeterSupportType meterSupportType,
-            String lastReceived) {
+    public SqlStatementBuilder buildSqlStatementForAMRSupportedMeters(String lastReceived) {
         boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
+
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append(selectSql);
-
         if (lastReceived != null) {
             sql.append("WHERE MeterNumber").gt(lastReceived);
         }
@@ -67,17 +65,32 @@ public class MspMeterDaoBase {
             sql.append("DisableFlag").eq_k(YNBoolean.NO);
         }
 
-        if (meterSupportType == MeterSupportType.CD_SUPPORTED) {
-            if (StringUtils.containsIgnoreCase(sql.getSql(), "WHERE ")) {
-                sql.append("AND");
-            } else {
-                sql.append("WHERE");
-            }
-            Collection<PaoType> collection = getIntegratedDisconnectPaoDefinitions();
-            sql.append("(pao.type IN (").appendArgumentList(collection).append(")");
-            sql.append("OR (DisconnectAddress IS NOT NULL) )");
-        }
         sql.append("ORDER BY METERNUMBER");
+        
+        return sql;
+    }
+
+    /**
+     * Gets the SQL query to search for the meters of CD support type
+     * 
+     * @param lastReceived search criteria , last meter number received
+     * @returns SqlStatementBuilder with the SQL query formed 
+     */
+    public SqlStatementBuilder buildSqlStatementForCDSupportedMeters( String lastReceived) {
+        boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
+        Collection<PaoType> collection = getIntegratedDisconnectPaoDefinitions();
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append(selectSql);
+        sql.append("WHERE (pao.type IN (").appendArgumentList(collection).append(")");
+        sql.append(" OR (DisconnectAddress IS NOT NULL) )");
+        if (lastReceived != null) {
+            sql.append("AND MeterNumber").gt(lastReceived);
+        }
+        if (excludeDisabled) {
+            sql.append("AND DisableFlag").eq_k(YNBoolean.NO);
+        }
+        sql.append("ORDER BY MeterNumber");
         return sql;
     }
 

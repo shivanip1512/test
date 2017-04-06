@@ -22,7 +22,6 @@ import com.cannontech.msp.beans.v3.ModuleList;
 import com.cannontech.msp.beans.v3.Nameplate;
 import com.cannontech.msp.beans.v3.UtilityInfo;
 import com.cannontech.multispeak.client.MultispeakDefines;
-import com.cannontech.multispeak.dao.MeterSupportType;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.MspMeterDaoBase;
 import com.cannontech.multispeak.data.MspMeterReturnList;
@@ -30,7 +29,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 
 public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDao
 {
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate = null;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
 	@Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private MeterRowMapper meterRowMapper;
@@ -46,7 +45,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDa
     @Override
     public MspMeterReturnList getAMRSupportedMeters(String lastReceived, int maxRecords) {
         
-        SqlStatementBuilder sql = buildSqlStatementByMeterSupportType(MeterSupportType.AMR_SUPPORTED, lastReceived);
+        SqlStatementBuilder sql = buildSqlStatementForAMRSupportedMeters(lastReceived);
         List<Meter> mspMeters = new ArrayList<Meter>();
         CollectionRowCallbackHandler<Meter> crcHandler = new CollectionRowCallbackHandler<Meter>(mspMeterRowMapper, mspMeters);
         yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
@@ -59,7 +58,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDa
     @Override
     public MspMeterReturnList getCDSupportedMeters(String lastReceived, int maxRecords) {
 
-        SqlStatementBuilder sql = buildSqlStatementByMeterSupportType(MeterSupportType.CD_SUPPORTED, lastReceived);
+        SqlStatementBuilder sql = buildSqlStatementForCDSupportedMeters(lastReceived);
         List<Meter> mspMeters = new ArrayList<Meter>();
         CollectionRowCallbackHandler<Meter> crcHandler = new CollectionRowCallbackHandler<Meter>(mspMeterRowMapper, mspMeters);
         yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));

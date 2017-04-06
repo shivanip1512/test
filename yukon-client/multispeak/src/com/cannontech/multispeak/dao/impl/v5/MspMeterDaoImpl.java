@@ -26,7 +26,6 @@ import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.Module;
 import com.cannontech.msp.beans.v5.multispeak.Modules;
 import com.cannontech.multispeak.client.MultispeakDefines;
-import com.cannontech.multispeak.dao.MeterSupportType;
 import com.cannontech.multispeak.dao.MspMeterDaoBase;
 import com.cannontech.multispeak.dao.v5.MspMeterDao;
 import com.cannontech.multispeak.data.v5.MspCDDeviceReturnList;
@@ -60,7 +59,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDa
     @Override
     public MspMeterReturnList getAMRSupportedMeters(String lastReceived, int maxRecords) {
 
-        SqlStatementBuilder sql = buildSqlStatementByMeterSupportType(MeterSupportType.AMR_SUPPORTED, lastReceived);
+        SqlStatementBuilder sql = buildSqlStatementForAMRSupportedMeters(lastReceived);
         List<ElectricMeter> mspMeters = new ArrayList<ElectricMeter>();
         CollectionRowCallbackHandler<ElectricMeter> crcHandler =
             new CollectionRowCallbackHandler<ElectricMeter>(mspMeterRowMapper, mspMeters);
@@ -74,7 +73,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDa
     @Override
     public MspMeterReturnList getCDSupportedMeters(String lastReceived, int maxRecords) {
 
-        SqlStatementBuilder sql = buildSqlStatementByMeterSupportType(MeterSupportType.CD_SUPPORTED, lastReceived);
+        SqlStatementBuilder sql = buildSqlStatementForCDSupportedMeters(lastReceived);
         List<ElectricMeter> mspMeters = new ArrayList<ElectricMeter>();
         CollectionRowCallbackHandler<ElectricMeter> crcHandler =
             new CollectionRowCallbackHandler<ElectricMeter>(mspMeterRowMapper, mspMeters);
@@ -89,7 +88,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDa
     @Override
     public MspCDDeviceReturnList getAllCDDevices(String lastReceived, int maxRecords) {
 
-        SqlStatementBuilder sql = buildSqlStatementByMeterSupportType(MeterSupportType.CD_SUPPORTED, lastReceived);
+        SqlStatementBuilder sql = buildSqlStatementForCDSupportedMeters(lastReceived);
         List<CDDevice> mspCDMeters = new ArrayList<CDDevice>();
         CollectionRowCallbackHandler<CDDevice> crcHandler =
             new CollectionRowCallbackHandler<CDDevice>(mspCDDeviceRowMapper, mspCDMeters);
