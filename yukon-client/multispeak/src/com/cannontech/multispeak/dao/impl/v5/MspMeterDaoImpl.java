@@ -5,15 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.meter.dao.impl.MeterRowMapper;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.CollectionRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
-import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.msp.beans.v5.commontypes.MeterID;
@@ -30,15 +26,8 @@ import com.cannontech.multispeak.dao.MspMeterDaoBase;
 import com.cannontech.multispeak.dao.v5.MspMeterDao;
 import com.cannontech.multispeak.data.v5.MspCDDeviceReturnList;
 import com.cannontech.multispeak.data.v5.MspMeterReturnList;
-import com.cannontech.system.dao.GlobalSettingDao;
 
 public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDao {
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private MeterRowMapper meterRowMapper;
-
-   
 
     private static final YukonRowMapper<ElectricMeter> mspMeterRowMapper = new YukonRowMapper<ElectricMeter>() {
         @Override
@@ -63,7 +52,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDa
         List<ElectricMeter> mspMeters = new ArrayList<ElectricMeter>();
         CollectionRowCallbackHandler<ElectricMeter> crcHandler =
             new CollectionRowCallbackHandler<ElectricMeter>(mspMeterRowMapper, mspMeters);
-        yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
+        jdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
         MspMeterReturnList mspMeterReturnList = new MspMeterReturnList();
         mspMeterReturnList.setMeters(mspMeters);
         mspMeterReturnList.setReturnFields(mspMeters, maxRecords);
@@ -77,7 +66,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDa
         List<ElectricMeter> mspMeters = new ArrayList<ElectricMeter>();
         CollectionRowCallbackHandler<ElectricMeter> crcHandler =
             new CollectionRowCallbackHandler<ElectricMeter>(mspMeterRowMapper, mspMeters);
-        yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
+        jdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
 
         MspMeterReturnList mspMeterReturnList = new MspMeterReturnList();
         mspMeterReturnList.setMeters(mspMeters);
@@ -92,7 +81,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDa
         List<CDDevice> mspCDMeters = new ArrayList<CDDevice>();
         CollectionRowCallbackHandler<CDDevice> crcHandler =
             new CollectionRowCallbackHandler<CDDevice>(mspCDDeviceRowMapper, mspCDMeters);
-        yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
+        jdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
 
         MspCDDeviceReturnList mspCDDeviceReturnList = new MspCDDeviceReturnList();
         mspCDDeviceReturnList.setCDMeters(mspCDMeters);

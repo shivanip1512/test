@@ -5,15 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.amr.meter.dao.impl.MeterRowMapper;
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.CollectionRowCallbackHandler;
 import com.cannontech.database.MaxRowCalbackHandlerRse;
-import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.msp.beans.v3.Meter;
@@ -25,15 +21,9 @@ import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.MspMeterDaoBase;
 import com.cannontech.multispeak.data.MspMeterReturnList;
-import com.cannontech.system.dao.GlobalSettingDao;
 
 public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDao
 {
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-	@Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private MeterRowMapper meterRowMapper;
-
     private static final YukonRowMapper<Meter> mspMeterRowMapper = new YukonRowMapper<Meter>() {
     	@Override
         public Meter mapRow(YukonResultSet rset) throws SQLException {
@@ -48,7 +38,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDa
         SqlStatementBuilder sql = buildSqlStatementForAMRSupportedMeters(lastReceived);
         List<Meter> mspMeters = new ArrayList<Meter>();
         CollectionRowCallbackHandler<Meter> crcHandler = new CollectionRowCallbackHandler<Meter>(mspMeterRowMapper, mspMeters);
-        yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
+        jdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
         MspMeterReturnList mspMeterReturnList = new MspMeterReturnList();
         mspMeterReturnList.setMeters(mspMeters);
         mspMeterReturnList.setReturnFields(mspMeters, maxRecords);
@@ -61,7 +51,7 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDa
         SqlStatementBuilder sql = buildSqlStatementForCDSupportedMeters(lastReceived);
         List<Meter> mspMeters = new ArrayList<Meter>();
         CollectionRowCallbackHandler<Meter> crcHandler = new CollectionRowCallbackHandler<Meter>(mspMeterRowMapper, mspMeters);
-        yukonJdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
+        jdbcTemplate.query(sql, new MaxRowCalbackHandlerRse(crcHandler, maxRecords));
     
         MspMeterReturnList mspMeterReturnList = new MspMeterReturnList();
         mspMeterReturnList.setMeters(mspMeters);

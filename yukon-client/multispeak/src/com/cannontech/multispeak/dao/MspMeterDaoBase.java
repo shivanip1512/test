@@ -25,10 +25,10 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
 public class MspMeterDaoBase {
-    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
-    @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private GlobalSettingDao globalSettingDao;
-    @Autowired private MeterRowMapper meterRowMapper;
+    @Autowired protected YukonJdbcTemplate jdbcTemplate;
+    @Autowired protected PaoDefinitionDao paoDefinitionDao;
+    @Autowired protected GlobalSettingDao globalSettingDao;
+    @Autowired protected MeterRowMapper meterRowMapper;
 
     protected static String selectSql;
 
@@ -107,7 +107,7 @@ public class MspMeterDaoBase {
         sql.append("AND METERNUMBER").eq(meterNumber);
         sql.append(") Temp");
 
-        int meterCount = yukonJdbcTemplate.queryForInt(sql);
+        int meterCount = jdbcTemplate.queryForInt(sql);
         if (meterCount > 0) {
             return true;
         } else {
@@ -127,7 +127,7 @@ public class MspMeterDaoBase {
         }
 
         try {
-            YukonMeter yukonMeter = yukonJdbcTemplate.queryForObject(sql, meterRowMapper);
+            YukonMeter yukonMeter = jdbcTemplate.queryForObject(sql, meterRowMapper);
             return yukonMeter;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("no meter matches " + meterNumber);
@@ -140,7 +140,7 @@ public class MspMeterDaoBase {
             sql.append(meterRowMapper.getSql());
             sql.append("WHERE dcs.Address").eq(serialNumberOrAddress);
             sql.append("OR SerialNumber").eq(serialNumberOrAddress);
-            YukonMeter meter = yukonJdbcTemplate.queryForObject(sql, meterRowMapper);
+            YukonMeter meter = jdbcTemplate.queryForObject(sql, meterRowMapper);
             return meter;
         } catch (EmptyResultDataAccessException e) {
             throw new NotFoundException("Unknown physical address or rfn sensorSerialNumber " + serialNumberOrAddress);

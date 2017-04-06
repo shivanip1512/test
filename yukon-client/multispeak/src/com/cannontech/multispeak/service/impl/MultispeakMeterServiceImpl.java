@@ -38,7 +38,6 @@ import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterBy;
-import com.cannontech.amr.rfn.dao.RfnDeviceDao;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
@@ -46,7 +45,6 @@ import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.processor.ProcessingException;
-import com.cannontech.common.bulk.service.ChangeDeviceTypeService;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigHelper;
@@ -64,7 +62,6 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
-import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.InsufficientMultiSpeakDataException;
@@ -169,7 +166,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
     private BasicServerConnection porterConnection;
     @Autowired private AttributeService attributeService;
-    @Autowired private ChangeDeviceTypeService changeDeviceTypeService;
     @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
@@ -177,7 +173,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private DeviceUpdateService deviceUpdateService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private MeterDao meterDao;
@@ -189,7 +184,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Autowired private MultispeakFuncs multispeakFuncs;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PointDao pointDao;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
  
     @Autowired private TransactionTemplate transactionTemplate;
