@@ -1,23 +1,21 @@
-<tr><c:set var="resultsCount" value="${resultsCount + 1}"/>
-                            <td>
-                              <c:out value="${multispeakInterface.mspInterface}"/>
-                              <tags:hidden path="mspInterfaceList[${i.index}].mspInterface"/>
-                              <tags:hidden path="mspInterfaceList[${i.index}].vendorID"/>
-                              <tags:hidden path="mspInterfaceList[${i.index}].interfaceEnabled"/>
-                            </td>
-                        <td class="wbba" style="width: 332px;">
-                        <tags:input id="endpointURL_${multispeakInterface.mspInterface}" path="mspInterfaceList[${i.index}].mspEndpoint" size="40" /> 
-                        </td>
-                        <td>
-                                <span>${multispeakInterface.version.version}</span>
-                                <tags:hidden path="mspInterfaceList[${i.index}].version"/>
-                        </td>
-                            <td>       
-                                <div class="button-group fr wsnw oh">
-                                    <cti:button icon="icon-ping" id="${multispeakInterface.mspInterface}" name="pingURL" renderMode="buttonImage" title="${pingTitle}" disabled="${disabled}"
-                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${multispeakInterface.version}');"/>
-                                    <cti:button icon="icon-application-view-columns" id="${multispeakInterface.mspInterface}" name="getMethods" renderMode="buttonImage" title="${getMethods}" disabled="${disabled}"
-                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${multispeakInterface.version}');"/>
-                                </div>
-                            </td>
-                     </tr>
+<tr>
+    <c:set var="resultsCount" value="${resultsCount + 1}" />
+    <td><c:out value="${multispeakInterface.mspInterface}" /> <tags:hidden
+            path="mspInterfaceList[${i.index}].mspInterface" /> <tags:hidden
+            path="mspInterfaceList[${i.index}].vendorID" /> <tags:hidden
+            path="mspInterfaceList[${i.index}].interfaceEnabled" /></td>
+    <td class="wbba" style="width: 332px;"><tags:input id="endpointURL_${multispeakInterface.mspInterface}"
+            path="mspInterfaceList[${i.index}].mspEndpoint" size="40" /></td>
+    <td><span>${multispeakInterface.version.version}</span> <tags:hidden
+            path="mspInterfaceList[${i.index}].version" /></td>
+    <td>
+        <div class="button-group fr wsnw oh">
+            <cti:button icon="icon-ping" id="${multispeakInterface.mspInterface}" name="pingURL"
+                renderMode="buttonImage" title="${pingTitle}" disabled="${disabled}"
+                onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${multispeakInterface.version}');" />
+            <cti:button icon="icon-application-view-columns" id="${multispeakInterface.mspInterface}" name="getMethods"
+                renderMode="buttonImage" title="${getMethods}" disabled="${disabled}"
+                onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${multispeakInterface.version}');" />
+        </div>
+    </td>
+</tr>
