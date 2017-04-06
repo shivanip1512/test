@@ -50,6 +50,38 @@ BOOST_AUTO_TEST_CASE(test_Lookup_success)
         BOOST_CHECK_EQUAL(point->offset, 214);
         BOOST_CHECK_EQUAL(point->type, 1);
     }
+    {
+        auto point = Cti::DeviceAttributeLookup::Lookup(DeviceTypes::TYPE_RFN530S4EAX, Attribute::UsageReading);
+
+        BOOST_REQUIRE(point);
+
+        BOOST_CHECK_EQUAL(point->offset, 3);
+        BOOST_CHECK_EQUAL(point->type, 1);
+    }
+    {
+        auto point = Cti::DeviceAttributeLookup::Lookup(DeviceTypes::TYPE_RFN530S4EAX, Attribute::PeakDemand);
+
+        BOOST_REQUIRE(point);
+
+        BOOST_CHECK_EQUAL(point->offset, 265);
+        BOOST_CHECK_EQUAL(point->type, 1);
+    }
+    {
+        auto point = Cti::DeviceAttributeLookup::Lookup(DeviceTypes::TYPE_RFN530S4X, Attribute::UsageReading);
+
+        BOOST_REQUIRE(point);
+
+        BOOST_CHECK_EQUAL(point->offset, 1);
+        BOOST_CHECK_EQUAL(point->type, 1);
+    }
+    {
+        auto point = Cti::DeviceAttributeLookup::Lookup(DeviceTypes::TYPE_RFN530S4X, Attribute::PeakDemand);
+
+        BOOST_REQUIRE(point);
+
+        BOOST_CHECK_EQUAL(point->offset, 105);
+        BOOST_CHECK_EQUAL(point->type, 1);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(test_Lookup_failure)
