@@ -40,6 +40,7 @@
         </cti:displayForPageEditModes>
         <c:set var="tableClass" value="${viewMode ? '' : 'with-form-controls'}" />
         <form:hidden id="actionService" path="service" />
+        <form:hidden id="endpointURL" path="endpointURL" />
         <form:hidden id="vendorID" path="mspVendor.vendorID" />
         <form:hidden id="userName" path="mspVendor.userName" />
         <form:hidden id="password" path="mspVendor.password" />
@@ -105,55 +106,11 @@
                         </c:if>
                         <c:choose>
                         <c:when test="${multispeakInterface.interfaceEnabled && viewMode}">
-                        <tr><c:set var="resultsCount" value="${resultsCount + 1}"/>
-                            <td>
-                              <c:out value="${multispeakInterface.mspInterface}"/>
-                              <tags:hidden path="mspInterfaceList[${i.index}].mspInterface"/>
-                              <tags:hidden path="mspInterfaceList[${i.index}].vendorID"/>
-                              <tags:hidden path="mspInterfaceList[${i.index}].interfaceEnabled"/>
-                            </td>
-                        <td class="wbba" style="width: 332px;">
-                        <tags:input id="${multispeakInterface.mspInterface}" path="mspInterfaceList[${i.index}].mspEndpoint" size="40" /> 
-                        </td>
-                        <td>
-                                <span>${multispeakInterface.version.version}</span>
-                                <tags:hidden path="mspInterfaceList[${i.index}].version"/>
-                        </td>
-                            <td>       
-                                <div class="button-group fr wsnw oh">
-                                    <cti:button icon="icon-ping" id="${multispeakInterface.mspInterface}" name="pingURL" renderMode="buttonImage" title="${pingTitle}" disabled="${disabled}"
-                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${multispeakInterface.version}');"/>
-                                    <cti:button icon="icon-application-view-columns" id="${multispeakInterface.mspInterface}" name="getMethods" renderMode="buttonImage" title="${getMethods}" disabled="${disabled}"
-                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${multispeakInterface.version}');"/>
-                                </div>
-                            </td>
-                     </tr>
-                     </c:when>
+                            <%@ include file="interface.jspf" %>
+                        </c:when>
                      <c:otherwise>
                      <cti:displayForPageEditModes modes="EDIT">
-                     <tr><c:set var="resultsCount" value="${resultsCount + 1}"/>
-                            <td>
-                              <c:out value="${multispeakInterface.mspInterface}"/>
-                              <tags:hidden path="mspInterfaceList[${i.index}].mspInterface"/>
-                              <tags:hidden path="mspInterfaceList[${i.index}].vendorID"/>
-                              <tags:hidden path="mspInterfaceList[${i.index}].interfaceEnabled"/>
-                            </td>
-                        <td class="wbba" style="width: 332px;">
-                        <tags:input id="${multispeakInterface.mspInterface}" path="mspInterfaceList[${i.index}].mspEndpoint" size="40" /> 
-                        </td>
-                        <td>
-                                <span>${multispeakInterface.version.version}</span>
-                                <tags:hidden path="mspInterfaceList[${i.index}].version"/>
-                        </td>
-                            <td>       
-                                <div class="button-group fr wsnw oh">
-                                    <cti:button icon="icon-ping" id="${multispeakInterface.mspInterface}" name="pingURL" renderMode="buttonImage" title="${pingTitle}" disabled="${disabled}"
-                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${multispeakInterface.version}');"/>
-                                    <cti:button icon="icon-application-view-columns" id="${multispeakInterface.mspInterface}" name="getMethods" renderMode="buttonImage" title="${getMethods}" disabled="${disabled}"
-                                    onclick="yukon.admin.multispeak.executeRequest(this.id,this.name,'${multispeakInterface.version}');"/>
-                                </div>
-                            </td>
-                     </tr>
+                         <%@ include file="interface.jspf" %>
                      </cti:displayForPageEditModes>
                      </c:otherwise>
                      </c:choose>

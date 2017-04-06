@@ -23,6 +23,7 @@ public class MultispeakModel {
     private MultispeakVendor mspVendor;
     private List<MultispeakInterface> mspInterfaceList;
     private String service;
+    private String endpointURL;
 
     public Integer getMspPrimaryCIS() {
         return mspPrimaryCIS;
@@ -104,4 +105,11 @@ public class MultispeakModel {
         this.service = service;
     }
 
+    public String getEndpointURL() {
+        return endpointURL;
+    }
+
+    public void setEndpointURL(String endpointURL) {
+        this.endpointURL = endpointURL;
+    }
 }

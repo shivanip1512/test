@@ -490,8 +490,8 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
 
     @Override
-    public ErrorObject[] pingURL(MultispeakVendor mspVendor, String service) throws MultispeakWebServiceClientException {
-        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, service);
+    public ErrorObject[] pingURL(MultispeakVendor mspVendor, String service, String endpointUrl)
+            throws MultispeakWebServiceClientException {
 
         ErrorObject[] objects = new ErrorObject[] {};
         List<ErrorObject> errorObjects = new ArrayList<>();
@@ -539,7 +539,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
     public List<String> findMethods(String mspServer, MultispeakVendor mspVendor) {
 
         try {
-            return getMethods(mspVendor, mspServer);
+            return getMethods(mspVendor, mspServer, null);
         } catch (MultispeakWebServiceClientException e) {
             log.error("Exception processing GetMethods (" + mspVendor.getCompanyName() + ") for Server: " + mspServer);
             log.error("MultispeakWebServiceClientException: " + e.getMessage());
@@ -548,10 +548,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
     }
 
     @Override
-    public List<String> getMethods(MultispeakVendor mspVendor, String service)
+    public List<String> getMethods(MultispeakVendor mspVendor, String service, String endpointUrl)
             throws MultispeakWebServiceClientException {
-
-        String endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, service);
+        if (endpointUrl == null) {
+            endpointUrl = multispeakFuncs.getEndpointUrl(mspVendor, service);
+        }
         List<String> methods = new ArrayList<>();
         
         GetMethods getMethods = objectFactory.createGetMethods();

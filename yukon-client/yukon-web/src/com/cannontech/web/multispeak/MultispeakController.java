@@ -208,14 +208,14 @@ public class MultispeakController {
     public Map<String, Object> pingURL(HttpServletRequest request, ModelMap map,
             @ModelAttribute MultispeakModel multispeak, @PathVariable String serviceVersion) {
         Map<String, Object> json = new HashMap<>();
-
+        String endpointURL = multispeak.getEndpointURL().trim();
         String mspService = multispeak.getService();
         MultiSpeakVersion version = MultiSpeakVersion.valueOf(serviceVersion);
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeak.getMspVendor().getVendorID());
         if (mspService != null) {
             try {
                 if (version == MultiSpeakVersion.V3) {
-                    ErrorObject[] objects = mspObjectDao.pingURL(mspVendor, mspService);
+                    ErrorObject[] objects = mspObjectDao.pingURL(mspVendor, mspService, endpointURL);
                     if (objects != null && objects != null && objects.length > 0) {
                         String result = "";
                         for (int i = 0; i < objects.length; i++) {
@@ -261,13 +261,14 @@ public class MultispeakController {
             @ModelAttribute MultispeakModel multispeak, @PathVariable String serviceVersion) {
         Map<String, Object> json = new HashMap<>();
         String mspService = multispeak.getService();
+        String endpointURL = multispeak.getEndpointURL().trim();
         MultiSpeakVersion version = MultiSpeakVersion.valueOf(serviceVersion);
         Integer vendorId = multispeak.getMspVendor().getVendorID();
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
         if (mspService != null) {
             try {
                 if (version == MultiSpeakVersion.V3) {
-                    List<String> supportedMethods = mspObjectDao.getMethods(mspVendor, mspService);
+                    List<String> supportedMethods = mspObjectDao.getMethods(mspVendor, mspService, endpointURL);
                     if (supportedMethods.isEmpty()) {
 
                         json.put(MultispeakDefines.MSP_RESULT_MSG, "* No methods reported for " + mspService
