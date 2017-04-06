@@ -42,7 +42,6 @@ import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.dr.assetavailability.AllRelayCommunicationTimes;
 import com.cannontech.dr.assetavailability.AssetAvailabilityPointDataTimes;
 import com.cannontech.dr.assetavailability.dao.DynamicLcrCommunicationsDao;
 import com.cannontech.dr.honeywellWifi.azure.event.EquipmentStatus;
@@ -68,85 +67,88 @@ public class HoneywellWifiRuntimeCalcServiceImpl implements HoneywellWifiRuntime
     @PostConstruct
     public void init() {
         //Schedule calculateRuntimes() every 6 hours, with the first run 1 minute after the honeywell services init.
-        scheduledExecutor.scheduleAtFixedRate(this::calculateRuntimes, 1, 6*60, TimeUnit.MINUTES);
+        scheduledExecutor.scheduleAtFixedRate(this::calculateRuntimes, 1, 1, TimeUnit.MINUTES);
         log.info("Initialized HoneywellWifiRuntimeCalcService");
     }
     
     @Override
     public void calculateRuntimes() {
-        
-        List<YukonPao> thermostats = getAllThermostats();
-        if (thermostats.size() == 0) {
-            return;
-        }
-        log.info("Calculating runtimes for Honeywell wifi thermostats.");
-        log.debug("Found " + thermostats.size() + " Honeywell wifi thermostats.");
-        
-        Map<Integer, DateTime> lastRuntimes = getLastRuntimes(thermostats);
-        Instant endOfCalcRange = getEndOfRuntimeCalcRange().toInstant();
-        
-        for (YukonPao thermostat : thermostats) {
-            // Get all the state values within the range where we want to calculate runtime
-            int paoId = thermostat.getPaoIdentifier().getPaoId();
-            final Instant startOfCalcRange;
-            if (lastRuntimes.get(paoId) != null) {
-                startOfCalcRange = lastRuntimes.get(paoId).toInstant();
-            } else {
-                startOfCalcRange = null;
+        try {
+            List<YukonPao> thermostats = getAllThermostats();
+            if (thermostats.size() == 0) {
+                return;
             }
+            log.info("Calculating runtimes for Honeywell wifi thermostats.");
+            log.debug("Found " + thermostats.size() + " Honeywell wifi thermostats.");
             
-            ListMultimap<PaoIdentifier, PointValueQualityHolder> stateDataMultimap = 
-                    rphDao.getAttributeData(Collections.singleton(thermostat), 
-                                            BuiltInAttribute.THERMOSTAT_RELAY_STATE, 
-                                            false, 
-                                            Range.inclusive(startOfCalcRange, endOfCalcRange), 
-                                            Order.FORWARD, 
-                                            null);
-            List<PointValueQualityHolder> stateData = stateDataMultimap.get(thermostat.getPaoIdentifier());
+            Map<Integer, DateTime> lastRuntimes = getLastRuntimes(thermostats);
+            Instant endOfCalcRange = getEndOfRuntimeCalcRange().toInstant();
             
-            // Get the status point entry directly previous to the first (if applicable).
-            // This is needed to calculate runtime for the portion of the hour prior to the "first" status
-            PointValueHolder previousStatus = null;
-            if (startOfCalcRange != null) {
-                AdjacentPointValues adjacents = rphDao.getAdjacentPointValues(stateData.get(0));
-                previousStatus = adjacents.getPreceding();
+            for (YukonPao thermostat : thermostats) {
+                // Get all the state values within the range where we want to calculate runtime
+                int paoId = thermostat.getPaoIdentifier().getPaoId();
+                final Instant startOfCalcRange;
+                if (lastRuntimes.get(paoId) != null) {
+                    startOfCalcRange = lastRuntimes.get(paoId).toInstant();
+                } else {
+                    startOfCalcRange = null;
+                }
+                
+                ListMultimap<PaoIdentifier, PointValueQualityHolder> stateDataMultimap = 
+                        rphDao.getAttributeData(Collections.singleton(thermostat), 
+                                                BuiltInAttribute.THERMOSTAT_RELAY_STATE, 
+                                                false, 
+                                                Range.inclusive(startOfCalcRange, endOfCalcRange), 
+                                                Order.FORWARD, 
+                                                null);
+                List<PointValueQualityHolder> stateData = stateDataMultimap.get(thermostat.getPaoIdentifier());
+                
+                // Get the status point entry directly previous to the first (if applicable).
+                // This is needed to calculate runtime for the portion of the hour prior to the "first" status
+                PointValueHolder previousStatus = null;
+                if (startOfCalcRange != null && stateData.size() > 0) {
+                    AdjacentPointValues adjacents = rphDao.getAdjacentPointValues(stateData.get(0));
+                    previousStatus = adjacents.getPreceding();
+                }
+                
+                //Calculate hourly runtimes
+                List<DatedRuntimeStatus> statuses = new ArrayList<>();
+                if (previousStatus != null) {
+                    statuses.add(getRuntimeStatusFromPoint(previousStatus));
+                }
+                for (PointValueQualityHolder pointValue : stateData) {
+                    statuses.add(getRuntimeStatusFromPoint(pointValue));
+                }
+                Map<DateTime, Integer> runtimeSeconds = runtimeCalcService.getHourlyRuntimeSeconds(statuses);
+                //Updating last non zero runtime for thermostat
+                runtimeSeconds.entrySet().stream()
+                                         .filter(entry -> entry.getValue() > 0)
+                                         .map(entry -> entry.getKey())
+                                         .max(DateTime::compareTo)
+                                         .ifPresent(lastRuntimeDate -> {
+                                             updateAssetAvailability(thermostat.getPaoIdentifier(), lastRuntimeDate.toInstant());
+                                         });
+    
+                // Throw away any values prior to start of calculation range (if applicable), since that runtime is already
+                // recorded.
+                // Throw away the value for the last hour of the calculation range, since it is probably a partial hour. It
+                // will get calculated next time.
+                Predicate<Map.Entry<DateTime, Integer>> filter = null;
+                if (startOfCalcRange != null) {
+                    filter = entry -> {
+                        return entry.getKey().isAfter(startOfCalcRange)
+                               || entry.getKey().equals(startOfCalcRange)
+                               || entry.getKey().isAfter(getStartOfHour(endOfCalcRange.toDateTime()));
+                    };
+                }
+                
+                //Insert runtime values via dispatch
+                insertRuntimes(thermostat, runtimeSeconds, filter);
+                
+                log.info("Finished calculating runtimes for Honeywell wifi thermostats.");
             }
-            
-            //Calculate hourly runtimes
-            List<DatedRuntimeStatus> statuses = new ArrayList<>();
-            if (previousStatus != null) {
-                statuses.add(getRuntimeStatusFromPoint(previousStatus));
-            }
-            for (PointValueQualityHolder pointValue : stateData) {
-                statuses.add(getRuntimeStatusFromPoint(pointValue));
-            }
-            Map<DateTime, Integer> runtimeSeconds = runtimeCalcService.getHourlyRuntimeSeconds(statuses);
-            //Updating last non zero runtime for thermostat
-            runtimeSeconds.entrySet().stream()
-                                     .filter(entry -> entry.getValue() > 0)
-                                     .map(entry -> entry.getKey())
-                                     .max(DateTime::compareTo)
-                                     .ifPresent(lastRuntimeDate -> {
-                                         updateAssetAvailability(thermostat.getPaoIdentifier(), lastRuntimeDate.toInstant());
-                                     });
-
-            // Throw away any values prior to start of calculation range (if applicable), since that runtime is already
-            // recorded.
-            // Throw away the value for the last hour of the calculation range, since it is probably a partial hour. It
-            // will get calculated next time.
-            Predicate<Map.Entry<DateTime, Integer>> filter = null;
-            if (startOfCalcRange != null) {
-                filter = entry -> {
-                    return entry.getKey().isAfter(startOfCalcRange)
-                           || entry.getKey().equals(startOfCalcRange)
-                           || entry.getKey().isAfter(getStartOfHour(endOfCalcRange.toDateTime()));
-                };
-            }
-            
-            //Insert runtime values via dispatch
-            insertRuntimes(thermostat, runtimeSeconds, filter);
-            
-            log.info("Finished calculating runtimes for Honeywell wifi thermostats.");
+        } catch (Exception e) {
+            log.error("Error occurred in Honeywell runtime calculation", e);
         }
     }
     

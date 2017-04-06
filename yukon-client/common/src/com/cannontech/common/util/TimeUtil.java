@@ -11,6 +11,7 @@ import org.joda.time.DateMidnight;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
+import org.joda.time.IllegalFieldValueException;
 import org.joda.time.Instant;
 import org.joda.time.Interval;
 import org.joda.time.LocalDate;
@@ -332,7 +333,12 @@ public static int differenceMinutes(Date from, Date to) {
             return dateTime.plusDays(1)
                             .withTimeAtStartOfDay();
         }
-        return dateTime.withTime(hourOfDay + 1, 0, 0, 0);
+        try {
+            return dateTime.withTime(hourOfDay + 1, 0, 0, 0);
+        } catch (IllegalFieldValueException e) {
+            //Next hour falls within daylight savings time "gap", so we have to skip an hour.
+            return dateTime.withTime(hourOfDay + 2, 0, 0, 0);
+        }
     }
     
     public static DateTime getStartOfHour(DateTime dateTime) {
