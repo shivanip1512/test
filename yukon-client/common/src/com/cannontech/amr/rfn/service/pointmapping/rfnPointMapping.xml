@@ -955,6 +955,16 @@
                 <modifier>Harmonic</modifier>
             </modifiers>
         </point>
+        <point name="Power Factor">
+            <uom>PF</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 2</modifier>
+                <modifier>Quadrant 4</modifier>
+            </modifiers>
+        </point>
         <point name="Coincident Power Factor">
             <uom>PF</uom>
             <multiplier value=".001"/>
@@ -1341,7 +1351,8 @@
                 <modifier>Phase C</modifier>
             </modifiers>
         </point>
-<!-- The following only applies to A3K -->
+        
+        <!-- The following only applies to A3K -->
         <point name="Delivered kVA">
             <uom>VA</uom>
             <multiplier value=".001"/>
@@ -1349,6 +1360,7 @@
             <modifiers match="equal">
                 <modifier>Quadrant 1</modifier>
                 <modifier>Quadrant 4</modifier>
+                <modifier>Harmonic</modifier>   <!-- Delivered kVA on other paoTypes do not have this modifier -->
             </modifiers>
         </point>
         <point name="Received kVA">
@@ -1358,6 +1370,7 @@
             <modifiers match="equal">
                 <modifier>Quadrant 2</modifier>
                 <modifier>Quadrant 3</modifier>
+                <modifier>Harmonic</modifier>   <!-- Received kVA on other paoTypes do not have this modifier -->
             </modifiers>
         </point>
         <point name="kVAh Sum">
@@ -3342,7 +3355,8 @@
                 <modifier>Previous</modifier>
             </modifiers>
         </point>
-<!-- The following do not apply to RFN520FAX or RFN520FAXD -->
+        
+        <!-- The following do not apply to RFN520FAX or RFN520FAXD -->
         <point name="Sum kVArh">
             <uom>Varh</uom>
             <multiplier value=".001"/>
@@ -4644,7 +4658,8 @@
                 <modifier>Phase Neutral->Ground</modifier>
             </modifiers>
         </point>
-<!-- The following only applies to RFN530S4ERX and RFN530S4ERXR -->
+        
+        <!-- The following only applies to RFN530S4ERX and RFN530S4ERXR -->
         <point name="Net kVAh">
             <uom>VAh</uom>
             <multiplier value=".001"/>
