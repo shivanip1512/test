@@ -48,6 +48,7 @@
         <c:set var="tableClass" value="${viewMode ? '' : 'with-form-controls'}" />
         <form:hidden id="actionService" path="service" />
         <form:hidden id="vendorID" path="mspVendor.vendorID" />
+        <form:hidden id="endpointURL" path="endpointURL" />
         <tags:sectionContainer2 nameKey="setup" styleClass="stacked-lg">
             <c:if test="${!noVendorsExist || createMode}">
                 <div class="column-12-12 clearfix">
@@ -145,104 +146,85 @@
                         </thead>
                         <tbody>
                             <c:forEach var="mspPossibleInterfacev3" items="${multispeak.mspInterfaceList}"
-                                varStatus="status" step="2" begin="0" end="${fn:length(multispeak.mspInterfaceList)-3}">
-                                <c:set var="mspPossibleInterfacev5"
-                                    value="${multispeak.mspInterfaceList[status.index+1]}" />
-                                <c:set var="enabledV3" value="${mspPossibleInterfacev3.interfaceEnabled}" />
-                                <c:set var="enabledV5" value="${mspPossibleInterfacev5.interfaceEnabled}" />
+                                varStatus="status" begin="0">
+                                <c:choose>
+                                <c:when test="${status.index % 2 == 0 || mspPossibleInterfacev3.mspInterface=='NOT_Server'}">
+                                <c:choose>
+                                    <c:when test="${mspPossibleInterfacev3.mspInterface=='NOT_Server' || mspPossibleInterfacev3.mspInterface=='CB_CD'}">
+                                        <c:set var="currentInterface" value="${mspPossibleInterfacev3}"/>
+                                        <c:set var="indexValue" value="${status.index}"/>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <c:set var="mspPossibleInterfacev5"
+                                            value="${multispeak.mspInterfaceList[status.index+1]}" />
+                                        <c:set var="enabledV3" value="${mspPossibleInterfacev3.interfaceEnabled}" />
+                                        <c:set var="enabledV5" value="${mspPossibleInterfacev5.interfaceEnabled}" />
+                                        <c:set var="currentInterface" value="${mspPossibleInterfacev3}"/>
+                                        <c:set var="indexValue" value="${status.index}"/>
+                                        <c:if test="${enabledV5}">
+                                            <c:set var="currentInterface" value="${mspPossibleInterfacev5}"/>
+                                            <c:set var="indexValue" value="${status.index + 1}"/>
+                                        </c:if>
+                                    </c:otherwise>
+                                </c:choose>
+                                
                                 <tr>
+                                    
+                                    <td><tags:checkbox
+                                            path="mspInterfaceList[${indexValue}].interfaceEnabled"
+                                            id="${currentInterface.mspInterface}"
+                                            onclick="yukon.admin.multispeak.enableEndpointValue(this.checked, this.id)" />
+                                        <span class="checkBoxLabel"><spring:escapeBody
+                                                htmlEscape="true">${currentInterface.mspInterface}</spring:escapeBody></span>
+                                        <form:hidden path="mspInterfaceList[${indexValue}].vendorID" />
+                                        <form:hidden
+                                            path="mspInterfaceList[${indexValue}].mspInterface" />
+                                    </td>
+                                    <td class="wbba"><tags:input
+                                            id="endpointURL_${currentInterface.mspInterface}"
+                                            path="mspInterfaceList[${indexValue}].mspEndpoint"
+                                            size="40"
+                                            disabled="${!currentInterface.interfaceEnabled}" /></td>
+                                    <td>
                                     <c:choose>
-                                        <c:when test="${enabledV3}">
-                                            <td><tags:checkbox
-                                                    path="mspInterfaceList[${status.index}].interfaceEnabled"
-                                                    id="${mspPossibleInterfacev3.mspInterface}"
-                                                    onclick="yukon.admin.multispeak.enableEndpointValue(this.checked, this.id)" />
-                                                <span class="checkBoxLabel"><spring:escapeBody htmlEscape="true">${mspPossibleInterfacev3.mspInterface}</spring:escapeBody></span>
-                                                <form:hidden path="mspInterfaceList[${status.index}].vendorID" /> <form:hidden
-                                                    path="mspInterfaceList[${status.index}].mspInterface" /></td>
-                                            <td class="wbba"><tags:input
-                                                    id="interfaceURL${mspPossibleInterfacev3.mspInterface}${mspPossibleInterfacev3.version}"
-                                                    path="mspInterfaceList[${status.index}].mspEndpoint" size="40" /></td>
-                                            <td><tags:selectWithItems
-                                                    id="select${mspPossibleInterfacev3.mspInterface}"
-                                                    path="mspInterfaceList[${status.index}].version"
-                                                    items="${mspVersionList}" inputClass="with-option-hiding" /></td>
-                                            <td>
-                                                <div class="button-group fr wsnw oh">
-                                                    <cti:button icon="icon-ping"
-                                                        id="ping${mspPossibleInterfacev3.mspInterface}" name="pingURL"
-                                                        renderMode="buttonImage" title="${pingTitle}"
-                                                        onclick="yukon.admin.multispeak.executeRequest('${mspPossibleInterfacev3.mspInterface}',this.name,'${mspPossibleInterfacev3.version}');" />
-                                                    <cti:button icon="icon-application-view-columns"
-                                                        id="getMethods${mspPossibleInterfacev3.mspInterface}"
-                                                        name="getMethods" renderMode="buttonImage" title="${getMethods}"
-                                                        disabled="${disabled}"
-                                                        onclick="yukon.admin.multispeak.executeRequest('${mspPossibleInterfacev3.mspInterface}',this.name,'${mspPossibleInterfacev3.version}');" />
-                                                </div>
-                                            </td>
-                                        </c:when>
-                                        <c:when test="${enabledV5}">
-                                            <td><tags:checkbox
-                                                    path="mspInterfaceList[${status.index+1}].interfaceEnabled"
-                                                    id="${mspPossibleInterfacev5.mspInterface}"
-                                                    onclick="yukon.admin.multispeak.enableEndpointValue(this.checked, this.id)" />
-                                                <span class="checkBoxLabel"><spring:escapeBody htmlEscape="true">${mspPossibleInterfacev5.mspInterface}</spring:escapeBody></span>
-                                                <form:hidden path="mspInterfaceList[${status.index+1}].vendorID" /> <form:hidden
-                                                    path="mspInterfaceList[${status.index+1}].mspInterface" /></td>
-                                            <td class="wbba"><tags:input
-                                                    id="interfaceURL${mspPossibleInterfacev5.mspInterface}${mspPossibleInterfacev5.version}"
-                                                    path="mspInterfaceList[${status.index+1}].mspEndpoint" size="40" />
-                                            </td>
-                                            <td><tags:selectWithItems
-                                                    id="select${mspPossibleInterfacev5.mspInterface}"
-                                                    path="mspInterfaceList[${status.index+1}].version"
-                                                    items="${mspVersionList}" inputClass="with-option-hiding" /></td>
-                                            <td>
-                                                <div class="button-group fr wsnw oh">
-                                                    <cti:button icon="icon-ping"
-                                                        id="ping${mspPossibleInterfacev5.mspInterface}" name="pingURL"
-                                                        renderMode="buttonImage" title="${pingTitle}"
-                                                        onclick="yukon.admin.multispeak.executeRequest('${mspPossibleInterfacev3.mspInterface}',this.name,'${mspPossibleInterfacev5.version}');" />
-                                                    <cti:button icon="icon-application-view-columns"
-                                                        id="getMethods${mspPossibleInterfacev5.mspInterface}"
-                                                        name="getMethods" renderMode="buttonImage" title="${getMethods}"
-                                                        disabled="${disabled}"
-                                                        onclick="yukon.admin.multispeak.executeRequest('${mspPossibleInterfacev3.mspInterface}',this.name,'${mspPossibleInterfacev5.version}');" />
-                                                </div>
-                                            </td>
-                                        </c:when>
+                                        <c:when test="${currentInterface.mspInterface=='NOT_Server'}">
+                                                <tags:selectWithItems id="select${currentInterface.mspInterface}"
+                                                    path="mspInterfaceList[${indexValue}].version"
+                                                    disabled="${!currentInterface.interfaceEnabled}"
+                                                    items="${mspVersion5}" inputClass="with-option-hiding" />
+                                            </c:when>
+                                            <c:when test="${currentInterface.mspInterface=='CB_CD'}">
+                                                <tags:selectWithItems id="select${currentInterface.mspInterface}"
+                                                    path="mspInterfaceList[${indexValue}].version"
+                                                    disabled="${!currentInterface.interfaceEnabled}"
+                                                    items="${mspVersion3}" inputClass="with-option-hiding" />
+                                            </c:when>
                                         <c:otherwise>
-                                            <td><tags:checkbox
-                                                    path="mspInterfaceList[${status.index}].interfaceEnabled"
-                                                    id="${mspPossibleInterfacev3.mspInterface}"
-                                                    onclick="yukon.admin.multispeak.enableEndpointValue(this.checked, this.id)" />
-                                                <span class="checkBoxLabel"><spring:escapeBody htmlEscape="true">${mspPossibleInterfacev3.mspInterface}</spring:escapeBody></span>
-                                                <form:hidden path="mspInterfaceList[${status.index}].vendorID" /> <form:hidden
-                                                    path="mspInterfaceList[${status.index}].mspInterface" /></td>
-                                            <td class="wbba"><tags:input
-                                                    id="interfaceURL${mspPossibleInterfacev3.mspInterface}${mspPossibleInterfacev3.version}"
-                                                    disabled="${!mspPossibleInterfacev3.interfaceEnabled}"
-                                                    path="mspInterfaceList[${status.index}].mspEndpoint" size="40" /></td>
-                                            <td><tags:selectWithItems
-                                                    id="select${mspPossibleInterfacev3.mspInterface}"
-                                                    path="mspInterfaceList[${status.index}].version" disabled="true"
-                                                    items="${mspVersionList}" inputClass="with-option-hiding" /></td>
-                                            <td>
-                                                <div class="button-group fr wsnw oh">
-                                                    <cti:button icon="icon-ping"
-                                                        id="ping${mspPossibleInterfacev3.mspInterface}" name="pingURL"
-                                                        renderMode="buttonImage" title="${pingTitle}"
-                                                        disabled="${!mspPossibleInterfacev3.interfaceEnabled}"
-                                                        onclick="yukon.admin.multispeak.executeRequest('${mspPossibleInterfacev3.mspInterface}',this.name,'${mspPossibleInterfacev3.version}');" />
-                                                    <cti:button icon="icon-application-view-columns"
-                                                        id="getMethods${mspPossibleInterfacev3.mspInterface}"
-                                                        name="getMethods" renderMode="buttonImage" title="${getMethods}"
-                                                        disabled="${!mspPossibleInterfacev3.interfaceEnabled}"
-                                                        onclick="yukon.admin.multispeak.executeRequest('${mspPossibleInterfacev3.mspInterface}',this.name,'${mspPossibleInterfacev3.version}');" />
-                                                </div>
-                                            </td>
+                                        <tags:selectWithItems
+                                            id="select${currentInterface.mspInterface}"
+                                            path="mspInterfaceList[${indexValue}].version"
+                                            items="${mspVersionList}"
+                                            inputClass="with-option-hiding"
+                                            disabled="${!currentInterface.interfaceEnabled}" />
                                         </c:otherwise>
                                     </c:choose>
+                                    </td>
+                                    <td>
+                                        <div class="button-group fr wsnw oh">
+                                            <cti:button icon="icon-ping"
+                                                id="ping${currentInterface.mspInterface}"
+                                                name="pingURL" renderMode="buttonImage"
+                                                title="${pingTitle}"
+                                                disabled="${!currentInterface.interfaceEnabled}"
+                                                onclick="yukon.admin.multispeak.executeRequest('${currentInterface.mspInterface}',this.name,'${currentInterface.version}');" />
+                                            <cti:button icon="icon-application-view-columns"
+                                                id="getMethods${currentInterface.mspInterface}"
+                                                name="getMethods" renderMode="buttonImage"
+                                                title="${getMethods}"
+                                                disabled="${!currentInterface.interfaceEnabled}"
+                                                onclick="yukon.admin.multispeak.executeRequest('${currentInterface.mspInterface}',this.name,'${currentInterface.version}');" />
+                                        </div>
+                                    </td>
                                     <c:if test="${status.index == 0}">
                                         <c:set var="interfaceListLength"
                                             value="${fn:length(multispeak.mspInterfaceList)/2}" />
@@ -252,49 +234,10 @@
                                         </td>
                                     </c:if>
                                 </tr>
+                                </c:when>
+                                </c:choose>
                             </c:forEach>
-                            <c:forEach var="mspSingleInterface" items="${multispeak.mspInterfaceList}" varStatus="stat"
-                                begin="${fn:length(multispeak.mspInterfaceList)-2}">
-                                <tr>
-                                    <td><tags:checkbox path="mspInterfaceList[${stat.index}].interfaceEnabled"
-                                            id="${mspSingleInterface.mspInterface}"
-                                            onclick="yukon.admin.multispeak.enableEndpointValue(this.checked, this.id)" />
-                                        <span class="checkBoxLabel"><spring:escapeBody htmlEscape="true">${mspSingleInterface.mspInterface}</spring:escapeBody></span>
-                                        <form:hidden path="mspInterfaceList[${stat.index}].vendorID" /> <form:hidden
-                                            path="mspInterfaceList[${stat.index}].mspInterface" /></td>
-                                    <td class="wbba"><tags:input
-                                            id="interfaceURL${mspSingleInterface.mspInterface}${mspSingleInterface.version}"
-                                            disabled="${!mspSingleInterface.interfaceEnabled}"
-                                            path="mspInterfaceList[${stat.index}].mspEndpoint" size="40" /></td>
-                                    <td><c:choose>
-                                            <c:when test="${mspSingleInterface.mspInterface=='NOT_Server'}">
-                                                <tags:selectWithItems id="select${mspSingleInterface.mspInterface}"
-                                                    path="mspInterfaceList[${stat.index}].version"
-                                                    disabled="${!mspSingleInterface.interfaceEnabled}"
-                                                    items="${mspVersion5}" inputClass="with-option-hiding" />
-                                            </c:when>
-                                            <c:otherwise>
-                                                <tags:selectWithItems id="select${mspSingleInterface.mspInterface}"
-                                                    path="mspInterfaceList[${stat.index}].version"
-                                                    disabled="${!mspSingleInterface.interfaceEnabled}"
-                                                    items="${mspVersion3}" inputClass="with-option-hiding" />
-                                            </c:otherwise>
-                                        </c:choose></td>
-                                    <td>
-                                        <div class="button-group fr wsnw oh">
-                                            <cti:button icon="icon-ping" id="ping${mspSingleInterface.mspInterface}"
-                                                name="pingURL" renderMode="buttonImage" title="${pingTitle}"
-                                                disabled="${!mspSingleInterface.interfaceEnabled}"
-                                                onclick="yukon.admin.multispeak.executeRequest('${mspPossibleInterfacev3.mspInterface}',this.name,'${mspInterfacev5.version}');" />
-                                            <cti:button icon="icon-application-view-columns"
-                                                id="getMethods${mspSingleInterface.mspInterface}" name="getMethods"
-                                                renderMode="buttonImage" title="${getMethods}"
-                                                disabled="${!mspSingleInterface.interfaceEnabled}"
-                                                onclick="yukon.admin.multispeak.executeRequest('${mspPossibleInterfacev3.mspInterface}',this.name,'${mspInterfacev5.version}');" />
-                                        </div>
-                                    </td>
-                                </tr>
-                            </c:forEach>
+                            
                         </tbody>
                     </table>
                 </tags:sectionContainer2>

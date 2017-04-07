@@ -190,8 +190,7 @@ public class MultispeakController {
             flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.interfaces.deleted",
                 deletedMspVendor.getCompanyName()));
         }
-        vendorId = 0;
-        return "redirect:/multispeak/setup/vendorHome/" + vendorId;
+        return "redirect:/multispeak/setup/vendorHome";
 
     }
 
@@ -231,7 +230,7 @@ public class MultispeakController {
                     }
                 } else {
                     com.cannontech.msp.beans.v5.commontypes.ErrorObject[] objects =
-                        mspObjectDaoV5.pingURL(mspVendor, mspService);
+                        mspObjectDaoV5.pingURL(mspVendor, mspService, endpointURL);
                     if (objects != null && objects != null && objects.length > 0) {
                         String result = "";
                         for (int i = 0; i < objects.length; i++) {
@@ -284,7 +283,7 @@ public class MultispeakController {
                         json.put(RESULT_COLOR_ATT, "blue");
                     }
                 } else {
-                    List<String> supportedMethods = mspObjectDaoV5.getMethods(mspVendor, mspService);
+                    List<String> supportedMethods = mspObjectDaoV5.getMethods(mspVendor, mspService, endpointURL);
                     if (supportedMethods.isEmpty()) {
 
                         json.put(MultispeakDefines.MSP_RESULT_MSG, "* No methods reported for " + mspService

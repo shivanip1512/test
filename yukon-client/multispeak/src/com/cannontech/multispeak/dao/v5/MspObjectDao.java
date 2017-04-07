@@ -93,20 +93,23 @@ public interface MspObjectDao {
      * 
      * @param mspVendor The multispeak vendor to invoke.
      * @param service The string representation of the webservice to run.
+     * @param endpointUrl The endpointUrl for the service.
      * @return Returns an ArrayOfErrorObjects
      * @throws MultispeakWebServiceClientException
      */
-    public ErrorObject[] pingURL(MultispeakVendor mspVendor, String service) throws MultispeakWebServiceClientException;
+    public ErrorObject[] pingURL(MultispeakVendor mspVendor, String service, String endpointUrl)
+            throws MultispeakWebServiceClientException;
 
     /**
      * Utility to implement the getMethods method for the service.
      * 
      * @param mspVendor The MultiSpeak vendor to invoke.
      * @param service The string representation of the webservice to run.
+     * @param endpointUrl The endpointUrl for the service.
      * @return Returns the list of supported methods
      * @throws MultispeakWebServiceClientException
      */
-    public List<String> getMethods(MultispeakVendor mspVendor, String service)
+    public List<String> getMethods(MultispeakVendor mspVendor, String service, String endpointUrl)
             throws MultispeakWebServiceClientException;
 
     /**

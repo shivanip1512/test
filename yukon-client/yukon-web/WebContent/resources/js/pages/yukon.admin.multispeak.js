@@ -13,23 +13,19 @@ yukon.admin.multispeak = (function () {
 	 var
 	    _initialized = false;
 	    mod = {
-	    		enableEndpointValue : function (selected, mspInterface) {
-	    			
-	    					if(document.getElementById("interfaceURL"+mspInterface+"V3") != null) {
-	    						document.getElementById("interfaceURL"+mspInterface+"V3").disabled = !selected;
-	    					} else if(document.getElementById("interfaceURL"+mspInterface+"V5") != null) {
-	    						document.getElementById("interfaceURL"+mspInterface+"V5").disabled = !selected;
-	    					}
-	    				if (document.getElementById("select"+mspInterface) != null) {
-	    				   document.getElementById("select"+mspInterface).disabled = !selected;
-	    				}
-	    				if(document.getElementById("ping"+mspInterface) != null){
-	    					document.getElementById("ping"+mspInterface).disabled = !selected;
-	    				}
-	    				if(document.getElementById("getMethods"+mspInterface) != null){
-	    					document.getElementById("getMethods"+mspInterface).disabled = !selected;
-	    				}
-	    				
+	    	    enableEndpointValue : function (selected, mspInterface) {
+	    		    if($('#endpointURL_'+mspInterface).val() != null) {
+	    			    $('#endpointURL_'+mspInterface).prop('disabled', !selected);
+	    			}
+	    			if ($('#select'+mspInterface) != null) {
+	    				$('#select'+mspInterface).prop('disabled', !selected);
+	    			}
+	    			if($('#ping'+mspInterface) != null){
+	    				$('#ping'+mspInterface).prop('disabled', !selected);
+	    			}
+	    			if($('#getMethods'+mspInterface) != null){
+	    				$('#getMethods'+mspInterface).prop('disabled', !selected);
+	    			}
 	            },
 	            
 	            enableExtension: function (selected) {

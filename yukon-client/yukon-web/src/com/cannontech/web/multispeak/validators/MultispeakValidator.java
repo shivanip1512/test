@@ -36,7 +36,8 @@ public class MultispeakValidator extends SimpleValidator<MultispeakModel> {
             }
         }
         int index = 0;
-        if (multispeak.getMspVendor().getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
+        if (multispeak.getMspVendor().getVendorID() != null
+            && multispeak.getMspVendor().getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
 
             for (MultispeakInterface multispeakInterface : multispeak.getMspInterfaceList()) {
                 validateInterfaceURL(multispeakInterface.getMspEndpoint(), index, errors);
