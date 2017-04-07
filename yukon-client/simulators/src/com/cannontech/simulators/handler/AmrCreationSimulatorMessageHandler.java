@@ -15,6 +15,9 @@ import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 
+/**
+ * Handles messages for bulk amr device creation.
+ */
 public class AmrCreationSimulatorMessageHandler extends SimulatorMessageHandler {
     private static final Logger log = YukonLogManager.getLogger(AmrCreationSimulatorMessageHandler.class);
     @Autowired private DevAmrCreationService devAmrCreationService;

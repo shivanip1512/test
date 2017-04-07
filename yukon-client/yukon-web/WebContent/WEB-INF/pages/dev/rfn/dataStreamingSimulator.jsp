@@ -11,26 +11,33 @@
             <h3>Verification Response</h3>
             <input type="checkbox" name="isOverloadGatewaysOnVerification"/> Overload Gateways<br>
             <input type="checkbox" name="isNetworkManagerFailOnVerification"/> Network Manager Fail<br>
-            <input type="checkbox" name="isDeviceErrorOnVerification">
+            <input type="checkbox" name="isDeviceErrorOnVerification" data-toggle="verif-device-error">
             Device Error 
-            <select name="deviceErrorOnVerification">
+            <select name="deviceErrorOnVerification" data-toggle-group="verif-device-error">
                 <c:forEach var="deviceError" items="${deviceErrors}">
                     <option value="${deviceError}">${deviceError}</option>
                 </c:forEach>
-            </select>
+            </select> 
+            &nbsp(Error for first
+            <input type="number" name="numberOfDevicesToErrorOnVerification" min="0" value="1" data-toggle-group="verif-device-error"/>
+            devices)
             <br>
             
             <h3>Config Response</h3>
             <input type="checkbox" name="isOverloadGatewaysOnConfig"/> Overload Gateways<br>
             <input type="checkbox" name="isNetworkManagerFailOnConfig"/> Network Manager Fail<br>
             <input type="checkbox" name="isAcceptedWithError"/> Accepted With Error (Overloaded Gateways).Only for "re-send". The first 5 devices will always return no device errors. The remaining devices will always return a random error<br>
-            <input type="checkbox" name="isDeviceErrorOnConfig">
+            <input type="checkbox" name="isDeviceErrorOnConfig" data-toggle="resp-device-error">
             Device Error 
-            <select name="deviceErrorOnConfig">
+            <select name="deviceErrorOnConfig" data-toggle-group="resp-device-error">
                 <c:forEach var="deviceError" items="${deviceErrors}">
                     <option value="${deviceError}">${deviceError}</option>
                 </c:forEach>
             </select>
+            &nbsp(Error for first
+            <input type="number" name="numberOfDevicesToErrorOnConfig" min="0" value="1" data-toggle-group="resp-device-error"/>
+            devices)
+            <br>
             <br><br>
             <cti:button label="Start Simulator" type="submit"/>
         </form>
@@ -67,10 +74,8 @@
             </c:otherwise>
         </c:choose>
         <input type="checkbox" name="isDeviceErrorOnVerification" disabled="disabled" ${checked}>
-        Device Error 
-        <select name="deviceErrorOnVerification" disabled="disabled">
-                <option value="${settings.deviceErrorOnVerification}">${settings.deviceErrorOnVerification}</option>
-        </select>
+        Device Error: ${settings.deviceErrorOnVerification} 
+        (Error for first ${settings.numberOfDevicesToErrorOnVerification} devices)
         <br>
         
         <h3>Config Response</h3>
@@ -113,10 +118,8 @@
             </c:otherwise>
         </c:choose>
         <input type="checkbox" name="isDeviceErrorOnConfig" disabled="disabled" ${checked}>
-        Device Error 
-        <select name="deviceErrorOnConfig" disabled="disabled">
-            <option value="${settings.deviceErrorOnConfig}">${settings.deviceErrorOnConfig}</option>
-        </select>
+        Device Error: ${settings.deviceErrorOnConfig} 
+        (Error for first ${settings.numberOfDevicesToErrorOnConfig} devices)
         <br><br>
         <cti:button label="Stop Simulator" href="stopDataStreamingSimulator"/>
     </c:if>

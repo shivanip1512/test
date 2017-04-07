@@ -18,6 +18,10 @@ import com.cannontech.simulators.message.response.GatewaySimulatorStatusResponse
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 
+/**
+ * Handles setup of the RFN gateway simulator, which receives and sends messages related to gateways, which would
+ * normally be handled by Network Manager.
+ */
 public class GatewaySimulatorMessageHandler extends SimulatorMessageHandler {
     private static final Logger log = YukonLogManager.getLogger(GatewaySimulatorMessageHandler.class);
     @Autowired private RfnGatewaySimulatorService simulator;

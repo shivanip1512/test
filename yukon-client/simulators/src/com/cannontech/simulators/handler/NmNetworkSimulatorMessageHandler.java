@@ -12,6 +12,10 @@ import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.NmNetworkSimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 
+/**
+ * Handles setup messages for the RFN network simulator, which sends and receives RF-network related messages (mostly
+ * related to mapping features in Yukon) that would normally be handled by Network Manager.
+ */
 public class NmNetworkSimulatorMessageHandler extends SimulatorMessageHandler {
     private static final Logger log = YukonLogManager.getLogger(NmNetworkSimulatorMessageHandler.class);
     

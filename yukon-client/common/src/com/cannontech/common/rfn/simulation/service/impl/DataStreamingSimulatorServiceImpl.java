@@ -39,6 +39,7 @@ import com.cannontech.common.rfn.simulation.SimulatedDataStreamingSettings;
 import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.service.DataStreamingSimulatorService;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
+import com.cannontech.common.stream.StreamUtils;
 import com.google.common.collect.Lists;
 
 public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulatorService {
@@ -184,6 +185,7 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
                                settings.isOverloadGatewaysOnVerification(),
                                settings.isNetworkManagerFailOnVerification(),
                                settings.getDeviceErrorOnVerification(), 
+                               settings.getNumberOfDevicesToErrorOnVerification(),
                                false, request.getRequestSeqNumber());
         case UPDATE:
             return getResponse(request.getRequestType(),
@@ -191,6 +193,7 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
                                settings.isOverloadGatewaysOnConfig(),
                                settings.isNetworkManagerFailOnConfig(),
                                settings.getDeviceErrorOnConfig(), 
+                               settings.getNumberOfDevicesToErrorOnConfig(),
                                false, request.getRequestSeqNumber());
         case UPDATE_WITH_FORCE:
             return getResponse(request.getRequestType(),
@@ -198,11 +201,12 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
                                settings.isOverloadGatewaysOnConfig(),
                                settings.isNetworkManagerFailOnConfig(),
                                settings.getDeviceErrorOnConfig(),
+                               settings.getNumberOfDevicesToErrorOnConfig(),
                                settings.isAcceptedWithError(),
                                request.getRequestSeqNumber());
         case CONFIRM:
             return getResponse(request.getRequestType(), new ArrayList<>(request.getDevices().keySet()), false, false, 
-                               null, false, request.getRequestSeqNumber());
+                               null, 0, false, request.getRequestSeqNumber());
         default:
             throw new IllegalArgumentException("Unsupported request type: " + request.getRequestType());
         }
@@ -213,6 +217,7 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
                                                           boolean isOverloadGateways,
                                                           boolean isNetworkManagerFail,
                                                           DeviceDataStreamingConfigError deviceError,
+                                                          int numberOfDevicesToError,
                                                           boolean isAcceptedWithError,
                                                           long requestSeqNumber) {
         
@@ -254,25 +259,28 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         response.setRequestSeqNumber(requestSeqNumber);
         response.setAffectedGateways(affectedGateways);
         response.setResponseMessage("Simulated Response!");
-        response.setErrorConfigedDevices(new HashMap<>());
 
-        
         if (deviceError != null) {
-            for (RfnIdentifier device : devices) {
-                ConfigError error = new ConfigError();
-                error.setErrorType(deviceError);
-                error.setErrorMessage(deviceError.toString());
-                if (isOverloadGateways) {
-                    error.setOverSubscribedGatewayRfnIdentifier(device);
-                }
-                response.getErrorConfigedDevices().put(device, error);
-            }
+            Map<RfnIdentifier, ConfigError> deviceErrors = 
+                    devices.stream()
+                           .limit(numberOfDevicesToError == 0 ? Integer.MAX_VALUE : numberOfDevicesToError)
+                           .collect(StreamUtils.mapSelfTo(rfnId -> {
+                               ConfigError error = new ConfigError();
+                               error.setErrorType(deviceError);
+                               error.setErrorMessage(deviceError.toString());
+                               if (isOverloadGateways) {
+                                   error.setOverSubscribedGatewayRfnIdentifier(rfnId);
+                               }
+                               return error;
+                           }));
+            response.setErrorConfigedDevices(deviceErrors);
         } 
         if (isAcceptedWithError) {
             response.setResponseType(DeviceDataStreamingConfigResponseType.ACCEPTED_WITH_ERROR);
             List<DeviceDataStreamingConfigError> configErrors =
-                Arrays.asList(DeviceDataStreamingConfigError.values()).stream().filter(
-                    e -> e != DeviceDataStreamingConfigError.GATEWAY_OVERLOADED).collect(Collectors.toList());
+                Arrays.stream(DeviceDataStreamingConfigError.values())
+                      .filter( e -> e != DeviceDataStreamingConfigError.GATEWAY_OVERLOADED)
+                      .collect(Collectors.toList());
             Map<RfnIdentifier, ConfigError> errorMap = new HashMap<>();
             for(int i = 0; i < devices.size(); i++){
                 if(i < 5){

@@ -16,7 +16,7 @@ import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Entry point for the simulators service. This is a testing service that simulates external systems and hardware that 
- * Yukon communicates with.
+ * Yukon communicates with, most notably Network Manager.
  */
 public class SimulatorsService {
     private static final Logger log = YukonLogManager.getLogger(SimulatorsService.class);

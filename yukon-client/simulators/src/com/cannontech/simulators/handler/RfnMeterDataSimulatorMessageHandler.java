@@ -16,6 +16,10 @@ import com.cannontech.simulators.message.response.RfnMeterDataSimulatorStatusRes
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 
+/**
+ * Handles setup messages for the RFN meter simulator, which produces RFN meter data similar to what Yukon would receive
+ * from an active Network Manager.
+ */
 public class RfnMeterDataSimulatorMessageHandler extends SimulatorMessageHandler {
     private static final Logger log = YukonLogManager.getLogger(RfnMeterDataSimulatorMessageHandler.class);
     @Autowired private RfnMeterDataSimulatorService rfnMeterDataSimulatorService;

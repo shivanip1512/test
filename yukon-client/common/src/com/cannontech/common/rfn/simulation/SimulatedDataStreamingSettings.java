@@ -13,10 +13,13 @@ public class SimulatedDataStreamingSettings implements Serializable {
     private boolean overloadGatewaysOnVerification;
     private DeviceDataStreamingConfigError deviceErrorOnVerification;
     private boolean networkManagerFailOnVerification;
+    private int numberOfDevicesToErrorOnVerification;
     
     private boolean overloadGatewaysOnConfig;
     private DeviceDataStreamingConfigError deviceErrorOnConfig;
     private boolean networkManagerFailOnConfig;
+    private int numberOfDevicesToErrorOnConfig;
+    
     private boolean acceptedWithError;
     
     //VERIFICATION
@@ -45,6 +48,14 @@ public class SimulatedDataStreamingSettings implements Serializable {
         this.networkManagerFailOnVerification = networkManagerFailOnVerification;
     }
     
+    public int getNumberOfDevicesToErrorOnVerification() {
+        return numberOfDevicesToErrorOnVerification;
+    }
+
+    public void setNumberOfDevicesToErrorOnVerification(int numberOfDevicesToErrorOnVerification) {
+        this.numberOfDevicesToErrorOnVerification = numberOfDevicesToErrorOnVerification;
+    }
+    
     //CONFIG
     
     public boolean isOverloadGatewaysOnConfig() {
@@ -71,6 +82,15 @@ public class SimulatedDataStreamingSettings implements Serializable {
         this.networkManagerFailOnConfig = networkManagerFailOnConfig;
     }
 
+    
+    public int getNumberOfDevicesToErrorOnConfig() {
+        return numberOfDevicesToErrorOnConfig;
+    }
+
+    public void setNumberOfDevicesToErrorOnConfig(int numberOfDevicesToErrorOnConfig) {
+        this.numberOfDevicesToErrorOnConfig = numberOfDevicesToErrorOnConfig;
+    }
+    
     public boolean isAcceptedWithError() {
         return acceptedWithError;
     }
@@ -78,10 +98,4 @@ public class SimulatedDataStreamingSettings implements Serializable {
     public void setAcceptedWithError(boolean acceptedWithError) {
         this.acceptedWithError = acceptedWithError;
     }
-    
-    //TODO
-    //Device specific errors
-    //all DeviceDataStreamingConfigError values?
-    
-    
 }

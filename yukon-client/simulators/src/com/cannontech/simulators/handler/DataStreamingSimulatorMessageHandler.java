@@ -13,6 +13,10 @@ import com.cannontech.simulators.message.response.DataStreamingSimulatorStatusRe
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 
+/**
+ * Handles setup of data streaming requests that would normally be handled by Network Manager. The field simulator
+ * (in Yukon\server\bin) handles E2E communications from Yukon to the actual RFN endpoints.
+ */
 public class DataStreamingSimulatorMessageHandler extends SimulatorMessageHandler {
     private static final Logger log = YukonLogManager.getLogger(DataStreamingSimulatorMessageHandler.class);
     

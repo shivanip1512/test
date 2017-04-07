@@ -18,6 +18,10 @@ import com.cannontech.simulators.message.response.RfnLcrSimulatorStatusResponse;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 import com.cannontech.simulators.message.response.SimulatorResponseBase;
 
+/**
+ * Handles setup messages for the RFN LCR simulator, which produces RFN LCR data similar to what Yukon would receive
+ * from an active Network Manager.
+ */
 public class RfnLcrDataSimulatorMessageHandler extends SimulatorMessageHandler {
     private static final Logger log = YukonLogManager.getLogger(RfnLcrDataSimulatorMessageHandler.class);
     @Autowired private RfnLcrDataSimulatorService rfnLcrDataSimulatorService;
