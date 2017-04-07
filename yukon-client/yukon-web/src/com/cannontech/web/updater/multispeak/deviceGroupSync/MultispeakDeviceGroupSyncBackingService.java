@@ -15,7 +15,6 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.multispeak.client.MultispeakFuncs;
-import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgressStatus;
@@ -57,8 +56,7 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         MultispeakDeviceGroupSyncProgress progress = null;
 
         if (vendorId > 0) {
-            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
-            progress = mspHandler.getDeviceGroupSyncService(mspVendor).getProgress();
+            progress = mspHandler.getDeviceGroupSyncService().getProgress();
         }
 
         MultispeakDeviceGroupSyncUpdaterTypeEnum updaterType = MultispeakDeviceGroupSyncUpdaterTypeEnum.valueOf(updaterTypeStr);
@@ -283,9 +281,8 @@ public class MultispeakDeviceGroupSyncBackingService implements UpdateBackingSer
         int vendorId = multispeakFuncs.getPrimaryCIS();
         Instant instant = null;
         if (vendorId > 0) {
-            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
             Map<MultispeakDeviceGroupSyncTypeProcessorType, Instant> lastSyncInstants =
-                mspHandler.getDeviceGroupSyncService(mspVendor).getLastSyncInstants();
+                mspHandler.getDeviceGroupSyncService().getLastSyncInstants();
             instant = lastSyncInstants.get(type);
         }
 

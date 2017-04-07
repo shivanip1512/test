@@ -13,7 +13,6 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.multispeak.client.MultispeakFuncs;
-import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncProgress;
 import com.cannontech.multispeak.service.MultispeakDeviceGroupSyncType;
@@ -29,10 +28,10 @@ import com.google.common.collect.Maps;
 @RequestMapping("/setup/deviceGroupSync/*")
 public class MultispeakDeviceGroupSyncController {
     
-    @Autowired MultispeakDao multispeakDao;
-    @Autowired MspHandler mspHandler;
-    private MeterDao meterDao;
-    private MultispeakFuncs multispeakFuncs;
+    @Autowired private MultispeakFuncs multispeakFuncs;
+    @Autowired private MeterDao meterDao;
+    @Autowired private MultispeakDao multispeakDao;
+    @Autowired private MspHandler mspHandler;
 
 	// HOME
     @RequestMapping("home")
@@ -43,13 +42,11 @@ public class MultispeakDeviceGroupSyncController {
 
         MultispeakDeviceGroupSyncType[] deviceGroupSyncTypes = MultispeakDeviceGroupSyncType.values();
         modelMap.addAttribute("deviceGroupSyncTypes", deviceGroupSyncTypes);
-
-        MultispeakVendor mspVendor = getMspVendor();
-        if (mspVendor != null) {
-            progress = mspHandler.getDeviceGroupSyncService(mspVendor).getProgress();
+        int vendorId = multispeakFuncs.getPrimaryCIS();
+        if (vendorId > 0) {
+            progress = mspHandler.getDeviceGroupSyncService().getProgress();
             // start page
-            lastSyncInstants =
-                    mspHandler.getDeviceGroupSyncService(mspVendor).getLastSyncInstants();
+            lastSyncInstants = mspHandler.getDeviceGroupSyncService().getLastSyncInstants();
         } else {
             lastSyncInstants.put(MultispeakDeviceGroupSyncTypeProcessorType.SUBSTATION, null);
             lastSyncInstants.put(MultispeakDeviceGroupSyncTypeProcessorType.BILLING_CYCLE, null);
@@ -75,10 +72,9 @@ public class MultispeakDeviceGroupSyncController {
             return "redirect:home";
         }
 
-        MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
         MultispeakDeviceGroupSyncType multispeakDeviceGroupSyncType = MultispeakDeviceGroupSyncType.valueOf(deviceGroupSyncType);
          
-        mspHandler.startDeviceGroupSync(mspVendor, multispeakDeviceGroupSyncType, userContext);
+        mspHandler.startDeviceGroupSync(multispeakDeviceGroupSyncType, userContext);
 
     
             flashScope.setConfirm(new YukonMessageSourceResolvable(
@@ -91,7 +87,7 @@ public class MultispeakDeviceGroupSyncController {
     public String progress(ModelMap modelMap, FlashScope flashScope) {
 
         MultispeakDeviceGroupSyncProgress progress =
-                mspHandler.getDeviceGroupSyncService(getMspVendor()).getProgress();
+                mspHandler.getDeviceGroupSyncService().getProgress();
 
         if (progress == null) {
             return "redirect:home";
@@ -109,7 +105,7 @@ public class MultispeakDeviceGroupSyncController {
 	@RequestMapping(value="done", params="cancel")
     public String done(FlashScope flashScope) {
 
-	    mspHandler.getDeviceGroupSyncService(getMspVendor()).getProgress().cancel();
+	    mspHandler.getDeviceGroupSyncService().getProgress().cancel();
 
         flashScope.setConfirm(new YukonMessageSourceResolvable(
             "yukon.web.modules.adminSetup.deviceGroupSyncProgress.cancelOk"));
@@ -122,24 +118,5 @@ public class MultispeakDeviceGroupSyncController {
     public String done() {
 		
         return "redirect:home";
-    }
-	
-    @Autowired
-    public void setMeterDao(MeterDao meterDao) {
-		this.meterDao = meterDao;
-	}
-    
-    @Autowired
-    public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
-		this.multispeakFuncs = multispeakFuncs;
-	}
-    
-    private MultispeakVendor getMspVendor() {
-        int vendorId = multispeakFuncs.getPrimaryCIS();
-        if (vendorId <= 0) {
-            return null;
-        }
-        MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
-        return mspVendor;
     }
 }

@@ -20,7 +20,6 @@ import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.substation.dao.SubstationDao;
 import com.cannontech.multispeak.client.MultispeakFuncs;
-import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.multispeak.MspHandler;
@@ -49,8 +48,7 @@ public class MspSubstationsController {
         }
         
         // mspSubstationNames
-        MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-        List<String> mspSubstationNames = mspHandler.getMspSubstationName(mspVendor);
+        List<String> mspSubstationNames = mspHandler.getMspSubstationName();
         
         // make MspSubstation list. Don't show those that already exists (case insensitive)
         List<MspSubstation> mspSubstations = new ArrayList<MspSubstation>();
@@ -66,7 +64,7 @@ public class MspSubstationsController {
             
             MspSubstation mspSubstation = new MspSubstation(mspSubstationName, show);
             if (!(PaoUtils.isValidPaoName(mspSubstationName))) {
-                mspHandler.invalidSubstationName(mspVendor, mspSubstationName);
+                mspHandler.invalidSubstationName(mspSubstationName);
                 continue;
             }
             mspSubstations.add(mspSubstation);

@@ -72,7 +72,6 @@ import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.multispeak.client.MultispeakFuncs;
-import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.system.GlobalSettingType;
@@ -416,12 +415,7 @@ public class WaterLeakReportController {
 
     @RequestMapping(value = "cisDetails", method = RequestMethod.GET)
     public String cisDetails(ModelMap model, YukonUserContext userContext, int paoId) {
-
-        MultispeakVendor mspPrimaryCISVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
-        if (mspPrimaryCISVendor.getVendorID() > 0) {
-            return mspHandler.getCisDetails(model, userContext, paoId, mspPrimaryCISVendor);
-        }
-        return "";
+        return mspHandler.getCisDetails(model, userContext, paoId);
     }
 
     @RequestMapping(value="leaks-csv", method = RequestMethod.GET)
