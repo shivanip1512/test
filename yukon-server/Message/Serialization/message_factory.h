@@ -24,7 +24,7 @@ namespace Serialization {
 template <typename Message_t>
 struct MessagePtr
 {
-    typedef std::auto_ptr<Message_t> type;
+    typedef std::unique_ptr<Message_t> type;
 };
 
 /*-----------------------------------------------------------------------------

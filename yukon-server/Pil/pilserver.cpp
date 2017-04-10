@@ -52,6 +52,7 @@
 #include <boost/range/algorithm/count_if.hpp>
 #include <boost/range/algorithm/for_each.hpp>
 #include <boost/ptr_container/ptr_deque.hpp>
+#include <boost/range/adaptor/indirected.hpp>
 
 #include <iomanip>
 #include <iostream>
@@ -500,9 +501,7 @@ void PilServer::resultThread()
                 }
             }
 
-            typedef boost::ptr_deque<RfnDeviceResult> RfnResultQueue_t;
-            RfnResultQueue_t pendingRfnResultQueue =
-                    _rfnManager.getResults(inQueueBlockSize);
+            auto pendingRfnResultQueue = _rfnManager.getResults(inQueueBlockSize);
 
             set<long> paoids;
 
@@ -510,9 +509,8 @@ void PilServer::resultThread()
                      pendingInMessages.end(),
                      collect_inmess_target_device(paoids));
 
-            for_each(pendingRfnResultQueue.begin(),
-                     pendingRfnResultQueue.end(),
-                     collectRfnResultDeviceIds(paoids));
+            boost::for_each(pendingRfnResultQueue | boost::adaptors::indirected,
+                            collectRfnResultDeviceIds(paoids));
 
             if( ! paoids.empty() )
             {
@@ -530,9 +528,9 @@ void PilServer::resultThread()
 
             while( !bServerClosing && !pendingRfnResultQueue.empty() )
             {
-                RfnResultQueue_t::auto_type rfnResult = pendingRfnResultQueue.pop_front();
+                handleRfnDeviceResult(*pendingRfnResultQueue.front());
 
-                handleRfnDeviceResult(*rfnResult);
+                pendingRfnResultQueue.pop_front();
             }
 
             const size_t clientReturnBlockSize = 20;

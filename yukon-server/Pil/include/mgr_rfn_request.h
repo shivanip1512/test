@@ -47,8 +47,8 @@ class IM_EX_CTIPIL RfnRequestManager
 {
 public:
 
-    typedef boost::ptr_deque<RfnDeviceResult> ResultQueue;
-    typedef std::vector<RfnDeviceRequest> RfnDeviceRequestList;
+    using ResultQueue          = std::deque<std::unique_ptr<RfnDeviceResult>>;
+    using RfnDeviceRequestList = std::vector<RfnDeviceRequest>;
 
     void tick();
 

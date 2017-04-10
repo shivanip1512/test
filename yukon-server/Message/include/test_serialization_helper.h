@@ -96,8 +96,7 @@ struct TestCaseBase
 
     int _mismatchCount;
 
-    std::auto_ptr<message_t> _imsg,
-                             _omsg;
+    std::unique_ptr<message_t> _imsg, _omsg;
 
     TestCaseBase() : _mismatchCount(0)
     {

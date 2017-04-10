@@ -132,12 +132,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_successful )
 
     mgr.tick();
 
-    boost::ptr_deque<Cti::Pil::RfnDeviceResult> results = mgr.getResults(99);
+    auto results = mgr.getResults(99);
 
     {
         BOOST_REQUIRE_EQUAL(results.size(), 1);
 
-        Cti::Pil::RfnDeviceResult &result = results.front();
+        Cti::Pil::RfnDeviceResult &result = *results.front();
 
         const std::string expectedDescription =
             "Status: Success (0)"
@@ -257,12 +257,12 @@ BOOST_AUTO_TEST_CASE( test_cmd_rfn_badRequest )
 
     mgr.tick();
 
-    boost::ptr_deque<Cti::Pil::RfnDeviceResult> results = mgr.getResults(99);
+    auto results = mgr.getResults(99);
 
     {
         BOOST_REQUIRE_EQUAL(results.size(), 1);
 
-        Cti::Pil::RfnDeviceResult &result = results.front();
+        Cti::Pil::RfnDeviceResult &result = *results.front();
 
         const std::string expectedDescription =
             "Request not acceptable";
