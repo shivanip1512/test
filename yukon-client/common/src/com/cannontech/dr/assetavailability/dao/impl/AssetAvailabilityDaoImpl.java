@@ -16,7 +16,6 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.SqlBuilder;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.roleproperties.SerialNumberValidation;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
@@ -28,19 +27,13 @@ import com.cannontech.dr.assetavailability.AssetAvailabilityCombinedStatus;
 import com.cannontech.dr.assetavailability.AssetAvailabilityDetails;
 import com.cannontech.dr.assetavailability.AssetAvailabilitySummary;
 import com.cannontech.dr.assetavailability.dao.AssetAvailabilityDao;
-import com.cannontech.stars.core.dao.EnergyCompanyDao;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
-import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
-import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
-import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private VendorSpecificSqlBuilderFactory vendorSpecificSqlBuilderFactory;
-    @Autowired private EnergyCompanySettingDao energyCompanySettingDao;
-    @Autowired private EnergyCompanyDao ecDao;
 
     @Override
     public SearchResults<AssetAvailabilityDetails> getAssetAvailabilityDetails(Iterable<Integer> loadGroupIds,
@@ -76,15 +69,7 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
 
         sqlPaginateQuery.append("FROM (");
         sqlPaginateQuery.append("SELECT (ROW_NUMBER() OVER (ORDER BY");
-        if (("SERIAL_NUM").equals(sortingOrder)) {
-            if (isSerialNumberNumeric(userContext)) {
-                sqlPaginateQuery.append(castToNumeric(sortingOrder).getSql());
-            } else {
-                sqlPaginateQuery.append(sortingOrder);
-            }
-        } else {
-            sqlPaginateQuery.append(sortingOrder);
-        }
+        sqlPaginateQuery.append(sortingOrder);
         sqlPaginateQuery.append(" ");
         sqlPaginateQuery.append(sortingDirection);
         sqlPaginateQuery.append(")) AS RowNumber, Appliances,DeviceId,InventoryId,serial_num,Type,last_comm,last_run,"
@@ -330,23 +315,6 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         return summary;
     }
 
-    private SqlFragmentSource castToNumeric(String sortingOrder) {
-        VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
-        SqlBuilder oracleSql =
-            builder.buildFor(DatabaseVendor.ORACLE9I, DatabaseVendor.ORACLE10G, DatabaseVendor.ORACLE11G,
-                DatabaseVendor.ORACLE12C);
-        oracleSql.append("CAST (");
-        oracleSql.append(sortingOrder);
-        oracleSql.append(" AS NUMBER(19))");
-
-        SqlBuilder otherSql = builder.buildOther();
-        otherSql.append("CAST (");
-        otherSql.append(sortingOrder);
-        otherSql.append(" AS BIGINT)");
-
-        return builder;
-    }
-    
     private SqlFragmentSource getTable() {
         VendorSpecificSqlBuilder builder = vendorSpecificSqlBuilderFactory.create();
         SqlBuilder oracleSql =
@@ -358,19 +326,5 @@ public class AssetAvailabilityDaoImpl implements AssetAvailabilityDao {
         otherSql.append("");
 
         return builder;
-    }
-    
-    private boolean isSerialNumberNumeric(YukonUserContext userContext) {
-        YukonEnergyCompany yukonEnergyCompany = ecDao.getEnergyCompanyByOperator(userContext.getYukonUser());
-
-        SerialNumberValidation value =
-            energyCompanySettingDao.getEnum(EnergyCompanySettingType.SERIAL_NUMBER_VALIDATION,
-                SerialNumberValidation.class, yukonEnergyCompany.getEnergyCompanyId());
-        if (value.equals(SerialNumberValidation.NUMERIC)) {
-            return true;
-        } else {
-            return false;
-        }
-
     }
 }
