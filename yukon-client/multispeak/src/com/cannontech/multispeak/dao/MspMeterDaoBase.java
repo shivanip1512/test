@@ -48,7 +48,7 @@ public class MspMeterDaoBase {
      * @param lastReceived search criteria , last meter number received
      * @returns SqlStatementBuilder with the SQL query formed
      */
-    public SqlStatementBuilder buildSqlStatementForAMRSupportedMeters(String lastReceived) {
+    protected SqlStatementBuilder buildSqlStatementForAMRSupportedMeters(String lastReceived) {
         boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -76,7 +76,7 @@ public class MspMeterDaoBase {
      * @param lastReceived search criteria , last meter number received
      * @returns SqlStatementBuilder with the SQL query formed 
      */
-    public SqlStatementBuilder buildSqlStatementForCDSupportedMeters( String lastReceived) {
+    protected SqlStatementBuilder buildSqlStatementForCDSupportedMeters( String lastReceived) {
         boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
         Collection<PaoType> collection = getIntegratedDisconnectPaoDefinitions();
 
