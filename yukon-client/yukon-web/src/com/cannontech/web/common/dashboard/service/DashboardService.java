@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.dashboard.model.Dashboard;
-import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
+import com.cannontech.web.common.dashboard.model.LiteDashboard;
 
 /**
  * This service handles dashboard create, update and delete actions, as well as miscellaneous actions relating to
