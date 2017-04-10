@@ -569,6 +569,15 @@ DELETE FROM POINT WHERE POINTID IN (
     WHERE POINTTYPE = 'ANALOG' AND PointOffset = 1 AND YP.Type IN ('RFN-530S4eAX', 'RFN-530S4eAXR', 'RFN-530S4eRX', 'RFN-530S4eRXR'));
 /* End YUK-16470 */
 
+/* Start YUK-16502 */
+IF (SELECT DISTINCT 1 FROM CTIDatabase WHERE 6.7 <= (SELECT max(version) FROM CTIDatabase)) IS NULL
+BEGIN
+	UPDATE RAWPOINTHISTORY SET TIMESTAMP = DATEADD(SECOND, -VALUE, TIMESTAMP)
+	WHERE pointid IN (SELECT pointid FROM point p, YukonPAObject ypo WHERE p.PAObjectID = ypo.PAObjectID AND POINTNAME = 'Outages' AND POINTOFFSET = '100'
+	AND Type LIKE ('RFN%'))
+END;
+/* End YUK-16502 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
