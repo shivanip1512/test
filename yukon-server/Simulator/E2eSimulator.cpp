@@ -124,14 +124,21 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
                 
             sendNetworkManagerRequestAck(requestMsg->header, msg->getCMSReplyTo());
 
-            //  E2E timeout
-            if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_TIMEOUT_CHANCE") )
+            //  NM queue timeout
+            if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_NM_QUEUE_TIMEOUT_CHANCE") )
             {
                 CTILOG_INFO(dout, "Not sending E2E confirm for " << requestMsg->rfnIdentifier);
                 return;
             }
 
             sendE2eDataConfirm(*requestMsg);
+
+            //  E2E timeout
+            if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_TIMEOUT_CHANCE") )
+            {
+                CTILOG_INFO(dout, "Not sending E2E indication for " << requestMsg->rfnIdentifier);
+                return;
+            }
 
             if( auto e2edtRequest = parseE2eDtRequestPayload(requestMsg->payload, requestMsg->rfnIdentifier) )
             {
