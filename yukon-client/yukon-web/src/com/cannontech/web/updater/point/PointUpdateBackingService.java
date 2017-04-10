@@ -209,10 +209,7 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, Poin
     public PointValueQualityHolder getCachedValue(int pointId) {
         log.info("PointUpdateBackingService alwaysRegisterForPoints=" + alwaysRegisterForPoints);
         log.info("PointUpdateBackingService Internal cache size=" + cache.size());
-        Set<Integer> pointSet = new HashSet<>();
-        pointSet.add(pointId);
-        List<DatedPointValue> values = getLatestValues(pointSet, 0, true);
-        DatedPointValue value = values.get(0);
+        DatedPointValue value = getLatestValues(Collections.singleton(pointId), 0, true).get(0);
         log.info("PointUpdateBackingService recieved point data for id=" + pointId + " on "
             + new DateTime(value.receivedTime).toString("MM-dd-yyyy HH:mm:ss"));
         return value.value;
