@@ -29,8 +29,6 @@
 
 using Cti::Logging::Vector::Hex::operator<<;
 
-static unsigned delay;
-
 namespace Cti {
 namespace Messaging {
 
@@ -60,8 +58,6 @@ ActiveMQConnectionManager::~ActiveMQConnectionManager()
 void ActiveMQConnectionManager::start()
 {
     static_cast<CtiThread *>(gActiveMQConnection.get())->start();
-
-    delay = gConfigParms.getValueAsULong("ACTIVEMQ_TEMP_QUEUE_CREATION_DELAY_SECONDS");
 }
 
 void ActiveMQConnectionManager::close()
@@ -96,7 +92,7 @@ void ActiveMQConnectionManager::releaseConnectionObjects()
     CtiLockGuard<CtiCriticalSection> lock(_closeConnectionMux);
 
     _producers.clear();
-    _consumers.clear();
+    _namedConsumers.clear();
 
     _producerSession.reset();
     _consumerSession.reset();
@@ -187,7 +183,7 @@ bool ActiveMQConnectionManager::verifyConnectionObjects()
 
         _consumerSession = _connection->createSession();
 
-        registerConsumersForCallbacks(_callbacks);
+        registerConsumersForCallbacks(_namedCallbacks);
     }
 
     return true;
@@ -202,15 +198,15 @@ void ActiveMQConnectionManager::registerConsumersForCallbacks(const CallbacksPer
             callbacks
                 | boost::adaptors::map_keys
                 | boost::adaptors::adjacent_filtered(std::not_equal_to<const InboundQueue *>{})
-                | boost::adaptors::filtered([this](const InboundQueue *q) { return ! _consumers.count(q); }),
+                | boost::adaptors::filtered([this](const InboundQueue *q) { return ! _namedConsumers.count(q); }),
             [this](const InboundQueue *q)
             {
-                registerConsumer(q);
+                registerNamedConsumer(q);
             });
 }
 
 
-void ActiveMQConnectionManager::registerConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue)
+void ActiveMQConnectionManager::registerNamedConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue)
 {
     auto consumer = std::make_unique<QueueConsumerWithListener>();
 
@@ -223,7 +219,7 @@ void ActiveMQConnectionManager::registerConsumer(const ActiveMQ::Queues::Inbound
             std::make_unique<ActiveMQ::MessageListener>(
                     [=](const cms::Message *msg)
                     {
-                        onInboundMessage(inboundQueue, msg);
+                        acceptNamedMessage(inboundQueue, msg);
                     });
 
     consumer->managedConsumer->setMessageListener(
@@ -231,7 +227,7 @@ void ActiveMQConnectionManager::registerConsumer(const ActiveMQ::Queues::Inbound
 
     CTILOG_INFO(dout, "Listener registered for destination \"" << inboundQueue->name << "\" id " << reinterpret_cast<unsigned long>(inboundQueue));
 
-    _consumers.emplace(inboundQueue, std::move(consumer));
+    _namedConsumers.emplace(inboundQueue, std::move(consumer));
 }
 
 
@@ -239,7 +235,7 @@ void ActiveMQConnectionManager::updateCallbacks()
 {
     CtiLockGuard<CtiCriticalSection> lock(_newCallbackMux);
 
-    _callbacks.insert(
+    _namedCallbacks.insert(
             _newCallbacks.begin(),
             _newCallbacks.end());
 
@@ -256,14 +252,7 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
     {
         CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
 
-        const auto end = _outgoingMessages.upper_bound(time(nullptr));
-
-        for( auto itr = _outgoingMessages.begin(); itr != end; ++itr )
-        {
-            messages.emplace_back(std::move(itr->second));
-        }
-
-        _outgoingMessages.erase(_outgoingMessages.begin(), end);
+        messages.swap(_outgoingMessages);
     }
 
     for( const auto &e : messages )
@@ -289,7 +278,7 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
                     std::make_unique<ActiveMQ::MessageListener>(
                             [=](const cms::Message *msg)
                             {
-                                onTempQueueReply(msg);
+                                acceptSingleReply(msg);
                             });
 
             tempConsumer->managedConsumer->setMessageListener(
@@ -304,11 +293,11 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
                 CTILOG_DEBUG(dout, "Created temporary queue for callback reply for \"" << destinationPhysicalName << "\"");
             }
 
-            _temporaryConsumers.emplace(
+            _replyConsumers.emplace(
                     destinationPhysicalName,
                     std::move(tempConsumer));
 
-            _temporaryExpirations.emplace(
+            _replyExpirations.emplace(
                         CtiTime::now() + e->replyListener->timeout.count(),  //  extract raw seconds out of the timeout duration
                         ExpirationHandler{
                             destinationPhysicalName,
@@ -342,7 +331,7 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
             CTILOG_DEBUG(dout, "Received incoming message(s) for queue \"" << queue->name << "\" id " << reinterpret_cast<unsigned long>(queue));
         }
 
-        const auto callbackRange = _callbacks.equal_range(queue);
+        const auto callbackRange = _namedCallbacks.equal_range(queue);
         const auto callbacks     = boost::make_iterator_range(callbackRange.first, callbackRange.second) | boost::adaptors::map_values;
 
         for( const auto &md : descriptors )
@@ -383,9 +372,9 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
         const auto &descriptor  = kv.second;
 
         //  need the iterator so we can delete later
-        auto itr = _temporaryConsumers.find(destination);
+        auto itr = _replyConsumers.find(destination);
 
-        if( itr == _temporaryConsumers.end() )
+        if( itr == _replyConsumers.end() )
         {
             CTILOG_ERROR(dout, "Message received with no consumer; destination [" << destination << "]");
             continue;
@@ -401,29 +390,29 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
 
         consumer->callback(*descriptor);
 
-        _temporaryConsumers.erase(itr);
+        _replyConsumers.erase(itr);
     }
 
-    const auto end = _temporaryExpirations.upper_bound(CtiTime::now());
+    const auto end = _replyExpirations.upper_bound(CtiTime::now());
 
-    if( _temporaryExpirations.begin() != end )
+    if( _replyExpirations.begin() != end )
     {
-        for( auto itr = _temporaryExpirations.begin(); itr != end; ++itr )
+        for( auto itr = _replyExpirations.begin(); itr != end; ++itr )
         {
             const auto &expirationHandler = itr->second;
 
-            const auto consumer_itr = _temporaryConsumers.find(expirationHandler.queueName);
+            const auto consumer_itr = _replyConsumers.find(expirationHandler.queueName);
 
             //  if the queue consumer still exists, we never got a response
-            if( consumer_itr != _temporaryConsumers.end() )
+            if( consumer_itr != _replyConsumers.end() )
             {
-                _temporaryConsumers.erase(consumer_itr);
+                _replyConsumers.erase(consumer_itr);
 
                 expirationHandler.callback();
             }
         }
 
-        _temporaryExpirations.erase(_temporaryExpirations.begin(), end);
+        _replyExpirations.erase(_replyExpirations.begin(), end);
     }
 }
 
@@ -533,7 +522,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
     {
         CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
 
-        _outgoingMessages.emplace(time(nullptr) + delay, std::move(e));
+        _outgoingMessages.emplace_back(std::move(e));
     }
 
     if( ! isRunning() )
@@ -576,7 +565,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
     {
         CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
 
-        _outgoingMessages.emplace(time(nullptr) + delay, std::move(e));
+        _outgoingMessages.emplace_back(std::move(e));
     }
 
     if( ! isRunning() )
@@ -673,7 +662,7 @@ void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQu
 }
 
 
-void ActiveMQConnectionManager::onInboundMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message)
+void ActiveMQConnectionManager::acceptNamedMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message)
 {
     if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
     {
@@ -705,7 +694,7 @@ void ActiveMQConnectionManager::onInboundMessage(const ActiveMQ::Queues::Inbound
 }
 
 
-void ActiveMQConnectionManager::onTempQueueReply(const cms::Message *message)
+void ActiveMQConnectionManager::acceptSingleReply(const cms::Message *message)
 {
     if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
     {

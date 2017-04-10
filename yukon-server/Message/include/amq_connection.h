@@ -150,8 +150,8 @@ protected:
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallbackWithReply callback);
 
-    void onInboundMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message);
-    void onTempQueueReply(const cms::Message *message);
+    void acceptNamedMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message);
+    void acceptSingleReply(const cms::Message *message);
 
 private:
 
@@ -178,7 +178,7 @@ private:
         virtual ~Envelope() = default;
     };
 
-    using EnvelopeQueue = std::multimap<time_t, std::unique_ptr<Envelope>>;
+    using EnvelopeQueue = std::vector<std::unique_ptr<Envelope>>;
     CtiCriticalSection _outgoingMessagesMux;
     EnvelopeQueue      _outgoingMessages;
 
@@ -192,7 +192,7 @@ private:
     typedef std::multimap<const ActiveMQ::Queues::InboundQueue *, MessageCallback> CallbacksPerQueue;
     CtiCriticalSection _newCallbackMux;
     CallbacksPerQueue  _newCallbacks;
-    CallbacksPerQueue  _callbacks;
+    CallbacksPerQueue  _namedCallbacks;
 
     //  Consumer and listener - binds to onInboundMessage
     struct QueueConsumerWithListener
@@ -202,7 +202,7 @@ private:
     };
 
     using ConsumerMap = std::map<const ActiveMQ::Queues::InboundQueue *, std::unique_ptr<QueueConsumerWithListener>>;
-    ConsumerMap _consumers;
+    ConsumerMap _namedConsumers;
 
     //  Temp consumer, listener, and client callback - binds to onTempQueueReply
     struct TempQueueConsumerWithCallback
@@ -213,7 +213,7 @@ private:
     };
 
     using TemporaryConsumersByDestination = std::map<std::string, std::unique_ptr<TempQueueConsumerWithCallback>>;
-    TemporaryConsumersByDestination _temporaryConsumers;
+    TemporaryConsumersByDestination _replyConsumers;
 
     struct ExpirationHandler
     {
@@ -221,7 +221,7 @@ private:
         TimeoutCallback callback;
     };
 
-    std::multimap<CtiTime, ExpirationHandler> _temporaryExpirations;
+    std::multimap<CtiTime, ExpirationHandler> _replyExpirations;
 
     typedef std::map<std::string, std::unique_ptr<MessageDescriptor>> ReplyPerDestination;
     CtiCriticalSection  _tempQueueRepliesMux;
@@ -238,7 +238,7 @@ private:
     void updateCallbacks();
 
     void registerConsumersForCallbacks(const CallbacksPerQueue &callbacks);
-    void registerConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue);
+    void registerNamedConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue);
 
     void sendOutgoingMessages();
     ActiveMQ::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
