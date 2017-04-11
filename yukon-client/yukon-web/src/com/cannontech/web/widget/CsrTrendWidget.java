@@ -150,7 +150,7 @@ public class CsrTrendWidget extends WidgetControllerBase {
         MutableRange<Date> dateRange = getDateRange(chartPeriod, userContext, request);
         ChartInterval chartInterval = chartPeriod.getChartUnit(dateRange.getImmutableRange());
         LitePoint point = attributeService.getPointForAttribute(device, attribute);
-        String tabularDataViewer = WidgetParameterHelper.getRequiredStringParameter(request, "tabularDataViewer");
+        String tabularDataViewer = WidgetParameterHelper.getStringParameter(request, "tabularDataViewer", "archivedDataReport");
         String title = getTitle(chartPeriod, dateRange.getImmutableRange(), userContext, attribute, attributeGraphType);
 
         Date stopDateAdjusted = dateRange.getMax();

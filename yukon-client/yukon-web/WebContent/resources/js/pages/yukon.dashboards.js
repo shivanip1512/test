@@ -19,6 +19,19 @@ yukon.dashboards = (function () {
         init : function () {
             
             if (_initialized) return;
+            
+            /** 'Save' button clicked on the dashboard details popup. */
+            $(document).on('yukon:dashboard:details:save', function (ev) {
+                $('#dashboard-details').submit();
+/*                $('#dashboard-details').ajaxSubmit({
+                    success: function (result, status, xhr, $form) {
+                    },
+                    error: function (xhr, status, error, $form) {
+                    },
+                    complete: function () {
+                    }
+                });*/
+            });
                         
             _initialized = true;
         },

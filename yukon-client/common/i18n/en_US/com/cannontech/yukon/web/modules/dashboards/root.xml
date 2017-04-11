@@ -13,23 +13,30 @@
     <entry key="yukon.web.modules.dashboard.myFavorites.label">My Favorites</entry>
     <entry key="yukon.web.modules.dashboard.createdByMe.label">Created By Me</entry>
     <entry key="yukon.web.modules.dashboard.name">Name</entry>
+    <entry key="yukon.web.modules.dashboard.description">Description</entry>
     <entry key="yukon.web.modules.dashboard.createdBy">Created By</entry>
+    <entry key="yukon.web.modules.dashboard.template">Template</entry> 
     <entry key="yukon.web.modules.dashboard.visibility">Visibility</entry>
     <entry key="yukon.web.modules.dashboard.numberOfUsers"># of Users</entry>
     <entry key="yukon.web.modules.dashboard.copy">Copy</entry>
     <entry key="yukon.web.modules.dashboard.edit">Edit</entry>
     <entry key="yukon.web.modules.dashboard.delete">Delete</entry>
     <entry key="yukon.web.modules.dashboard.changeOwner">Change Owner</entry>
+    <entry key="yukon.web.modules.dashboard.manageDashboards">Manage Dashboards</entry>
+    
     
     <!-- Dashboard Admin page -->
     <entry key="yukon.web.modules.dashboard.admin.pageHeading">Dashboard Admin</entry>
     <entry key="yukon.web.modules.dashboard.admin.crumbTitle">Dashboard Admin</entry>
     
     <!-- Dashboard View/Edit page -->
-    <entry key="yukon.web.modules.dashboard.view.pageHeading">Dashboard</entry>
+    <entry key="yukon.web.modules.dashboard.view.pageHeading">Dashboard: {0}</entry>
+    <entry key="yukon.web.modules.dashboard.edit.pageTitle">Dashboard: {0}</entry>
     <entry key="yukon.web.modules.dashboard.view.crumbTitle">Dashboard</entry>
-    <entry key="yukon.web.modules.dashboard.edit.pageHeading">Dashboard Edit</entry>
+    <entry key="yukon.web.modules.dashboard.edit.pageHeading">Edit Dashboard: {0}</entry>
+    <entry key="yukon.web.modules.dashboard.edit.pageTitle">Dashboard: {0} Edit</entry>
     <entry key="yukon.web.modules.dashboard.edit.crumbTitle">Dashboard Edit</entry>
+    <entry key="yukon.web.modules.dashboard.editDetails.label">Edit Details</entry>
     
     <!-- Add Widgets JSP -->
     <entry key="yukon.web.modules.dashboard.addWidgets.label">Add Widgets</entry>
@@ -47,7 +54,7 @@
     <entry key="yukon.web.modules.dashboard.widgetType.TREND.description">Displays trends for a specific device.</entry>    
     
     <!-- Widget Parameters -->
-    <entry key="yukon.web.modules.dashboard.widgetParameter.trendDevice">Device</entry>
+    <entry key="yukon.web.modules.dashboard.widgetParameter.deviceId">Device</entry>
     
     <!-- Visibility -->
     <entry key="yukon.web.modules.dashboard.visibility.SYSTEM">System</entry>

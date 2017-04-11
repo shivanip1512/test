@@ -2,6 +2,7 @@ package com.cannontech.web.dashboards;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -45,22 +46,32 @@ public class DashboardsController {
     
     @RequestMapping("create")
     public String createDashboard(ModelMap model, YukonUserContext userContext) {
+        model.addAttribute("mode", PageEditMode.CREATE);
         model.addAttribute("visibilityOptions", Visibility.values());
         model.addAttribute("dashboards", createDashboardsListMockup(userContext));
+        model.addAttribute("dashboard", new Dashboard());
+        return "dashboardDetails.jsp";
+    }
+    
+    @RequestMapping("{id}/editDetails")
+    public String editDetails(ModelMap model, YukonUserContext userContext) {
+        model.addAttribute("mode", PageEditMode.EDIT);
+        model.addAttribute("visibilityOptions", Visibility.values());
+        model.addAttribute("dashboard", createDashboardMockup(userContext));
         return "dashboardDetails.jsp";
     }
     
     @RequestMapping("{id}/view")
-    public String viewDashboard(@PathVariable int id, ModelMap model) {
+    public String viewDashboard(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
         model.addAttribute("mode", PageEditMode.VIEW);
-        model.addAttribute("dashboard", createDashboardMockup());
+        model.addAttribute("dashboard", createDashboardMockup(userContext));
         return "dashboardView.jsp";
     }
     
     @RequestMapping("{id}/edit")
-    public String editDashboard(@PathVariable int id, ModelMap model) {
+    public String editDashboard(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        model.addAttribute("dashboard", createDashboardMockup());
+        model.addAttribute("dashboard", createDashboardMockup(userContext));
         return "dashboardEdit.jsp";
     }
     
@@ -71,9 +82,18 @@ public class DashboardsController {
         return "addWidgets.jsp";
     }
     
+    @RequestMapping("saveDetails")
+    public String saveDetails(@ModelAttribute Dashboard dashboard) {
+        //only update name, description, visibility, template
+        //Check for dashboardTemplate
+        return "dashboardView.jsp";
+        //return "redirect:/dashboards/" + dashboard.getId() + "/view";
+    }
+    
     @RequestMapping("save")
     public String saveDashboard(@ModelAttribute Dashboard dashboard) {
-        return "manageDashboards.jsp";
+        return "dashboardView.jsp";
+        //return "redirect:/dashboards/" + dashboard.getId() + "/view";
     }
     
     @RequestMapping("{id}/copy")
@@ -98,24 +118,41 @@ public class DashboardsController {
         return "manageDashboards.jsp";
     }
     
-    private Dashboard createDashboardMockup() {
+    private Dashboard createDashboardMockup(YukonUserContext userContext) {
         Dashboard dashboard = new Dashboard();
-        dashboard.setName("Yukon Default Dashboard");
+        dashboard.setName("Utility Company Sample Dashboard");
+        dashboard.setDescription("Utility Company Default Test Dashboard");
+        dashboard.setVisibility(Visibility.SHARED);
+        dashboard.setOwner(userContext.getYukonUser());
+        dashboard.setPageType(DashboardPageType.MAIN);
         dashboard.setId(12);
         dashboard.setPageType(DashboardPageType.MAIN);
         Widget widget = new Widget();
+        widget.setDashboardId(12);
+        widget.setId(11);
         widget.setType(WidgetType.MONITOR_SUBSCRIPTIONS);
-        dashboard.addColumn1Widget(widget);
         Widget widget2 = new Widget();
+        widget2.setDashboardId(12);
+        widget2.setId(12);
         widget2.setType(WidgetType.TREND);
         Map<String, String> params = new HashMap<String, String>();
         Map<Integer, SimpleMeter> meters = databaseCache.getAllMeters();
-        SimpleMeter meter = meters.values().iterator().next();
+        Iterator<SimpleMeter> meterIterator = meters.values().iterator();
+        SimpleMeter meter = meterIterator.next();
         params.put("deviceId",  Integer.toString(meter.getPaoIdentifier().getPaoId()));
-        //params.put("deviceId", "1140");
-        params.put("tabularDataViewer", "archivedDataReport");
         widget2.setParameters(params);
-        dashboard.addColumn2Widget(widget2);
+        dashboard.addColumn1Widget(widget);
+        dashboard.addColumn1Widget(widget2);
+        Widget widget3 = new Widget();
+        widget3.setDashboardId(12);
+        widget3.setId(22);
+        widget3.setType(WidgetType.TREND);
+        Map<String, String> params2 = new HashMap<String, String>();
+        SimpleMeter meter2 = meterIterator.next();
+        params2.put("deviceId",  Integer.toString(meter2.getPaoIdentifier().getPaoId()));
+        widget3.setParameters(params2);
+        widget3.setId(21);
+        dashboard.addColumn2Widget(widget3);
         return dashboard;
     }
     

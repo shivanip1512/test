@@ -52,4 +52,8 @@ public class WidgetParameter implements Displayable {
     public MessageSourceResolvable getMessage() {
         return messageKey;
     }
+    
+    public String getKey() {
+        return keyBase + name;
+    }
 }

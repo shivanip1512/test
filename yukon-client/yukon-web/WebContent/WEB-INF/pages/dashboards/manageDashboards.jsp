@@ -6,6 +6,8 @@
 
 <cti:standardPage module="dashboard" page="manage">
 
+<tags:setFormEditMode mode="${mode}"/>
+
 <div class="page-actions fr stacked-md"><cti:button icon="icon-plus-green" nameKey="createDashboard" data-popup=".js-create-dashboard-popup"/></div>
 <br/><br/>
 <cti:tabs>
@@ -95,6 +97,10 @@
 <div class="dn js-create-dashboard-popup" data-dialog
     data-title="<cti:msg2 key=".createDashboard.label"/>"
     data-ok-text="<cti:msg2 key="yukon.common.create"/>"
+    data-event="yukon:dashboard:details:save" 
     data-url="<cti:url value="/dashboards/create"/>"></div>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.dashboards.js"/>
+    
   
 </cti:standardPage>

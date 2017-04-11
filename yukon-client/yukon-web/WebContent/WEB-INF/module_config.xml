@@ -955,8 +955,12 @@
     <pages>
       <page name="manage" type="BASIC"/>
       <page name="admin" type="BASIC"/>
-      <page name="view" type="BASIC"/>
-      <page name="edit" type="BASIC"/>
+      <page name="view" type="BASIC">
+        <labelArgument>${dashboard.name}</labelArgument>
+      </page>
+      <page name="edit" type="BASIC">
+        <labelArgument>${dashboard.name}</labelArgument>
+      </page>
     </pages>
   </module>
 

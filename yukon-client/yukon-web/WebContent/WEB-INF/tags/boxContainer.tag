@@ -14,6 +14,7 @@
 <%@ attribute name="styleClass" description="CSS class names applied to the outer container element." %>
 <%@ attribute name="title" required="true" %>
 <%@ attribute name="titleLinkHtml" %>
+<%@ attribute name="showArrows" type="java.lang.Boolean" %>
 
 <cti:default var="hideEnabled" value="${true}"/>
 <cti:default var="showInitially" value="${true}"/>
@@ -55,6 +56,16 @@
         <c:if test="${hideEnabled}">
             <div class="controls"><cti:icon icon="show-hide"/></div>
         </c:if>
+        <c:if test="${showArrows}">
+            <div class="controls">
+                <cti:button renderMode="image" icon="icon-bullet-go-up" classes="arrows js-move-up"/>
+                <cti:button renderMode="image" icon="icon-bullet-go-down" classes="arrows js-move-down"/>
+                <cti:button renderMode="image" icon="icon-bullet-go-left" classes="arrows js-move-left"/>
+                <cti:button renderMode="image" icon="icon-bullet-go" classes="arrows js-move-right"/>
+                <cti:button renderMode="image" icon="icon-cross" classes="arrows js-remove"/>
+            </div>
+        </c:if>
+        
     </div>
     
     <div id="${thisId}_content" class="content clearfix"><jsp:doBody/></div>

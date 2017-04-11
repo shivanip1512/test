@@ -57,7 +57,7 @@ public enum WidgetType implements DisplayableEnum {
         );
         
         widgetParameters = ImmutableListMultimap.of(
-            TREND, new WidgetParameter("trendDevice", WidgetInputType.METER_PICKER, MeterPickerValidator.get())
+            TREND, new WidgetParameter("deviceId", WidgetInputType.METER_PICKER, MeterPickerValidator.get())
         );
     }
     
