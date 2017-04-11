@@ -8191,8 +8191,8 @@
                 <decimalplaces value="3" />
             </point>
 
-            <point type="Analog" offset="347">
-                <name>kVAr</name>
+            <point type="Analog" offset="321">
+                <name>Delivered kVAr</name>
                 <multiplier value="1" />
                 <unitofmeasure value="kVAr" />
                 <decimalplaces value="3" />
@@ -8382,7 +8382,7 @@
                 <basicLookup point="Delivered kVArh" />
             </attribute>
             <attribute name="KVAR">
-                <basicLookup point="kVAr"/>
+                <basicLookup point="Delivered kVAr"/>
             </attribute>
             <attribute name="PEAK_KVAR_RATE_A">
                 <basicLookup point="Rate A Peak kVAr" />

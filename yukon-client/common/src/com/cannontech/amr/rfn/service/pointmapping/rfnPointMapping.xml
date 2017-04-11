@@ -1512,7 +1512,7 @@
             </modifiers>
         </point>
 
-        <point name="kVAr">
+        <point name="Delivered kVAr">
             <uom>Var</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>
