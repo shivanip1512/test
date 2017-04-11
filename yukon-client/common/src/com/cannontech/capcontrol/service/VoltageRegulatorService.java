@@ -106,7 +106,8 @@ public class VoltageRegulatorService {
         SimpleDevice device = new SimpleDevice(completeRegulator);
         LightDeviceConfiguration config = new LightDeviceConfiguration(regulator.getConfigId(), null, null);
 
-        deviceConfigurationService.assignConfigToDevice(config, device, YukonUserContext.system.getYukonUser());
+        deviceConfigurationService.assignConfigToDevice(config, device, YukonUserContext.system.getYukonUser(),
+            regulator.getName());
 
         //Point Mappings
 

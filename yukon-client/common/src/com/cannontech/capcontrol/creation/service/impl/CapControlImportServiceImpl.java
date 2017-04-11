@@ -244,7 +244,8 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             DeviceConfiguration config = deviceConfigurationDao.getDefaultDNPConfiguration();
             try {
                 SimpleDevice device = new SimpleDevice(pao.getPaoIdentifier());
-                deviceConfigurationService.assignConfigToDevice(config, device, YukonUserContext.system.getYukonUser());
+                deviceConfigurationService.assignConfigToDevice(config, device, YukonUserContext.system.getYukonUser(),
+                    pao.getPaoName());
             } catch (InvalidDeviceTypeException e) {
                 /*
                  *  This can only happen if there wasn't a default configuration in the database.
@@ -358,7 +359,7 @@ public class CapControlImportServiceImpl implements CapControlImportService {
             LightDeviceConfiguration config = deviceConfigurationDao.findConfigurationForDevice(device);
             YukonDevice newDevice = new SimpleDevice(template.getPaoIdentifier());
             try {
-                deviceConfigurationService.assignConfigToDevice(config, newDevice, YukonUserContext.system.getYukonUser());
+                deviceConfigurationService.assignConfigToDevice(config, newDevice, YukonUserContext.system.getYukonUser(), template.getPaoName());
             } catch (InvalidDeviceTypeException e) {
                 log.error("An error occurred attempting to assign a DNP configuration to CBC '" +
                           template.getPaoName() + "'. Please assign this device a configuration manually.", e);

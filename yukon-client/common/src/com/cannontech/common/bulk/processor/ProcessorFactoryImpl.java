@@ -7,6 +7,7 @@ import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.device.config.service.DeviceConfigurationService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * Default implementation of ProcessorFactory
@@ -14,6 +15,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public class ProcessorFactoryImpl implements ProcessorFactory {
 
     @Autowired private DeviceConfigurationService deviceConfigurationService = null;
+    @Autowired private IDatabaseCache dbCache;
 
     @Override
     public Processor<SimpleDevice> createAssignConfigurationToYukonDeviceProcessor(final DeviceConfiguration configuration, LiteYukonUser user) {
@@ -21,7 +23,8 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
             @Override
             public void process(SimpleDevice device) throws ProcessingException {
                 try {
-                    deviceConfigurationService.assignConfigToDevice(configuration, device, user);
+                    String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+                    deviceConfigurationService.assignConfigToDevice(configuration, device, user, deviceName);
                 } catch (InvalidDeviceTypeException e) {
                     throw new ProcessingException(e.getMessage(), "invalidDeviceType", e);
                 }
@@ -35,7 +38,8 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
             @Override
             public void process(SimpleDevice device) throws ProcessingException {
                 try {
-                    deviceConfigurationService.unassignConfig(device, user);
+                    String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+                    deviceConfigurationService.unassignConfig(device, user, deviceName);
                 } catch (InvalidDeviceTypeException e) {
                     throw new ProcessingException(e.getMessage(), "invalidDeviceType", e);
                 }

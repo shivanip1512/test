@@ -60,17 +60,19 @@ public interface DeviceConfigurationService {
      * Assign a configuration to a device.
      * @param configuration the configuration being assigned
      * @param device the device being assigned to
+     * @param deviceName name of the device
      * @throws InvalidDeviceTypeException if the configuration doesn't support the device type.
      */
-    void assignConfigToDevice(LightDeviceConfiguration configuration, YukonDevice device, LiteYukonUser user)
+    void assignConfigToDevice(LightDeviceConfiguration configuration, YukonDevice device, LiteYukonUser user, String deviceName)
             throws InvalidDeviceTypeException;
 
     /**
      * Remove a configuration from a device
      * @param device the device being unassigned from
+     * @param deviceName name of the device
      * @throws InvalidDeviceTypeException if the device is a DNP device (which cannot be configurationless.)
      */
-    void unassignConfig(YukonDevice device, LiteYukonUser user) throws InvalidDeviceTypeException;
+    void unassignConfig(YukonDevice device, LiteYukonUser user, String deviceName) throws InvalidDeviceTypeException;
 
     /**
      * Change the assignment of a category to a configuration

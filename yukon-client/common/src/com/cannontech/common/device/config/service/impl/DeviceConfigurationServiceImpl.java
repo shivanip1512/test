@@ -18,7 +18,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.yukon.IDatabaseCache;
 
 public class DeviceConfigurationServiceImpl implements DeviceConfigurationService {
     private static final String CONFIG_OBJECT_TYPE = "config";
@@ -27,7 +26,6 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
 
     @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private DbChangeManager dbChangeManager;
-    @Autowired private IDatabaseCache dbCache;
     @Autowired private DeviceConfigEventLogService eventLogService;
     
     @Override
@@ -84,10 +82,9 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
     }
     
     @Override
-    public void assignConfigToDevice(LightDeviceConfiguration configuration, YukonDevice device, LiteYukonUser user)
-            throws InvalidDeviceTypeException {
+    public void assignConfigToDevice(LightDeviceConfiguration configuration, YukonDevice device, LiteYukonUser user,
+            String deviceName) throws InvalidDeviceTypeException {
         
-        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
         try {
             deviceConfigurationDao.assignConfigToDevice(configuration, device);
             eventLogService.assignConfigToDeviceCompleted(configuration.getName(), deviceName, user, 1);
@@ -107,8 +104,9 @@ public class DeviceConfigurationServiceImpl implements DeviceConfigurationServic
     }
 
     @Override
-    public void unassignConfig(YukonDevice device, LiteYukonUser user) throws InvalidDeviceTypeException {
-        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+    public void unassignConfig(YukonDevice device, LiteYukonUser user, String deviceName)
+            throws InvalidDeviceTypeException {
+
         try {
             deviceConfigurationDao.unassignConfig(device);
             eventLogService.unassignConfigFromDeviceCompleted(deviceName, user, 1);

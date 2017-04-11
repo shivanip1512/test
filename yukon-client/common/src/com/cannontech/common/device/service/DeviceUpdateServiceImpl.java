@@ -206,7 +206,8 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                 deviceConfigurationDao.isTypeSupportedByConfiguration(config, device.getPaoIdentifier().getPaoType());
             if (!configSupported) {
                 try {
-                    deviceConfigurationService.unassignConfig(device, YukonUserContext.system.getYukonUser());
+                    deviceConfigurationService.unassignConfig(device, YukonUserContext.system.getYukonUser(),
+                        changedDevice.getPAOName());
                 } catch (InvalidDeviceTypeException e) {
                     log.error("Unable to remove device config on type change.", e);
                 }

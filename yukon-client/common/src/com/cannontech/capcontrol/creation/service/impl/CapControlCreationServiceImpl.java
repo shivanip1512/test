@@ -62,7 +62,8 @@ public class CapControlCreationServiceImpl implements CapControlCreationService 
             
             SimpleDevice device = new SimpleDevice(pao.getPaoIdentifier());
             try {
-                deviceConfigurationService.assignConfigToDevice(config, device, YukonUserContext.system.getYukonUser());
+                deviceConfigurationService.assignConfigToDevice(config, device, YukonUserContext.system.getYukonUser(),
+                    pao.getPaoName());
             } catch (InvalidDeviceTypeException e) {
                 /*
                  *  This only happens if config is null for a DNP CBC or if we try to assign a

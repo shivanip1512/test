@@ -39,6 +39,7 @@ import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.web.widget.support.SimpleWidgetInput;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
+import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
 @RequestMapping("/configWidget/*")
@@ -53,7 +54,8 @@ public class ConfigWidget extends WidgetControllerBase {
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
 
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
-    
+    @Autowired private IDatabaseCache dbCache;
+
     @Autowired
     public ConfigWidget(@Qualifier("widgetInput.deviceId") SimpleWidgetInput simpleWidgetInput,
             RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
@@ -121,11 +123,12 @@ public class ConfigWidget extends WidgetControllerBase {
         YukonDevice device = getYukonDevice(request);
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         final int configId = ServletRequestUtils.getRequiredIntParameter(request, "configuration");
+        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
         if (configId > -1) {
             DeviceConfiguration configuration = deviceConfigurationDao.getDeviceConfiguration(configId);
-            deviceConfigurationService.assignConfigToDevice(configuration, device, userContext.getYukonUser());
+            deviceConfigurationService.assignConfigToDevice(configuration, device, userContext.getYukonUser(), deviceName);
         } else {
-            deviceConfigurationService.unassignConfig(device, userContext.getYukonUser());
+            deviceConfigurationService.unassignConfig(device, userContext.getYukonUser(), deviceName);
         }
         
         ModelAndView mav = getConfigModelAndView(request);
@@ -137,7 +140,8 @@ public class ConfigWidget extends WidgetControllerBase {
     public ModelAndView unassignConfig(HttpServletRequest request, HttpServletResponse response) throws Exception {
         YukonDevice device = getYukonDevice(request);
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        deviceConfigurationService.unassignConfig(device, userContext.getYukonUser());
+        String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
+        deviceConfigurationService.unassignConfig(device, userContext.getYukonUser(), deviceName);
         
         ModelAndView mav = getConfigModelAndView(request);
         return mav;

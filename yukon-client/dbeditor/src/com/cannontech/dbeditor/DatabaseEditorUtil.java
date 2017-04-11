@@ -69,7 +69,8 @@ public final class DatabaseEditorUtil {
         LightDeviceConfiguration config = configurationDao.findConfigurationForDevice(device);
         if(config != null) {
             if (!configurationDao.isTypeSupportedByConfiguration(config, device.getPaoIdentifier().getPaoType())) {
-                configurationService.unassignConfig(device, YukonUserContext.system.getYukonUser());
+                LiteYukonPAObject pao = paoDao.getLiteYukonPAO(paoId);
+                configurationService.unassignConfig(device, YukonUserContext.system.getYukonUser(), pao.getPaoName());
                 return true;
             }
         }

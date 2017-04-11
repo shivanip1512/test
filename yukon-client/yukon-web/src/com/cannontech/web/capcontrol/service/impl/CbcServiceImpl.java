@@ -291,7 +291,8 @@ public class CbcServiceImpl implements CbcService {
         LightDeviceConfiguration config = configurationDao.getLightConfigurationById(cbc.getDnpConfigId());
 
         try {
-            deviceConfigService.assignConfigToDevice(config, device, YukonUserContext.system.getYukonUser());
+            deviceConfigService.assignConfigToDevice(config, device, YukonUserContext.system.getYukonUser(),
+                cbc.getName());
         } catch (InvalidDeviceTypeException e) {
             /*
              * This should have already been validated. 
