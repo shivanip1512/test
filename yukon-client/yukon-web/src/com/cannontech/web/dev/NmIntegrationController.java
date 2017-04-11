@@ -859,26 +859,26 @@ public class NmIntegrationController {
     public String startDataStreamingSimulator(Boolean isOverloadGatewaysOnVerification, 
                                               Boolean isNetworkManagerFailOnVerification,
                                               Boolean isDeviceErrorOnVerification,
-                                              DeviceDataStreamingConfigError deviceErrorOnVerification, 
-                                              Integer numberOfDevicesToErrorOnVerification,
+                                              @RequestParam(required=false) DeviceDataStreamingConfigError deviceErrorOnVerification, 
+                                              @RequestParam(defaultValue="0") Integer numberOfDevicesToErrorOnVerification,
                                               Boolean isOverloadGatewaysOnConfig,
                                               Boolean isNetworkManagerFailOnConfig,
                                               Boolean isDeviceErrorOnConfig,
                                               Boolean isAcceptedWithError,
-                                              DeviceDataStreamingConfigError deviceErrorOnConfig,
-                                              Integer numberOfDevicesToErrorOnConfig,
+                                              @RequestParam(required=false) DeviceDataStreamingConfigError deviceErrorOnConfig,
+                                              @RequestParam(defaultValue="0") Integer numberOfDevicesToErrorOnConfig,
                                               FlashScope flash) {
         try {
             SimulatedDataStreamingSettings settings = new SimulatedDataStreamingSettings();
             settings.setOverloadGatewaysOnVerification(Optional.ofNullable(isOverloadGatewaysOnVerification).orElse(false));
             settings.setNetworkManagerFailOnVerification(Optional.ofNullable(isNetworkManagerFailOnVerification).orElse(false));
             settings.setDeviceErrorOnVerification(isDeviceErrorOnVerification != null ? deviceErrorOnVerification : null);
-            settings.setNumberOfDevicesToErrorOnVerification(Optional.ofNullable(numberOfDevicesToErrorOnVerification).orElse(0));
+            settings.setNumberOfDevicesToErrorOnVerification(numberOfDevicesToErrorOnVerification);
             
             settings.setOverloadGatewaysOnConfig(Optional.ofNullable(isOverloadGatewaysOnConfig).orElse(false));
             settings.setNetworkManagerFailOnConfig(Optional.ofNullable(isNetworkManagerFailOnConfig).orElse(false));
             settings.setDeviceErrorOnConfig(isDeviceErrorOnConfig != null ? deviceErrorOnConfig : null);
-            settings.setNumberOfDevicesToErrorOnConfig(Optional.ofNullable(numberOfDevicesToErrorOnConfig).orElse(0));
+            settings.setNumberOfDevicesToErrorOnConfig(numberOfDevicesToErrorOnConfig);
             
             settings.setAcceptedWithError(Optional.ofNullable(isAcceptedWithError).orElse(false));
             

@@ -74,8 +74,15 @@
             </c:otherwise>
         </c:choose>
         <input type="checkbox" name="isDeviceErrorOnVerification" disabled="disabled" ${checked}>
-        Device Error: ${settings.deviceErrorOnVerification} 
-        (Error for first ${settings.numberOfDevicesToErrorOnVerification} devices)
+        Device Error: 
+        <c:choose>
+            <c:when test="${not empty settings.deviceErrorOnVerification}">
+                ${settings.deviceErrorOnVerification} (Error for first ${settings.numberOfDevicesToErrorOnVerification} devices)
+            </c:when>
+            <c:otherwise>
+                None
+            </c:otherwise>
+        </c:choose>
         <br>
         
         <h3>Config Response</h3>
@@ -118,8 +125,15 @@
             </c:otherwise>
         </c:choose>
         <input type="checkbox" name="isDeviceErrorOnConfig" disabled="disabled" ${checked}>
-        Device Error: ${settings.deviceErrorOnConfig} 
-        (Error for first ${settings.numberOfDevicesToErrorOnConfig} devices)
+        Device Error: 
+        <c:choose>
+            <c:when test="${not empty settings.deviceErrorOnConfig}">
+                ${settings.deviceErrorOnConfig} (Error for first ${settings.numberOfDevicesToErrorOnConfig} devices)
+            </c:when>
+            <c:otherwise>
+                None
+            </c:otherwise>
+        </c:choose>
         <br><br>
         <cti:button label="Stop Simulator" href="stopDataStreamingSimulator"/>
     </c:if>
