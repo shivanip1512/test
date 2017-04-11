@@ -563,18 +563,21 @@ DELETE FROM POINT WHERE POINTID IN (
 /* End YUK-16470 */
 
 /* Start YUK-16502 */
+/* @start-block */
 DECLARE
-	v_exists NUMBER;
+    v_exists NUMBER;
 BEGIN
   SELECT CASE WHEN (SELECT DISTINCT 1  FROM CTIDatabase WHERE 6.7 <= (SELECT max(version) FROM CTIDatabase)) IS NULL THEN 0 ELSE 1  END 
-  	AS temp INTO v_exists FROM dual;
-	    IF v_exists != 1 THEN
-		    UPDATE RAWPOINTHISTORY SET TIMESTAMP = TIMESTAMP - numtodsinterval(VALUE, 'SECOND') 
-		    WHERE pointid IN (SELECT pointid FROM point p JOIN YukonPAObject ypo ON p.PAObjectID = ypo.PAObjectID 
-		    AND PointType = 'Analog' AND POINTOFFSET = 100
-		    AND Type LIKE ('RFN%'));
-	    END IF;
+    AS temp INTO v_exists FROM dual;
+        IF v_exists != 1 THEN
+            UPDATE RAWPOINTHISTORY SET TIMESTAMP = TIMESTAMP - numtodsinterval(VALUE, 'SECOND') 
+            WHERE pointid IN (SELECT pointid FROM point p JOIN YukonPAObject ypo ON p.PAObjectID = ypo.PAObjectID 
+            AND PointType = 'Analog' AND POINTOFFSET = 100
+            AND Type LIKE ('RFN%'));
+        END IF;
 END;
+/
+/* @end-block */
 /* End YUK-16502 */
 
 /**************************************************************/
