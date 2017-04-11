@@ -570,8 +570,8 @@ BEGIN
   	AS temp INTO v_exists FROM dual;
 	    IF v_exists != 1 THEN
 		    UPDATE RAWPOINTHISTORY SET TIMESTAMP = TIMESTAMP - numtodsinterval(VALUE, 'SECOND') 
-		    WHERE pointid IN (SELECT pointid FROM point p, YukonPAObject ypo WHERE p.PAObjectID = ypo.PAObjectID 
-		    AND POINTNAME = 'Outages' AND POINTOFFSET ='100'
+		    WHERE pointid IN (SELECT pointid FROM point p JOIN YukonPAObject ypo ON p.PAObjectID = ypo.PAObjectID 
+		    AND PointType = 'Analog' AND POINTOFFSET = 100
 		    AND Type LIKE ('RFN%'));
 	    END IF;
 END;
