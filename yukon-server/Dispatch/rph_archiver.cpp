@@ -358,60 +358,87 @@ void RawPointHistoryArchiver::mainThread()
 
     SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
 
+    const unsigned ThirtySeconds = 30 * 1000;
+    unsigned loopTimer = 0;
+
+    Cti::Timing::MillisecondTimer timer;
+
     try
     {
-        Cti::Database::DatabaseConnection conn;
+        unsigned resetDelay = 1;
 
-        const unsigned ThirtySeconds = 30 * 1000;
-        unsigned loopTimer = 0;
-
-        Cti::Timing::MillisecondTimer timer;
-
-        try
+        while( true )
         {
-            while( true )
+            Database::DatabaseConnection conn;
+
+            if( ! conn.isValid() )
             {
-                WriteMode wm = WriteMode_WriteChunkIfOverThreshold;
+                CTILOG_WARN(dout, "Database connection invalid, attempting reset in " << resetDelay << " seconds");
 
-                if( loopTimer > ThirtySeconds )
+                WorkerThread::sleepFor(Timing::Chrono::seconds(resetDelay));
+
+                resetDelay = std::min(resetDelay * 2, 30U);  //  1, 2, 4, 8, 16, 30
+
+                continue;
+            }
+
+            resetDelay = 1;
+
+            while( conn.isValid() )
+            {
+                try
                 {
-                    loopTimer %= ThirtySeconds;
+                    WriteMode wm = WriteMode_WriteChunkIfOverThreshold;
 
-                    //  guaranteed write once every 30 seconds
-                    wm = WriteMode_WriteChunk;
+                    if( loopTimer > ThirtySeconds )
+                    {
+                        loopTimer %= ThirtySeconds;
 
-                    if( ShutdownOnThreadTimeout )
-                    {
-                        threadStatus.monitorCheck(ShutdownFunc);
+                        //  guaranteed write once every 30 seconds
+                        wm = WriteMode_WriteChunk;
+
+                        if( ShutdownOnThreadTimeout )
+                        {
+                            threadStatus.monitorCheck(ShutdownFunc);
+                        }
+                        else
+                        {
+                            threadStatus.monitorCheck(CtiThreadRegData::None);
+                        }
                     }
-                    else
+
+                    const bool MoreWaiting = writeArchiveDataToDB(conn, wm);
+
+                    const unsigned MinimumLoopTime = MoreWaiting ? 50 : 1000;  //  wait 50 ms if more work waiting, 1 second otherwise
+
+                    const unsigned elapsed = timer.elapsed();
+
+                    if( elapsed < MinimumLoopTime )
                     {
-                        threadStatus.monitorCheck(CtiThreadRegData::None);
+                        WorkerThread::sleepFor(Timing::Chrono::milliseconds(MinimumLoopTime - elapsed));
                     }
+
+                    loopTimer += timer.elapsed();
+                    timer.reset();
                 }
-
-                const bool MoreWaiting = writeArchiveDataToDB(conn, wm);
-
-                const unsigned MinimumLoopTime = MoreWaiting ? 50 : 1000;  //  wait 50 ms if more work waiting, 1 second otherwise
-
-                const unsigned elapsed = timer.elapsed();
-
-                if( elapsed < MinimumLoopTime )
+                catch( const WorkerThread::Interrupted& ex )
                 {
-                    WorkerThread::sleepFor(Timing::Chrono::milliseconds(MinimumLoopTime - elapsed));
-                }
+                    CTILOG_INFO(dout, "Interrupted, shutting down");
 
-                loopTimer += timer.elapsed();
-                timer.reset();
+                    //  Write anything remaining before we exit.
+                    writeArchiveDataToDB(conn, WriteMode_WriteAll);
+
+                    // get out of here...
+                    CTILOG_INFO(dout, "Dispatch RawPointHistory Writer Thread shutting down");
+
+                    return;
+                }
             }
         }
-        catch( const WorkerThread::Interrupted& ex )
-        {
-            CTILOG_INFO(dout, "Interrupted, shutting down");
-
-            //  Write anything remaining before we exit.
-            writeArchiveDataToDB(conn, WriteMode_WriteAll);
-        }
+    }
+    catch( const WorkerThread::Interrupted& ex )
+    {
+        CTILOG_ERROR(dout, "Interrupted, no DB connection - shutting down without writing");
     }
     catch(...)
     {
