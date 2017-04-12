@@ -5,21 +5,20 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for anonymous complex type.
+ * <p>Java class for pointInfos complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType>
+ * &lt;complexType name="pointInfos">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
- *       &lt;sequence maxOccurs="unbounded" minOccurs="0">
- *         &lt;element name="point" type="{}point"/>
+ *       &lt;sequence>
+ *         &lt;element name="pointInfo" type="{}pointInfo" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,41 +28,40 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "point"
+@XmlType(name = "pointInfos", propOrder = {
+    "pointInfo"
 })
-@XmlRootElement(name = "points")
-public class Points {
+public class PointInfos {
 
-    protected List<Point> point;
+    protected List<OverridePointInfo> pointInfo;
 
     /**
-     * Gets the value of the point property.
+     * Gets the value of the pointInfo property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the point property.
+     * This is why there is not a <CODE>set</CODE> method for the pointInfo property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getPoint().add(newItem);
+     *    getPointInfo().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Point }
+     * {@link OverridePointInfo }
      * 
      * 
      */
-    public List<Point> getPoint() {
-        if (point == null) {
-            point = new ArrayList<Point>();
+    public List<OverridePointInfo> getPointInfo() {
+        if (pointInfo == null) {
+            pointInfo = new ArrayList<OverridePointInfo>();
         }
-        return this.point;
+        return this.pointInfo;
     }
 
 }

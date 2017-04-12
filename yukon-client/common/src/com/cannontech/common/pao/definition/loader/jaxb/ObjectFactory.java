@@ -30,131 +30,195 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Points }
+     * Create an instance of {@link Point }
      * 
      */
-    public Points createPoints() {
-        return new Points();
+    public Point createPoint() {
+        return new Point();
     }
 
     /**
-     * Create an instance of {@link Points.Point }
+     * Create an instance of {@link Point.Calculation }
      * 
      */
-    public Points.Point createPointsPoint() {
-        return new Points.Point();
+    public Point.Calculation createPointCalculation() {
+        return new Point.Calculation();
     }
 
     /**
-     * Create an instance of {@link Points.Point.Calculation }
+     * Create an instance of {@link Point.Calculation.Components }
      * 
      */
-    public Points.Point.Calculation createPointsPointCalculation() {
-        return new Points.Point.Calculation();
+    public Point.Calculation.Components createPointCalculationComponents() {
+        return new Point.Calculation.Components();
     }
 
     /**
-     * Create an instance of {@link Points.Point.Calculation.Components }
+     * Create an instance of {@link Overrides }
      * 
      */
-    public Points.Point.Calculation.Components createPointsPointCalculationComponents() {
-        return new Points.Point.Calculation.Components();
+    public Overrides createOverrides() {
+        return new Overrides();
     }
 
     /**
-     * Create an instance of {@link Points.Point.Archive }
+     * Create an instance of {@link Override }
      * 
      */
-    public Points.Point.Archive createPointsPointArchive() {
-        return new Points.Point.Archive();
+    public Override createOverride() {
+        return new Override();
     }
 
     /**
-     * Create an instance of {@link Points.Point.Multiplier }
+     * Create an instance of {@link OverridePointInfo }
      * 
      */
-    public Points.Point.Multiplier createPointsPointMultiplier() {
-        return new Points.Point.Multiplier();
+    public OverridePointInfo createOverridePointInfo() {
+        return new OverridePointInfo();
     }
 
     /**
-     * Create an instance of {@link Points.Point.Unitofmeasure }
+     * Create an instance of {@link Configurations }
      * 
      */
-    public Points.Point.Unitofmeasure createPointsPointUnitofmeasure() {
-        return new Points.Point.Unitofmeasure();
+    public Configurations createConfigurations() {
+        return new Configurations();
     }
 
     /**
-     * Create an instance of {@link Points.Point.Decimalplaces }
+     * Create an instance of {@link Tags }
      * 
      */
-    public Points.Point.Decimalplaces createPointsPointDecimalplaces() {
-        return new Points.Point.Decimalplaces();
+    public Tags createTags() {
+        return new Tags();
     }
 
     /**
-     * Create an instance of {@link Points.Point.Analogstategroup }
+     * Create an instance of {@link PointInfos }
      * 
      */
-    public Points.Point.Analogstategroup createPointsPointAnalogstategroup() {
-        return new Points.Point.Analogstategroup();
+    public PointInfos createPointInfos() {
+        return new PointInfos();
     }
 
     /**
-     * Create an instance of {@link Points.Point.DataOffset }
+     * Create an instance of {@link PaoTypes }
      * 
      */
-    public Points.Point.DataOffset createPointsPointDataOffset() {
-        return new Points.Point.DataOffset();
+    public PaoTypes createPaoTypes() {
+        return new PaoTypes();
     }
 
     /**
-     * Create an instance of {@link Points.Point.ControlType }
+     * Create an instance of {@link OverrideTag }
      * 
      */
-    public Points.Point.ControlType createPointsPointControlType() {
-        return new Points.Point.ControlType();
+    public OverrideTag createOverrideTag() {
+        return new OverrideTag();
     }
 
     /**
-     * Create an instance of {@link Points.Point.ControlOffset }
+     * Create an instance of {@link OverrideCategory }
      * 
      */
-    public Points.Point.ControlOffset createPointsPointControlOffset() {
-        return new Points.Point.ControlOffset();
+    public OverrideCategory createOverrideCategory() {
+        return new OverrideCategory();
     }
 
     /**
-     * Create an instance of {@link Points.Point.StateZeroControl }
+     * Create an instance of {@link Point.Archive }
      * 
      */
-    public Points.Point.StateZeroControl createPointsPointStateZeroControl() {
-        return new Points.Point.StateZeroControl();
+    public Point.Archive createPointArchive() {
+        return new Point.Archive();
     }
 
     /**
-     * Create an instance of {@link Points.Point.StateOneControl }
+     * Create an instance of {@link Point.Multiplier }
      * 
      */
-    public Points.Point.StateOneControl createPointsPointStateOneControl() {
-        return new Points.Point.StateOneControl();
+    public Point.Multiplier createPointMultiplier() {
+        return new Point.Multiplier();
     }
 
     /**
-     * Create an instance of {@link Points.Point.Stategroup }
+     * Create an instance of {@link Point.Unitofmeasure }
      * 
      */
-    public Points.Point.Stategroup createPointsPointStategroup() {
-        return new Points.Point.Stategroup();
+    public Point.Unitofmeasure createPointUnitofmeasure() {
+        return new Point.Unitofmeasure();
     }
 
     /**
-     * Create an instance of {@link Points.Point.Calculation.Components.Component }
+     * Create an instance of {@link Point.Decimalplaces }
      * 
      */
-    public Points.Point.Calculation.Components.Component createPointsPointCalculationComponentsComponent() {
-        return new Points.Point.Calculation.Components.Component();
+    public Point.Decimalplaces createPointDecimalplaces() {
+        return new Point.Decimalplaces();
+    }
+
+    /**
+     * Create an instance of {@link Point.Analogstategroup }
+     * 
+     */
+    public Point.Analogstategroup createPointAnalogstategroup() {
+        return new Point.Analogstategroup();
+    }
+
+    /**
+     * Create an instance of {@link Point.DataOffset }
+     * 
+     */
+    public Point.DataOffset createPointDataOffset() {
+        return new Point.DataOffset();
+    }
+
+    /**
+     * Create an instance of {@link Point.ControlType }
+     * 
+     */
+    public Point.ControlType createPointControlType() {
+        return new Point.ControlType();
+    }
+
+    /**
+     * Create an instance of {@link Point.ControlOffset }
+     * 
+     */
+    public Point.ControlOffset createPointControlOffset() {
+        return new Point.ControlOffset();
+    }
+
+    /**
+     * Create an instance of {@link Point.StateZeroControl }
+     * 
+     */
+    public Point.StateZeroControl createPointStateZeroControl() {
+        return new Point.StateZeroControl();
+    }
+
+    /**
+     * Create an instance of {@link Point.StateOneControl }
+     * 
+     */
+    public Point.StateOneControl createPointStateOneControl() {
+        return new Point.StateOneControl();
+    }
+
+    /**
+     * Create an instance of {@link Point.Stategroup }
+     * 
+     */
+    public Point.Stategroup createPointStategroup() {
+        return new Point.Stategroup();
+    }
+
+    /**
+     * Create an instance of {@link Point.Calculation.Components.Component }
+     * 
+     */
+    public Point.Calculation.Components.Component createPointCalculationComponentsComponent() {
+        return new Point.Calculation.Components.Component();
     }
 
 }

@@ -77,6 +77,7 @@
     	
     	<touch file="../yukon-shared/src/main/resources/pao/definition/pao.xsd"/>
     	<touch file="../yukon-shared/src/main/resources/pao/definition/points.xsd"/>
+    	<touch file="../yukon-shared/src/main/resources/pao/definition/override.xsd"/>
     	
         <xjc schema="../yukon-shared/src/main/resources/pao/definition/pao.xsd"
                         package="com.cannontech.common.pao.definition.loader.jaxb" destdir="src" removeOldOutput="yes">
@@ -93,7 +94,13 @@
                  <arg value="-Xdefault-value"/>
                     <!-- Everything in this "produces" dir should be overwritten on fresh build -->
         </xjc>
-    	
+    	<xjc schema="../yukon-shared/src/main/resources/pao/definition/override.xsd"
+	    	            package="com.cannontech.common.pao.definition.loader.jaxb" destdir="src" removeOldOutput="yes">
+                 <arg value="-extension"/>
+		    	 <arg value="-no-header"/>
+		    	 <arg value="-Xdefault-value"/>
+		    	 <!-- Everything in this "produces" dir should be overwritten on fresh build -->
+    	</xjc>
     </target>
 	
     <!-- Run unit tests - will stop running if a failure or error occurs during a test -->

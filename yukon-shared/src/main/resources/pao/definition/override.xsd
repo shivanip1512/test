@@ -1,0 +1,79 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:jaxb="http://java.sun.com/xml/ns/jaxb" jaxb:version="2.1">
+    <xs:include schemaLocation="point.xsd" />
+    <xs:element name="overrides">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element type="override" name="override" maxOccurs="unbounded" minOccurs="1" />
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:complexType name="paoTypes">
+        <xs:sequence>
+            <xs:element type="xs:string" name="paoType" maxOccurs="unbounded" minOccurs="1" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="tag">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class name="overrideTag" />
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="name" use="required" />
+                <xs:attribute type="xs:string" name="action" use="required" />
+                <xs:attribute type="xs:string" name="option" use="optional" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="tags">
+        <xs:sequence>
+            <xs:element type="tag" name="tag" maxOccurs="unbounded" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="category">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class name="overrideCategory" />
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:simpleContent>
+            <xs:extension base="xs:string">
+                <xs:attribute type="xs:string" name="type" use="required" />
+                <xs:attribute type="xs:string" name="action" use="required" />
+            </xs:extension>
+        </xs:simpleContent>
+    </xs:complexType>
+    <xs:complexType name="configurations">
+        <xs:sequence>
+            <xs:element type="category" name="category" maxOccurs="unbounded" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="pointInfo">
+        <xs:annotation>
+            <xs:appinfo>
+                <jaxb:class name="overridePointInfo" />
+            </xs:appinfo>
+        </xs:annotation>
+        <xs:sequence>
+            <xs:element name="point" type="point" maxOccurs="1" minOccurs="0" />
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="name" use="required" />
+        <xs:attribute type="xs:boolean" name="init" use="optional" />
+        <xs:attribute type="xs:string" name="attributes" use="optional" />
+        <xs:attribute type="xs:string" name="action" use="required" />
+    </xs:complexType>
+    <xs:complexType name="pointInfos">
+        <xs:sequence>
+            <xs:element type="pointInfo" name="pointInfo" maxOccurs="unbounded" minOccurs="0" />
+        </xs:sequence>
+    </xs:complexType>
+    <xs:complexType name="override">
+        <xs:sequence>
+            <xs:element type="paoTypes" name="paoTypes" />
+            <xs:element type="tags" name="tags" />
+            <xs:element type="configurations" name="configurations" />
+            <xs:element type="pointInfos" name="pointInfos" />
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>
