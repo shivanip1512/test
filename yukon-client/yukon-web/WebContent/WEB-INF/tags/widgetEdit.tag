@@ -18,7 +18,6 @@
     <c:forEach var="parameter" items="${widget.type.parameters}">
         <c:set var="filePath" value="/WEB-INF/pages/dashboards/widgetParameters/${parameter.inputType.jspName}.jsp"/>
             <jsp:include flush="false" page="${filePath}">
-                <jsp:param name="widgetId" value="${widget.id}"/>
                 <jsp:param name="parameterName" value="${parameter.name}"/>
                 <jsp:param name="parameterKey" value="${parameter.key}"/>
                 <jsp:param name="path" value="${path}"/>

@@ -41,17 +41,28 @@
     <!-- Add Widgets JSP -->
     <entry key="yukon.web.modules.dashboard.addWidgets.label">Add Widgets</entry>
     <entry key="yukon.web.modules.dashboard.addWidgets.addWidget.label">Add Widget</entry>
-    <entry key="yukon.web.modules.dashboard.addWidgets.widgetType">Widget Type</entry>
+    <entry key="yukon.web.modules.dashboard.addWidgets.widgetCategory">Widget Category</entry>
+    <entry key="yukon.web.modules.dashboard.addWidgets.noWidgetsFound">No widgets were found matching the criteria.</entry>
     
     <!-- Widget Types -->
     <entry key="yukon.web.modules.dashboard.widgetType.FAVORITES.name">Favorites</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.FAVORITES.description">Displays links to any pages that you mark as your favorite.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.MONITOR_SUBSCRIPTIONS.name">Monitor Subscriptions</entry>
-    <entry key="yukon.web.modules.dashboard.widgetType.MONITOR_SUBSCRIPTIONS.description">Displays the Monitors you have set up in your system and the # of Violations, Monitoring. </entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.MONITOR_SUBSCRIPTIONS.description">Displays the Monitors you have subscribed to and the # of Violations, Monitoring. </entry>
     <entry key="yukon.web.modules.dashboard.widgetType.MESSAGING_STATISTICS.name">Inter-Service Messaging Statistics</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.MESSAGING_STATISTICS.description">Displays messaging statics between services running on your system.</entry>    
     <entry key="yukon.web.modules.dashboard.widgetType.TREND.name">Trends</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.TREND.description">Displays trends for a specific device.</entry>    
+    <entry key="yukon.web.modules.dashboard.widgetType.MONITORS.name">Monitors</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.MONITORS.description">Displays the Monitors you have set up in your system and the # of Violations, Monitoring.</entry>  
+    <entry key="yukon.web.modules.dashboard.widgetType.METER_SEARCH.name">Meter Search</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.METER_SEARCH.description">Search meters by Meter Number, Device Name, Device Type, Address/Serial and/or Route.</entry>  
+    <entry key="yukon.web.modules.dashboard.widgetType.AMI_ACTIONS.name">AMI Actions</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.AMI_ACTIONS.description">Provides links to common Actions for AMI (Archive Data Analysis, Phase Detect, Meter Events Report, Water Leak Report).</entry>  
+    <entry key="yukon.web.modules.dashboard.widgetType.SCHEDULED_REQUESTS.name">Scheduled Requests</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.SCHEDULED_REQUESTS.description">Displays a table of the schedules that are set up in your system with the current status and controls for each.</entry>  
+    <entry key="yukon.web.modules.dashboard.widgetType.GATEWAY_STREAMING_CAPACITY.name">Gateway Streaming Capacity</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.GATEWAY_STREAMING_CAPACITY.description">Displays the gateways that are over data streaming capacity and links to the gateway and data streaming detail.</entry>  
     
     <!-- Widget Parameters -->
     <entry key="yukon.web.modules.dashboard.widgetParameter.deviceId">Device</entry>
@@ -63,6 +74,7 @@
     <entry key="yukon.web.modules.dashboard.visibility.PUBLIC">Public</entry>
     
     <!-- Widget Categories -->
+    <entry key="yukon.web.modules.dashboard.widgetCategory.ALL">All</entry>
     <entry key="yukon.web.modules.dashboard.widgetCategory.AMI">AMI</entry>
     <entry key="yukon.web.modules.dashboard.widgetCategory.DR">Demand Response</entry>
     <entry key="yukon.web.modules.dashboard.widgetCategory.IVVC">Volt/Var</entry>

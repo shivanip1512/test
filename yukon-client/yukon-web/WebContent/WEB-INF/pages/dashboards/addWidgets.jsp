@@ -6,30 +6,40 @@
 
     <div class="column-6-18">
         <div class="column one">
-            <input type="text" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>"/>
+            <input type="text" class="js-search" placeholder="<cti:msg2 key='yukon.common.search.placeholder'/>"/>
             <br/><br/>
-            <h3><i:inline key=".addWidgets.widgetType"/></h3>
+            <h4><i:inline key=".addWidgets.widgetCategory"/></h4>
             <table class="compact-results-table full-width">
-                <c:forEach var="widgetCategory" items="${widgetCategories}">
+                <tr>
+                    <td><a class="js-show-all cp"><i:inline key=".widgetCategory.ALL"/></a></td>
+                    <td class="fr"><span class="badge">${totalWidgets}</span></td>
+                </tr>
+                <c:forEach var="mapEntry" items="${widgetMap}">
                     <tr>
-                    <td><a><i:inline key="${widgetCategory.formatKey}"/></a></td>
-                    <td><span class="badge">15</span></td>
+                        <td><a class="js-show-category cp" data-category="${mapEntry.key}"><i:inline key="${mapEntry.key.formatKey}"/></a></td>
+                        <td class="fr"><span class="badge">${mapEntry.value.size()}</span></td>
                     </tr>
                 </c:forEach>
             </table>
         </div>
         <div class="column two nogutter" style="padding-left:20px;border-left:1px solid #ccc;">
+        <div class="js-no-widgets-found dn"><i:inline key=".addWidgets.noWidgetsFound"/></div>
             <table class="compact-results-table row-highlighting">
-                <c:forEach var="widgetType" items="${widgetTypes}">
-                    <tr style="border-bottom:1px solid #ccc">
-                        <td><cti:dashboardImage image="${widgetType.imageName}"/></td>    
-                        <td><b class="wsnw"><i:inline key="${widgetType.formatKey}"/></b><br/><br/><i:inline key="${widgetType.descriptionKey}"/></td>    
-                        <td style="width:25%;" class="wsnw"><cti:button icon="icon-plus-green" nameKey="addWidgets.addWidget"/></td>            
-                    </tr>
-                </c:forEach>
+                <c:forEach var="mapEntry" items="${widgetMap}">
+                    <c:forEach var="widgetType" items="${mapEntry.value}">
+                        <tr style="border-bottom:1px solid #ccc" class="js-category-widgets js-${mapEntry.key}">
+                            <td><cti:dashboardImage image="${widgetType.imageName}"/></td>    
+                            <td>
+                                <b class="wsnw"><span class="js-name"><i:inline key="${widgetType.formatKey}"/></span></b>
+                                <br/><br/><span class="js-description"><i:inline key="${widgetType.descriptionKey}"/></span>
+                            </td>    
+                            <td style="width:25%;" class="wsnw"><cti:button data-type="${widgetType}" classes="js-widget-add" icon="icon-plus-green" nameKey="addWidgets.addWidget"/></td>            
+                        </tr>
+                    </c:forEach>
+                 </c:forEach>
             </table>
         </div>
-    </div>
+    </div>    
 
 </cti:msgScope>
 

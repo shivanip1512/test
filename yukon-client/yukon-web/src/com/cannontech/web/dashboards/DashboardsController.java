@@ -21,8 +21,8 @@ import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.model.Visibility;
 import com.cannontech.web.common.dashboard.model.Widget;
-import com.cannontech.web.common.dashboard.model.WidgetCategory;
 import com.cannontech.web.common.dashboard.model.WidgetType;
+import com.cannontech.web.common.dashboard.widget.service.WidgetService;
 import com.cannontech.yukon.IDatabaseCache;
 
 @Controller
@@ -30,7 +30,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class DashboardsController {
     
     @Autowired private IDatabaseCache databaseCache;
-
+    @Autowired private WidgetService widgetService;
     
     @RequestMapping("manage")
     public String manageDashboards(ModelMap model, YukonUserContext userContext) {
@@ -77,9 +77,19 @@ public class DashboardsController {
     
     @RequestMapping("{id}/addWidgets")
     public String addWidgets(@PathVariable int id, ModelMap model) {
-        model.addAttribute("widgetTypes", WidgetType.values());
-        model.addAttribute("widgetCategories", WidgetCategory.values());
+        model.addAttribute("widgetMap", widgetService.getTypesByCategory().asMap());
+        model.addAttribute("totalWidgets", WidgetType.values().length);
         return "addWidgets.jsp";
+    }
+    
+    @RequestMapping("{id}/addWidget/{type}")
+    public String addWidgetType(@PathVariable int id, @PathVariable String type, ModelMap model, YukonUserContext userContext) {
+        WidgetType widgetType = WidgetType.valueOf(type);
+        Widget widget = new Widget();
+        widget.setType(widgetType);
+        model.addAttribute("widget", widget);
+        model.addAttribute("dashboard", createDashboardMockup(userContext));
+        return "widgetAddRow.jsp";
     }
     
     @RequestMapping("saveDetails")

@@ -117,6 +117,56 @@ yukon.dashboards.edit = (function () {
                 mod.updateIndicies();
 
             });
+            
+            $(document).on('click', '.js-show-category', function () {
+                var category = $(this).data('category');
+                $('.js-search').val("");
+                $('.js-no-widgets-found').toggleClass('dn', true);
+                $('.js-category-widgets').toggleClass('dn', true);
+                $('.js-' + category).toggleClass('dn', false);
+                $('.js-show-category').css("font-weight", "normal");
+                $('.js-show-all').css("font-weight", "normal");
+                $(this).css("font-weight", "bold");
+            });
+            
+            $(document).on('click', '.js-show-all', function () {
+                $('.js-search').val("");
+                $('.js-no-widgets-found').toggleClass('dn', true);
+                $('.js-category-widgets').toggleClass('dn', false);
+                $('.js-show-category').css("font-weight", "normal");
+                $(this).css("font-weight", "bold");
+            });
+            
+            $(document).on('keyup', '.js-search', function () {
+                $('.js-no-widgets-found').toggleClass('dn', true);
+                var widgetFound = false;
+                var searchValue = $(this).val().toLowerCase();
+                $('.js-category-widgets').toggleClass('dn', true);
+                $('.js-name, .js-description').each( function() {
+                    var widgetValue = $(this).text().toLowerCase();
+                    if (widgetValue.indexOf(searchValue) != -1) {
+                        $(this).closest('.js-category-widgets').toggleClass('dn', false);
+                        widgetFound = true;
+                    }
+                });
+                if (!widgetFound) {
+                    $('.js-no-widgets-found').toggleClass('dn', false);
+                }
+            });
+            
+            $(document).on('click', '.js-widget-add', function () {
+                var dashboardId = $('#id').val();
+                var widgetType = $(this).data('type');
+                $.ajax(yukon.url('/dashboards/' + dashboardId + '/addWidget/' + widgetType)).done(function (data) {
+                    $('#column1-widgets').prepend(data);
+                    // Fix buttons.
+                    $('.js-with-movables').trigger('yukon:ordered-selection:added-removed');
+                    mod.updateLeftRightArrows();
+                    mod.updateIndicies();
+                    $('[name="column1Widgets[0].type"]').val(widgetType);
+                    $('[name="column1Widgets[0].id"]').val(0);
+                });
+            });
 
                         
             _initialized = true;

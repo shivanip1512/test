@@ -1350,9 +1350,9 @@ License: http://creativecommons.org/licenses/by/3.0/
     background-repeat: no-repeat;
     display: inline-block;
     float: left;
-    height: 150px;
+    height: 100px;
     image-rendering: pixelated;
-    line-height: 150px;
+    line-height: 100px;
     margin-top: 0px;
     margin-right: 0px;
     margin-bottom: 0px;
@@ -1364,5 +1364,13 @@ License: http://creativecommons.org/licenses/by/3.0/
     border: 1px solid #ccc;
 }
 
-.image-coming-soon { background-position: -150px 0px; }
-.image-monitor-subscriptions { background-position: 0px 0px; }
+.image-ami-actions { background-position: 0px 0px; }
+.image-gateway-streaming { background-position: -150px 0px; }
+.image-coming-soon { background-position: 0px -100px; }
+.image-meter-search { background-position: -150px -100px; }
+.image-monitor-subscriptions { background-position: 0px -200px; }
+.image-monitors { background-position: -150px -200px; }
+.image-scheduled-requests { background-position: -300px 0px; }
+.image-trends { background-position: -300px -100px; }
+
+

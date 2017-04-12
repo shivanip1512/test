@@ -50,7 +50,7 @@
     </form:form>
     
     <%-- ADD WIDGETS POPUP --%>
-<div class="dn js-add-widgets-popup" data-dialog
+<div class="dn js-add-widgets-popup" data-dialog data-height="500" data-width="800"
     data-title="<cti:msg2 key=".addWidgets.label"/>"
     data-url="<cti:url value="/dashboards/${dashboard.id}/addWidgets"/>"></div>
         
