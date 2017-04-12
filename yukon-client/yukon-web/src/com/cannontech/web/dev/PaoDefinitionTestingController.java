@@ -14,7 +14,6 @@ public class PaoDefinitionTestingController {
     
     @Autowired private PaoDefinitionDao paoDefinitionDao;
 
-
     @RequestMapping("paoDefinition")
     public String paoDefinitionTesting() {
         return "paoDefinitionTesting.jsp";
@@ -22,14 +21,14 @@ public class PaoDefinitionTestingController {
     
     @RequestMapping("reloadPaoDefinition")
     public String reloadPaoDefinition(FlashScope flash) {
-        paoDefinitionDao.reload();
+        paoDefinitionDao.load();
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.paoDefinitionTesting.reloadSuccessful"));
         return "redirect:paoDefinition";
     }
     
     @RequestMapping("reloadOverrideFile")
     public String reloadOverrideFile(FlashScope flash) {
-        //paoDefinitionDao.reload();
+        paoDefinitionDao.override();
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.paoDefinitionTesting.reloadOverrideSuccessful"));
         return "redirect:paoDefinition";
     }

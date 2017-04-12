@@ -11,7 +11,7 @@
         <cti:button type="submit" label="Reload Pao Definition"/>
         
         <cti:url var="reloadOverrideUrl" value="reloadOverrideFile"/>
-        <cti:button href="${reloadOverrideUrl}" label="Reload Override File"/>
+        <cti:button href="${reloadOverrideUrl}" label="Reload And Override Pao Definition"/>
         
     </form:form>
 </cti:standardPage>

@@ -31,13 +31,6 @@ import com.google.common.collect.SetMultimap;
  */
   public interface PaoDefinitionDao {
 
-    /**
-     * Reloads all pao definitions files and re-initializes the cache. This method should be used for testing only since
-     * all pao definitions are loaded on
-     * the start-up.
-     */
-    void reload();
-
     // ATTRIBUTES
     // ============================================
      Set<AttributeDefinition> getDefinedAttributes(PaoType paoType);
@@ -215,4 +208,14 @@ import com.google.common.collect.SetMultimap;
      * matches that default point name.
      */
     PointIdentifier getPointIdentifierByDefaultName(PaoType key, String defaultPointName) throws NotFoundException;
+
+    void override();
+
+    /**
+     * Reloads all pao definitions files and re-initializes the cache. This method should be used for testing
+     * only since
+     * all pao definitions are loaded on
+     * the start-up.
+     */
+    void load();
 }

@@ -67,18 +67,24 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
     private SetMultimap<PaoType, Category> paoCategoryMap;
     private SetMultimap<Category, PaoType> categoryToPaoMap;
     private BiMap<PaoType, PaoDefinition> paoTypeMap;
-    private ListMultimap<String, PaoDefinition> paoDisplayGroupMap = LinkedListMultimap.create();
-    private SetMultimap<String, PaoDefinition> changeGroupPaosMap = HashMultimap.create();
+    private ListMultimap<String, PaoDefinition> paoDisplayGroupMap;
+    private SetMultimap<String, PaoDefinition> changeGroupPaosMap;
     private SetMultimap<PaoType, CommandDefinition> paoCommandMap;
     private Map<PaoType, ImmutableBiMap<PaoTag, PaoTagDefinition>> supportedTagsByType;
-    private Map<PaoTag, BiMap<PaoType, PaoDefinition>> typesBySupportedTag = new HashMap<>();
-    private Set<PaoDefinition> creatablePaoDefinitions = new HashSet<>();
-    private SetMultimap<PaoTypePointIdentifier, BuiltInAttribute> paoAndPointToAttribute =  HashMultimap.create();
+    private Map<PaoTag, BiMap<PaoType, PaoDefinition>> typesBySupportedTag;
+    private Set<PaoDefinition> creatablePaoDefinitions;
+    private SetMultimap<PaoTypePointIdentifier, BuiltInAttribute> paoAndPointToAttribute;
     
     @Autowired private DefinitionLoaderService definitionLoaderService;
    
     @PostConstruct
-    public void initialize() {
+    public void initialize() {        
+        paoDisplayGroupMap = LinkedListMultimap.create();
+        changeGroupPaosMap = HashMultimap.create();
+        typesBySupportedTag = new HashMap<>();
+        paoAndPointToAttribute =  HashMultimap.create();
+        creatablePaoDefinitions = new HashSet<>();
+        
         paoAttributeAttrDefinitionMap = definitionLoaderService.getPaoAttributeAttrDefinitionMap();
         Builder<PaoType, Attribute> builder = ImmutableListMultimap.builder();
         for (Map.Entry<PaoType, Map<Attribute, AttributeDefinition>> entry : paoAttributeAttrDefinitionMap.entrySet()) {
@@ -116,11 +122,20 @@ public class PaoDefinitionDaoImpl implements PaoDefinitionDao {
                 }
             }
         }
+        
+        definitionLoaderService.cleanUp();
     }
     
     @Override
-    public void reload(){
-        definitionLoaderService.reload();
+    public void load(){
+        definitionLoaderService.load();
+        initialize();
+    }
+    
+    @Override
+    public void override(){
+        definitionLoaderService.load();
+        definitionLoaderService.override();
         initialize();
     }
     

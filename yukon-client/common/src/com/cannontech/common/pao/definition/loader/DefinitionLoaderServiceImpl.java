@@ -8,13 +8,11 @@ import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -24,11 +22,11 @@ import com.cannontech.common.pao.definition.loader.jaxb.CommandType;
 import com.cannontech.common.pao.definition.loader.jaxb.ComponentTypeType;
 import com.cannontech.common.pao.definition.loader.jaxb.DeviceCategories.Category;
 import com.cannontech.common.pao.definition.loader.jaxb.Pao;
+import com.cannontech.common.pao.definition.loader.jaxb.Point;
+import com.cannontech.common.pao.definition.loader.jaxb.Point.Archive;
+import com.cannontech.common.pao.definition.loader.jaxb.Point.Calculation;
+import com.cannontech.common.pao.definition.loader.jaxb.Point.Calculation.Components.Component;
 import com.cannontech.common.pao.definition.loader.jaxb.PointInfoType;
-import com.cannontech.common.pao.definition.loader.jaxb.Points.Point;
-import com.cannontech.common.pao.definition.loader.jaxb.Points.Point.Archive;
-import com.cannontech.common.pao.definition.loader.jaxb.Points.Point.Calculation;
-import com.cannontech.common.pao.definition.loader.jaxb.Points.Point.Calculation.Components.Component;
 import com.cannontech.common.pao.definition.loader.jaxb.TagType;
 import com.cannontech.common.pao.definition.loader.jaxb.UpdateTypeType;
 import com.cannontech.common.pao.definition.model.CalcPointComponent;
@@ -62,9 +60,9 @@ import com.google.common.collect.SetMultimap;
 
 public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
 
-    private final Logger log = YukonLogManager.getLogger(DefinitionLoaderServiceImpl.class);
     @Value("classpath:pao/definition/pao.xsd") private Resource paoXsd;
     @Value("classpath:pao/definition/points.xsd") private Resource pointsXsd;
+    @Value("classpath:pao/definition/override.xsd") private Resource overrideXsd;
     @Autowired private ResourceLoader loader;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private PointDao pointDao;
@@ -72,14 +70,23 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
     
     @PostConstruct
     public void initialize() {
-        log.info("Loading device defintions.");
-        fileLoader = new FileLoader(loader, paoXsd, pointsXsd);
-        log.info("Loading device defintions complete.");
+        load();
+        override();
     }
     
     @Override
-    public void reload(){
-        initialize();
+    public void load() {
+        fileLoader = new FileLoader(loader, paoXsd, pointsXsd);
+    }
+    
+    @Override
+    public void override() {
+        fileLoader.override(overrideXsd);
+    }
+
+    @Override
+    public void cleanUp() {
+        fileLoader.cleanUp();
     }
     
     @Override
@@ -101,8 +108,8 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
                 paoAttributeAttrDefinitionMap.put(paoType, new HashMap<>());
             }
             Map<Attribute, AttributeDefinition> attrDefMap = paoAttributeAttrDefinitionMap.get(paoType);
-            if (pao.getPointFiles() != null) {
-                Map<String, Point> allPoints = fileLoader.getPoints(pao.getPointFiles().getPointFile());
+            if (pao.getPointInfos() != null) {
+                Map<String, Point> allPoints = fileLoader.getPoints(pao.getPaoType());
                 for (PointInfoType pointInfo : pao.getPointInfos().getPointInfo()) {
                     PointTemplate template = createPointTemplate(pointInfo.getName(), allPoints);
                     if (pointInfo.getAttributes() != null) {
@@ -125,9 +132,9 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
         SetMultimap<PaoType, PointTemplate> paoAllPointTemplateMap = HashMultimap.create();
         
         for(Pao pao: fileLoader.getPaos()) {
-            if(pao.getPointFiles() != null) {
+            if(pao.getPointInfos() != null) {
+                Map<String, Point> allPoints =  fileLoader.getPoints(pao.getPaoType());
                 PaoType paoType = PaoType.valueOf(pao.getPaoType());
-                Map<String, Point> allPoints =  fileLoader.getPoints(pao.getPointFiles().getPointFile());
                 for (PointInfoType pointInfo : pao.getPointInfos().getPointInfo()) {
                     if(initOnly && !pointInfo.isInit()){
                         continue;
@@ -161,8 +168,8 @@ public class DefinitionLoaderServiceImpl implements DefinitionLoaderService{
     public SetMultimap<PaoType, CommandDefinition> getPaoCommandMap() {
         SetMultimap<PaoType, CommandDefinition> paoCommandMap = HashMultimap.create();
         for (Pao pao : fileLoader.getPaos()) {
-            if(pao.getPointFiles() != null) {
-                Map<String, Point> allPoints = fileLoader.getPoints(pao.getPointFiles().getPointFile());
+            Map<String, Point> allPoints = fileLoader.getPoints(pao.getPaoType());
+            if(allPoints != null) {
                 PaoType paoType = PaoType.valueOf(pao.getPaoType());
                 if(pao.getCommands() != null){
                     for (CommandType command : pao.getCommands().getCommand()) {

@@ -1,13 +1,17 @@
 package com.cannontech.common.pao.definition.loader;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -22,6 +26,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -33,81 +38,126 @@ import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.RemoteLoginSession;
+import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.loader.jaxb.CategoryType;
 import com.cannontech.common.pao.definition.loader.jaxb.CommandType;
+import com.cannontech.common.pao.definition.loader.jaxb.DeviceCategories;
+import com.cannontech.common.pao.definition.loader.jaxb.DeviceCategories.Category;
+import com.cannontech.common.pao.definition.loader.jaxb.OverrideCategory;
+import com.cannontech.common.pao.definition.loader.jaxb.OverridePointInfo;
+import com.cannontech.common.pao.definition.loader.jaxb.OverrideTag;
+import com.cannontech.common.pao.definition.loader.jaxb.Overrides;
 import com.cannontech.common.pao.definition.loader.jaxb.Pao;
+import com.cannontech.common.pao.definition.loader.jaxb.Point;
+import com.cannontech.common.pao.definition.loader.jaxb.Point.Calculation;
+import com.cannontech.common.pao.definition.loader.jaxb.Point.Calculation.Components.Component;
 import com.cannontech.common.pao.definition.loader.jaxb.PointInfoType;
+import com.cannontech.common.pao.definition.loader.jaxb.PointInfosType;
 import com.cannontech.common.pao.definition.loader.jaxb.PointType;
 import com.cannontech.common.pao.definition.loader.jaxb.Points;
-import com.cannontech.common.pao.definition.loader.jaxb.Points.Point;
-import com.cannontech.common.pao.definition.loader.jaxb.Points.Point.Calculation;
-import com.cannontech.common.pao.definition.loader.jaxb.Points.Point.Calculation.Components.Component;
 import com.cannontech.common.pao.definition.loader.jaxb.TagType;
+import com.cannontech.common.pao.definition.loader.jaxb.TagsType;
 import com.cannontech.common.pao.definition.model.PaoTag;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.data.point.UnitOfMeasure;
-import com.google.common.collect.Maps;
 
 public class FileLoader {
    
+    private final static String OVERRIDE_FILE_LOCATION= CtiUtilities.getYukonBase() + "/Server/Config/deviceDefinition.xml";
+    private final static File overrideFile = new File(OVERRIDE_FILE_LOCATION);
     private final Logger log = YukonLogManager.getLogger(FileLoader.class);    
-    private Map<String, List<Point>> fileNameToPoints = new HashMap<>();
     private List<Pao> paos = new ArrayList<>();
-    
+    private Map<String, List<Point>> paoTypeToPoints = new HashMap<>();
+    private List<String> allPaoTypes = Arrays.stream(PaoType.values()).map(PaoType::name).collect(Collectors.toList());       
     //xml files are located in yukon-shared
     private final String classpath = "classpath*:pao/definition/**/*.xml";
     
-    public FileLoader(ResourceLoader loader, Resource paoXsd, Resource pointsXsd) {
+    enum Action {
+        ADD, UPDATE, REMOVE
+    }
 
+    /**
+     * Loads and validates pao definition files.
+     */
+    public FileLoader(ResourceLoader loader, Resource paoXsd, Resource pointsXsd) {
+        loadPaosAndPoints(loader, paoXsd, pointsXsd);
+        validate();
+    }
+    
+    private void loadPaosAndPoints(ResourceLoader loader, Resource paoXsd, Resource pointsXsd) {
+        log.info("Loading device defintions.");
+        Map<String, List<Point>> fileNameToPoints = new HashMap<>();
         PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver();
         try {
             Resource[] resources = resolver.getResources(classpath);
             for (Resource resource : resources) {
                 if (resource.getURL().getPath().contains("/points/")) {
-                    loadPoints(resource, resource.getFilename(), pointsXsd);
+                    loadPoints(resource, resource.getFilename(), pointsXsd, fileNameToPoints);
                 } else {
                     loadPao(resource, paoXsd);
                 }
             }
-            for (Pao pao : paos) {
+            paos.forEach(pao -> {
                 if (pao.getPointFiles() != null) {
                     String file = pao.getPointFiles().getPointFile();
-                    Map<String, Point> allPoints = Maps.uniqueIndex(fileNameToPoints.get(file), c -> c.getName());
-                    validatePointInfos(pao, allPoints);
-                    validateCommands(pao, allPoints);
-                    validatePoints(allPoints, file);
+                    paoTypeToPoints.put(pao.getPaoType(), new ArrayList<>(fileNameToPoints.get(file)));
                 }
-                validateTags(pao);
-            }
+            });
         } catch (IOException e) {
             throw new PaoConfigurationException("Unable to load resorces from " + classpath, e);
         }
+        log.info("Loading device defintions complete.");
+    }
+    
+    private void validate(){
+        log.info("Validating device definitions.");
+        paos.forEach(pao -> {
+            if (paoTypeToPoints.get(pao.getPaoType()) != null) {
+                validatePointInfos(pao);
+                validateCommands(pao);
+                validatePoints(pao);
+            }
+            validateTags(pao);
+        });
+        log.info("Validating device definitions complete.");
     }
         
     /**
      * Validates that all points used in calculation exist, if the point does not exist or disabled throws exception.
      * Checks if unit of measure exits if it doesn't exist throws exception.
      */
-    private void validatePoints(Map<String, Point> allPoints, String file) {
-        for (Point point : allPoints.values()) {
+    private void validatePoints(Pao pao) {
+        String file = "";
+        if(pao.getPointFiles() != null){
+            file = pao.getPointFiles().getPointFile();
+        }else{
+            //point is in override file, device doesn't have point file. Example: VIRTUAL_SYSTEM
+            file = OVERRIDE_FILE_LOCATION;
+        }
+        for (Point point : paoTypeToPoints.get(pao.getPaoType())) {
             if (point.getUnitofmeasure() != null) {
                 String unitOfMeasure = point.getUnitofmeasure().getValue().name();
                 try {
                     UnitOfMeasure.valueOf(unitOfMeasure);
                 } catch (Exception e) {
-                    throw new PaoConfigurationException("Unable to load : point=" + point.getName() + " (" + file + ")"
-                        + " unit of measure=" + unitOfMeasure + " doesn't exist");
+                    throw new PaoConfigurationException(pao.getPaoType() + " unable to load: point=" + point.getName()
+                        + " (" + file + ")" + " unit of measure=" + unitOfMeasure + " doesn't exist");
                 }
             }
             Calculation calculation = point.getCalculation();
             if (calculation != null) {
                 for (Component component : calculation.getComponents().getComponent()) {
-                    Point componentPoint = allPoints.get(component.getPoint());
+                    Point componentPoint = findPointByName(pao, component.getPoint());
                     if (componentPoint == null) {
                         throw new PaoConfigurationException(
-                            "Unable to load : point=" + point.getName() + " component point="+component.getPoint()+" doesn't exist in " + file);
-                    }else if (!componentPoint.isEnabled()) {
-                        throw new PaoConfigurationException(
-                            "Unable to load : point=" + point.getName() + " component point="+component.getPoint()+" is disabled " + file);
+                            pao.getPaoType() + " unable to load: point=" + point.getName() + " component point="
+                                + component.getPoint() + " doesn't exist in " + file);
+                    } else if (!componentPoint.isEnabled()) {
+                        throw new PaoConfigurationException(pao.getPaoType() + " unable to load: point=" + point.getName()
+                            + " component point=" + component.getPoint() + " is disabled " + file);
                     }
                 }
             }
@@ -118,67 +168,82 @@ public class FileLoader {
      * Validates that all points used in PointInfos exist, if the point does not exist throws exception. If the point is
      * disabled removes pointInfo from the list.
      */
-    void validatePointInfos(Pao pao, Map<String, Point> allPoints){
-        String file = pao.getPointFiles().getPointFile();
-        ListIterator<PointInfoType> it = pao.getPointInfos().getPointInfo().listIterator();
-        while (it.hasNext()) {
-            PointInfoType pointInfo = it.next();
-            Point point = allPoints.get(pointInfo.getName());
-            if (point == null) {
-                throw new PaoConfigurationException(
-                    "Unable to load :" + pao.getPaoType() + " point=" + pointInfo.getName() + " doesn't exist in " + file);
-            }else if (!point.isEnabled()) {
-                log.warn("Removing pointInfo :" + pao.getPaoType() + " point=" + pointInfo.getName() + " is disabled in"
-                    + file);
-                it.remove();
-            }
-        }
+    void validatePointInfos(Pao pao) {
+        pao.getPointInfos().getPointInfo().removeIf(pointInfo -> !validatePointInfo(pao, pointInfo.getName()));
     }
     
     /**
-     * Validates that all points used in commands exist, if the point does not exist or disabled throws exception.
+     * Returns false if the point is disabled in a points file.
      */
-    void validateCommands(Pao pao, Map<String, Point> allPoints){
-        String file = pao.getPointFiles().getPointFile();
-        if(pao.getCommands() != null){
+    private boolean validatePointInfo(Pao pao, String pointName) {
+        Point point = findPointByName(pao, pointName);
+        if (point == null) {
+            throw new PaoConfigurationException(pao.getPaoType() + " unable to load: " + pointName + " point="
+                + pointName + " doesn't exist in " + pao.getPointFiles().getPointFile());
+        } else if (!point.isEnabled()) {
+            log.warn("Removing pointInfo :" + pao.getPaoType() + " point=" + pointName + " is disabled in"
+                + pao.getPointFiles().getPointFile());
+            return false;
+        }
+        return true;
+    }
+    
+    private Point findPointByName(Pao pao, String pointToFind){
+        Point point = paoTypeToPoints.get(pao.getPaoType())
+                                     .stream()
+                                     .filter(p -> p.getName().equals(pointToFind))
+                                     .findFirst()
+                                     .orElse(null);
+        return point;
+    }
+
+    /**
+     * Validates that all points used in commands exist, if the point does not exist or disabled throws
+     * exception.
+     */
+    void validateCommands(Pao pao) {
+        if (pao.getCommands() != null) {
+            String file = pao.getPointFiles().getPointFile();
             for (CommandType command : pao.getCommands().getCommand()) {
                 for (PointType pointType : command.getPoint()) {
                     String pointName = pointType.getName();
-                    Point commandPoint = allPoints.get(pointType.getName());
+                    Point commandPoint = findPointByName(pao, pointName);
                     if (commandPoint == null) {
-                        throw new PaoConfigurationException("Unable to load :" + pao.getPaoType() + "command="
-                            + command.getName() + " point=" + pointName + " doesn't exist in " + file);
-                    }else if (!commandPoint.isEnabled()) {
-                        throw new PaoConfigurationException("Unable to load :" + pao.getPaoType() + "command="
-                            + command.getName() + " point=" + pointName + " is disabled in" + file);
+                        throw new PaoConfigurationException(pao.getPaoType() + " unable to load: " + pao.getPaoType()
+                            + "command=" + command.getName() + " point=" + pointName + " doesn't exist in " + file);
+                    } else if (!commandPoint.isEnabled()) {
+                        throw new PaoConfigurationException(pao.getPaoType() + " unable to load: " + pao.getPaoType()
+                            + "command=" + command.getName() + " point=" + pointName + " is disabled in" + file);
                     }
                 }
             }
-        }  
+        }
     }
     
     /**
      * Validates that all tags have a parsable option if the option exist.
      * <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="0-4194303"/>
      */
-    void validateTags(Pao pao){
-        if(pao.getTags() != null){
-            for (TagType tagType : pao.getTags().getTag()) {
-                PaoTag tag = PaoTag.valueOf(tagType.getName());
-                String value = tagType.getOption();
-                
-                if (tag.isTagHasValue()) {
-                    Object convertedValue = InputTypeFactory.convertPropertyValue(tag.getValueType(), value);
-                    if (convertedValue == null) {
-                        throw new PaoConfigurationException(pao.getPaoType() + " has invalid option for a tag="
-                            + tagType.getName() + ". Unable to convert the value.");
-                    }
-                } else {
-                    if (StringUtils.isNotBlank(tagType.getOption())) {
-                        throw new PaoConfigurationException(pao.getPaoType() + " has invalid option for a tag="
-                            + tagType.getName() + ". This tag shouldn't have an option value.");
-                    }
-                }
+    private void validateTags(Pao pao) {
+        Optional.ofNullable(pao.getTags()).ifPresent(tags -> tags.getTag().forEach(tag -> {
+            validateTag(tag, pao.getPaoType());
+        }));
+    }
+    
+    private void validateTag(TagType tagType, String paoType) {
+        PaoTag tag = PaoTag.valueOf(tagType.getName());
+        String value = tagType.getOption();
+
+        if (tag.isTagHasValue()) {
+            Object convertedValue = InputTypeFactory.convertPropertyValue(tag.getValueType(), value);
+            if (convertedValue == null) {
+                throw new PaoConfigurationException(
+                    paoType + " has invalid option for a tag=" + tagType.getName() + ". Unable to convert the value.");
+            }
+        } else {
+            if (StringUtils.isNotBlank(tagType.getOption())) {
+                throw new PaoConfigurationException(paoType + " has invalid option for a tag=" + tagType.getName()
+                    + ". This tag shouldn't have an option value.");
             }
         }
     }
@@ -205,14 +270,14 @@ public class FileLoader {
                 }
             }
         } catch (IOException | JAXBException | SAXException | ParserConfigurationException e) {
-            throw new PaoConfigurationException("Unable to load file:" + fileUrl + ". File is located in yukon-shared project.", e);
+            throw new PaoConfigurationException("Unable to parse file:" + fileUrl + ". File is located in yukon-shared project.", e);
         }
     }
 
     /**
      * Validates and loads point file.
      */
-    private void loadPoints(Resource resource, String fileName, Resource pointsXsd) {
+    private void loadPoints(Resource resource, String fileName, Resource pointsXsd, Map<String, List<Point>> fileNameToPoints) {
 
         String fileUrl = "";
         try {
@@ -233,7 +298,6 @@ public class FileLoader {
 
     private void validateXmlSchema(InputStream stream, URL schemaUrl)
             throws IOException, SAXException, ParserConfigurationException {
-        
         SAXParserFactory factory = SAXParserFactory.newInstance();
         factory.setValidating(false); // this is for DTD, so we want it off
         factory.setNamespaceAware(true);
@@ -264,6 +328,319 @@ public class FileLoader {
 
         xmlReader.parse(new InputSource(stream));
     }
+    
+    /**
+     * Loads and applies custom overrides.
+     */
+    public void override(Resource deviceDefinitionXsd) {
+        if (overrideFile.exists()) {
+            Overrides overrides = loadOverrideFile(deviceDefinitionXsd);
+            if (overrides != null) {
+                applyOverrides(overrides);
+                validate();
+            }
+        }
+    }
+
+    private void applyOverrides(Overrides overrides) {
+        log.info("- Applying custom overrides to device definitions.");
+
+        Map<String, Pao> typeToPao = paos.stream().collect(Collectors.toMap(Pao::getPaoType, Function.identity()));
+        overrides.getOverride().forEach(override -> {  
+            List<String> paoTypes  = Optional.ofNullable(override.getPaoTypes())
+                                             .map(types -> override.getPaoTypes().getPaoType())
+                                             .orElse(new ArrayList<>())
+                                             .stream()
+                                             .filter(paoType -> allPaoTypes.contains(paoType))
+                                             .collect(Collectors.toList());
+            List<OverrideCategory> overrideCategories = Optional.ofNullable(override.getConfigurations())
+                                                                        .map(c ->override.getConfigurations().getCategory())
+                                                                        .orElse(new ArrayList<>());
+            List<OverrideTag> overrideTags = Optional.ofNullable(override.getTags())
+                                                     .map(c ->override.getTags().getTag())
+                                                     .orElse(new ArrayList<>());
+            List<OverridePointInfo> overridePointInfos = Optional.ofNullable(override.getPointInfos())
+                                                                 .map(c ->override.getPointInfos().getPointInfo())
+                                                                 .orElse(new ArrayList<>());
+            paoTypes.forEach(paoType -> {
+                try {
+                    log.info("");
+                    log.info("-- Applying custom overrides for device " + paoType + "");
+                    Pao pao = typeToPao.get(paoType);
+                    overrideTags(pao, overrideTags);
+                    overrideConfigurations(pao, overrideCategories);
+                    overidePointInfo(pao, overridePointInfos);
+                    log.info("-- Applying custom overrides for device " + paoType + " is complete.");
+                } catch (Exception e) {
+                    log.error("Can't parse " + paoType + " override in " + OVERRIDE_FILE_LOCATION, e);
+                }
+            });
+        });
+
+        log.info("- Applying custom overrides to device definitions complete.");
+
+    }
+    
+    private void overidePointInfo(Pao pao, List<OverridePointInfo> pointInfos) {
+        pointInfos.forEach(override -> {
+            switch (Action.valueOf(override.getAction().toUpperCase())) {
+            case REMOVE:
+                removeExistingPointInfo(pao, override, Action.REMOVE);
+                break;
+            case ADD:
+                createUpdatePointInfo(pao, override, Action.ADD);
+                break;
+            case UPDATE:
+                createUpdatePointInfo(pao, override, Action.UPDATE);
+                break;
+            }
+        });
+    }
+
+    private void removeExistingPointInfo(Pao pao, OverridePointInfo override, Action action) {
+        String pointNameToRemove = override.getName();
+        boolean isRemoved = Optional.ofNullable(pao.getPointInfos()).map(t -> t.getPointInfo())
+                                                                    .orElse(new ArrayList<>())
+                                                                    .removeIf(i -> i.getName().equals(pointNameToRemove));
+        if (isRemoved) {
+            logOverride(Action.REMOVE, pao.getPaoType(), pointNameToRemove, "pointInfo", null, null);
+        }
+        if (!isRemoved && action == Action.REMOVE) {
+            logOverride(Action.REMOVE, pao.getPaoType(), pointNameToRemove, "pointInfo", "pointInfo doesn't exist.", Level.WARN);
+        }
+    }
+    
+    private void logOverride(Action action, String paoType, String value, String item, String msgToDisplay,
+            Level level) {
+        String msg = "---- " + paoType + " " + action.name().toLowerCase() + " " + item + "(" + value + ")";
+        if (msgToDisplay == null) {
+            log.info(msg + " <SUCCESS>");
+        } else {
+            log.info(msg + " <" + level + ":" + msgToDisplay + ">");
+        }
+    }
+
+    private void createUpdatePointInfo(Pao pao, OverridePointInfo override, Action action) {
+        String newName = override.getName();
+        boolean pointExists = Optional.ofNullable(pao.getPointInfos()).map(t -> t.getPointInfo())
+                                                                      .orElse(new ArrayList<>())
+                                                                      .stream()
+                                                                      .anyMatch(p -> p.getName().equals(newName));
+        if (pointExists && action == Action.ADD) {
+            logOverride(action, pao.getPaoType(), newName, "pointInfo", "pointInfo already exists.", Level.WARN);
+            return;
+        }
+
+        PointInfoType pointInfo = createPointInfo(pao, override);
+        if (pointInfo != null) {
+            if (pointExists) {
+                removeExistingPointInfo(pao, override, action);
+            }
+            if(pao.getPointInfos() == null){
+                pao.setPointInfos(new PointInfosType()); 
+            }
+            pao.getPointInfos().getPointInfo().add(pointInfo);
+            logOverride(Action.ADD, pao.getPaoType(), newName, "pointInfo", null, null);
+        } else {
+            logOverride(Action.ADD, pao.getPaoType(), newName, "pointInfo",
+                "New pointInfo is invalid. Check that the point exist in the point file or in override file and the point is enabled.",
+                Level.ERROR);
+        }
+    }
+
+    private PointInfoType createPointInfo(Pao pao, OverridePointInfo overridePointInfo) {
+        PointInfoType newPointInfo = new PointInfoType();
+        newPointInfo.setName(overridePointInfo.getName());
+        newPointInfo.setAttributes(overridePointInfo.getAttributes());
+        newPointInfo.setInit(overridePointInfo.isInit());
+        addNewPoint(pao.getPaoType(), overridePointInfo.getPoint());
+        try {
+            //checks if the point that matches pointInfo name exists and it is enabled.
+            if (validatePointInfo(pao, newPointInfo.getName())) {
+                return newPointInfo;
+            }
+        } catch (PaoConfigurationException e) {
+            //ignore
+        }
+        return null;
+    }
+    
+    private void addNewPoint(String paoType, Point overridePoint){
+        if (overridePoint != null) {
+            if (paoTypeToPoints.get(paoType) == null) {
+                paoTypeToPoints.put(paoType, new ArrayList<>());
+            }
+            if (paoTypeToPoints.get(paoType).removeIf(p -> p.getName().equals(overridePoint.getName()))) {
+                logOverride(Action.REMOVE, paoType, overridePoint.getName(), "POINT", null, null);
+            }
+            logOverride(Action.ADD, paoType, overridePoint.getName(), "POINT", null, null);
+            paoTypeToPoints.get(paoType).add(overridePoint);
+        }
+    }
+
+    private void overrideTags(Pao pao, List<OverrideTag> overrideTags) {
+        overrideTags.forEach(overrideTag -> {
+            switch (Action.valueOf(overrideTag.getAction().toUpperCase())) {
+            case REMOVE:
+                removeExistingTag(pao, overrideTag, Action.REMOVE);
+                break;
+            case ADD:
+                createUpdateTag(pao, overrideTag, Action.ADD);
+                break;
+            case UPDATE:
+                createUpdateTag(pao, overrideTag, Action.UPDATE);
+                break;
+            }
+        });
+    }
+    
+    private void createUpdateTag(Pao pao, OverrideTag overrideTag, Action action) {
+        String newTagName = overrideTag.getName();
+         boolean tagExists = Optional.ofNullable(pao.getTags()).map(t -> t.getTag())
+                                    .orElse(new ArrayList<>())
+                                    .stream()
+                                    .anyMatch(t -> t.getName().equals(newTagName));
+
+        if (tagExists && action == Action.ADD) {
+            logOverride(action, pao.getPaoType(), newTagName, "TAG", "Tag already exists.", Level.WARN);
+            return;
+        }
+        
+        TagType newTag = createNewTag(overrideTag, pao.getPaoType());
+        if (newTag != null) {
+            if (tagExists) {
+                removeExistingTag(pao, overrideTag, action);
+            }
+            if(pao.getTags() == null){
+                pao.setTags(new TagsType());
+            }
+            pao.getTags().getTag().add(newTag);
+            logOverride(Action.ADD, pao.getPaoType(), newTagName, "TAG", null, Level.WARN);
+        } else {
+            logOverride(Action.ADD, pao.getPaoType(), newTagName, "TAG", "New tag is invalid.", Level.ERROR);
+        }
+    }
+    
+    private void removeExistingTag(Pao pao, OverrideTag overrideTag, Action action) {
+        String tagToRemove = overrideTag.getName();
+        boolean isRemoved = Optional.ofNullable(pao.getTags()).map(t -> t.getTag())
+                                    .orElse(new ArrayList<>())
+                                    .removeIf(i -> i.getName().equals(tagToRemove));
+        if (isRemoved) {
+            logOverride(Action.REMOVE, pao.getPaoType(), tagToRemove, "TAG", null, null);
+        }else if (action == Action.REMOVE && !isRemoved) {
+            logOverride(Action.REMOVE, pao.getPaoType(), tagToRemove, "TAG", "Tag doesn't exists.", Level.WARN);
+        }
+    }
+        
+    private TagType createNewTag(OverrideTag overrideTag, String paoType){
+        TagType newTag = new TagType();
+        newTag.setName(overrideTag.getName());
+        newTag.setOption(overrideTag.getOption());
+        newTag.setValue(overrideTag.getValue());
+        try{
+            validateTag(newTag, paoType);
+            return newTag;
+        }catch(PaoConfigurationException e){
+            log.error("Error creating new tag", e);
+            return null;
+        }
+    }
+        
+    private void overrideConfigurations(Pao pao, List<OverrideCategory> categories) {
+        for (OverrideCategory category : categories) {
+            try {
+                CategoryType overrideCategyType = CategoryType.fromValue(category.getType());
+                switch (Action.valueOf(category.getAction().toUpperCase())) {
+                case REMOVE:
+                    removeExistingConfigurationCategory(pao, overrideCategyType, Action.REMOVE);
+                    break;
+                case ADD:
+                    createUpdateConfigurationCategory(pao, overrideCategyType, Action.ADD);
+                    break;
+                case UPDATE:
+                    createUpdateConfigurationCategory(pao, overrideCategyType, Action.UPDATE);
+                    break;
+                }
+            } catch (Exception e) {
+                log.error("Error overriding configuration", e);
+            }
+        }
+    }
+       
+    private void createUpdateConfigurationCategory(Pao pao, CategoryType overrideCategyType, Action action) {
+        boolean configurationExists = Optional.ofNullable(pao.getConfiguration()).map(c -> c.getCategory())
+                                                                                 .orElse(new ArrayList<>())
+                                                                                 .stream()
+                                                                                 .anyMatch(t -> t.getType() == overrideCategyType);
+        if (!configurationExists) {
+            Category category = new Category();
+            category.setType(overrideCategyType);
+            if(pao.getConfiguration() == null){
+                pao.setConfiguration(new DeviceCategories());
+            }
+            pao.getConfiguration().getCategory().add(category);
+            logOverride(Action.ADD, pao.getPaoType(), overrideCategyType.name(), "Configuration Category", null, Level.WARN);
+        } else {
+            logOverride(Action.ADD, pao.getPaoType(), overrideCategyType.name(), "Configuration Category",
+                "Configuration Category already exists.", Level.WARN);
+        }
+    }
+    
+    private void removeExistingConfigurationCategory(Pao pao, CategoryType typeToRemove, Action action) {
+        boolean isRemoved = Optional.ofNullable(pao.getConfiguration()).map(c -> c.getCategory())
+                                                                       .orElse(new ArrayList<>())
+                                                                       .removeIf(i -> i.getType() == typeToRemove);
+        if (isRemoved) {
+            logOverride(Action.REMOVE, pao.getPaoType(), typeToRemove.name(), "Configuration Category", null, null);
+        } else if (!isRemoved && action == Action.REMOVE) {
+            logOverride(Action.REMOVE, pao.getPaoType(), typeToRemove.name(), "Configuration Category", "Configuration Category doesn't exist.", Level.WARN);
+        }
+    }
+
+    private Overrides loadOverrideFile(Resource deviceDefinitionXsd) {
+        Overrides overrides = null;
+        boolean isValidSchema = false;
+        if (ClientSession.isRemoteSession()) {
+            RemoteLoginSession remoteSession = ClientSession.getRemoteLoginSession();
+            try (InputStream inputStream =
+                remoteSession.getInputStreamForUrl("/common/config/deviceDefinition", true)) {
+                validateXmlSchema(inputStream, deviceDefinitionXsd.getURL());
+                isValidSchema = true;
+            } catch (IOException | SAXException | ParserConfigurationException e) {
+                log.error("Unable to validate schema (remote session) for " + OVERRIDE_FILE_LOCATION, e);
+            }
+            if (isValidSchema) {
+                try (InputStream inputStream =
+                    remoteSession.getInputStreamForUrl("/common/config/deviceDefinition", true)) {
+                    log.info("Parsing (remote session) " + OVERRIDE_FILE_LOCATION);
+                    JAXBContext jaxbContext = JAXBContext.newInstance(Overrides.class);
+                    Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                    overrides = (Overrides) unmarshaller.unmarshal(inputStream);
+                } catch (IOException | JAXBException e) {
+                    log.error("Unable to parse (remote session) " + OVERRIDE_FILE_LOCATION, e);
+                }
+            }
+        } else {
+            try (InputStream inputStream = new FileInputStream(overrideFile)) {
+                validateXmlSchema(inputStream, deviceDefinitionXsd.getURL());
+                isValidSchema = true;
+            } catch (IOException | SAXException | ParserConfigurationException e) {
+                log.error("Unable to validate schema for " + OVERRIDE_FILE_LOCATION, e);
+            }
+            if (isValidSchema) {
+                try (InputStream inputStream = new FileInputStream(overrideFile)) {
+                    log.info("Parsing " + OVERRIDE_FILE_LOCATION);
+                    JAXBContext jaxbContext = JAXBContext.newInstance(Overrides.class);
+                    Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+                    overrides = (Overrides) unmarshaller.unmarshal(inputStream);
+                } catch (IOException | JAXBException e) {
+                    log.error("Unable to parse " + OVERRIDE_FILE_LOCATION, e);
+                }
+            }
+        }
+        return overrides;
+    }
 
     /**
      * Returns enabled jaxb paos
@@ -273,12 +650,21 @@ public class FileLoader {
     }
 
     /**
-     * Returns all enabled jaxb points in a file
+     * Returns all enabled jaxb points for PaoType
      */
-    public Map<String, Point> getPoints(String fileName) {
-        return fileNameToPoints.get(fileName)
-                               .stream()
-                               .filter(Point::isEnabled)
-                               .collect(Collectors.toMap(Point::getName, Function.identity()));
+    public Map<String, Point> getPoints(String paoType) {
+        return Optional.ofNullable(paoTypeToPoints.get(paoType))
+                             .orElse(Collections.emptyList()).stream()
+                             .filter(Point::isEnabled)
+                             .collect(Collectors.toMap(Point::getName, Function.identity()));
+    }
+    
+    /**
+     * Clears memory
+     */
+    public void cleanUp(){
+        paos.clear();
+        paoTypeToPoints.clear();
+        allPaoTypes.clear();
     }
 }

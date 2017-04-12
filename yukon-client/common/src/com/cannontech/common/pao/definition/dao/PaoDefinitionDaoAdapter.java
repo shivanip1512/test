@@ -191,7 +191,12 @@ public class PaoDefinitionDaoAdapter implements PaoDefinitionDao {
     }
 
     @Override
-    public void reload() {
-        throw new UnsupportedOperationException("not implemented");
+    public void override() {
+        throw new UnsupportedOperationException("not implemented"); 
+    }
+
+    @Override
+    public void load() {
+        throw new UnsupportedOperationException("not implemented"); 
     }
 }
