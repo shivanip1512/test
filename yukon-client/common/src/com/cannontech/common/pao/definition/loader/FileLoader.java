@@ -515,7 +515,7 @@ public class FileLoader {
                 pao.setTags(new TagsType());
             }
             pao.getTags().getTag().add(newTag);
-            logOverride(Action.ADD, pao.getPaoType(), newTagName, "TAG", null, Level.WARN);
+            logOverride(Action.ADD, pao.getPaoType(), newTagName, "TAG", null, null);
         } else {
             logOverride(Action.ADD, pao.getPaoType(), newTagName, "TAG", "New tag is invalid.", Level.ERROR);
         }
@@ -580,7 +580,7 @@ public class FileLoader {
                 pao.setConfiguration(new DeviceCategories());
             }
             pao.getConfiguration().getCategory().add(category);
-            logOverride(Action.ADD, pao.getPaoType(), overrideCategyType.name(), "Configuration Category", null, Level.WARN);
+            logOverride(Action.ADD, pao.getPaoType(), overrideCategyType.name(), "Configuration Category", null, null);
         } else {
             logOverride(Action.ADD, pao.getPaoType(), overrideCategyType.name(), "Configuration Category",
                 "Configuration Category already exists.", Level.WARN);
