@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.capcontrol.creation.service.CapControlCreationService;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.model.CompleteCapBank;
@@ -33,23 +36,21 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
-import com.cannontech.database.db.device.DeviceDirectCommSettings;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.capcontrol.service.CapBankService;
-import com.cannontech.web.capcontrol.service.CbcService;
-import com.cannontech.web.editor.CapControlCBC;
 import com.cannontech.yukon.IDatabaseCache;
 
 @Service
 public class CapBankServiceImpl implements CapBankService {
 
+    @Autowired private CapControlCreationService ccCreationService;
+    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private DBPersistentDao dbPersistentDao;
+    @Autowired private DeviceConfigurationDao deviceConfigurationDao;
     @Autowired private IDatabaseCache dbCache;
     @Autowired private PointDao pointDao;
-    @Autowired private CbcService cbcService;
     @Autowired private PaoPersistenceService paoPersistenceService;
-    @Autowired private DbChangeManager dbChangeManager;
     
     private Logger log = YukonLogManager.getLogger(getClass());
 
@@ -120,16 +121,10 @@ public class CapBankServiceImpl implements CapBankService {
         
         if (capbank.getId() == null) {
             if(!capbank.getCbcControllerName().isEmpty()){
-                CapControlCBC cbc = new CapControlCBC();
-                cbc.setName(capbank.getCbcControllerName());
-                cbc.setPaoType(capbank.getCbcType());
-                if(capbank.getCbcCommChannel() != null && capbank.getCbcCommChannel() != 0) {
-                    DeviceDirectCommSettings commSettings = new DeviceDirectCommSettings();
-                    commSettings.setPortID(capbank.getCbcCommChannel());
-                    cbc.setDeviceDirectCommSettings(commSettings);
-                }
-                int cbcId = cbcService.create(cbc);
-                capbank.getCapBank().setControlDeviceID(cbcId);
+                DeviceConfiguration configuration = deviceConfigurationDao.getDefaultDNPConfiguration();
+
+                PaoIdentifier cbcId = ccCreationService.createCbc(capbank.getCbcType(), capbank.getCbcControllerName(), false, capbank.getCbcCommChannel(), configuration);
+                capbank.getCapBank().setControlDeviceID(cbcId.getPaoId());
                 LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(capbank.getCapBank().getControlDeviceID(), 1, PointTypes.STATUS_POINT);
                 capbank.getCapBank().setControlPointID(point.getPointID());
             }
