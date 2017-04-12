@@ -38,12 +38,14 @@ public interface DataStreamingService extends DeviceBehaviorStrings{
      * Assign a data streaming configuration to the devices.
      * @param config The configuration to assign to the devices.  If the deviceCollection contains multiple device types, 
      *     the config will be split into multiple configs containing the subset of attributes supported by each device type.
+     * @param failedVerificationDevices A list of ids for devices that failed NM verification.
      * @param user The user who initiated this request.
      * @return The resultId to look up the results in recentResultsCache.
      * @throws DataStreamingConfigException If the configuration is disallowed or there is an error.
      */
     public DataStreamingConfigResult assignDataStreamingConfig(DataStreamingConfig config, DeviceCollection deviceCollection, 
-                                                               LiteYukonUser user) throws DataStreamingConfigException;
+                                                               List<Integer> failedVerificationDevices, LiteYukonUser user) 
+                                                               throws DataStreamingConfigException;
     
     /**
      * Unassign the data streaming configuration currently assigned to the specified devices. (They will no longer 

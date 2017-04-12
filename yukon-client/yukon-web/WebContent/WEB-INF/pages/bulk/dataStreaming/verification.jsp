@@ -17,13 +17,18 @@
             <cti:url var="assignUrl"  value="/bulk/dataStreaming/verification" />
             <form:form id="configureForm" method="post" commandName="verificationInfo" action="${assignUrl}">
                 <cti:csrfToken/>
+                
+                <c:forEach var="failDevice" items="${verificationInfo.failedVerificationDevices}" varStatus="status">
+                    <form:hidden path="failedVerificationDevices[${status.index}]"/>
+                </c:forEach>
+                
                 <cti:deviceCollection deviceCollection="${deviceCollection}" />
                 <form:hidden path="configuration.id" />
                 <c:forEach var="att" items="${configuration.attributes}" varStatus="status">
                     <form:hidden path="configuration.attributes[${status.index}].attribute"/>
                     <form:hidden path="configuration.attributes[${status.index}].attributeOn"/>
                     <form:hidden path="configuration.attributes[${status.index}].interval"/>
-                </c:forEach>          
+                </c:forEach>
                 <c:forEach var="exception" items="${verificationInfo.exceptions}">
                     <div class="user-message error"><i:inline key="${exception}"/></div>
                 </c:forEach>

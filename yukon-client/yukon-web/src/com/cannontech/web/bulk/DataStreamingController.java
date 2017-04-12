@@ -175,7 +175,11 @@ public class DataStreamingController {
         config.setAccessor(accessor);
 
         try {
-            DataStreamingConfigResult result = dataStreamingService.assignDataStreamingConfig(config, deviceCollection, user);
+            List<Integer> failedVerificationDevices = verificationInfo.getFailedVerificationDevices();
+            DataStreamingConfigResult result = dataStreamingService.assignDataStreamingConfig(config, 
+                                                                                              deviceCollection, 
+                                                                                              failedVerificationDevices, 
+                                                                                              user);
             model.addAttribute("resultsId", result.getResultsId());
             return "redirect:dataStreamingResults";
         } catch (DataStreamingConfigException e) {

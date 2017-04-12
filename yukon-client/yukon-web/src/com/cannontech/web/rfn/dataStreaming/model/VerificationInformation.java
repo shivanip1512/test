@@ -9,9 +9,10 @@ public class VerificationInformation {
     
     private boolean verificationPassed;
     private DataStreamingConfig configuration;
-    private List<GatewayLoading> gatewayLoadingInfo = new ArrayList<GatewayLoading>();
-    private List<DeviceUnsupported> deviceUnsupported = new ArrayList<DeviceUnsupported>();
+    private List<GatewayLoading> gatewayLoadingInfo = new ArrayList<>();
+    private List<DeviceUnsupported> deviceUnsupported = new ArrayList<>();
     private List<DataStreamingConfigException> exceptions = new ArrayList<>();
+    private List<Integer> failedVerificationDevices = new ArrayList<>();
     
     public boolean isVerificationPassed() {
         return verificationPassed;
@@ -53,5 +54,12 @@ public class VerificationInformation {
         this.deviceUnsupported = deviceUnsupported;
     }
     
+    public void setFailedVerificationDevices(List<Integer> failedVerificationDevices) {
+        this.failedVerificationDevices = failedVerificationDevices;
+    }
+    
+    public List<Integer> getFailedVerificationDevices() {
+        return failedVerificationDevices;
+    }
 
 }

@@ -1,11 +1,11 @@
 package com.cannontech.web.rfn.dataStreaming.service.impl;
 
-import static java.util.stream.Collectors.toList;
-import static java.util.stream.Collectors.toSet;
+import static java.util.stream.Collectors.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -98,6 +98,7 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.conns.ConnPool;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -109,8 +110,13 @@ import com.google.common.collect.Sets;
 public class DataStreamingServiceImpl implements DataStreamingService {
 
     private static final Logger log = YukonLogManager.getLogger(DataStreamingServiceImpl.class);
-
-    public final static BehaviorType TYPE = BehaviorType.DATA_STREAMING;
+    private static final Set<DeviceDataStreamingConfigError> nonCriticalDeviceErrors = ImmutableSet.of(
+        DeviceDataStreamingConfigError.NO_NODE_FOR_SENSOR,
+        DeviceDataStreamingConfigError.NO_GATEWAY_FOR_NODE,
+        DeviceDataStreamingConfigError.NO_DATA_STREAMING_METRIC,
+        DeviceDataStreamingConfigError.NODE_NOT_READY
+    );
+    public static final BehaviorType TYPE = BehaviorType.DATA_STREAMING;
 
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
@@ -446,9 +452,9 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             configInfo.addDeviceUnsupported(
                 unsupportedAttributes,
                 unsupportedTypes.stream()
-                    .map(devicesByType::get)
-                    .flatMap(Collection::stream)
-                    .collect(toList()),
+                                .map(devicesByType::get)
+                                .flatMap(Collection::stream)
+                                .collect(toList()),
                 false));
 
         Multimap<DataStreamingConfig, DeviceTypeList> configAssignmentsByType = 
@@ -467,12 +473,21 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             DeviceDataStreamingConfigResponse response =
                 dataStreamingCommService.sendConfigRequest(verificationRequest);
             configInfo.processVerificationResponse(response);
+            //remove devices that failed verification (e.g. not ready or no associated gateway)
+            devices.removeAll(configInfo.failedVerificationDevices);
+            
         } catch (DataStreamingConfigException e) {
             configInfo.exceptions.add(e);
             configInfo.success = false;
         }
 
         // Build VerificationInfo from response message
+        if (devices.isEmpty()) {
+            // None of the selected devices support data streaming
+            configInfo.success = false;
+            configInfo.exceptions.add(
+                new DataStreamingConfigException("No devices support data streaming", "noDevices"));
+        }
         VerificationInformation verificationInfo = buildVerificationInformation(configInfo);
         return verificationInfo;
     }
@@ -663,7 +678,11 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         verificationInfo.setGatewayLoadingInfo(configInfo.gatewayLoading);
         verificationInfo.setVerificationPassed(configInfo.success);
         verificationInfo.setExceptions(configInfo.exceptions);
-
+        verificationInfo.setFailedVerificationDevices(configInfo.failedVerificationDevices
+                                                                .stream()
+                                                                .map(SimpleDevice::getDeviceId)
+                                                                .collect(toList()));
+        
         return verificationInfo;
     }
 
@@ -854,8 +873,9 @@ public class DataStreamingServiceImpl implements DataStreamingService {
     }
 
     @Override
-    public DataStreamingConfigResult assignDataStreamingConfig(DataStreamingConfig config,
-            DeviceCollection deviceCollection, LiteYukonUser user) throws DataStreamingConfigException {
+    public DataStreamingConfigResult assignDataStreamingConfig(DataStreamingConfig config, DeviceCollection deviceCollection, 
+                                                               List<Integer> failedVerificationDevices, LiteYukonUser user) 
+                                                               throws DataStreamingConfigException {
 
         if (isValidPorterConnection()) {
 
@@ -869,6 +889,10 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 deviceCollection.getDeviceCount());
 
             List<SimpleDevice> devices = getSupportedDevices(deviceCollection);
+
+            // Remove all devices that failed verification, these are treated as unsupported
+            devices.removeIf(device -> failedVerificationDevices.contains(device.getDeviceId()));
+            
             Multimap<PaoType, Integer> devicesByType = asTypesToDeviceIds(devices);
             int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
 
@@ -881,6 +905,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             Set<BuiltInAttribute> enabledAttributes = getEnabledAttributes(config);
             Collection<PaoType> typesSupportingNoAttributes = unsupportedAttributesPerType.removeAll(enabledAttributes);
             Set<Integer> devicesSupportingNoAttributes = removeTypes(devicesByType, typesSupportingNoAttributes);
+            devicesSupportingNoAttributes.addAll(failedVerificationDevices);
             
             Multimap<DataStreamingConfig, DeviceTypeList> configAssignmentsByType = 
                     splitConfigForDevices(config, devicesByType, unsupportedAttributesPerType);
@@ -1311,6 +1336,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         public List<DataStreamingConfigException> exceptions = new ArrayList<>();
         public List<DeviceUnsupported> deviceUnsupported = new ArrayList<>();
         public List<GatewayLoading> gatewayLoading = new ArrayList<>();
+        public List<SimpleDevice> failedVerificationDevices = new ArrayList<>();
         public boolean success = true;
 
         public void addDeviceUnsupported(Set<BuiltInAttribute> attributes, Collection<Integer> deviceIds, boolean allAttributes) {
@@ -1349,24 +1375,42 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         }
 
         private void handleRejectedResponse(DeviceDataStreamingConfigResponse response) {
-            success = false;
+            
             boolean gatewaysOverloaded = setGatewayLoading(response);
-
+            
+            // Handle gateway overloaded errors
             if (gatewaysOverloaded) {
                 log.debug("Data streaming verification response - gateways oversubscribed.");
                 exceptions.add(new DataStreamingConfigException("Gateways oversubscribed", "gatewaysOversubscribed"));
+                success = false;
             }
 
             for (Entry<RfnIdentifier, ConfigError> errorDeviceEntry : response.getErrorConfigedDevices().entrySet()) {
                 DeviceDataStreamingConfigError errorType = errorDeviceEntry.getValue().getErrorType();
-                // Ignore Gateway overloaded errors, those are covered above
-                if (errorType != DeviceDataStreamingConfigError.GATEWAY_OVERLOADED) {
+                
+                // Handle non-critical verification errors. These are things like old firmware or node not ready, where 
+                // we can just put the device in the unsupported bucket and still update other devices.
+                if (nonCriticalDeviceErrors.contains(errorType)) {
                     RfnDevice device = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
                     log.debug(
                         "Data streaming verification response - device error: " + device + ", " + errorType.name());
                     String deviceError = "Device error for " + device + ": " + errorType;
                     String i18nKey = "device." + errorType.name();
                     exceptions.add(new DataStreamingConfigException(deviceError, i18nKey, device.getName()));
+                    //device will not be updated
+                    addDeviceUnsupported(Collections.emptySet(), 
+                                         Collections.singleton(device.getPaoIdentifier().getPaoId()), 
+                                         true);
+                    failedVerificationDevices.add(new SimpleDevice(device));
+                } else if (errorType != DeviceDataStreamingConfigError.GATEWAY_OVERLOADED) {
+                    // Handle all other errors that haven't been covered above
+                    RfnDevice device = rfnDeviceDao.getDeviceForExactIdentifier(errorDeviceEntry.getKey());
+                    log.debug(
+                        "Data streaming verification response - device error: " + device + ", " + errorType.name());
+                    String deviceError = "Device error for " + device + ": " + errorType;
+                    String i18nKey = "device." + errorType.name();
+                    exceptions.add(new DataStreamingConfigException(deviceError, i18nKey, device.getName()));
+                    success = false;
                 }
             }
         }
