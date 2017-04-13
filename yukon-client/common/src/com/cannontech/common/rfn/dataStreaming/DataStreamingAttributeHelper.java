@@ -341,10 +341,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
-                BuiltInAttribute.POWER_FACTOR_PHASE_A,  //metric 162
-                BuiltInAttribute.POWER_FACTOR_PHASE_B,  //metric 163
-                BuiltInAttribute.POWER_FACTOR_PHASE_C   //metric 164
+                BuiltInAttribute.VOLTAGE_PHASE_C //metric 102
                 ),
         //Elster A3R
         RFN_430A3R(PaoType.RFN430A3R,
@@ -358,10 +355,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_POWER_FACTOR,//metric 81
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
-                BuiltInAttribute.POWER_FACTOR_PHASE_A,  //metric 162
-                BuiltInAttribute.POWER_FACTOR_PHASE_B,  //metric 163
-                BuiltInAttribute.POWER_FACTOR_PHASE_C   //metric 164
+                BuiltInAttribute.VOLTAGE_PHASE_C //metric 102
                 ),
         //Sentinel-L0
         RFN_430SL0(PaoType.RFN430SL0,
