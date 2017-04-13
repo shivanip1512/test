@@ -19,6 +19,31 @@ AND PaobjectId IN (
 );
 /* End YUK-16537 */
 
+/* Start YUK-16525 */
+DELETE FROM DYNAMICPOINTDISPATCH WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'ANALOG' AND PointOffset IN (1, 2, 3) AND YP.Type = 'RF Gateway');
+
+DELETE FROM POINTUNIT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'ANALOG' AND PointOffset IN (1, 2, 3) AND YP.Type = 'RF Gateway');
+
+DELETE FROM PointAlarming WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'ANALOG' AND PointOffset IN (1, 2, 3) AND YP.Type = 'RF Gateway');
+
+DELETE FROM DISPLAY2WAYDATA WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'ANALOG' AND PointOffset IN (1, 2, 3) AND YP.Type = 'RF Gateway');
+
+DELETE FROM POINTANALOG WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'ANALOG' AND PointOffset IN (1, 2, 3) AND YP.Type = 'RF Gateway');
+
+DELETE FROM POINT WHERE POINTID IN (
+    SELECT PointId FROM Point P JOIN YukonPAObject YP ON YP.PAObjectID = P.PAObjectID
+    WHERE POINTTYPE = 'ANALOG' AND PointOffset IN (1, 2, 3) AND YP.Type = 'RF Gateway');
+/* End YUK-16525 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
