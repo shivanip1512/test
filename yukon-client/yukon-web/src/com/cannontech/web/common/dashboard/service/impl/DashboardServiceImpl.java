@@ -84,7 +84,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public void delete(int dashboardId) {
-        throw new MethodNotImplementedException();
+        dashboardDao.deleteDashboard(dashboardId);
     }
 
     @Override

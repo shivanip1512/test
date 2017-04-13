@@ -84,6 +84,7 @@ public interface DashboardService {
     
     /**
      * Delete a dashboard.
+     * @param userId TODO
      */
     void delete(int dashboardId);
     
