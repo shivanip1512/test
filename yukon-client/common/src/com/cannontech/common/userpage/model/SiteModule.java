@@ -23,6 +23,7 @@ public enum SiteModule implements DatabaseRepresentationSource {
     USER("user", SiteMapCategory.ADMIN),
     CCURT("commercialcurtailment", SiteMapCategory.CCURT),
     CCURT_USER("commercialcurtailment_user", SiteMapCategory.CCURT),
+    DASHBOARD("dashboard", SiteMapCategory.DASHBOARD),
     ;
 
     private final String name;

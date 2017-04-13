@@ -163,6 +163,16 @@ public class DashboardsController {
         widget3.setParameters(params2);
         widget3.setId(21);
         dashboard.addColumn2Widget(widget3);
+        Widget widget4 = new Widget();
+        widget4.setDashboardId(12);
+        widget4.setId(22);
+        widget4.setType(WidgetType.METER_SEARCH);
+        dashboard.addColumn2Widget(widget4);
+        Widget widget5 = new Widget();
+        widget5.setDashboardId(12);
+        widget5.setId(13);
+        widget5.setType(WidgetType.SCHEDULED_REQUESTS);
+        dashboard.addColumn1Widget(widget5);
         return dashboard;
     }
     

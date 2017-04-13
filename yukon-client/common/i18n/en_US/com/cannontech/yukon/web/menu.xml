@@ -243,5 +243,8 @@
 <entry key="yukon.web.menu.config.adminSetup.jobsscheduler.status">Status</entry>
 <entry key="yukon.web.menu.config.adminSetup.jobsscheduler.all">All</entry>
 
+<!-- Dashboards -->
+<entry key="yukon.web.menu.dashboard">Dashboard</entry>
+
 
 </properties>

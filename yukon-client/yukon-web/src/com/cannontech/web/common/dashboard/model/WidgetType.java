@@ -30,11 +30,6 @@ public enum WidgetType implements DisplayableEnum {
     GATEWAY_STREAMING_CAPACITY(DashboardScope.GENERAL, WidgetCategory.AMI, "overloadedGatewaysWidget", "image-gateway-streaming"),
     
     /*
-    //AMI Dashboard
-    MONITORS(DashboardScope.GENERAL, WidgetCategory.AMI),
-    METER_SEARCH(DashboardScope.GENERAL, WidgetCategory.AMI),
-    AMI_ACTIONS(DashboardScope.GENERAL, WidgetCategory.AMI),
-    SCHEDULED_REQUESTS(DashboardScope.GENERAL, WidgetCategory.AMI),
     //Meter Detail
     METER_INFORMATION(DashboardScope.DEVICE_SPECIFIC, WidgetCategory.AMI),
     METER_READINGS(DashboardScope.DEVICE_SPECIFIC, WidgetCategory.AMI),
