@@ -539,7 +539,11 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
             {
                 if( parse.isKeyValid( "verify" ) )
                 {
-                    ret = compareChannels(pReq, parse, returnMsgs, "Midnight", cfgMidnightMetrics, paoMidnightMetrics);
+                    //  This is a workaround to allow an empty (no-channels) config to verify successfully, even though we don't know if the channels match.
+                    if( ! cfgMidnightMetrics.empty() )
+                    {
+                        ret = compareChannels(pReq, parse, returnMsgs, "Midnight", cfgMidnightMetrics, paoMidnightMetrics);
+                    }
                 }
                 else
                 {
@@ -570,13 +574,18 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
             {
                 if( parse.isKeyValid( "verify" ) )
                 {
-                    ret = compareChannels(pReq, parse, returnMsgs, "Interval", cfgIntervalMetrics, paoIntervalMetrics);
+                    //  This is a workaround to allow an empty (no-channels) config to verify successfully, even though we don't know if the channels match.
+                    if( ! cfgIntervalMetrics.empty() )
+                    {
+                        ret = compareChannels(pReq, parse, returnMsgs, "Interval", cfgIntervalMetrics, paoIntervalMetrics);
+                    }
 
                     if (cfgReportingIntervalSeconds != paoReportingIntervalSeconds)
                     {
                         reportConfigMismatchDetails<unsigned>("Channel Recording Interval (sec)",
                             cfgRecordingIntervalSeconds, paoRecordingIntervalSeconds,
                             pReq, returnMsgs);
+                        ret = ClientErrors::ConfigNotCurrent;
                     }
 
                     if (cfgReportingIntervalSeconds != paoReportingIntervalSeconds)
@@ -584,8 +593,8 @@ YukonError_t RfnMeterDevice::executePutConfigInstallChannels( CtiRequestMsg    *
                         reportConfigMismatchDetails<unsigned>("Channel Reporting Interval (sec)",
                             cfgReportingIntervalSeconds, paoReportingIntervalSeconds,
                             pReq, returnMsgs);
+                        ret = ClientErrors::ConfigNotCurrent;
                     }
-                    ret = ClientErrors::ConfigNotCurrent;
                 }
                 else
                 {
