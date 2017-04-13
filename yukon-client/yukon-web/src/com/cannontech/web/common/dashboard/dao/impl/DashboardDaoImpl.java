@@ -1,15 +1,13 @@
 package com.cannontech.web.common.dashboard.dao.impl;
 
-import java.sql.SQLException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowMapper;
 import com.cannontech.web.common.dashboard.dao.DashboardDao;
 
 public class DashboardDaoImpl implements DashboardDao {
@@ -20,40 +18,31 @@ public class DashboardDaoImpl implements DashboardDao {
     @Transactional
     public void deleteDashboard(int dashboardId) {
         
-        SqlStatementBuilder userDashboardSql = new SqlStatementBuilder();
-        userDashboardSql.append("DELETE FROM Dashboard");
-        userDashboardSql.append("WHERE DashboardId").eq(dashboardId);
-        jdbcTemplate.update(userDashboardSql);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM Dashboard");
+        sql.append("WHERE DashboardId").eq(dashboardId);
+        jdbcTemplate.update(sql);
     }
     
     @Override
     @Transactional
     public void deleteUserDashboard(int userId, int dashboardId) {
         
-        SqlStatementBuilder userDashboardSql = new SqlStatementBuilder();
-        userDashboardSql.append("DELETE FROM UserDashboard");
-        userDashboardSql.append("WHERE UserId").eq(userId);
-        userDashboardSql.append("AND DashboardId").eq(dashboardId);
-        jdbcTemplate.update(userDashboardSql);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM UserDashboard");
+        sql.append("WHERE UserId").eq(userId);
+        sql.append("AND DashboardId").eq(dashboardId);
+        jdbcTemplate.update(sql);
     }
     
     @Override
-    @Transactional
     public List<Integer> getAllUsersForDashboard(int dashboardId) {
-        SqlStatementBuilder usersDashboardSql = new SqlStatementBuilder();
-        usersDashboardSql.append("Select UD.UserId");
-        usersDashboardSql.append("FROM UserDashboard");
-        usersDashboardSql.append("WHERE DashboardId").eq(dashboardId);
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT UserId");
+        sql.append("FROM UserDashboard");
+        sql.append("WHERE DashboardId").eq(dashboardId);
         
-        List<Integer> userIdList = jdbcTemplate.query(usersDashboardSql, new UserIdRowMapper());
+        List<Integer> userIdList = jdbcTemplate.query(sql, TypeRowMapper.INTEGER);
         return userIdList;
-    }
-    
-    private static class UserIdRowMapper implements YukonRowMapper<Integer> {
-        @Override
-        public Integer mapRow(YukonResultSet rs) throws SQLException {
-            int userId = rs.getInt("UserId");
-            return userId;
-        }
     }
 }
