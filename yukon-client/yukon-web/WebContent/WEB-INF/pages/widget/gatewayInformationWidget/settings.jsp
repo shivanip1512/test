@@ -29,7 +29,7 @@
 </c:choose>
 <form:form id="gateway-settings-form" action="${url}" method="${method}" commandName="settings">
     <cti:csrfToken/>
-    
+    <tags:hidden path="id" />
     <tags:nameValueContainer2 tableClass="with-form-controls">
         
         <tags:nameValue2 nameKey=".name">

@@ -41,9 +41,12 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
         YukonValidationUtils.checkExceedsMaxLength(errors, "name", settings.getName(), 60);
         
         if (!errors.hasFieldErrors("name")) {
-            LiteYukonPAObject unique = paoDao.findUnique(settings.getName(), PaoType.RFN_GATEWAY);
-            if (unique != null) {
-                errors.rejectValue("name", baseKey + "name.unique");
+            Integer deviceId = settings.getId();
+            if (deviceId == null || !(StringUtils.equals(paoDao.getYukonPAOName(deviceId), settings.getName()))) {
+                LiteYukonPAObject unique = paoDao.findUnique(settings.getName(), PaoType.RFN_GATEWAY);
+                if (unique != null) {
+                    errors.rejectValue("name", baseKey + "name.unique");
+                }
             }
         }
         
