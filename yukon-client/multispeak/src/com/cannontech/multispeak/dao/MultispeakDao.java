@@ -40,4 +40,11 @@ public interface MultispeakDao {
      */
     public void updateMultispeakVendor(final MultispeakVendor mspVendor);
     
+    /**
+     * Checks if there is already a Vendor having the same combination of Company Name and App Name.
+     * 
+     * @return true if there is a conflict
+     */
+    boolean isUniqueName(String companyName, String appName, Integer vendorId);
+    
 }

@@ -7,11 +7,11 @@
 <cti:standardPage module="adminSetup" page="deviceGroupSyncHome">
 
 <cti:linkTabbedContainer mode="section" id="page_header_tab_container">
-    <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.modules.adminSetup.interfaces.home.tab.title">
+    <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.modules.adminSetup.multispeak.home.tab.title">
         <c:url value="/multispeak/setup/home" />
     </cti:linkTab>
     
-    <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.interfaces.vendor.tab.title">
+    <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.vendor.tab.title">
         <c:url value="/multispeak/setup/vendorHome" />
     </cti:linkTab>
 

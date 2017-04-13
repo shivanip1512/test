@@ -3,25 +3,51 @@
 <properties>
 
     <!-- msp_setup.jsp -->
-    <entry key="yukon.web.modules.adminSetup.interfaces.pageName">MultiSpeak</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.contextualPageName">MultiSpeak</entry><!-- Interfaces -->
-    <entry key="yukon.web.modules.adminSetup.interfaces.invalidCompanyName">Invalid Company Name.  Length must be greater than zero.</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.invalidMaxInitiateRequestObjects">Invalid MaxInitiateRequestObjects.  Must be a numeric value.</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.invalidRequestMessageTimeout">Invalid RequestMessageTimeout.  Must be a numeric value.</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.invalidMaxReturnRecords">Invalid MaxReturnRecords.  Must be a numeric value.</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.invalidTemplateNameDefault">Invalid TemplateNameDefault.  Length must be greater than zero.</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.invalidURL">Invalid URL format.  (Ex. http://127.0.0.1:8080/)</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.invalidPaoNameAliasExtension">Invalid Extension Name.  Length must be greater than zero when Use Extension is checked.</entry>
-
-    <entry key="yukon.web.modules.adminSetup.interfaces.exception">{0}</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.deleteDefaultMessage">The default interface {0} cannot be deleted.</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.deletePrimaryMessage">The Primary CIS interface {0} cannot be deleted.</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.deleted">The interface {0} was deleted.</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.added">The interface {0} was added.</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.updated">The interface {0} was updated.</entry>
-    
-    <entry key="yukon.web.modules.adminSetup.interfaces.setup.title">MultiSpeak Interface Setup</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.setup.helpText"><![CDATA[
+    <entry key="yukon.web.modules.adminSetup.multispeak.mspInterfaces.title">Interfaces</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.EDIT.pageHeading">Edit Multispeak</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.EDIT.pageTitle">Multispeak: {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.VIEW.crumbTitle">Multispeak</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.VIEW.pageTitle">Multispeak: {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.VIEW.pageHeading">Multispeak</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.pageName">MultiSpeak</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.contextualPageName">MultiSpeak</entry><!-- Interfaces -->
+    <entry key="yukon.web.modules.adminSetup.multispeak.invalidCompanyName">Invalid Company Name.  Length must be greater than zero.</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.invalidMaxInitiateRequestObjects">Invalid MaxInitiateRequestObjects.  Must be a numeric value.</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.invalidRequestMessageTimeout">Invalid RequestMessageTimeout.  Must be a numeric value.</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.invalidMaxReturnRecords">Invalid MaxReturnRecords.  Must be a numeric value.</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.invalidTemplateNameDefault">Invalid TemplateNameDefault.  Length must be greater than zero.</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.invalidURL">Invalid URL format.  (Ex. http://127.0.0.1:8080/)</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.companyAppNameConflict">CompanyName/AppName combination  already exists.</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.invalidPaoNameAliasExtension">Invalid Extension Name.  Length must be greater than zero when Use Extension is checked.</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.version3">Version 3.0</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.version5">Version 5.0</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.deleted">The interface {0} was deleted.</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.added">The interface {0} was added.</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.updated">The interface {0} was updated.</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.primaryCIS">Primary CIS</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.primaryCIS.title">Select the Primary CIS vendor</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.deviceNameAlias">DeviceName Alias</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.deviceNameAlias.title">Select the DeviceName Alias field</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.useExtension">Use Extension</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.meterLookupField">Meter Lookup Field</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.meterLookupField.title">Select the Meter Lookup field</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.extensionName">Extension Name</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.noVendorsExist">No Vendors exist.</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.setup.controls">*indicates required field</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.home.tab.title">Yukon Setup</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.companyName">Company Name</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.appName">App Name</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.appName.title">Enter the Application Name</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.ping">Ping</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.getMethods">Get Methods</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.reponseMsgLogin">Response Message Login</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.mspVersion3">3.0</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.mspVersion5">5.0</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.confirmDelete.title">Confirm Delete</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.confirmDelete.message">Are you sure you want to delete "{0}"?</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.title">MultiSpeak Interface Setup</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.setup.helpText"><![CDATA[
         Configure Yukon's MultiSpeak integration settings. Yukon is acting as the "server" for the following interfaces: MR, OD, CD, LM, SCADA, and NOT.
         <br>
         <ul>
@@ -53,8 +79,8 @@
             Please refer to the <i>MultiSpeak Implementation_Yukon</i> manual for more information.
     ]]>
     </entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.vendorSetup.title">MultiSpeak Interface Setup</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.vendorSetup.helpText"><![CDATA[
+    <entry key="yukon.web.modules.adminSetup.vendor.vendorSetup.title">MultiSpeak Interface Setup</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.vendorSetup.helpText"><![CDATA[
         Configure MultiSpeak interfaces for third-party vendors. These vendors are acting as the "client" for the following interfaces: CB, OA, EA, and MDM.
         <br>
         <ul>
@@ -88,51 +114,45 @@
         <ul>
     ]]>
     </entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.setup.controls">*indicates required field</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.home.tab.title">Yukon Setup</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.companyName">Company Name</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.selectVendor.title">Select Vendor</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.appName">App Name</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.appName.title">Enter the Application Name</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.maxRecords">Maximum Records Returned</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.reqMsgTimeout">Request Message Timeout</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.initRequestTimeout">Maximum Initiate Request Objects</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.template">Default Meter Template</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.maxReturnRecords">MSP Max Return Records*</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.mspMessageTimeout">MSP Request Message Timeout*</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.mspMaxInitiateRequest">MSP Max Initiate Request Objects*</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.mspTemplateNameDefault">MSP Template Name Default</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.userName">UserName</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.password">Password</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.primaryCIS">Primary CIS</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.primaryCIS.title">Select the Primary CIS vendor</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.deviceNameAlias">DeviceName Alias</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.deviceNameAlias.title">Select the DeviceName Alias field</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.useExtension">Use Extension</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.meterLookupField">Meter Lookup Field</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.meterLookupField.title">Select the Meter Lookup field</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.extensionName">Extension Name</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.noVendorsExist">No Vendors exist.</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.mspInterfaces.title">Interfaces</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.url">URL</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.version3">Version 3.0</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.version5">Version 5.0</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.interface">Interface</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.version">Version</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.actions">Actions</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.results">Results</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.vendor.tab.title">Vendor Setup</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.ping">Ping</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.getMethods">Get Methods</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.reponseMsgLogin">Response Message Login</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.incomingAuthentication">Incoming Authentication</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.outcomingAuthentication">Outcoming Authentication</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.mspVersion3">3.0</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.mspVersion5">5.0</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.confirmDelete.title">Confirm Delete</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.confirmDelete.message">Are you sure you want to delete "{0}"?</entry>
-    <entry key="yukon.web.modules.adminSetup.interfaces.title">MultiSpeak Interface Setup</entry>
-    <!-- <entry key="yukon.web.modules.adminSetup.interfaces.home.tab.title">Setup</entry> -->
+    
+    <entry key="yukon.web.modules.adminSetup.vendor.selectVendor.title">Select Vendor</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.VIEW.crumbTitle">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.VIEW.pageTitle">Vendor: {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.VIEW.pageHeading">Multispeak</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.CREATE.pageHeading">Create Vendor</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.CREATE.crumbTitle">Create Vendor</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.CREATE.pageTitle">Create Vendor</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.EDIT.pageHeading">Edit Vendor: {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.EDIT.crumbTitle">Edit</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.maxRecords">Maximum Records Returned</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.reqMsgTimeout">Request Message Timeout</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.initRequestTimeout">Maximum Initiate Request Objects</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.template">Default Meter Template</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.maxReturnRecords">MSP Max Return Records*</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.mspMessageTimeout">MSP Request Message Timeout*</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.mspMaxInitiateRequest">MSP Max Initiate Request Objects*</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.mspTemplateNameDefault">MSP Template Name Default</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.userName">UserName</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.password">Password</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.exception">{0}</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.deleteDefaultMessage">The default interface {0} cannot be deleted.</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.deletePrimaryMessage">The Primary CIS interface {0} cannot be deleted.</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.mspInterfaces.title">Interfaces</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.url">URL</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.setup.title">MultiSpeak Interface Setup</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.interface">Interface</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.version">Version</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.actions">Actions</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.results">Results</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.tab.title">Vendor Setup</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.ping">Ping</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.getMethods">Get Methods</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.companyName">Company Name</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.appName">App Name</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.incomingAuthentication">Incoming Authentication</entry>
+    <entry key="yukon.web.modules.adminSetup.vendor.outcomingAuthentication">Outcoming Authentication</entry>
+    
+    <!-- <entry key="yukon.web.modules.adminSetup.multispeak.home.tab.title">Setup</entry> -->
     
     <!-- device group sync pages -->
     <!-- enum entries -->

@@ -984,13 +984,31 @@
                 <link>/multispeak/setup/routemapping/mappings</link>
             </page>
         
-            <page name="multispeak" type="BASIC">
+            <page name="multispeak.VIEW" type="BASIC">
                 <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
                 <link>/multispeak/setup/home</link>
+                <pages>
+                    <page name="multispeak.EDIT" type="BASIC" hideFavorite="true">
+                        <labelArgument>${mspVendor.companyName}</labelArgument>
+                    </page>
+                </pages>
             </page>
-            <page name="interfaces" type="BASIC">
-                <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />
-                <link>/multispeak/setup/home</link>
+            
+            <page name="multispeak.VIEW" type="BASIC">
+                <requireRoleProperty value="ADMIN_MULTISPEAK_SETUP" />
+                <link>/multispeak/setup/vendorHome</link>
+                <pages>
+                    <page name="vendor.CREATE" type="BASIC" />
+                    <page name="vendor.VIEW" type="BASIC">
+                        <link>/multispeak/setup/vendorHome/${vendorId}</link>
+                        <labelArgument>${mspVendor.companyName}</labelArgument>
+                        <pages>
+                            <page name="vendor.EDIT" type="BASIC" hideFavorite="true">
+                                <labelArgument>${mspVendor.companyName}</labelArgument>
+                            </page>
+                        </pages>
+                   </page>
+                </pages>
             </page>
             <page name="lmMappings" type="BASIC">
                 <requireRoleProperty value="MSP_LM_MAPPING_SETUP" />

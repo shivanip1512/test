@@ -7,17 +7,17 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
-<cti:standardPage module="adminSetup" page="interfaces.${mode}">
+<cti:standardPage module="adminSetup" page="vendor.${mode}" >
     <tags:setFormEditMode mode="${mode}" />
     <cti:msg2 var="pingTitle" key=".ping" />
     <cti:msg2 var="getMethods" key=".getMethods" />
     <cti:includeScript link="/resources/js/pages/yukon.admin.multispeak.js" />
     <cti:linkTabbedContainer mode="section" id="page_header_tab_container">
-        <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.modules.adminSetup.interfaces.home.tab.title">
+        <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.modules.adminSetup.multispeak.home.tab.title">
             <c:url value="/multispeak/setup/home" />
         </cti:linkTab>
 
-        <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.interfaces.vendor.tab.title"
+        <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.vendor.tab.title"
             initiallySelected="${true}">
             <c:url value="/multispeak/setup/vendorHome" />
         </cti:linkTab>
@@ -49,13 +49,13 @@
         <form:hidden id="actionService" path="service" />
         <form:hidden id="vendorID" path="mspVendor.vendorID" />
         <form:hidden id="endpointURL" path="endpointURL" />
-        <tags:sectionContainer2 nameKey="setup" styleClass="stacked-lg">
+        <tags:sectionContainer2 nameKey="vendorSetup" styleClass="stacked-lg">
             <c:if test="${!noVendorsExist || createMode}">
                 <div class="column-12-12 clearfix">
                     <div class="column one">
                         <tags:nameValueContainer2 tableClass="natural-width ${tableClass}">
 
-                            <tags:nameValue2 nameKey=".companyName">
+                            <tags:nameValue2 nameKey=".companyName" requiredField="true">
                                 <c:choose>
                                     <c:when test="${createMode}">
                                         <tags:input path="mspVendor.companyName" maxlength="32" />

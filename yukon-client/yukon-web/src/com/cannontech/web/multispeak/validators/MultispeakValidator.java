@@ -3,29 +3,31 @@ package com.cannontech.web.multispeak.validators;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.Errors;
 
 import com.cannontech.common.validator.SimpleValidator;
 import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.web.editor.MultispeakModel;
 
 @Service
 public class MultispeakValidator extends SimpleValidator<MultispeakModel> {
-
+    @Autowired private MultispeakDao multispeakDao;
     public MultispeakValidator() {
         super(MultispeakModel.class);
     }
 
     @Override
     public void doValidation(MultispeakModel multispeak, Errors errors) {
+        MultispeakVendor multispeakVendor=multispeak.getMspVendor();
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "mspVendor.companyName", "yukon.web.error.isBlank");
-
+        
         YukonValidationUtils.rejectIfEmptyOrWhitespace(errors, "mspVendor.templateNameDefault",
             "yukon.web.error.isBlank");
-        MultispeakVendor multispeakVendor = multispeak.getMspVendor();
         if (multispeakVendor.getVendorID() != null
             && multispeakVendor.getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
 
@@ -44,6 +46,13 @@ public class MultispeakValidator extends SimpleValidator<MultispeakModel> {
                 index++;
             }
         } else {
+            boolean nameAvailable =
+                multispeakDao.isUniqueName(multispeakVendor.getCompanyName(), multispeakVendor.getAppName(),multispeak.getMspVendor().getVendorID());
+            if (nameAvailable) {
+                errors.rejectValue("mspVendor.appName",
+                    "yukon.web.modules.adminSetup.multispeak.companyAppNameConflict");
+                errors.rejectValue("mspVendor.companyName", "yukon.common.blank");
+            }
             for (MultispeakInterface multispeakInterface : multispeak.getMspInterfaceList()) {
                 if (multispeakInterface.getInterfaceEnabled() != null && multispeakInterface.getInterfaceEnabled()) {
                     validateInterfaceURL(multispeakInterface.getMspEndpoint(), index, errors);
@@ -58,7 +67,7 @@ public class MultispeakValidator extends SimpleValidator<MultispeakModel> {
             new URL(endpoint);
         } catch (MalformedURLException e) {
             errors.rejectValue("mspInterfaceList[" + index + "].mspEndpoint",
-                "yukon.web.modules.adminSetup.interfaces.invalidURL");
+                "yukon.web.modules.adminSetup.multispeak.invalidURL");
         }
     }
 

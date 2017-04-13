@@ -6,17 +6,17 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<cti:standardPage module="adminSetup"  page="interfaces.${mode}">
+<cti:standardPage module="adminSetup"  page="multispeak.${mode}">
 <tags:setFormEditMode mode="${mode}" />
 <cti:msg2 var="pingTitle" key=".ping"/>
 <cti:msg2 var="getMethods" key=".getMethods"/>
 <cti:includeScript link="/resources/js/pages/yukon.admin.multispeak.js" />
 <cti:linkTabbedContainer mode="section" id="page_header_tab_container">
-    <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.modules.adminSetup.interfaces.home.tab.title" initiallySelected="${true}">
+    <cti:linkTab tabId="deviceTab" selectorKey="yukon.web.modules.adminSetup.multispeak.home.tab.title" initiallySelected="${true}">
         <c:url value="/multispeak/setup/home" />
     </cti:linkTab>
     
-    <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.interfaces.vendor.tab.title">
+    <cti:linkTab tabId="vendorTab" selectorKey="yukon.web.modules.adminSetup.vendor.tab.title">
         <c:url value="/multispeak/setup/vendorHome" />
     </cti:linkTab>
 

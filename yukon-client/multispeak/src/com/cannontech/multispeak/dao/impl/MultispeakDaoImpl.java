@@ -355,4 +355,17 @@ public final class MultispeakDaoImpl implements MultispeakDao {
         MultispeakInterface mspInterface = new MultispeakInterface(vendorID, interfaceStr, endpoint, version);
         return mspInterface;
     }
+
+    @Override
+    public boolean isUniqueName(String companyName, String appName, Integer vendorId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) FROM MSPVendor");
+        sql.append("WHERE CompanyName").eq(companyName);
+        sql.append("AND AppName").eq(appName);
+        if (vendorId != null) {
+            sql.append("AND VendorID").neq(vendorId);
+        }
+        int duplicateNames = jdbcTemplate.queryForInt(sql);
+        return duplicateNames != 0;
+    }
 }
