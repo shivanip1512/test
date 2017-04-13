@@ -116,9 +116,11 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KWH,         //metric 3
                 BuiltInAttribute.SUM_KVARH,       //metric 23
+                /* Removed due to RFNFIVE-636
                 BuiltInAttribute.NET_KVARH,       //metric 24
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.NET_KVAH,        //metric 44
+                */
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -128,9 +130,11 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KWH,         //metric 3
                 BuiltInAttribute.SUM_KVARH,       //metric 23
+                /* Removed due to RFNFIVE-636
                 BuiltInAttribute.NET_KVARH,       //metric 24
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.NET_KVAH,        //metric 44
+                */
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -140,9 +144,11 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.SUM_KWH,         //metric 3
                 BuiltInAttribute.SUM_KVARH,       //metric 23
+                /* Removed due to RFNFIVE-636
                 BuiltInAttribute.NET_KVARH,       //metric 24
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.NET_KVAH,        //metric 44
+                */
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
