@@ -124,7 +124,7 @@ YukonError_t RfDaPortHandler::sendOutbound( device_record &dr )
         };
 
     auto failCallback =
-        []{
+        [](const YukonError_t cause){
             //  TODO - report error
         };
 

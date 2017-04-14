@@ -95,10 +95,10 @@ private:
 
     void checkForNewRequest(const RfnIdentifier &rfnId);
 
-    using IndicationQueue = std::vector<Messaging::Rfn::E2eMessenger::Indication>;
-    using ConfirmQueue    = std::vector<Messaging::Rfn::E2eMessenger::Confirm>;
-    using ExpirationQueue = std::vector<RfnIdentifier>;
-    using RequestQueue    = std::multiset<RfnDeviceRequest, std::greater<RfnDeviceRequest>>;
+    using IndicationQueue  = std::vector<Messaging::Rfn::E2eMessenger::Indication>;
+    using ConfirmQueue     = std::vector<Messaging::Rfn::E2eMessenger::Confirm>;
+    using ExpirationCauses = std::map<RfnIdentifier, YukonError_t>;
+    using RequestQueue     = std::multiset<RfnDeviceRequest, std::greater<RfnDeviceRequest>>;
     using RfnIdToRequestQueue = std::map<RfnIdentifier, RequestQueue>;
 
     using Mutex     = std::mutex;
@@ -111,7 +111,7 @@ private:
     ConfirmQueue         _confirms;
 
     Mutex                _expirationMux;
-    ExpirationQueue      _expirations;
+    ExpirationCauses     _expirations;
 
     Mutex                _submittedRequestsMux;
     RfnDeviceRequestList _submittedRequests;

@@ -14,7 +14,8 @@
 
 #include "yukon.h"
 
-#include <boost/ptr_container/ptr_deque.hpp>
+#include "amq_connection.h"
+
 #include <boost/optional.hpp>
 
 #include <mutex>
@@ -64,7 +65,7 @@ public:
         boost::optional<YukonError_t> error;
     };
 
-    using TimeoutCallback = std::function<void ()>;
+    using TimeoutCallback = std::function<void (const YukonError_t)>;
 
     static void registerE2eDtHandler(Indication::Callback callback);
     static void registerDataStreamingHandler(Indication::Callback callback);
@@ -101,24 +102,30 @@ private:
     void handleRfnE2eDataConfirmMsg   (const SerializedMessage &msg);
     void handleNetworkManagerResponseMsg(const SerializedMessage &msg, const std::string &type);
 
+    void ackProcessor(const ActiveMQConnectionManager::MessageDescriptor& msg);
+
     WorkerThread _timeoutProcessor;
 
-    struct MessageCallbacks
+    struct MessageHandling
     {
-        Confirm::Callback confirm;
-        TimeoutCallback   timeout;
+        CtiTime messageTimeout;
+        Confirm::Callback confirmCallback;
+        TimeoutCallback   timeoutCallback;
     };
 
-    using Expirations        = std::multimap<CtiTime, long long>;
-    using MessageIdCallbacks = std::map<long long, MessageCallbacks>;
-    using RfnIdToMessageId   = std::map<RfnIdentifier, long long>;
+    using HandlingPerMessage = std::map<long long, MessageHandling>;
+    using MessageExpirations = std::multimap<CtiTime, long long>;
     using Mutex     = std::mutex;
     using LockGuard = std::lock_guard<std::mutex>;
 
     Mutex              _expirationMux;
-    Expirations        _pendingExpirations;
-    MessageIdCallbacks _pendingCallbacks;
-    RfnIdToMessageId   _pendingMessageIds;
+    MessageExpirations _awaitingAcks;
+    MessageExpirations _awaitingConfirms;
+    HandlingPerMessage _messageHandling;
+
+    ActiveMQConnectionManager::SessionCallback _ackProcessorHandle;
+
+    void handleTimeouts(const CtiTime Now, MessageExpirations& messageExpirations, const YukonError_t error);
 };
 
 extern IM_EX_RFN_E2E std::unique_ptr<E2eMessenger> gE2eMessenger;

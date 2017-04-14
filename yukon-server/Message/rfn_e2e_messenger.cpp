@@ -2,11 +2,12 @@
 
 #include "rfn_e2e_messenger.h"
 
-#include "amq_connection.h"
-
 #include "message_factory.h"
 
 #include "NetworkManagerRequest.h"
+
+#include "cparms.h"
+#include "dsm2err.h"
 
 #include "std_helper.h"
 
@@ -22,15 +23,15 @@ namespace Rfn {
 
 enum
 {
-    E2EDT_NM_TIMEOUT =  5,
-    NM_TIMEOUT       =  5
+    E2EDT_NM_TIMEOUT =  30,
+    NM_TIMEOUT       =  30
 };
 
 extern Serialization::MessageFactory<Rfn::E2eMsg>        e2eMessageFactory;
 extern Serialization::MessageFactory<NetworkManagerBase> nmMessageFactory;
 
 E2eMessenger::E2eMessenger() :
-    _timeoutProcessor([this]{processTimeouts();})
+    _timeoutProcessor{ [this]{ processTimeouts(); } }
 {
     // empty
 }
@@ -44,6 +45,10 @@ E2eMessenger::~E2eMessenger()
 
 void E2eMessenger::start()
 {
+    _ackProcessorHandle = 
+            ActiveMQConnectionManager::registerSessionCallback(
+                    [this](const ActiveMQConnectionManager::MessageDescriptor& msg) { ackProcessor(msg); });
+
     _timeoutProcessor.start();
 }
 
@@ -56,28 +61,10 @@ try
         {
             LockGuard guard(_expirationMux);
 
-            const auto end = _pendingExpirations.upper_bound(CtiTime::now());
+            const CtiTime Now;
 
-            if( _pendingExpirations.begin() != end )
-            {
-                for( auto itr = _pendingExpirations.begin(); itr != end; ++itr )
-                {
-                    const auto messageId = itr->second;
-
-                    auto callbackItr = _pendingCallbacks.find(messageId);
-
-                    if( callbackItr != _pendingCallbacks.end() )
-                    {
-                        auto callbacks = callbackItr->second;
-
-                        callbacks.timeout();
-
-                        _pendingCallbacks.erase(callbackItr);
-                    }
-                }
-
-                _pendingExpirations.erase(_pendingExpirations.begin(), end);
-            }
+            handleTimeouts(Now, _awaitingAcks,     ClientErrors::NetworkManagerTimeout);
+            handleTimeouts(Now, _awaitingConfirms, ClientErrors::NetworkManagerTimeout);
         }
 
         WorkerThread::sleepFor(Timing::Chrono::seconds(1));
@@ -86,6 +73,31 @@ try
 catch( WorkerThread::Interrupted &ex )
 {
     //  exit gracefully
+}
+
+
+void E2eMessenger::handleTimeouts(const CtiTime Now, MessageExpirations& messageExpirations, const YukonError_t error)
+{
+    const auto end = messageExpirations.upper_bound(Now);
+
+    if( messageExpirations.begin() != end )
+    {
+        for( auto itr = messageExpirations.begin(); itr != end; ++itr )
+        {
+            const auto messageId = itr->second;
+
+            auto handlingItr = _messageHandling.find(messageId);
+
+            if( handlingItr != _messageHandling.end() )
+            {
+                handlingItr->second.timeoutCallback(error);
+
+                _messageHandling.erase(handlingItr);
+            }
+        }
+
+        messageExpirations.erase(_awaitingConfirms.begin(), end);
+    }
 }
 
 
@@ -265,6 +277,7 @@ namespace {
     using CE = ClientErrors;
 
     const std::map<RT, YukonError_t> ConfirmErrors = {
+        { RT::OK                                     , CE::None                           },
         { RT::DESTINATION_DEVICE_ADDRESS_UNKNOWN     , CE::E2eUnknownAddress              },
         { RT::DESTINATION_NETWORK_UNAVAILABLE        , CE::E2eNetworkUnavailable          },
         { RT::PMTU_LENGTH_EXCEEDED                   , CE::E2eRequestPacketTooLarge       },
@@ -292,17 +305,25 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg)
 
         boost::optional<Confirm::Callback> confirmCallback;
 
+        const auto yukonErrorCode = mapFindOrDefault(ConfirmErrors, confirmMsg->replyType, ClientErrors::Unknown);
+
         if( confirmMsg->header )
         {
             LockGuard guard(_expirationMux);
 
             const auto messageId = confirmMsg->header->messageId;
 
-            if( auto callbacks = mapFind(_pendingCallbacks, messageId) )
-            {
-                confirmCallback = callbacks->confirm;
+            auto itr = _messageHandling.find(messageId);
 
-                _pendingCallbacks.erase(messageId);
+            if( itr != _messageHandling.end() )
+            {
+                confirmCallback = itr->second.confirmCallback;
+
+                _messageHandling.erase(itr);
+            }
+            else
+            {
+                CTILOG_WARN(dout, "Confirm message received for unknown message ID " << messageId << " with status " << yukonErrorCode << ", " << GetErrorString(yukonErrorCode));
             }
         }
 
@@ -311,13 +332,7 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg)
             Confirm c;
 
             c.rfnIdentifier = confirmMsg->rfnIdentifier;
-
-            if( confirmMsg->replyType != E2eDataConfirmMsg::ReplyType::OK )
-            {
-                const boost::optional<YukonError_t> error = mapFind(ConfirmErrors, confirmMsg->replyType);
-
-                c.error = (error ? *error : ClientErrors::Unknown);
-            }
+            c.error = yukonErrorCode;
 
             (*confirmCallback)(c);
         }
@@ -407,7 +422,7 @@ E2eDataRequestMsg E2eMessenger::createMessageFromRequest(const Request& req, con
 }
 
 
-void E2eMessenger::serializeAndQueue(const Request &req, const ApplicationServiceIdentifiers asid, Confirm::Callback callback, TimeoutCallback timeout)
+void E2eMessenger::serializeAndQueue(const Request &req, const ApplicationServiceIdentifiers asid, Confirm::Callback successCallback, TimeoutCallback timeoutCallback)
 {
     E2eDataRequestMsg msg = createMessageFromRequest(req, asid);
 
@@ -415,27 +430,20 @@ void E2eMessenger::serializeAndQueue(const Request &req, const ApplicationServic
 
     e2eMessageFactory.serialize(msg, serialized);
 
-    ActiveMQConnectionManager::enqueueMessageWithCallback(
+    const auto e2eNmTimeout = gConfigParms.getValueAsInt("E2EDT_NM_TIMEOUT", E2EDT_NM_TIMEOUT);
+
+    _awaitingAcks.emplace(
+            CtiTime::now().addSeconds(e2eNmTimeout),
+            msg.header.messageId);
+
+    _messageHandling.emplace(
+            msg.header.messageId, 
+            MessageHandling { req.expiration, successCallback, timeoutCallback });
+
+    ActiveMQConnectionManager::enqueueMessageWithSessionCallback(
             ActiveMQ::Queues::OutboundQueue::NetworkManagerE2eDataRequest,
             serialized,
-            [=](const ActiveMQConnectionManager::MessageDescriptor &md)
-            {
-                //  ignore the ack message itself
-
-                LockGuard guard(_expirationMux);
-
-                _pendingExpirations.insert(
-                        std::make_pair(
-                                req.expiration,
-                                msg.header.messageId));
-
-                _pendingCallbacks[msg.header.messageId] = MessageCallbacks{ callback, timeout };
-            },
-            std::chrono::seconds{ E2EDT_NM_TIMEOUT },
-            [=]
-            {
-                timeout();
-            });
+            _ackProcessorHandle);
 }
 
 
@@ -447,6 +455,7 @@ void E2eMessenger::serializeAndQueue(const Request &req, const ApplicationServic
 
     e2eMessageFactory.serialize(msg, serialized);
 
+    //  Ignore the ack entirely
     ActiveMQConnectionManager::enqueueMessage(
         ActiveMQ::Queues::OutboundQueue::NetworkManagerE2eDataRequest,
         serialized);
@@ -487,13 +496,39 @@ void E2eMessenger::cancel(const long id, NetworkManagerCancelRequest::CancelType
             serialized,
             [=](const ActiveMQConnectionManager::MessageDescriptor &md)
             {
-                //  ignore the ack message itself
+                //  ignore the ack message itself - it does echo the full cancel request, so it could eventually be moved to ackProcessor()
             },
             std::chrono::seconds{ NM_TIMEOUT },
             [=]
             {
                 CTILOG_ERROR(dout, "Cancel request for id " << id << " timed out");
             });
+}
+
+
+void E2eMessenger::ackProcessor(const ActiveMQConnectionManager::MessageDescriptor& descriptor)
+{
+    LockGuard guard(_expirationMux);
+
+    if( const auto msg = nmMessageFactory.deserialize( "com.eaton.eas.yukon.networkmanager.NetworkManagerRequestAck", descriptor.msg ) )
+    {
+        if( const auto reqMsg = dynamic_cast<const Messaging::Rfn::NetworkManagerRequestAck*>(msg.get()) )
+        {
+            const auto messageId = reqMsg->header.messageId;
+
+            auto itr = _messageHandling.find(messageId);
+
+            if( itr != _messageHandling.end() )
+            {
+                _awaitingAcks.erase(messageId);
+                _awaitingConfirms.emplace(itr->second.messageTimeout, messageId);
+            }
+            else
+            {
+                CTILOG_WARN(dout, "Received ack for unknown message ID " << messageId);
+            }
+        }
+    }
 }
 
 

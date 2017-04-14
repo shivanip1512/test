@@ -265,7 +265,7 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
 
     RfnIdentifierSet expirations;
 
-    ExpirationQueue recentExpirations;
+    ExpirationCauses recentExpirations;
 
     {
         std::lock_guard<std::mutex> guard(_expirationMux);
@@ -278,8 +278,10 @@ RfnRequestManager::RfnIdentifierSet RfnRequestManager::handleTimeouts()
     {
         LockGuard guard(_activeRequestsMux);
 
-        for( const auto &rfnId : recentExpirations )
+        for( const auto &kv : recentExpirations )
         {
+            const auto& rfnId = kv.first;
+
             auto &request = mapFindRef(_activeRequests, rfnId);
 
             if( ! request )
@@ -653,11 +655,11 @@ RfnRequestManager::PacketInfo
 
                 _confirms.push_back(msg);
             },
-            [=]
+            [=](const YukonError_t error)
             {
                 LockGuard guard(_confirmMux);
 
-                _expirations.push_back(rfnIdentifier);
+                _expirations.emplace(rfnIdentifier, error);
             });
 
     PacketInfo transmissionReceipt;
@@ -690,7 +692,7 @@ void RfnRequestManager::sendE2eDataAck(
     msg.expiration    = E2EDT_CON_RETX_TIMEOUT;
 
     //  ignore the confirm and timeout callbacks - this is fire and forget, even if we don't hear back from NM
-    E2eMessenger::sendE2eDt(msg, asid, [](const E2eMessenger::Confirm &msg){}, []{});
+    E2eMessenger::sendE2eDt(msg, asid);
 }
 
 
