@@ -582,9 +582,9 @@ void ActiveMQConnectionManager::enqueueMessageWithCallback(
 void ActiveMQConnectionManager::enqueueMessageWithSessionCallback(
     const ActiveMQ::Queues::OutboundQueue &queue,
     const SerializedMessage &message,
-    SessionCallback cr)
+    SessionCallback callback)
 {
-    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, gActiveMQConnection->makeReturnLabel(cr));
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, gActiveMQConnection->makeReturnLabel(callback));
 }
 
 

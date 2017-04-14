@@ -138,7 +138,7 @@ public:
             MessageCallback callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
     static void enqueueMessageWithSessionCallback(
             const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, 
-            SessionCallback cr);
+            SessionCallback callback);
 
     static void registerHandler     (const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
     static void registerReplyHandler(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallbackWithReply callback);
