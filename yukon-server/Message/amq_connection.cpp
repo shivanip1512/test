@@ -762,12 +762,6 @@ void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQu
 }
 
 
-auto ActiveMQConnectionManager::addNewCallback(const MessageCallback callback) -> SessionCallback
-{
-    return callback;
-}
-
-
 void ActiveMQConnectionManager::acceptNamedMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message)
 {
     if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )

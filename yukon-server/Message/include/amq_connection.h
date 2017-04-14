@@ -161,7 +161,6 @@ protected:
 
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallbackWithReply callback);
-    auto addNewCallback(const MessageCallback callback) -> SessionCallback;
         
     void acceptNamedMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message);
     void acceptSingleReply (const cms::Message *message);
