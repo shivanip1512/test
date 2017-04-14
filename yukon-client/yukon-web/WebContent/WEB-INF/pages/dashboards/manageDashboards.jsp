@@ -5,6 +5,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
 <cti:standardPage module="dashboard" page="manage">
 
@@ -56,8 +57,9 @@
                                 <cm:dropdownOption key=".copy" icon="icon-disk-multiple" data-popup=".copy-dashboard-${dashboardId}"/>
                                 <cti:url var="editUrl" value="/dashboards/${dashboardId}/edit"/>
                                 <cm:dropdownOption key=".edit" icon="icon-pencil" href="${editUrl}"/>
-                                <cti:url var="deleteUrl" value="/dashboards/${dashboardId}/delete"/>
-                                <cm:dropdownOption key=".delete" icon="icon-cross" href="${deleteUrl}"/>                
+                                <cm:dropdownOption id="deleteMeter_${dashboardId}" key=".delete" icon="icon-cross"
+                                    data-dashboard-id="${dashboardId}" data-ok-event="yukon:dashboard:remove" />
+                                <d:confirm on="#deleteMeter_${dashboardId}" nameKey="dashboard.confirmDelete"/>
                             </cm:dropdown>
                         
                         </td>

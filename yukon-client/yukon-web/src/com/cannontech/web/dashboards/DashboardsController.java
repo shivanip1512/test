@@ -26,9 +26,11 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
+import com.cannontech.web.common.dashboard.dao.DashboardDao;
 import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.UserDashboardSettings;
@@ -50,6 +52,7 @@ public class DashboardsController {
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private WidgetService widgetService;
     @Autowired private DashboardService dashboardService;
+    @Autowired private DashboardDao dashboardDao;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @RequestMapping("manage")
@@ -208,8 +211,16 @@ public class DashboardsController {
     }
     
     @RequestMapping("{id}/delete")
-    public String deleteDashboard(@PathVariable int id) {
-        return "manageDashboards.jsp";
+    public String deleteDashboard(@PathVariable int id, YukonUserContext userContext) {
+        dashboardService.getOwner(id);
+        LiteYukonUser user = userContext.getYukonUser();
+        List<Integer> userIdList = dashboardDao.getAllUsersForDashboard(id);
+        if (user == dashboardService.getOwner(id).get()) {
+            if (userIdList.size() > 1) {
+                dashboardService.delete(id);
+            }
+        }
+         return "manageDashboards.jsp";
     }
     
     @RequestMapping("{id}/favorite")

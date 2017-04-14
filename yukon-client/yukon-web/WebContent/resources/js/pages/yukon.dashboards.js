@@ -49,10 +49,16 @@ yukon.dashboards = (function () {
                 dashboardId = icon.data('dashboard');
                 $.getJSON(yukon.url('/dashboards/' + dashboardId + '/unfavorite')).done(function (json) {
                     if (!json.isFavorite) {
-                        icon.removeClass('icon-star js-unfavorite-dashboard')               
+                        icon.removeClass('icon-star js-unfavorite-dashboard')             
                             .addClass('icon-favorite-not js-favorite-dashboard');
                     }
                 });
+            });
+            
+            $(document).on('yukon:dashboard:remove', function (ev) {
+                var container = $(ev.target),
+                dashboardId = container.data('dashboardId');
+                window.location.href = yukon.url('/dashboards/' + dashboardId + '/delete');
             });
                         
             _initialized = true;
