@@ -378,5 +378,14 @@
       <sequence name="HoneywellDREvent">
         <table name="HoneywellDREvent" identitycolumn="eventId"/>
       </sequence>
+      <sequence name="Dashboard">
+        <table name="Dashboard" identitycolumn="DashboardId" initsequence="true"/>
+      </sequence>
+      <sequence name="Widget">
+        <table name="Widget" identitycolumn="WidgetId" initsequence="true"/>
+      </sequence>
+      <sequence name="WidgetSettings">
+        <table name="WidgetSettings" identitycolumn="SettingId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

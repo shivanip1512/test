@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.dashboard.model.Dashboard;
+import com.cannontech.web.common.dashboard.model.DashboardBase;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.LiteDashboard;
 
@@ -69,7 +70,7 @@ public interface DashboardService {
     /**
      * @return The ID of the newly created dashboard.
      */
-    int create(Dashboard dashboard);
+    int create(DashboardBase dashboard);
     
     /**
      * @return The ID of the modified dashboard.

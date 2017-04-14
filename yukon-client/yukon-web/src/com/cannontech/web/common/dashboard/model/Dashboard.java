@@ -9,7 +9,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * The complete representation of a dashboard, including associated widgets.
  * @see LiteDashboard LiteDashboard, a lighter dashboard object.
  */
-public class Dashboard {
+public class Dashboard implements DashboardBase {
     private int dashboardId;
     private String name;
     private String description;
@@ -19,42 +19,52 @@ public class Dashboard {
     private List<Widget> column1Widgets;
     private List<Widget> column2Widgets;
     
-    public int getId() {
+    @Override
+    public int getDashboardId() {
         return dashboardId;
     }
     
-    public void setId(int id) {
+    @Override
+    public void setDashboardId(int id) {
         dashboardId = id;
     }
     
+    @Override
     public String getName() {
         return name;
     }
     
+    @Override
     public void setName(String name) {
         this.name = name;
     }
     
+    @Override
     public String getDescription() {
         return description;
     }
     
+    @Override
     public void setDescription(String description) {
         this.description = description;
     }
     
+    @Override
     public LiteYukonUser getOwner() {
         return owner;
     }
     
+    @Override
     public void setOwner(LiteYukonUser owner) {
         this.owner = owner;
     }
     
+    @Override
     public Visibility getVisibility() {
         return visibility;
     }
     
+    @Override
     public void setVisibility(Visibility visibility) {
         this.visibility = visibility;
     }

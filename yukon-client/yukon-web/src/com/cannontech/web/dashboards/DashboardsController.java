@@ -135,7 +135,7 @@ public class DashboardsController {
         dashboard.setVisibility(Visibility.SHARED);
         dashboard.setOwner(userContext.getYukonUser());
         dashboard.setPageType(DashboardPageType.MAIN);
-        dashboard.setId(12);
+        dashboard.setDashboardId(12);
         dashboard.setPageType(DashboardPageType.MAIN);
         Widget widget = new Widget();
         widget.setDashboardId(12);
@@ -145,7 +145,7 @@ public class DashboardsController {
         widget2.setDashboardId(12);
         widget2.setId(12);
         widget2.setType(WidgetType.TREND);
-        Map<String, String> params = new HashMap<String, String>();
+        Map<String, String> params = new HashMap<>();
         Map<Integer, SimpleMeter> meters = databaseCache.getAllMeters();
         Iterator<SimpleMeter> meterIterator = meters.values().iterator();
         SimpleMeter meter = meterIterator.next();
@@ -157,7 +157,7 @@ public class DashboardsController {
         widget3.setDashboardId(12);
         widget3.setId(22);
         widget3.setType(WidgetType.TREND);
-        Map<String, String> params2 = new HashMap<String, String>();
+        Map<String, String> params2 = new HashMap<>();
         SimpleMeter meter2 = meterIterator.next();
         params2.put("deviceId",  Integer.toString(meter2.getPaoIdentifier().getPaoId()));
         widget3.setParameters(params2);
@@ -177,7 +177,7 @@ public class DashboardsController {
     }
     
     private List<LiteDashboard> createDashboardsListMockup(YukonUserContext userContext) {
-        List<LiteDashboard> dashboards = new ArrayList<LiteDashboard>();
+        List<LiteDashboard> dashboards = new ArrayList<>();
         LiteDashboard dashboard = new LiteDashboard();
         dashboard.setName("Yukon Default Dashboard");
         dashboard.setDashboardId(12);

@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.dashboard.dao.DashboardDao;
 import com.cannontech.web.common.dashboard.model.Dashboard;
+import com.cannontech.web.common.dashboard.model.DashboardBase;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.service.DashboardService;
@@ -68,8 +70,15 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public int create(Dashboard dashboard) {
-        throw new MethodNotImplementedException();
+    @Transactional
+    public int create(DashboardBase dashboardBase) {
+        int dashboardId = dashboardDao.create(dashboardBase);
+        if (dashboardBase instanceof Dashboard) {
+            Dashboard dashboard = (Dashboard) dashboardBase;
+            dashboardDao.insertWidgets(dashboardId, dashboard.getColumn1Widgets(), 1);
+            dashboardDao.insertWidgets(dashboardId, dashboard.getColumn2Widgets(), 2);
+        }
+        return dashboardId;
     }
 
     @Override
