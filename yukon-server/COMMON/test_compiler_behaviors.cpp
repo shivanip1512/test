@@ -139,6 +139,69 @@ BOOST_AUTO_TEST_CASE(test_multiset_insert_order)
     }
 }
 
+BOOST_AUTO_TEST_CASE(test_multimap_insert_order)
+{
+    std::multimap<int, int> t;
+
+    t.emplace(3,1);
+    t.emplace(3,2);
+    t.emplace(3,3);
+    t.emplace(3,4);
+    t.emplace(3,5);
+
+    {
+        auto itr = t.cbegin();
+
+        BOOST_CHECK_EQUAL(itr++->second, 1);
+        BOOST_CHECK_EQUAL(itr++->second, 2);
+        BOOST_CHECK_EQUAL(itr++->second, 3);
+        BOOST_CHECK_EQUAL(itr++->second, 4);
+        BOOST_CHECK_EQUAL(itr++->second, 5);
+    }
+
+    t.emplace(1,6);
+
+    {
+        auto itr = t.cbegin();
+
+        BOOST_CHECK_EQUAL(itr++->second, 6);
+        BOOST_CHECK_EQUAL(itr++->second, 1);
+        BOOST_CHECK_EQUAL(itr++->second, 2);
+        BOOST_CHECK_EQUAL(itr++->second, 3);
+        BOOST_CHECK_EQUAL(itr++->second, 4);
+        BOOST_CHECK_EQUAL(itr++->second, 5);
+    }
+
+    t.emplace(4,7);
+
+    {
+        auto itr = t.cbegin();
+
+        BOOST_CHECK_EQUAL(itr++->second, 6);
+        BOOST_CHECK_EQUAL(itr++->second, 1);
+        BOOST_CHECK_EQUAL(itr++->second, 2);
+        BOOST_CHECK_EQUAL(itr++->second, 3);
+        BOOST_CHECK_EQUAL(itr++->second, 4);
+        BOOST_CHECK_EQUAL(itr++->second, 5);
+        BOOST_CHECK_EQUAL(itr++->second, 7);
+    }
+
+    t.emplace(4,8);
+
+    {
+        auto itr = t.cbegin();
+
+        BOOST_CHECK_EQUAL(itr++->second, 6);
+        BOOST_CHECK_EQUAL(itr++->second, 1);
+        BOOST_CHECK_EQUAL(itr++->second, 2);
+        BOOST_CHECK_EQUAL(itr++->second, 3);
+        BOOST_CHECK_EQUAL(itr++->second, 4);
+        BOOST_CHECK_EQUAL(itr++->second, 5);
+        BOOST_CHECK_EQUAL(itr++->second, 7);
+        BOOST_CHECK_EQUAL(itr++->second, 8);
+    }
+}
+
 BOOST_AUTO_TEST_CASE(test_map_range_for_is_mutable)
 {
     std::map<int, std::string> numbers = {

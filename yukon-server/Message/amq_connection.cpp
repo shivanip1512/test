@@ -93,6 +93,7 @@ void ActiveMQConnectionManager::releaseConnectionObjects()
 
     _producers.clear();
     _namedConsumers.clear();
+    _replyConsumers.clear();
 
     _producerSession.reset();
     _consumerSession.reset();
@@ -183,14 +184,14 @@ bool ActiveMQConnectionManager::verifyConnectionObjects()
 
         _consumerSession = _connection->createSession();
 
-        registerConsumersForCallbacks(_namedCallbacks);
+        createConsumersForCallbacks(_namedCallbacks);
     }
 
     return true;
 }
 
 
-void ActiveMQConnectionManager::registerConsumersForCallbacks(const CallbacksPerQueue &callbacks)
+void ActiveMQConnectionManager::createConsumersForCallbacks(const CallbacksPerQueue &callbacks)
 {
     using ActiveMQ::Queues::InboundQueue;
 
@@ -201,12 +202,12 @@ void ActiveMQConnectionManager::registerConsumersForCallbacks(const CallbacksPer
                 | boost::adaptors::filtered([this](const InboundQueue *q) { return ! _namedConsumers.count(q); }),
             [this](const InboundQueue *q)
             {
-                registerNamedConsumer(q);
+                createNamedConsumer(q);
             });
 }
 
 
-void ActiveMQConnectionManager::registerNamedConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue)
+void ActiveMQConnectionManager::createNamedConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue)
 {
     auto consumer = std::make_unique<QueueConsumerWithListener>();
 
@@ -239,7 +240,7 @@ void ActiveMQConnectionManager::updateCallbacks()
             _newCallbacks.begin(),
             _newCallbacks.end());
 
-    registerConsumersForCallbacks(_newCallbacks);
+    createConsumersForCallbacks(_newCallbacks);
 
     _newCallbacks.clear();
 }
@@ -264,50 +265,60 @@ void ActiveMQConnectionManager::sendOutgoingMessages()
             CTILOG_DEBUG(dout, "Sending outgoing message for queue \"" << e->queueName << "\"");
         }
 
-        if( e->replyListener )
+        if( e->returnAddress )
         {
-            auto tempConsumer = std::make_unique<TempQueueConsumerWithCallback>();
-
-            tempConsumer->managedConsumer = std::make_unique<ActiveMQ::TempQueueConsumer>(*_consumerSession, e->replyListener->tempQueue);
-
-            message->setCMSReplyTo(tempConsumer->managedConsumer->getDestination());
-
-            tempConsumer->callback = e->replyListener->callback;
-
-            tempConsumer->listener = 
-                    std::make_unique<ActiveMQ::MessageListener>(
-                            [=](const cms::Message *msg)
-                            {
-                                acceptSingleReply(msg);
-                            });
-
-            tempConsumer->managedConsumer->setMessageListener(
-                    tempConsumer->listener.get());
-
-            //  copy the key string for inserting, since tempConsumer will be invalidated
-            //    when passed as a parameter to ptr_map::insert()
-            const std::string destinationPhysicalName = tempConsumer->managedConsumer->getDestPhysicalName();
-
-            if( debugActivityInfo() )
-            {
-                CTILOG_DEBUG(dout, "Created temporary queue for callback reply for \"" << destinationPhysicalName << "\"");
-            }
-
-            _replyConsumers.emplace(
-                    destinationPhysicalName,
-                    std::move(tempConsumer));
-
-            _replyExpirations.emplace(
-                        CtiTime::now() + e->replyListener->timeout.count(),  //  extract raw seconds out of the timeout duration
-                        ExpirationHandler{
-                            destinationPhysicalName,
-                            e->replyListener->timedOut });
+            message->setCMSReplyTo(e->returnAddress());
         }
 
         ActiveMQ::QueueProducer &queueProducer = getQueueProducer(*_producerSession, e->queueName);
 
         queueProducer.send(message.get());
     }
+}
+
+
+auto ActiveMQConnectionManager::makeReturnLabel(MessageCallback callback, std::chrono::seconds timeout, TimeoutCallback timeoutCallback) -> ReturnLabel
+{
+    return [this, callback, timeout, timeoutCallback] {
+        
+        auto tempConsumer = std::make_unique<TempQueueConsumerWithCallback>();
+
+        tempConsumer->managedConsumer = ActiveMQ::createTempQueueConsumer(*_consumerSession);
+
+        tempConsumer->callback = callback;
+
+        static const auto singleReplyListener = 
+            std::make_unique<ActiveMQ::MessageListener>(
+                [this](const cms::Message *msg)
+                {
+                    acceptSingleReply(msg);
+                });
+
+        tempConsumer->managedConsumer->setMessageListener(singleReplyListener.get());
+
+        //  copy the key string for inserting, since tempConsumer will be invalidated
+        //    when passed as a parameter to ptr_map::insert()
+        const std::string destinationPhysicalName = tempConsumer->managedConsumer->getDestPhysicalName();
+
+        if( debugActivityInfo() )
+        {
+            CTILOG_DEBUG(dout, "Created temporary queue for callback reply for \"" << destinationPhysicalName << "\"");
+        }
+
+        const auto destination = tempConsumer->managedConsumer->getDestination();
+
+        _replyConsumers.emplace(
+            destinationPhysicalName,
+            std::move(tempConsumer));
+
+        _replyExpirations.emplace(
+            CtiTime::now().addSeconds(timeout.count()),  //  extract raw seconds out of the timeout duration
+            ExpirationHandler {
+                destinationPhysicalName,
+                timeoutCallback });
+
+        return destination;
+    };
 }
 
 
@@ -358,7 +369,7 @@ void ActiveMQConnectionManager::dispatchIncomingMessages()
 
 void ActiveMQConnectionManager::dispatchTempQueueReplies()
 {
-    ReplyPerDestination replies;
+    RepliesByDestination replies;
 
     {
         CtiLockGuard<CtiCriticalSection> lock(_tempQueueRepliesMux);
@@ -419,12 +430,12 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
 
 void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message)
 {
-    gActiveMQConnection->enqueueOutgoingMessage(queue.name, std::move(message), boost::none);
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, std::move(message), nullptr);
 }
 
 void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message)
 {
-    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, boost::none);
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, nullptr);
 }
 
 template<typename Msg>
@@ -459,7 +470,7 @@ void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
 {
     MessageCallback callbackWrapper = DeserializationHelper<Msg>(callback);
 
-    gActiveMQConnection->enqueueOutgoingMessage(queue.name, std::move(message), TemporaryListener{ gActiveMQConnection->makeTempQueue(), callbackWrapper, timeout, timedOut });
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, std::move(message), gActiveMQConnection->makeReturnLabel(callbackWrapper, timeout, timedOut));
 }
 
 
@@ -473,7 +484,7 @@ void ActiveMQConnectionManager::enqueueMessageWithCallbackFor(
 {
     MessageCallback callbackWrapper = DeserializationHelper<Msg>(callback);
 
-    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, TemporaryListener{ gActiveMQConnection->makeTempQueue(), callbackWrapper, timeout, timedOut });
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, gActiveMQConnection->makeReturnLabel(callbackWrapper, timeout, timedOut));
 }
 
 
@@ -484,14 +495,14 @@ void ActiveMQConnectionManager::enqueueMessageWithCallback(
         std::chrono::seconds timeout,
         TimeoutCallback timedOut)
 {
-    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, TemporaryListener{ gActiveMQConnection->makeTempQueue(), callback, timeout, timedOut });
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, gActiveMQConnection->makeReturnLabel(callback, timeout, timedOut ));
 }
 
 
 void ActiveMQConnectionManager::enqueueOutgoingMessage(
         const std::string &queueName,
         StreamableMessage::auto_type&& message,
-        boost::optional<TemporaryListener> replyListener)
+        ReturnLabel returnAddress)
 {
     //  ensure the message is not null
     if( ! message.get() )
@@ -517,7 +528,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
 
     e->queueName = queueName;
     e->message = std::move(message);
-    e->replyListener = replyListener;
+    e->returnAddress = returnAddress;
 
     {
         CtiLockGuard<CtiCriticalSection> lock(_outgoingMessagesMux);
@@ -535,7 +546,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
 void ActiveMQConnectionManager::enqueueOutgoingMessage(
         const std::string &queueName,
         const SerializedMessage &message,
-        boost::optional<TemporaryListener> replyListener)
+        ReturnLabel returnAddress)
 {
     struct BytesEnvelope : Envelope
     {
@@ -555,7 +566,7 @@ void ActiveMQConnectionManager::enqueueOutgoingMessage(
 
     e->queueName = queueName;
     e->message   = message;
-    e->replyListener = replyListener;
+    e->returnAddress = returnAddress;
 
     if( debugActivityInfo() )
     {
@@ -592,12 +603,6 @@ ActiveMQ::QueueProducer &ActiveMQConnectionManager::getQueueProducer(cms::Sessio
     auto result = _producers.emplace(queueName, std::move(queueProducer));
 
     return *(result.first->second);
-}
-
-
-cms::TemporaryQueue* ActiveMQConnectionManager::makeTempQueue()
-{
-    return _consumerSession->createTemporaryQueue();
 }
 
 

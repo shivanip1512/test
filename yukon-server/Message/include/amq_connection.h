@@ -130,22 +130,16 @@ public:
 
 protected:
 
-    struct TemporaryListener
-    {
-        cms::TemporaryQueue *tempQueue;
-        MessageCallback callback;
-        std::chrono::seconds timeout;
-        TimeoutCallback timedOut;
-    };
+    using ReturnLabel = std::function<const cms::Destination*()>;
 
     virtual void enqueueOutgoingMessage(
             const std::string &queueName,
             StreamableMessage::auto_type&& message,
-            boost::optional<TemporaryListener> callback);
+            ReturnLabel returnAddress);
     virtual void enqueueOutgoingMessage(
             const std::string &queueName,
             const SerializedMessage &message,
-            boost::optional<TemporaryListener> callback);
+            ReturnLabel returnAddress);
 
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallbackWithReply callback);
@@ -171,7 +165,7 @@ private:
     {
         std::string queueName;
 
-        boost::optional<TemporaryListener> replyListener;
+        ReturnLabel returnAddress;
 
         virtual std::unique_ptr<cms::Message> extractMessage(cms::Session &session) const = 0;
 
@@ -194,26 +188,29 @@ private:
     CallbacksPerQueue  _newCallbacks;
     CallbacksPerQueue  _namedCallbacks;
 
-    //  Consumer and listener - binds to onInboundMessage
+    //  Consumer and listener - binds to acceptNamedMessage
     struct QueueConsumerWithListener
     {
         std::unique_ptr<ActiveMQ::QueueConsumer> managedConsumer;
         std::unique_ptr<cms::MessageListener> listener;
     };
 
-    using ConsumerMap = std::map<const ActiveMQ::Queues::InboundQueue *, std::unique_ptr<QueueConsumerWithListener>>;
-    ConsumerMap _namedConsumers;
+    using NamedConsumerMap = std::map<const ActiveMQ::Queues::InboundQueue *, std::unique_ptr<QueueConsumerWithListener>>;
+    NamedConsumerMap _namedConsumers;
 
-    //  Temp consumer, listener, and client callback - binds to onTempQueueReply
+    //  Temp consumer and client callback
     struct TempQueueConsumerWithCallback
     {
         std::unique_ptr<ActiveMQ::TempQueueConsumer> managedConsumer;
-        std::unique_ptr<cms::MessageListener> listener;
         MessageCallback callback;
     };
 
     using TemporaryConsumersByDestination = std::map<std::string, std::unique_ptr<TempQueueConsumerWithCallback>>;
+
+    //  temp consumer that only lasts as long as the first reply - binds to acceptSingleReply
     TemporaryConsumersByDestination _replyConsumers;
+
+    ReturnLabel makeReturnLabel(MessageCallback callback, std::chrono::seconds timeout, TimeoutCallback timeoutCallback);
 
     struct ExpirationHandler
     {
@@ -223,9 +220,9 @@ private:
 
     std::multimap<CtiTime, ExpirationHandler> _replyExpirations;
 
-    typedef std::map<std::string, std::unique_ptr<MessageDescriptor>> ReplyPerDestination;
-    CtiCriticalSection  _tempQueueRepliesMux;
-    ReplyPerDestination _tempQueueReplies;
+    typedef std::multimap<std::string, std::unique_ptr<MessageDescriptor>> RepliesByDestination;
+    CtiCriticalSection   _tempQueueRepliesMux;
+    RepliesByDestination _tempQueueReplies;
 
     enum
     {
@@ -237,12 +234,11 @@ private:
 
     void updateCallbacks();
 
-    void registerConsumersForCallbacks(const CallbacksPerQueue &callbacks);
-    void registerNamedConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue);
+    void createConsumersForCallbacks(const CallbacksPerQueue &callbacks);
+    void createNamedConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue);
 
     void sendOutgoingMessages();
     ActiveMQ::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
-    cms::TemporaryQueue* makeTempQueue();
 
     void dispatchIncomingMessages();
     void dispatchTempQueueReplies();
