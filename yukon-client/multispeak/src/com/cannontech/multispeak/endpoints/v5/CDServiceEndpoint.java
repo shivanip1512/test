@@ -1,6 +1,5 @@
 package com.cannontech.multispeak.endpoints.v5;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -14,41 +13,17 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.cannontech.msp.beans.v5.cd_server.GetAllCDDevices;
 import com.cannontech.msp.beans.v5.cd_server.GetAllCDDevicesResponse;
-import com.cannontech.msp.beans.v5.cd_server.GetAllDomains;
-import com.cannontech.msp.beans.v5.cd_server.GetAllDomainsResponse;
-import com.cannontech.msp.beans.v5.cd_server.GetAttachmentsByObjectRefs;
-import com.cannontech.msp.beans.v5.cd_server.GetAttachmentsByObjectRefsResponse;
 import com.cannontech.msp.beans.v5.cd_server.GetCDDeviceStates;
 import com.cannontech.msp.beans.v5.cd_server.GetCDDeviceStatesResponse;
 import com.cannontech.msp.beans.v5.cd_server.GetCDEnabledMeters;
 import com.cannontech.msp.beans.v5.cd_server.GetCDEnabledMetersResponse;
-import com.cannontech.msp.beans.v5.cd_server.GetCDMeterCollectionChanges;
-import com.cannontech.msp.beans.v5.cd_server.GetCDMeterCollectionChangesResponse;
-import com.cannontech.msp.beans.v5.cd_server.GetDomainNames;
-import com.cannontech.msp.beans.v5.cd_server.GetDomainNamesResponse;
-import com.cannontech.msp.beans.v5.cd_server.GetDomainsByDomainNames;
-import com.cannontech.msp.beans.v5.cd_server.GetDomainsByDomainNamesResponse;
 import com.cannontech.msp.beans.v5.cd_server.GetMethods;
 import com.cannontech.msp.beans.v5.cd_server.GetMethodsResponse;
-import com.cannontech.msp.beans.v5.cd_server.GetObjectRefsByNounAndPrimaryIdentifiers;
-import com.cannontech.msp.beans.v5.cd_server.GetObjectRefsByNounAndPrimaryIdentifiersResponse;
-import com.cannontech.msp.beans.v5.cd_server.InitiateCDStateRequest;
-import com.cannontech.msp.beans.v5.cd_server.InitiateCDStateRequestResponse;
 import com.cannontech.msp.beans.v5.cd_server.InitiateConnectDisconnect;
 import com.cannontech.msp.beans.v5.cd_server.InitiateConnectDisconnectResponse;
-import com.cannontech.msp.beans.v5.cd_server.IsCDSupported;
-import com.cannontech.msp.beans.v5.cd_server.IsCDSupportedResponse;
-import com.cannontech.msp.beans.v5.cd_server.LinkAttachmentsToObjects;
-import com.cannontech.msp.beans.v5.cd_server.LinkAttachmentsToObjectsResponse;
 import com.cannontech.msp.beans.v5.cd_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.cd_server.PingURL;
 import com.cannontech.msp.beans.v5.cd_server.PingURLResponse;
-import com.cannontech.msp.beans.v5.cd_server.SetCDDevicesDisabled;
-import com.cannontech.msp.beans.v5.cd_server.SetCDDevicesDisabledResponse;
-import com.cannontech.msp.beans.v5.cd_server.SetCDDevicesEnabled;
-import com.cannontech.msp.beans.v5.cd_server.SetCDDevicesEnabledResponse;
-import com.cannontech.msp.beans.v5.cd_server.UnlinkAttachmentsFromObjects;
-import com.cannontech.msp.beans.v5.cd_server.UnlinkAttachmentsFromObjectsResponse;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfCDDevice;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfCDState;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
@@ -144,92 +119,4 @@ public class CDServiceEndpoint {
             transactionID, xmlExpirationTime));
         return response;
     }
-
-    @PayloadRoot(localPart = "GetAllDomains", namespace = CD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetAllDomainsResponse getAllDomains(@RequestPayload GetAllDomains getAllDomains)
-            throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "GetAttachmentsByObjectRefs", namespace = CD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetAttachmentsByObjectRefsResponse getAttachmentsByObjectRefs(
-            @RequestPayload GetAttachmentsByObjectRefs getAttachmentsByObjectRefs) throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "GetCDMeterCollectionChanges", namespace = CD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetCDMeterCollectionChangesResponse getCDMeterCollectionChanges(
-            @RequestPayload GetCDMeterCollectionChanges getCDMeterCollectionChanges)
-            throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "GetDomainNames", namespace = CD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetDomainNamesResponse getDomainNames(@RequestPayload GetDomainNames getDomainNames)
-            throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "GetDomainsByDomainNames", namespace = CD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetDomainsByDomainNamesResponse getDomainsByDomainNames(
-            @RequestPayload GetDomainsByDomainNames getDomainsByDomainNames) throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "GetObjectRefsByNounAndPrimaryIdentifiers", namespace = CD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetObjectRefsByNounAndPrimaryIdentifiersResponse getObjectRefsByNounAndPrimaryIdentifiers(
-            @RequestPayload GetObjectRefsByNounAndPrimaryIdentifiers getObjectRefsByNounAndPrimaryIdentifiers)
-            throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "InitiateCDStateRequest", namespace = CD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload InitiateCDStateRequestResponse initiateCDStateRequest(
-            @RequestPayload InitiateCDStateRequest initiateCDStateRequest) throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "IsCDSupported", namespace = CD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload IsCDSupportedResponse isCDSupported(@RequestPayload IsCDSupported isCDSupported)
-            throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "LinkAttachmentsToObjects", namespace = CD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload LinkAttachmentsToObjectsResponse linkAttachmentsToObjects(
-            @RequestPayload LinkAttachmentsToObjects linkAttachmentsToObjects) throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "SetCDDevicesDisabled", namespace = CD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload SetCDDevicesDisabledResponse setCDDevicesDisabled(
-            @RequestPayload SetCDDevicesDisabled setCDDevicesDisabled) throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "SetCDDevicesEnabled", namespace = CD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload SetCDDevicesEnabledResponse setCDDevicesEnabled(
-            @RequestPayload SetCDDevicesEnabled setCDDevicesEnabled) throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "UnlinkAttachmentsFromObjects", namespace = CD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload UnlinkAttachmentsFromObjectsResponse unlinkAttachmentsFromObjects(
-            @RequestPayload UnlinkAttachmentsFromObjects unlinkAttachmentsFromObjects)
-            throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
 }

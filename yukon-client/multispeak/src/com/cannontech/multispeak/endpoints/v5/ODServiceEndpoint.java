@@ -13,29 +13,13 @@ import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
 
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfObjectRef;
 import com.cannontech.msp.beans.v5.commonarrays.ArrayOfString;
-import com.cannontech.msp.beans.v5.od_server.GetAllDomains;
-import com.cannontech.msp.beans.v5.od_server.GetAllDomainsResponse;
-import com.cannontech.msp.beans.v5.od_server.GetAttachmentsByObjectRefs;
-import com.cannontech.msp.beans.v5.od_server.GetAttachmentsByObjectRefsResponse;
-import com.cannontech.msp.beans.v5.od_server.GetDomainNames;
-import com.cannontech.msp.beans.v5.od_server.GetDomainNamesResponse;
-import com.cannontech.msp.beans.v5.od_server.GetDomainsByDomainNames;
-import com.cannontech.msp.beans.v5.od_server.GetDomainsByDomainNamesResponse;
-import com.cannontech.msp.beans.v5.od_server.GetMeterIDsByEndDeviceStateTypes;
-import com.cannontech.msp.beans.v5.od_server.GetMeterIDsByEndDeviceStateTypesResponse;
 import com.cannontech.msp.beans.v5.od_server.GetMethods;
 import com.cannontech.msp.beans.v5.od_server.GetMethodsResponse;
-import com.cannontech.msp.beans.v5.od_server.GetObjectRefsByNounAndPrimaryIdentifiers;
-import com.cannontech.msp.beans.v5.od_server.GetObjectRefsByNounAndPrimaryIdentifiersResponse;
 import com.cannontech.msp.beans.v5.od_server.InitiateEndDevicePings;
 import com.cannontech.msp.beans.v5.od_server.InitiateEndDevicePingsResponse;
-import com.cannontech.msp.beans.v5.od_server.LinkAttachmentsToObjects;
-import com.cannontech.msp.beans.v5.od_server.LinkAttachmentsToObjectsResponse;
 import com.cannontech.msp.beans.v5.od_server.ObjectFactory;
 import com.cannontech.msp.beans.v5.od_server.PingURL;
 import com.cannontech.msp.beans.v5.od_server.PingURLResponse;
-import com.cannontech.msp.beans.v5.od_server.UnlinkAttachmentsFromObjects;
-import com.cannontech.msp.beans.v5.od_server.UnlinkAttachmentsFromObjectsResponse;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
@@ -85,67 +69,5 @@ public class ODServiceEndpoint {
                                                                                          expirationTime));
 
         return response;
-    }
-
-    @PayloadRoot(localPart = "GetAllDomains", namespace = OD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetAllDomainsResponse getAllDomainsResponse(
-            @RequestPayload GetAllDomains getAllDomains) throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "GetAttachmentsByObjectRefs", namespace = OD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetAttachmentsByObjectRefsResponse getAttachmentsByObjectRefsResponse(
-            @RequestPayload GetAttachmentsByObjectRefs getAttachmentsByObjectRefs) throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "GetDomainNames", namespace = OD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetDomainNamesResponse  getDomainNamesResponse (
-            @RequestPayload GetDomainNames getDomainNames)
-            throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "GetDomainsByDomainNames", namespace = OD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetDomainsByDomainNamesResponse getDomainsByDomainNamesResponse(
-            @RequestPayload GetDomainsByDomainNames  getDomainsByDomainNames )
-            throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "GetMeterIDsByEndDeviceStateTypes", namespace = OD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetMeterIDsByEndDeviceStateTypesResponse getMeterIDsByEndDeviceStateTypesResponse(
-            @RequestPayload GetMeterIDsByEndDeviceStateTypes getMeterIDsByEndDeviceStateTypes)
-            throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "GetObjectRefsByNounAndPrimaryIdentifiers", namespace = OD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload GetObjectRefsByNounAndPrimaryIdentifiersResponse  getObjectRefsByNounAndPrimaryIdentifiersResponse (
-            @RequestPayload GetObjectRefsByNounAndPrimaryIdentifiers getObjectRefsByNounAndPrimaryIdentifiers)
-            throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "LinkAttachmentsToObjects", namespace = OD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload LinkAttachmentsToObjectsResponse  linkAttachmentsToObjectsResponse (
-            @RequestPayload LinkAttachmentsToObjects  linkAttachmentsToObjects )
-            throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
-    }
-
-    @PayloadRoot(localPart = "UnlinkAttachmentsFromObjects", namespace = OD_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload UnlinkAttachmentsFromObjectsResponse unlinkAttachmentsFromObjectsResponse(
-            @RequestPayload UnlinkAttachmentsFromObjects  unlinkAttachmentsFromObjects )
-            throws MultispeakWebServiceException {
-        multispeakFuncs.init();
-        throw new MultispeakWebServiceException("Method is NOT supported.");
     }
 }
