@@ -3,93 +3,93 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <cti:standardPage module="dashboard" page="manage">
 
 <tags:setFormEditMode mode="${mode}"/>
 
-<div class="page-actions fr stacked-md"><cti:button icon="icon-plus-green" nameKey="createDashboard" data-popup=".js-create-dashboard-popup"/></div>
+<div class="page-actions fr stacked-md">
+    <cti:button icon="icon-plus-green" nameKey="createDashboard" data-popup=".js-create-dashboard-popup"/>
+</div>
 <br/><br/>
+
 <cti:tabs>
-<cti:tab title="Dashboards" selected="true">
-
-    <hr/>
-    <span class="fl"><i:inline key=".filters"/></span><div class="button-group"> <cti:button nameKey="myFavorites"/><cti:button nameKey="createdByMe"/></div>
-    <hr/>
+    <cti:msg2 var="dashboardsTab" key=".dashboardsTab"/>
+    <cti:tab title="${dashboardsTab}" selected="true">
     
-    <table class="compact-results-table row-highlighting has-actions has-alerts">
-        <th></th>
-        <th><i:inline key=".name"/></th>
-        <th><i:inline key=".createdBy"/></th>
-        <th><i:inline key=".visibility"/></th>
-        <th><i:inline key=".numberOfUsers"/></th>
-        <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
-        <c:forEach var="dashboard" items="${dashboards}">
-            <tr>
-                <c:set var="dashboardId" value="${dashboard.dashboardId}"/>
-                <cti:url var="dashboardUrl" value="/dashboards/${dashboardId}/view"/>
-                <td><cti:icon icon="icon-star"/></td>                
-                <td><a href="${dashboardUrl}">${dashboard.name}</a></td>
-                <td>${dashboard.owner.username}</td>
-                <td><i:inline key=".visibility.${dashboard.visibility}"/></td>
-                <td>${dashboard.users}</td>
-                <td>
-                    <cm:dropdown icon="icon-cog">
-                        <div class="dn copy-dashboard-${dashboardId}" data-dialog data-title="<cti:msg2 key=".copyDashboard.label"/>"
-                        data-url="<cti:url value="/dashboards/${dashboardId}/copy"/>"></div>
-                        <cm:dropdownOption key=".copy" icon="icon-disk-multiple" data-popup=".copy-dashboard-${dashboardId}"/>
-                        <cti:url var="editUrl" value="/dashboards/${dashboardId}/edit"/>
-                        <cm:dropdownOption key=".edit" icon="icon-pencil" href="${editUrl}"/>
-                        <cti:url var="deleteUrl" value="/dashboards/${dashboardId}/delete"/>
-                        <cm:dropdownOption key=".delete" icon="icon-cross" href="${deleteUrl}"/>                
-                    </cm:dropdown>
+        <hr/>
+        <span class="fl"><i:inline key=".filters"/></span>
+        <div class="button-group"> 
+            <cti:url var="manageUrl" value="/dashboards/manage" />
+            <cti:button nameKey="myFavorites" href="${manageUrl}?filter=myFavorites"/>
+            <cti:button nameKey="createdByMe" href="${manageUrl}?filter=createdByMe"/>
+        </div>
+        <hr/>
+        
+        <cti:url var="dataUrl" value="/dashboards/manage" />
+        <div data-url="${dataUrl}" data-static>
+            <table class="compact-results-table row-highlighting has-actions has-alerts">
+                <th></th>
+                <tags:sort column="${name}" />                
+                <tags:sort column="${createdBy}" />                
+                <tags:sort column="${visibility}" />                
+                <tags:sort column="${numberOfUsers}" />                
+                <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
+                <c:forEach var="dashboard" items="${dashboards.resultList}">
+                    <tr>
+                        <c:set var="dashboardId" value="${dashboard.dashboardId}"/>
+                        <cti:url var="dashboardUrl" value="/dashboards/${dashboardId}/view"/>
+                        <td>
+                            <cti:icon icon="icon-favorite-not" classes="js-favorite-dashboard" data-dashboard="${dashboardId}"/>
+    <%--                         <cti:icon icon="icon-star" classes="js-unfavorite-dashboard" data-dashboard="${dashboardId}"/> --%>
+                        </td>                
+                        <td><a href="${dashboardUrl}">${dashboard.name}</a></td>
+                        <td>${dashboard.owner.username}</td>
+                        <td><i:inline key=".visibility.${dashboard.visibility}"/></td>
+                        <td>${dashboard.users}</td>
+                        <td>
+                            <cm:dropdown icon="icon-cog">
+                                <div class="dn copy-dashboard-${dashboardId}" data-dialog data-title="<cti:msg2 key=".copyDashboard.label"/>"
+                                data-url="<cti:url value="/dashboards/${dashboardId}/copy"/>"></div>
+                                <cm:dropdownOption key=".copy" icon="icon-disk-multiple" data-popup=".copy-dashboard-${dashboardId}"/>
+                                <cti:url var="editUrl" value="/dashboards/${dashboardId}/edit"/>
+                                <cm:dropdownOption key=".edit" icon="icon-pencil" href="${editUrl}"/>
+                                <cti:url var="deleteUrl" value="/dashboards/${dashboardId}/delete"/>
+                                <cm:dropdownOption key=".delete" icon="icon-cross" href="${deleteUrl}"/>                
+                            </cm:dropdown>
+                        
+                        </td>
+                    </tr>   
+                </c:forEach>
+            </table>
+            <tags:pagingResultsControls result="${dashboards}" adjustPageCount="true"/>
+        </div>
+    </cti:tab>
+    <cti:msg2 var="settingsTab" key=".settingsTab"/>
+    <cti:tab title="${settingsTab}">
+        <cti:url var="action" value="/dashboards/saveSettings"/>
+        <form:form commandName="dashboardSettings" action="${action}" method="POST">
+            <cti:csrfToken/>
+            <tags:nameValueContainer2>
+                <c:forEach var="setting" items="${dashboardSettings.settings}" varStatus="status">
+                    <c:set var="index" value="${status.index}"/>
+                    <form:hidden path="settings[${index}].pageType"/>
+                    <tags:nameValue2 nameKey=".pageType.${setting.pageType}">
+                        <tags:selectWithItems items="${dashboardsList}" path="settings[${index}].dashboardId" itemValue="dashboardId" itemLabel="name"/>
+                    </tags:nameValue2>
+                </c:forEach>
+            </tags:nameValueContainer2>
                 
-                </td>
-            </tr>   
-        </c:forEach>
-    </table>
-</cti:tab>
-<cti:tab title="Settings">
-
-    <tags:nameValueContainer style="width:60%">
-        <tags:nameValue name="Home Dashboard">
-            <select>
-                <option>Yukon Default Dashboard</option>
-                <option>Utility Company Sample Dashboard</option>
-                <option>User Specific Dashboard</option>
-            </select>
-            
-        </tags:nameValue>
-                <tags:nameValue name="AMI Dashboard">
-            <select>
-                <option>Yukon Default Dashboard</option>
-                <option>Utility Company Sample Dashboard</option>
-                <option>User Specific Dashboard</option>
-            </select>
-            
-        </tags:nameValue>
-                <tags:nameValue name="Demand Response Dashboard">
-            <select>
-                <option>Yukon Default Dashboard</option>
-                <option>Utility Company Sample Dashboard</option>
-                <option>User Specific Dashboard</option>
-            </select>
-            
-        </tags:nameValue>
-                <tags:nameValue name="Volt/Var Dashboard">
-            <select>
-                <option>Yukon Default Dashboard</option>
-                <option>Utility Company Sample Dashboard</option>
-                <option>User Specific Dashboard</option>
-            </select>
-            
-        </tags:nameValue>
-    </tags:nameValueContainer>
-    
-        <div class="page-action-area">
-    <cti:button nameKey="cancel"/><cti:button classes="primary" nameKey="save"/>
-    </div>
-</cti:tab>
+            <div class="page-action-area">
+                <cti:button type="submit" classes="primary" nameKey="save"/>
+                <cti:url var="cancelUrl" value="/dashboards/manage"/>
+                <cti:button nameKey="cancel" href="${cancelUrl}"/>
+            </div>
+        
+        </form:form>
+    </cti:tab>
 
 </cti:tabs>
 

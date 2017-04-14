@@ -8,6 +8,8 @@
     <entry key="yukon.web.modules.dashboard.manage.pageHeading">Dashboards</entry>
     <entry key="yukon.web.modules.dashboard.manage.crumbTitle">Dashboards</entry>
     <entry key="yukon.web.modules.dashboard.manage.pageTitle">Dashboards: Manage</entry>
+    <entry key="yukon.web.modules.dashboard.dashboardsTab">Dashboards</entry>
+    <entry key="yukon.web.modules.dashboard.settingsTab">Settings</entry>
     <entry key="yukon.web.modules.dashboard.createDashboard.label">Create Dashboard</entry>
     <entry key="yukon.web.modules.dashboard.copyDashboard.label">Copy Dashboard</entry>
     <entry key="yukon.web.modules.dashboard.filters">Filters:</entry>
@@ -80,6 +82,10 @@
     <entry key="yukon.web.modules.dashboard.widgetCategory.DR">Demand Response</entry>
     <entry key="yukon.web.modules.dashboard.widgetCategory.IVVC">Volt/Var</entry>
     <entry key="yukon.web.modules.dashboard.widgetCategory.OTHER">Other</entry>
+    
+    <!-- Dashboard Page Types -->
+    <entry key="yukon.web.modules.dashboard.pageType.MAIN">Main Dashboard</entry>
+    <entry key="yukon.web.modules.dashboard.pageType.AMI">AMI Dashboard</entry>
     
     <!-- Exceptions -->
     <entry key="yukon.web.modules.dashboard.exception.missingParameters">Widget is missing inputs: {0}</entry>

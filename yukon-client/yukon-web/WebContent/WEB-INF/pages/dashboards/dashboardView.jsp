@@ -8,7 +8,7 @@
 <tags:setFormEditMode mode="${mode}"/>
 
     <div id="page-actions" class="dn">
-        <cti:url var="editUrl" value="/dashboards/${dashboard.id}/edit"/>
+        <cti:url var="editUrl" value="/dashboards/${dashboard.dashboardId}/edit"/>
         <cm:dropdownOption key=".edit" href="${editUrl}"/>
         <cti:url var="manageDashboardsUrl" value="/dashboards/manage"/>
         <cm:dropdownOption key=".manageDashboards" href="${manageDashboardsUrl}"/>

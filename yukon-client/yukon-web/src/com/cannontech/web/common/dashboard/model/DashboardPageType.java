@@ -10,8 +10,8 @@ import com.google.common.collect.ImmutableSet;
  * Enumeration of pages that provide a user-customizable dashboard.
  */
 public enum DashboardPageType {
-    MAIN(GENERAL)
-    //AMI(GENERAL),
+    MAIN(GENERAL),
+    AMI(GENERAL),
     //DR(GENERAL),
     //METER_HOME(GENERAL, DEVICE_SPECIFIC),
     ;

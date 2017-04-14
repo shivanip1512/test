@@ -155,7 +155,7 @@ yukon.dashboards.edit = (function () {
             });
             
             $(document).on('click', '.js-widget-add', function () {
-                var dashboardId = $('#id').val();
+                var dashboardId = $('#dashboardId').val();
                 var widgetType = $(this).data('type');
                 $.ajax(yukon.url('/dashboards/' + dashboardId + '/addWidget/' + widgetType)).done(function (data) {
                     $('#column1-widgets').prepend(data);

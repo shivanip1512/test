@@ -32,6 +32,28 @@ yukon.dashboards = (function () {
                     }
                 });*/
             });
+            
+            $(document).on('click', '.js-favorite-dashboard', function () {
+                var icon = $(this),
+                    dashboardId = icon.data('dashboard');
+                $.getJSON(yukon.url('/dashboards/' + dashboardId + '/favorite')).done(function (json) {
+                    if (json.isFavorite) {
+                        icon.removeClass('icon-favorite-not js-favorite-dashboard')
+                            .addClass('icon-star js-unfavorite-dashboard');                    
+                    }
+                });
+            });
+            
+            $(document).on('click', '.js-unfavorite-dashboard', function () {
+                var icon = $(this),
+                dashboardId = icon.data('dashboard');
+                $.getJSON(yukon.url('/dashboards/' + dashboardId + '/unfavorite')).done(function (json) {
+                    if (!json.isFavorite) {
+                        icon.removeClass('icon-star js-unfavorite-dashboard')               
+                            .addClass('icon-favorite-not js-favorite-dashboard');
+                    }
+                });
+            });
                         
             _initialized = true;
         },

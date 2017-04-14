@@ -17,7 +17,7 @@
     <form:form commandName="dashboard" action="${action}" method="POST">
         <cti:csrfToken/>
 
-        <form:hidden path="id"/>
+        <form:hidden path="dashboardId"/>
         <form:hidden path="name"/>
         <form:hidden path="description"/>
         <form:hidden path="visibility"/>
@@ -52,13 +52,13 @@
     <%-- ADD WIDGETS POPUP --%>
 <div class="dn js-add-widgets-popup" data-dialog data-height="500" data-width="800"
     data-title="<cti:msg2 key=".addWidgets.label"/>"
-    data-url="<cti:url value="/dashboards/${dashboard.id}/addWidgets"/>"></div>
+    data-url="<cti:url value="/dashboards/${dashboard.dashboardId}/addWidgets"/>"></div>
         
     <%-- EDIT DETAILS POPUP --%>
 <div class="dn js-edit-details-popup" data-dialog
     data-title="<cti:msg2 key=".editDetails.label"/>"
     data-event="yukon:dashboard:details:save" 
-    data-url="<cti:url value="/dashboards/${dashboard.id}/editDetails"/>"></div>
+    data-url="<cti:url value="/dashboards/${dashboard.dashboardId}/editDetails"/>"></div>
     
     <cti:includeScript link="/resources/js/pages/yukon.dashboards.js"/>
     <cti:includeScript link="/resources/js/pages/yukon.dashboards.edit.js"/>
