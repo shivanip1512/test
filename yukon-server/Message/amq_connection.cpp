@@ -34,6 +34,8 @@ namespace Messaging {
 
 extern IM_EX_MSG std::auto_ptr<ActiveMQConnectionManager> gActiveMQConnection;
 
+std::atomic_size_t ActiveMQConnectionManager::SessionCallback::globalId;
+
 ActiveMQConnectionManager::MessageDescriptor::~MessageDescriptor() {
     delete replyTo;
 }
@@ -94,6 +96,7 @@ void ActiveMQConnectionManager::releaseConnectionObjects()
     _producers.clear();
     _namedConsumers.clear();
     _replyConsumers.clear();
+    _sessionConsumers.clear();
 
     _producerSession.reset();
     _consumerSession.reset();
@@ -232,6 +235,34 @@ void ActiveMQConnectionManager::createNamedConsumer(const ActiveMQ::Queues::Inbo
 }
 
 
+auto ActiveMQConnectionManager::createSessionConsumer(const SessionCallback callback) -> const cms::Destination*
+{
+    auto consumer = std::make_unique<TempQueueConsumerWithCallback>();
+
+    consumer->managedConsumer = ActiveMQ::createTempQueueConsumer(*_consumerSession);
+
+    static const auto sessionListener = 
+        std::make_unique<ActiveMQ::MessageListener>(
+            [this](const cms::Message *msg)
+            {
+                acceptSessionReply(msg);
+            });
+
+    consumer->managedConsumer->setMessageListener(sessionListener.get());
+
+    consumer->callback = callback.callback;
+
+    auto destination = consumer->managedConsumer->getDestination();
+
+    CTILOG_INFO(dout, "Session listener " << reinterpret_cast<unsigned long>(&callback) << " registered for temp queue \"" << consumer->managedConsumer->getDestPhysicalName() << "\"");
+
+    _sessionConsumerDestinations.emplace(callback, consumer->managedConsumer->getDestination());
+    _sessionConsumers.emplace(consumer->managedConsumer->getDestPhysicalName(), std::move(consumer));
+
+    return destination;
+}
+
+
 void ActiveMQConnectionManager::updateCallbacks()
 {
     CtiLockGuard<CtiCriticalSection> lock(_newCallbackMux);
@@ -318,6 +349,20 @@ auto ActiveMQConnectionManager::makeReturnLabel(MessageCallback callback, std::c
                 timeoutCallback });
 
         return destination;
+    };
+}
+
+
+auto ActiveMQConnectionManager::makeReturnLabel(SessionCallback& callback) -> ReturnLabel
+{
+    return [this, callback] {
+        
+        if( auto existingDestination = mapFind(_sessionConsumerDestinations, callback) )
+        {
+            return *existingDestination;
+        }
+
+        return createSessionConsumer(callback);
     };
 }
 
@@ -428,6 +473,41 @@ void ActiveMQConnectionManager::dispatchTempQueueReplies()
 }
 
 
+void ActiveMQConnectionManager::dispatchSessionReplies()
+{
+    RepliesByDestination replies;
+
+    {
+        CtiLockGuard<CtiCriticalSection> lock(_sessionRepliesMux);
+
+        _sessionReplies.swap(replies);
+    }
+
+    for( auto& kv : replies )
+    {
+        const auto &destination = kv.first;
+        const auto &descriptor  = kv.second;
+
+        if( auto consumer = mapFindRef(_sessionConsumers, destination) )
+        {
+            const auto& callback = (*consumer)->callback;
+
+            if( debugActivityInfo() )
+            {
+                CTILOG_DEBUG(dout, "Calling session callback " << reinterpret_cast<unsigned long>(&callback) << " for temp queue \"" << destination << "\"" << std::endl
+                    << reinterpret_cast<unsigned long>(&(callback)) << ": " << descriptor->msg);
+            }
+
+            callback(*descriptor);
+        }
+        else
+        {
+            CTILOG_ERROR(dout, "Message received with no consumer; destination [" << destination << "]");
+        }
+    }
+}
+
+
 void ActiveMQConnectionManager::enqueueMessage(const ActiveMQ::Queues::OutboundQueue &queue, StreamableMessage::auto_type&& message)
 {
     gActiveMQConnection->enqueueOutgoingMessage(queue.name, std::move(message), nullptr);
@@ -496,6 +576,15 @@ void ActiveMQConnectionManager::enqueueMessageWithCallback(
         TimeoutCallback timedOut)
 {
     gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, gActiveMQConnection->makeReturnLabel(callback, timeout, timedOut ));
+}
+
+
+void ActiveMQConnectionManager::enqueueMessageWithSessionCallback(
+    const ActiveMQ::Queues::OutboundQueue &queue,
+    const SerializedMessage &message,
+    SessionCallback cr)
+{
+    gActiveMQConnection->enqueueOutgoingMessage(queue.name, message, gActiveMQConnection->makeReturnLabel(cr));
 }
 
 
@@ -618,6 +707,12 @@ void ActiveMQConnectionManager::registerReplyHandler(const ActiveMQ::Queues::Inb
 }
 
 
+auto ActiveMQConnectionManager::registerSessionCallback(MessageCallback callback) -> SessionCallback
+{
+    return callback;
+}
+
+
 void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, MessageCallback callback)
 {
     {
@@ -664,6 +759,12 @@ void ActiveMQConnectionManager::addNewCallback(const ActiveMQ::Queues::InboundQu
     {
         start();
     }
+}
+
+
+auto ActiveMQConnectionManager::addNewCallback(const MessageCallback callback) -> SessionCallback
+{
+    return callback;
 }
 
 
@@ -723,6 +824,36 @@ void ActiveMQConnectionManager::acceptSingleReply(const cms::Message *message)
                 CtiLockGuard<CtiCriticalSection> lock(_tempQueueRepliesMux);
 
                 _tempQueueReplies.emplace(ActiveMQ::destPhysicalName(*dest), std::move(md));
+            }
+        }
+    }
+}
+
+
+void ActiveMQConnectionManager::acceptSessionReply(const cms::Message *message)
+{
+    if( const cms::BytesMessage *bytesMessage = dynamic_cast<const cms::BytesMessage *>(message) )
+    {
+        if( const cms::Destination *dest = message->getCMSDestination() )
+        {
+            auto md = std::make_unique<MessageDescriptor>();
+
+            md->type = bytesMessage->getCMSType();
+
+            md->msg.resize(bytesMessage->getBodyLength());
+
+            bytesMessage->readBytes(md->msg);
+
+            if( debugActivityInfo() )
+            {
+                CTILOG_DEBUG(dout, "Received temp queue reply for \"" << ActiveMQ::destPhysicalName(*dest) << "\"" << std::endl
+                    << ActiveMQ::destPhysicalName(*dest) << ": " << md->msg);
+            }
+
+            {
+                CtiLockGuard<CtiCriticalSection> lock(_sessionRepliesMux);
+
+                _sessionReplies.emplace(ActiveMQ::destPhysicalName(*dest), std::move(md));
             }
         }
     }

@@ -103,6 +103,20 @@ public:
         typedef std::function<void (const Msg &)> type;
     };
 
+    class SessionCallback
+    {
+        friend class ActiveMQConnectionManager;
+        static std::atomic_size_t globalId;
+        size_t id { std::numeric_limits<size_t>::max() };
+        MessageCallback callback;
+        SessionCallback(MessageCallback callback_) : callback { callback_ }, id { globalId++ } {}
+    public:
+        SessionCallback() = default;
+        SessionCallback(const SessionCallback&) = default;
+        SessionCallback& operator=(const SessionCallback&) = default;
+        bool operator<(const SessionCallback& rhs) const { return id < rhs.id; }
+    };
+
     ActiveMQConnectionManager(const std::string &broker_uri);
     virtual ~ActiveMQConnectionManager();
 
@@ -122,9 +136,13 @@ public:
     static void enqueueMessageWithCallback(
             const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message,
             MessageCallback callback, std::chrono::seconds timeout, TimeoutCallback timedOut);
+    static void enqueueMessageWithSessionCallback(
+            const ActiveMQ::Queues::OutboundQueue &queue, const SerializedMessage &message, 
+            SessionCallback cr);
 
     static void registerHandler     (const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
     static void registerReplyHandler(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallbackWithReply callback);
+    static auto registerSessionCallback(const MessageCallback callback) -> SessionCallback;
 
     virtual void close();
 
@@ -143,9 +161,11 @@ protected:
 
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallback callback);
     void addNewCallback(const ActiveMQ::Queues::InboundQueue &queue, const MessageCallbackWithReply callback);
-
+    auto addNewCallback(const MessageCallback callback) -> SessionCallback;
+        
     void acceptNamedMessage(const ActiveMQ::Queues::InboundQueue *queue, const cms::Message *message);
-    void acceptSingleReply(const cms::Message *message);
+    void acceptSingleReply (const cms::Message *message);
+    void acceptSessionReply(const cms::Message *message);
 
 private:
 
@@ -210,7 +230,14 @@ private:
     //  temp consumer that only lasts as long as the first reply - binds to acceptSingleReply
     TemporaryConsumersByDestination _replyConsumers;
 
+    using DestinationsBySessionCallback = std::map<SessionCallback, const cms::Destination*>;
+
+    //  temp queues that last the lifetime of the session - binds to acceptSessionReply, no timeouts
+    TemporaryConsumersByDestination _sessionConsumers;
+    DestinationsBySessionCallback _sessionConsumerDestinations;
+
     ReturnLabel makeReturnLabel(MessageCallback callback, std::chrono::seconds timeout, TimeoutCallback timeoutCallback);
+    ReturnLabel makeReturnLabel(SessionCallback& callback);
 
     struct ExpirationHandler
     {
@@ -224,6 +251,9 @@ private:
     CtiCriticalSection   _tempQueueRepliesMux;
     RepliesByDestination _tempQueueReplies;
 
+    CtiCriticalSection   _sessionRepliesMux;
+    RepliesByDestination _sessionReplies;
+
     enum
     {
         DefaultTimeToLiveMillis = 3600 * 1000  //  1 hour
@@ -236,12 +266,14 @@ private:
 
     void createConsumersForCallbacks(const CallbacksPerQueue &callbacks);
     void createNamedConsumer(const ActiveMQ::Queues::InboundQueue *inboundQueue);
+    auto createSessionConsumer(const SessionCallback callback) -> const cms::Destination*;
 
     void sendOutgoingMessages();
     ActiveMQ::QueueProducer &getQueueProducer(cms::Session &session, const std::string &queue);
 
     void dispatchIncomingMessages();
     void dispatchTempQueueReplies();
+    void dispatchSessionReplies();
 };
 
 }
