@@ -800,14 +800,15 @@ public class DeviceBehaviorDaoImpl implements DeviceBehaviorDao {
     private void unassignBehaviorForBatch(BehaviorType type, List<Integer> deviceIds) {
         
         log.debug("Batch=" + deviceIds.size());
+        
+        SqlStatementBuilder innerSql = new SqlStatementBuilder();
+        innerSql.append("SELECT BehaviorId FROM Behavior WHERE BehaviorType").eq_k(type);
+        
         // unassign devices
         SqlStatementBuilder unassignSql = new SqlStatementBuilder();
-        unassignSql.append("DELETE dbm");
-        unassignSql.append("FROM DeviceBehaviorMap dbm");
-        unassignSql.append("JOIN Behavior b");
-        unassignSql.append("ON dbm.BehaviorId=b.BehaviorId");
-        unassignSql.append("WHERE b.BehaviorType").eq(type);
-        unassignSql.append("AND dbm.deviceId").in(deviceIds);
+        unassignSql.append("DELETE FROM DeviceBehaviorMap");
+        unassignSql.append("WHERE BehaviorId").in(innerSql);
+        unassignSql.append("AND deviceId").in(deviceIds);
 
         jdbcTemplate.update(unassignSql);
     }
