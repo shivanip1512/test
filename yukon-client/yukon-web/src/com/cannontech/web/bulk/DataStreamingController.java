@@ -171,6 +171,7 @@ public class DataStreamingController {
         LiteYukonUser user = userContext.getYukonUser();
 
         DataStreamingConfig config = verificationInfo.getConfiguration();
+        config.setSelectedInterval(config.getAttributes().get(0).getInterval());
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         config.setAccessor(accessor);
 
