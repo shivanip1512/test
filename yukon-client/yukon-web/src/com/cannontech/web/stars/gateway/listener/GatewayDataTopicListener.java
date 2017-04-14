@@ -20,6 +20,7 @@ import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponseType;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.core.dao.NotFoundException;
@@ -60,16 +61,18 @@ public class GatewayDataTopicListener implements MessageListener {
     
     private void handleDataMessage(GatewayDataResponse message) {
         RfnIdentifier rfnIdentifier = message.getRfnIdentifier();
-        try {
-            RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
-            log.debug("Handling gateway data message: " + message);
-            RfnGatewayData data = new RfnGatewayData(message);
-            cache.put(rfnDevice.getPaoIdentifier(), data);
-            dataStreamingCommunicationService.generatePointDataForDataStreaming(rfnDevice, BuiltInAttribute.DATA_STREAMING_LOAD,
-                data.getDataStreamingLoadingPercent(), false);
+        if (rfnIdentifier.getSensorModel().equalsIgnoreCase(RfnDeviceCreationService.GATEWAY_2_MODEL_STRING)) {
+            try {
+                RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
+                log.debug("Handling gateway data message: " + message);
+                RfnGatewayData data = new RfnGatewayData(message);
+                cache.put(rfnDevice.getPaoIdentifier(), data);
+                dataStreamingCommunicationService.generatePointDataForDataStreaming(rfnDevice,
+                    BuiltInAttribute.DATA_STREAMING_LOAD, data.getDataStreamingLoadingPercent(), false);
 
-        } catch (NotFoundException e) {
-            log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
+            } catch (NotFoundException e) {
+                log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
+            }
         }
     }
     

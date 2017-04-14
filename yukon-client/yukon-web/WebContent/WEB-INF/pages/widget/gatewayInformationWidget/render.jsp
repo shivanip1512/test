@@ -51,19 +51,26 @@
         </tags:nameValue2>
         <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
             <tags:nameValue2 nameKey=".streamingCapacity" data-gateway="${gateway.paoIdentifier.paoId}">
-                <c:set var="color" value="badge-success"/>
-                <c:if test="${gateway.data.dataStreamingLoadingPercent > 100}">
-                    <c:set var="color" value="badge-${gateway.data.dataStreamingLoadingPercent > 120 ? 'error':'warning'}"/>
-                </c:if>
-                <span class="badge ${color} cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${gateway.data.dataStreamingLoadingPercent / 100}"/></span>
-                    <cti:attributeResolver pao="${gateway}" attribute="${streamingCapacity}" var="pointId"/>
-                    <cti:url var="valuesUrl" value="/meter/historicalReadings/view">
-                        <cti:param name="pointId" value="${pointId}"/>
-                        <cti:param name="attribute" value="${streamingCapacity}"/>
-                    </cti:url>
-                    <a href="javascript:void(0);" data-popup="#load-popup"><i:inline key=".streamingCapacityHistory"/></a>
-                    <div id="load-popup" data-width="500" data-height="400" data-url="${valuesUrl}"></div>
-            </tags:nameValue2>
+	            <c:choose>
+	                <c:when test="${gateway.rfnIdentifier.sensorModel == 'RFGateway2'}">
+                        <c:set var="color" value="badge-success"/>
+	                    <c:if test="${gateway.data.dataStreamingLoadingPercent > 100}">
+	                        <c:set var="color" value="badge-${gateway.data.dataStreamingLoadingPercent > 120 ? 'error':'warning'}"/>
+	                    </c:if>
+	                    <span class="badge ${color} cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${gateway.data.dataStreamingLoadingPercent / 100}"/></span>
+	                    <cti:attributeResolver pao="${gateway}" attribute="${streamingCapacity}" var="pointId"/>
+                        <cti:url var="valuesUrl" value="/meter/historicalReadings/view">
+                            <cti:param name="pointId" value="${pointId}"/>
+                            <cti:param name="attribute" value="${streamingCapacity}"/>
+                        </cti:url>
+                        <a href="javascript:void(0);" data-popup="#load-popup"><i:inline key=".streamingCapacityHistory"/></a>
+                        <div id="load-popup" data-width="500" data-height="400" data-url="${valuesUrl}"></div>
+	                </c:when>
+	                <c:otherwise>
+	                    <i:inline key="yukon.common.unsupported"/>
+	                </c:otherwise>
+	            </c:choose>
+	        </tags:nameValue2>
         </cti:checkRolesAndProperties>
     </tags:nameValueContainer2>
     

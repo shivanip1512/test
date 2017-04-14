@@ -46,6 +46,11 @@ yukon.assets.gateway.list = (function () {
                         // This gateway didn't have data at page load.
                         // Replace the 'loading' row with a 'loaded' template row and fill in with data.
                         clone = $('.js-loaded-row').clone();
+                        if (gateway.rfnId.sensorModel == "RFGateway2") {
+                            clone.find("span.js-streaming-capacity").removeClass("dn");
+                        } else {
+                            clone.find("div.js-streaming-unsupported").removeClass("dn");
+                        }
                         clone.attr('data-gateway', paoId)
                         .removeClass('js-loaded-row')
                         .find('.js-gw-name a').text(gateway.name)

@@ -4564,6 +4564,19 @@
     <!-- RF Gateway -->
     <pao id="RFN_GATEWAY_BASE" abstract="true">
         <displayGroup>RFMESH</displayGroup>
+        <tags>
+            <tag name="DB_EDITOR_INCOMPATIBLE" />
+        </tags>
+    </pao>
+    
+    <pao id="RFN_GATEWAY" inherits="RFN_GATEWAY_BASE" creatable="false">
+    <!-- Creatable=false means it cannot be created in DBEditor, nor listed as a type in device configurations...to-date -->
+        <displayName>RFN Gateway</displayName>
+    </pao>
+    
+    <pao id="GWY800" inherits="RFN_GATEWAY_BASE" creatable="false">
+        <!-- Creatable=false means it cannot be created in DBEditor, nor listed as a type in device configurations...to-date -->
+        <displayName>GWY-800</displayName>
         <points>
             <!-- Analog Points -->
             <point type="Analog" offset="1">
@@ -4599,19 +4612,6 @@
                 <basicLookup point="Data Streaming Load" />
             </attribute>
         </attributes>
-        <tags>
-            <tag name="DB_EDITOR_INCOMPATIBLE" />
-        </tags>
-    </pao>
-    
-    <pao id="RFN_GATEWAY" inherits="RFN_GATEWAY_BASE" creatable="false">
-    <!-- Creatable=false means it cannot be created in DBEditor, nor listed as a type in device configurations...to-date -->
-        <displayName>RFN Gateway</displayName>
-    </pao>
-    
-    <pao id="GWY800" inherits="RFN_GATEWAY_BASE" creatable="false">
-        <!-- Creatable=false means it cannot be created in DBEditor, nor listed as a type in device configurations...to-date -->
-        <displayName>GWY-800</displayName>
     </pao>
     
     

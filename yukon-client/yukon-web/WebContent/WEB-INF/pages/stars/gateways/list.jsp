@@ -119,14 +119,21 @@
                         <td class="js-gw-name"><a href="${detailUrl}">${fn:escapeXml(gateway.name)}</a></td>
                         <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
                             <td class="js-gw-capacity">
-                                <c:set var="color" value="badge-success"/>
-                                <c:if test="${data.dataStreamingLoadingPercent > 100}">
-                                    <c:set var="color" value="badge-warning"/>
-                                </c:if>
-                                <c:if test="${data.dataStreamingLoadingPercent > 120}">
-                                    <c:set var="color" value="badge-error"/>
-                                </c:if>
-                                <span class="badge ${color} cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
+                                <c:choose>
+                                    <c:when test="${gateway.rfnIdentifier.sensorModel == 'RFGateway2'}">
+                                        <c:set var="color" value="badge-success"/>
+                                        <c:if test="${data.dataStreamingLoadingPercent > 100}">
+                                            <c:set var="color" value="badge-warning"/>
+                                        </c:if>
+                                        <c:if test="${data.dataStreamingLoadingPercent > 120}">
+                                            <c:set var="color" value="badge-error"/>
+                                        </c:if>
+                                        <span class="badge ${color} cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"><fmt:formatNumber pattern="###.##%" value="${data.dataStreamingLoadingPercent / 100}"/></span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <i:inline key="yukon.common.unsupported"/>
+                                    </c:otherwise>
+                                </c:choose>
                             </td>
                         </cti:checkRolesAndProperties>
                         <td class="js-gw-sn">${fn:escapeXml(gateway.rfnIdentifier.sensorSerialNumber)}</td>
@@ -328,7 +335,10 @@
             <td class="js-gw-conn-status"><span class="state-box"></span></td>
             <td class="js-gw-name"><a></a></td>
             <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
-                <td class="js-gw-capacity"><span class="badge cp js-streaming-capacity" title="<cti:msg2 key=".streamingDetail"/>"></span></td>
+                <td class="js-gw-capacity">
+                    <span class="badge cp js-streaming-capacity dn" title="<cti:msg2 key=".streamingDetail"/>"></span>
+                    <div class="js-streaming-unsupported dn"><i:inline key="yukon.common.unsupported"/></div>
+                </td>
             </cti:checkRolesAndProperties>
             <td class="js-gw-sn"></td>
             <td class="js-gw-ip"></td>

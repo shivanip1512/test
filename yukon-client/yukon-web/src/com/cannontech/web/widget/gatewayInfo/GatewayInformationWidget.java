@@ -1,5 +1,5 @@
 package com.cannontech.web.widget.gatewayInfo;
-
+import static com.cannontech.common.rfn.service.RfnDeviceCreationService.GATEWAY_2_MODEL_STRING;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,10 +73,12 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
     @RequestMapping("render")
     public String render(ModelMap model, int deviceId, YukonUserContext userContext) {
 
-            model.addAttribute("streamingCapacity", BuiltInAttribute.DATA_STREAMING_LOAD);
         try {
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(deviceId);
             model.addAttribute("gateway", gateway);
+            if (gateway.getRfnIdentifier().getSensorModel().equalsIgnoreCase(GATEWAY_2_MODEL_STRING)) {
+                model.addAttribute("streamingCapacity", BuiltInAttribute.DATA_STREAMING_LOAD);
+            }
 
         } catch (NmCommunicationException e) {
             MessageSourceAccessor accessor = messageResolver.getMessageSourceAccessor(userContext);
