@@ -42,6 +42,8 @@ public class GatewaySettingsValidator extends SimpleValidator<GatewaySettings> {
         
         if (!errors.hasFieldErrors("name")) {
             Integer deviceId = settings.getId();
+            
+            // Check if a gateway with this name already exists
             if (deviceId == null || !(StringUtils.equals(paoDao.getYukonPAOName(deviceId), settings.getName()))) {
                 LiteYukonPAObject unique = paoDao.findUnique(settings.getName(), PaoType.RFN_GATEWAY);
                 if (unique != null) {
