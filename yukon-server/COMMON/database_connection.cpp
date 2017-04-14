@@ -56,7 +56,7 @@ DatabaseConnection::operator SAConnection*()
 
 bool DatabaseConnection::isValid() const
 {
-    return ( connection != NULL );
+    return ( connection != NULL ) && connection->isAlive();
 }
 
 auto DatabaseConnection::getClientType() const -> ClientType
