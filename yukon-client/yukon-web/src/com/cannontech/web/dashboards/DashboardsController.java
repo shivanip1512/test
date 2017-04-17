@@ -27,6 +27,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
@@ -41,6 +42,7 @@ import com.cannontech.web.common.dashboard.model.Widget;
 import com.cannontech.web.common.dashboard.model.WidgetType;
 import com.cannontech.web.common.dashboard.service.DashboardService;
 import com.cannontech.web.common.dashboard.widget.service.WidgetService;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
@@ -211,16 +213,26 @@ public class DashboardsController {
     }
     
     @RequestMapping("{id}/delete")
-    public String deleteDashboard(@PathVariable int id, YukonUserContext userContext) {
-        dashboardService.getOwner(id);
-        LiteYukonUser user = userContext.getYukonUser();
-        List<Integer> userIdList = dashboardDao.getAllUsersForDashboard(id);
-        if (user == dashboardService.getOwner(id).get()) {
-            if (userIdList.size() > 1) {
-                dashboardService.delete(id);
+    public String deleteDashboard(FlashScope flash, @PathVariable int id, YukonUserContext userContext) {
+        try {
+            dashboardService.getOwner(id);
+            LiteYukonUser user = userContext.getYukonUser();
+            List<Integer> userIdList = dashboardDao.getAllUsersForDashboard(id);
+            if (user == dashboardService.getOwner(id).get()) {
+                if (userIdList.size() > 1) {
+                    dashboardService.delete(id);
+                    flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dashboard.delete.success"));
+                    return "redirect:/dashboards/manage";
+                }
+                flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dashboard.delete.exception.currentInUse"));
             }
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dashboard.delete.exception.notOwner"));
+            return "redirect:/dashboards/manage";
+        } 
+        catch (Exception e) {
+            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dashboard.delete.exception"));
+            return "redirect:/dashboards/manage";
         }
-         return "manageDashboards.jsp";
     }
     
     @RequestMapping("{id}/favorite")
