@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/20/2017 1:25:22 AM                         */
+/* Created on:     4/14/2017 6:36:31 AM                         */
 /*==============================================================*/
 
 
@@ -6787,13 +6787,14 @@ create table MSPInterface  (
    VendorID             NUMBER                          not null,
    Interface            VARCHAR2(12)                    not null,
    Endpoint             VARCHAR2(255)                   not null,
-   Version              NUMBER(10,1)                    not null,
+   Version              VARCHAR2(12)                    not null,
    constraint PK_MSPINTERFACE primary key (VendorID, Interface, Version)
 );
 
-INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/soap/MR_ServerSoap', '3.0');
-INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/soap/OD_ServerSoap', '3.0');
-INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/soap/CD_ServerSoap', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v3/MR_Server', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v3/OD_Server', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v3/CD_Server', '3.0');
+
 INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v5/MR_Server', '5.0');
 INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v5/OD_Server', '5.0');
 INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v5/CD_Server', '5.0');

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     3/20/2017 1:24:20 AM                         */
+/* Created on:     4/14/2017 6:37:23 AM                         */
 /*==============================================================*/
 
 
@@ -7185,14 +7185,15 @@ create table MSPInterface (
    VendorID             numeric              not null,
    Interface            varchar(12)          not null,
    Endpoint             varchar(255)         not null,
-   Version              numeric(10,1)        not null,
+   Version              varchar(12)          not null,
    constraint PK_MSPINTERFACE primary key (VendorID, Interface, Version)
 )
 go
 
-INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/soap/MR_ServerSoap', '3.0');
-INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/soap/OD_ServerSoap', '3.0');
-INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/soap/CD_ServerSoap', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v3/MR_Server', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v3/OD_Server', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v3/CD_Server', '3.0');
+
 INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v5/MR_Server', '5.0');
 INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v5/OD_Server', '5.0');
 INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v5/CD_Server', '5.0');
@@ -14368,140 +14369,4 @@ alter table Zone
    add constraint FK_Zone_Zone foreign key (ParentId)
       references Zone (ZoneId)
 go
-
-
-
-IF OBJECT_ID ('sp_SmartIndexMaintenance') IS NOT NULL
-    DROP PROCEDURE sp_SmartIndexMaintenance;
-go
-
-CREATE PROCEDURE sp_SmartIndexMaintenance AS
-BEGIN TRY
-
-    SET NOCOUNT ON;
-
-    DECLARE @start_time     DATETIME;
-
-    DECLARE @objectid       int;
-    DECLARE @indexid        int;
-    DECLARE @partitioncount bigint;
-    DECLARE @schemaname     nvarchar(130);
-    DECLARE @objectname     nvarchar(130);
-    DECLARE @indexname      nvarchar(130);
-    DECLARE @partitionnum   bigint;
-    DECLARE @partitions     bigint;
-    DECLARE @frag           float;
-    DECLARE @pagecount      int;
-    DECLARE @command        nvarchar(4000);
-    DECLARE @output         nvarchar(4000);
-
-    DECLARE @page_count_minimum   smallint
-    DECLARE @frag_min_reorg       float
-    DECLARE @frag_min_rebuild     float
-
-    SET @page_count_minimum       = 50
-    SET @frag_min_reorg           = 10.0
-    SET @frag_min_rebuild         = 30.0
-
-    /* Conditionally select tables and indexes from the sys.dm_db_index_physical_stats function and convert object and index IDs to names. */
-    /* Store records in temp table work_to_do */
-    SELECT object_id AS ObjectId, 
-        index_id AS IndexId, 
-        partition_number AS PartNum, 
-        avg_fragmentation_in_percent AS AvgFrag, 
-        page_count AS PageCount
-        INTO #work_to_do
-    FROM sys.dm_db_index_physical_stats (DB_ID(), NULL, NULL , NULL, 'LIMITED')
-        WHERE avg_fragmentation_in_percent > @frag_min_reorg
-        AND index_id > 0
-        AND page_count > @page_count_minimum;
-
-    /* Declare the cursor for the list of partitions (from temp table work_to_do) to be processed. */
-    DECLARE partitions CURSOR FOR SELECT * FROM #work_to_do;
-
-    /* Open the cursor. */
-    OPEN partitions;
-
-    /* Loop through the partitions. */
-    FETCH NEXT FROM partitions INTO @objectid, @indexid, @partitionnum, @frag, @pagecount;
-    WHILE @@FETCH_STATUS = 0
-    BEGIN
-
-        SELECT @objectname = QUOTENAME(o.name), @schemaname = QUOTENAME(s.name)
-        FROM sys.objects AS o JOIN sys.schemas as s ON s.schema_id = o.schema_id
-            WHERE o.object_id = @objectid;
-
-        SELECT @indexname = QUOTENAME(name)
-        FROM sys.indexes
-            WHERE  object_id = @objectid AND index_id = @indexid;
-
-        SELECT @partitioncount = count (*)
-        FROM sys.partitions
-            WHERE object_id = @objectid AND index_id = @indexid;
-
-        SET @command = N'ALTER INDEX ' + @indexname + N' ON ' + @schemaname + N'.' + @objectname;
-
-        IF @frag > @frag_min_rebuild
-            SET @command = @command + N' REBUILD';
-        ELSE IF @frag > @frag_min_reorg
-            SET @command = @command + N' REORGANIZE';
-
-        IF @partitioncount > 1
-            SET @command = @command + N' PARTITION=' + CAST(@partitionnum AS nvarchar(10));
-
-        SET @output = @command + N' : Fragmentation: ' + CAST(@frag AS varchar(15)) + ' : Page Count: ' + CAST(@pagecount AS varchar(15));
-
-        SET @start_time = CURRENT_TIMESTAMP;
-        /* Execute the REBUILD or REORGANIZE command on the table index */
-        EXEC (@command);
-
-        /* update the table index statistics, only do when reorganizing */
-        IF @frag > @frag_min_reorg AND @frag <= @frag_min_rebuild
-        BEGIN
-            SET @output = @output + N' : Update Statistics';
-            SET @command = N'UPDATE STATISTICS ' +  @schemaname + N'.' + @objectname + ' ' +  @indexname + ' WITH FULLSCAN';
-            /* Execute the UPDATE STATISTICS command on the table index */
-            EXEC (@command);
-        END;
-
-        SET @output = @output + N' : Time ' + CAST(DATEDIFF(millisecond, @start_time, CURRENT_TIMESTAMP) AS varchar(20)) + ' millis';
-        INSERT INTO StoredProcedureLog VALUES (
-            (SELECT ISNULL(MAX(EntryId) + 1, 1) FROM StoredProcedureLog), 
-            'sp_SmartIndexMaintenance', 
-            GETDATE(), @output);
-
-        FETCH NEXT FROM partitions INTO @objectid, @indexid, @partitionnum, @frag, @pagecount;
-    END;
-
-    /* Close and deallocate the cursor. */
-    CLOSE partitions;
-    DEALLOCATE partitions;
-
-    /* Drop the temporary table. */
-    DROP TABLE #work_to_do;
-    SET NOCOUNT OFF;
-
-END TRY
-BEGIN CATCH
-    DECLARE @ErrorNumber INT = ERROR_NUMBER();
-    DECLARE @ErrorLine INT = ERROR_LINE();
-    DECLARE @ErrorMessage NVARCHAR(4000) = ERROR_MESSAGE();
-    DECLARE @ErrorSeverity INT = ERROR_SEVERITY();
-    DECLARE @ErrorState INT = ERROR_STATE();
-
-    SET @output = N'ERROR: ' + CAST(@ErrorNumber AS VARCHAR(10)) + ' Message:' +  @ErrorMessage +
-            ' ErrorLine:' + CAST(@ErrorLine AS VARCHAR(10)) + ' ErrorState:' + CAST(@ErrorState AS VARCHAR(10));
-    INSERT INTO StoredProcedureLog VALUES (
-            (SELECT ISNULL(MAX(EntryId) + 1, 1) FROM StoredProcedureLog), 
-            'sp_SmartIndexMaintenance', 
-            GETDATE(), @output);
-    RAISERROR(@ErrorMessage, @ErrorSeverity, @ErrorState);
-END CATCH
-
-INSERT INTO StoredProcedureLog VALUES (
-            (SELECT ISNULL(MAX(EntryId) + 1, 1) FROM StoredProcedureLog), 
-            'sp_SmartIndexMaintenance', 
-            GETDATE(), 'Smart Index Maintenance Complete');
-go
-
 
