@@ -8,10 +8,9 @@
     <entry key="yukon.web.modules.adminSetup.multispeak.EDIT.crumbTitle">Edit</entry>
     <entry key="yukon.web.modules.adminSetup.multispeak.EDIT.pageTitle">Multispeak: {0}</entry>
     <entry key="yukon.web.modules.adminSetup.multispeak.VIEW.crumbTitle">Multispeak</entry>
-    <entry key="yukon.web.modules.adminSetup.multispeak.VIEW.pageTitle">Multispeak: {0}</entry>
+    <entry key="yukon.web.modules.adminSetup.multispeak.VIEW.pageTitle">Multispeak</entry>
     <entry key="yukon.web.modules.adminSetup.multispeak.VIEW.pageHeading">Multispeak</entry>
     <entry key="yukon.web.modules.adminSetup.multispeak.pageName">MultiSpeak</entry>
-    <entry key="yukon.web.modules.adminSetup.multispeak.contextualPageName">MultiSpeak</entry><!-- Interfaces -->
     <entry key="yukon.web.modules.adminSetup.multispeak.invalidCompanyName">Invalid Company Name.  Length must be greater than zero.</entry>
     <entry key="yukon.web.modules.adminSetup.multispeak.invalidMaxInitiateRequestObjects">Invalid MaxInitiateRequestObjects.  Must be a numeric value.</entry>
     <entry key="yukon.web.modules.adminSetup.multispeak.invalidRequestMessageTimeout">Invalid RequestMessageTimeout.  Must be a numeric value.</entry>
