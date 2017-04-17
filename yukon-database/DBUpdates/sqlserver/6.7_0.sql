@@ -13,14 +13,14 @@ ALTER TABLE MSPInterface
 DROP CONSTRAINT PK_MSPINTERFACE;
 
 ALTER TABLE MSPInterface
-ADD Version NUMERIC(10,1);
+ADD Version VARCHAR(12);
 GO
 
 UPDATE MSPInterface 
-SET Version = 3.0;
+SET Version = '3.0';
 
 ALTER TABLE MSPInterface
-ALTER COLUMN Version NUMERIC(10,1) NOT NULL;
+ALTER COLUMN Version VARCHAR(12) NOT NULL;
 GO
 
 ALTER TABLE MSPInterface
@@ -38,6 +38,14 @@ GO
 
 ALTER TABLE MSPVendor DROP COLUMN URL;
 GO
+
+DELETE FROM MSPInterface WHERE VendorID = 1 AND Version = 3.0 AND Interface LIKE 'MR_SERVER';
+DELETE FROM MSPInterface WHERE VendorID = 1 AND Version = 3.0 AND Interface LIKE 'OD_Server';
+DELETE FROM MSPInterface WHERE VendorID = 1 AND Version = 3.0 AND Interface LIKE 'CD_Server';
+
+INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v3/MR_Server', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v3/OD_Server', '3.0');
+INSERT INTO MSPInterface VALUES (1, 'CD_Server', 'http://127.0.0.1:8080/multispeak/v3/CD_Server', '3.0');
 
 INSERT INTO MSPInterface VALUES (1, 'MR_Server', 'http://127.0.0.1:8080/multispeak/v5/MR_Server', '5.0');
 INSERT INTO MSPInterface VALUES (1, 'OD_Server', 'http://127.0.0.1:8080/multispeak/v5/OD_Server', '5.0');
