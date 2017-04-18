@@ -57,9 +57,9 @@
                                 <cm:dropdownOption key=".copy" icon="icon-disk-multiple" data-popup=".copy-dashboard-${dashboardId}"/>
                                 <cti:url var="editUrl" value="/dashboards/${dashboardId}/edit"/>
                                 <cm:dropdownOption key=".edit" icon="icon-pencil" href="${editUrl}"/>
-                                <cm:dropdownOption id="deleteMeter_${dashboardId}" key=".delete" icon="icon-cross"
+                                <cm:dropdownOption id="deleteDashboard_${dashboardId}" key=".delete" icon="icon-cross"
                                     data-dashboard-id="${dashboardId}" data-ok-event="yukon:dashboard:remove" />
-                                <d:confirm on="#deleteMeter_${dashboardId}" nameKey="dashboard.confirmDelete"/>
+                                <d:confirm on="#deleteDashboard_${dashboardId}" nameKey="confirmDelete" argument="${dashboard.name}"/>
                             </cm:dropdown>
                         
                         </td>

@@ -247,18 +247,19 @@ public class DashboardsController {
             LiteYukonUser user = userContext.getYukonUser();
             List<Integer> userIdList = dashboardDao.getAllUsersForDashboard(id);
             if (user == dashboardService.getOwner(id).get()) {
-                if (userIdList.size() > 1) {
+                if (userIdList.size() <= 1 && (userIdList.get(0) == null || userIdList.get(0) == user.getLiteID())) {
                     dashboardService.delete(id);
-                    flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dashboard.delete.success"));
+                    flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success"));
                     return "redirect:/dashboards/manage";
                 }
-                flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dashboard.delete.exception.currentInUse"));
+                flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.currentInUse"));
+                return "redirect:/dashboards/manage";
             }
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dashboard.delete.exception.notOwner"));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.notOwner"));
             return "redirect:/dashboards/manage";
         } 
         catch (Exception e) {
-            flash.setError(new YukonMessageSourceResolvable("yukon.web.modules.dashboard.delete.exception"));
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception"));
             return "redirect:/dashboards/manage";
         }
     }
