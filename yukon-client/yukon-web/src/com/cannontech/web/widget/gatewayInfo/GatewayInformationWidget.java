@@ -1,5 +1,4 @@
 package com.cannontech.web.widget.gatewayInfo;
-import static com.cannontech.common.rfn.service.RfnDeviceCreationService.GATEWAY_2_MODEL_STRING;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
@@ -76,7 +76,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         try {
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(deviceId);
             model.addAttribute("gateway", gateway);
-            if (gateway.getRfnIdentifier().getSensorModel().equalsIgnoreCase(GATEWAY_2_MODEL_STRING)) {
+            if (gateway.getPaoIdentifier().getPaoType().equals(PaoType.GWY800)) {
                 model.addAttribute("streamingCapacity", BuiltInAttribute.DATA_STREAMING_LOAD);
             }
 

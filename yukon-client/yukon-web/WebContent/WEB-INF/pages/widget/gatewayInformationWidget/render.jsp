@@ -52,7 +52,7 @@
         <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
             <tags:nameValue2 nameKey=".streamingCapacity" data-gateway="${gateway.paoIdentifier.paoId}">
 	            <c:choose>
-	                <c:when test="${gateway.rfnIdentifier.sensorModel == 'RFGateway2'}">
+	                <c:when test="${gateway.dataStreamingSupported}">
                         <c:set var="color" value="badge-success"/>
 	                    <c:if test="${gateway.data.dataStreamingLoadingPercent > 100}">
 	                        <c:set var="color" value="badge-${gateway.data.dataStreamingLoadingPercent > 120 ? 'error':'warning'}"/>

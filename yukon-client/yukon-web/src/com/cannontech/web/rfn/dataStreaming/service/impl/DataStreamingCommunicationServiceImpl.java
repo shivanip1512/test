@@ -1,5 +1,4 @@
 package com.cannontech.web.rfn.dataStreaming.service.impl;
-import static com.cannontech.common.rfn.service.RfnDeviceCreationService.GATEWAY_2_MODEL_STRING;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -178,7 +177,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
             throws DataStreamingConfigException {
 
         Set<RfnIdentifier> gatewayIds = gateways.stream()
-                                                .filter((gateway) -> gateway.getRfnIdentifier().getSensorModel().equalsIgnoreCase(GATEWAY_2_MODEL_STRING))
+                                                .filter((gateway) -> gateway.getPaoIdentifier().getPaoType().equals(PaoType.GWY800))
                                                 .map(gateway -> gateway.getRfnIdentifier()).collect(Collectors.toSet());
 
         GatewayDataStreamingInfoRequest request = new GatewayDataStreamingInfoRequest();

@@ -197,5 +197,12 @@ public class RfnGateway extends RfnDevice implements Locatable, Comparable<RfnGa
 
         return this;
     }
+    
+    public boolean isDataStreamingSupported() {
+        if (getPaoIdentifier().getPaoType() == PaoType.GWY800) {
+            return true;
+        }
+        return false;
+    }
 
 }

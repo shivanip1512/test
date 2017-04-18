@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
@@ -20,7 +21,6 @@ import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponseType;
 import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGatewayData;
-import com.cannontech.common.rfn.service.RfnDeviceCreationService;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.core.dao.NotFoundException;
@@ -61,18 +61,17 @@ public class GatewayDataTopicListener implements MessageListener {
     
     private void handleDataMessage(GatewayDataResponse message) {
         RfnIdentifier rfnIdentifier = message.getRfnIdentifier();
-        if (rfnIdentifier.getSensorModel().equalsIgnoreCase(RfnDeviceCreationService.GATEWAY_2_MODEL_STRING)) {
-            try {
-                RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
+        try {
+            RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
+            if (rfnDevice.getPaoIdentifier().getPaoType().equals(PaoType.GWY800)) {
                 log.debug("Handling gateway data message: " + message);
                 RfnGatewayData data = new RfnGatewayData(message);
                 cache.put(rfnDevice.getPaoIdentifier(), data);
                 dataStreamingCommunicationService.generatePointDataForDataStreaming(rfnDevice,
                     BuiltInAttribute.DATA_STREAMING_LOAD, data.getDataStreamingLoadingPercent(), false);
-
-            } catch (NotFoundException e) {
-                log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
             }
+        } catch (NotFoundException e) {
+            log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
         }
     }
     
