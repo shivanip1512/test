@@ -10,9 +10,13 @@
     <tags:setFormEditMode mode="${mode}"/>
     
     <cti:url var="action" value="/dashboards/saveDetails"/>
+    <cti:displayForPageEditModes modes="CREATE">
+        <cti:url value="/dashboards/create" var="action"/>
+    </cti:displayForPageEditModes>
+    
     <form:form id="dashboard-details" commandName="dashboard" action="${action}" method="POST">
      <cti:csrfToken/>
-    
+              
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".name">
                 <tags:input path="name" size="30" maxlength="100"/>
@@ -22,11 +26,8 @@
             </tags:nameValue2>
             <cti:displayForPageEditModes modes="CREATE">
                 <tags:nameValue2 nameKey=".template">
-                    <select name="dashboardTemplate">
-                        <c:forEach var="template" items="${dashboards}">
-                            <option value="${template.dashboardId}">${fn:escapeXml(template.name)}</option>
-                        </c:forEach>
-                    </select>
+                    <cti:msg2 key=".blankDashboard" var="blankDashboard"/>
+                    <tags:selectWithItems path="dashboardId" items="${dashboards}" itemValue="dashboardId" itemLabel="name" defaultItemValue="0" defaultItemLabel="${blankDashboard}"/>
                 </tags:nameValue2>
             </cti:displayForPageEditModes>
             <tags:nameValue2 nameKey=".visibility">

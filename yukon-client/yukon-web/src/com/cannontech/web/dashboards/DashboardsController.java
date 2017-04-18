@@ -15,6 +15,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -56,6 +57,8 @@ public class DashboardsController {
     @Autowired private DashboardService dashboardService;
     @Autowired private DashboardDao dashboardDao;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
+
+    private final static String baseKey = "yukon.web.modules.dashboard.";
 
     @RequestMapping("manage")
     public String manageDashboards(ModelMap model, @RequestParam(value="filter", required=false) String filter, YukonUserContext userContext, 
@@ -138,13 +141,44 @@ public class DashboardsController {
         return "dashboardAdmin.jsp";
     }
     
-    @RequestMapping("create")
-    public String createDashboard(ModelMap model, YukonUserContext userContext) {
+    @RequestMapping(value="create", method=RequestMethod.GET)
+    public String createDialog(ModelMap model, YukonUserContext userContext) {
+        model.addAttribute("mode", PageEditMode.CREATE);
+        model.addAttribute("visibilityOptions", Visibility.values());
+        //List<LiteDashboard> dashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
+        List<LiteDashboard> dashboards = createDashboardsListMockup(userContext);
+        model.addAttribute("dashboards", dashboards);
+        model.addAttribute("dashboard", new Dashboard());
+        return "dashboardDetails.jsp";
+    }
+    
+    @RequestMapping("{id}/copy")
+    public String copyDashboard(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
         model.addAttribute("mode", PageEditMode.CREATE);
         model.addAttribute("visibilityOptions", Visibility.values());
         model.addAttribute("dashboards", createDashboardsListMockup(userContext));
-        model.addAttribute("dashboard", new Dashboard());
+        Dashboard dashboard = new Dashboard();
+        dashboard.setDashboardId(id);
+        model.addAttribute("dashboard", dashboard);
         return "dashboardDetails.jsp";
+    }
+    
+    @RequestMapping(value="create", method=RequestMethod.POST)
+    public String createDashboard(@ModelAttribute Dashboard dashboard, YukonUserContext userContext, FlashScope flash) {
+        //Check for dashboardTemplate to copy and then change name, description
+        int id = dashboard.getDashboardId();
+        if (id > 0) {
+            //Dashboard copyDashboard = dashboardService.copy(dashboard.getDashboardId(), userContext.getYukonUser().getUserID());
+            //copyDashboard.setName(dashboard.getName());
+            //copyDashboard.setDescription(dashboard.getDescription());
+            //copyDashboard.setVisibility(dashboard.getVisibility());
+            //int id = dashboardService.update(copyDashboard);
+        } else {
+            dashboard.setOwner(userContext.getYukonUser());
+            id = dashboardService.create(dashboard);
+        }
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "create.success"));
+        return "redirect:/dashboards/" + id + "/edit";
     }
     
     @RequestMapping("{id}/editDetails")
@@ -189,11 +223,12 @@ public class DashboardsController {
         model.addAttribute("dashboard", createDashboardMockup(userContext));
         return "widgetAddRow.jsp";
     }
+
     
     @RequestMapping("saveDetails")
-    public String saveDetails(@ModelAttribute Dashboard dashboard) {
+    public String saveDetails(@ModelAttribute Dashboard dashboard, YukonUserContext userContext) {
         //only update name, description, visibility, template
-        //Check for dashboardTemplate
+        dashboard.setOwner(userContext.getYukonUser());
         return "dashboardView.jsp";
         //return "redirect:/dashboards/" + dashboard.getId() + "/view";
     }
@@ -203,13 +238,6 @@ public class DashboardsController {
         //int id = dashboardService.update(dashboard);
         return "dashboardView.jsp";
         //return "redirect:/dashboards/" + dashboard.getId() + "/view";
-    }
-    
-    @RequestMapping("{id}/copy")
-    public String copyDashboard(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
-        model.addAttribute("visibilityOptions", Visibility.values());
-        model.addAttribute("dashboards", createDashboardsListMockup(userContext));
-        return "dashboardDetails.jsp";
     }
     
     @RequestMapping("{id}/delete")
@@ -333,7 +361,7 @@ public class DashboardsController {
 
         @Override
         public String getFormatKey() {
-            return "yukon.web.modules.dashboard." + name();
+            return baseKey + name();
         }
     }
 

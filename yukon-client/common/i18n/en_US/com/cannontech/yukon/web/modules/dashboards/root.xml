@@ -26,7 +26,8 @@
     <entry key="yukon.web.modules.dashboard.delete">Delete</entry>
     <entry key="yukon.web.modules.dashboard.changeOwner">Change Owner</entry>
     <entry key="yukon.web.modules.dashboard.manageDashboards">Manage Dashboards</entry>
-    
+    <entry key="yukon.web.modules.dashboard.blankDashboard">Blank Dashboard</entry>
+    <entry key="yukon.web.modules.dashboard.create.success">Dashboard successfully created</entry>    
     
     <!-- Dashboard Admin page -->
     <entry key="yukon.web.modules.dashboard.admin.pageHeading">Dashboard Admin</entry>
