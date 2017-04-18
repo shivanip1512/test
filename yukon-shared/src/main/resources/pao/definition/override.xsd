@@ -70,10 +70,10 @@
     </xs:complexType>
     <xs:complexType name="override">
         <xs:sequence>
-            <xs:element type="paoTypes" name="paoTypes" />
-            <xs:element type="tags" name="tags" />
-            <xs:element type="configurations" name="configurations" />
-            <xs:element type="pointInfos" name="pointInfos" />
+            <xs:element type="paoTypes" name="paoTypes" minOccurs="1" maxOccurs="1"/>
+            <xs:element type="tags" name="tags" minOccurs="0" maxOccurs="1"/>
+            <xs:element type="configurations" name="configurations" minOccurs="0" maxOccurs="1"/>
+            <xs:element type="pointInfos" name="pointInfos" minOccurs="0" maxOccurs="1"/>
         </xs:sequence>
     </xs:complexType>
 </xs:schema>
