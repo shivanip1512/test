@@ -21,6 +21,7 @@ import com.cannontech.dr.ecobee.message.DeviceRequest;
 import com.cannontech.dr.ecobee.message.DrRequest;
 import com.cannontech.dr.ecobee.message.DrResponse;
 import com.cannontech.dr.ecobee.message.HierarchyResponse;
+import com.cannontech.dr.ecobee.message.RegisterDeviceRequest;
 import com.cannontech.dr.ecobee.message.RuntimeReportRequest;
 import com.cannontech.dr.ecobee.message.SetRequest;
 import com.cannontech.dr.ecobee.message.StandardResponse;
@@ -67,7 +68,7 @@ public class EcobeeMockApiController {
 
     @IgnoreCsrfCheck
     @RequestMapping(value = "hierarchy/thermostat", method = RequestMethod.POST)
-    public @ResponseBody StandardResponse thermostatHierarchy(HttpEntity<DeviceRequest> requestEntity) {
+    public @ResponseBody StandardResponse thermostatHierarchy(HttpEntity<RegisterDeviceRequest> requestEntity) {
         StandardResponse standardResponse = null;
         DeviceRequest request = requestEntity.getBody();
         if (request.getOperation().equalsIgnoreCase("register")) {
