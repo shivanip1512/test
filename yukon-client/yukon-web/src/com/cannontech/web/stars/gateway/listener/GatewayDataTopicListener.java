@@ -63,10 +63,10 @@ public class GatewayDataTopicListener implements MessageListener {
         RfnIdentifier rfnIdentifier = message.getRfnIdentifier();
         try {
             RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
+            log.debug("Handling gateway data message: " + message);
+            RfnGatewayData data = new RfnGatewayData(message);
+            cache.put(rfnDevice.getPaoIdentifier(), data);
             if (rfnDevice.getPaoIdentifier().getPaoType() == PaoType.GWY800) {
-                log.debug("Handling gateway data message: " + message);
-                RfnGatewayData data = new RfnGatewayData(message);
-                cache.put(rfnDevice.getPaoIdentifier(), data);
                 dataStreamingCommunicationService.generatePointDataForDataStreaming(rfnDevice,
                     BuiltInAttribute.DATA_STREAMING_LOAD, data.getDataStreamingLoadingPercent(), false);
             }
