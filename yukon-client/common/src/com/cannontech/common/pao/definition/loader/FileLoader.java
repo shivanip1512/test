@@ -11,9 +11,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -43,6 +45,7 @@ import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.loader.jaxb.CategoryType;
 import com.cannontech.common.pao.definition.loader.jaxb.CommandType;
+import com.cannontech.common.pao.definition.loader.jaxb.Configurations;
 import com.cannontech.common.pao.definition.loader.jaxb.DeviceCategories;
 import com.cannontech.common.pao.definition.loader.jaxb.DeviceCategories.Category;
 import com.cannontech.common.pao.definition.loader.jaxb.OverrideCategory;
@@ -50,19 +53,23 @@ import com.cannontech.common.pao.definition.loader.jaxb.OverridePointInfo;
 import com.cannontech.common.pao.definition.loader.jaxb.OverrideTag;
 import com.cannontech.common.pao.definition.loader.jaxb.Overrides;
 import com.cannontech.common.pao.definition.loader.jaxb.Pao;
+import com.cannontech.common.pao.definition.loader.jaxb.PaoTypes;
 import com.cannontech.common.pao.definition.loader.jaxb.Point;
 import com.cannontech.common.pao.definition.loader.jaxb.Point.Calculation;
 import com.cannontech.common.pao.definition.loader.jaxb.Point.Calculation.Components.Component;
 import com.cannontech.common.pao.definition.loader.jaxb.PointInfoType;
+import com.cannontech.common.pao.definition.loader.jaxb.PointInfos;
 import com.cannontech.common.pao.definition.loader.jaxb.PointInfosType;
 import com.cannontech.common.pao.definition.loader.jaxb.PointType;
 import com.cannontech.common.pao.definition.loader.jaxb.Points;
 import com.cannontech.common.pao.definition.loader.jaxb.TagType;
+import com.cannontech.common.pao.definition.loader.jaxb.Tags;
 import com.cannontech.common.pao.definition.loader.jaxb.TagsType;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.data.point.UnitOfMeasure;
+import com.google.common.collect.Maps;
 
 public class FileLoader {
    
@@ -100,12 +107,13 @@ public class FileLoader {
                     loadPao(resource, paoXsd);
                 }
             }
-            paos.forEach(pao -> {
-                if (pao.getPointFiles() != null) {
-                    String file = pao.getPointFiles().getPointFile();
-                    paoTypeToPoints.put(pao.getPaoType(), new ArrayList<>(fileNameToPoints.get(file)));
-                }
-            });
+            paoTypeToPoints.putAll(
+                paos.stream()
+                .filter(p -> p.getPointFiles() != null)
+                .collect(
+                    Collectors.toMap(
+                        Pao::getPaoType, 
+                        p -> fileNameToPoints.get(p.getPointFiles().getPointFile()))));
         } catch (IOException e) {
             throw new PaoConfigurationException("Unable to load resorces from " + classpath, e);
         }
@@ -133,7 +141,7 @@ public class FileLoader {
         String file = "";
         if(pao.getPointFiles() != null){
             file = pao.getPointFiles().getPointFile();
-        }else{
+        } else {
             //point is in override file, device doesn't have point file. Example: VIRTUAL_SYSTEM
             file = OVERRIDE_FILE_LOCATION;
         }
@@ -189,12 +197,11 @@ public class FileLoader {
     }
     
     private Point findPointByName(Pao pao, String pointToFind){
-        Point point = paoTypeToPoints.get(pao.getPaoType())
-                                     .stream()
-                                     .filter(p -> p.getName().equals(pointToFind))
-                                     .findFirst()
-                                     .orElse(null);
-        return point;
+        return paoTypeToPoints.get(pao.getPaoType())
+                                      .stream()
+                                      .filter(p -> p.getName().equals(pointToFind))
+                                      .findFirst()
+                                      .orElse(null);
     }
 
     /**
@@ -225,9 +232,11 @@ public class FileLoader {
      * <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="0-4194303"/>
      */
     private void validateTags(Pao pao) {
-        Optional.ofNullable(pao.getTags()).ifPresent(tags -> tags.getTag().forEach(tag -> {
-            validateTag(tag, pao.getPaoType());
-        }));
+        Stream.of(pao.getTags())
+              .filter(Objects::nonNull)
+              .map(TagsType::getTag)
+              .flatMap(List::stream)
+              .forEach(tag -> validateTag(tag, pao.getPaoType()));
     }
     
     private void validateTag(TagType tagType, String paoType) {
@@ -345,22 +354,23 @@ public class FileLoader {
     private void applyOverrides(Overrides overrides) {
         log.info("- Applying custom overrides to device definitions.");
 
-        Map<String, Pao> typeToPao = paos.stream().collect(Collectors.toMap(Pao::getPaoType, Function.identity()));
+        Map<String, Pao> typeToPao =  Maps.uniqueIndex(paos, Pao::getPaoType);
         overrides.getOverride().forEach(override -> {  
-            List<String> paoTypes  = Optional.ofNullable(override.getPaoTypes())
-                                             .map(types -> override.getPaoTypes().getPaoType())
-                                             .orElse(new ArrayList<>())
-                                             .stream()
-                                             .filter(paoType -> allPaoTypes.contains(paoType))
-                                             .collect(Collectors.toList());
+            List<String> paoTypes  = Stream.of(override.getPaoTypes())
+                                           .filter(Objects::nonNull)
+                                           .map(PaoTypes::getPaoType)
+                                           .flatMap(List::stream)
+                                           .filter(paoType -> allPaoTypes.contains(paoType))
+                                           .collect(Collectors.toList());
+            
             List<OverrideCategory> overrideCategories = Optional.ofNullable(override.getConfigurations())
-                                                                        .map(c ->override.getConfigurations().getCategory())
-                                                                        .orElse(new ArrayList<>());
+                                                                .map(Configurations::getCategory)
+                                                                .orElse(new ArrayList<>());
             List<OverrideTag> overrideTags = Optional.ofNullable(override.getTags())
-                                                     .map(c ->override.getTags().getTag())
+                                                     .map(Tags::getTag)
                                                      .orElse(new ArrayList<>());
             List<OverridePointInfo> overridePointInfos = Optional.ofNullable(override.getPointInfos())
-                                                                 .map(c ->override.getPointInfos().getPointInfo())
+                                                                 .map(PointInfos::getPointInfo)
                                                                  .orElse(new ArrayList<>());
             paoTypes.forEach(paoType -> {
                 try {
@@ -399,9 +409,9 @@ public class FileLoader {
 
     private void removeExistingPointInfo(Pao pao, OverridePointInfo override, Action action) {
         String pointNameToRemove = override.getName();
-        boolean isRemoved = Optional.ofNullable(pao.getPointInfos()).map(t -> t.getPointInfo())
-                                                                    .orElse(new ArrayList<>())
-                                                                    .removeIf(i -> i.getName().equals(pointNameToRemove));
+        boolean isRemoved = Optional.ofNullable(pao.getPointInfos()).map(PointInfosType::getPointInfo)
+                                                                    .map(t -> t.removeIf(i -> i.getName().equals(pointNameToRemove)))
+                                                                    .orElse(false);
         if (isRemoved) {
             logOverride(Action.REMOVE, pao.getPaoType(), pointNameToRemove, "pointInfo", null, null);
         }
@@ -422,18 +432,20 @@ public class FileLoader {
 
     private void createUpdatePointInfo(Pao pao, OverridePointInfo override, Action action) {
         String newName = override.getName();
-        boolean pointExists = Optional.ofNullable(pao.getPointInfos()).map(t -> t.getPointInfo())
-                                                                      .orElse(new ArrayList<>())
-                                                                      .stream()
-                                                                      .anyMatch(p -> p.getName().equals(newName));
-        if (pointExists && action == Action.ADD) {
+        boolean pointInfoExists = Stream.of(pao.getPointInfos())
+                                    .filter(Objects::nonNull)
+                                    .map(p -> p.getPointInfo())
+                                    .flatMap(List::stream)
+                                    .anyMatch(p -> p.getName().equals(newName));
+        
+        if (pointInfoExists && action == Action.ADD) {
             logOverride(action, pao.getPaoType(), newName, "pointInfo", "pointInfo already exists.", Level.WARN);
             return;
         }
 
         PointInfoType pointInfo = createPointInfo(pao, override);
         if (pointInfo != null) {
-            if (pointExists) {
+            if (pointInfoExists) {
                 removeExistingPointInfo(pao, override, action);
             }
             if(pao.getPointInfos() == null){
@@ -465,16 +477,14 @@ public class FileLoader {
         return null;
     }
     
-    private void addNewPoint(String paoType, Point overridePoint){
+    private void addNewPoint(String paoType, Point overridePoint){ 
         if (overridePoint != null) {
-            if (paoTypeToPoints.get(paoType) == null) {
-                paoTypeToPoints.put(paoType, new ArrayList<>());
-            }
-            if (paoTypeToPoints.get(paoType).removeIf(p -> p.getName().equals(overridePoint.getName()))) {
+            List<Point> paoPoints = paoTypeToPoints.computeIfAbsent(paoType, s -> new ArrayList<>());
+            if (paoPoints.removeIf(p -> p.getName().equals(overridePoint.getName()))) {
                 logOverride(Action.REMOVE, paoType, overridePoint.getName(), "POINT", null, null);
             }
             logOverride(Action.ADD, paoType, overridePoint.getName(), "POINT", null, null);
-            paoTypeToPoints.get(paoType).add(overridePoint);
+            paoPoints.add(overridePoint);
         }
     }
 
@@ -496,11 +506,11 @@ public class FileLoader {
     
     private void createUpdateTag(Pao pao, OverrideTag overrideTag, Action action) {
         String newTagName = overrideTag.getName();
-         boolean tagExists = Optional.ofNullable(pao.getTags()).map(t -> t.getTag())
-                                    .orElse(new ArrayList<>())
-                                    .stream()
-                                    .anyMatch(t -> t.getName().equals(newTagName));
-
+         boolean tagExists = Stream.of(pao.getTags())
+                                   .filter(Objects::nonNull)
+                                   .map(t -> t.getTag())
+                                   .flatMap(List::stream)
+                                   .anyMatch(t -> t.getName().equals(newTagName));
         if (tagExists && action == Action.ADD) {
             logOverride(action, pao.getPaoType(), newTagName, "TAG", "Tag already exists.", Level.WARN);
             return;
@@ -523,9 +533,9 @@ public class FileLoader {
     
     private void removeExistingTag(Pao pao, OverrideTag overrideTag, Action action) {
         String tagToRemove = overrideTag.getName();
-        boolean isRemoved = Optional.ofNullable(pao.getTags()).map(t -> t.getTag())
-                                    .orElse(new ArrayList<>())
-                                    .removeIf(i -> i.getName().equals(tagToRemove));
+        boolean isRemoved = Optional.ofNullable(pao.getTags()).map(TagsType::getTag)
+                                                              .map(t -> t.removeIf(i -> i.getName().equals(tagToRemove)))
+                                                              .orElse(false);
         if (isRemoved) {
             logOverride(Action.REMOVE, pao.getPaoType(), tagToRemove, "TAG", null, null);
         }else if (action == Action.REMOVE && !isRemoved) {
@@ -569,10 +579,11 @@ public class FileLoader {
     }
        
     private void createUpdateConfigurationCategory(Pao pao, CategoryType overrideCategyType, Action action) {
-        boolean configurationExists = Optional.ofNullable(pao.getConfiguration()).map(c -> c.getCategory())
-                                                                                 .orElse(new ArrayList<>())
-                                                                                 .stream()
-                                                                                 .anyMatch(t -> t.getType() == overrideCategyType);
+        boolean configurationExists = Stream.of(pao.getConfiguration())
+                                            .filter(Objects::nonNull)
+                                            .map(c -> c.getCategory())
+                                            .flatMap(List::stream)
+                                            .anyMatch(t -> t.getType() == overrideCategyType);
         if (!configurationExists) {
             Category category = new Category();
             category.setType(overrideCategyType);
@@ -587,10 +598,10 @@ public class FileLoader {
         }
     }
     
-    private void removeExistingConfigurationCategory(Pao pao, CategoryType typeToRemove, Action action) {
-        boolean isRemoved = Optional.ofNullable(pao.getConfiguration()).map(c -> c.getCategory())
-                                                                       .orElse(new ArrayList<>())
-                                                                       .removeIf(i -> i.getType() == typeToRemove);
+    private void removeExistingConfigurationCategory(Pao pao, CategoryType typeToRemove, Action action) {         
+        boolean isRemoved = Optional.ofNullable(pao.getConfiguration()).map(DeviceCategories::getCategory)
+                                                                       .map(t -> t.removeIf(i -> i.getType() == typeToRemove))
+                                                                       .orElse(false);
         if (isRemoved) {
             logOverride(Action.REMOVE, pao.getPaoType(), typeToRemove.name(), "Configuration Category", null, null);
         } else if (!isRemoved && action == Action.REMOVE) {
