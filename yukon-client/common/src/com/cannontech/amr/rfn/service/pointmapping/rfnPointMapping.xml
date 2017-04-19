@@ -4652,7 +4652,6 @@
         </point>
         <point name="Current Neutral to Ground">
             <uom>A</uom>
-            <multiplier value=".001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase Neutral->Ground</modifier>
