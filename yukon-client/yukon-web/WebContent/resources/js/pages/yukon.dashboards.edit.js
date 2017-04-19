@@ -165,6 +165,7 @@ yukon.dashboards.edit = (function () {
                     mod.updateIndicies();
                     $('[name="column1Widgets[0].type"]').val(widgetType);
                     $('[name="column1Widgets[0].id"]').val(0);
+                    $('.js-widget-added-msg-' + widgetType).show().fadeOut(5000);
                 });
             });
 

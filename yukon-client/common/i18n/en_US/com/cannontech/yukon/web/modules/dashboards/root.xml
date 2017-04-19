@@ -49,6 +49,7 @@
     <entry key="yukon.web.modules.dashboard.addWidgets.addWidget.label">Add Widget</entry>
     <entry key="yukon.web.modules.dashboard.addWidgets.widgetCategory">Widget Category</entry>
     <entry key="yukon.web.modules.dashboard.addWidgets.noWidgetsFound">No widgets were found matching the criteria.</entry>
+    <entry key="yukon.web.modules.dashboard.addWidgets.widgetAdded">Widget has been added.</entry>
     
     <!-- Widget Types -->
     <entry key="yukon.web.modules.dashboard.widgetType.FAVORITES.name">Favorites</entry>
@@ -71,7 +72,7 @@
     <entry key="yukon.web.modules.dashboard.widgetType.GATEWAY_STREAMING_CAPACITY.description">Displays the gateways that are over data streaming capacity and links to the gateway and data streaming detail.</entry>  
     
     <!-- Widget Parameters -->
-    <entry key="yukon.web.modules.dashboard.widgetParameter.deviceId">Device</entry>
+    <entry key="yukon.web.modules.dashboard.widgetParameter.deviceId">Meter</entry>
     
     <!-- Visibility -->
     <entry key="yukon.web.modules.dashboard.visibility.SYSTEM">System</entry>
