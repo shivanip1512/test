@@ -12,9 +12,10 @@
     <entry key="yukon.web.modules.dashboard.settingsTab">Settings</entry>
     <entry key="yukon.web.modules.dashboard.createDashboard.label">Create Dashboard</entry>
     <entry key="yukon.web.modules.dashboard.copyDashboard.label">Copy Dashboard</entry>
-    <entry key="yukon.web.modules.dashboard.filters">Filters:</entry>
-    <entry key="yukon.web.modules.dashboard.myFavorites.label">My Favorites</entry>
-    <entry key="yukon.web.modules.dashboard.createdByMe.label">Created By Me</entry>
+    <entry key="yukon.web.modules.dashboard.filters">Filter:</entry>
+    <entry key="yukon.web.modules.dashboard.showAll">Show All</entry>
+    <entry key="yukon.web.modules.dashboard.myFavorites">My Favorites</entry>
+    <entry key="yukon.web.modules.dashboard.createdByMe">Created By Me</entry>
     <entry key="yukon.web.modules.dashboard.name">Name</entry>
     <entry key="yukon.web.modules.dashboard.description">Description</entry>
     <entry key="yukon.web.modules.dashboard.createdBy">Created By</entry>
@@ -28,6 +29,7 @@
     <entry key="yukon.web.modules.dashboard.manageDashboards">Manage Dashboards</entry>
     <entry key="yukon.web.modules.dashboard.blankDashboard">Blank Dashboard</entry>
     <entry key="yukon.web.modules.dashboard.create.success">Dashboard successfully created</entry>    
+    <entry key="yukon.web.modules.dashboard.saveSettings.success">Dashboard settings successfully saved</entry>    
     
     <!-- Dashboard Admin page -->
     <entry key="yukon.web.modules.dashboard.admin.pageHeading">Dashboard Admin</entry>

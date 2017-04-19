@@ -68,12 +68,15 @@ public class DashboardsController {
         List<LiteDashboard> dashboards = createDashboardsListMockup(userContext);
         //List<LiteDashboard> dashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
         if (filter != null) {
-            if (filter.equals("myFavorites")) {
+            if (filter.equals(DashboardFilter.MYFAVORITES.name())) {
+                dashboards = dashboards.subList(0, 1);
                 //dashboards = dashboardService.getFavorites(userContext.getYukonUser().getUserID());
-            } else if (filter.equals("createdByMe")) {
+            } else if (filter.equals(DashboardFilter.CREATEDBYME.name())) {
+                dashboards = dashboards.subList(0, 2);
                 //dashboards = dashboardService.getOwnedDashboards(userContext.getYukonUser().getUserID());
             }
         }
+        model.addAttribute("filter", filter);
 
         SearchResults<LiteDashboard> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
@@ -127,11 +130,11 @@ public class DashboardsController {
     }
     
     @RequestMapping("saveSettings")
-    public String saveSettings(@ModelAttribute UserDashboardSettings settings, YukonUserContext userContext) {
+    public String saveSettings(@ModelAttribute UserDashboardSettings settings, YukonUserContext userContext, FlashScope flash) {
         settings.getSettings().forEach(setting -> {
             //dashboardService.setDefault(Arrays.asList(userContext.getYukonUser().getUserID()), setting.getPageType(), setting.getDashboardId());
         });
-
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "saveSettings.success"));
         return "redirect:/dashboards/manage";
     }
     
@@ -364,6 +367,12 @@ public class DashboardsController {
         public String getFormatKey() {
             return baseKey + name();
         }
+    }
+    
+    public enum DashboardFilter {
+        ALL,
+        MYFAVORITES,
+        CREATEDBYME;
     }
 
 }

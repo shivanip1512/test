@@ -21,15 +21,18 @@
     <cti:tab title="${dashboardsTab}" selected="true">
     
         <hr/>
-        <span class="fl"><i:inline key=".filters"/></span>
-        <div class="button-group"> 
-            <cti:url var="manageUrl" value="/dashboards/manage" />
-            <cti:button nameKey="myFavorites" href="${manageUrl}?filter=myFavorites"/>
-            <cti:button nameKey="createdByMe" href="${manageUrl}?filter=createdByMe"/>
-        </div>
+        <span class="fl"><i:inline key=".filters"/>&nbsp;&nbsp;</span>
+            <cti:url var="manageUrl" value="/dashboards/manage"/>
+            <select onchange="window.location.href=this.value">
+                <option value="${manageUrl}"/><i:inline key=".showAll"/></option>
+                <option value="${manageUrl}?filter=MYFAVORITES" <c:if test="${filter == 'MYFAVORITES'}">selected="selected"</c:if>><i:inline key=".myFavorites"/></option>
+                <option value="${manageUrl}?filter=CREATEDBYME" <c:if test="${filter == 'CREATEDBYME'}">selected="selected"</c:if>><i:inline key=".createdByMe"/></option>
+            </select>
         <hr/>
         
-        <cti:url var="dataUrl" value="/dashboards/manage" />
+        <cti:url var="dataUrl" value="/dashboards/manage">
+            <cti:param name="filter" value="${filter}"/>
+        </cti:url>
         <div data-url="${dataUrl}" data-static>
             <table class="compact-results-table row-highlighting has-actions has-alerts">
                 <th></th>
@@ -43,8 +46,8 @@
                         <c:set var="dashboardId" value="${dashboard.dashboardId}"/>
                         <cti:url var="dashboardUrl" value="/dashboards/${dashboardId}/view"/>
                         <td>
-                            <cti:icon icon="icon-favorite-not" classes="js-favorite-dashboard" data-dashboard="${dashboardId}"/>
-    <%--                         <cti:icon icon="icon-star" classes="js-unfavorite-dashboard" data-dashboard="${dashboardId}"/> --%>
+                            <cti:icon icon="icon-favorite-not" classes="js-favorite-dashboard cp" data-dashboard="${dashboardId}"/>
+    <%--                         <cti:icon icon="icon-star" classes="js-unfavorite-dashboard cp" data-dashboard="${dashboardId}"/> --%>
                         </td>                
                         <td><a href="${dashboardUrl}">${dashboard.name}</a></td>
                         <td>${dashboard.owner.username}</td>
