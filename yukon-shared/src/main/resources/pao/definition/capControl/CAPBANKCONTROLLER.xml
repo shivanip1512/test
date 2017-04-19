@@ -7,7 +7,7 @@
         <tag name="COMMANDER_REQUESTS"/>
         <tag name="DLC_ADDRESS_RANGE" option="700000001-701000000"/>
         <tag name="ONE_WAY_DEVICE"/>
-    </tags>
+    </tags>    <!-- legacy has 0-999999999 -->
     <pointInfos>
         <pointInfo name="Capacitor Bank State" init="true" attributes="CONTROL_POINT"/>
     </pointInfos>

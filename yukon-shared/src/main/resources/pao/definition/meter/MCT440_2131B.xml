@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!-- MCT 440-2131b -->
 <pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="MCT440_2131B" changeGroup="meter" creatable="false" displayGroup="MCT" displayName="MCT-440-2131B" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>MCT44X.xml</pointFile>
@@ -74,7 +76,7 @@
         <pointInfo name="Tamper Flag Set" init="true" attributes="TAMPER_FLAG"/>
         <pointInfo name="Terminal Block Cover Removal" init="true" attributes="TERMINAL_BLOCK_COVER_REMOVAL_FLAG"/>
         <pointInfo name="Voltage Out of Limits" init="true" attributes="VOLTAGE_OUT_OF_LIMITS_FLAG"/>
-        <pointInfo name="Voltage Phase A" init="true" attributes="VOLTAGE"/>
+        <pointInfo name="Voltage Phase A" init="true" attributes="VOLTAGE"/> 
     </pointInfos>
     <commands>
         <command name="Read Blink Count">
@@ -93,9 +95,9 @@
         </command>
         <command name="Read Instant Line Data">
             <cmd text="getvalue instant line data"/>
-            <point name="Voltage Phase A"/>
+            <point name="Voltage Phase A"/> <!--  for MCT440_2131B this is the single phase "Voltage" point  -->
             <point name="Power Factor"/>
-            <point name="Current Phase A"/>
+            <point name="Current Phase A"/> <!--  for MCT440_2131B this is the single phase "Current" point  -->
         </command>
         <command name="Read Outage Log (10 most recent)">
             <cmd text="getvalue outage 1"/>

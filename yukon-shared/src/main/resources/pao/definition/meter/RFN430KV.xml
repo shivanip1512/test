@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!-- GE RFN METERS -->
 <pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFN430KV" changeGroup="meter" displayGroup="RFMESH" displayName="RFN-430KV" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>RFN.xml</pointFile>

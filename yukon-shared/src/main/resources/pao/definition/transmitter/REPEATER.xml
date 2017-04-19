@@ -6,7 +6,7 @@
     <tags>
         <tag name="COMMANDER_REQUESTS"/>
         <tag name="DEVICE_ICON_TYPE" option="transmitter"/>
-        <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="464-4302,4190464-4194302"/>
+        <tag name="DLC_ADDRESS_RANGE_ENFORCE" option="464-4302,4190464-4194302"/> <!-- 4190464-4194302 is the range for RPT901 -->
         <tag name="LOCATE_ROUTE"/>
     </tags>
     <pointInfos>

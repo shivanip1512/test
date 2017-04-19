@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!-- This doesn't support a disconnect collar either -->
 <pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="MCT420CL" changeGroup="meter" displayGroup="MCT" displayName="MCT-420cL" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>MCT.xml</pointFile>

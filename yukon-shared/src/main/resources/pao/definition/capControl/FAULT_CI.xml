@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="FAULT_CI" displayGroup="Grid Advisor" displayName="Faulted Circuit Indicator" xsi:noNamespaceSchemaLocation="../pao.xsd">
+
+    <!-- GRID ADVISOR -->
     <pointFiles>
         <pointFile>FAULT_CI.xml</pointFile>
     </pointFiles>

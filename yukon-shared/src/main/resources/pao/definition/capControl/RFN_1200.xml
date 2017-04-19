@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFN_1200" changeGroup="rfnda" creatable="false" displayGroup="RFMESH" displayName="RFN-1200" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <!-- Creatable=false means it cannot be created in DBEditor, nor listed as a type in device configurations...to-date -->
     <pointFiles>
         <pointFile>RFN_1200.xml</pointFile>
     </pointFiles>

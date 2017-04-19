@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!-- MCT 470 -->
+<!-- MCT_430_VOLTAGE valid for all 470 EXCEPT Elster (Alpha) Power Plus -->
 <pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="MCT470" changeGroup="meter" displayGroup="MCT" displayName="MCT-470" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>MCT470.xml</pointFile>

@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!-- SYSTEM RESERVED PAOS -->
 <pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="SYSTEM" displayGroup="System" displayName="SYSTEM" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>SYSTEM.xml</pointFile>

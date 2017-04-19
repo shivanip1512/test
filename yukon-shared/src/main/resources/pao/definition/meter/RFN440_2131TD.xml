@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+
+<!-- ELO RFN METERS -->
+<!-- <pao id="RFN440_2131T" inherits="RFN440_BASE, RFN440_SINGLE_PHASE_VOLTAGE"> 
+        <displayName>RFN-440-2131T</displayName></pao> -->
 <pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFN440_2131TD" changeGroup="meter" creatable="false" displayGroup="RFMESH" displayName="RFN-440-2131TD" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <pointFiles>
         <pointFile>RFN.xml</pointFile>

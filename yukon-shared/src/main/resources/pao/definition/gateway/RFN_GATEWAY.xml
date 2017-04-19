@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- RF Gateway -->
 <pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFN_GATEWAY" creatable="false" displayGroup="RFMESH" displayName="RFN Gateway" xsi:noNamespaceSchemaLocation="../pao.xsd">
     <tags>
         <tag name="DB_EDITOR_INCOMPATIBLE"/>
