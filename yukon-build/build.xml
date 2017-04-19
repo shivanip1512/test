@@ -177,8 +177,6 @@
         <mkdir dir="${yukon.exampleXml}"/>
         <copy file="${basedir}/yukon-client/common/src/com/cannontech/amr/rfn/service/pointmapping/rfnPointMapping.xml" 
             tofile="${yukon.exampleXml}/rfnPointMapping_Example.xml"/>
-        <copy file="${basedir}/yukon-client/common/src/com/cannontech/common/pao/definition/dao/paoDefinition.xml" 
-            tofile="${yukon.exampleXml}/deviceDefinition_Example.xml"/>
 
         <signjar alias="cannon5" storepass="cti123" keystore="${basedir}/yukon-client/build/keys/jarKeyStore">
             <fileset dir="${client.bin}">
