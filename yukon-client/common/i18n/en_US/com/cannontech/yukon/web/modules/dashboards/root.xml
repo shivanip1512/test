@@ -95,9 +95,9 @@
     <entry key="yukon.web.modules.dashboard.exception.nonIntDeviceId">Device ID is not an integer: {0}</entry>
     
     <!-- Dashboard Deletion -->
-    <entry key="yukon.web.modules.dashboard.delete.success">Dashboard successfully deleted</entry>
-    <entry key="yukon.web.modules.dashboard.delete.exception">Unable to delete Dashboard</entry>
-    <entry key="yukon.web.modules.dashboard.delete.exception.notOwner">Current user is not owner of dashboard being deleted</entry>
-    <entry key="yukon.web.modules.dashboard.delete.exception.currentInUse">Dashboard is being used by other user(s)</entry>
+    <entry key="yukon.web.modules.dashboard.delete.success">Dashboard {0} successfully deleted.</entry>
+    <entry key="yukon.web.modules.dashboard.delete.exception">Unable to delete dashboard {0}.</entry>
+    <entry key="yukon.web.modules.dashboard.delete.exception.notOwner">Unable to delete dashboard {0}. Only the dashboard owner may delete this dashboard.</entry>
+    <entry key="yukon.web.modules.dashboard.delete.exception.currentInUse">Unable to delete dashboard {0}. This dashboard is in use by other user(s).</entry>
     
 </properties>
