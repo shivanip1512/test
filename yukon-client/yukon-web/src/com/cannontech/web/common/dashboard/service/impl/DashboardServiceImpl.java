@@ -26,7 +26,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public Dashboard getDashboard(int dashboardId) {
-        throw new MethodNotImplementedException();
+        return dashboardDao.getDashboard(dashboardId);
     }
 
     @Override
@@ -72,14 +72,6 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     @Transactional
     public int create(DashboardBase dashboardBase) {
-        return doCreate(dashboardBase);
-    }
-    
-    /**
-     * Creates the specified dashboard, including any widgets and widget settings.
-     * Any public method that calls this should be marked @Transactional.
-     */
-    private int doCreate(DashboardBase dashboardBase) {
         int dashboardId = dashboardDao.create(dashboardBase);
         if (dashboardBase instanceof Dashboard) {
             Dashboard dashboard = (Dashboard) dashboardBase;
@@ -93,7 +85,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Transactional
     public int update(Dashboard dashboard) {
         dashboardDao.deleteDashboard(dashboard.getDashboardId());
-        return doCreate(dashboard);
+        return create(dashboard);
     }
 
     @Override

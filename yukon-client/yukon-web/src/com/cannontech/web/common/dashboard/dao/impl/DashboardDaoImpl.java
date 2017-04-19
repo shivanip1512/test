@@ -1,6 +1,9 @@
 package com.cannontech.web.common.dashboard.dao.impl;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,15 +14,54 @@ import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.web.common.dashboard.dao.DashboardDao;
+import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardBase;
 import com.cannontech.web.common.dashboard.model.Widget;
 
 public class DashboardDaoImpl implements DashboardDao {
     private static final int col1WidgetBase = 100; // This implies no more than 100 widgets per column.
     private static final int col2WidgetBase = 200;
+    private static final DashboardRowMapper dashboardRowMapper = new DashboardRowMapper();
     
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    
+    @Override
+    public Dashboard getDashboard(int dashboardId) {
+        
+        // Get dashboard
+        SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
+        dashboardSql.append("SELECT DashboardId, Name, Description, OwnerId, Visibility, UserId, UserName, Status, ForceReset, UserGroupId");
+        dashboardSql.append("FROM Dashboard d");
+        dashboardSql.append("LEFT JOIN YukonUser yu ON d.OwnerId = yu.UserID");
+        dashboardSql.append("WHERE DashboardId").eq(dashboardId);
+        Dashboard dashboard = jdbcTemplate.queryForObject(dashboardSql, dashboardRowMapper);
+        
+        // Get associated widgets
+        SqlStatementBuilder widgetSql = new SqlStatementBuilder();
+        widgetSql.append("SELECT WidgetId, DashboardId, WidgetType, Ordering");
+        widgetSql.append("FROM Widget");
+        widgetSql.append("WHERE DashboardId").eq(dashboardId);
+        widgetSql.append("ORDER BY Ordering");
+        jdbcTemplate.query(widgetSql, new WidgetRowCallbackHandler(dashboard));
+        
+        // Get widget parameters
+        SqlStatementBuilder widgetParamSql = new SqlStatementBuilder();
+        widgetParamSql.append("SELECT ws.WidgetId, Name, Value");
+        widgetParamSql.append("FROM WidgetSettings ws");
+        widgetParamSql.append("JOIN Widget w ON w.WidgetId = ws.WidgetId");
+        widgetParamSql.append("WHERE w.DashboardId").eq(dashboardId);
+        WidgetSettingCallbackHandler widgetSettingCallbackHandler = new WidgetSettingCallbackHandler();
+        jdbcTemplate.query(widgetParamSql, widgetSettingCallbackHandler);
+        
+        Map<Integer, Map<String, String>> widgetParameters = widgetSettingCallbackHandler.getWidgetParameters();
+        dashboard.getAllWidgets().forEach(widget -> {
+            Map<String, String> parameters = widgetParameters.get(widget.getId());
+            widget.setParameters(Optional.ofNullable(parameters).orElse(new HashMap<>()));
+        });
+        
+        return dashboard;
+    }
     
     @Override
     public void deleteDashboard(int dashboardId) {

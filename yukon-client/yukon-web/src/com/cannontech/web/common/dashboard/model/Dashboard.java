@@ -112,5 +112,12 @@ public class Dashboard implements DashboardBase {
     public void setPageType(DashboardPageType pageType) {
         this.pageType = pageType;
     }
+
+    @Override
+    public String toString() {
+        return "Dashboard [dashboardId=" + dashboardId + ", name=" + name + ", description=" + description
+               + ", pageType=" + pageType + ", owner=" + owner + ", visibility=" + visibility + ", column1Widgets="
+               + column1Widgets + ", column2Widgets=" + column2Widgets + "]";
+    }
     
 }

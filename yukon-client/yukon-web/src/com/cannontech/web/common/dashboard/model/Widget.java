@@ -1,17 +1,16 @@
 package com.cannontech.web.common.dashboard.model;
 
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
+/**
+ * Object representing a specific widget on a dashboard. 
+ * @see WidgetType WidgetType for the generalized types of widgets.
+ */
 public class Widget {
     private int id;
     private WidgetType type;
     private int dashboardId;
-    private String helpTextKey;
-    private Set<String> requiredJavascript = new HashSet<>();
-    private Set<String> requiredCss = new HashSet<>();
     private Map<String, String> parameters;
     
     public int getId() {
@@ -48,29 +47,5 @@ public class Widget {
     
     public void setParameters(Map<String, String> parameters) {
         this.parameters = parameters;
-    }
-
-    public String getHelpTextKey() {
-        return helpTextKey;
-    }
-
-    public void setHelpTextKey(String helpTextKey) {
-        this.helpTextKey = helpTextKey;
-    }
-
-    public Set<String> getRequiredJavascript() {
-        return requiredJavascript;
-    }
-
-    public void setRequiredJavascript(Set<String> requiredJavascript) {
-        this.requiredJavascript = requiredJavascript;
-    }
-
-    public Set<String> getRequiredCss() {
-        return requiredCss;
-    }
-
-    public void setRequiredCss(Set<String> requiredCss) {
-        this.requiredCss = requiredCss;
     }
 }
