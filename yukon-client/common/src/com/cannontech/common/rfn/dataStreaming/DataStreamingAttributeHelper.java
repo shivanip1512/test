@@ -294,9 +294,9 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,      //metric 2
                 BuiltInAttribute.DEMAND,            //metric 5
                 BuiltInAttribute.VOLTAGE,           //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A,   //metric 119
-                BuiltInAttribute.VOLTAGE_PHASE_B,   //metric 120
-                BuiltInAttribute.VOLTAGE_PHASE_C    //metric 121
+                BuiltInAttribute.VOLTAGE_PHASE_A,   //metric 100
+                BuiltInAttribute.VOLTAGE_PHASE_B,   //metric 101
+                BuiltInAttribute.VOLTAGE_PHASE_C    //metric 102
                 ),
         //FocusAXR-530
         RFN_530FAXR(PaoType.RFN530FRX,
@@ -306,9 +306,9 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.SUM_KVARH,         //metric 23
                 BuiltInAttribute.SUM_KVAH,          //metric 43
                 BuiltInAttribute.VOLTAGE,           //metric 115
-                BuiltInAttribute.VOLTAGE_PHASE_A,   //metric 119
-                BuiltInAttribute.VOLTAGE_PHASE_B,   //metric 120
-                BuiltInAttribute.VOLTAGE_PHASE_C    //metric 121
+                BuiltInAttribute.VOLTAGE_PHASE_A,   //metric 100
+                BuiltInAttribute.VOLTAGE_PHASE_B,   //metric 101
+                BuiltInAttribute.VOLTAGE_PHASE_C    //metric 102
                 ),
         //Elster A3D
         RFN_430A3D(PaoType.RFN430A3D,
