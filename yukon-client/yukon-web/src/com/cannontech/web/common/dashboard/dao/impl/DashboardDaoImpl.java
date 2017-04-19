@@ -53,7 +53,10 @@ public class DashboardDaoImpl implements DashboardDao {
     
     @Override
     public int create(DashboardBase dashboard) {
-        int dashboardId = nextValueHelper.getNextValue("Dashboard");
+        int dashboardId = dashboard.getDashboardId();
+        if (dashboardId == 0) {
+            dashboardId = nextValueHelper.getNextValue("Dashboard");
+        }
         SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
         SqlParameterSink dashboardSink = dashboardSql.insertInto("Dashboard");
         dashboardSink.addValue("DashboardId", dashboardId);
@@ -99,4 +102,5 @@ public class DashboardDaoImpl implements DashboardDao {
             });
         }
     }
+    
 }

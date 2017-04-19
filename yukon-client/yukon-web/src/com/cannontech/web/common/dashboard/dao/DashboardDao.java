@@ -16,7 +16,7 @@ public interface DashboardDao {
     void deleteUserDashboard(int userId, int dashboardId);
     
     /**
-     * deletes Dashboard.
+     * Deletes a dashboard.
      */
     void deleteDashboard(int dashboardId);
     
@@ -24,8 +24,6 @@ public interface DashboardDao {
      * Obtain UserIds that are using Dashboard.
      */
     List<Integer> getAllUsersForDashboard(int dashboardId);
-    
-
     
     /**
      * Creates a dashboard. Any widgets associated with the dashboard will need to be added separately, via 
