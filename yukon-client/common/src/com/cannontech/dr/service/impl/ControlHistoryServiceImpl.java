@@ -1,8 +1,10 @@
 package com.cannontech.dr.service.impl;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -14,6 +16,8 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 
 public class ControlHistoryServiceImpl implements ControlHistoryService {
+    private static final Logger log = YukonLogManager.getLogger(ControlHistoryServiceImpl.class);
+    
     @Autowired private AttributeService attributeService;
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private IServerConnection dispatchConnection;
@@ -49,6 +53,8 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
             controlHistoryMessage.setControlType(controlType.toString());
         }
 
+        log.debug("ControlHistoryServiceImpl - sendControlHistoryShedMessage..Sending "
+            + "Control History Shed Message.");
         dispatchConnection.queue(controlHistoryMessage);
     }
     
