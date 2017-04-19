@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
@@ -76,7 +75,7 @@ public class GatewayInformationWidget extends AdvancedWidgetControllerBase {
         try {
             RfnGateway gateway = rfnGatewayService.getGatewayByPaoIdWithData(deviceId);
             model.addAttribute("gateway", gateway);
-            if (gateway.getPaoIdentifier().getPaoType().equals(PaoType.GWY800)) {
+            if (gateway.isDataStreamingSupported()) {
                 model.addAttribute("streamingCapacity", BuiltInAttribute.DATA_STREAMING_LOAD);
             }
 

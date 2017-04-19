@@ -177,7 +177,7 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
             throws DataStreamingConfigException {
 
         Set<RfnIdentifier> gatewayIds = gateways.stream()
-                                                .filter((gateway) -> gateway.getPaoIdentifier().getPaoType().equals(PaoType.GWY800))
+                                                .filter((gateway) -> gateway.isDataStreamingSupported())
                                                 .map(gateway -> gateway.getRfnIdentifier()).collect(Collectors.toSet());
 
         GatewayDataStreamingInfoRequest request = new GatewayDataStreamingInfoRequest();

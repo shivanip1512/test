@@ -123,6 +123,7 @@ public class GatewayControllerHelper {
             dataJson.put("schedule", schedule);
             
             gatewayJson.put("data", dataJson);
+            gatewayJson.put("isDataStreamingSupported",  gateway.isDataStreamingSupported());
         }
         
         return gatewayJson;

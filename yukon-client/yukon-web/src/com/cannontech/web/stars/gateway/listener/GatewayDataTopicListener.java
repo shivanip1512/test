@@ -63,7 +63,7 @@ public class GatewayDataTopicListener implements MessageListener {
         RfnIdentifier rfnIdentifier = message.getRfnIdentifier();
         try {
             RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
-            if (rfnDevice.getPaoIdentifier().getPaoType().equals(PaoType.GWY800)) {
+            if (rfnDevice.getPaoIdentifier().getPaoType() == PaoType.GWY800) {
                 log.debug("Handling gateway data message: " + message);
                 RfnGatewayData data = new RfnGatewayData(message);
                 cache.put(rfnDevice.getPaoIdentifier(), data);

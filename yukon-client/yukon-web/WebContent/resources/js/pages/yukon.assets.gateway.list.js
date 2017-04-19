@@ -46,7 +46,7 @@ yukon.assets.gateway.list = (function () {
                         // This gateway didn't have data at page load.
                         // Replace the 'loading' row with a 'loaded' template row and fill in with data.
                         clone = $('.js-loaded-row').clone();
-                        if (gateway.paoId.paoType == "GWY800") {
+                        if (gateway.isDataStreamingSupported === true) {
                             clone.find("span.js-streaming-capacity").removeClass("dn");
                         } else {
                             clone.find("div.js-streaming-unsupported").removeClass("dn");
