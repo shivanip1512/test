@@ -100,6 +100,7 @@
     <!-- Dashboard Deletion -->
     <entry key="yukon.web.modules.dashboard.delete.success">Dashboard {0} successfully deleted.</entry>
     <entry key="yukon.web.modules.dashboard.delete.exception">Unable to delete dashboard {0}.</entry>
+    <entry key="yukon.web.modules.dashboard.delete.exception.system">Unable to delete dashboard {0}. System dashboards cannot be deleted.</entry>
     <entry key="yukon.web.modules.dashboard.delete.exception.notOwner">Unable to delete dashboard {0}. Only the dashboard owner may delete this dashboard.</entry>
     <entry key="yukon.web.modules.dashboard.delete.exception.currentInUse">Unable to delete dashboard {0}. This dashboard is in use by other user(s).</entry>
     

@@ -253,6 +253,10 @@ public class DashboardsController {
     
     @RequestMapping("{id}/delete")
     public String deleteDashboard(FlashScope flash, @PathVariable int id, YukonUserContext userContext) {
+        if (dashboardDao.getDashboard(id).getVisibility() == Visibility.SYSTEM) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.system"));
+            return "redirect:/dashboards/manage";
+        }
         try {
             dashboardService.getOwner(id);
             LiteYukonUser user = userContext.getYukonUser();
