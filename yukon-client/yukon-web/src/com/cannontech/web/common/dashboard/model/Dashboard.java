@@ -16,8 +16,8 @@ public class Dashboard implements DashboardBase {
     private DashboardPageType pageType;
     private LiteYukonUser owner;
     private Visibility visibility;
-    private List<Widget> column1Widgets;
-    private List<Widget> column2Widgets;
+    private List<Widget> column1Widgets = new ArrayList<>();;
+    private List<Widget> column2Widgets = new ArrayList<>();;
     
     @Override
     public int getDashboardId() {
@@ -100,7 +100,8 @@ public class Dashboard implements DashboardBase {
     }
     
     public List<Widget> getAllWidgets() {
-        List<Widget> allWidgets = new ArrayList<>(column1Widgets);
+        List<Widget> allWidgets = new ArrayList<>();
+        allWidgets.addAll(column1Widgets);
         allWidgets.addAll(column2Widgets);
         return allWidgets;
     }
