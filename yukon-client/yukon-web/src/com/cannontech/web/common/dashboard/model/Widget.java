@@ -1,5 +1,6 @@
 package com.cannontech.web.common.dashboard.model;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -11,7 +12,7 @@ public class Widget {
     private int id;
     private WidgetType type;
     private int dashboardId;
-    private Map<String, String> parameters;
+    private Map<String, String> parameters = new HashMap<>();
     
     public int getId() {
         return id;
@@ -46,6 +47,9 @@ public class Widget {
     }
     
     public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
+        if (parameters != null) {
+            this.parameters = new HashMap<>();
+            parameters.putAll(parameters);
+        }
     }
 }
