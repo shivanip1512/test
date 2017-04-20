@@ -74,7 +74,9 @@ public class Dashboard implements DashboardBase {
     }
     
     public void setColumn1Widgets(List<Widget> column1Widgets) {
-        this.column1Widgets = new ArrayList<>(column1Widgets);
+        if (column1Widgets != null) {
+            this.column1Widgets = new ArrayList<>(column1Widgets);
+        }
     }
     
     public void addColumn1Widget(Widget widget) {
@@ -89,7 +91,9 @@ public class Dashboard implements DashboardBase {
     }
     
     public void setColumn2Widgets(List<Widget> column2Widgets) {
-        this.column2Widgets = new ArrayList<>(column2Widgets);
+        if (column2Widgets != null) {
+            this.column2Widgets = new ArrayList<>(column2Widgets);
+        }
     }
     
     public void addColumn2Widget(Widget widget) {
