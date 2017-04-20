@@ -23,8 +23,7 @@ public enum MspLoadActionCode {
 //    INITATE_POWER_LIMITATION(LoadActionCode.InitiatePowerLimitation),   //not supported
 //    OPEN(LoadActionCode.Open),                                          //not suupported
 //    CLOSED(LoadActionCode.Closed),                                      //not supported
-    ARM(LoadActionCodeKind.ARM, null, null), // no yukon states will ever return this LAC
-    ARMED(LoadActionCodeKind.ARM, RfnDisconnectStatusState.ARMED, Disconnect410State.CONNECT_ARMED),
+    ARM(LoadActionCodeKind.ARM, RfnDisconnectStatusState.ARMED, Disconnect410State.CONNECT_ARMED),
     UNKNOWN(LoadActionCodeKind.UNKNOWN, RfnDisconnectStatusState.UNKNOWN, Disconnect410State.UNCONFIRMED_DISCONNECTED), // Old CDEvent code mapped PLC unconfirmedDisconnect to LoadActionCode.Disconnect....
     ;
 
@@ -43,12 +42,8 @@ public enum MspLoadActionCode {
             Builder<Disconnect410State, MspLoadActionCode> plcBuilder = ImmutableMap.builder();
             Builder<LoadActionCodeKind, MspLoadActionCode> mspLACBuilder = ImmutableMap.builder();
             for (MspLoadActionCode mspLoadActionCode : values()) {
-                if (mspLoadActionCode.rfnState != null) {
-                    rfnBuilder.put(mspLoadActionCode.rfnState, mspLoadActionCode);
-                }
-                if (mspLoadActionCode.plcState != null) {
-                    plcBuilder.put(mspLoadActionCode.plcState, mspLoadActionCode);
-                }
+                rfnBuilder.put(mspLoadActionCode.rfnState, mspLoadActionCode);
+                plcBuilder.put(mspLoadActionCode.plcState, mspLoadActionCode);
                 mspLACBuilder.put(mspLoadActionCode.loadActionCode, mspLoadActionCode);
             }
             lookupByRfnState  = rfnBuilder.build();
@@ -102,7 +97,6 @@ public enum MspLoadActionCode {
         switch (this) {
         case CONNECT:
             return RfnMeterDisconnectStatusType.RESUME;
-        case ARMED:
         case ARM: {
             String arm = configSource.getString(MasterConfigString.RFN_METER_DISCONNECT_ARMING, "FALSE");
             RfnMeterDisconnectArming mode = RfnMeterDisconnectArming.getForCparm(arm);
@@ -128,7 +122,6 @@ public enum MspLoadActionCode {
     public String getPlcCommandString() {
         switch (this) {
         case CONNECT:
-        case ARMED:
         case ARM:
             return DisconnectCommand.CONNECT.getPlcCommand();
         case DISCONNECT:
