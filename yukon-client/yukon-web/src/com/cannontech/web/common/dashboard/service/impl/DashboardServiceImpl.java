@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.MethodNotImplementedException;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.dashboard.dao.DashboardDao;
 import com.cannontech.web.common.dashboard.model.Dashboard;
@@ -18,7 +19,8 @@ import com.cannontech.web.common.dashboard.service.DashboardService;
 public class DashboardServiceImpl implements DashboardService {
     
     @Autowired DashboardDao dashboardDao;
-    
+    @Autowired YukonUserDao userDao;
+ 
     @Override
     public Dashboard getAssignedDashboard(int userId, DashboardPageType dashboardType) {
         throw new MethodNotImplementedException();
@@ -89,8 +91,12 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
+    @Transactional
     public Dashboard copy(int dashboardId, int userId) {
-        throw new MethodNotImplementedException();
+        Dashboard dashboard = getDashboard(dashboardId);
+        dashboard.setOwner(userDao.getLiteYukonUser(userId));
+        int newDashboardId = create(dashboard);
+        return getDashboard(newDashboardId);
     }
 
     @Override
@@ -99,13 +105,13 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public void assign(int userId, int dashboardId) {
-        throw new MethodNotImplementedException();
+    public void assign(int userId, int dashboardId, DashboardPageType type) {
+        dashboardDao.assign(userId, dashboardId, type);
     }
 
     @Override
     public Optional<LiteYukonUser> getOwner(int dashboardId) {
-        throw new MethodNotImplementedException();
+        Dashboard dashboard = getDashboard(dashboardId);
+        return Optional.of(dashboard.getOwner());
     }
-
 }

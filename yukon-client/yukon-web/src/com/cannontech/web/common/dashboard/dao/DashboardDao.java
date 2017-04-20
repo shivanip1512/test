@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardBase;
+import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.Widget;
 
 /**
@@ -43,4 +44,6 @@ public interface DashboardDao {
      * Inserts widgets for the specified dashboard.
      */
     void insertWidgets(int dashboardId, List<Widget> widgets, int column);
+
+    void assign(int userId, int dashboardId, DashboardPageType type);
 }

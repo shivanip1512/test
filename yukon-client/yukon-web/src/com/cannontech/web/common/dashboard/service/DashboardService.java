@@ -92,12 +92,11 @@ public interface DashboardService {
     /**
      * Set a new owner for a dashboard.
      */
-    void assign(int userId, int dashboardId);
+    void assign(int userId, int dashboardId, DashboardPageType type);
     
     /**
      * Get the user that owns the specified dashboard.
      * @return the owner of the dashboard, or empty optional if the dashboard has no owner.
      */
-    Optional<LiteYukonUser> getOwner(int dashboardId);
-    
+    Optional<LiteYukonUser> getOwner(int dashboardId);    
 }

@@ -16,6 +16,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.web.common.dashboard.dao.DashboardDao;
 import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardBase;
+import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.Widget;
 
 public class DashboardDaoImpl implements DashboardDao {
@@ -95,10 +96,7 @@ public class DashboardDaoImpl implements DashboardDao {
     
     @Override
     public int create(DashboardBase dashboard) {
-        int dashboardId = dashboard.getDashboardId();
-        if (dashboardId == 0) {
-            dashboardId = nextValueHelper.getNextValue("Dashboard");
-        }
+        int dashboardId = nextValueHelper.getNextValue("Dashboard");
         SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
         SqlParameterSink dashboardSink = dashboardSql.insertInto("Dashboard");
         dashboardSink.addValue("DashboardId", dashboardId);
@@ -144,5 +142,14 @@ public class DashboardDaoImpl implements DashboardDao {
             });
         }
     }
-    
+
+    @Override
+    public void assign(int userId, int dashboardId, DashboardPageType type) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlParameterSink param = sql.insertInto("UserDashboard");
+        param.addValue("UserId", userId);
+        param.addValue("DashboardId", dashboardId);
+        param.addValue("PageAssignment", type);
+        jdbcTemplate.update(sql);
+    } 
 }
