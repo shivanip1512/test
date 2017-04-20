@@ -124,6 +124,18 @@ private:
     Mutex                _pendingRequestsMux;
     RfnIdToRequestQueue  _pendingRequests;
 
+    struct RfnRequestIdentifier
+    {
+        RfnIdentifier rfnId;
+        unsigned long token;
+    };
+
+    using RfnTimeouts = std::multimap<CtiTime, RfnRequestIdentifier>;
+    using NodeTokens = std::map<RfnIdentifier, unsigned long>;
+
+    RfnTimeouts _awaitingIndications;
+    NodeTokens  _activeTokens;
+
     struct ActiveRfnRequest
     {
         RfnDeviceRequest request;

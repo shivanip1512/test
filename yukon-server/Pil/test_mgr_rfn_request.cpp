@@ -26,6 +26,7 @@ struct test_E2eMessenger : Cti::Messaging::Rfn::E2eMessenger
 
         Confirm ack;
         ack.rfnIdentifier = req.rfnIdentifier;
+        ack.error = ClientErrors::None;
 
         callback(ack);  //  call the confirm callback immediately
     }

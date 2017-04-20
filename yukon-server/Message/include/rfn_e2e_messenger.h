@@ -62,7 +62,7 @@ public:
 
     struct Confirm : Message, CallbackFor<Confirm>
     {
-        boost::optional<YukonError_t> error;
+        YukonError_t error;
     };
 
     using TimeoutCallback = std::function<void (const YukonError_t)>;
