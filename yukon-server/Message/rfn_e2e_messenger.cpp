@@ -90,13 +90,15 @@ void E2eMessenger::handleTimeouts(const CtiTime Now, MessageExpirations& message
 
             if( handlingItr != _messageHandling.end() )
             {
+                CTILOG_DEBUG(dout, "Timeout occurred for message ID " << messageId);
+
                 handlingItr->second.timeoutCallback(error);
 
                 _messageHandling.erase(handlingItr);
             }
         }
 
-        messageExpirations.erase(_awaitingConfirms.begin(), end);
+        messageExpirations.erase(messageExpirations.begin(), end);
     }
 }
 
@@ -317,6 +319,8 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg)
 
             if( itr != _messageHandling.end() )
             {
+                CTILOG_DEBUG(dout, "Confirm message received for message ID " << messageId << " with status " << yukonErrorCode << ", " << GetErrorString(yukonErrorCode));
+
                 confirmCallback = itr->second.confirmCallback;
 
                 _messageHandling.erase(itr);
@@ -426,6 +430,8 @@ void E2eMessenger::serializeAndQueue(const Request &req, const ApplicationServic
 {
     E2eDataRequestMsg msg = createMessageFromRequest(req, asid);
 
+    CTILOG_DEBUG(dout, "Sending E2E request with message ID " << msg.header.messageId);
+
     SerializedMessage serialized;
 
     e2eMessageFactory.serialize(msg, serialized);
@@ -450,6 +456,8 @@ void E2eMessenger::serializeAndQueue(const Request &req, const ApplicationServic
 void E2eMessenger::serializeAndQueue(const Request &req, const ApplicationServiceIdentifiers asid)
 {
     E2eDataRequestMsg msg = createMessageFromRequest(req, asid);
+
+    CTILOG_DEBUG(dout, "Sending E2E request with message ID " << msg.header.messageId);
 
     SerializedMessage serialized;
 
@@ -520,6 +528,7 @@ void E2eMessenger::ackProcessor(const ActiveMQConnectionManager::MessageDescript
 
             if( itr != _messageHandling.end() )
             {
+                CTILOG_DEBUG(dout, "Received ack for message ID " << messageId);
                 _awaitingAcks.erase(messageId);
                 _awaitingConfirms.emplace(itr->second.messageTimeout, messageId);
             }

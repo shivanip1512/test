@@ -47,6 +47,39 @@ Thrift::RfnE2eProtocol::type mapping( E2eMsg::Protocol protocol )
 }
 
 
+NetworkManagerRequestHeader translate(const Thrift::NetworkManagerRequestHeader &hdr)
+{
+    NetworkManagerRequestHeader header;
+
+    header.clientGuid = hdr.clientGuid;
+    header.expiration = hdr.expiration;
+    header.groupId    = hdr.groupId;
+    header.messageId  = hdr.messageId;
+    header.priority   = hdr.priority;
+    header.sessionId  = hdr.sessionId;
+
+    return header;
+}
+
+
+Thrift::NetworkManagerRequestHeader translate(const NetworkManagerRequestHeader &hdr)
+{
+    Thrift::NetworkManagerRequestHeader header;
+
+    header.__set_clientGuid( hdr.clientGuid );
+    header.__set_sessionId ( hdr.sessionId );
+    header.__set_messageId ( hdr.messageId );
+    header.__set_groupId   ( hdr.groupId );
+    header.__set_priority  ( hdr.priority );
+    header.__set_expiration( hdr.expiration );
+
+    //  Default all messages to expire with our session
+    header.__set_lifetime  ( Thrift::NetworkManagerMessageLifetime::SESSION );
+
+    return header;
+}
+
+
 //=============================================================================
 //  RfnE2eDataRequest
 //=============================================================================
@@ -71,22 +104,8 @@ MessagePtr<Thrift::RfnE2eDataRequest>::type serialize( const E2eDataRequestMsg& 
         rfnId.__set_sensorSerialNumber  ( imsg.rfnIdentifier.serialNumber );
 
         omsg->__set_rfnIdentifier       ( rfnId );
-    }
 
-    {
-        Thrift::NetworkManagerRequestHeader hdr;
-
-        hdr.__set_clientGuid( imsg.header.clientGuid );
-        hdr.__set_sessionId ( imsg.header.sessionId );
-        hdr.__set_messageId ( imsg.header.messageId );
-        hdr.__set_groupId   ( imsg.header.groupId );
-        hdr.__set_priority  ( imsg.header.priority );
-        hdr.__set_expiration( imsg.header.expiration );
-
-        //  Default all messages to expire with our session
-        hdr.__set_lifetime  ( Thrift::NetworkManagerMessageLifetime::SESSION );
-
-        omsg->__set_header( hdr );
+        omsg->__set_header              ( translate( imsg.header ) );
     }
 
     if( imsg.security )
@@ -114,8 +133,10 @@ MessagePtr<E2eDataRequestMsg>::type deserialize( const Thrift::RfnE2eDataRequest
 
     omsg->rfnIdentifier        = rfnId;
 
-    //  skip the optional Network Manager request header - we don't care about inbound requests (yet?)
-    //imsg.header;
+    if( imsg.__isset.header )
+    {
+        omsg->header = translate(imsg.header);
+    }
 
     if( imsg.__isset.security )
     {
@@ -147,19 +168,7 @@ MessagePtr<Thrift::RfnE2eDataConfirm>::type serialize( const E2eDataConfirmMsg& 
 
     if( imsg.header )
     {
-        Thrift::NetworkManagerRequestHeader header;
-
-        header.__set_clientGuid(imsg.header->clientGuid);
-        header.__set_sessionId (imsg.header->sessionId);
-        header.__set_messageId (imsg.header->messageId);
-        header.__set_groupId   (imsg.header->groupId);
-        header.__set_expiration(imsg.header->expiration);
-        header.__set_priority  (imsg.header->priority);
-
-        //  Default all messages to expire with our session
-        header.__set_lifetime  (Thrift::NetworkManagerMessageLifetime::SESSION);
-
-        omsg->__set_header(header);
+        omsg->__set_header( translate( *imsg.header ) );
     }
 
     return omsg;
@@ -183,16 +192,7 @@ MessagePtr<E2eDataConfirmMsg>::type deserialize( const Thrift::RfnE2eDataConfirm
 
     if( imsg.__isset.header )
     {
-        NetworkManagerRequestHeader header;
-
-        header.clientGuid = imsg.header.clientGuid;
-        header.sessionId  = imsg.header.sessionId;
-        header.messageId  = imsg.header.messageId;
-        header.groupId    = imsg.header.groupId;
-        header.expiration = imsg.header.expiration;
-        header.priority   = imsg.header.priority;
-
-        omsg->header = header;
+        omsg->header = translate( imsg.header );
     }
 
     return omsg;
