@@ -21,13 +21,15 @@ public enum WidgetType implements DisplayableEnum {
     MESSAGING_STATISTICS(DashboardScope.GENERAL, WidgetCategory.OTHER, "messagingStatisticsWidget", "image-coming-soon"),
     
     TREND(DashboardScope.GENERAL, WidgetCategory.AMI, "csrTrendWidget", "image-trends"), 
-    
+    SYSTEM_HEALTH(DashboardScope.GENERAL, WidgetCategory.OTHER, "systemHealthWidget", "image-ami-actions"),
+
     //AMI Dashboard
     MONITORS(DashboardScope.GENERAL, WidgetCategory.AMI, "allMonitorsWidget", "image-monitors"),
     METER_SEARCH(DashboardScope.GENERAL, WidgetCategory.AMI, "meterSearchWidget", "image-meter-search"),
     AMI_ACTIONS(DashboardScope.GENERAL, WidgetCategory.AMI, "systemActionsMenuWidget", "image-ami-actions"),
     SCHEDULED_REQUESTS(DashboardScope.GENERAL, WidgetCategory.AMI, "scheduledGroupRequestExecutionWidget", "image-scheduled-requests"),
     GATEWAY_STREAMING_CAPACITY(DashboardScope.GENERAL, WidgetCategory.AMI, "overloadedGatewaysWidget", "image-gateway-streaming"),
+
     
     /*
     //Meter Detail
