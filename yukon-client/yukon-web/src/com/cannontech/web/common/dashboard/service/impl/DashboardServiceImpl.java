@@ -105,8 +105,10 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public void assign(int userId, int dashboardId, DashboardPageType type) {
-        dashboardDao.assign(userId, dashboardId, type);
+    public void assign(int userId, int dashboardId) {
+        Dashboard dashboard = getDashboard(dashboardId);
+        dashboard.setOwner(userDao.getLiteYukonUser(userId));
+        update(dashboard);
     }
 
     @Override

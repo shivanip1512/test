@@ -92,7 +92,7 @@ public interface DashboardService {
     /**
      * Set a new owner for a dashboard.
      */
-    void assign(int userId, int dashboardId, DashboardPageType type);
+    void assign(int userId, int dashboardId);
     
     /**
      * Get the user that owns the specified dashboard.
