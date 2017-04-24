@@ -148,6 +148,14 @@ public class MspHandler {
         return mav;
     }
 
+    public MultiSpeakVersion getMSPVersion() {
+        MultispeakVendor mspPrimaryCISVendor = getMspPrimaryCISVendor();
+        if (mspPrimaryCISVendor != null) {
+            return multispeakFuncs.getPrimaryCISVersion(mspPrimaryCISVendor);
+        }
+        return null;
+    }
+
     /**
      * Returns the MultiSpeak Vendor that represents the Primary CIS vendor.
      * If no vendor is defined, then return null

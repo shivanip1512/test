@@ -15,18 +15,20 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.common.model.Address;
+import com.cannontech.common.model.Contact;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.PhoneNumberFormattingService;
+import com.cannontech.msp.beans.v5.commontypes.AddressItems;
 import com.cannontech.msp.beans.v5.commontypes.PhoneNumber;
 import com.cannontech.msp.beans.v5.enumerations.PhoneTypeKind;
 import com.cannontech.msp.beans.v5.multispeak.BillingStatusInformation;
+import com.cannontech.msp.beans.v5.multispeak.ContactInfo;
 import com.cannontech.msp.beans.v5.multispeak.Customer;
 import com.cannontech.msp.beans.v5.multispeak.ServiceLocation;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.v5.MspObjectDao;
 import com.cannontech.multispeak.service.v5.MultispeakCustomerInfoService;
 import com.cannontech.user.YukonUserContext;
-import com.google.common.collect.Lists;
 
 public class MspAccountInformationV5 implements MspAccountInformation {
 
@@ -48,19 +50,23 @@ public class MspAccountInformationV5 implements MspAccountInformation {
         mav.addObject("homePhone", primaryContact.get(PhoneTypeKind.HOME));
         mav.addObject("dayPhone", primaryContact.get(PhoneTypeKind.BUSINESS));
 
-        List<Address> custAddress = getCustomerAddressInfo(mspCustomer);
-        mav.addObject("custAddress", custAddress); // Change on UI for this
-
+        if (mspCustomer.getContactInfo() != null) {
+            List<Address> custAddressInfo = getAddressList(mspCustomer.getContactInfo().getAddressItems());
+            mav.addObject("custAddressInfo", custAddressInfo);
+        }
         // Customer Basic Information
-        Map<String, List<Info>> custBasicsInfo = getCustomerBasicsInfo(mspCustomer, userContext);
+        List<Info> custBasicsInfo = getCustomerBasicsInfo(mspCustomer, userContext);
         mav.addObject("custBasicsInfo", custBasicsInfo);
 
+        List<Contact> custBasicContactInfo = getCustomerBasicContactInfo(mspCustomer, userContext);
+        mav.addObject("custBasicContactInfo", custBasicContactInfo);
+
         if (mspCustomer.getCustomerHazards() != null) {
-            Map<AtomicInteger, List<Info>> custHazardInfo = getCustomerHazardInfo(mspCustomer, userContext);
+            List<Info> custHazardInfo = getCustomerHazardInfo(mspCustomer, userContext);
             mav.addObject("custHazardInfo", custHazardInfo);
         }
         if (mspCustomer.getAccounts() != null) {
-            Map<String, List<Info>> custAccountInfo = getCustomerAccountInfo(mspCustomer, userContext);
+            List<Info> custAccountInfo = getCustomerAccountInfo(mspCustomer, userContext);
             mav.addObject("custAccountInfo", custAccountInfo);
 
             Map<String, List<Info>> custAccountReceivableInfo =
@@ -72,14 +78,14 @@ public class MspAccountInformationV5 implements MspAccountInformation {
 
         }
         if (mspCustomer.getAlternateContacts() != null) {
-            Map<Integer, List<Info>> custContactInfo = getCustomerContactInfo(mspCustomer, userContext);
-            if (custContactInfo != null) {
-                mav.addObject("custContactInfo", custContactInfo);
+            List<Contact> custAlternateContactInfo = getCustomerAlternateContactsInfo(mspCustomer, userContext);
+            if (custAlternateContactInfo != null) {
+                mav.addObject("custAlternateContactInfo", custAlternateContactInfo);
             }
         }
 
         // Service Location Information
-        Map<String, List<Info>> servLocBasicsInfo = getServLocBasicsInfo(mspServLoc, userContext);
+        List<Info> servLocBasicsInfo = getServLocBasicsInfo(mspServLoc, userContext);
         mav.addObject("servLocBasicsInfo", servLocBasicsInfo);
 
         if (mspServLoc.getServiceHazards() != null) {
@@ -88,20 +94,20 @@ public class MspAccountInformationV5 implements MspAccountInformation {
         }
 
         if (mspServLoc.getElectricServicePoints() != null) {
-            Map<String, List<Info>> electricServicePointsInfo = getElectricServicePointInfo(mspServLoc, userContext);
+            List<Info> electricServicePointsInfo = getElectricServicePointInfo(mspServLoc, userContext);
             mav.addObject("electricServicePointsInfo", electricServicePointsInfo);
         }
         if (mspServLoc.getGasServicePoints() != null) {
-            Map<String, List<Info>> gasServicePointsInfo = getGasServicePointInfo(mspServLoc, userContext);
+            List<Info> gasServicePointsInfo = getGasServicePointInfo(mspServLoc, userContext);
             mav.addObject("gasServicePointsInfo", gasServicePointsInfo);
         }
 
         if (mspServLoc.getWaterServicePoints() != null) {
-            Map<String, List<Info>> waterServicePointsInfo = getWaterServicePointInfo(mspServLoc, userContext);
+            List<Info> waterServicePointsInfo = getWaterServicePointInfo(mspServLoc, userContext);
             mav.addObject("waterServicePointsInfo", waterServicePointsInfo);
         }
         if (mspServLoc.getPropaneServicePoints() != null) {
-            Map<String, List<Info>> propaneServicePointsInfo = getPropaneServicePointInfo(mspServLoc, userContext);
+            List<Info> propaneServicePointsInfo = getPropaneServicePointInfo(mspServLoc, userContext);
             mav.addObject("propaneServicePointsInfo", propaneServicePointsInfo);
         }
 
@@ -109,9 +115,8 @@ public class MspAccountInformationV5 implements MspAccountInformation {
     }
 
     // Customer Basic Information
-    private Map<String, List<Info>> getCustomerBasicsInfo(Customer mspCustomer, YukonUserContext userContext) {
+    private List<Info> getCustomerBasicsInfo(Customer mspCustomer, YukonUserContext userContext) {
 
-        Map<String, List<Info>> customerBasicInfo = new HashMap<>();
         List<Info> infoList = new ArrayList<Info>();
 
         Map<PhoneTypeKind, String> primaryContact = getPrimaryContacts(mspCustomer);
@@ -126,34 +131,46 @@ public class MspAccountInformationV5 implements MspAccountInformation {
         add("Utility", mspCustomer.getUtility(), true, infoList, userContext);
         add("Comments", mspCustomer.getComments(), true, infoList, userContext);
         add("Government ID", mspCustomer.getGovernmentID(), true, infoList, userContext);
-        if (mspCustomer.getPrimaryIdentifier() != null) {
-            customerBasicInfo.put(mspCustomer.getPrimaryIdentifier().getValue(), infoList);
-        }
-        return customerBasicInfo;
+        return infoList;
+    }
+
+    // Customer Basic Contact Information
+    private List<Contact> getCustomerBasicContactInfo(Customer mspCustomer, YukonUserContext userContext) {
+
+        List<Contact> info = new ArrayList<>();
+
+        ContactInfo contactInfo = mspCustomer.getContactInfo();
+        Contact contact = new Contact();
+        List<String> phoneNumbers =
+            multispeakCustomerInfoService.getPhoneNumbers(contactInfo.getPhoneNumbers(), userContext);
+        contact.setPhoneNumbers(StringUtils.join(phoneNumbers, ", "));
+
+        List<String> emailAddresses =
+            multispeakCustomerInfoService.getEmailAddresses(contactInfo.getEMailAddresses(), userContext);
+        contact.setEmailAddresses(StringUtils.join(emailAddresses, ", "));
+        contact.setAddresses(getAddressList(contactInfo.getAddressItems()));
+        info.add(contact);
+
+        return info;
+
     }
 
     // Customer Hazards Information
-    private Map<AtomicInteger, List<Info>> getCustomerHazardInfo(Customer mspCustomer, YukonUserContext userContext) {
+    private List<Info> getCustomerHazardInfo(Customer mspCustomer, YukonUserContext userContext) {
 
-        Map<AtomicInteger, List<Info>> customerHazardMap = new HashMap<>();
         List<Info> info = new ArrayList<>();
-        final AtomicInteger hazardID = new AtomicInteger();
 
         mspCustomer.getCustomerHazards().getCustomerHazard().forEach(customerHazard -> {
             add("Type", customerHazard.getCustomerHazardType(), false, info, userContext);
             add("Sub Type", customerHazard.getCustomerHazardSubType(), false, info, userContext);
             add("Text", customerHazard.getHazardText(), false, info, userContext);
-            hazardID.getAndIncrement();
-            customerHazardMap.put(hazardID, info);
-
         });
-        return customerHazardMap;
+        return info;
     }
 
     // Customer Account Information
-    private Map<String, List<Info>> getCustomerAccountInfo(Customer mspCustomer, YukonUserContext userContext) {
+    private List<Info> getCustomerAccountInfo(Customer mspCustomer, YukonUserContext userContext) {
 
-        Map<String, List<Info>> customerAccountMap = new HashMap<>();
         List<Info> info = new ArrayList<>();
 
         mspCustomer.getAccounts().getAccount().forEach(
@@ -178,10 +195,8 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                 add("Last Bill Amount", accountInfo.getLastBillAmount(), false, info, userContext);
                 add("Calculated Used Yesterday", accountInfo.getCalculatedUsedYesterday(), false, info, userContext);
 
-                customerAccountMap.put(accountInfo.getPrimaryIdentifier().getValue(), info);
-
             });
-        return customerAccountMap;
+        return info;
     }
 
     // Customer Account Receivable Information
@@ -246,9 +261,8 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                     if (phNo.getPhoneType().getValue() == PhoneTypeKind.HOME
                         || phNo.getPhoneType().getValue() == PhoneTypeKind.BUSINESS) {
 
-                        allPhoneNumbers.put(
-                            phNo.getPhoneType().getValue(),
-                            phoneNumberFormattingService.formatPhone(phNo.getPhone().getAreaCode(), phNo.getPhone().getLocalNumber()));
+                        allPhoneNumbers.put(phNo.getPhoneType().getValue(), phoneNumberFormattingService.formatPhone(
+                            phNo.getPhone().getAreaCode(), phNo.getPhone().getLocalNumber()));
                     }
                 }
             });
@@ -257,57 +271,50 @@ public class MspAccountInformationV5 implements MspAccountInformation {
     }
 
     // Get the customer alternate contact information
-    private Map<Integer, List<Info>> getCustomerContactInfo(Customer mspCustomer, YukonUserContext userContext) {
+    private List<Contact> getCustomerAlternateContactsInfo(Customer mspCustomer, YukonUserContext userContext) {
 
-        Map<Integer, List<Info>> customerAlternateContactMap = new HashMap<>();
-        List<Info> info = new ArrayList<>();
-        Integer alternateContactID = 1;
+        List<Contact> info = new ArrayList<>();
 
-        mspCustomer.getAlternateContacts().getAlternateContact().forEach(alternateContact -> {
-            add("First Name", alternateContact.getFirstName(), false, info, userContext);
-            add("Last Name", alternateContact.getLastName(), false, info, userContext);
-            add("Middle Name", alternateContact.getMName(), false, info, userContext);
+        mspCustomer.getAlternateContacts().getAlternateContact().forEach(
+            alternateContact -> {
+                ContactInfo contactInfo = alternateContact.getContactInfo();
+                Contact contact = new Contact();
+                contact.setFirstName(alternateContact.getFirstName());
+                contact.setMiddleName(alternateContact.getMName());
+                contact.setLastName(alternateContact.getLastName());
+                List<String> phoneNumbers =
+                    multispeakCustomerInfoService.getPhoneNumbers(contactInfo.getPhoneNumbers(), userContext);
+                contact.setPhoneNumbers(StringUtils.join(phoneNumbers, ", "));
 
-            List<String> phoneNumbers = multispeakCustomerInfoService.getPhoneNumbers(mspCustomer, userContext);
-            boolean hasPhones = phoneNumbers.size() > 0;
+                List<String> emailAddresses =
+                    multispeakCustomerInfoService.getEmailAddresses(contactInfo.getEMailAddresses(), userContext);
+                contact.setEmailAddresses(StringUtils.join(emailAddresses, ", "));
+                contact.setAddresses(getAddressList(contactInfo.getAddressItems()));
+                info.add(contact);
 
-            List<String> emailAddresses = multispeakCustomerInfoService.getEmailAddresses(mspCustomer, userContext);
-            boolean hasEmails = emailAddresses.size() > 0;
-
-            List<Info> infoList = Lists.newArrayList();
-            if (hasPhones && hasEmails) {
-                add("Phone Number", StringUtils.join(phoneNumbers, ", "), true, infoList, userContext);
-                add("Email Address", StringUtils.join(emailAddresses, ", "), true, infoList, userContext);
-            }
-            customerAlternateContactMap.put(alternateContactID, infoList);
-        });
-        return customerAlternateContactMap;
+            });
+        return info;
     }
 
-    // Returns the list of address of the customer contact
-    private List<Address> getCustomerAddressInfo(Customer mspCustomer) {
-
+    private List<Address> getAddressList(AddressItems addressItems) {
         List<Address> addressList = new ArrayList<>();
-        if (mspCustomer.getContactInfo() != null && mspCustomer.getContactInfo().getAddressItems() != null) {
-
-            mspCustomer.getContactInfo().getAddressItems().getAddressItem().forEach(addressItem -> {
-                if (addressItem.getAddress() != null) {
-                    Address address = new Address();
-                    address.setLocationAddress1(addressItem.getAddress().getAddress1());
-                    address.setLocationAddress2(addressItem.getAddress().getAddress2());
-                    address.setCityName(addressItem.getAddress().getCity());
-                    address.setStateCode(addressItem.getAddress().getState());
-                    address.setZipCode(addressItem.getAddress().getPostalCode());
-                }
-            });
-        }
+        addressItems.getAddressItem().forEach(addressItem -> {
+            if (addressItem.getAddress() != null) {
+                Address address = new Address();
+                address.setLocationAddress1(addressItem.getAddress().getAddress1());
+                address.setLocationAddress2(addressItem.getAddress().getAddress2());
+                address.setCityName(addressItem.getAddress().getCity());
+                address.setStateCode(addressItem.getAddress().getState());
+                address.setZipCode(addressItem.getAddress().getPostalCode());
+                addressList.add(address);
+            }
+        });
         return addressList;
     }
 
     // Service location basic information
-    private Map<String, List<Info>> getServLocBasicsInfo(ServiceLocation mspServLoc, YukonUserContext userContext) {
+    private List<Info> getServLocBasicsInfo(ServiceLocation mspServLoc, YukonUserContext userContext) {
 
-        Map<String, List<Info>> serviceLocationMap = new HashMap<>();
         List<Info> infoList = new ArrayList<Info>();
 
         add("Primary Identifier ", mspServLoc.getPrimaryIdentifier(), false, infoList, userContext);
@@ -351,10 +358,8 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                     infoList, userContext);
             }
         }
-        if (mspServLoc.getPrimaryIdentifier() != null) {
-            serviceLocationMap.put(mspServLoc.getPrimaryIdentifier().getValue(), infoList);
-        }
-        return serviceLocationMap;
+
+        return infoList;
     }
 
     // Service Location Hazards Information
@@ -377,9 +382,9 @@ public class MspAccountInformationV5 implements MspAccountInformation {
     }
 
     // Service Location - Electric Service Point
-    private Map<String, List<Info>> getElectricServicePointInfo(ServiceLocation mspServLoc, YukonUserContext userContext) {
+    private List<Info> getElectricServicePointInfo(ServiceLocation mspServLoc, YukonUserContext userContext) {
 
-        Map<String, List<Info>> electricServicePointMap = new HashMap<>();
+        // Map<String, List<Info>> electricServicePointMap = new HashMap<>();
         List<Info> info = new ArrayList<>();
 
         mspServLoc.getElectricServicePoints().getElectricServicePoint().forEach(
@@ -630,17 +635,19 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                             info, userContext);
                     }
                 }
-                if (electricServicePoint.getPrimaryIdentifier() != null) {
-                    electricServicePointMap.put(electricServicePoint.getPrimaryIdentifier().getValue(), info);
-                }
+                /*
+                 * if (electricServicePoint.getPrimaryIdentifier() != null) {
+                 * electricServicePointMap.put(electricServicePoint.getPrimaryIdentifier().getValue(), info);
+                 * }
+                 */
             });
-        return electricServicePointMap;
+        return info;
     }
 
     // Service Location - Gas Service Point
-    private Map<String, List<Info>> getGasServicePointInfo(ServiceLocation mspServLoc, YukonUserContext userContext) {
+    private List<Info> getGasServicePointInfo(ServiceLocation mspServLoc, YukonUserContext userContext) {
 
-        Map<String, List<Info>> gasServicePointMap = new HashMap<>();
+        // Map<String, List<Info>> gasServicePointMap = new HashMap<>();
         List<Info> info = new ArrayList<>();
 
         mspServLoc.getGasServicePoints().getGasServicePoint().forEach(
@@ -716,18 +723,21 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                 add("Rate Code", gasServicePoint.getRateCode(), false, info, userContext);
                 add("Service Sub Type", gasServicePoint.getServiceSubType(), false, info, userContext);
 
-                if (gasServicePoint.getPrimaryIdentifier() != null) {
-                    gasServicePointMap.put(gasServicePoint.getPrimaryIdentifier().getValue(), info);
-                }
+                /*
+                 * if (gasServicePoint.getPrimaryIdentifier() != null) {
+                 * gasServicePointMap.put(gasServicePoint.getPrimaryIdentifier().getValue(), info);
+                 * }
+                 */
 
             });
-        return gasServicePointMap;
+        // return gasServicePointMap;
+        return info;
     }
 
     // Service Location - Propane Service Point
-    private Map<String, List<Info>> getPropaneServicePointInfo(ServiceLocation mspServLoc, YukonUserContext userContext) {
+    private List<Info> getPropaneServicePointInfo(ServiceLocation mspServLoc, YukonUserContext userContext) {
 
-        Map<String, List<Info>> propaneServicePointMap = new HashMap<>();
+        // Map<String, List<Info>> propaneServicePointMap = new HashMap<>();
         List<Info> info = new ArrayList<>();
 
         mspServLoc.getPropaneServicePoints().getPropaneServicePoint().forEach(
@@ -805,16 +815,18 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                 add("Rate Code", propaneServicePoint.getRateCode(), false, info, userContext);
                 add("Service Sub Type", propaneServicePoint.getServiceSubType(), false, info, userContext);
 
-                if (propaneServicePoint.getPrimaryIdentifier() != null) {
-                    propaneServicePointMap.put(propaneServicePoint.getPrimaryIdentifier().getValue(), info);
-                }
+                /*
+                 * if (propaneServicePoint.getPrimaryIdentifier() != null) {
+                 * propaneServicePointMap.put(propaneServicePoint.getPrimaryIdentifier().getValue(), info);
+                 * }
+                 */
 
             });
-        return propaneServicePointMap;
+        return info;
     }
 
     // Service Location - Water Service Point
-    private Map<String, List<Info>> getWaterServicePointInfo(ServiceLocation mspServLoc, YukonUserContext userContext) {
+    private List<Info> getWaterServicePointInfo(ServiceLocation mspServLoc, YukonUserContext userContext) {
 
         Map<String, List<Info>> waterServicePointMap = new HashMap<>();
         List<Info> info = new ArrayList<>();
@@ -870,13 +882,15 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                 add("Rate Code", waterServicePoint.getRateCode(), false, info, userContext);
                 add("Service Sub Type", waterServicePoint.getServiceSubType(), false, info, userContext);
 
-                if (waterServicePoint.getPrimaryIdentifier() != null) {
-                    waterServicePointMap.put(waterServicePoint.getPrimaryIdentifier().getValue(), info);
-                }
+                /*
+                 * if (waterServicePoint.getPrimaryIdentifier() != null) {
+                 * waterServicePointMap.put(waterServicePoint.getPrimaryIdentifier().getValue(), info);
+                 * }
+                 */
 
             });
 
-        return waterServicePointMap;
+        return info;
     }
 
     private void makeBillingInformation(BillingStatusInformation billingInfo, List<Info> info,
@@ -911,8 +925,8 @@ public class MspAccountInformationV5 implements MspAccountInformation {
             this.label = label;
             if (value != null) {
                 MspAccountInformationInfo accountInfo =
-                    Arrays.asList(MspAccountInformationInfo.values()).stream().filter(objType -> objType.isInstance(value))
-                    .findFirst().orElse(MspAccountInformationInfo.OTHER);
+                    Arrays.asList(MspAccountInformationInfo.values()).stream().filter(
+                        objType -> objType.isInstance(value)).findFirst().orElse(MspAccountInformationInfo.OTHER);
 
                 if (accountInfo == MspAccountInformationInfo.DATE) {
                     this.value = formatDate((Date) value, userContext);

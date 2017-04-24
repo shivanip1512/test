@@ -3,46 +3,51 @@ package com.cannontech.multispeak.service.impl.v5;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.msp.beans.v5.commontypes.EMailAddress;
+import com.cannontech.msp.beans.v5.commontypes.EMailAddresses;
 import com.cannontech.msp.beans.v5.commontypes.PhoneNumber;
-import com.cannontech.msp.beans.v5.multispeak.ContactInfo;
-import com.cannontech.msp.beans.v5.multispeak.Customer;
+import com.cannontech.msp.beans.v5.commontypes.PhoneNumbers;
 import com.cannontech.multispeak.service.v5.MultispeakCustomerInfoService;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Lists;
 
 public class MultispeakCustomerInfoServiceImpl implements MultispeakCustomerInfoService {
+    @Autowired private PhoneNumberFormattingService phoneNumberFormattingService;
 
     @Override
-    public List<String> getPhoneNumbers(Customer mspCustomer, YukonUserContext userContext) {
-        List<String> phoneNumbers = Lists.newArrayList();
-        ContactInfo contactInfo = mspCustomer.getContactInfo();
-        if (contactInfo != null && contactInfo.getPhoneNumbers() != null) {
+    public List<String> getPhoneNumbers(PhoneNumbers phoneNumbers, YukonUserContext userContext) {
 
-            for (PhoneNumber p : contactInfo.getPhoneNumbers().getPhoneNumber()) {
+        List<String> phoneNumbersList = null;
+        if (phoneNumbers != null) {
+            phoneNumbersList = Lists.newArrayList();
+            for (PhoneNumber p : phoneNumbers.getPhoneNumber()) {
                 StringBuffer fullPhone = new StringBuffer();
                 if (p.getPhone() != null) {
-                    fullPhone.append(p.getPhone().getAreaCode());
-                    fullPhone.append(p.getPhone().getLocalNumber());
+                    fullPhone.append(phoneNumberFormattingService.formatPhone(p.getPhone().getAreaCode(),
+                        p.getPhone().getLocalNumber()));
                 }
                 if (p.getPhoneType() != null && p.getPhoneType() != null) {
                     fullPhone.append(StringUtils.SPACE);
                     fullPhone.append(p.getPhoneType().getValue());
                 }
                 if (!StringUtils.isBlank(fullPhone)) {
-                    phoneNumbers.add(fullPhone.toString());
+                    phoneNumbersList.add(fullPhone.toString());
                 }
             }
         }
-        return phoneNumbers;
+        return phoneNumbersList;
     }
 
     @Override
-    public List<String> getEmailAddresses(Customer mspCustomer, YukonUserContext userContext) {
-        List<String> emails = Lists.newArrayList();
-        ContactInfo contactInfo = mspCustomer.getContactInfo();
-        if (contactInfo != null && contactInfo.getEMailAddresses() != null) {
-            for (EMailAddress e : contactInfo.getEMailAddresses().getEMailAddress()) {
+    public List<String> getEmailAddresses(EMailAddresses emailAddresses, YukonUserContext userContext) {
+        List<String> emails = null;
+
+        if (emailAddresses != null) {
+            emails = Lists.newArrayList();
+            for (EMailAddress e : emailAddresses.getEMailAddress()) {
                 StringBuffer fullEmail = new StringBuffer();
                 if (e.getEMail() != null) {
                     fullEmail.append(e.getEMail());

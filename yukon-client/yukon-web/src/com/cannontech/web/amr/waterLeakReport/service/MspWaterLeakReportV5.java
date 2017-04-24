@@ -43,11 +43,14 @@ public class MspWaterLeakReportV5 extends MspWaterLeakReport {
             mspMeterAccountInfo = new MspMeterAccountInfo();
             mspMeterAccountInfo.mspCustomer = mspObjectDao.getMspCustomer(meter, mspVendor);
             mspMeterAccountInfo.mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor);
-
-            mspMeterAccountInfo.phoneNumbers =
-                mspCustomerInfoService.getPhoneNumbers(mspMeterAccountInfo.mspCustomer, userContext);
-            mspMeterAccountInfo.emailAddresses =
-                mspCustomerInfoService.getEmailAddresses(mspMeterAccountInfo.mspCustomer, userContext);
+            if (mspMeterAccountInfo.mspCustomer.getContactInfo() != null) {
+                mspMeterAccountInfo.phoneNumbers =
+                    mspCustomerInfoService.getPhoneNumbers(
+                        mspMeterAccountInfo.mspCustomer.getContactInfo().getPhoneNumbers(), userContext);
+                mspMeterAccountInfo.emailAddresses =
+                    mspCustomerInfoService.getEmailAddresses(
+                        mspMeterAccountInfo.mspCustomer.getContactInfo().getEMailAddresses(), userContext);
+            }
             mspMeterAccountInfoMap.put(paoId, mspMeterAccountInfo);
 
         }

@@ -14,6 +14,7 @@ import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
@@ -66,7 +67,9 @@ public class AccountInformationWidget extends WidgetControllerBase{
             return mav;
         }
         mav.addObject("hasVendorId", true);
-
+        mav.addObject("deviceId", deviceId);
+        MultiSpeakVersion multiSpeakVersion = mspHandler.getMSPVersion();
+        mav.addObject("multiSpeakVersion", multiSpeakVersion);
         YukonMeter meter = meterDao.getForId(deviceId);
         return mspHandler.getMspInformation(meter, mav, userContext);
     }
