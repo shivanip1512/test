@@ -45,5 +45,9 @@ public interface DashboardDao {
      */
     void insertWidgets(int dashboardId, List<Widget> widgets, int column);
 
-    void assign(int userId, int dashboardId, DashboardPageType type);
+    void assignDashboard(Iterable<Integer> userIds, DashboardPageType dashboardType, int dashboardId);
+
+    void unassignDashboard(Iterable<Integer> userIds, DashboardPageType dashboardType);
+
+    Dashboard getDashboard(int userId, DashboardPageType dashboardType);
 }

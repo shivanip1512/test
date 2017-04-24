@@ -20,7 +20,7 @@ public final class DashboardRowMapper implements YukonRowMapper<Dashboard> {
         dashboard.setDescription(rs.getString("Description"));
         dashboard.setName(rs.getString("Name"));
         dashboard.setVisibility(rs.getEnum("Visibility", Visibility.class));
-        dashboard.setPageType(DashboardPageType.MAIN); //TODO 
+        dashboard.setPageType(rs.getEnum("PageAssignment", DashboardPageType.class)); //TODO 
         
         // If there's an assigned owner, get the LiteYukonUser, otherwise leave it null
         if (rs.getNullableInt("OwnerId") != null) {

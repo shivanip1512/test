@@ -1,13 +1,18 @@
 package com.cannontech.web.common.dashboard.dao.impl;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TypeRowMapper;
@@ -18,6 +23,7 @@ import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardBase;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.Widget;
+import com.google.common.collect.Lists;
 
 public class DashboardDaoImpl implements DashboardDao {
     private static final int col1WidgetBase = 100; // This implies no more than 100 widgets per column.
@@ -28,21 +34,49 @@ public class DashboardDaoImpl implements DashboardDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     
     @Override
-    public Dashboard getDashboard(int dashboardId) {
+    public Dashboard getDashboard(int userId, DashboardPageType dashboardType){
         
         // Get dashboard
         SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
-        dashboardSql.append("SELECT DashboardId, Name, Description, OwnerId, Visibility, UserId, UserName, Status, ForceReset, UserGroupId");
+        dashboardSql.append("SELECT d.DashboardId, Name, Description, OwnerId, Visibility, yu.UserID, UserName, Status, ForceReset, UserGroupId, PageAssignment");
         dashboardSql.append("FROM Dashboard d");
         dashboardSql.append("LEFT JOIN YukonUser yu ON d.OwnerId = yu.UserID");
-        dashboardSql.append("WHERE DashboardId").eq(dashboardId);
+        dashboardSql.append("JOIN UserDashboard du ON d.DashboardId = du.DashboardId");
+        dashboardSql.append("WHERE du.UserID").eq(userId);
+        dashboardSql.append("AND du.PageAssignment").eq_k(dashboardType);
+        try {
+            Dashboard dashboard = jdbcTemplate.queryForObject(dashboardSql, dashboardRowMapper);
+            addWidgets(dashboard);
+            return dashboard;
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        }
+    }
+    
+    @Override
+    public Dashboard getDashboard(int dashboardId) {
+        // Get dashboard
+        SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
+        dashboardSql.append("SELECT d.DashboardId, Name, Description, OwnerId, Visibility, yu.UserID, UserName, Status, ForceReset, UserGroupId, PageAssignment");
+        dashboardSql.append("FROM Dashboard d");
+        dashboardSql.append("LEFT JOIN YukonUser yu ON d.OwnerId = yu.UserID");
+        dashboardSql.append("LEFT JOIN UserDashboard du ON d.DashboardId = du.DashboardId");
+        dashboardSql.append("WHERE d.DashboardId").eq(dashboardId);
         Dashboard dashboard = jdbcTemplate.queryForObject(dashboardSql, dashboardRowMapper);
         
+        addWidgets(dashboard);
+        return dashboard;
+    }
+    
+    /**
+     * Adds widgets to dashboard
+     */
+    private void addWidgets(Dashboard dashboard){
         // Get associated widgets
         SqlStatementBuilder widgetSql = new SqlStatementBuilder();
         widgetSql.append("SELECT WidgetId, DashboardId, WidgetType, Ordering");
         widgetSql.append("FROM Widget");
-        widgetSql.append("WHERE DashboardId").eq(dashboardId);
+        widgetSql.append("WHERE DashboardId").eq(dashboard.getDashboardId());
         widgetSql.append("ORDER BY Ordering");
         jdbcTemplate.query(widgetSql, new WidgetRowCallbackHandler(dashboard));
         
@@ -51,7 +85,7 @@ public class DashboardDaoImpl implements DashboardDao {
         widgetParamSql.append("SELECT ws.WidgetId, Name, Value");
         widgetParamSql.append("FROM WidgetSettings ws");
         widgetParamSql.append("JOIN Widget w ON w.WidgetId = ws.WidgetId");
-        widgetParamSql.append("WHERE w.DashboardId").eq(dashboardId);
+        widgetParamSql.append("WHERE w.DashboardId").eq(dashboard.getDashboardId());
         WidgetSettingCallbackHandler widgetSettingCallbackHandler = new WidgetSettingCallbackHandler();
         jdbcTemplate.query(widgetParamSql, widgetSettingCallbackHandler);
         
@@ -61,7 +95,6 @@ public class DashboardDaoImpl implements DashboardDao {
             widget.setParameters(Optional.ofNullable(parameters).orElse(new HashMap<>()));
         });
         
-        return dashboard;
     }
     
     @Override
@@ -96,7 +129,10 @@ public class DashboardDaoImpl implements DashboardDao {
     
     @Override
     public int create(DashboardBase dashboard) {
-        int dashboardId = nextValueHelper.getNextValue("Dashboard");
+        int dashboardId = dashboard.getDashboardId();
+        if (dashboardId == 0) {
+            dashboardId = nextValueHelper.getNextValue("Dashboard");
+        }
         SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
         SqlParameterSink dashboardSink = dashboardSql.insertInto("Dashboard");
         dashboardSink.addValue("DashboardId", dashboardId);
@@ -144,12 +180,47 @@ public class DashboardDaoImpl implements DashboardDao {
     }
 
     @Override
-    public void assign(int userId, int dashboardId, DashboardPageType type) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        SqlParameterSink param = sql.insertInto("UserDashboard");
-        param.addValue("UserId", userId);
-        param.addValue("DashboardId", dashboardId);
-        param.addValue("PageAssignment", type);
-        jdbcTemplate.update(sql);
-    } 
+    @Transactional
+    public void assignDashboard(Iterable<Integer> userIds, DashboardPageType dashboardType, int dashboardId) {
+        List<List<Integer>> ids = Lists.partition(Lists.newArrayList(userIds), ChunkingSqlTemplate.DEFAULT_SIZE);
+        ids.forEach(idBatch -> {
+            unassignDashboardForType(idBatch, dashboardType);
+            SqlStatementBuilder insertSql = new SqlStatementBuilder();
+            insertSql.append("INSERT INTO UserDashboard");
+            insertSql.append("(UserId, DashboardId, PageAssignment)");
+            insertSql.append("values");
+            insertSql.append("(?, ?, ?)");
+
+            jdbcTemplate.batchUpdate(insertSql.toString(), new BatchPreparedStatementSetter() {
+                @Override
+                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                    ps.setInt(1, idBatch.get(i));
+                    ps.setInt(2, dashboardId);
+                    ps.setString(3, dashboardType.name());
+                }
+
+                @Override
+                public int getBatchSize() {
+                    return idBatch.size();
+                }
+            });
+        });
+    }
+    
+    @Override
+    @Transactional
+    public void unassignDashboard(Iterable<Integer> userIds, DashboardPageType dashboardType) {
+        List<List<Integer>> ids = Lists.partition(Lists.newArrayList(userIds), ChunkingSqlTemplate.DEFAULT_SIZE);
+        ids.forEach(idBatch -> {
+            unassignDashboardForType(userIds, dashboardType);
+        });
+    }
+    
+    private void unassignDashboardForType(Iterable<Integer> userIds, DashboardPageType type) {
+        SqlStatementBuilder unassignSql = new SqlStatementBuilder();
+        unassignSql.append("DELETE FROM UserDashboard");
+        unassignSql.append("WHERE UserId").in(userIds);
+        unassignSql.append("AND PageAssignment").eq_k(type);
+        jdbcTemplate.update(unassignSql);
+    }
 }

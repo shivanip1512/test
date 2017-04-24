@@ -23,7 +23,7 @@ public class DashboardServiceImpl implements DashboardService {
  
     @Override
     public Dashboard getAssignedDashboard(int userId, DashboardPageType dashboardType) {
-        throw new MethodNotImplementedException();
+        return dashboardDao.getDashboard(userId, dashboardType);
     }
 
     @Override
@@ -58,7 +58,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public void setDefault(Iterable<Integer> userIds, DashboardPageType dashboardType, int dashboardId) {
-        throw new MethodNotImplementedException();
+        dashboardDao.assignDashboard(userIds, dashboardType, dashboardId);
     }
 
     @Override
@@ -95,6 +95,7 @@ public class DashboardServiceImpl implements DashboardService {
     public Dashboard copy(int dashboardId, int userId) {
         Dashboard dashboard = getDashboard(dashboardId);
         dashboard.setOwner(userDao.getLiteYukonUser(userId));
+        dashboard.setDashboardId(0);
         int newDashboardId = create(dashboard);
         return getDashboard(newDashboardId);
     }
@@ -105,7 +106,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public void assign(int userId, int dashboardId) {
+    public void changeOwner(int userId, int dashboardId) {
         Dashboard dashboard = getDashboard(dashboardId);
         dashboard.setOwner(userDao.getLiteYukonUser(userId));
         update(dashboard);
