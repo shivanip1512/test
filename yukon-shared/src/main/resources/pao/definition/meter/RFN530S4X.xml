@@ -54,8 +54,6 @@
         <pointInfo name="Delivered kVArh (Rate D kVArh)" attributes="KVARH_RATE_D"/>
         <pointInfo name="Delivered kW" init="true" attributes="DEMAND"/>
         <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
-
-        <!-- Overriding the USAGE attribute to map to Delivered kWh. (The RFN530_S4_BASE overrides USAGE with the Sum kWh point, so we need to "undo" that.  -->
         <pointInfo name="Delivered kWh" init="true" attributes="USAGE,DELIVERED_KWH"/>
         <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
         <pointInfo name="Delivered Peak kVA (Rate A kVA)" attributes="PEAK_KVA_RATE_A"/>
@@ -208,8 +206,6 @@
         <pointInfo name="Sum Peak kVAr (Rate B kVAr)" attributes="SUM_PEAK_KVAR_RATE_B"/>
         <pointInfo name="Sum Peak kVAr (Rate C kVAr)" attributes="SUM_PEAK_KVAR_RATE_C"/>
         <pointInfo name="Sum Peak kVAr (Rate D kVAr)" attributes="SUM_PEAK_KVAR_RATE_D"/>
-        
-        <!-- Overriding the USAGE attribute to map to Peak kW. (The RFN530_S4_BASE overrides PEAK_DEMAND with the Sum Peak kW point, so we need to "undo" that.  -->
         <pointInfo name="Sum Peak kW" init="true" attributes="SUM_PEAK_DEMAND"/>
         <pointInfo name="Sum Peak kW (Rate A kW)" attributes="SUM_PEAK_DEMAND_RATE_A"/>
         <pointInfo name="Sum Peak kW (Rate B kW)" attributes="SUM_PEAK_DEMAND_RATE_B"/>

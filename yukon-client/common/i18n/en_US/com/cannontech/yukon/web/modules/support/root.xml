@@ -154,7 +154,6 @@
     <entry key="yukon.web.modules.support.supportBundle.writerName.serverXmlFileSource">server.xml</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.deviceDefinitionXmlSource">deviceDefinition.xml</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.rfnPointMappingXmlSource">rfnPointMappinng.xml</entry>
-    <entry key="yukon.web.modules.support.supportBundle.writerName.paoDefinitionXmlSource">paoDefinition.xml</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.logsFilesSource">Server Log Files</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.commFilesSource">Comm Log Files</entry>
     <entry key="yukon.web.modules.support.supportBundle.writerName.clientLogFilesSource">Client Log Files</entry>

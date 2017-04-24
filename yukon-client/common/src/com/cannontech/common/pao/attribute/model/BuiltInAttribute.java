@@ -26,7 +26,15 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     
     // yukon-server/COMMON/PointAttribute.cpp
     // yukon-server/COMMON/include/PointAttribute.h
-    
+
+     /** 
+       * Point Name naming convention: 
+       * [Net|Sum] [Delivered|Received] [Peak] [UOM] [Frozen] [Rate #|Phase X|Channel #] 
+       * Examples: 
+       * Net kWh OR Net Delivered kWh 
+       * Received kWh Rate A 
+       * Note: [Delivered] - can be omitted/assumed where it make sense; Peak kW or kVar for examples  
+       */
     BLINK_COUNT("Blink Count", AttributeGroup.BLINK_AND_OUTAGE),
     COMM_STATUS("Communication Status", AttributeGroup.STATUS, false),   // updated directly by port activity only
     CONTROL_POINT("Control Point", AttributeGroup.STATUS),
