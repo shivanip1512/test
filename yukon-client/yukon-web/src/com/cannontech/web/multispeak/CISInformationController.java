@@ -27,7 +27,7 @@ public class CISInformationController {
     @Autowired private PaoLoadingService paoLoadingService;
 
     @RequestMapping("viewCISDetails/{deviceId}")
-    public ModelAndView yukonSetupHome(HttpServletRequest request, ModelMap map, YukonUserContext context,
+    public ModelAndView viewCISDetails(HttpServletRequest request, ModelMap map, YukonUserContext context,
             @PathVariable int deviceId) {
         ModelAndView mav = new ModelAndView("setup/cisDetails.jsp");
         YukonMeter meter = meterDao.getForId(deviceId);
