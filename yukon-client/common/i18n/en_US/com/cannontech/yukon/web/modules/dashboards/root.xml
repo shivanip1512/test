@@ -43,6 +43,7 @@
     <entry key="yukon.web.modules.dashboard.edit.pageTitle">Dashboard: {0} Edit</entry>
     <entry key="yukon.web.modules.dashboard.edit.crumbTitle">Dashboard Edit</entry>
     <entry key="yukon.web.modules.dashboard.editDetails.label">Edit Details</entry>
+    <entry key="yukon.web.modules.dashboard.save.success">Dashboard saved successfully.</entry>    
     
     <!-- Add Widgets JSP -->
     <entry key="yukon.web.modules.dashboard.addWidgets.label">Add Widgets</entry>

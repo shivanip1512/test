@@ -16,6 +16,8 @@
     
     <form:form id="dashboard-details" commandName="dashboard" action="${action}" method="POST">
      <cti:csrfToken/>
+     
+       <form:hidden path="dashboardId"/>
               
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".name">

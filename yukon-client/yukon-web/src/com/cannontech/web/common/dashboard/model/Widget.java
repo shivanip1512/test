@@ -49,7 +49,7 @@ public class Widget {
     public void setParameters(Map<String, String> parameters) {
         if (parameters != null) {
             this.parameters = new HashMap<>();
-            parameters.putAll(parameters);
+            this.parameters.putAll(parameters);
         }
     }
 }

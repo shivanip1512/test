@@ -22,15 +22,16 @@ yukon.dashboards = (function () {
             
             /** 'Save' button clicked on the dashboard details popup. */
             $(document).on('yukon:dashboard:details:save', function (ev) {
-                $('#dashboard-details').submit();
-/*                $('#dashboard-details').ajaxSubmit({
+                $('#dashboard-details').ajaxSubmit({
                     success: function (result, status, xhr, $form) {
+                        $(this).closest('.js-dashboard-details-popup').dialog('close');
+                        var dashboardId = result.dashboardId;
+                        window.location.href = yukon.url('/dashboards/' + dashboardId + '/edit');
                     },
                     error: function (xhr, status, error, $form) {
-                    },
-                    complete: function () {
+                        $('#dashboard-details').html(xhr.responseText);
                     }
-                });*/
+                });
             });
             
             $(document).on('click', '.js-favorite-dashboard', function () {

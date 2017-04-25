@@ -55,8 +55,8 @@
                         <td>${dashboard.users}</td>
                         <td>
                             <cm:dropdown icon="icon-cog">
-                                <div class="dn copy-dashboard-${dashboardId}" data-dialog data-title="<cti:msg2 key=".copyDashboard.label"/>"
-                                data-url="<cti:url value="/dashboards/${dashboardId}/copy"/>"></div>
+                                <div class="dn copy-dashboard-${dashboardId} js-dashboard-details-popup" data-dialog data-title="<cti:msg2 key=".copyDashboard.label"/>"
+                                data-url="<cti:url value="/dashboards/${dashboardId}/copy"/>" data-event="yukon:dashboard:details:save"></div>
                                 <cm:dropdownOption key=".copy" icon="icon-disk-multiple" data-popup=".copy-dashboard-${dashboardId}"/>
                                 <cti:url var="editUrl" value="/dashboards/${dashboardId}/edit"/>
                                 <cm:dropdownOption key=".edit" icon="icon-pencil" href="${editUrl}"/>
@@ -99,7 +99,7 @@
 </cti:tabs>
 
 <%-- CREATE DASHBOARD POPUP --%>
-<div class="dn js-create-dashboard-popup" data-dialog
+<div class="dn js-create-dashboard-popup js-dashboard-details-popup" data-dialog
     data-title="<cti:msg2 key=".createDashboard.label"/>"
     data-ok-text="<cti:msg2 key="yukon.common.create"/>"
     data-event="yukon:dashboard:details:save" 

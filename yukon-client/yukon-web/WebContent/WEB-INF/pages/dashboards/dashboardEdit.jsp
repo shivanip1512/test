@@ -9,7 +9,7 @@
 
     <div class="page-actions fr">
         <cti:button icon="icon-plus-green" nameKey="addWidgets" data-popup=".js-add-widgets-popup"/>
-        <cti:button icon="icon-pencil" nameKey="editDetails" data-popup=".js-edit-details-popup"/>
+        <cti:button icon="icon-pencil" nameKey="editDetails" data-popup=".js-dashboard-details-popup"/>
     </div>
     <br/><br/>
     
@@ -55,7 +55,7 @@
     data-url="<cti:url value="/dashboards/${dashboard.dashboardId}/addWidgets"/>"></div>
         
     <%-- EDIT DETAILS POPUP --%>
-<div class="dn js-edit-details-popup" data-dialog
+<div class="dn js-dashboard-details-popup" data-dialog
     data-title="<cti:msg2 key=".editDetails.label"/>"
     data-event="yukon:dashboard:details:save" 
     data-url="<cti:url value="/dashboards/${dashboard.dashboardId}/editDetails"/>"></div>
