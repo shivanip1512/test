@@ -291,18 +291,17 @@ public class DashboardsController {
     public String deleteDashboard(FlashScope flash, @PathVariable int id, LiteYukonUser user) {
         Dashboard dashboard = dashboardService.getDashboard(id);
         LiteYukonUser owner = dashboard.getOwner();
-        
-        if (dashboardDao.getAllUsersForDashboard(id).size() > 1) {
+        if (dashboard.getVisibility() == Visibility.SYSTEM) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.system", dashboard.getName()));
+        } else if (dashboardDao.getAllUsersForDashboard(id).size() > 1) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.currentInUse", dashboard.getName()));
-            return "redirect:/dashboards/manage";
         } else if (owner == null || owner.getUserID() == user.getUserID()) {
             dashboardService.delete(id);
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", dashboard.getName()));
-            return "redirect:/dashboards/manage";
         } else {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.notOwner", dashboard.getName()));
-            return "redirect:/dashboards/manage";
         }
+        return "redirect:/dashboards/manage";
     }
     
     @RequestMapping("{id}/favorite")
