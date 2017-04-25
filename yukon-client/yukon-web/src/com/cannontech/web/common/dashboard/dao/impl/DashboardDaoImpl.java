@@ -134,8 +134,6 @@ public class DashboardDaoImpl implements DashboardDao {
             }
         });
         
-        dashboards.forEach( d -> {
-        });
         return dashboards.stream()
                          .map(d -> new LiteDashboard(d, dashboardIdToUserCount.get(d.getDashboardId())))
                          .collect(Collectors.toList());
