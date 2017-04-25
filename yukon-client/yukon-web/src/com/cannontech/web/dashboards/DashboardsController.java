@@ -288,29 +288,19 @@ public class DashboardsController {
     }
     
     @RequestMapping("{id}/delete")
-    public String deleteDashboard(FlashScope flash, @PathVariable int id, YukonUserContext userContext) {
-        if (dashboardDao.getDashboard(id).getVisibility() == Visibility.SYSTEM) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.system"));
+    public String deleteDashboard(FlashScope flash, @PathVariable int id, LiteYukonUser user) {
+        Dashboard dashboard = dashboardService.getDashboard(id);
+        LiteYukonUser owner = dashboard.getOwner();
+        
+        if (dashboardDao.getAllUsersForDashboard(id).size() > 1) {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.currentInUse", dashboard.getName()));
             return "redirect:/dashboards/manage";
-        }
-        try {
-            dashboardService.getOwner(id);
-            LiteYukonUser user = userContext.getYukonUser();
-            List<Integer> userIdList = dashboardDao.getAllUsersForDashboard(id);
-            if (user == dashboardService.getOwner(id).get()) {
-                if (userIdList.size() <= 1 && (userIdList.get(0) == null || userIdList.get(0) == user.getLiteID())) {
-                    dashboardService.delete(id);
-                    flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", dashboardService.getDashboard(id).getName()));
-                    return "redirect:/dashboards/manage";
-                }
-                flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.currentInUse", dashboardService.getDashboard(id).getName()));
-                return "redirect:/dashboards/manage";
-            }
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.notOwner", dashboardService.getDashboard(id).getName()));
+        } else if (owner == null || owner.getUserID() == user.getUserID()) {
+            dashboardService.delete(id);
+            flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", dashboard.getName()));
             return "redirect:/dashboards/manage";
-        } 
-        catch (Exception e) {
-            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception", dashboardService.getDashboard(id).getName()));
+        } else {
+            flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.notOwner", dashboard.getName()));
             return "redirect:/dashboards/manage";
         }
     }
