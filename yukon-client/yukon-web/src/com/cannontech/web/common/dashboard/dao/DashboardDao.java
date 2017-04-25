@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardBase;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
+import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.model.Widget;
 
 /**
@@ -50,4 +51,8 @@ public interface DashboardDao {
     void unassignDashboard(Iterable<Integer> userIds, DashboardPageType dashboardType);
 
     Dashboard getDashboard(int userId, DashboardPageType dashboardType);
+
+    List<LiteDashboard> getOwnedDashboards(int ownerId);
+
+    List<LiteDashboard> getAllOwnerless();
 }

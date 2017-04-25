@@ -41,9 +41,9 @@ import com.cannontech.web.PageEditMode;
 import com.cannontech.web.common.dashboard.dao.DashboardDao;
 import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
-import com.cannontech.web.common.dashboard.model.UserDashboardSettings;
 import com.cannontech.web.common.dashboard.model.DashboardSetting;
 import com.cannontech.web.common.dashboard.model.LiteDashboard;
+import com.cannontech.web.common.dashboard.model.UserDashboardSettings;
 import com.cannontech.web.common.dashboard.model.Visibility;
 import com.cannontech.web.common.dashboard.model.Widget;
 import com.cannontech.web.common.dashboard.model.WidgetCategory;
@@ -366,30 +366,27 @@ public class DashboardsController {
     
     private List<LiteDashboard> createDashboardsListMockup(YukonUserContext userContext) {
         List<LiteDashboard> dashboards = new ArrayList<>();
-        LiteDashboard dashboard = new LiteDashboard();
+        Dashboard dashboard = new Dashboard();
         dashboard.setName("Yukon Default Dashboard");
         dashboard.setDashboardId(12);
         dashboard.setPageType(DashboardPageType.MAIN);
         dashboard.setVisibility(Visibility.SYSTEM);
         dashboard.setOwner(userContext.getYukonUser());
-        dashboard.setUsers(2456);
-        dashboards.add(dashboard);
-        LiteDashboard dashboard2 = new LiteDashboard();
+        dashboards.add(new LiteDashboard(dashboard, 2456));
+        Dashboard dashboard2 = new Dashboard();
         dashboard2.setName("Utility Company Sample Dashboard");
         dashboard2.setDashboardId(13);
         dashboard2.setPageType(DashboardPageType.MAIN);
         dashboard2.setVisibility(Visibility.SHARED);
         dashboard2.setOwner(userContext.getYukonUser());
-        dashboard2.setUsers(5);
-        dashboards.add(dashboard2);
-        LiteDashboard dashboard3 = new LiteDashboard();
+        dashboards.add(new LiteDashboard(dashboard2, 5));
+        Dashboard dashboard3 = new Dashboard();
         dashboard3.setName("User Specific Dashboard");
         dashboard3.setDashboardId(14);
         dashboard3.setPageType(DashboardPageType.MAIN);
         dashboard3.setVisibility(Visibility.PRIVATE);
         dashboard3.setOwner(userContext.getYukonUser());
-        dashboard3.setUsers(0);
-        dashboards.add(dashboard3);
+        dashboards.add(new LiteDashboard(dashboard3, 0));
         return dashboards;
     }
     

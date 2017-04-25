@@ -9,25 +9,20 @@ public class LiteDashboard extends DashboardBase {
 
     private int users;
 
-    public LiteDashboard() {
-    }
-
-    public LiteDashboard(DashboardBase dashboard, int users) {
+    public LiteDashboard(DashboardBase dashboard, Integer users) {
         setDashboardId(dashboard.getDashboardId());
         setDescription(dashboard.getDescription());
         setName(dashboard.getName());
         setOwner(dashboard.getOwner());
         setPageType(dashboard.getPageType());
         setVisibility(dashboard.getVisibility());
-        this.users = users;
+        if (users != null) {
+            this.users = users;
+        }
     }
     
     public int getUsers() {
         return users;
-    }
-    
-    public void setUsers(int users){
-        this.users = users;
     }
 
     @Override

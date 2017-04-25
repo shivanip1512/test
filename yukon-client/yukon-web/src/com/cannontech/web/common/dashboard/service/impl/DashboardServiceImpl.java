@@ -32,8 +32,8 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public List<LiteDashboard> getOwnedDashboards(int userId) {
-        throw new MethodNotImplementedException();
+    public List<LiteDashboard> getOwnedDashboards(int ownerId) {
+        return dashboardDao.getOwnedDashboards(ownerId);
     }
 
     @Override
@@ -53,7 +53,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public List<LiteDashboard> getAllOwnerless() {
-        throw new MethodNotImplementedException();
+        return dashboardDao.getAllOwnerless();
     }
 
     @Override

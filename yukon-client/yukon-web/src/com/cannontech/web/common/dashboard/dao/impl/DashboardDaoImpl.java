@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -17,11 +18,14 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.web.common.dashboard.dao.DashboardDao;
 import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardBase;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
+import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.model.Widget;
 import com.google.common.collect.Lists;
 
@@ -32,16 +36,21 @@ public class DashboardDaoImpl implements DashboardDao {
     
     @Autowired private NextValueHelper nextValueHelper;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    SqlStatementBuilder baseDashboardSql = new SqlStatementBuilder();
+    {
+        baseDashboardSql.append(
+            "SELECT d.DashboardId, Name, Description, OwnerId, Visibility, yu.UserID, UserName, Status, ForceReset, UserGroupId, PageAssignment");
+        baseDashboardSql.append("FROM Dashboard d");
+        baseDashboardSql.append("LEFT JOIN YukonUser yu ON d.OwnerId = yu.UserID");
+        baseDashboardSql.append("LEFT JOIN UserDashboard du ON d.DashboardId = du.DashboardId");
+    }
     
     @Override
     public Dashboard getDashboard(int userId, DashboardPageType dashboardType){
         
         // Get dashboard
         SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
-        dashboardSql.append("SELECT d.DashboardId, Name, Description, OwnerId, Visibility, yu.UserID, UserName, Status, ForceReset, UserGroupId, PageAssignment");
-        dashboardSql.append("FROM Dashboard d");
-        dashboardSql.append("LEFT JOIN YukonUser yu ON d.OwnerId = yu.UserID");
-        dashboardSql.append("JOIN UserDashboard du ON d.DashboardId = du.DashboardId");
+        dashboardSql.append(baseDashboardSql.getSql());
         dashboardSql.append("WHERE du.UserID").eq(userId);
         dashboardSql.append("AND du.PageAssignment").eq_k(dashboardType);
         try {
@@ -57,10 +66,7 @@ public class DashboardDaoImpl implements DashboardDao {
     public Dashboard getDashboard(int dashboardId) {
         // Get dashboard
         SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
-        dashboardSql.append("SELECT d.DashboardId, Name, Description, OwnerId, Visibility, yu.UserID, UserName, Status, ForceReset, UserGroupId, PageAssignment");
-        dashboardSql.append("FROM Dashboard d");
-        dashboardSql.append("LEFT JOIN YukonUser yu ON d.OwnerId = yu.UserID");
-        dashboardSql.append("LEFT JOIN UserDashboard du ON d.DashboardId = du.DashboardId");
+        dashboardSql.append(baseDashboardSql.getSql());
         dashboardSql.append("WHERE d.DashboardId").eq(dashboardId);
         Dashboard dashboard = jdbcTemplate.queryForObject(dashboardSql, dashboardRowMapper);
         
@@ -95,6 +101,44 @@ public class DashboardDaoImpl implements DashboardDao {
             widget.setParameters(Optional.ofNullable(parameters).orElse(new HashMap<>()));
         });
         
+    }
+    
+    @Override
+    public List<LiteDashboard> getOwnedDashboards(int ownerId) {
+        SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
+        dashboardSql.append(baseDashboardSql.getSql());
+        dashboardSql.append("WHERE OwnerId").eq(ownerId);
+        List<Dashboard> dashboards = jdbcTemplate.query(dashboardSql, dashboardRowMapper);
+        return getLiteDashboards(dashboards);
+    }
+    
+    @Override
+    public List<LiteDashboard> getAllOwnerless() {
+        SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
+        dashboardSql.append(baseDashboardSql.getSql());
+        dashboardSql.append("WHERE OwnerId IS NULL");
+        List<Dashboard> dashboards = jdbcTemplate.query(dashboardSql, dashboardRowMapper);
+        return getLiteDashboards(dashboards);
+    }
+    
+    private List<LiteDashboard> getLiteDashboards(List<Dashboard> dashboards){
+        Map<Integer, Integer> dashboardIdToUserCount = new HashMap<>();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DashboardId, count(UserId) as UserCount");
+        sql.append("FROM UserDashboard");
+        sql.append("GROUP BY DashboardId");
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                dashboardIdToUserCount.put(rs.getInt("DashboardId"), rs.getInt("UserCount"));
+            }
+        });
+        
+        dashboards.forEach( d -> {
+        });
+        return dashboards.stream()
+                         .map(d -> new LiteDashboard(d, dashboardIdToUserCount.get(d.getDashboardId())))
+                         .collect(Collectors.toList());
     }
     
     @Override
