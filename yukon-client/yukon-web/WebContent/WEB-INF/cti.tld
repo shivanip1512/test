@@ -2529,5 +2529,12 @@
         java.lang.String escapeJavaScript(java.lang.String)
     </function-signature>
   </function>
-    
+
+  <function>
+    <description>Join elements of an Iterable into a string.</description>
+    <display-name>Join</display-name>
+    <name>join</name>
+    <function-class>com.cannontech.web.widget.support.WidgetUtils</function-class>
+    <function-signature>java.lang.String join(java.lang.Iterable, java.lang.CharSequence)</function-signature>
+  </function>
 </taglib>

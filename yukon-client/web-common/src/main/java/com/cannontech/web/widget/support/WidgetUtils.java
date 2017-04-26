@@ -58,4 +58,18 @@ public class WidgetUtils {
     public static String escapeJavaScript(String string) {
         return StringEscapeUtils.escapeEcmaScript(string);
     }
+
+    public static String join(Iterable<?> elements, CharSequence separator) {
+        StringBuilder buf = new StringBuilder();
+        if (elements != null) {
+            if (separator == null)
+                separator = " ";
+            for (Object o : elements) {
+                if (buf.length() > 0)
+                    buf.append(separator);
+                buf.append(o);
+            }
+        }
+        return buf.toString();
+    }
 }

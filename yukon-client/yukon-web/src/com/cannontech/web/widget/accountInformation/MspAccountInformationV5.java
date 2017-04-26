@@ -143,11 +143,11 @@ public class MspAccountInformationV5 implements MspAccountInformation {
         Contact contact = new Contact();
         List<String> phoneNumbers =
             multispeakCustomerInfoService.getPhoneNumbers(contactInfo.getPhoneNumbers(), userContext);
-        contact.setPhoneNumbers(StringUtils.join(phoneNumbers, ", "));
+        contact.setPhoneNumbers(phoneNumbers);
 
         List<String> emailAddresses =
             multispeakCustomerInfoService.getEmailAddresses(contactInfo.getEMailAddresses(), userContext);
-        contact.setEmailAddresses(StringUtils.join(emailAddresses, ", "));
+        contact.setEmailAddresses(emailAddresses);
         contact.setAddresses(getAddressList(contactInfo.getAddressItems()));
         info.add(contact);
 
@@ -278,18 +278,14 @@ public class MspAccountInformationV5 implements MspAccountInformation {
         mspCustomer.getAlternateContacts().getAlternateContact().forEach(
             alternateContact -> {
                 ContactInfo contactInfo = alternateContact.getContactInfo();
-                Contact contact = new Contact();
-                contact.setFirstName(alternateContact.getFirstName());
-                contact.setMiddleName(alternateContact.getMName());
-                contact.setLastName(alternateContact.getLastName());
                 List<String> phoneNumbers =
                     multispeakCustomerInfoService.getPhoneNumbers(contactInfo.getPhoneNumbers(), userContext);
-                contact.setPhoneNumbers(StringUtils.join(phoneNumbers, ", "));
-
                 List<String> emailAddresses =
                     multispeakCustomerInfoService.getEmailAddresses(contactInfo.getEMailAddresses(), userContext);
-                contact.setEmailAddresses(StringUtils.join(emailAddresses, ", "));
-                contact.setAddresses(getAddressList(contactInfo.getAddressItems()));
+                Contact contact =
+                    new Contact(alternateContact.getFirstName(), alternateContact.getMName(),
+                        alternateContact.getLastName(), phoneNumbers, emailAddresses,
+                        getAddressList(contactInfo.getAddressItems()));
                 info.add(contact);
 
             });
@@ -814,12 +810,6 @@ public class MspAccountInformationV5 implements MspAccountInformation {
 
                 add("Rate Code", propaneServicePoint.getRateCode(), false, info, userContext);
                 add("Service Sub Type", propaneServicePoint.getServiceSubType(), false, info, userContext);
-
-                /*
-                 * if (propaneServicePoint.getPrimaryIdentifier() != null) {
-                 * propaneServicePointMap.put(propaneServicePoint.getPrimaryIdentifier().getValue(), info);
-                 * }
-                 */
 
             });
         return info;

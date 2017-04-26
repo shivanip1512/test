@@ -19,20 +19,20 @@
             <cti:msg2 var="custInfo" key=".customerInfo" />
             <tags:sectionContainer title="${custInfo}">
                 <tags:nameValueContainer tableClass="name-value-table natural-width  stacked-md natural-width">
-                    <c:forEach var="x" items="${custBasicsInfo}">
-                        <tags:nameValue name="${x.label}">${x.value}</tags:nameValue>
+                    <c:forEach var="cust" items="${custBasicsInfo}">
+                        <tags:nameValue name="${cust.label}">${cust.value}</tags:nameValue>
                     </c:forEach>
                 </tags:nameValueContainer>
             </tags:sectionContainer>
             <cti:msg2 var="customerContactInfo" key=".customerContactInfo" />
-            <c:forEach var="x" items="${custBasicContactInfo}" varStatus="status">
+            <c:forEach var="custBasicContact" items="${custBasicContactInfo}" varStatus="status">
                 <cti:msg2 var="customerContactInfo" key=".customerContactInfo" />
                 <tags:sectionContainer title="${customerContactInfo}">
                     <tags:nameValueContainer2 tableClass="name-value-table natural-width  stacked-md natural-width">
-                        <tags:nameValue2 nameKey=".phoneNumbers">${x.phoneNumbers}</tags:nameValue2>
-                        <tags:nameValue2 nameKey=".emailAddresses">${x.emailAddresses}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".phoneNumbers">${cti:join(custBasicContact.phoneNumbers,",")}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".emailAddresses">${cti:join(custBasicContact.emailAddresses,",")}</tags:nameValue2>
                     </tags:nameValueContainer2>
-                    <c:forEach var="address" items="${x.addresses}" varStatus="addressStatus">
+                    <c:forEach var="address" items="${custBasicContact.addresses}" varStatus="addressStatus">
                         <h3>
                             <i:inline key=".alternateContactAddressInfo" />${addressStatus.index+1}</h3>
                         <tags:nameValueContainer2 tableClass="name-value-table natural-width  stacked-md natural-width">
@@ -51,8 +51,8 @@
             <cti:msg2 var="serviceLocationInfo" key=".serviceLocationInfo" />
             <tags:sectionContainer title="${serviceLocationInfo}">
                 <tags:nameValueContainer tableClass="name-value-table natural-width  stacked-md natural-width">
-                    <c:forEach var="x" items="${servLocBasicsInfo}">
-                        <tags:nameValue name="${x.label}">${x.value}</tags:nameValue>
+                    <c:forEach var="serviceInfo" items="${servLocBasicsInfo}">
+                        <tags:nameValue name="${serviceInfo.label}">${serviceInfo.value}</tags:nameValue>
                     </c:forEach>
                 </tags:nameValueContainer>
             </tags:sectionContainer>
@@ -65,8 +65,8 @@
                         <i:inline key=".electricServicePointInfo" />
                     </h3>
                     <tags:nameValueContainer tableClass="name-value-table natural-width  stacked-md natural-width">
-                        <c:forEach var="x" items="${electricServicePointsInfo}" varStatus="electricStatus">
-                            <tags:nameValue name="${x.label}">${x.value}</tags:nameValue>
+                        <c:forEach var="electricServicePoint" items="${electricServicePointsInfo}" varStatus="electricStatus">
+                            <tags:nameValue name="${electricServicePoint.label}">${electricServicePoint.value}</tags:nameValue>
                         </c:forEach>
                     </tags:nameValueContainer>
                 </c:if>
@@ -149,17 +149,17 @@
         <!-- Alternate Contacts Tab -->
         <cti:msg2 var="alternateContacts" key=".tab.alternateContacts" />
         <cti:tab title="${alternateContacts}">
-            <c:forEach var="x" items="${custAlternateContactInfo}" varStatus="status">
+            <c:forEach var="custAlternateContact" items="${custAlternateContactInfo}" varStatus="status">
                 <cti:msg2 var="alternateContactInfo" key=".alternateContactInfo" />
                 <tags:sectionContainer title="${alternateContactInfo}${status.index+1}">
                     <tags:nameValueContainer2 tableClass="name-value-table natural-width  stacked-md natural-width">
-                        <tags:nameValue2 nameKey=".lastName">${x.lastName}</tags:nameValue2>
-                        <tags:nameValue2 nameKey=".firstName">${x.firstName}</tags:nameValue2>
-                        <tags:nameValue2 nameKey=".middleName">${x.middleName}</tags:nameValue2>
-                        <tags:nameValue2 nameKey=".phoneNumbers">${x.phoneNumbers}</tags:nameValue2>
-                        <tags:nameValue2 nameKey=".emailAddresses">${x.emailAddresses}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".lastName">${custAlternateContact.lastName}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".firstName">${custAlternateContact.firstName}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".middleName">${custAlternateContact.middleName}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".phoneNumbers">${cti:join(custAlternateContact.phoneNumbers,",")}</tags:nameValue2>
+                        <tags:nameValue2 nameKey=".emailAddresses">${cti:join(custAlternateContact.emailAddresses,",")}</tags:nameValue2>
                     </tags:nameValueContainer2>
-                    <c:forEach var="address" items="${x.addresses}" varStatus="addressStatus">
+                    <c:forEach var="address" items="${custAlternateContact.addresses}" varStatus="addressStatus">
                         <h3>
                             <i:inline key=".alternateContactAddressInfo" />${addressStatus.index+1}</h3>
 
