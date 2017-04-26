@@ -59,6 +59,14 @@ public class WidgetUtils {
         return StringEscapeUtils.escapeEcmaScript(string);
     }
 
+    /**
+     * Method which joins elements of an Iterable into a string separating each element with a given
+     * separator.
+     * 
+     * @param elements - List of elements
+     * @param separator - Separator to be used
+     * @return The string containing the list of elements separated using the separator passed as an argument
+     */
     public static String join(Iterable<?> elements, CharSequence separator) {
         StringBuilder buf = new StringBuilder();
         if (elements != null) {
