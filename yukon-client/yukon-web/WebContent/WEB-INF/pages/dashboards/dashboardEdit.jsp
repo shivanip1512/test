@@ -21,7 +21,6 @@
         <form:hidden path="name"/>
         <form:hidden path="description"/>
         <form:hidden path="visibility"/>
-        <form:hidden path="pageType"/>
 
         <div class="column-12-12">
             <div id="column1-widgets" class="column one js-with-movables" data-item-selector=".select-box-item" style="min-height:300px;">

@@ -10,7 +10,6 @@ public abstract class DashboardBase {
     private int dashboardId;
     private String name;
     private String description;
-    private DashboardPageType pageType;
     private LiteYukonUser owner;
     private Visibility visibility;
     
@@ -54,17 +53,9 @@ public abstract class DashboardBase {
         this.visibility = visibility;
     }
     
-    public DashboardPageType getPageType() {
-        return pageType;
-    }
-
-    public void setPageType(DashboardPageType pageType) {
-        this.pageType = pageType;
-    }
-    
     @Override
     public String toString() {
         return "Dashboard [dashboardId=" + dashboardId + ", name=" + name + ", description=" + description
-               + ", pageType=" + pageType + ", owner=" + owner + ", visibility=" + visibility + "]";
+               + ", owner=" + owner + ", visibility=" + visibility + "]";
     }
 }

@@ -7,7 +7,6 @@ import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.dashboard.model.Dashboard;
-import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.Visibility;
 
 public final class DashboardRowMapper implements YukonRowMapper<Dashboard> {
@@ -20,7 +19,6 @@ public final class DashboardRowMapper implements YukonRowMapper<Dashboard> {
         dashboard.setDescription(rs.getString("Description"));
         dashboard.setName(rs.getString("Name"));
         dashboard.setVisibility(rs.getEnum("Visibility", Visibility.class));
-        dashboard.setPageType(rs.getEnum("PageAssignment", DashboardPageType.class)); //TODO 
         
         // If there's an assigned owner, get the LiteYukonUser, otherwise leave it null
         if (rs.getNullableInt("OwnerId") != null) {

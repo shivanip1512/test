@@ -14,7 +14,6 @@ public class LiteDashboard extends DashboardBase {
         setDescription(dashboard.getDescription());
         setName(dashboard.getName());
         setOwner(dashboard.getOwner());
-        setPageType(dashboard.getPageType());
         setVisibility(dashboard.getVisibility());
         if (users != null) {
             this.users = users;

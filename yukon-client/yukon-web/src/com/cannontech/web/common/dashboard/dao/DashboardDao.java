@@ -6,6 +6,7 @@ import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardBase;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.LiteDashboard;
+import com.cannontech.web.common.dashboard.model.Visibility;
 import com.cannontech.web.common.dashboard.model.Widget;
 
 /**
@@ -46,13 +47,47 @@ public interface DashboardDao {
      */
     void insertWidgets(int dashboardId, List<Widget> widgets, int column);
 
+    /**
+     * Assigns users to dashboard.
+     */
     void assignDashboard(Iterable<Integer> userIds, DashboardPageType dashboardType, int dashboardId);
 
+    /**
+     * Unassigns users from dashboard.
+     */
     void unassignDashboard(Iterable<Integer> userIds, DashboardPageType dashboardType);
 
+    /**
+     * Retrieves dashboard for userId and dashboard type.
+     */
     Dashboard getDashboard(int userId, DashboardPageType dashboardType);
 
+    /**
+     * Retrieves dashboards that have a owner.
+     */
     List<LiteDashboard> getOwnedDashboards(int ownerId);
 
+    /**
+     * Retrieves dashboards without an owner.
+     */
     List<LiteDashboard> getAllOwnerless();
+
+    /**
+     * Retrieves dashboards by visibility and type.
+     */
+    Dashboard getDashboard(Visibility visibility, DashboardPageType dashboardType);
+
+    /**
+     * Retrieves dashboard if
+     * 1. The user is the owner
+     * 2. The dashboard visibility = PUBLIC or SYSTEM
+     * 3. The dashboard visibility = SHARED and the user is in the same user group as the dashboard's owner.
+     * 
+     */
+    List<LiteDashboard> getVisibleSharedDashboards(int userId);
+
+    /**
+     * Retrieves dashboards by visibility.
+     */
+    List<LiteDashboard> getDashboardsByVisibility(Visibility... visibility);  
 }

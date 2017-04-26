@@ -1,5 +1,6 @@
 package com.cannontech.web.common.dashboard.service.impl;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,6 +15,7 @@ import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardBase;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.LiteDashboard;
+import com.cannontech.web.common.dashboard.model.Visibility;
 import com.cannontech.web.common.dashboard.service.DashboardService;
 
 public class DashboardServiceImpl implements DashboardService {
@@ -23,7 +25,11 @@ public class DashboardServiceImpl implements DashboardService {
  
     @Override
     public Dashboard getAssignedDashboard(int userId, DashboardPageType dashboardType) {
-        return dashboardDao.getDashboard(userId, dashboardType);
+        Dashboard dashboard = dashboardDao.getDashboard(userId, dashboardType);
+        if (dashboard == null) {
+            dashboard = dashboardDao.getDashboard(Visibility.SYSTEM, dashboardType);
+        }
+        return dashboard;
     }
 
     @Override
@@ -48,7 +54,39 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public List<LiteDashboard> getVisible(int userId) {
-        throw new MethodNotImplementedException();
+        List<LiteDashboard> visibleDashboards = new ArrayList<>();
+
+        //User can view the dashboard if
+        
+        //The dashboard visibility = PUBLIC or SYSTEM
+        visibleDashboards.addAll(dashboardDao.getDashboardsByVisibility(Visibility.SYSTEM, Visibility.PUBLIC));
+        //The user is the owner
+        visibleDashboards.addAll(dashboardDao.getOwnedDashboards(userId));
+        //The dashboard visibility = SHARED and the user is in the same user group as the dashboard's owner.
+        visibleDashboards.addAll(dashboardDao.getVisibleSharedDashboards(userId));
+        return visibleDashboards;
+    }
+    
+    @Override
+    public boolean isVisible(int userId, int dashboardId) {
+        Dashboard dashboard = getDashboard(dashboardId);
+        //User can view the dashboard if
+          
+        if (dashboard.getVisibility() == Visibility.SYSTEM || dashboard.getVisibility() == Visibility.PUBLIC) {
+          //The dashboard visibility = PUBLIC or SYSTEM
+            return true;
+        } else if (dashboard.getOwner().getLiteID() == userId) {
+            //The user is the owner
+            return true;
+        } else if (dashboard.getVisibility() == Visibility.SHARED && dashboard.getOwner() != null){
+            LiteYukonUser owner = userDao.getLiteYukonUser(dashboard.getOwner().getLiteID());
+            LiteYukonUser user = userDao.getLiteYukonUser(userId);
+            if(owner.getUserGroupId() == user.getUserGroupId()){
+              //The dashboard visibility = SHARED and the user is in the same user group as the dashboard's owner.
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -106,7 +144,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public void changeOwner(int userId, int dashboardId) {
+    public void setOwner(int userId, int dashboardId) {
         Dashboard dashboard = getDashboard(dashboardId);
         dashboard.setOwner(userDao.getLiteYukonUser(userId));
         update(dashboard);
