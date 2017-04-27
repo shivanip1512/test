@@ -2,7 +2,6 @@ package com.cannontech.web.dashboards;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -44,14 +43,12 @@ import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.model.UserDashboardSettings;
 import com.cannontech.web.common.dashboard.model.Visibility;
 import com.cannontech.web.common.dashboard.model.Widget;
-import com.cannontech.web.common.dashboard.model.WidgetCategory;
 import com.cannontech.web.common.dashboard.model.WidgetType;
 import com.cannontech.web.common.dashboard.service.DashboardService;
 import com.cannontech.web.common.dashboard.widget.service.WidgetService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 
 @Controller
 @RequestMapping("/*")
@@ -250,12 +247,7 @@ public class DashboardsController {
     
     @RequestMapping("{id}/addWidgets")
     public String addWidgets(@PathVariable int id, ModelMap model) {
-        Map<WidgetCategory, Collection<WidgetType>> widgetMap = widgetService.getTypesByCategory().asMap();
-        List<WidgetCategory> categories = Lists.newArrayList(widgetMap.keySet());
-        Collections.sort(categories);
-        Map<WidgetCategory, List<WidgetType>> realMap = Maps.newLinkedHashMap();
-        categories.forEach(category -> realMap.put(category,  Lists.newArrayList(widgetMap.get(category))));
-        model.addAttribute("widgetMap", realMap);
+        model.addAttribute("widgetMap", widgetService.getTypesByCategory());
         model.addAttribute("totalWidgets", WidgetType.values().length);
         return "addWidgets.jsp";
     }

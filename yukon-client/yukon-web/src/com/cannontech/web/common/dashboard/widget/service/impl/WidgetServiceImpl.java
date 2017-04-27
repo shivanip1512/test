@@ -1,10 +1,13 @@
 package com.cannontech.web.common.dashboard.widget.service.impl;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.cannontech.common.stream.StreamUtils;
 import com.cannontech.web.common.dashboard.exception.WidgetMissingParameterException;
 import com.cannontech.web.common.dashboard.exception.WidgetParameterValidationException;
 import com.cannontech.web.common.dashboard.model.Widget;
@@ -12,15 +15,25 @@ import com.cannontech.web.common.dashboard.model.WidgetCategory;
 import com.cannontech.web.common.dashboard.model.WidgetParameter;
 import com.cannontech.web.common.dashboard.model.WidgetType;
 import com.cannontech.web.common.dashboard.widget.service.WidgetService;
-import com.google.common.collect.Multimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 public class WidgetServiceImpl implements WidgetService {
-
+    
     @Override
-    public Multimap<WidgetCategory, WidgetType> getTypesByCategory() {
-        return WidgetType.stream()
-                         .collect(StreamUtils.groupingBy(WidgetType::getCategory));
+    public Map<WidgetCategory, List<WidgetType>> getTypesByCategory() {
+        LinkedHashMap<WidgetCategory, List<WidgetType>> map = new LinkedHashMap<>();
+        List<WidgetCategory> widgetCategories = Lists.newArrayList(WidgetCategory.values());
+        Collections.sort(widgetCategories);
+        for (WidgetCategory category : widgetCategories) {
+            map.put(category, new ArrayList<>());
+        }
+        List<WidgetType> widgetTypes = Lists.newArrayList(WidgetType.values());
+        Collections.sort(widgetTypes, (type1, type2) -> type1.name().compareTo(type2.name()));
+        for (WidgetType type : widgetTypes) {
+            map.get(type.getCategory()).add(type);
+        }
+        return map;
     }
 
     @Override
