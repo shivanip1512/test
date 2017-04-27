@@ -1,8 +1,9 @@
 package com.cannontech.web.common.dashboard.service.impl;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.model.Visibility;
 import com.cannontech.web.common.dashboard.service.DashboardService;
+import com.google.common.collect.Lists;
 
 public class DashboardServiceImpl implements DashboardService {
     
@@ -54,7 +56,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     public List<LiteDashboard> getVisible(int userId) {
-        List<LiteDashboard> visibleDashboards = new ArrayList<>();
+        Set<LiteDashboard> visibleDashboards = new HashSet<>();
 
         // User can view the dashboard if
 
@@ -64,7 +66,7 @@ public class DashboardServiceImpl implements DashboardService {
         visibleDashboards.addAll(dashboardDao.getOwnedDashboards(userId));
         // The dashboard visibility = SHARED and the user is in the same user group as the dashboard's owner.
         visibleDashboards.addAll(dashboardDao.getVisibleSharedDashboards(userId));
-        return visibleDashboards;
+        return Lists.newArrayList(visibleDashboards);
     }
     
     @Override
