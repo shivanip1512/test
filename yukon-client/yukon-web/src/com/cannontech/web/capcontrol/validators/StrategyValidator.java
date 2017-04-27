@@ -177,10 +177,17 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
         for (Map.Entry<TargetSettingType, PeakTargetSetting> entry : targetSettings.entrySet()) {
             if (timeOfDaySettings.contains(entry.getKey()) || pFactorSettings.contains(entry.getKey())) {
                 PeakTargetSetting peakTargetSetting = entry.getValue();
-                YukonValidationUtils.checkRange(errors, "targetSettings[" + entry.getKey() + "].peakValue",
-                    peakTargetSetting.getPeakValue(), 0.0, 100.0, true);
-                YukonValidationUtils.checkRange(errors, "targetSettings[" + entry.getKey() + "].offPeakValue",
-                    peakTargetSetting.getOffPeakValue(), 0.0, 100.0, true);
+                if (entry.getKey().equals(TargetSettingType.TARGET_PF)) {
+                    YukonValidationUtils.checkRange(errors, "targetSettings[" + entry.getKey() + "].peakValue",
+                        peakTargetSetting.getPeakValue(), -99.9, 100.0, true);
+                    YukonValidationUtils.checkRange(errors, "targetSettings[" + entry.getKey() + "].offPeakValue",
+                        peakTargetSetting.getOffPeakValue(), -99.9, 100.0, true);
+                } else {
+                    YukonValidationUtils.checkRange(errors, "targetSettings[" + entry.getKey() + "].peakValue",
+                        peakTargetSetting.getPeakValue(), 0.0, 100.0, true);
+                    YukonValidationUtils.checkRange(errors, "targetSettings[" + entry.getKey() + "].offPeakValue",
+                        peakTargetSetting.getOffPeakValue(), 0.0, 100.0, true);
+                }
             }
             if (entry.getKey().equals(TargetSettingType.UPPER_VOLT_LIMIT)) {
                 double upperVoltPeakValue = targetSettings.get(TargetSettingType.UPPER_VOLT_LIMIT).getPeakValue();
