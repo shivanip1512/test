@@ -1,36 +1,43 @@
 package com.cannontech.web.widget;
 
+import java.util.Collection;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.support.service.SystemHealthService;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetric;
+import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetricType;
-import com.cannontech.web.widget.support.WidgetControllerBase;
+import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
+import com.google.common.collect.Multimap;
 
 @Controller
 @RequestMapping("/systemHealthWidget")
-public class SystemHealthWidget extends WidgetControllerBase {
+public class SystemHealthWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private SystemHealthService systemHealthService;
     
     @RequestMapping("render")
-    public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        ModelAndView mav = new ModelAndView("systemHealthWidget/render.jsp");
-
-        List<SystemHealthMetric> extendedQueueData = systemHealthService.getMetricsByType(SystemHealthMetricType.JMS_QUEUE_EXTENDED);
-        mav.addObject("extendedQueueData", extendedQueueData);
+    public String render(ModelMap model, LiteYukonUser user) throws Exception {
         
-        List<SystemHealthMetric> queueData = systemHealthService.getMetricsByType(SystemHealthMetricType.JMS_QUEUE);
-        mav.addObject("queueData", queueData);
-        return mav;
+        List<SystemHealthMetricIdentifier> favoriteIds = systemHealthService.getFavorites(user);
+        Multimap<SystemHealthMetricType, SystemHealthMetric> metrics = systemHealthService.getMetricsByIdentifiers(favoriteIds);
+        
+        if (metrics.size() > 0) {
+            model.addAttribute("showSystemHealth", true);
+            Collection<SystemHealthMetric> extendedQueueData = metrics.get(SystemHealthMetricType.JMS_QUEUE_EXTENDED);
+            model.addAttribute("extendedQueueData", extendedQueueData);
+            Collection<SystemHealthMetric> queueData = metrics.get(SystemHealthMetricType.JMS_QUEUE);
+            model.addAttribute("queueData", queueData);
+        } else {
+            model.addAttribute("showSystemHealth", false);
+        }
+        return "systemHealthWidget/render.jsp";
     }
 
 }

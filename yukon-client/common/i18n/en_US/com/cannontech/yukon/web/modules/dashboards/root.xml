@@ -71,8 +71,8 @@
     <entry key="yukon.web.modules.dashboard.widgetType.SCHEDULED_REQUESTS.description">Displays a table of the schedules that are set up in your system with the current status and controls for each.</entry>  
     <entry key="yukon.web.modules.dashboard.widgetType.GATEWAY_STREAMING_CAPACITY.name">Gateway Streaming Capacity</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.GATEWAY_STREAMING_CAPACITY.description">Displays the gateways that are over data streaming capacity and links to the gateway and data streaming detail.</entry>  
-    <entry key="yukon.web.modules.dashboard.widgetType.SYSTEM_HEALTH.name">System Health</entry>
-    <entry key="yukon.web.modules.dashboard.widgetType.SYSTEM_HEALTH.description">Provides information about Yukon's system health.</entry>  
+    <entry key="yukon.web.modules.dashboard.widgetType.SYSTEM_HEALTH.name">Inter-Service Messaging Statistics</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.SYSTEM_HEALTH.description">Displays messaging statics between services running on your system.</entry>  
     
     <!-- Widget Parameters -->
     <entry key="yukon.web.modules.dashboard.widgetParameter.deviceId">Meter</entry>
