@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
@@ -52,7 +50,6 @@ import com.cannontech.web.common.dashboard.service.DashboardService;
 import com.cannontech.web.common.dashboard.widget.service.WidgetService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
@@ -60,7 +57,6 @@ import com.google.common.collect.Maps;
 @RequestMapping("/*")
 public class DashboardsController {
     
-    @Autowired private IDatabaseCache databaseCache;
     @Autowired private WidgetService widgetService;
     @Autowired private DashboardService dashboardService;
     @Autowired private DashboardDao dashboardDao;
@@ -74,17 +70,17 @@ public class DashboardsController {
                                    @DefaultSort(dir=Direction.asc, sort="name") SortingParameters sorting, PagingParameters paging) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         model.addAttribute("pageTypes", DashboardPageType.values());
-        List<LiteDashboard> dashboards = createDashboardsListMockup(userContext);
-        //List<LiteDashboard> dashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
+        List<LiteDashboard> visibleDashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
+        List<LiteDashboard> dashboards = visibleDashboards;
         if (filter != null) {
             if (filter.equals(DashboardFilter.MYFAVORITES.name())) {
                 dashboards = dashboards.subList(0, 1);
                 //dashboards = dashboardService.getFavorites(userContext.getYukonUser().getUserID());
             } else if (filter.equals(DashboardFilter.CREATEDBYME.name())) {
-                dashboards = dashboards.subList(0, 2);
-                //dashboards = dashboardService.getOwnedDashboards(userContext.getYukonUser().getUserID());
+                dashboards = dashboardService.getOwnedDashboards(userContext.getYukonUser().getUserID());
             }
         }
+
         model.addAttribute("filter", filter);
 
         SearchResults<LiteDashboard> searchResult = new SearchResults<>();
@@ -121,15 +117,17 @@ public class DashboardsController {
         searchResult.setResultList(itemList);        
         
         model.addAttribute("dashboards", searchResult);
-        model.addAttribute("dashboardsList", dashboards);
+        model.addAttribute("dashboardsList", visibleDashboards);
         
         UserDashboardSettings settings = new UserDashboardSettings();
         Arrays.asList(DashboardPageType.values()).forEach(pageType -> {
             DashboardSetting setting = new DashboardSetting();
             setting.setPageType(pageType);
-            //Dashboard assignedDashboard = dashboardService.getAssignedDashboard(userContext.getYukonUser().getUserID(), pageType);
-            Dashboard assignedDashboard = createDashboardMockup(userContext);
-            setting.setDashboardId(assignedDashboard.getDashboardId());
+            Dashboard assignedDashboard = dashboardService.getAssignedDashboard(userContext.getYukonUser().getUserID(), pageType);
+            //TODO: this should be set to the default dashboard if the user has not yet assigned one
+            if (assignedDashboard != null) {
+                setting.setDashboardId(assignedDashboard.getDashboardId());
+            }
             settings.addSetting(setting);
         });
         
@@ -141,7 +139,7 @@ public class DashboardsController {
     @RequestMapping("saveSettings")
     public String saveSettings(@ModelAttribute UserDashboardSettings settings, YukonUserContext userContext, FlashScope flash) {
         settings.getSettings().forEach(setting -> {
-            //dashboardService.setDefault(Arrays.asList(userContext.getYukonUser().getUserID()), setting.getPageType(), setting.getDashboardId());
+            dashboardService.setDefault(Arrays.asList(userContext.getYukonUser().getUserID()), setting.getPageType(), setting.getDashboardId());
         });
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "saveSettings.success"));
         return "redirect:/dashboards/manage";
@@ -149,7 +147,10 @@ public class DashboardsController {
     
     @RequestMapping("admin")
     public String adminDashboards(ModelMap model, YukonUserContext userContext) {
-        model.addAttribute("dashboards", createDashboardsListMockup(userContext));
+        //TODO: Should this return all dashboards?
+        List<LiteDashboard> dashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
+        model.addAttribute("dashboards", dashboards);
+        model.addAttribute("ownerlessDashboards", dashboardService.getAllOwnerless());
         return "dashboardAdmin.jsp";
     }
     
@@ -173,8 +174,7 @@ public class DashboardsController {
     
     private void setupDashboardDetailsModel(ModelMap model, YukonUserContext userContext) {
         model.addAttribute("visibilityOptions", Visibility.values());
-        //List<LiteDashboard> dashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
-        List<LiteDashboard> dashboards = createDashboardsListMockup(userContext);
+        List<LiteDashboard> dashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
         model.addAttribute("dashboards", dashboards);
     }
     
@@ -210,8 +210,24 @@ public class DashboardsController {
     @RequestMapping("{id}/editDetails")
     public String editDetails(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
         model.addAttribute("mode", PageEditMode.EDIT);
-        setupDashboardDetailsModel(model, userContext);
         Dashboard dashboard = dashboardService.getDashboard(id);
+        List<Visibility> reducedVisibility = new ArrayList<>();
+        List<Visibility> visibilityOptions = Arrays.asList(Visibility.values());
+        if (dashboardDao.getAllUsersForDashboard(id).size() >= 1) {
+            //only allow making visibility more visible if there are users
+            List<Visibility> reversedOptions = Lists.reverse(visibilityOptions);
+            for (Visibility visibility : reversedOptions) {
+                if (visibility == dashboard.getVisibility()) {
+                    reducedVisibility.add(visibility);
+                    break;
+                }
+                reducedVisibility.add(visibility);
+            }
+            visibilityOptions = reducedVisibility;
+        }
+        model.addAttribute("visibilityOptions", visibilityOptions);
+        List<LiteDashboard> dashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
+        model.addAttribute("dashboards", dashboards);
         model.addAttribute("dashboard", dashboard);
         return "dashboardDetails.jsp";
     }
@@ -314,75 +330,6 @@ public class DashboardsController {
     public @ResponseBody Map<String, Boolean> unfavoriteDashboard(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
         //dashboardService.unfavorite(userContext.getYukonUser().getUserID(), id);
         return Collections.singletonMap("isFavorite", false);
-    }
-    
-    private Dashboard createDashboardMockup(YukonUserContext userContext) {
-        Dashboard dashboard = new Dashboard();
-        dashboard.setName("Utility Company Sample Dashboard");
-        dashboard.setDescription("Utility Company Default Test Dashboard");
-        dashboard.setVisibility(Visibility.SHARED);
-        dashboard.setOwner(userContext.getYukonUser());
-        dashboard.setDashboardId(12);
-        Widget widget = new Widget();
-        widget.setDashboardId(12);
-        widget.setId(11);
-        widget.setType(WidgetType.MONITOR_SUBSCRIPTIONS);
-        Widget widget2 = new Widget();
-        widget2.setDashboardId(12);
-        widget2.setId(12);
-        widget2.setType(WidgetType.TREND);
-        Map<String, String> params = new HashMap<>();
-        Map<Integer, SimpleMeter> meters = databaseCache.getAllMeters();
-        Iterator<SimpleMeter> meterIterator = meters.values().iterator();
-        SimpleMeter meter = meterIterator.next();
-        params.put("deviceId",  Integer.toString(meter.getPaoIdentifier().getPaoId()));
-        widget2.setParameters(params);
-        dashboard.addColumn1Widget(widget);
-        dashboard.addColumn1Widget(widget2);
-        Widget widget3 = new Widget();
-        widget3.setDashboardId(12);
-        widget3.setId(22);
-        widget3.setType(WidgetType.TREND);
-        Map<String, String> params2 = new HashMap<>();
-        SimpleMeter meter2 = meterIterator.next();
-        params2.put("deviceId",  Integer.toString(meter2.getPaoIdentifier().getPaoId()));
-        widget3.setParameters(params2);
-        widget3.setId(21);
-        dashboard.addColumn2Widget(widget3);
-        Widget widget4 = new Widget();
-        widget4.setDashboardId(12);
-        widget4.setId(22);
-        widget4.setType(WidgetType.METER_SEARCH);
-        dashboard.addColumn2Widget(widget4);
-        Widget widget5 = new Widget();
-        widget5.setDashboardId(12);
-        widget5.setId(13);
-        widget5.setType(WidgetType.SCHEDULED_REQUESTS);
-        dashboard.addColumn1Widget(widget5);
-        return dashboard;
-    }
-    
-    private List<LiteDashboard> createDashboardsListMockup(YukonUserContext userContext) {
-        List<LiteDashboard> dashboards = new ArrayList<>();
-        Dashboard dashboard = new Dashboard();
-        dashboard.setName("Yukon Default Dashboard");
-        dashboard.setDashboardId(12);
-        dashboard.setVisibility(Visibility.SYSTEM);
-        dashboard.setOwner(userContext.getYukonUser());
-        dashboards.add(new LiteDashboard(dashboard, 2456));
-        Dashboard dashboard2 = new Dashboard();
-        dashboard2.setName("Utility Company Sample Dashboard");
-        dashboard2.setDashboardId(13);
-        dashboard2.setVisibility(Visibility.SHARED);
-        dashboard2.setOwner(userContext.getYukonUser());
-        dashboards.add(new LiteDashboard(dashboard2, 5));
-        Dashboard dashboard3 = new Dashboard();
-        dashboard3.setName("User Specific Dashboard");
-        dashboard3.setDashboardId(14);
-        dashboard3.setVisibility(Visibility.PRIVATE);
-        dashboard3.setOwner(userContext.getYukonUser());
-        dashboards.add(new LiteDashboard(dashboard3, 0));
-        return dashboards;
     }
     
     public enum DashboardSortBy implements DisplayableEnum {
