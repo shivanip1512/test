@@ -6874,8 +6874,6 @@ bool CtiCCSubstationBus::areOtherMonitorPointResponsesOk(long mPointID, CtiCCCap
 
 bool CtiCCSubstationBus::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr & oorPoint)
 {
-    bool retVal = false;
-
     StrategyManager::SharedPtr  strategy = getStrategy();
 
     CtiTime Now;
@@ -6895,31 +6893,42 @@ bool CtiCCSubstationBus::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr 
             lowerBound = point->getLowerBandwidth();
         }
 
-        if ( lowerBound <= point->getValue() && point->getValue() <= upperBound )
+        const double pointValue = point->getValue();
+
+        if ( lowerBound <= pointValue && pointValue <= upperBound )
         {
             if (_CC_DEBUG & CC_DEBUG_MULTIVOLT)
             {
                 CTILOG_DEBUG( dout,
                               "MULTIVOLT: Monitor Point: " << point->getPointId() << " on CapBank: "
                                 << point->getDeviceId() << " is inside limits.  Current value: "
-                                << point->getValue() 
-                                << " Limits: [" << lowerBound << ", " << upperBound << "]" ); 
+                                << pointValue
+                                << " - Limits: [" << lowerBound << ", " << upperBound << "]" ); 
             }
-            retVal = true;
         }
-        else
+        else if ( pointValue < lowerBound )
         {
-
-            CTILOG_INFO( dout,
+            CTILOG_WARN( dout,
                          "Monitor Point: " << point->getPointId() << " on CapBank: " << point->getDeviceId()
-                            << " is outside limits.  Current value: "<< point->getValue()
-                            << " Limits: [" << lowerBound << ", " << upperBound << "]" ); 
+                            << " is BELOW limit.  Current value: " << pointValue
+                            << " - Limits: [" << lowerBound << ", " << upperBound << "]" ); 
             oorPoint = point;
-            retVal = false;
             break;
         }
+        else    // pointValue > upperBound
+        {
+            CTILOG_WARN( dout,
+                         "Monitor Point: " << point->getPointId() << " on CapBank: " << point->getDeviceId()
+                            << " is ABOVE limit.  Current value: " << pointValue
+                            << " - Limits: [" << lowerBound << ", " << upperBound << "]" ); 
+            if ( ! oorPoint )
+            {
+                oorPoint = point;
+            }
+        }
     }
-    return retVal;
+
+    return ! oorPoint;
 }
 
 
