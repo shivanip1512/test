@@ -52,7 +52,7 @@ public class DashboardDaoImpl implements DashboardDao {
         
         SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
         dashboardSql.append(baseDashboardSql.getSql());
-        dashboardSql.append("LEFT JOIN UserDashboard ud ON d.DashboardId = ud.DashboardId");
+        dashboardSql.append("JOIN UserDashboard ud ON d.DashboardId = ud.DashboardId");
         dashboardSql.append("WHERE ud.UserID").eq(userId);
         dashboardSql.append("AND ud.PageAssignment").eq_k(dashboardType);
         try {
@@ -81,7 +81,7 @@ public class DashboardDaoImpl implements DashboardDao {
         
         SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
         dashboardSql.append(baseDashboardSql.getSql());
-        dashboardSql.append("LEFT JOIN UserDashboard ud ON d.DashboardId = ud.DashboardId");
+        dashboardSql.append("JOIN UserDashboard ud ON d.DashboardId = ud.DashboardId");
         dashboardSql.append("WHERE Visibility").eq_k(visibility);
         dashboardSql.append("AND ud.PageAssignment").eq_k(dashboardType);
         try {
