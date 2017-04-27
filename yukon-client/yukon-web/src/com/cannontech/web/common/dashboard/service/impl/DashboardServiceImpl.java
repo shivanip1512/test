@@ -56,13 +56,13 @@ public class DashboardServiceImpl implements DashboardService {
     public List<LiteDashboard> getVisible(int userId) {
         List<LiteDashboard> visibleDashboards = new ArrayList<>();
 
-        //User can view the dashboard if
-        
-        //The dashboard visibility = PUBLIC or SYSTEM
+        // User can view the dashboard if
+
+        // The dashboard visibility = PUBLIC or SYSTEM
         visibleDashboards.addAll(dashboardDao.getDashboardsByVisibility(Visibility.SYSTEM, Visibility.PUBLIC));
-        //The user is the owner
+        // The user is the owner
         visibleDashboards.addAll(dashboardDao.getOwnedDashboards(userId));
-        //The dashboard visibility = SHARED and the user is in the same user group as the dashboard's owner.
+        // The dashboard visibility = SHARED and the user is in the same user group as the dashboard's owner.
         visibleDashboards.addAll(dashboardDao.getVisibleSharedDashboards(userId));
         return visibleDashboards;
     }
@@ -70,19 +70,20 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public boolean isVisible(int userId, int dashboardId) {
         Dashboard dashboard = getDashboard(dashboardId);
-        //User can view the dashboard if
-          
+        // User can view the dashboard if
+
         if (dashboard.getVisibility() == Visibility.SYSTEM || dashboard.getVisibility() == Visibility.PUBLIC) {
-          //The dashboard visibility = PUBLIC or SYSTEM
+            // The dashboard visibility = PUBLIC or SYSTEM
             return true;
-        } else if (dashboard.getOwner().getLiteID() == userId) {
-            //The user is the owner
+        } else if (dashboard.getOwner() != null && dashboard.getOwner().getLiteID() == userId) {
+            // The user is the owner
             return true;
-        } else if (dashboard.getVisibility() == Visibility.SHARED && dashboard.getOwner() != null){
+        } else if (dashboard.getOwner() != null && dashboard.getVisibility() == Visibility.SHARED) {
             LiteYukonUser owner = userDao.getLiteYukonUser(dashboard.getOwner().getLiteID());
             LiteYukonUser user = userDao.getLiteYukonUser(userId);
-            if(owner.getUserGroupId() == user.getUserGroupId()){
-              //The dashboard visibility = SHARED and the user is in the same user group as the dashboard's owner.
+            if (owner.getUserGroupId() == user.getUserGroupId()) {
+                // The dashboard visibility = SHARED and the user is in the same user group as the dashboard's
+                // owner.
                 return true;
             }
         }
