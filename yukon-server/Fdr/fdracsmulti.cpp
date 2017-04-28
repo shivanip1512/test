@@ -290,7 +290,6 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
                                            char** buffer,
                                            unsigned int& bufferSize)
 {
-    CHAR* acs = NULL;
     CtiFDRPointSPtr point = destination.findPointFromList( getSendToList() );
     if( point == nullptr )
     {
@@ -309,7 +308,7 @@ bool CtiFDRAcsMulti::buildForeignSystemMessage(const CtiFDRDestination& destinat
         return false;
     }
 
-    acs = new CHAR[sizeof (ACSInterface_t)];
+    CHAR* acs = new CHAR[sizeof (ACSInterface_t)];
     ACSInterface_t *ptr = (ACSInterface_t *)acs;
 
     // make sure we have all the pieces
@@ -445,76 +444,62 @@ unsigned int CtiFDRAcsMulti::getMessageSize(const char* data)
     return sizeof (ACSInterface_t);
 }
 
-bool CtiFDRAcsMulti::processValueMessage(CtiFDRClientServerConnection* connection,
-                                     const char* data, unsigned int size)
+bool CtiFDRAcsMulti::processValueMessage(Cti::Fdr::ServerConnection& connection,
+                                         const char* data, unsigned int size)
 {
     ACSInterface_t     *acsData = (ACSInterface_t*)data;
-    int                 quality;
-    double              value;
-    CtiTime              timestamp;
 
     CtiAcsId acsId = ForeignToYukonId(acsData->Value.RemoteNumber,
-                                    acsData->Value.CategoryCode,
-                                    acsData->Value.PointNumber,
-                                    connection->getName());
-    // assign last stuff
-    quality = ForeignToYukonQuality(acsData->Value.Quality);
-    timestamp = ForeignToYukonTime(acsData->TimeStamp);
-    value = CtiFDRSocketInterface::ntohieeef(acsData->Value.LongValue);
+                                      acsData->Value.CategoryCode,
+                                      acsData->Value.PointNumber,
+                                      connection.getName());
+
+    int quality = ForeignToYukonQuality(acsData->Value.Quality);
+    CtiTime timestamp = ForeignToYukonTime(acsData->TimeStamp);
+    double value = CtiFDRSocketInterface::ntohieeef(acsData->Value.LongValue);
 
     return _helper->handleValueUpdate(acsId, value, quality, timestamp);
 }
 
-bool CtiFDRAcsMulti::processStatusMessage(CtiFDRClientServerConnection* connection,
-                                      const char* data, unsigned int size)
+bool CtiFDRAcsMulti::processStatusMessage(Cti::Fdr::ServerConnection& connection,
+                                          const char* data, unsigned int size)
 {
     ACSInterface_t  *acsData = (ACSInterface_t*)data;
-    int                 quality;
-    DOUBLE              value;
-    CtiTime              timestamp;
 
     CtiAcsId acsId = ForeignToYukonId(acsData->Status.RemoteNumber,
-                                    acsData->Status.CategoryCode,
-                                    acsData->Status.PointNumber,
-                                    connection->getName());
+                                      acsData->Status.CategoryCode,
+                                      acsData->Status.PointNumber,
+                                      connection.getName());
 
-    // assign last stuff
-    quality = ForeignToYukonQuality(acsData->Status.Quality);
-    timestamp = ForeignToYukonTime(acsData->TimeStamp);
-    value = ForeignToYukonStatus(acsData->Status.Value);
+    int quality = ForeignToYukonQuality(acsData->Status.Quality);
+    CtiTime timestamp = ForeignToYukonTime(acsData->TimeStamp);
+    int value = ForeignToYukonStatus(acsData->Status.Value);
 
     return _helper->handleStatusUpdate(acsId, value, quality, timestamp);
 }
 
-bool CtiFDRAcsMulti::processControlMessage(CtiFDRClientServerConnection* connection, const char* data, unsigned int size)
+bool CtiFDRAcsMulti::processControlMessage(Cti::Fdr::ServerConnection& connection,
+                                           const char* data, unsigned int size)
 {
-    int retVal = ClientErrors::None;
-    CtiPointDataMsg     *pData;
     ACSInterface_t  *acsData = (ACSInterface_t*)data;
-    int                 quality =NormalQuality;
-    CtiTime             timestamp;
-    string              desc;
-    CHAR                action[60];
 
     CtiAcsId acsId = ForeignToYukonId(acsData->Control.RemoteNumber,
-                                    acsData->Control.CategoryCode,
-                                    acsData->Control.PointNumber,
-                                    connection->getName());
-
+                                      acsData->Control.CategoryCode,
+                                      acsData->Control.PointNumber,
+                                      connection.getName());
 
     int controlState = ForeignToYukonStatus (acsData->Control.Value);
 
     return _helper->handleControl(acsId, controlState);
 }
 
-bool CtiFDRAcsMulti::processTimeSyncMessage(CtiFDRClientServerConnection* connection, const char* data, unsigned int size)
+bool CtiFDRAcsMulti::processTimeSyncMessage(Cti::Fdr::ServerConnection& connection,
+                                            const char* data, unsigned int size)
 {
     int retVal = ClientErrors::None;
-    CtiPointDataMsg     *pData;
     ACSInterface_t  *acsData = (ACSInterface_t*)data;
-    CtiTime              timestamp;
 
-    timestamp = ForeignToYukonTime (acsData->TimeStamp,true);
+    CtiTime timestamp = ForeignToYukonTime (acsData->TimeStamp,true);
     if (timestamp == PASTDATE)
     {
         CTILOG_ERROR(dout, logNow() <<"Time sync request was invalid: "<< acsData->TimeStamp);

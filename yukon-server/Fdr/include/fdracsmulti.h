@@ -188,7 +188,7 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
 
         virtual ~CtiFDRAcsMulti();
 
-        virtual unsigned int getMessageSize(const char* data);
+        unsigned int getMessageSize(const char* data) override;
         unsigned int getHeaderLength() override  {  return ACS_MULTI_HEADER_SIZE;  }
         bool readConfig() override;
 
@@ -197,26 +197,26 @@ class IM_EX_FDRACSMULTI CtiFDRAcsMulti : public CtiFDRScadaServer
         void startup();
 
     protected:
-        virtual CtiFDRClientServerConnectionSPtr createNewConnection(SOCKET newConnection);
+        CtiFDRClientServerConnectionSPtr createNewConnection(SOCKET newConnection) override;
 
-        virtual void begineNewPoints();
-        virtual bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList);
-        virtual void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList);
+        void begineNewPoints() override;
+        bool translateSinglePoint(CtiFDRPointSPtr & translationPoint, bool sendList) override;
+        void cleanupTranslationPoint(CtiFDRPointSPtr & translationPoint, bool recvList) override;
 
-        virtual bool buildForeignSystemHeartbeatMsg(char** buffer,
-                                                    unsigned int& bufferSize);
-        virtual bool buildForeignSystemMessage(const CtiFDRDestination& destination,
-                                               char** buffer,
-                                               unsigned int& bufferSize);
+        bool buildForeignSystemHeartbeatMsg(char** buffer,
+                                                    unsigned int& bufferSize) override;
+        bool buildForeignSystemMessage(const CtiFDRDestination& destination,
+                                       char** buffer,
+                                       unsigned int& bufferSize) override;
 
-        virtual bool processValueMessage(CtiFDRClientServerConnection* connection,
-                                         const char* data, unsigned int size);
-        virtual bool processStatusMessage(CtiFDRClientServerConnection* connection,
-                                          const char* data, unsigned int size);
-        virtual bool processControlMessage(CtiFDRClientServerConnection* connection,
-                                           const char* data, unsigned int size);
-        virtual bool processTimeSyncMessage(CtiFDRClientServerConnection* connection,
-                                            const char* data, unsigned int size);
+        bool processValueMessage(Cti::Fdr::ServerConnection& connection,
+                                 const char* data, unsigned int size) override;
+        bool processStatusMessage(Cti::Fdr::ServerConnection& connection,
+                                  const char* data, unsigned int size) override;
+        bool processControlMessage(Cti::Fdr::ServerConnection& connection,
+                                   const char* data, unsigned int size) override;
+        bool processTimeSyncMessage(Cti::Fdr::ServerConnection& connection,
+                                    const char* data, unsigned int size) override;
 
     private:
         CtiAcsId    ForeignToYukonId(USHORT remote, CHAR category, USHORT point,
