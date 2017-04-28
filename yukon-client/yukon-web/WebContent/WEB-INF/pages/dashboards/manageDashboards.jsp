@@ -25,7 +25,6 @@
             <cti:url var="manageUrl" value="/dashboards/manage"/>
             <select onchange="window.location.href=this.value">
                 <option value="${manageUrl}"/><i:inline key=".showAll"/></option>
-                <option value="${manageUrl}?filter=MYFAVORITES" <c:if test="${filter == 'MYFAVORITES'}">selected="selected"</c:if>><i:inline key=".myFavorites"/></option>
                 <option value="${manageUrl}?filter=CREATEDBYME" <c:if test="${filter == 'CREATEDBYME'}">selected="selected"</c:if>><i:inline key=".createdByMe"/></option>
             </select>
         <hr/>
@@ -34,40 +33,45 @@
             <cti:param name="filter" value="${filter}"/>
         </cti:url>
         <div data-url="${dataUrl}" data-static>
-            <table class="compact-results-table row-highlighting has-actions has-alerts">
-                <th></th>
+            <table class="compact-results-table row-highlighting has-actions">
                 <tags:sort column="${name}" />                
                 <tags:sort column="${createdBy}" />                
                 <tags:sort column="${visibility}" />                
                 <tags:sort column="${numberOfUsers}" />                
                 <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
-                <c:forEach var="dashboard" items="${dashboards.resultList}">
-                    <tr>
-                        <c:set var="dashboardId" value="${dashboard.dashboardId}"/>
-                        <cti:url var="dashboardUrl" value="/dashboards/${dashboardId}/view"/>
-                        <td>
-                            <cti:icon icon="icon-favorite-not" classes="js-favorite-dashboard cp" data-dashboard="${dashboardId}"/>
-    <%--                         <cti:icon icon="icon-star" classes="js-unfavorite-dashboard cp" data-dashboard="${dashboardId}"/> --%>
-                        </td>                
-                        <td><a href="${dashboardUrl}">${dashboard.name}</a></td>
-                        <td>${dashboard.owner.username}</td>
-                        <td><i:inline key=".visibility.${dashboard.visibility}"/></td>
-                        <td>${dashboard.users}</td>
-                        <td>
-                            <cm:dropdown icon="icon-cog">
-                                <div class="dn copy-dashboard-${dashboardId} js-dashboard-details-popup" data-dialog data-title="<cti:msg2 key=".copyDashboard.label"/>"
-                                data-url="<cti:url value="/dashboards/${dashboardId}/copy"/>" data-event="yukon:dashboard:details:save"></div>
-                                <cm:dropdownOption key=".copy" icon="icon-disk-multiple" data-popup=".copy-dashboard-${dashboardId}"/>
-                                <cti:url var="editUrl" value="/dashboards/${dashboardId}/edit"/>
-                                <cm:dropdownOption key=".edit" icon="icon-pencil" href="${editUrl}"/>
-                                <cm:dropdownOption id="deleteDashboard_${dashboardId}" key=".delete" icon="icon-cross"
-                                    data-dashboard-id="${dashboardId}" data-ok-event="yukon:dashboard:remove" />
-                                <d:confirm on="#deleteDashboard_${dashboardId}" nameKey="confirmDelete" argument="${dashboard.name}"/>
-                            </cm:dropdown>
-                        
-                        </td>
-                    </tr>   
-                </c:forEach>
+                <c:choose>
+                    <c:when test="${dashboards.hitCount > 0}">
+                        <c:forEach var="dashboard" items="${dashboards.resultList}">
+                            <tr>
+                                <c:set var="dashboardId" value="${dashboard.dashboardId}"/>
+                                <cti:url var="dashboardUrl" value="/dashboards/${dashboardId}/view"/>            
+                                <td><a href="${dashboardUrl}">${dashboard.name}</a></td>
+                                <td>${dashboard.owner.username}</td>
+                                <td><i:inline key=".visibility.${dashboard.visibility}"/></td>
+                                <td>${dashboard.users}</td>
+                                <td>
+                                    <cm:dropdown icon="icon-cog">
+                                        <div class="dn copy-dashboard-${dashboardId} js-dashboard-details-popup" data-dialog data-title="<cti:msg2 key=".copyDashboard.label"/>"
+                                        data-url="<cti:url value="/dashboards/${dashboardId}/copy"/>" data-event="yukon:dashboard:details:save"></div>
+                                        <cm:dropdownOption key=".copy" icon="icon-disk-multiple" data-popup=".copy-dashboard-${dashboardId}"/>
+                                        <cti:url var="editUrl" value="/dashboards/${dashboardId}/edit"/>
+                                        <cm:dropdownOption key=".edit" icon="icon-pencil" href="${editUrl}"/>
+                                        <cm:dropdownOption id="deleteDashboard_${dashboardId}" key=".delete" icon="icon-cross"
+                                            data-dashboard-id="${dashboardId}" data-ok-event="yukon:dashboard:remove" />
+                                        <d:confirm on="#deleteDashboard_${dashboardId}" nameKey="confirmDelete" argument="${dashboard.name}"/>
+                                    </cm:dropdown>
+                                </td>
+                            </tr>   
+                        </c:forEach>
+                    </c:when>
+                    <c:otherwise>
+                        <tr>
+                            <td colspan="5">
+                                <span class="empty-list"><i:inline key="yukon.common.search.noResultsFound" /></span>
+                            </td>
+                        </tr>
+                    </c:otherwise>
+                </c:choose>
             </table>
             <tags:pagingResultsControls result="${dashboards}" adjustPageCount="true"/>
         </div>

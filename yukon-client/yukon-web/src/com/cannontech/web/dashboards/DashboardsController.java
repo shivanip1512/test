@@ -69,13 +69,8 @@ public class DashboardsController {
         model.addAttribute("pageTypes", DashboardPageType.values());
         List<LiteDashboard> visibleDashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
         List<LiteDashboard> dashboards = visibleDashboards;
-        if (filter != null) {
-            if (filter.equals(DashboardFilter.MYFAVORITES.name())) {
-                dashboards = dashboards.subList(0, 1);
-                //dashboards = dashboardService.getFavorites(userContext.getYukonUser().getUserID());
-            } else if (filter.equals(DashboardFilter.CREATEDBYME.name())) {
-                dashboards = dashboardService.getOwnedDashboards(userContext.getYukonUser().getUserID());
-            }
+        if (filter != null && filter.equals(DashboardFilter.CREATEDBYME.name())) {
+            dashboards = dashboardService.getOwnedDashboards(userContext.getYukonUser().getUserID());
         }
 
         model.addAttribute("filter", filter);
@@ -339,7 +334,6 @@ public class DashboardsController {
     
     public enum DashboardFilter {
         ALL,
-        MYFAVORITES,
         CREATEDBYME;
     }
 
