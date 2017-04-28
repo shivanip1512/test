@@ -17,7 +17,9 @@
     <form:form id="dashboard-details" commandName="dashboard" action="${action}" method="POST">
      <cti:csrfToken/>
      
-       <form:hidden path="dashboardId"/>
+       <cti:displayForPageEditModes modes="EDIT">
+            <form:hidden path="dashboardId"/>
+       </cti:displayForPageEditModes>
               
         <tags:nameValueContainer2>
             <tags:nameValue2 nameKey=".name">
@@ -35,7 +37,7 @@
             <tags:nameValue2 nameKey=".visibility">
                 <form:select path="visibility">
                     <c:forEach var="visOption" items="${visibilityOptions}">
-                        <c:if test="${visOption != 'SYSTEM'}">
+                        <c:if test="${visOption != 'SYSTEM' && visOption != 'SHARED'}">
                             <form:option value="${visOption}"><i:inline key=".visibility.${visOption}"/></form:option>
                         </c:if>
                     </c:forEach>
