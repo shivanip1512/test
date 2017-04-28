@@ -150,7 +150,8 @@
     <entry key="yukon.web.modules.adminSetup.vendor.appName">App Name</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.incomingAuthentication">Incoming Authentication</entry>
     <entry key="yukon.web.modules.adminSetup.vendor.outcomingAuthentication">Outcoming Authentication</entry>
-    
+    <entry key="yukon.web.modules.adminSetup.multispeak.exception">Multispeak Vendor not inserted for Company Name {0}</entry>
+
     <!-- device group sync pages -->
     <!-- enum entries -->
     <entry key="yukon.web.modules.adminSetup.deviceGroupSync.multispeakDeviceGroupSyncType.SUBSTATION">Substation</entry>

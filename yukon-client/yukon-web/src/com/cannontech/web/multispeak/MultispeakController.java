@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.CisDetailRolePropertyEnum;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
@@ -151,11 +151,11 @@ public class MultispeakController {
 
         try {
             addOrUpdateMspVendor(request, mspVendor, flashScope, isCreateNew, multispeak);
-        } catch (DuplicateException e) {
+        } catch (DataIntegrityViolationException e) {
             flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.adminSetup.multispeak.exception",
-                e.getMessage()));
+                mspVendor.getCompanyName()));
+            return bindAndForward(multispeak, result, redirectAttributes, isCreateNew);
         }
-
         map.addAttribute("mspVendorId", mspVendor.getVendorID());
         if (mspVendor.getVendorID() != null && mspVendor.getVendorID() == MultispeakVendor.CANNON_MSP_VENDORID) {
             return "redirect:home";

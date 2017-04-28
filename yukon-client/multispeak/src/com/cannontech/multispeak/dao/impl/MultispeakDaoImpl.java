@@ -15,7 +15,6 @@ import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -279,14 +278,9 @@ public final class MultispeakDaoImpl implements MultispeakDao {
                     jdbcTemplate.update(sql);
 
                 } catch (IncorrectResultSizeDataAccessException e) {
-                    throw new NotFoundException("Multispeak Vendor not inserted for Company Name "
+                    throw new DataIntegrityViolationException("Multispeak Vendor not inserted for Company Name "
                         + mspVendor.getCompanyName() + ".");
-                } catch (DataIntegrityViolationException e) {
-                    throw new DuplicateException(
-                        "Cannot create Multispeak Vendor Integration with the same CompanyName/AppName " +
-                        "combination as an existing Vendor.", e);
                 }
-
                 for (MultispeakInterface mspInterface : mspVendor.getMspInterfaces()) {
                     mspInterface.setVendorID(mspVendor.getVendorID());
                     addMultispeakInterfaces(mspInterface);
