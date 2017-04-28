@@ -6,6 +6,7 @@
 <cti:standardPage module="dashboard" page="view">
 
 <tags:setFormEditMode mode="${mode}"/>
+<cti:yukonUser var="user"/>
 
     <div id="page-actions" class="dn">
         <c:forEach var="ownedDashboard" items="${ownedDashboards}" varStatus="status">
@@ -15,8 +16,10 @@
             </c:if>
         </c:forEach>
         <li class="divider"/>
-        <cti:url var="editUrl" value="/dashboards/${dashboard.dashboardId}/edit"/>
-        <cm:dropdownOption key=".edit" href="${editUrl}"/>
+        <c:if test="${user.userID == dashboard.owner.userID}">
+            <cti:url var="editUrl" value="/dashboards/${dashboard.dashboardId}/edit"/>
+            <cm:dropdownOption key=".edit" href="${editUrl}"/>
+        </c:if>
         <cti:url var="manageDashboardsUrl" value="/dashboards/manage"/>
         <cm:dropdownOption key=".manageDashboards" href="${manageDashboardsUrl}"/>
     </div>

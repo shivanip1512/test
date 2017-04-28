@@ -44,6 +44,9 @@
     <entry key="yukon.web.modules.dashboard.edit.crumbTitle">Dashboard Edit</entry>
     <entry key="yukon.web.modules.dashboard.editDetails.label">Edit Details</entry>
     <entry key="yukon.web.modules.dashboard.save.success">Dashboard saved successfully.</entry>    
+    <entry key="yukon.web.modules.dashboard.edit.exception.notOwner">Unable to edit dashboard {0}. Only the dashboard owner may edit this dashboard.</entry>
+    <entry key="yukon.web.modules.dashboard.view.exception.notOwner">Unable to view dashboard {0}. You do not have access to this dashboard.</entry>
+    
     
     <!-- Add Widgets JSP -->
     <entry key="yukon.web.modules.dashboard.addWidgets.label">Add Widgets</entry>
