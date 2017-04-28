@@ -33,17 +33,8 @@ public interface DashboardService {
     List<LiteDashboard> getOwnedDashboards(int userId);
     
     /**
-     * Get a list of dashboards favorited by the user.
-     */
-    List<LiteDashboard> getFavorites(int userId);
-    
-    /**
-     * Get a list of favorite dashboards for a particular page type.
-     */
-    List<LiteDashboard> getFavoritesForPage(int userId, DashboardPageType type);
-    
-    /**
      * Get a list of dashboards that are visible to the specified user.
+     * The dashboard visibility = PUBLIC or SYSTEM or the user is the owner.
      */
     List<LiteDashboard> getVisible(int userId);
     
@@ -56,16 +47,6 @@ public interface DashboardService {
      * Sets the default dashboard for the specified users and dashboard page type.
      */
     void setDefault(Iterable<Integer> userIds, DashboardPageType dashboardType, int dashboardId);
-    
-    /**
-     * Adds the dashboard to the user's favorites.
-     */
-    void favorite(int userId, int dashboardId);
-    
-    /**
-     * Removes the dashboard from the user's favorites.
-     */
-    void unfavorite(int userId, int dashboardId);
     
     /**
      * @return The ID of the newly created dashboard.
@@ -95,6 +76,9 @@ public interface DashboardService {
      */
     Optional<LiteYukonUser> getOwner(int dashboardId);
 
+    /**
+     * Returns true if dashboard visibility = PUBLIC or SYSTEM or the user is the owner.
+     */
     boolean isVisible(int userId, int dashboardId);
 
     /**

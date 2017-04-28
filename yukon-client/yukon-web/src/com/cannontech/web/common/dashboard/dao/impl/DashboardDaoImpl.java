@@ -121,22 +121,7 @@ public class DashboardDaoImpl implements DashboardDao {
         });
         
     }
-    
-    @Override
-    public List<LiteDashboard> getVisibleSharedDashboards(int userId){
         
-        SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
-        dashboardSql.append(baseDashboardSql.getSql());
-        dashboardSql.append("WHERE Visibility").eq_k(Visibility.SHARED);
-        dashboardSql.append("AND OwnerId in (SELECT yu.UserId");
-        dashboardSql.append(                    "FROM UserGroup ug");
-        dashboardSql.append(                    "JOIN YukonUser yu ON yu.UserGroupId = ug.UserGroupId");
-        dashboardSql.append(                    "WHERE UG.UserGroupId = (SELECT UserGroupId from YukonUser where UserId ").eq(userId);
-        dashboardSql.append("                    ))");
-        List<Dashboard> dashboards = jdbcTemplate.query(dashboardSql, dashboardRowMapper);
-        return getLiteDashboards(dashboards);   
-    }
-    
     @Override
     public List<LiteDashboard> getDashboardsByVisibility(Visibility... visibility) {
         SqlStatementBuilder dashboardSql = new SqlStatementBuilder();

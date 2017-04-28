@@ -78,15 +78,6 @@ public interface DashboardDao {
     Dashboard getDashboard(Visibility visibility, DashboardPageType dashboardType);
 
     /**
-     * Retrieves dashboard if
-     * 1. The user is the owner
-     * 2. The dashboard visibility = PUBLIC or SYSTEM
-     * 3. The dashboard visibility = SHARED and the user is in the same user group as the dashboard's owner.
-     * 
-     */
-    List<LiteDashboard> getVisibleSharedDashboards(int userId);
-
-    /**
      * Retrieves dashboards by visibility.
      */
     List<LiteDashboard> getDashboardsByVisibility(Visibility... visibility);  

@@ -8,7 +8,6 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.dashboard.dao.DashboardDao;
@@ -45,16 +44,6 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
-    public List<LiteDashboard> getFavorites(int userId) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public List<LiteDashboard> getFavoritesForPage(int userId, DashboardPageType type) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
     public List<LiteDashboard> getVisible(int userId) {
         Set<LiteDashboard> visibleDashboards = new HashSet<>();
 
@@ -64,8 +53,6 @@ public class DashboardServiceImpl implements DashboardService {
         visibleDashboards.addAll(dashboardDao.getDashboardsByVisibility(Visibility.SYSTEM, Visibility.PUBLIC));
         // The user is the owner
         visibleDashboards.addAll(dashboardDao.getOwnedDashboards(userId));
-        // The dashboard visibility = SHARED and the user is in the same user group as the dashboard's owner.
-        visibleDashboards.addAll(dashboardDao.getVisibleSharedDashboards(userId));
         return Lists.newArrayList(visibleDashboards);
     }
     
@@ -80,15 +67,7 @@ public class DashboardServiceImpl implements DashboardService {
         } else if (dashboard.getOwner() != null && dashboard.getOwner().getLiteID() == userId) {
             // The user is the owner
             return true;
-        } else if (dashboard.getOwner() != null && dashboard.getVisibility() == Visibility.SHARED) {
-            LiteYukonUser owner = userDao.getLiteYukonUser(dashboard.getOwner().getLiteID());
-            LiteYukonUser user = userDao.getLiteYukonUser(userId);
-            if (owner.getUserGroupId() == user.getUserGroupId()) {
-                // The dashboard visibility = SHARED and the user is in the same user group as the dashboard's
-                // owner.
-                return true;
-            }
-        }
+        } 
         return false;
     }
 
@@ -100,16 +79,6 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public void setDefault(Iterable<Integer> userIds, DashboardPageType dashboardType, int dashboardId) {
         dashboardDao.assignDashboard(userIds, dashboardType, dashboardId);
-    }
-
-    @Override
-    public void favorite(int userId, int dashboardId) {
-        throw new MethodNotImplementedException();
-    }
-
-    @Override
-    public void unfavorite(int userId, int dashboardId) {
-        throw new MethodNotImplementedException();
     }
 
     @Override
