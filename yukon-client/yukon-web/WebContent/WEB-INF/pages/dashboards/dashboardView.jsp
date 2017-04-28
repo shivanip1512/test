@@ -8,6 +8,13 @@
 <tags:setFormEditMode mode="${mode}"/>
 
     <div id="page-actions" class="dn">
+        <c:forEach var="ownedDashboard" items="${ownedDashboards}" varStatus="status">
+            <c:if test="${ownedDashboard.dashboardId != dashboard.dashboardId && status.index <= 10}">
+                <cti:url var="dashboardUrl" value="/dashboards/${ownedDashboard.dashboardId}/view"/>
+                <cm:dropdownOption label="${ownedDashboard.name}" href="${dashboardUrl}"/>
+            </c:if>
+        </c:forEach>
+        <li class="divider"/>
         <cti:url var="editUrl" value="/dashboards/${dashboard.dashboardId}/edit"/>
         <cm:dropdownOption key=".edit" href="${editUrl}"/>
         <cti:url var="manageDashboardsUrl" value="/dashboards/manage"/>

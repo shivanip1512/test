@@ -229,6 +229,8 @@ public class DashboardsController {
         model.addAttribute("mode", PageEditMode.VIEW);
         Dashboard dashboard = dashboardService.getDashboard(id);
         model.addAttribute("dashboard", dashboard);
+        List<LiteDashboard> ownedDashboards = dashboardService.getOwnedDashboards(userContext.getYukonUser().getUserID());
+        model.addAttribute("ownedDashboards", ownedDashboards);
         return "dashboardView.jsp";
     }
     
