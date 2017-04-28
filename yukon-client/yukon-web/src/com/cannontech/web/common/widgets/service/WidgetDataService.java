@@ -1,7 +1,7 @@
 
 package com.cannontech.web.common.widgets.service;
 
-public interface DataCollectionService {
+public interface WidgetDataService {
 
 }
 
