@@ -28,7 +28,7 @@ public enum WidgetType implements DisplayableEnum {
     AMI_ACTIONS(DashboardScope.GENERAL, WidgetCategory.AMI, "systemActionsMenuWidget", "image-ami-actions"),
     SCHEDULED_REQUESTS(DashboardScope.GENERAL, WidgetCategory.AMI, "scheduledGroupRequestExecutionWidget", "image-scheduled-requests"),
     GATEWAY_STREAMING_CAPACITY(DashboardScope.GENERAL, WidgetCategory.AMI, "overloadedGatewaysWidget", "image-gateway-streaming"),
-
+    DATA_COLLECTION(DashboardScope.GENERAL, WidgetCategory.AMI, "dataCollectionWidget", "image-coming-soon"),
     
     /*
     //Meter Detail
