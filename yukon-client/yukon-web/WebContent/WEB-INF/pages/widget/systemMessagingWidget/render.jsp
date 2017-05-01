@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:msgScope paths="modules.support.systemHealth">
-    <div id="systemHealthTable">
+    <div id="systemMessagingTable">
         <c:if test="${not empty extendedQueueData}">
             <table class="compact-results-table stacked-md">
                 <thead>
@@ -79,7 +79,7 @@
 </cti:msgScope>
 
 <style>
-#systemHealthTable {
+#systemMessagingTable {
     overflow-x: scroll;
 }
 </style>
