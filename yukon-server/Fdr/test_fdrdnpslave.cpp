@@ -18,7 +18,7 @@ struct Test_FdrDnpSlave : Cti::Fdr::DnpSlave
     using DnpSlave::translateSinglePoint;
     using DnpSlave::processMessageFromForeignSystem;
 
-    std::vector<std::unique_ptr<CtiMessage>> dispatchMessages;
+    std::vector<std::unique_ptr<CtiMessage>> dispatchMessages, pointMessages;
 
     std::unique_ptr<CtiRequestMsg> lastRequestMsg;
 
@@ -54,6 +54,13 @@ struct Test_FdrDnpSlave : Cti::Fdr::DnpSlave
     LitePoint lookupPointById(long pointId) override
     {
         return point;
+    }
+
+    bool queueMessageToDispatch(CtiMessage *aMessage) override
+    {
+        pointMessages.emplace_back(aMessage);
+
+        return true;
     }
 
     bool sendMessageToDispatch (CtiMessage *aMessage) override
@@ -596,11 +603,226 @@ BOOST_AUTO_TEST_CASE( test_scan_request_multiple_packet )
 
 
 /**
- * Verify behavior of various "control close" messages sent to a
- * non-DNP device.
- * Correctly-formatted requests should generate a Dispatch
- * control message.
- */
+* Verify behavior of various "control close" messages sent to a point.
+* Correctly-formatted requests should generate a pointdata message.
+*/
+BOOST_AUTO_TEST_CASE( test_control_close_receive )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.getReceiveFromList().deletePointList();
+    dnpSlave.getReceiveFromList().deletePointList();
+    dnpSlave.setReceiveFromList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(0);
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(43);
+        fdrPoint->setPaoID(53);  //  <=100, not a DNP deviceid (see Test_FdrDnpSlave::isDnpDeviceId)
+        fdrPoint->setOffset(12);
+        fdrPoint->setPointType(StatusPointType);
+        fdrPoint->setValue(0);
+        fdrPoint->setControllable(false);  //  Not receive-for-control, just receive
+
+        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:1", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, false);
+    }
+
+    //  Close, NUL operation (0x40)
+    {
+        const byte_str request(
+            "05 64 18 c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 0c 01 17 01 00 40 01 00 00 00 00 00 00 96 bf "
+            "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+            "05 64 1a 44 e8 03 f6 01 20 bb "
+            "c0 c1 81 00 00 0c 01 17 01 00 40 01 00 00 00 00 40 06 "
+            "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 0);
+        BOOST_REQUIRE_EQUAL(dnpSlave.pointMessages.size(), 1);
+
+        auto msg = dynamic_cast<const CtiPointDataMsg *>(dnpSlave.pointMessages.front().get());
+
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getId(),      43);
+        BOOST_CHECK_EQUAL(msg->getQuality(), 5);
+        BOOST_CHECK_EQUAL(msg->getValue(),   1);
+        BOOST_CHECK_EQUAL(msg->getType(),    StatusPointType);
+    }
+
+    dnpSlave.pointMessages.clear();
+
+    //  Close, pulse on (0x41)
+    {
+        const byte_str request(
+            "05 64 18 c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 0c 01 17 01 00 41 01 e8 03 00 00 00 00 2e 18 "
+            "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+            "05 64 1a 44 e8 03 f6 01 20 bb "
+            "c0 c1 81 00 00 0c 01 17 01 00 41 01 e8 03 00 00 c5 65 "
+            "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 0);
+        BOOST_REQUIRE_EQUAL(dnpSlave.pointMessages.size(), 1);
+
+        auto msg = dynamic_cast<const CtiPointDataMsg *>(dnpSlave.pointMessages.front().get());
+
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getId(),      43);
+        BOOST_CHECK_EQUAL(msg->getQuality(), 5);
+        BOOST_CHECK_EQUAL(msg->getValue(),   1);
+        BOOST_CHECK_EQUAL(msg->getType(),    StatusPointType);
+    }
+
+    dnpSlave.pointMessages.clear();
+
+    //  Close, pulse off (0x42)
+    {
+        const byte_str request(
+            "05 64 18 c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 0c 01 17 01 00 42 01 e8 03 00 00 00 00 18 22 "
+            "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+            "05 64 1a 44 e8 03 f6 01 20 bb "
+            "c0 c1 81 00 00 0c 01 17 01 00 42 01 e8 03 00 00 95 f6 "
+            "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 0);
+        BOOST_REQUIRE_EQUAL(dnpSlave.pointMessages.size(), 1);
+
+        auto msg = dynamic_cast<const CtiPointDataMsg *>(dnpSlave.pointMessages.front().get());
+
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getId(),      43);
+        BOOST_CHECK_EQUAL(msg->getQuality(), 5);
+        BOOST_CHECK_EQUAL(msg->getValue(),   1);
+        BOOST_CHECK_EQUAL(msg->getType(),    StatusPointType);
+    }
+
+    dnpSlave.pointMessages.clear();
+
+    //  Pulse on, no trip/close (0x01)
+    {
+        const byte_str request(
+            "05 64 18 c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 0c 01 17 01 00 01 01 00 00 00 00 00 00 e0 18 "
+            "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+            "05 64 1a 44 e8 03 f6 01 20 bb "
+            "c0 c1 81 00 00 0c 01 17 01 00 01 01 00 00 00 00 da 1d "
+            "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 0);
+        BOOST_REQUIRE_EQUAL(dnpSlave.pointMessages.size(), 1);
+
+        auto msg = dynamic_cast<const CtiPointDataMsg *>(dnpSlave.pointMessages.front().get());
+
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getId(),      43);
+        BOOST_CHECK_EQUAL(msg->getQuality(), 5);
+        BOOST_CHECK_EQUAL(msg->getValue(),   1);
+        BOOST_CHECK_EQUAL(msg->getType(),    StatusPointType);
+    }
+
+    dnpSlave.pointMessages.clear();
+
+    //  Latch on, no trip/close (0x03)
+    {
+        const byte_str request(
+            "05 64 18 c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 0c 01 17 01 00 03 01 00 00 00 00 00 00 c4 34 "
+            "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+            "05 64 1a 44 e8 03 f6 01 20 bb "
+            "c0 c1 81 00 00 0c 01 17 01 00 03 01 00 00 00 00 6d 3b "
+            "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 0);
+        BOOST_REQUIRE_EQUAL(dnpSlave.pointMessages.size(), 1);
+
+        auto msg = dynamic_cast<const CtiPointDataMsg *>(dnpSlave.pointMessages.front().get());
+
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getId(),      43);
+        BOOST_CHECK_EQUAL(msg->getQuality(), 5);
+        BOOST_CHECK_EQUAL(msg->getValue(),   1);
+        BOOST_CHECK_EQUAL(msg->getType(),    StatusPointType);
+    }
+}
+
+
+/**
+* Verify behavior of various "control close" messages sent to a
+* non-DNP device.
+* Correctly-formatted requests should generate a Dispatch
+* control message.
+*/
 BOOST_AUTO_TEST_CASE( test_control_close_dispatch )
 {
     Test_FdrDnpSlave dnpSlave;
@@ -1310,11 +1532,191 @@ BOOST_AUTO_TEST_CASE( test_control_close_sbo_porter )
 
 
 /**
- * Verify behavior of various "control open" messages sent to a
- * non-DNP device.
- * Correctly-formatted requests should generate a Dispatch
- * control message.
- */
+* Verify behavior of various "control open" messages sent to a point.
+* Correctly-formatted requests should generate a pointdata message.
+*/
+BOOST_AUTO_TEST_CASE( test_control_open_receive )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.getReceiveFromList().deletePointList();
+    dnpSlave.setReceiveFromList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(0);
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(43);
+        fdrPoint->setPaoID(53);  //  <=100, not a DNP deviceid (see Test_FdrDnpSlave::isDnpDeviceId)
+        fdrPoint->setOffset(12);
+        fdrPoint->setPointType(StatusPointType);
+        fdrPoint->setValue(0);
+        fdrPoint->setControllable(false);  //  not receive-for-control, just receive
+
+        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:1000;SlaveId:502;POINTTYPE:Status;Offset:1", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, false);
+    }
+
+    //  Trip, NUL operation (0x80)
+    {
+        const byte_str request(
+            "05 64 18 c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 0c 01 17 01 00 80 01 00 00 00 00 00 00 43 21 "
+            "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+            "05 64 1a 44 e8 03 f6 01 20 bb "
+            "c0 c1 81 00 00 0c 01 17 01 00 80 01 00 00 00 00 be b9 "
+            "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 0);
+        BOOST_REQUIRE_EQUAL(dnpSlave.pointMessages.size(), 1);
+
+        auto msg = dynamic_cast<const CtiPointDataMsg *>(dnpSlave.pointMessages.front().get());
+
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getId(),      43);
+        BOOST_CHECK_EQUAL(msg->getQuality(), 5);
+        BOOST_CHECK_EQUAL(msg->getValue(),   0);
+        BOOST_CHECK_EQUAL(msg->getType(),    StatusPointType);
+    }
+
+    dnpSlave.pointMessages.clear();
+
+    //  Trip, pulse on (0x81)
+    {
+        const byte_str request(
+            "05 64 18 c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 0c 01 17 01 00 81 01 00 00 00 00 00 00 51 37 "
+            "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+            "05 64 1a 44 e8 03 f6 01 20 bb "
+            "c0 c1 81 00 00 0c 01 17 01 00 81 01 00 00 00 00 59 0c "
+            "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 0);
+        BOOST_REQUIRE_EQUAL(dnpSlave.pointMessages.size(), 1);
+
+        auto msg = dynamic_cast<const CtiPointDataMsg *>(dnpSlave.pointMessages.front().get());
+
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getId(),      43);
+        BOOST_CHECK_EQUAL(msg->getQuality(), 5);
+        BOOST_CHECK_EQUAL(msg->getValue(),   0);
+        BOOST_CHECK_EQUAL(msg->getType(),    StatusPointType);
+    }
+
+    dnpSlave.pointMessages.clear();
+
+    //  Pulse off, no trip/close (0x02)
+    {
+        const byte_str request(
+            "05 64 18 c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 0c 01 17 01 00 02 01 00 00 00 00 00 00 d6 22 "
+            "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+            "05 64 1a 44 e8 03 f6 01 20 bb "
+            "c0 c1 81 00 00 0c 01 17 01 00 02 01 00 00 00 00 8a 8e "
+            "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 0);
+        BOOST_REQUIRE_EQUAL(dnpSlave.pointMessages.size(), 1);
+
+        auto msg = dynamic_cast<const CtiPointDataMsg *>(dnpSlave.pointMessages.front().get());
+
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getId(),      43);
+        BOOST_CHECK_EQUAL(msg->getQuality(), 5);
+        BOOST_CHECK_EQUAL(msg->getValue(),   0);
+        BOOST_CHECK_EQUAL(msg->getType(),    StatusPointType);
+    }
+
+    dnpSlave.pointMessages.clear();
+
+    //  Latch off, no trip/close (0x04)
+    {
+        const byte_str request(
+            "05 64 18 c4 f6 01 e8 03 36 79 "
+            "c0 c1 05 0c 01 17 01 00 04 01 00 00 00 00 00 00 ba 56 "
+            "00 00 00 ff ff");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+            "05 64 1a 44 e8 03 f6 01 20 bb "
+            "c0 c1 81 00 00 0c 01 17 01 00 04 01 00 00 00 00 53 e5 "
+            "00 00 00 00 00 ff ff");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 0);
+        BOOST_REQUIRE_EQUAL(dnpSlave.pointMessages.size(), 1);
+
+        auto msg = dynamic_cast<const CtiPointDataMsg *>(dnpSlave.pointMessages.front().get());
+
+        BOOST_REQUIRE(msg);
+
+        BOOST_CHECK_EQUAL(msg->getId(),      43);
+        BOOST_CHECK_EQUAL(msg->getQuality(), 5);
+        BOOST_CHECK_EQUAL(msg->getValue(),   0);
+        BOOST_CHECK_EQUAL(msg->getType(),    StatusPointType);
+    }
+}
+
+
+/**
+* Verify behavior of various "control open" messages sent to a
+* non-DNP device.
+* Correctly-formatted requests should generate a Dispatch
+* control message.
+*/
 BOOST_AUTO_TEST_CASE( test_control_open_dispatch )
 {
     Test_FdrDnpSlave dnpSlave;
@@ -2266,6 +2668,76 @@ BOOST_AUTO_TEST_CASE( test_control_noPoints )
 
     BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
     BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+}
+
+
+BOOST_AUTO_TEST_CASE( test_analog_output_receive )
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.getReceiveFromList().deletePointList();
+    dnpSlave.setReceiveFromList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(0);
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(43);
+        fdrPoint->setPaoID(53);
+        fdrPoint->setOffset(12);
+        fdrPoint->setPointType(AnalogPointType);
+        fdrPoint->setValue(0);
+        fdrPoint->setControllable(false);  //  no controls will be sent
+
+        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:1", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, false);
+    }
+
+    const byte_str request(
+        "05 64 14 c4 0b 00 e8 03 72 f2 "
+        "c4 c3 05 29 01 28 01 00 00 00 01 02 03 04 00 81 7a");
+
+    Test_ServerConnection connection;
+
+    dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+    const byte_str expected(
+        "05 64 16 44 e8 03 0b 00 d9 35 "
+        "c0 c3 81 00 00 29 01 28 01 00 00 00 01 02 03 04 44 27 "
+        "00 ff ff");
+
+    BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+    BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+    BOOST_REQUIRE_EQUAL(dnpSlave.dispatchMessages.size(), 0);
+    BOOST_REQUIRE_EQUAL(dnpSlave.pointMessages.size(), 1);
+
+    auto msg = dynamic_cast<const CtiPointDataMsg *>(dnpSlave.pointMessages.front().get());
+
+    BOOST_REQUIRE(msg);
+
+    BOOST_CHECK_EQUAL(msg->getId(),      43);
+    BOOST_CHECK_EQUAL(msg->getQuality(), 5);
+    BOOST_CHECK_EQUAL(msg->getValue(),   67305985);
+    BOOST_CHECK_EQUAL(msg->getType(),    AnalogPointType);
 }
 
 

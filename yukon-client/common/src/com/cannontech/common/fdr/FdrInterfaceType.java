@@ -226,6 +226,7 @@ public enum FdrInterfaceType implements DatabaseRepresentationSource, Displayabl
             },
             new FdrDirection[] {
                 FdrDirection.SEND,
+                FdrDirection.RECEIVE,
                 FdrDirection.RECEIVE_FOR_CONTROL
             }),
     VALMETMULTI(29, new FdrInterfaceOption[] {

@@ -631,6 +631,48 @@ int DnpSlave::processControlRequest (ServerConnection& connection, const ObjectB
                     //  only send the control to the first point found
                     break;
                 }
+                else
+                {
+                    auto statusValue = [=]{
+                        switch( control.trip_close )
+                        {
+                            case BinaryOutputControl::TripClose::Trip:  return 0;
+                            case BinaryOutputControl::TripClose::Close: return 1;
+                        }
+                        //  If it's TripClose::NUL, rely on latch/pulse ON to send a 1 or 0
+                        switch( control.control )
+                        {
+                            case BinaryOutputControl::ControlCode::LatchOn:
+                            case BinaryOutputControl::ControlCode::PulseOn:
+                                return 1;
+                            default:
+                                return 0;
+                        }
+                    }();
+
+                    auto pData = 
+                        std::make_unique<CtiPointDataMsg>(
+                            fdrPoint.getPointID(),
+                            statusValue,
+                            NormalQuality,
+                            fdrPoint.getPointType());
+
+                    // consumes a delete memory
+                    queueMessageToDispatch(pData.release());
+
+                    control.status = ControlStatus::Success;
+
+                    if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                    {
+                        FormattedList l;
+
+                        l.add("Point ID") << fdrPoint.getPointID();
+                        l.add("Pao ID") << fdrPoint.getPaoID();
+                        l.add("Value") << statusValue;
+
+                        CTILOG_DEBUG(dout, "Sending analog point update to Dispatch:" << l);
+                    }
+                }
             }
         }
     }
@@ -1053,6 +1095,31 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
                 else if( tryDispatchAnalogOutput( analog, fdrPoint.getPointID() ) )
                 {
                     analog.status = ControlStatus::Success;
+                }
+            }
+            else
+            {
+                auto pData = 
+                    std::make_unique<CtiPointDataMsg>(
+                        fdrPoint.getPointID(),
+                        analog.value,
+                        NormalQuality,
+                        fdrPoint.getPointType());
+
+                // consumes a delete memory
+                queueMessageToDispatch(pData.release());
+
+                analog.status = ControlStatus::Success;
+
+                if (getDebugLevel () & DETAIL_FDR_DEBUGLEVEL)
+                {
+                    FormattedList l;
+
+                    l.add("Point ID") << fdrPoint.getPointID();
+                    l.add("Pao ID") << fdrPoint.getPaoID();
+                    l.add("Value") << analog.value;
+
+                    CTILOG_DEBUG(dout, "Sending analog point update to Dispatch:" << l);
                 }
             }
         }
