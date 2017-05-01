@@ -6912,6 +6912,9 @@ bool CtiCCSubstationBus::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr 
                          "Monitor Point: " << point->getPointId() << " on CapBank: " << point->getDeviceId()
                             << " is BELOW limit.  Current value: " << pointValue
                             << " - Limits: [" << lowerBound << ", " << upperBound << "]" ); 
+
+            // Return the first point that we find that is BELOW the lower limit immediately, regardless
+            //  if we've found an ABOVE the limit point.
             oorPoint = point;
             break;
         }
@@ -6921,6 +6924,9 @@ bool CtiCCSubstationBus::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr 
                          "Monitor Point: " << point->getPointId() << " on CapBank: " << point->getDeviceId()
                             << " is ABOVE limit.  Current value: " << pointValue
                             << " - Limits: [" << lowerBound << ", " << upperBound << "]" ); 
+
+            // Record the first ABOVE limit point we've found, but don't return until we've determined that
+            //  there are no BELOW limit points.
             if ( ! oorPoint )
             {
                 oorPoint = point;
