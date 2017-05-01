@@ -76,7 +76,7 @@
     <entry key="yukon.web.modules.dashboard.widgetType.GATEWAY_STREAMING_CAPACITY.name">Gateway Streaming Capacity</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.GATEWAY_STREAMING_CAPACITY.description">Displays the gateways that are over data streaming capacity and links to the gateway and data streaming detail.</entry>  
     <entry key="yukon.web.modules.dashboard.widgetType.SYSTEM_MESSAGING.name">Inter-Service Messaging Statistics</entry>
-    <entry key="yukon.web.modules.dashboard.widgetType.SYSTEM_MESSAGING.description">Displays messaging statics between services running on your system.</entry>  
+    <entry key="yukon.web.modules.dashboard.widgetType.SYSTEM_MESSAGING.description">Displays messaging statistics between services running on your system.</entry>  
     <entry key="yukon.web.modules.dashboard.widgetType.DATA_COLLECTION.name">Data Collection</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.DATA_COLLECTION.description">Displays data collection information for a selected device group.</entry>  
     
