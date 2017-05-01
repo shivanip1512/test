@@ -17,8 +17,8 @@ import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.google.common.collect.Multimap;
 
 @Controller
-@RequestMapping("/systemHealthWidget")
-public class SystemHealthWidget extends AdvancedWidgetControllerBase {
+@RequestMapping("/systemMessagingWidget")
+public class SystemMessagingWidget extends AdvancedWidgetControllerBase {
 
     @Autowired private SystemHealthService systemHealthService;
     
@@ -29,15 +29,18 @@ public class SystemHealthWidget extends AdvancedWidgetControllerBase {
         Multimap<SystemHealthMetricType, SystemHealthMetric> metrics = systemHealthService.getMetricsByIdentifiers(favoriteIds);
         
         if (metrics.size() > 0) {
-            model.addAttribute("showSystemHealth", true);
             Collection<SystemHealthMetric> extendedQueueData = metrics.get(SystemHealthMetricType.JMS_QUEUE_EXTENDED);
             model.addAttribute("extendedQueueData", extendedQueueData);
             Collection<SystemHealthMetric> queueData = metrics.get(SystemHealthMetricType.JMS_QUEUE);
             model.addAttribute("queueData", queueData);
         } else {
-            model.addAttribute("showSystemHealth", false);
+            List<SystemHealthMetric> extendedQueueData = systemHealthService.getMetricsByType(SystemHealthMetricType.JMS_QUEUE_EXTENDED);
+            model.addAttribute("extendedQueueData", extendedQueueData);
+            
+            List<SystemHealthMetric> queueData = systemHealthService.getMetricsByType(SystemHealthMetricType.JMS_QUEUE);
+            model.addAttribute("queueData", queueData);
         }
-        return "systemHealthWidget/render.jsp";
+        return "systemMessagingWidget/render.jsp";
     }
 
 }

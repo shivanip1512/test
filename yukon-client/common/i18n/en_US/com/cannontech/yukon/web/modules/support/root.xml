@@ -320,6 +320,7 @@
             </ul>
         ]]>
     </entry>
+    <entry key="yukon.web.modules.support.systemHealth.widgetRedirect">Visit the <![CDATA[<a href="../../support/systemHealth/home">System Metrics</a>]]> page to select the metrics displayed in this view.</entry>
     <entry key="yukon.web.modules.support.systemHealth.archivedReadings">Archived Readings</entry>
     <entry key="yukon.web.modules.support.systemHealth.processedArchiveRequests">Processed Archive Requests</entry>
     <entry key="yukon.web.modules.support.systemHealth.enqueuedCount">Enqueued Count</entry>

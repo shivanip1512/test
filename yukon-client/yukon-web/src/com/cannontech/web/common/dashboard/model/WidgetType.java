@@ -18,7 +18,7 @@ public enum WidgetType implements DisplayableEnum {
     //Main Dashboard
     FAVORITES(DashboardScope.GENERAL, WidgetCategory.OTHER, "favoritesWidget", "image-coming-soon"),
     MONITOR_SUBSCRIPTIONS(DashboardScope.GENERAL, WidgetCategory.OTHER, "subscribedMonitorsWidget", "image-monitor-subscriptions"),
-    SYSTEM_HEALTH(DashboardScope.GENERAL, WidgetCategory.OTHER, "systemHealthWidget", "image-coming-soon"),
+    SYSTEM_MESSAGING(DashboardScope.GENERAL, WidgetCategory.OTHER, "systemMessagingWidget", "image-coming-soon"),
 
     TREND(DashboardScope.GENERAL, WidgetCategory.AMI, "csrTrendWidget", "image-trends"), 
 
@@ -53,7 +53,7 @@ public enum WidgetType implements DisplayableEnum {
     
     static {
         widgetSpecificJavascript = ImmutableListMultimap.of(
-            SYSTEM_HEALTH, "yukon.support.systemHealth.js"
+            SYSTEM_MESSAGING, "yukon.support.systemHealth.js"
         );
         
         widgetSpecificCss = ImmutableListMultimap.of(
