@@ -27,12 +27,14 @@
     <div class="column-12-12">
         <div class="column one" style="min-height:100px;">
             <c:forEach var="widget" items="${dashboard.column1Widgets}">
-                <tags:widget bean="${widget.type.beanName}" paramMap="${widget.parameters}" />
+                <cti:msg2 key="yukon.web.widgets.${widget.type.beanName}.helpText" var="helpText" blankIfMissing="true"/>
+                <tags:widget bean="${widget.type.beanName}" paramMap="${widget.parameters}" helpText="${helpText}"/>
             </c:forEach>
         </div>
         <div class="column two nogutter" style="min-height:100px;">
             <c:forEach var="widget" items="${dashboard.column2Widgets}">
-                <tags:widget bean="${widget.type.beanName}" paramMap="${widget.parameters}"/>
+                <cti:msg2 key="yukon.web.widgets.${widget.type.beanName}.helpText" var="helpText" blankIfMissing="true"/>
+                <tags:widget bean="${widget.type.beanName}" paramMap="${widget.parameters}" helpText="${helpText}"/>
             </c:forEach>        
         </div>
     </div>
