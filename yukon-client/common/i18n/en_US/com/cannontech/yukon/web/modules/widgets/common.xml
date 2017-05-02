@@ -12,6 +12,31 @@
 ]]></entry>
 <entry key="yukon.web.widgets.favoritesWidget">My Pages</entry>
 <entry key="yukon.web.widgets.systemMessagingWidget">Inter-Service Messaging Statistics</entry>
+<entry key="yukon.web.widgets.systemMessagingWidget.helpText">
+    <![CDATA[
+        <h3>Queues</h3>
+        Queues handle messages between Service Manager and Network Manager that contain information for device creation, device editing, or data archival.
+        <ul>
+            <li><b>RFN Meter Archive Request:</b> Meter data to be archived, sent from Network Manager to Service Manager.</li>
+            <li><b>RFN LCR Archive Request:</b> LCR data to be archived, sent from Network Manager to Service Manager.</li>
+            <li><b>Gateway Archive Request:</b> Initiates creation of an RF Gateway device, sent from Network Manager to Service Manager.</li>
+            <li><b>RF DA Archive Request:</b> Initiates creation of an RF DA device, sent from Network Manager to Service Manager.</li>
+            <li><b>Gateway Data Request:</b> Request for data about an RF Gateway, sent from Service Manager to Network Manager.</li>
+            <li><b>Gateway Data Response:</b> RF Gateway data, sent from Network Manager to Service Manager.</li>
+        </ul>
+        
+        <h3>Metrics</h3>
+        These metrics show how many messages are sent and received, and how efficiently they are being processed.
+        <ul>
+            <li><b>Archived Readings:</b> The number of data readings that have been archived.</li>
+            <li><b>Processed Archive Requests:</b> The number of messages that have been fully processed. (Each message may contain multiple data readings.)</li>
+            <li><b>Enqueued Count:</b> The number of messages that have been pushed onto the queue since service start.</li>
+            <li><b>Dequeued Count:</b> The number of messages that have been taken off the queue since service start.</li>
+            <li><b>Queue Size:</b> The number of messages currently on the queue.</li>
+            <li><b>Average Enqueue Time:</b> The average length of time a message waits in the queue for processing, since service start.</li>
+        </ul>
+    ]]>
+</entry>
 <entry key="yukon.web.widgets.accountInformationWidget">CIS Information</entry>
 <entry key="yukon.web.widgets.cayentaAccountInformationWidget">CIS Information (Cayenta)</entry>
 <entry key="yukon.web.widgets.deviceGroupWidget">Device Groups</entry>

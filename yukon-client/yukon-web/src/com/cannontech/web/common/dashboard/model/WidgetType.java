@@ -53,7 +53,6 @@ public enum WidgetType implements DisplayableEnum {
     
     static {
         widgetSpecificJavascript = ImmutableListMultimap.of(
-            SYSTEM_MESSAGING, "yukon.support.systemHealth.js"
         );
         
         widgetSpecificCss = ImmutableListMultimap.of(

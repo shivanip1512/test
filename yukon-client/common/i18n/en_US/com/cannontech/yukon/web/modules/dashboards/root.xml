@@ -61,8 +61,6 @@
     <entry key="yukon.web.modules.dashboard.widgetType.FAVORITES.description">Displays links to any pages that you mark as your favorite.</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.MONITOR_SUBSCRIPTIONS.name">Monitor Subscriptions</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.MONITOR_SUBSCRIPTIONS.description">Displays the Monitors you have subscribed to and the # of Violations, Monitoring. </entry>
-    <entry key="yukon.web.modules.dashboard.widgetType.MESSAGING_STATISTICS.name">Inter-Service Messaging Statistics</entry>
-    <entry key="yukon.web.modules.dashboard.widgetType.MESSAGING_STATISTICS.description">Displays messaging statistics between services running on your system.</entry>    
     <entry key="yukon.web.modules.dashboard.widgetType.TREND.name">Trends</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.TREND.description">Displays trends for a specific device.</entry>    
     <entry key="yukon.web.modules.dashboard.widgetType.MONITORS.name">Monitors</entry>

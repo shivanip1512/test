@@ -8,13 +8,13 @@
         <c:if test="${not empty extendedQueueData}">
             <table class="compact-results-table stacked-md">
                 <thead>
-                    <th><i:inline key=".queue"/></th>
-                    <th class="tar"><i:inline key=".archivedReadings"/></th>
-                    <th class="tar"><i:inline key=".processedArchiveRequests"/></th>
-                    <th class="tar"><i:inline key=".enqueuedCount"/></th>
-                    <th class="tar"><i:inline key=".dequeuedCount"/></th>
-                    <th class="tar"><i:inline key=".queueSize"/></th>
-                    <th class="tar"><i:inline key=".averageEnqueueTime"/></th>
+                    <th class="vab"><i:inline key=".queue"/></th>
+                    <th class="tar vab"><i:inline key=".archivedReadings"/></th>
+                    <th class="tar vab"><i:inline key=".processedArchiveRequests"/></th>
+                    <th class="tar vab"><i:inline key=".enqueuedCount"/></th>
+                    <th class="tar vab"><i:inline key=".dequeuedCount"/></th>
+                    <th class="tar vab"><i:inline key=".queueSize"/></th>
+                    <th class="tar vab"><i:inline key=".averageEnqueueTime"/></th>
                     <th><i:inline key=".status"/></th>
                 </thead>
                 <tfoot></tfoot>
@@ -44,11 +44,11 @@
         <c:if test="${not empty queueData}">
             <table class="compact-results-table stacked-md">
                 <thead>
-                    <th><i:inline key=".queue"/></th>
-                    <th class="tar"><i:inline key=".enqueuedCount"/></th>
-                    <th class="tar"><i:inline key=".dequeuedCount"/></th>
-                    <th class="tar"><i:inline key=".queueSize"/></th>
-                    <th class="tar"><i:inline key=".averageEnqueueTime"/></th>
+                    <th class="vab"><i:inline key=".queue"/></th>
+                    <th class="tar vab"><i:inline key=".enqueuedCount"/></th>
+                    <th class="tar vab"><i:inline key=".dequeuedCount"/></th>
+                    <th class="tar vab"><i:inline key=".queueSize"/></th>
+                    <th class="tar vab"><i:inline key=".averageEnqueueTime"/></th>
                     <th><i:inline key=".status"/></th>
                 </thead>
                 <tfoot></tfoot>
