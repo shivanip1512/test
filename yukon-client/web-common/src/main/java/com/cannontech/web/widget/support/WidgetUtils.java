@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringEscapeUtils;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Joiner;
 
 public class WidgetUtils {
     private static ObjectMapper jsonObjectMapper = new ObjectMapper();
@@ -67,17 +68,8 @@ public class WidgetUtils {
      * @param separator - Separator to be used
      * @return The string containing the list of elements separated using the separator passed as an argument
      */
-    public static String join(Iterable<?> elements, CharSequence separator) {
-        StringBuilder buf = new StringBuilder();
-        if (elements != null) {
-            if (separator == null)
-                separator = " ";
-            for (Object o : elements) {
-                if (buf.length() > 0)
-                    buf.append(separator);
-                buf.append(o);
-            }
-        }
-        return buf.toString();
+    public static String join(Iterable<?> elements, String separator) {
+        return Joiner.on(separator).join(elements);
+
     }
 }

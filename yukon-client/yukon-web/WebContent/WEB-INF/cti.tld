@@ -2535,6 +2535,6 @@
     <display-name>Join</display-name>
     <name>join</name>
     <function-class>com.cannontech.web.widget.support.WidgetUtils</function-class>
-    <function-signature>java.lang.String join(java.lang.Iterable, java.lang.CharSequence)</function-signature>
+    <function-signature>java.lang.String join(java.lang.Iterable, java.lang.String)</function-signature>
   </function>
 </taglib>
