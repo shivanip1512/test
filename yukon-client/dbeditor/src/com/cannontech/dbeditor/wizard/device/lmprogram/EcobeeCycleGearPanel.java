@@ -41,13 +41,13 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
     private JCSpinField changeDurationSpinField;
     private JCSpinField changePrioritySpinField;
     private JCSpinField changeTriggerNumberSpinField;
-    private JCSpinField dutyCyclePercentSpinField;
+    private JCSpinField controlCyclePercentSpinField;
     private JCSpinField percentReductionSpinField;
     private JLabel changeDurationLabel;
     private JLabel changePriorityLabel;
     private JLabel changeTriggerNumberLabel;
     private JLabel changeTriggerOffsetLabel;
-    private JLabel dutyCyclePercentLabel;
+    private JLabel controlCyclePercentLabel;
     private JLabel howToStopLabel;
     private JLabel minutesChangeDurationLabel;
     private JLabel percentReductionLabel;
@@ -218,17 +218,17 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         return changeTriggerNumberSpinField;
     }
 
-    private JCSpinField getJCSpinFieldDutyCyclePercent() {
-        if (dutyCyclePercentSpinField == null) {
+    private JCSpinField getJCSpinFieldControlCyclePercent() {
+        if (controlCyclePercentSpinField == null) {
             try {
-                dutyCyclePercentSpinField = new JCSpinField();
-                dutyCyclePercentSpinField.setName("JCSpinFieldDutyCyclePercent");
-                dutyCyclePercentSpinField.setPreferredSize(new Dimension(48, 20));
-                dutyCyclePercentSpinField.setAlignmentX(LEFT_ALIGNMENT);
-                dutyCyclePercentSpinField.setAlignmentY(TOP_ALIGNMENT);
-                dutyCyclePercentSpinField.setMaximumSize(new Dimension(50, 20));
-                dutyCyclePercentSpinField.setMinimumSize(new Dimension(48, 20));
-                dutyCyclePercentSpinField.setDataProperties(new DataProperties(
+                controlCyclePercentSpinField = new JCSpinField();
+                controlCyclePercentSpinField.setName("JCSpinFieldControlCyclePercent");
+                controlCyclePercentSpinField.setPreferredSize(new Dimension(48, 20));
+                controlCyclePercentSpinField.setAlignmentX(LEFT_ALIGNMENT);
+                controlCyclePercentSpinField.setAlignmentY(TOP_ALIGNMENT);
+                controlCyclePercentSpinField.setMaximumSize(new Dimension(50, 20));
+                controlCyclePercentSpinField.setMinimumSize(new Dimension(48, 20));
+                controlCyclePercentSpinField.setDataProperties(new DataProperties(
                         new JCIntegerValidator(null, 5, 100, null, true, null, 1, "#,##0.###;-#,##0.###", false,
                                 false, false, null, 50),
                         new MutableValueModel(Integer.class, 0),
@@ -238,7 +238,7 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
                 handleException(ivjExc);
             }
         }
-        return dutyCyclePercentSpinField;
+        return controlCyclePercentSpinField;
     }
 
     private JCSpinField getJCSpinFieldPercentReduction() {
@@ -340,23 +340,23 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         return changeTriggerOffsetLabel;
     }
 
-    private JLabel getJLabelDutyCyclePercent() {
-        if (dutyCyclePercentLabel == null) {
+    private JLabel getJLabelControlCyclePercent() {
+        if (controlCyclePercentLabel == null) {
             try {
-                dutyCyclePercentLabel = new JLabel();
-                dutyCyclePercentLabel.setName("JLabelDutyCyclePercent");
-                dutyCyclePercentLabel.setAlignmentY(TOP_ALIGNMENT);
-                dutyCyclePercentLabel.setText("Duty Cycle Percent:");
-                dutyCyclePercentLabel.setMaximumSize(new Dimension(112, 14));
-                dutyCyclePercentLabel.setPreferredSize(new Dimension(112, 14));
-                dutyCyclePercentLabel.setFont(new Font("dialog", 0, 12));
-                dutyCyclePercentLabel.setAlignmentX(LEFT_ALIGNMENT);
-                dutyCyclePercentLabel.setMinimumSize(new Dimension(112, 14));
+                controlCyclePercentLabel = new JLabel();
+                controlCyclePercentLabel.setName("JLabelControlCyclePercent");
+                controlCyclePercentLabel.setAlignmentY(TOP_ALIGNMENT);
+                controlCyclePercentLabel.setText("Control Percent:");
+                controlCyclePercentLabel.setMaximumSize(new Dimension(112, 14));
+                controlCyclePercentLabel.setPreferredSize(new Dimension(112, 14));
+                controlCyclePercentLabel.setFont(new Font("dialog", 0, 12));
+                controlCyclePercentLabel.setAlignmentX(LEFT_ALIGNMENT);
+                controlCyclePercentLabel.setMinimumSize(new Dimension(112, 14));
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
             }
         }
-        return dutyCyclePercentLabel;
+        return controlCyclePercentLabel;
     }
     
     private JLabel getJLabelHowToStop() {
@@ -579,7 +579,7 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         } else {
             gear.setChangeTriggerOffset(Double.valueOf(getJTextFieldChangeTriggerOffset().getText()));
         }
-        gear.setDutyCyclePercent(toInteger(getJCSpinFieldDutyCyclePercent().getValue()));
+        gear.setControlCyclePercent(toInteger(getJCSpinFieldControlCyclePercent().getValue()));
         gear.setFrontRampEnabled(getCheckBoxRampIn().isSelected());
         gear.setMethodOptionType(getCheckBoxMandatory().isSelected());
         gear.setBackRampEnabled(getCheckBoxRampOut().isSelected());
@@ -602,7 +602,7 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         getJCSpinFieldChangeDuration().addValueListener(this);
         getJCSpinFieldChangePriority().addValueListener(this);
         getJCSpinFieldChangeTriggerNumber().addValueListener(this);
-        getJCSpinFieldDutyCyclePercent().addValueListener(this);
+        getJCSpinFieldControlCyclePercent().addValueListener(this);
         getJCSpinFieldPercentReduction().addValueListener(this);
         getJComboBoxWhenChange().addActionListener(this);
         getJComboBoxHowToStop().addActionListener(this);
@@ -617,8 +617,8 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         try {
             setName("EcobeeCycleGearPanel");
             
-            GridBagConstraints constraintJLabelDutyCyclePercent = new GridBagConstraints();
-            GridBagConstraints constraintJCSpinFieldDutyCyclePercent = new GridBagConstraints();
+            GridBagConstraints constraintJLabelControlCyclePercent = new GridBagConstraints();
+            GridBagConstraints constraintJCSpinFieldControlCyclePercent = new GridBagConstraints();
             GridBagConstraints constraintJPanelChangeMethod = new GridBagConstraints();
             GridBagConstraints constraintJLabelPercentReduction = new GridBagConstraints();
             GridBagConstraints constraintJLabelHowToStop = new GridBagConstraints();
@@ -653,15 +653,15 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
             constraintJCheckBoxRampOut.gridx = 1;
             
             
-            constraintJLabelDutyCyclePercent.insets = new Insets(0, 0, 5, 5);
-            constraintJLabelDutyCyclePercent.anchor = GridBagConstraints.WEST;
-            constraintJLabelDutyCyclePercent.gridy = 3;
-            constraintJLabelDutyCyclePercent.gridx = 1;
+            constraintJLabelControlCyclePercent.insets = new Insets(0, 0, 5, 5);
+            constraintJLabelControlCyclePercent.anchor = GridBagConstraints.WEST;
+            constraintJLabelControlCyclePercent.gridy = 3;
+            constraintJLabelControlCyclePercent.gridx = 1;
 
-            constraintJCSpinFieldDutyCyclePercent.insets = new Insets(0, 0, 5, 5);
-            constraintJCSpinFieldDutyCyclePercent.anchor = GridBagConstraints.WEST;
-            constraintJCSpinFieldDutyCyclePercent.gridy = 3;
-            constraintJCSpinFieldDutyCyclePercent.gridx = 2;
+            constraintJCSpinFieldControlCyclePercent.insets = new Insets(0, 0, 5, 5);
+            constraintJCSpinFieldControlCyclePercent.anchor = GridBagConstraints.WEST;
+            constraintJCSpinFieldControlCyclePercent.gridy = 3;
+            constraintJCSpinFieldControlCyclePercent.gridx = 2;
 
             constraintJLabelHowToStop.insets = new Insets(0, 0, 5, 5);
             constraintJLabelHowToStop.anchor = GridBagConstraints.WEST;
@@ -693,8 +693,8 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
             this.add(getCheckBoxRampIn(), constraintJCheckBoxRampIn);
             this.add(getCheckBoxMandatory(), constraintJCheckBoxMandatory);
             this.add(getCheckBoxRampOut(), constraintJCheckBoxRampOut);
-            this.add(getJLabelDutyCyclePercent(), constraintJLabelDutyCyclePercent);
-            this.add(getJCSpinFieldDutyCyclePercent(), constraintJCSpinFieldDutyCyclePercent);
+            this.add(getJLabelControlCyclePercent(), constraintJLabelControlCyclePercent);
+            this.add(getJCSpinFieldControlCyclePercent(), constraintJCSpinFieldControlCyclePercent);
             this.add(getJPanelChangeMethod(), constraintJPanelChangeMethod);
             this.add(getJLabelPercentReduction(), constraintJLabelPercentReduction);
             this.add(getJLabelHowToStop(), constraintJLabelHowToStop);
@@ -790,7 +790,7 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
         getJCSpinFieldChangeTriggerNumber().setValue(gear.getChangeTriggerNumber());
         final DecimalFormat format = new DecimalFormat("#####.####");
         getJTextFieldChangeTriggerOffset().setText(format.format(gear.getChangeTriggerOffset()));
-        getJCSpinFieldDutyCyclePercent().setValue(gear.getDutyCyclePercent());
+        getJCSpinFieldControlCyclePercent().setValue(gear.getControlCyclePercent());
         getCheckBoxRampIn().setSelected(gear.isFrontRampEnabled());
         getCheckBoxMandatory().setText(LMProgramDirectGear.OPTION_MANDATORY);
         getCheckBoxMandatory().setSelected(gear.isMandatorySelected(gear.getMethodOptionType()));

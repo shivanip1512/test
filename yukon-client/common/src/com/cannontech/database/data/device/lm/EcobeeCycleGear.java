@@ -10,11 +10,11 @@ public class EcobeeCycleGear extends com.cannontech.database.db.device.lm.LMProg
         setControlMethod(GearControlMethod.EcobeeCycle);
     }
 
-    public Integer getDutyCyclePercent() {
+    public Integer getControlCyclePercent() {
         return getMethodRate();
     }
 
-    public void setDutyCyclePercent(Integer seconds) {
+    public void setControlCyclePercent(Integer seconds) {
         setMethodRate(seconds);
     }
 
