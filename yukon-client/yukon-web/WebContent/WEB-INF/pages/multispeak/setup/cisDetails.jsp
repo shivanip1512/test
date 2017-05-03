@@ -60,7 +60,7 @@
             <!-- Meter -->
             <cti:msg2 var="meterInfo" key=".meterInfo" />
             <tags:sectionContainer title="${meterInfo}">
-            <!-- Electric Service Point Information -->
+                <!-- Electric Service Point Information -->
                 <c:if test="${not empty electricServicePointsInfo}">
                     <h3>
                         <i:inline key=".electricServicePointInfo" />
@@ -68,18 +68,18 @@
                     <tags:nameValueContainer tableClass="name-value-table natural-width  stacked-md natural-width">
                         <c:forEach var="electricServicePoint" items="${electricServicePointsInfo}"
                             varStatus="electricStatus">
-                             <c:choose>
-                                    <c:when test="${empty electricServicePoint.label}">
-                                        <td><h3>${electricServicePoint.value}</h3></td>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <tags:nameValue name="${electricServicePoint.label}">${electricServicePoint.value}</tags:nameValue>
-                                    </c:otherwise>
-                                </c:choose>
+                            <c:choose>
+                                <c:when test="${empty electricServicePoint.label}">
+                                    <td><h3>${electricServicePoint.value}</h3></td>
+                                </c:when>
+                                <c:otherwise>
+                                    <tags:nameValue name="${electricServicePoint.label}">${electricServicePoint.value}</tags:nameValue>
+                                </c:otherwise>
+                            </c:choose>
                         </c:forEach>
                     </tags:nameValueContainer>
                 </c:if>
-                
+
                 <!-- Gas Service Point Information -->
                 <c:if test="${not empty gasServicePointsInfo}">
                     <h3>
@@ -87,14 +87,14 @@
                     </h3>
                     <tags:nameValueContainer tableClass="name-value-table natural-width  stacked-md natural-width">
                         <c:forEach var="gasServicePoint" items="${gasServicePointsInfo}">
-                             <c:choose>
-                                    <c:when test="${empty gasServicePoint.label}">
-                                        <td><h3>${gasServicePoint.value}</h3></td>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <tags:nameValue name="${gasServicePoint.label}">${gasServicePoint.value}</tags:nameValue>
-                                    </c:otherwise>
-                                </c:choose>
+                            <c:choose>
+                                <c:when test="${empty gasServicePoint.label}">
+                                    <td><h3>${gasServicePoint.value}</h3></td>
+                                </c:when>
+                                <c:otherwise>
+                                    <tags:nameValue name="${gasServicePoint.label}">${gasServicePoint.value}</tags:nameValue>
+                                </c:otherwise>
+                            </c:choose>
                         </c:forEach>
                     </tags:nameValueContainer>
                 </c:if>
@@ -105,14 +105,14 @@
                     </h3>
                     <tags:nameValueContainer tableClass="name-value-table natural-width  stacked-md natural-width">
                         <c:forEach var="propaneServicePoint" items="${propaneServicePointsInfo}">
-                             <c:choose>
-                                    <c:when test="${empty propaneServicePoint.label}">
-                                        <td><h3>${propaneServicePoint.value}</h3></td>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <tags:nameValue name="${propaneServicePoint.label}">${propaneServicePoint.value}</tags:nameValue>
-                                    </c:otherwise>
-                                </c:choose>
+                            <c:choose>
+                                <c:when test="${empty propaneServicePoint.label}">
+                                    <td><h3>${propaneServicePoint.value}</h3></td>
+                                </c:when>
+                                <c:otherwise>
+                                    <tags:nameValue name="${propaneServicePoint.label}">${propaneServicePoint.value}</tags:nameValue>
+                                </c:otherwise>
+                            </c:choose>
                         </c:forEach>
                     </tags:nameValueContainer>
                 </c:if>
@@ -123,14 +123,14 @@
                     </h3>
                     <tags:nameValueContainer tableClass="name-value-table natural-width  stacked-md natural-width">
                         <c:forEach var="waterServicePoint" items="${waterServicePointsInfo}">
-                             <c:choose>
-                                    <c:when test="${empty waterServicePoint.label}">
-                                        <td><h3>${waterServicePoint.value}</h3></td>
-                                    </c:when>
-                                    <c:otherwise>
-                                        <tags:nameValue name="${waterServicePoint.label}">${waterServicePoint.value}</tags:nameValue>
-                                    </c:otherwise>
-                                </c:choose>
+                            <c:choose>
+                                <c:when test="${empty waterServicePoint.label}">
+                                    <td><h3>${waterServicePoint.value}</h3></td>
+                                </c:when>
+                                <c:otherwise>
+                                    <tags:nameValue name="${waterServicePoint.label}">${waterServicePoint.value}</tags:nameValue>
+                                </c:otherwise>
+                            </c:choose>
                         </c:forEach>
                     </tags:nameValueContainer>
                 </c:if>
