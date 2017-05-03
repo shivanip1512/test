@@ -1318,4 +1318,12 @@
     <bean class="com.cannontech.web.common.dashboard.dao.impl.DashboardDaoImpl"/>
     <bean class="com.cannontech.web.common.dashboard.widget.service.impl.WidgetServiceImpl"/>
     
+    <bean id="dataCollectionWidgetListener" class="com.cannontech.web.common.widgets.service.impl.DataCollectionWidgetServiceImpl"/>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.qr.obj.data.collection.RecalculationRequest" />
+        <property name="pubSubDomain" value="false"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="dataCollectionWidgetListener"/>
+    </bean> 
 </beans>

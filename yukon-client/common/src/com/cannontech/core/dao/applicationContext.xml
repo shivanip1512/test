@@ -112,4 +112,6 @@
   <bean id="lmGearDao" class="com.cannontech.core.dao.impl.LMGearDaoImpl"/>
   
   <bean class="com.cannontech.common.pao.dao.impl.PaoLocationDaoImpl"/>
+  
+  <bean class="com.cannontech.common.device.data.collection.dao.impl.RecentPointValueDaoImpl"/>
 </beans>

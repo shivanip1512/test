@@ -24,5 +24,13 @@
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="messageListener" ref="deviceDataMonitorListener"/>
     </bean>
+    <bean id="dataCollectionListener" class="com.cannontech.common.device.data.collection.service.PointDataCollectionService"/>
+    <bean class="org.springframework.jms.listener.SimpleMessageListenerContainer">
+        <property name="destinationName" value="yukon.qr.obj.data.collection.CollectionRequest" />
+        <property name="pubSubDomain" value="false"/>
+        <property name="concurrentConsumers" value="1"/>
+        <property name="connectionFactory" ref="connectionFactory" />
+        <property name="messageListener" ref="dataCollectionListener"/>
+    </bean>
       
 </beans>
