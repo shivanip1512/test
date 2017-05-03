@@ -237,6 +237,8 @@
     <entry key="yukon.web.modules.amr.tab.customerHazards">Customer Hazards</entry>
     <entry key="yukon.web.modules.amr.tab.alternateContacts">Alternate Contacts</entry>
     <entry key="yukon.web.modules.amr.tab.additionalInfo">Additional Information</entry>
+    <entry key="yukon.web.modules.amr.tab.receivables">Account Receivables</entry>
+    <entry key="yukon.web.modules.amr.tab.priorities">Account Priorities</entry>
     <entry key="yukon.web.modules.amr.cisDetails.crumbTitle">Multispeak</entry>
     <entry key="yukon.web.modules.amr.cisDetails.pageTitle">Multispeak</entry>
     <entry key="yukon.web.modules.amr.cisDetails.pageHeading">Multispeak</entry>
@@ -244,7 +246,11 @@
     <entry key="yukon.web.modules.amr.customerInfo">Customer Information:</entry>
     <entry key="yukon.web.modules.amr.serviceLocation">Service Location</entry>
     <entry key="yukon.web.modules.amr.meterInfo">Meter Information</entry>
-    <entry key="yukon.web.modules.amr.electricServicePointInfo">Electric Service Point</entry>
+    <entry key="yukon.web.modules.amr.electricServicePointInfo">Electric Service Point Information</entry>
+    <entry key="yukon.web.modules.amr.gasServicePointsInfo">Gas Service Point Information</entry>
+    <entry key="yukon.web.modules.amr.propaneServicePointsInfo">Propane Service Point Information</entry>
+    <entry key="yukon.web.modules.amr.waterServicePointsInfo">Water Service Point Information</entry>
+    <entry key="yukon.web.modules.amr.namePlateInfo">Nameplate</entry>
     <entry key="yukon.web.modules.amr.noResults">No Data</entry>
     <entry key="yukon.web.modules.amr.customerHazardType">Customer Hazard Type</entry>
     <entry key="yukon.web.modules.amr.customerHazardSubType">Customer Hazard Sub Type</entry>
@@ -286,4 +292,11 @@
     <entry key="yukon.web.modules.amr.calculatedCurrentBillDate">Calculated Current Bill Date</entry>
     <entry key="yukon.web.modules.amr.lastBillAmt">Last Bill Amount</entry>
     <entry key="yukon.web.modules.amr.calculatedUsedYesterday">Calculated Used Yesterday</entry>
+    <entry key="yukon.web.modules.amr.receivableAmt">Receivable Amount</entry>
+    <entry key="yukon.web.modules.amr.firstName">First Name</entry>
+    <entry key="yukon.web.modules.amr.middleName">Middle Name</entry>
+    <entry key="yukon.web.modules.amr.phoneNumbers">Phone Numbers</entry>
+    <entry key="yukon.web.modules.amr.emailAddresses">Email Addresses</entry>
+    <entry key="yukon.web.modules.amr.noReceivables">No Receivables</entry>
+    <entry key="yukon.web.modules.amr.noPriorities">No Priorities</entry>
 </properties>
