@@ -32,6 +32,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class PointDataCollectionService implements MessageListener {
 
     private static final int MINUTES_TO_WAIT_TO_START_COLLECTION = 5;
+    private static final int MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION = 15;
     private static final String recalculationQueueName = "yukon.qr.obj.data.collection.RecalculationRequest";
     @Autowired private IDatabaseCache databaseCache;
     @Autowired private RawPointHistoryDao rphDao;
@@ -42,14 +43,13 @@ public class PointDataCollectionService implements MessageListener {
     private Instant collectionTime;
     private boolean collectingData = false;
 
-    @PostConstruct
-    public void init() {
-        
-        log.info("Waiting " + MINUTES_TO_WAIT_TO_START_COLLECTION + " minutes to start data collection.");
 
+    @PostConstruct
+    public void init() {  
+        log.info("Waiting " + MINUTES_TO_WAIT_TO_START_COLLECTION + " minutes to start data collection.");
         scheduledExecutorService.scheduleAtFixedRate(() -> {
             try {
-                collect();
+              //  collect();
             } catch (Exception e) {
                 log.error("Failed to start collection", e);
             }
@@ -62,7 +62,8 @@ public class PointDataCollectionService implements MessageListener {
             ObjectMessage objMessage = (ObjectMessage) message;
             try {
                 if (objMessage.getObject() instanceof CollectionRequest) {
-                    if (new DateTime().isAfter(new DateTime(collectionTime).plusMinutes(15))) {
+                    if (new DateTime().isAfter(
+                        new DateTime(collectionTime).plusMinutes(MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION))) {
                         collect();
                     }
                 }
@@ -91,7 +92,7 @@ public class PointDataCollectionService implements MessageListener {
         log.debug("Got data from RPH");
         recentPointValueDao.collectData(recentValues);
 
-        // send message to web server to start the data collection widget value recalculation
+        // send message to web server to start the data collection widget values recalculation
         jmsTemplate.convertAndSend(recalculationQueueName, new RecalculationRequest(collectionTime));
         collectingData = false;
     }
