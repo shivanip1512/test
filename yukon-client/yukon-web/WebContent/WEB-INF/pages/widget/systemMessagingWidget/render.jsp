@@ -15,7 +15,7 @@
                     <th class="tar vab"><i:inline key=".dequeuedCount"/></th>
                     <th class="tar vab"><i:inline key=".queueSize"/></th>
                     <th class="tar vab"><i:inline key=".averageEnqueueTime"/></th>
-                    <th><i:inline key=".status"/></th>
+                    <th class="vab"><i:inline key=".status"/></th>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
@@ -49,7 +49,7 @@
                     <th class="tar vab"><i:inline key=".dequeuedCount"/></th>
                     <th class="tar vab"><i:inline key=".queueSize"/></th>
                     <th class="tar vab"><i:inline key=".averageEnqueueTime"/></th>
-                    <th><i:inline key=".status"/></th>
+                    <th class="vab"><i:inline key=".status"/></th>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
