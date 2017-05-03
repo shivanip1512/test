@@ -1,6 +1,7 @@
 package com.cannontech.system;
 
 import com.cannontech.common.i18n.DisplayableEnum;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 
 public enum GlobalSettingSubCategory implements DisplayableEnum {
 
@@ -20,16 +21,27 @@ public enum GlobalSettingSubCategory implements DisplayableEnum {
     DR(GlobalSettingCategory.SYSTEM_SETUP),
     YUKON_SERVICES(GlobalSettingCategory.SYSTEM_SETUP),
     THEMES(GlobalSettingCategory.SYSTEM_SETUP),
-    WEB_SERVER(GlobalSettingCategory.SYSTEM_SETUP);
+    WEB_SERVER(GlobalSettingCategory.SYSTEM_SETUP),
+    DASHBOARD_ADMIN(GlobalSettingCategory.SYSTEM_SETUP, YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS);
     
     private GlobalSettingCategory category;
+    private YukonRoleProperty roleProperty;
     
     private GlobalSettingSubCategory(GlobalSettingCategory category) {
         this.category = category;
     }
     
+    private GlobalSettingSubCategory(GlobalSettingCategory category, YukonRoleProperty roleProperty) {
+        this.category = category;
+        this.roleProperty = roleProperty;
+    }
+    
     public GlobalSettingCategory getCategory() {
         return category;
+    }
+    
+    public YukonRoleProperty getRoleProperty() {
+        return roleProperty;
     }
 
     @Override

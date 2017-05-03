@@ -34,33 +34,56 @@ yukon.dashboards = (function () {
                 });
             });
             
-            $(document).on('click', '.js-favorite-dashboard', function () {
-                var icon = $(this),
-                    dashboardId = icon.data('dashboard');
-                $.getJSON(yukon.url('/dashboards/' + dashboardId + '/favorite')).done(function (json) {
-                    if (json.isFavorite) {
-                        icon.removeClass('icon-favorite-not js-favorite-dashboard')
-                            .addClass('icon-star js-unfavorite-dashboard');                    
-                    }
-                });
-            });
-            
-            $(document).on('click', '.js-unfavorite-dashboard', function () {
-                var icon = $(this),
-                dashboardId = icon.data('dashboard');
-                $.getJSON(yukon.url('/dashboards/' + dashboardId + '/unfavorite')).done(function (json) {
-                    if (!json.isFavorite) {
-                        icon.removeClass('icon-star js-unfavorite-dashboard')             
-                            .addClass('icon-favorite-not js-favorite-dashboard');
-                    }
-                });
-            });
-            
             $(document).on('yukon:dashboard:remove', function (ev) {
                 var container = $(ev.target),
                 dashboardId = container.data('dashboardId');
-                window.location.href = yukon.url('/dashboards/' + dashboardId + '/delete');
+                //window.location.href = yukon.url('/dashboards/' + dashboardId + '/delete');
+                $.ajax({
+                    url: yukon.url('/dashboards/' + dashboardId + '/delete'),
+                    type: 'post'
+                }).done(function () {
+                    window.location.reload();
+                });
             });
+            
+            /** Change Owner  */
+            $(document).on('yukon:dashboard:changeOwner', function (ev, items, picker) {
+                var tableData = $(this).closest('td'),
+                    pickerIdParts = picker.pickerId.split('_'),
+                    dashboardId = pickerIdParts[1],
+                    userId = items[0].userId;
+                window.location.href = yukon.url('/dashboards/' + dashboardId + '/changeOwner/' + userId);
+            });
+            
+            /** Assign Users  */
+            $(document).on('yukon:dashboard:assignUsers', function (ev) {
+                var selectedUsers = yukon.pickers['dashboardUsersPicker'].selectedItems,
+                    selectedGroups = yukon.pickers['dashboardGroupsPicker'].selectedItems,
+                    dashboardId = $('#dashboardId').val(),
+                    dashboardType = $('#dashboardType').val();
+                var users = selectedUsers.map(function (item) { return item.userId; });
+                var groups = selectedGroups.map(function (item) { return item.userGroupId; });
+                
+                var data = {
+                    pageType: dashboardType,
+                    users: users,
+                    groups: groups                    
+                };
+                
+                $.ajax({
+                    url: yukon.url('/dashboards/' + dashboardId + '/assignUsers'),
+                    type: 'post',
+                    data: data
+                }).done(function () {
+                    window.location.reload();
+                });
+            });
+            
+            $(document).on('click', '.js-show-user-picker', function () {
+                var dashboardId = $(this).data('dashboardId');
+                yukon.pickers['userPicker_' + dashboardId].show();
+            });
+
                         
             _initialized = true;
         },

@@ -86,6 +86,7 @@ public class YukonConfigurationController {
         b.put(GlobalSettingSubCategory.THEMES, "icon-32-brush");
         b.put(GlobalSettingSubCategory.WEATHER, "icon-32-cloud2");
         b.put(GlobalSettingSubCategory.SECURITY, "icon-32-key");
+        b.put(GlobalSettingSubCategory.DASHBOARD_ADMIN, "icon-32-home");
         iconMap = b.build();
     }
     
@@ -121,6 +122,7 @@ public class YukonConfigurationController {
         List<Pair<GlobalSettingSubCategory, String>> systemSetup = Lists.newArrayList();
         systemSetup.add(Pair.of(GlobalSettingSubCategory.AMI, iconMap.get(GlobalSettingSubCategory.AMI)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.AUTHENTICATION, iconMap.get(GlobalSettingSubCategory.AUTHENTICATION)));
+        systemSetup.add(Pair.of(GlobalSettingSubCategory.DASHBOARD_ADMIN,  iconMap.get(GlobalSettingSubCategory.DASHBOARD_ADMIN)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.DR, iconMap.get(GlobalSettingSubCategory.DR)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.YUKON_SERVICES, iconMap.get(GlobalSettingSubCategory.YUKON_SERVICES)));
         systemSetup.add(Pair.of(GlobalSettingSubCategory.WEB_SERVER, iconMap.get(GlobalSettingSubCategory.WEB_SERVER)));
@@ -164,6 +166,8 @@ public class YukonConfigurationController {
             return "redirect:/admin/config/weather";
         } else if (category == GlobalSettingSubCategory.SECURITY) {
             return "redirect:/admin/config/security/view";
+        } else if (category == GlobalSettingSubCategory.DASHBOARD_ADMIN) {
+            return "redirect:/dashboards/admin";
         }
         
         MessageSourceAccessor accessor = resolver.getMessageSourceAccessor(context);

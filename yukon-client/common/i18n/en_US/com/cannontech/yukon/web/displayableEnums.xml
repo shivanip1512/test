@@ -160,6 +160,9 @@
     <entry key="yukon.common.setting.subcategory.WEATHER.description">Add weather tracking locations to Yukon</entry>
     <entry key="yukon.common.setting.subcategory.SECURITY">Security</entry>
     <entry key="yukon.common.setting.subcategory.SECURITY.description">Demand Response Encrypted Routes and Keys</entry>
+    <entry key="yukon.common.setting.subcategory.DASHBOARD_ADMIN">Dashboard Administration</entry>
+    <entry key="yukon.common.setting.subcategory.DASHBOARD_ADMIN.description">Administration page for Dashboards</entry>
+    
     
     <!-- YukonSettingCategory -->
     <entry key="yukon.common.setting.category.APPLICATION">Application</entry>

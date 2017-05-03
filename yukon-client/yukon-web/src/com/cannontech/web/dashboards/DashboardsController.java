@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -30,6 +29,8 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -48,6 +49,7 @@ import com.cannontech.web.common.dashboard.service.DashboardService;
 import com.cannontech.web.common.dashboard.widget.service.WidgetService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -59,6 +61,7 @@ public class DashboardsController {
     @Autowired private DashboardDao dashboardDao;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DashboardValidator validator;
+    @Autowired private YukonUserDao yukonUserDao;
 
     private final static String baseKey = "yukon.web.modules.dashboard.";
 
@@ -74,6 +77,29 @@ public class DashboardsController {
         }
 
         model.addAttribute("filter", filter);
+        
+        setupDashboardsTable(dashboards, sorting, paging, model, accessor);
+
+        model.addAttribute("dashboardsList", visibleDashboards);
+        
+        UserDashboardSettings settings = new UserDashboardSettings();
+        Arrays.asList(DashboardPageType.values()).forEach(pageType -> {
+            DashboardSetting setting = new DashboardSetting();
+            setting.setPageType(pageType);
+            Dashboard assignedDashboard = dashboardService.getAssignedDashboard(userContext.getYukonUser().getUserID(), pageType);
+            if (assignedDashboard != null) {
+                setting.setDashboardId(assignedDashboard.getDashboardId());
+            }
+            settings.addSetting(setting);
+        });
+        
+        model.addAttribute("dashboardSettings", settings);
+        
+        return "manageDashboards.jsp";
+    }
+    
+    private void setupDashboardsTable(List<LiteDashboard> dashboards, SortingParameters sorting, PagingParameters paging, 
+                                      ModelMap model, MessageSourceAccessor accessor) {
 
         SearchResults<LiteDashboard> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
@@ -109,23 +135,6 @@ public class DashboardsController {
         searchResult.setResultList(itemList);        
         
         model.addAttribute("dashboards", searchResult);
-        model.addAttribute("dashboardsList", visibleDashboards);
-        
-        UserDashboardSettings settings = new UserDashboardSettings();
-        Arrays.asList(DashboardPageType.values()).forEach(pageType -> {
-            DashboardSetting setting = new DashboardSetting();
-            setting.setPageType(pageType);
-            Dashboard assignedDashboard = dashboardService.getAssignedDashboard(userContext.getYukonUser().getUserID(), pageType);
-            //TODO: this should be set to the default dashboard if the user has not yet assigned one
-            if (assignedDashboard != null) {
-                setting.setDashboardId(assignedDashboard.getDashboardId());
-            }
-            settings.addSetting(setting);
-        });
-        
-        model.addAttribute("dashboardSettings", settings);
-        
-        return "manageDashboards.jsp";
     }
     
     @RequestMapping("saveSettings")
@@ -138,12 +147,58 @@ public class DashboardsController {
     }
     
     @RequestMapping("admin")
-    public String adminDashboards(ModelMap model, YukonUserContext userContext) {
-        //TODO: Should this return all dashboards?
+    @CheckRoleProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS)
+    public String adminDashboards(@DefaultSort(dir=Direction.asc, sort="name") SortingParameters sorting, PagingParameters paging, 
+                                  ModelMap model, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        //TODO: Return all dashboards?
+        List<LiteDashboard> dashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
+        setupDashboardsTable(dashboards, sorting, paging, model, accessor);
+        return "dashboardAdmin.jsp";
+    }
+    
+    @RequestMapping("{id}/changeOwner/{userId}")
+    @CheckRoleProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS)
+    public String changeOwner(@PathVariable int id, @PathVariable int userId, FlashScope flash) {
+        dashboardService.setOwner(userId, id);
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "changeOwner.success"));
+        return "redirect:/dashboards/admin";
+    }
+    
+    @RequestMapping("{id}/viewUsers")
+    @CheckRoleProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS)
+    public String viewUsers(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
+        //TODO: get Users for dashboard
+        return "dashboardAdmin.jsp";
+    }
+    
+    @RequestMapping("{id}/assignUsers")
+    @CheckRoleProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS)
+    public String assignUsersDialog(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
         List<LiteDashboard> dashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
         model.addAttribute("dashboards", dashboards);
-        model.addAttribute("ownerlessDashboards", dashboardService.getAllOwnerless());
-        return "dashboardAdmin.jsp";
+        model.addAttribute("dashboardId", id);
+        model.addAttribute("pageTypes", DashboardPageType.values());
+        return "assignUsers.jsp";
+    }
+    
+    @RequestMapping(value="{id}/assignUsers", method=RequestMethod.POST)
+    @CheckRoleProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS)
+    public void assignUsers(@PathVariable int id, @RequestParam(value="users[]", required=false) Integer[] users, 
+                              @RequestParam(value="groups[]", required=false) Integer[] groups, @RequestParam("pageType") String pageType, 
+                              FlashScope flash, HttpServletResponse resp) {
+        DashboardPageType dashboardType = DashboardPageType.valueOf(pageType);
+        if (users != null) {
+            dashboardService.setDefault(Arrays.asList(users), dashboardType, id);
+        }
+        if (groups != null) {
+            for (int groupId : groups) {
+                List<Integer> userIds = yukonUserDao.getUserIdsForUserGroup(groupId);
+                dashboardService.setDefault(userIds, dashboardType, id);
+            }
+        }
+        flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "assignUsers.success"));
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
     @RequestMapping(value="create", method=RequestMethod.GET)
@@ -331,7 +386,7 @@ public class DashboardsController {
     }
     
     @RequestMapping("{id}/delete")
-    public String deleteDashboard(FlashScope flash, @PathVariable int id, LiteYukonUser user) {
+    public void deleteDashboard(FlashScope flash, @PathVariable int id, LiteYukonUser user, HttpServletResponse resp) {
         Dashboard dashboard = dashboardService.getDashboard(id);
         LiteYukonUser owner = dashboard.getOwner();
         if (dashboard.getVisibility() == Visibility.SYSTEM) {
@@ -344,19 +399,7 @@ public class DashboardsController {
         } else {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.notOwner", dashboard.getName()));
         }
-        return "redirect:/dashboards/manage";
-    }
-    
-    @RequestMapping("{id}/favorite")
-    public @ResponseBody Map<String, Boolean> favoriteDashboard(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
-        //dashboardService.favorite(userContext.getYukonUser().getUserID(), id);
-        return Collections.singletonMap("isFavorite", true);
-    }
-    
-    @RequestMapping("{id}/unfavorite")
-    public @ResponseBody Map<String, Boolean> unfavoriteDashboard(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
-        //dashboardService.unfavorite(userContext.getYukonUser().getUserID(), id);
-        return Collections.singletonMap("isFavorite", false);
+        resp.setStatus(HttpStatus.NO_CONTENT.value());
     }
     
     private boolean isDashboardOwner(YukonUserContext userContext, Dashboard dashboard) {

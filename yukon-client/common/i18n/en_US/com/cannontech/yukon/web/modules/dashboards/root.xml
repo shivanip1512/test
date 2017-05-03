@@ -34,7 +34,14 @@
     <!-- Dashboard Admin page -->
     <entry key="yukon.web.modules.dashboard.admin.pageHeading">Dashboard Admin</entry>
     <entry key="yukon.web.modules.dashboard.admin.crumbTitle">Dashboard Admin</entry>
+    <entry key="yukon.web.modules.dashboard.dashboardsSection.title">Dashboards</entry>
     <entry key="yukon.web.modules.dashboard.changeOwner.success">Dashboard owner successfully changed.</entry>    
+    <entry key="yukon.web.modules.dashboard.assignUsers">Assign Users</entry>
+    <entry key="yukon.web.modules.dashboard.dashboard">Dashboard</entry>
+    <entry key="yukon.web.modules.dashboard.dashboardPage">Dashboard Page</entry>
+    <entry key="yukon.web.modules.dashboard.users">Users</entry>
+    <entry key="yukon.web.modules.dashboard.userGroups">User Groups</entry>
+    <entry key="yukon.web.modules.dashboard.assignUsers.success">Dashboard users have been successfully assigned.</entry>    
     
     <!-- Dashboard View/Edit page -->
     <entry key="yukon.web.modules.dashboard.view.pageHeading">Dashboard: {0}</entry>

@@ -2,37 +2,101 @@
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="d" tagdir="/WEB-INF/tags/dialog"%>
 
-<cti:standardPage module="dashboard" page="admin">
+<cti:standardPage module="adminSetup" page="config.dashboards">
 
+<cti:msgScope paths="modules.dashboard">
+
+    <div class="clearfix box">
+        <div class="category fl">
+            <cti:url var="viewUrl" value="/dashboards/admin"/>
+            <a href="${viewUrl}" class="icon icon-32 fl icon-32-home"></a>
+            <div class="box fl meta">
+                <div><a class="title" href="${viewUrl}"><i:inline key="yukon.common.setting.subcategory.DASHBOARD_ADMIN"/></a></div>
+                <div class="detail"><i:inline key="yukon.common.setting.subcategory.DASHBOARD_ADMIN.description"/></div>
+            </div>
+        </div>
+    </div>
+
+
+<div class="page-actions fr stacked-md">
+    <cti:button icon="icon-plus-green" nameKey="createDashboard" data-popup=".js-create-dashboard-popup"/>
+</div>
+<br/><br/>
+
+    <tags:sectionContainer2 nameKey="dashboardsSection">
+
+    <cti:url var="dataUrl" value="/dashboards/admin"/>
+    <div data-url="${dataUrl}" data-static>
       <table class="compact-results-table row-highlighting has-actions">
-        <th><i:inline key=".name"/></th>
-        <th><i:inline key=".createdBy"/></th>
-        <th><i:inline key=".visibility"/></th>
-        <th><i:inline key=".numberOfUsers"/></th>
+        <tags:sort column="${name}" />                
+        <tags:sort column="${createdBy}" />                
+        <tags:sort column="${visibility}" />                
+        <tags:sort column="${numberOfUsers}" />    
         <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
-        <c:forEach var="dashboard" items="${dashboards}">
+        <c:forEach var="dashboard" items="${dashboards.resultList}">
             <tr>
                 <c:set var="dashboardId" value="${dashboard.dashboardId}"/>
                 <cti:url var="dashboardUrl" value="/dashboards/${dashboardId}/view"/>
                 <td><a href="${dashboardUrl}">${dashboard.name}</a></td>
-                <td>${dashboard.owner.username}</td>
+                <td>
+                    <c:choose>
+                        <c:when test="${!empty dashboard.owner.username}">
+                            ${dashboard.owner.username}
+                        </c:when>
+                        <c:otherwise>
+                            <cti:icon icon="icon-error" classes="js-show-user-picker cp" data-dashboard-id="${dashboardId}"/>
+                        </c:otherwise>
+                    </c:choose>
+                </td>
                 <td><i:inline key=".visibility.${dashboard.visibility}"/></td>
                 <td>${dashboard.users}</td>
                 <td>
                     <cm:dropdown icon="icon-cog">
-                        <div class="dn copy-dashboard-${dashboardId}" data-dialog data-title="<cti:msg2 key=".copyDashboard.label"/>"
-                        data-url="<cti:url value="/dashboards/${dashboardId}/copy"/>"></div>
-                        <cm:dropdownOption key=".copy" icon="icon-disk-multiple" data-popup=".copy-dashboard-${dashboardId}"/>
-                        <cti:url var="editUrl" value="/dashboards/${dashboardId}/edit"/>
-                        <cm:dropdownOption key=".edit" icon="icon-pencil" href="${editUrl}"/>
-                        <cti:url var="deleteUrl" value="/dashboards/${dashboardId}/delete"/>
-                        <cm:dropdownOption key=".delete" icon="icon-cross" href="${deleteUrl}"/> 
-                        <cm:dropdownOption key=".changeOwner" icon="icon-user-edit"/>            
+                        <c:choose>
+                            <c:when test="${dashboard.visibility != 'SYSTEM'}">
+                                <cm:dropdownOption id="deleteDashboard_${dashboardId}" key=".delete" icon="icon-cross"
+                                    data-dashboard-id="${dashboardId}" data-ok-event="yukon:dashboard:remove" />
+                                <d:confirm on="#deleteDashboard_${dashboardId}" nameKey="confirmDelete" argument="${dashboard.name}"/>
+                                <input type="hidden" id="selectedPickerValues${dashboardId}" class="js-user-id">
+                                <li class="dropdown-option">
+                                    <tags:pickerDialog type="userPicker" id="userPicker_${dashboardId}" destinationFieldId="selectedPickerValues${dashboardId}"
+                                        endEvent="yukon:dashboard:changeOwner">
+                                        <cti:icon icon="icon-user-edit"/>                                
+                                        <cti:msg2 key=".changeOwner" />
+                                    </tags:pickerDialog>
+                                </li>
+                            </c:when>
+                            <c:otherwise>
+                                <cm:dropdownOption key=".delete" icon="icon-cross" disabled="true" />
+                                <cm:dropdownOption key=".changeOwner" icon="icon-user-edit" disabled="true" />
+                            </c:otherwise>
+                        </c:choose>
+                        <cm:dropdownOption label="View Users" icon="icon-group"/>
+                        <div class="dn js-assign-users-${dashboardId}" data-dialog data-title="<cti:msg2 key=".assignUsers"/>" 
+                            data-width="700" data-height="500" data-event="yukon:dashboard:assignUsers" 
+                            data-url="<cti:url value="/dashboards/${dashboardId}/assignUsers"/>"></div>
+                        <cm:dropdownOption key=".assignUsers" icon="icon-group-add" data-popup=".js-assign-users-${dashboardId}" endEvent="yukon:dashboard:assignUsers"/>
                     </cm:dropdown>
                 </td>
             </tr>   
         </c:forEach>
     </table>
+    <tags:pagingResultsControls result="${dashboards}" adjustPageCount="true"/>
+    </div>
+    </tags:sectionContainer2>
+    
+    <%-- CREATE DASHBOARD POPUP --%>
+<div class="dn js-create-dashboard-popup js-dashboard-details-popup" data-dialog
+    data-title="<cti:msg2 key=".createDashboard.label"/>"
+    data-ok-text="<cti:msg2 key="yukon.common.create"/>"
+    data-event="yukon:dashboard:details:save" 
+    data-url="<cti:url value="/dashboards/create"/>"></div>
+    
+    <cti:includeScript link="/resources/js/pages/yukon.dashboards.js"/>
+    
+    </cti:msgScope>
     
 </cti:standardPage>

@@ -282,4 +282,6 @@
     <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.routesUpdated">Routes updated successfully</entry>
     <entry key="yukon.web.modules.adminSetup.substationToRouteMapping.removeRoutes">Routes cannot be deleted unless they are saved.</entry>
     
+    <entry key="yukon.web.modules.adminSetup.config.dashboards.pageName">Dashboard Administration</entry>
+    
 </properties>
