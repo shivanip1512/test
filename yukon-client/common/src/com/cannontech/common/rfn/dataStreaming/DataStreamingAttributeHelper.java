@@ -41,21 +41,21 @@ public class DataStreamingAttributeHelper {
         RFN_410CL(PaoType.RFN410CL, 
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,           //metric 5
+                BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //C2SX
         RFN_420CL(PaoType.RFN420CL, 
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,           //metric 5
+                BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //C2SX
         RFN_420CD(PaoType.RFN420CD, 
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,           //metric 5
+                BuiltInAttribute.DEMAND,          //metric 5
                 BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //Focus AXD
@@ -63,9 +63,8 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 5
-                BuiltInAttribute.VOLTAGE           //metric 115
+                BuiltInAttribute.VOLTAGE          //metric 115
                 ),
-        //TODO Focus AXT?
         //Focus AXR-SD
         RFN_420FD(PaoType.RFN420FD,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
@@ -77,20 +76,20 @@ public class DataStreamingAttributeHelper {
         RFN_420FL(PaoType.RFN420FL,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,           //metric 5
-                BuiltInAttribute.VOLTAGE         //metric 115
+                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //FocuskWh-500
         RFN_510FL(PaoType.RFN510FL,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.DEMAND,           //metric 5
-                BuiltInAttribute.VOLTAGE         //metric 115
+                BuiltInAttribute.DEMAND,          //metric 5
+                BuiltInAttribute.VOLTAGE          //metric 115
                 ),
         //S4-AD
         RFN_530S4AD(PaoType.RFN530S4EAX,
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.SUM_KWH,		  //metric 3	
+                BuiltInAttribute.SUM_KWH,         //metric 3
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -98,7 +97,7 @@ public class DataStreamingAttributeHelper {
         //S4-AT
         RFN_530S4AT(PaoType.RFN530S4EAXR,
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.SUM_KWH,		  //metric 3
+                BuiltInAttribute.SUM_KWH,         //metric 3
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -106,7 +105,7 @@ public class DataStreamingAttributeHelper {
         //S4-AR
         RFN_530S4AR(PaoType.RFN530S4EAXR,
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.SUM_KWH,		  //metric 3
+                BuiltInAttribute.SUM_KWH,         //metric 3
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
                 BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
@@ -341,7 +340,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.SUM_KVAH,        //metric 43
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C //metric 102
+                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 ),
         //Elster A3R
         RFN_430A3R(PaoType.RFN430A3R,
@@ -355,67 +354,59 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.DELIVERED_POWER_FACTOR,//metric 81
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C //metric 102
+                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 ),
         //Sentinel-L0
         RFN_430SL0(PaoType.RFN430SL0,
-                BuiltInAttribute.DELIVERED_KWH   //metric 1
+                BuiltInAttribute.DELIVERED_KWH    //metric 1
                 ),
         //Sentinel-L1
         RFN_430SL1(PaoType.RFN430SL1,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
+                BuiltInAttribute.DEMAND,          //metric 200 (overrides 5)
+                BuiltInAttribute.KVAR,            //metric 201 (overrides 32)
+                BuiltInAttribute.DELIVERED_KVA,   //metric 202 (overrides 49) 
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
-                BuiltInAttribute.DEMAND           //metric 200
-                /*Var*/                           //metric 201
-                /*VA*/                            //metric 202
+                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 ),
         //Sentinel-L2
         RFN_430SL2(PaoType.RFN430SL2,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
+                BuiltInAttribute.DEMAND,          //metric 200 (overrides 5)
+                BuiltInAttribute.KVAR,            //metric 201 (overrides 32)
+                BuiltInAttribute.DELIVERED_KVA,   //metric 202 (overrides 49) 
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
-                BuiltInAttribute.DEMAND           //metric 200
-                /*Var*/                           //metric 201
-                /*VA*/                            //metric 202
+                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 ),
         //Sentinel-L3
         RFN_430SL3(PaoType.RFN430SL3,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
+                BuiltInAttribute.DEMAND,          //metric 200 (overrides 5)
+                BuiltInAttribute.KVAR,            //metric 201 (overrides 32)
+                BuiltInAttribute.DELIVERED_KVA,   //metric 202 (overrides 49) 
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
-                BuiltInAttribute.DEMAND           //metric 200
-                /*Var*/                           //metric 201
-                /*VA*/                            //metric 202
+                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 ),
         //Sentinel-L4
         RFN_430SL4(PaoType.RFN430SL4,
                 BuiltInAttribute.DELIVERED_KWH,   //metric 1
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
-                BuiltInAttribute.KVAR,            //metric 32
-                BuiltInAttribute.DELIVERED_KVA,   //metric 49
+                BuiltInAttribute.DEMAND,          //metric 200 (overrides 5)
+                BuiltInAttribute.KVAR,            //metric 201 (overrides 32)
+                BuiltInAttribute.DELIVERED_KVA,   //metric 202 (overrides 49) 
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
-                BuiltInAttribute.VOLTAGE_PHASE_C, //metric 102
-                BuiltInAttribute.DEMAND           //metric 200
-                /*Var*/                           //metric 201
-                /*VA*/                            //metric 202
+                BuiltInAttribute.VOLTAGE_PHASE_C  //metric 102
                 )
         ;
 
