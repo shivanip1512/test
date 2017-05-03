@@ -16,9 +16,9 @@ import com.google.common.collect.Multimap;
  */
 public enum WidgetType implements DisplayableEnum {
     //Main Dashboard
-    FAVORITES(DashboardScope.GENERAL, WidgetCategory.OTHER, "favoritesWidget", "image-coming-soon"),
+    FAVORITES(DashboardScope.GENERAL, WidgetCategory.OTHER, "favoritesWidget", "image-favorites"),
     MONITOR_SUBSCRIPTIONS(DashboardScope.GENERAL, WidgetCategory.OTHER, "subscribedMonitorsWidget", "image-monitor-subscriptions"),
-    SYSTEM_MESSAGING(DashboardScope.GENERAL, WidgetCategory.OTHER, "systemMessagingWidget", "image-coming-soon"),
+    SYSTEM_MESSAGING(DashboardScope.GENERAL, WidgetCategory.OTHER, "systemMessagingWidget", "image-system-messaging"),
 
     TREND(DashboardScope.GENERAL, WidgetCategory.AMI, "csrTrendWidget", "image-trends"), 
 

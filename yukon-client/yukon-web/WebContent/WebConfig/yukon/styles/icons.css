@@ -1364,6 +1364,8 @@ License: http://creativecommons.org/licenses/by/3.0/
     border: 1px solid #ccc;
 }
 
+/*dashboardImages.png is a sprite sheet with 300px width and variable height there are three icons per row and each row starts at every
+ n*100px. Note: ami-action is the top left most sprite at 0px 0px, first value is the horizontal position and second value is the vertical position*/
 .image-ami-actions { background-position: 0px 0px; }
 .image-gateway-streaming { background-position: -150px 0px; }
 .image-coming-soon { background-position: 0px -100px; }
@@ -1372,5 +1374,5 @@ License: http://creativecommons.org/licenses/by/3.0/
 .image-monitors { background-position: -150px -200px; }
 .image-scheduled-requests { background-position: -300px 0px; }
 .image-trends { background-position: -300px -100px; }
-
-
+.image-system-messaging { background-position: -300px -200px; }
+.image-favorites { background-position: 0px -300px; }
