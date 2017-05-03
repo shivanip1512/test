@@ -1,7 +1,7 @@
 package com.cannontech.common.device.data.collection.dao.model;
 
 import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 
 public class DeviceCollectionDetail {
     private PaoIdentifier paoIdentifier;
@@ -9,7 +9,7 @@ public class DeviceCollectionDetail {
     private String meterSerialNumber;
     private String route;
     private int address;
-    private PointValueHolder value;
+    private PointValueQualityHolder value;
 
     public PaoIdentifier getPaoIdentifier() {
         return paoIdentifier;
@@ -51,11 +51,11 @@ public class DeviceCollectionDetail {
         this.route = route;
     }
 
-    public PointValueHolder getValue() {
+    public PointValueQualityHolder getValue() {
         return value;
     }
 
-    public void setValue(PointValueHolder value) {
+    public void setValue(PointValueQualityHolder value) {
         this.value = value;
     }
 }
