@@ -130,6 +130,14 @@ public class DashboardDaoImpl implements DashboardDao {
         List<Dashboard> dashboards = jdbcTemplate.query(dashboardSql, dashboardRowMapper);
         return getLiteDashboards(dashboards);
     }
+    
+    @Override
+    public List<LiteDashboard> getAllDashboards() {
+        SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
+        dashboardSql.append(baseDashboardSql.getSql());
+        List<Dashboard> dashboards = jdbcTemplate.query(dashboardSql, dashboardRowMapper);
+        return getLiteDashboards(dashboards);
+    }
 
     @Override
     public List<LiteDashboard> getOwnedDashboards(int ownerId) {

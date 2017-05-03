@@ -84,5 +84,15 @@ public interface DashboardService {
     /**
      * Set a new owner for a dashboard.
      */
-    void setOwner(int userId, int dashboardId);    
+    void setOwner(int userId, int dashboardId);
+
+    /**
+     * Get all dashboards.
+     */
+    List<LiteDashboard> getDashboards();
+
+    /**
+     * Get users for a dashboard.
+     */
+    List<Integer> getAllUsersForDashboard(int dashboardId);    
 }

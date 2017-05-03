@@ -32,6 +32,11 @@ public class DashboardServiceImpl implements DashboardService {
         }
         return dashboard;
     }
+    
+    @Override
+    public List<LiteDashboard> getDashboards() {
+        return dashboardDao.getAllDashboards();
+    }
 
     @Override
     public Dashboard getDashboard(int dashboardId) {
@@ -127,4 +132,10 @@ public class DashboardServiceImpl implements DashboardService {
         Dashboard dashboard = getDashboard(dashboardId);
         return Optional.of(dashboard.getOwner());
     }
+    
+    @Override
+    public  List<Integer> getAllUsersForDashboard(int dashboardId) {
+        return dashboardDao.getAllUsersForDashboard(dashboardId);
+    }
+
 }

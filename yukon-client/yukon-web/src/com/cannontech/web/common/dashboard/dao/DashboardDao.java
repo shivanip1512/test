@@ -80,5 +80,10 @@ public interface DashboardDao {
     /**
      * Retrieves dashboards by visibility.
      */
-    List<LiteDashboard> getDashboardsByVisibility(Visibility... visibility);  
+    List<LiteDashboard> getDashboardsByVisibility(Visibility... visibility);
+
+    /**
+     * Retrieves all dashboards.
+     */
+    List<LiteDashboard> getAllDashboards();  
 }
