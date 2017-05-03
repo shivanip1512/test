@@ -35,4 +35,6 @@
     </bean>
     <bean class="com.cannontech.web.dev.service.SystemHealthMetricSimulatorService"/>
     <bean class="com.cannontech.web.dev.dataStreaming.DataStreamingDevSettings"/>
+    <bean class="com.cannontech.web.capcontrol.service.impl.StrategyServiceImpl"/>
+    <bean class="com.cannontech.capcontrol.dao.impl.StrategyDaoImpl"/>
 </beans>

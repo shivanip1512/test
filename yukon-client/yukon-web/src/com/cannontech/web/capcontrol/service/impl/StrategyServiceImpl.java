@@ -17,7 +17,6 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.capcontrol.service.StrategyService;
 
-@Service
 public class StrategyServiceImpl implements StrategyService {
     
     @Autowired private DbChangeManager dbChangeManager;
