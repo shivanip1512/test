@@ -579,6 +579,12 @@ END;
 /* @end-block */
 /* End YUK-16502 */
 
+/* Start YUK-16618 */
+UPDATE FDRInterface
+SET PossibleDirections='Send,Receive,Receive for control'
+WHERE InterfaceId = 28;
+/* End YUK-16618 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
