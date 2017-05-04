@@ -210,7 +210,9 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
         if (enrolled) {
             if (hardware.getHardwareType().isZigbee()) {
                 inService = EnrollmentInService.NA;
-	        } else {
+            } else if (hardware.getHardwareType().isEcobee() || hardware.getHardwareType().isHoneywell()) {
+                inService = EnrollmentInService.INSERVICE;
+            } else {
 	            boolean isInService = enrollmentDao.isInService(inventoryId);
 	            inService = EnrollmentInService.determineInService(isInService);
 	        }
