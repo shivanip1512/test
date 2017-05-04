@@ -48,8 +48,6 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
             controlHistoryMessage.setControlType(controlType.toString());
         }
 
-        log.debug("ControlHistoryServiceImpl - sendControlHistoryShedMessage..Sending "
-            + "Control History Shed Message.");
         dispatchConnection.queue(controlHistoryMessage);
     }
     
