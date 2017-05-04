@@ -54,12 +54,13 @@ public class HoneywellWifiMessageListener {
             // Store the most recent dr handle for each group, so we can cancel
             groupToEventIdMap.put(parameters.getGroupId(), parameters.getEventId());
 
+            int controlCyclePercent = 100 - parameters.getDutyCyclePercent();
             controlHistoryService.sendControlHistoryShedMessage(parameters.getGroupId(),
                                                                 parameters.getStartTime(),
                                                                 ControlType.HONEYWELLWIFI,
                                                                 null,
                                                                 parameters.getDurationSeconds(),
-                                                                parameters.getDutyCyclePercent());
+                                                                controlCyclePercent);
 
         }
 
@@ -119,13 +120,13 @@ public class HoneywellWifiMessageListener {
             throws JMSException {
         // Get the raw values
         int groupId = message.readInt();
-        int dutyCycle = message.readByte();
+        int controlCycle = message.readByte();
         byte rampingOptions = message.readByte();
         long utcStartTimeSeconds = message.readInt();
         long utcEndTimeSeconds = message.readInt();
 
         // Massage the data into the form we want
-        int dutyCyclePercent = 100 - dutyCycle;
+        int dutyCyclePercent = 100 - controlCycle;
         Instant startTime = new Instant(utcStartTimeSeconds * 1000);
         Instant endTime = new Instant(utcEndTimeSeconds * 1000);
         boolean rampInOut = (rampingOptions & 2) == 2;

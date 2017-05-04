@@ -57,9 +57,10 @@ public class EcobeeMessageListener {
             int controlDurationSeconds = controlDuration.toStandardSeconds().getSeconds();
             Instant startTime = new Instant(DateTimeZone.getDefault().convertLocalToUTC(parameters.getStartTime().getMillis(), false));
             
+            int controlCyclePercent = 100 - parameters.getDutyCyclePercent(); 
             controlHistoryService.sendControlHistoryShedMessage(parameters.getGroupId(), startTime, ControlType.ECOBEE, 
                                                                 null, controlDurationSeconds,
-                                                                parameters.getDutyCyclePercent());
+                                                                controlCyclePercent);
         }
     }
 
@@ -112,14 +113,14 @@ public class EcobeeMessageListener {
     private EcobeeDutyCycleDrParameters buildDutyCycleDrParameters(StreamMessage message) throws JMSException {
         //Get the raw values
         int groupId = message.readInt();
-        int shedPercent = message.readByte();
+        int controlPercent = message.readByte();
         byte rampingOptions = message.readByte();
         byte mandatoryByte = message.readByte();
         long utcStartTimeSeconds = message.readInt();
         long utcEndTimeSeconds = message.readInt();
 
         //Massage the data into the form we want
-        int runtimePercent = 100 - shedPercent;
+        int dutyCyclePercent = 100 - controlPercent;
         Instant startTime = new Instant(utcStartTimeSeconds * 1000);
         Instant endTime = new Instant(utcEndTimeSeconds * 1000);
         boolean rampIn = (rampingOptions & 2) == 2;
@@ -129,6 +130,6 @@ public class EcobeeMessageListener {
                   + ") End time: " + endTime + " (" + utcEndTimeSeconds + ") Ramp in: " + rampIn + " Ramp out: " 
                   + rampOut + "Optional: " + optional + "(" + mandatoryByte + ")");
         
-        return new EcobeeDutyCycleDrParameters(startTime, endTime, runtimePercent, rampIn, rampOut, optional, groupId);
+        return new EcobeeDutyCycleDrParameters(startTime, endTime, dutyCyclePercent, rampIn, rampOut, optional, groupId);
     }
 }
