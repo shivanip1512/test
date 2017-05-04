@@ -41,14 +41,9 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
             controlHistoryMessage.setControlDuration(ControlHistoryMessage.CONTROL_RESTORE_DURATION);
         }
         
-        if (controlType == ControlType.ECOBEE) {
-            int cyclePercent = 100 - reductionRatio;
-            controlHistoryMessage.setControlType(controlType.toString() + " " + cyclePercent + "%");
-        } else if (controlType == ControlType.DIGI) {
+        if (controlType == ControlType.ECOBEE || controlType == ControlType.DIGI
+            || controlType == ControlType.HONEYWELLWIFI) {
             controlHistoryMessage.setControlType(controlType.toString() + " " + reductionRatio + "%");
-        } else if (controlType == ControlType.HONEYWELLWIFI) {
-            int cyclePercent = 100 - reductionRatio;
-            controlHistoryMessage.setControlType(controlType.toString() + " " + cyclePercent + "%");
         } else {
             controlHistoryMessage.setControlType(controlType.toString());
         }

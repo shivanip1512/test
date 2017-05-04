@@ -120,13 +120,13 @@ public class HoneywellWifiMessageListener {
             throws JMSException {
         // Get the raw values
         int groupId = message.readInt();
-        int controlCycle = message.readByte();
+        int controlCyclePercent = message.readByte();
         byte rampingOptions = message.readByte();
         long utcStartTimeSeconds = message.readInt();
         long utcEndTimeSeconds = message.readInt();
 
         // Massage the data into the form we want
-        int dutyCyclePercent = 100 - controlCycle;
+        int dutyCyclePercent = 100 - controlCyclePercent;
         Instant startTime = new Instant(utcStartTimeSeconds * 1000);
         Instant endTime = new Instant(utcEndTimeSeconds * 1000);
         boolean rampInOut = (rampingOptions & 2) == 2;
