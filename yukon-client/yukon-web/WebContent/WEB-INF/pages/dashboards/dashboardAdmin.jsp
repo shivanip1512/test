@@ -74,7 +74,12 @@
                                 <cm:dropdownOption key=".changeOwner" icon="icon-user-edit" disabled="true" />
                             </c:otherwise>
                         </c:choose>
-                        <cm:dropdownOption label="View Users" icon="icon-group"/>
+                        <li class="dropdown-option">
+                            <tags:pickerDialog type="dashboardUsersPicker" id="dashboardUsers_${dashboardId}" extraArgs="${dashboardId}" allowEmptySelection="true">
+                                <cti:icon icon="icon-group"/>                                
+                                <cti:msg2 key=".viewUsers" />
+                            </tags:pickerDialog>
+                        </li>
                         <div class="dn js-assign-users-${dashboardId}" data-dialog data-title="<cti:msg2 key=".assignUsers"/>" 
                             data-width="700" data-height="500" data-event="yukon:dashboard:assignUsers" 
                             data-url="<cti:url value="/dashboards/${dashboardId}/assignUsers"/>"></div>

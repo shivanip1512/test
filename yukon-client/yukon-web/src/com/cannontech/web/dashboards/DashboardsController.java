@@ -31,6 +31,7 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
+import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -62,6 +63,7 @@ public class DashboardsController {
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DashboardValidator validator;
     @Autowired private YukonUserDao yukonUserDao;
+    @Autowired private RolePropertyDao rolePropertyDao;
 
     private final static String baseKey = "yukon.web.modules.dashboard.";
 
@@ -151,8 +153,7 @@ public class DashboardsController {
     public String adminDashboards(@DefaultSort(dir=Direction.asc, sort="name") SortingParameters sorting, PagingParameters paging, 
                                   ModelMap model, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        //TODO: Return all dashboards?
-        List<LiteDashboard> dashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
+        List<LiteDashboard> dashboards = dashboardService.getDashboards();
         setupDashboardsTable(dashboards, sorting, paging, model, accessor);
         return "dashboardAdmin.jsp";
     }
@@ -165,17 +166,10 @@ public class DashboardsController {
         return "redirect:/dashboards/admin";
     }
     
-    @RequestMapping("{id}/viewUsers")
-    @CheckRoleProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS)
-    public String viewUsers(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
-        //TODO: get Users for dashboard
-        return "dashboardAdmin.jsp";
-    }
-    
     @RequestMapping("{id}/assignUsers")
     @CheckRoleProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS)
     public String assignUsersDialog(@PathVariable int id, ModelMap model, YukonUserContext userContext) {
-        List<LiteDashboard> dashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
+        List<LiteDashboard> dashboards = dashboardService.getDashboards();
         model.addAttribute("dashboards", dashboards);
         model.addAttribute("dashboardId", id);
         model.addAttribute("pageTypes", DashboardPageType.values());
@@ -288,7 +282,8 @@ public class DashboardsController {
     @RequestMapping("{id}/view")
     public String viewDashboard(@PathVariable int id, ModelMap model, YukonUserContext userContext, FlashScope flash) {
         Dashboard dashboard = dashboardService.getDashboard(id);
-        if (dashboardService.isVisible(userContext.getYukonUser().getUserID(), id)) {
+        boolean adminDashboards = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS, userContext.getYukonUser());
+        if (adminDashboards || dashboardService.isVisible(userContext.getYukonUser().getUserID(), id)) {
             model.addAttribute("mode", PageEditMode.VIEW);
             model.addAttribute("dashboard", dashboard);
             List<LiteDashboard> ownedDashboards = dashboardService.getOwnedDashboards(userContext.getYukonUser().getUserID());

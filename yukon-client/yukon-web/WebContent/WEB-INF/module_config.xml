@@ -958,8 +958,6 @@
     <skin name="STANDARD" />
     <pages>
       <page name="manage" type="BASIC"/>
-
-<!--       <page name="admin" type="BASIC"/> -->
       <page name="view" type="BASIC">
         <labelArgument>${dashboard.name}</labelArgument>
       </page>
