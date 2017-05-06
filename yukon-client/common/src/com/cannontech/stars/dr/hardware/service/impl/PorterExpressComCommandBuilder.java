@@ -201,9 +201,12 @@ public class PorterExpressComCommandBuilder {
         StringBuilder commandString = new StringBuilder();
         HardwareConfigType configType = getConfigType(lmhb);
         if (configType == HardwareConfigType.VERSACOM) {
-            commandString.append("control shed ");
+            commandString.append("control vcom shed ");
         } else if (configType == HardwareConfigType.EXPRESSCOM) {
             commandString.append("control xcom shed ");
+        } else {
+            commandString.append("control shed ");
+
         }
         commandString.append(duration.getStandardMinutes());
         commandString.append("m ");
