@@ -25,12 +25,15 @@ import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.core.dao.SeasonScheduleDao;
+import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.model.Season;
 import com.cannontech.development.model.DevCommChannel;
 import com.cannontech.development.model.DevPaoType;
 import com.cannontech.development.service.impl.DevObjectCreationBase;
+import com.cannontech.web.capcontrol.service.CapBankService;
 import com.cannontech.web.capcontrol.service.StrategyService;
 import com.cannontech.web.dev.database.objects.DevCapControl;
 import com.cannontech.web.dev.database.service.DevCapControlCreationService;
@@ -48,6 +51,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     @Autowired private ZoneService zoneService;
     @Autowired private StrategyService strategyService;
     @Autowired private SeasonScheduleDao seasonScheduleDao;
+    @Autowired private CapBankService capbankService;
 
     private static final ReentrantLock _lock = new ReentrantLock();
     private static int complete;
@@ -90,23 +94,33 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
             for (int subIndex = 0; subIndex < devCapControl.getNumSubs(); subIndex++) { // Substations
                 
                 PaoIdentifier substationPao = createSubstation(devCapControl, areaIndex, areaPao , subIndex);
-               
+                               
                 for (int subBusIndex = 0; subBusIndex < devCapControl.getNumSubBuses(); subBusIndex++) { // Substations Buses
                     
                     PaoIdentifier subBusPao =  createAndAssignSubstationBus(devCapControl, areaIndex, subIndex, substationPao , subBusIndex, strategyId);
                     
-                    List<ZoneAssignmentCapBankRow> bankAssignments = new ArrayList<>();
+                    Integer parentZoneId = null;
+                    double graphPosition = 0;
+                    final double graphPositionOffset = 4.5; // How apart each regulator (zone) or cbc are
                     
                     for (int feederIndex = 0; feederIndex < devCapControl.getNumFeeders(); feederIndex++) { // Feeders
+                        List<ZoneAssignmentCapBankRow> bankAssignments = new ArrayList<>();
                         PaoIdentifier feederPao = createAndAssignFeeder(devCapControl, areaIndex, subIndex, subBusIndex, subBusPao, feederIndex);
+                        double zonePosition = graphPosition;
+                        graphPosition += graphPositionOffset;
                         for (int capBankIndex = 0; capBankIndex < devCapControl.getNumCapBanks(); capBankIndex++) { // CapBanks & CBCs
-                            PaoIdentifier capBankPao = createAndAssignCapBank(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, feederPao, capBankIndex, bankAssignments);
+                            PaoIdentifier capBankPao = createAndAssignCapBank(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, feederPao, capBankIndex, bankAssignments, graphPosition);
+                            graphPosition += graphPositionOffset;
                             createAndAssignCBC(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, capBankIndex, capBankPao);
+                            assignAllPointsToBank(capBankPao.getPaoId());
                         }
+                        
+                        PaoIdentifier regulatorPao = createRegulatorForSubBus(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex);
+                        // The first time through the zone is the parent (no parent zone ID), each time after its parent is the previous zone.
+                        parentZoneId = createAndAssignZone(devCapControl, areaIndex, subIndex, subBusPao, subBusIndex, regulatorPao.getPaoId(), bankAssignments, parentZoneId, zonePosition);
                     }
 
-                    PaoIdentifier regulatorPao = createRegulatorForSubBus(devCapControl, areaIndex, subIndex, subBusIndex);
-                    createAndAssignZone(devCapControl, areaIndex, subIndex, subBusPao, subBusIndex, regulatorPao.getPaoId(), bankAssignments);
+                    
 
                 }
             }
@@ -115,6 +129,14 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         for (int regIndex = 0; regIndex < devCapControl.getNumRegulators(); regIndex++) { // Additional Regulators
             createRegulators(devCapControl, regIndex);
         }
+    }
+
+    // This takes all unassigned points on the bank (CBC Points) and attaches them to the bank
+    private void assignAllPointsToBank(int capbankId) {
+        CapBank capbank = capbankService.getCapBank(capbankId);
+        List<CCMonitorBankList> unassigned = capbankService.getUnassignedPoints(capbank);
+        Integer[] pointIds = unassigned.stream().map(CCMonitorBankList::getPointId).toArray(Integer[]::new);
+        capbankService.savePoints(capbankId, pointIds);
     }
 
     private int createCapControlStrategy(DevCapControl devCapControl) {
@@ -129,28 +151,32 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     }
 
     private PaoIdentifier createRegulatorForSubBus(DevCapControl devCapControl, int areaIndex, int subIndex,
-                                          int subBusIndex) {
-        String regName = "Sim Regulator " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex);
+                                          int subBusIndex, int feederIndex) {
+        String regName = "Sim Regulator " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex);
         return createCapControlObject(devCapControl, PaoType.GANG_OPERATED, regName, false, 0);
     }
 
-    private void createAndAssignZone(DevCapControl devCapControl, int areaIndex,
+    private Integer createAndAssignZone(DevCapControl devCapControl, int areaIndex,
                                               int subIndex, PaoIdentifier subBusPao,
                                               int subBusIndex, int regulatorId, 
-                                              List<ZoneAssignmentCapBankRow> bankAssignments) {
+                                              List<ZoneAssignmentCapBankRow> bankAssignments, 
+                                              Integer parentId, double zonePosition) {
         Zone createdZone = new Zone();
-        createdZone.setName("Sim Zone" + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex));
+        createdZone.setName("Sim Zone" + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(parentId == null?0:parentId));
         RegulatorToZoneMapping regulatorToZoneMapping = new RegulatorToZoneMapping();
         regulatorToZoneMapping.setRegulatorId(regulatorId);
         regulatorToZoneMapping.setGraphStartPosition(1);
         regulatorToZoneMapping.setPhase(Phase.ALL);
+        createdZone.setParentId(parentId);
         
         createdZone.setRegulators(ImmutableList.of(regulatorToZoneMapping));
         
         ZoneGang zone = new ZoneGang(createdZone);
         zone.setSubstationBusId(subBusPao.getPaoId());
         zone.setBankAssignments(bankAssignments);
+        zone.setGraphStartPosition(zonePosition);
         zoneService.saveZone(zone);
+        return zone.getZoneId();
     }
 
     private void logCapControlAssignment(String child, PaoIdentifier parent) {
@@ -200,7 +226,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
                              int capBankIndex, PaoIdentifier capBankPao) {
         if (capBankPao != null && devCapControl.getCbcType() != null) {
             PaoType paoType = devCapControl.getCbcType().getPaoType();
-            String cbcName = paoType.getPaoTypeName() + " " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex);
+            String cbcName = "Sim " + paoType.getPaoTypeName() + " " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex);
             PaoIdentifier cbcPao =  createCapControlCBC(devCapControl, paoType, cbcName, false, DevCommChannel.SIM);
             capbankControllerDao.assignController(capBankPao.getPaoId(), cbcPao.getPaoId());
             logCapControlAssignment(cbcName, capBankPao);
@@ -208,7 +234,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     }
     
     private PaoIdentifier createAndAssignCapBank(DevCapControl devCapControl, int areaIndex, int subIndex, int subBusIndex, int feederIndex, PaoIdentifier feederPao,
-                             int capBankIndex, List<ZoneAssignmentCapBankRow> bankAssignments) {
+                             int capBankIndex, List<ZoneAssignmentCapBankRow> bankAssignments, double graphPosition) {
         PaoIdentifier capBankPao = null;
         if(feederPao != null){
             String capBankName = "Sim CapBank " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(capBankIndex);
@@ -218,8 +244,8 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
             
             ZoneAssignmentCapBankRow bankAssignment = new ZoneAssignmentCapBankRow();
             bankAssignment.setDevice(capBankName);
-            bankAssignment.setGraphPositionOffset((capBankIndex+1)*4.5);
-            bankAssignment.setDistance((capBankIndex+1)*5000);
+            bankAssignment.setGraphPositionOffset(graphPosition);
+            bankAssignment.setDistance(graphPosition*1000);
             bankAssignment.setId(capBankPao.getPaoId());
             bankAssignment.setName(capBankName);
             

@@ -41,7 +41,6 @@ import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.web.capcontrol.service.CapBankService;
 import com.cannontech.yukon.IDatabaseCache;
 
-@Service
 public class CapBankServiceImpl implements CapBankService {
 
     @Autowired private CapControlCreationService ccCreationService;

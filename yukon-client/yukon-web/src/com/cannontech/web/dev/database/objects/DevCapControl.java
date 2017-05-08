@@ -10,12 +10,12 @@ import com.google.common.collect.Lists;
 public class DevCapControl extends DevObject {
     private Integer numAreas = 1;
     private Integer numSubs = 1;
-    private Integer numSubBuses = 1;
-    private Integer numFeeders = 1;
-    private Integer numCapBanks = 3;
+    private Integer numSubBuses = 3;
+    private Integer numFeeders = 2;
+    private Integer numCapBanks = 4;
     private Integer numRegulators = 10;
     private Integer offset = 0;
-    private DevPaoType cbcType;
+    private DevPaoType cbcType = new DevPaoType(PaoType.CBC_8020);
     private List<DevPaoType> cbcTypes =
         Lists
             .newArrayList(new DevPaoType(PaoType.CBC_7010),
