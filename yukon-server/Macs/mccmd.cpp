@@ -1,10 +1,4 @@
 #include "precompiled.h"
-#include <boost/regex.hpp>
-
-#include <string>
-#include <stdio.h>
-
-#include <tcl/tcl.h>
 
 #include "mccmd.h"
 
@@ -46,12 +40,19 @@
 
 #include "MessageCounter.h"
 
+#include "std_helper.h"
+
 #include <boost/algorithm/string.hpp>
 #include <boost/range.hpp>
+#include <boost/regex.hpp>
+
+#include <string>
 
 using std::string;
 using std::endl;
 using std::vector;
+
+using namespace std::string_literals;
 
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
@@ -1413,15 +1414,41 @@ int getYukonBaseDir(ClientData clientData, Tcl_Interp* interp, int argc, const c
 //  Workaround to add "clock" back to the interpreter without requiring TCL's init.tcl and the whole TCL library
 int yukonClock(ClientData clientData, Tcl_Interp* interp, int argc, const char* argv[])
 {
-  if(argc < 2 || std::string("seconds") != argv[1] )
+    if(argc >= 3 && argv[1] == "format"s)
     {
-      CTILOG_ERROR(dout, "Usage: clock seconds");
-      return TCL_ERROR;
+        struct TimeFormatter {
+            const char* format_string;
+            decltype(&localtime_s) time_method;
+        };
+
+        static const std::map<std::string, TimeFormatter> formats {
+            { "mdy", { "%D %T", localtime_s } },
+            { "ymd", { "%F %T", localtime_s } },
+            { "utc", { "%F %T", gmtime_s } },
+        };
+
+        if( auto time_formatter = Cti::mapFind(formats, argv[2]) )
+        {
+            //  Get the time using the requested time method (localtime or gmtime)
+            tm time_value;
+            time_formatter->time_method(&time_value, nullptr);
+
+            //  Format the string and assign it into the TCL string
+            std::array<char, 25> result;
+            const auto length = std::strftime(result.data(), result.size(), time_formatter->format_string, &time_value);
+            Tcl_SetObjResult(interp, Tcl_NewStringObj(result.data(), length));
+            return TCL_OK;
+        }
+    }
+    else if(argc >= 2 && argv[1] == "seconds"s )
+    {
+        Tcl_Obj* tcl_seconds = Tcl_NewIntObj(time(nullptr));
+        Tcl_SetObjResult(interp, tcl_seconds);
+        return TCL_OK;
     }
 
-  Tcl_Obj* tcl_seconds = Tcl_NewIntObj(time(nullptr));
-  Tcl_SetObjResult(interp, tcl_seconds);
-  return TCL_OK;
+  CTILOG_ERROR(dout, "Usage: clock (seconds|format (mdy|ymd|utc))");
+  return TCL_ERROR;
 }
 
 int DoOneWayRequest(Tcl_Interp* interp, const string &cmd_line)
