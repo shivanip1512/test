@@ -1431,7 +1431,8 @@ int yukonClock(ClientData clientData, Tcl_Interp* interp, int argc, const char* 
         {
             //  Get the time using the requested time method (localtime or gmtime)
             tm time_value;
-            time_formatter->time_method(&time_value, nullptr);
+            const auto current_time = std::time(nullptr);
+            time_formatter->time_method(&time_value, &current_time);
 
             //  Format the string and assign it into the TCL string
             std::array<char, 25> result;
