@@ -1,10 +1,8 @@
 package com.cannontech.dr.service.impl;
 
-import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -16,7 +14,6 @@ import com.cannontech.yukon.IDatabaseCache;
 import com.cannontech.yukon.IServerConnection;
 
 public class ControlHistoryServiceImpl implements ControlHistoryService {
-    private static final Logger log = YukonLogManager.getLogger(ControlHistoryServiceImpl.class);
     
     @Autowired private AttributeService attributeService;
     @Autowired private IDatabaseCache databaseCache;
@@ -41,12 +38,7 @@ public class ControlHistoryServiceImpl implements ControlHistoryService {
             controlHistoryMessage.setControlDuration(ControlHistoryMessage.CONTROL_RESTORE_DURATION);
         }
         
-        if (controlType == ControlType.ECOBEE || controlType == ControlType.DIGI
-            || controlType == ControlType.HONEYWELLWIFI) {
-            controlHistoryMessage.setControlType(controlType.toString() + " " + reductionRatio + "%");
-        } else {
-            controlHistoryMessage.setControlType(controlType.toString());
-        }
+        controlHistoryMessage.setControlType(controlType.toString() + " " + reductionRatio + "%");
 
         dispatchConnection.queue(controlHistoryMessage);
     }
