@@ -70,7 +70,7 @@ public class EcobeeMockApiController {
     @RequestMapping(value = "hierarchy/thermostat", method = RequestMethod.POST)
     public @ResponseBody StandardResponse thermostatHierarchy(HttpEntity<RegisterDeviceRequest> requestEntity) {
         StandardResponse standardResponse = null;
-        DeviceRequest request = requestEntity.getBody();
+        RegisterDeviceRequest request = requestEntity.getBody();
         if (request.getOperation().equalsIgnoreCase("register")) {
             standardResponse = new StandardResponse(true, new Status(ecobeeDataConfiguration.getRegisterDevice(), " Register Thermostat"));
         } else if (request.getOperation().equalsIgnoreCase("assign")) {
