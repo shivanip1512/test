@@ -34,13 +34,13 @@ yukon.admin.multispeak = (function () {
 	            },
 	            
 	            executeRequest : function (service, call, version, mode) {
-	            	$('#actionService').val(service);
-	            	var endpointURL = $("#endpointURL_"+service).text();
-	            	if (typeof endpointURL === "undefined" || endpointURL === null || endpointURL === "") {
-	            		endpointURL = $("#endpointURL_"+service).val();
-	            	}
-	            	$('#endpointURL').val(endpointURL);
-	            	var formData = $('#mspForm').serialize();
+                    $('#actionService').val(service);
+                    var endpointURL = $("#endpointURL_" + version + "_" + service).text();
+                    if (typeof endpointURL === "undefined" || endpointURL === null || endpointURL === "") {
+                        endpointURL = $("#endpointURL_" + version + "_" + service).val();
+                    }
+                    $('#endpointURL').val(endpointURL);
+                    var formData = $('#mspForm').serialize();
 	                $.ajax({
 	                    url: yukon.url('/multispeak/setup/' + call + '/' + version),
 	                    type: 'post',

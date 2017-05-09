@@ -175,7 +175,7 @@
                                                 <form:hidden path="mspInterfaceList[${indexValue}].mspInterface" />
                                             </td>
                                             <td class="wbba" style="max-width:320px;">
-                                                <tags:input id="endpointURL_${currentInterface.mspInterface}" path="mspInterfaceList[${indexValue}].mspEndpoint"
+                                                <tags:input id="endpointURL_${currentInterface.version}_${currentInterface.mspInterface}" path="mspInterfaceList[${indexValue}].mspEndpoint"
                                                     size="35" disabled="${!currentInterface.interfaceEnabled}" />
                                             </td>
                                             <td>

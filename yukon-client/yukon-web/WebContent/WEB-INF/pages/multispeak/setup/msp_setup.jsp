@@ -114,7 +114,7 @@
                                     <tags:hidden path="mspInterfaceList[${i.index}].interfaceEnabled" />
                                 </td>
                                 <td class="wbba" style="max-width:320px;">
-                                    <tags:input id="endpointURL_${multispeakInterface.mspInterface}" path="mspInterfaceList[${i.index}].mspEndpoint" size="35" />
+                                    <tags:input id="endpointURL_${multispeakInterface.version}_${multispeakInterface.mspInterface}" path="mspInterfaceList[${i.index}].mspEndpoint" size="35" />
                                 </td>
                                 <td>
                                     <span>${multispeakInterface.version.version}</span>
