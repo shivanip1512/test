@@ -9,7 +9,7 @@ import com.cannontech.web.common.widgets.model.DataCollectionSummary;
 
 public interface DataCollectionWidgetService {
 
-    enum ResultType {
+    enum RangeType {
         AVAILABLE, EXPECTED, OUTDATED, UNAVAILABLE
     }
     /**
@@ -21,15 +21,16 @@ public interface DataCollectionWidgetService {
     DataCollectionSummary getDataCollectionSummary(DeviceGroup group, boolean includeDisabled);
     
     /**
+     * Sends request to PointDataCollectionService to initiate data collection.
+     */
+    void collectData();
+
+    /**
      * Returns collection result
      * 
      * @param includeDisabled - if true includes disabled devices otherwise only enabled devices will be
      *        included
      */
-    List<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, boolean includeDisabled, ResultType... types);
-
-    /**
-     * Sends request to PointDataCollectionService to initiate data collection.
-     */
-    void collectData();
+    List<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group1, DeviceGroup group2,
+            boolean includeDisabled, RangeType... ranges);
 }

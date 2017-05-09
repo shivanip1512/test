@@ -1,30 +1,20 @@
 package com.cannontech.web.widget;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.common.device.data.collection.dao.model.DeviceCollectionDetail;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.common.widgets.model.DataCollectionDetail;
 import com.cannontech.web.common.widgets.model.DataCollectionSummary;
 import com.cannontech.web.common.widgets.service.DataCollectionWidgetService;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
@@ -72,8 +62,7 @@ public class DataCollectionWidget extends AdvancedWidgetControllerBase {
         Map<String, Object> json = new HashMap<>();
 
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
-        //DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, includeDisabled);
-        DataCollectionSummary summary = mockedSummary();
+        DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, true);
         json.put("summary",  summary);
 
         return json;
@@ -86,27 +75,4 @@ public class DataCollectionWidget extends AdvancedWidgetControllerBase {
         json.put("success", true);
         return json;
     }
-    
-    private DataCollectionSummary mockedSummary() {
-        DataCollectionSummary summary = new DataCollectionSummary();
-        DataCollectionDetail avail = new DataCollectionDetail();
-        avail.setDeviceCount(12750);
-        avail.setPercentage(85);
-        summary.setAvailable(avail);
-        DataCollectionDetail expected = new DataCollectionDetail();
-        expected.setDeviceCount(1500);
-        expected.setPercentage(10);
-        summary.setExpected(expected);
-        DataCollectionDetail outdated = new DataCollectionDetail();
-        outdated.setDeviceCount(450);
-        outdated.setPercentage(3);
-        summary.setOutdated(outdated);
-        DataCollectionDetail unavailable = new DataCollectionDetail();
-        unavailable.setDeviceCount(300);
-        unavailable.setPercentage(2);
-        summary.setUnavailable(unavailable);
-        summary.setCollectionTime(Instant.now());
-        return summary;
-    }
-
 }

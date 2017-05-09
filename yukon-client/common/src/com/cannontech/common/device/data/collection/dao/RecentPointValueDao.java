@@ -23,5 +23,7 @@ public interface RecentPointValueDao {
     /**
      * Returns reading results for a date range and a group
      */
-    List<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, boolean includeDisabled, Range<Instant> range);
+    List<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group1, DeviceGroup group2, boolean includeDisabled, Range<Instant> range);
+
+    int getDeviceCount(DeviceGroup group, boolean includeDisabled, Range<Instant> range);
 }
