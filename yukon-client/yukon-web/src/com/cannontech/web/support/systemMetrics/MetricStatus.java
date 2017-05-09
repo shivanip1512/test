@@ -35,6 +35,6 @@ public enum MetricStatus implements DisplayableEnum {
     
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.support.systemHealth.metric.status." + name();
+        return "yukon.web.modules.support.systemMessaging.metric.status." + name();
     }
 }

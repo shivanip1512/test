@@ -202,7 +202,7 @@ public enum SiteMapPage implements DisplayableEnum {
             MasterConfigBoolean.RF_DATA_STREAMING_ENABLED),
     DATABASE_MIGRATION(SiteMapCategory.SUPPORT, "yukon.web.modules.support.databaseMigration.pageName", "/support/database/migration/home",
             MatchStyle.all, YukonRoleProperty.ADMIN_DATABASE_MIGRATION),
-    SYSTEM_METRICS(SiteMapCategory.SUPPORT, "yukon.web.modules.support.systemHealth.pageName", "/support/systemHealth/home", 
+    SYSTEM_METRICS(SiteMapCategory.SUPPORT, "yukon.web.modules.support.systemMessaging.pageName", "/support/systemHealth/home", 
             MatchStyle.all),
 
     DEVELOPMENT(SiteMapCategory.DEVELOPMENT, "yukon.web.modules.dev.home.pageName", "/dev",

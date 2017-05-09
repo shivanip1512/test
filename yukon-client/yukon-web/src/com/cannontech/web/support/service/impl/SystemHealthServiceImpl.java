@@ -45,7 +45,7 @@ public class SystemHealthServiceImpl implements SystemHealthService {
     private void init() {
         // Set the default message for healthy metrics
         String message = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system)
-                                              .getMessage("yukon.web.modules.support.systemHealth.criteria.default");
+                                              .getMessage("yukon.web.modules.support.systemMessaging.criteria.default");
         MetricStatusWithMessages.setDefaultMessage(message);
         
         // Init status helper and start periodic status calculation

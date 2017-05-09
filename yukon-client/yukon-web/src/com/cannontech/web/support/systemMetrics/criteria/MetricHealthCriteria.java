@@ -11,7 +11,7 @@ import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
  */
 public interface MetricHealthCriteria extends Displayable {
     
-    public static final String keyPrefix = "yukon.web.modules.support.systemHealth.criteria.";
+    public static final String keyPrefix = "yukon.web.modules.support.systemMessaging.criteria.";
     
     /**
      * @return The identifier of the metric that this criteria pertains to.

@@ -143,7 +143,7 @@ public class SystemHealthController {
             Instant now = new Instant();
             if (lastResync.isAfter(now.minus(Duration.standardMinutes(5)))) {
                 resp.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-                json.put("message", accessor.getMessage("yukon.web.modules.support.systemHealth.sync.throttle"));
+                json.put("message", accessor.getMessage("yukon.web.modules.support.systemMessaging.sync.throttle"));
                 return json;
             }
             lastResync = now;
@@ -160,7 +160,7 @@ public class SystemHealthController {
         jmsTemplate.convertAndSend("yukon.notif.obj.common.rfn.ArchiveStartupNotification", notif);
         
         resp.setStatus(HttpStatus.OK.value());
-        json.put("message", accessor.getMessage("yukon.web.modules.support.systemHealth.sync.success"));
+        json.put("message", accessor.getMessage("yukon.web.modules.support.systemMessaging.sync.success"));
         return json;
     }
     
@@ -181,7 +181,7 @@ public class SystemHealthController {
             log.error("Error saving favorite settings for system health metric.", e);
             
             MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String message = accessor.getMessage("yukon.web.modules.support.systemHealth.favoriteError");
+            String message = accessor.getMessage("yukon.web.modules.support.systemMessaging.favoriteError");
             json.put("message", message);
             
             response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
