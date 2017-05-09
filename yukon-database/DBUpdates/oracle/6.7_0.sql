@@ -585,6 +585,66 @@ SET PossibleDirections='Send,Receive,Receive for control'
 WHERE InterfaceId = 28;
 /* End YUK-16618 */
 
+/* Start YUK-16593 */
+UPDATE  DeviceConfigCategory
+SET     CategoryType = 'regulatorHeartbeat'
+WHERE   CategoryType = 'heartbeat';
+
+UPDATE  DeviceConfigCategoryItem
+SET     ItemName = 'regulatorHeartbeatPeriod'
+WHERE   ItemName = 'heartbeatPeriod';
+
+UPDATE  DeviceConfigCategoryItem
+SET     ItemName = 'regulatorHeartbeatValue'
+WHERE   ItemName = 'heartbeatValue';
+
+UPDATE  DeviceConfigCategoryItem
+SET     ItemName = 'regulatorHeartbeatMode'
+WHERE   ItemName = 'heartbeatMode';
+
+/* @start-block */
+DECLARE
+    v_newConfigCategoryId       NUMBER;
+    v_newConfigCategoryItemId   NUMBER;
+    v_existingConfigurationId   NUMBER;
+
+    /* Find non-default config categories used by existing CBC 8000 and CBC DNP Devices and stick them into a cursor */
+    CURSOR config_cursor IS (
+        SELECT DISTINCT C.DeviceConfigurationID
+        FROM YukonPAObject Y, DeviceConfigurationDeviceMap C, DeviceConfiguration DC
+        WHERE Y.Type IN ('CBC 8020', 'CBC 8024', 'CBC DNP')
+        AND Y.PAObjectID = C.DeviceID
+        AND C.DeviceConfigurationId = DC.DeviceConfigurationID
+        AND DC.DeviceConfigurationID > -1
+    );
+
+BEGIN
+    SELECT MAX(DeviceConfigCategoryId) + 1      INTO v_newConfigCategoryId      FROM DeviceConfigCategory;
+    SELECT MAX(DeviceConfigCategoryItemId) + 1  INTO v_newConfigCategoryItemId  FROM DeviceConfigCategoryItem;
+
+    INSERT INTO DeviceConfigCategory        VALUES (v_newConfigCategoryId, 'cbcHeartbeat', 'Default CBC Heartbeat Category', NULL);
+
+    INSERT INTO DeviceConfigCategoryItem    VALUES (v_newConfigCategoryItemId,      v_newConfigCategoryId, 'cbcHeartbeatPeriod', 0);
+    INSERT INTO DeviceConfigCategoryItem    VALUES (v_newConfigCategoryItemId + 1,  v_newConfigCategoryId, 'cbcHeartbeatValue',  0);
+    INSERT INTO DeviceConfigCategoryItem    VALUES (v_newConfigCategoryItemId + 2,  v_newConfigCategoryId, 'cbcHeartbeatMode',   'DISABLED');
+
+    INSERT INTO DeviceConfigCategoryMap     VALUES (-1, v_newConfigCategoryId); /* -1 is the ID for the default DNP Configuration */
+
+    /* Add @newConfigCategoryId to DeviceConfigCategoryMap for each of these found ID's (if any) */
+    OPEN config_cursor;
+    LOOP
+        FETCH config_cursor INTO v_existingConfigurationId;
+        EXIT WHEN config_cursor%NOTFOUND;
+
+        INSERT INTO DeviceConfigCategoryMap VALUES (v_existingConfigurationId, v_newConfigCategoryId);
+
+    END LOOP;
+    CLOSE config_cursor;
+END;
+/
+/* @end-block */
+/* End YUK-16593 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

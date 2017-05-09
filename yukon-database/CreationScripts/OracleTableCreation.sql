@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/4/2017 1:25:20 PM                          */
+/* Created on:     5/9/2017 2:35:39 PM                          */
 /*==============================================================*/
 
 
@@ -2814,7 +2814,8 @@ create table DeviceConfigCategory  (
 
 INSERT INTO DeviceConfigCategory VALUES (0, 'dnp', 'Default DNP Category', null);
 INSERT INTO DeviceConfigCategory VALUES (1, 'regulatorCategory', 'Default Regulator Category', null);
-INSERT INTO DeviceConfigCategory VALUES (2, 'heartbeat', 'Default Regulator Heartbeat Category', null);
+INSERT INTO DeviceConfigCategory VALUES (2, 'regulatorHeartbeat', 'Default Regulator Heartbeat Category', null);
+INSERT INTO DeviceConfigCategory VALUES (3, 'cbcHeartbeat', 'Default CBC Heartbeat Category', null);
 
 alter table DeviceConfigCategory
    add constraint AK_DeviceConfigCategory_Name unique (Name);
@@ -2839,9 +2840,12 @@ INSERT INTO DeviceConfigCategoryItem VALUES (5, 0, 'enableUnsolicitedMessagesCla
 INSERT INTO DeviceConfigCategoryItem VALUES (6, 0, 'enableUnsolicitedMessagesClass3', 'true');
 INSERT INTO DeviceConfigCategoryItem VALUES (7, 1, 'voltageChangePerTap', '0.75');
 INSERT INTO DeviceConfigCategoryItem VALUES (8, 1, 'voltageControlMode', 'DIRECT_TAP');
-INSERT INTO DeviceConfigCategoryItem VALUES (9, 2, 'heartbeatPeriod', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (10, 2, 'heartbeatValue', '0');
-INSERT INTO DeviceConfigCategoryItem VALUES (11, 2, 'heartbeatMode', 'NONE');
+INSERT INTO DeviceConfigCategoryItem VALUES (9, 2, 'regulatorHeartbeatPeriod', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (10, 2, 'regulatorHeartbeatValue', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (11, 2, 'regulatorHeartbeatMode', 'NONE');
+INSERT INTO DeviceConfigCategoryItem VALUES (12, 3, 'cbcHeartbeatPeriod', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (13, 3, 'cbcHeartbeatValue', '0');
+INSERT INTO DeviceConfigCategoryItem VALUES (14, 3, 'cbcHeartbeatMode', 'DISABLED');
 
 alter table DeviceConfigCategoryItem
    add constraint AK_DevConCatItem_CatIdItemName unique (DeviceConfigCategoryId, ItemName);
@@ -2856,6 +2860,7 @@ create table DeviceConfigCategoryMap  (
 );
 
 INSERT INTO DeviceConfigCategoryMap VALUES(-1, 0);
+INSERT INTO DeviceConfigCategoryMap VALUES(-1, 3);
 INSERT INTO DeviceConfigCategoryMap VALUES(-2, 1);
 INSERT INTO DeviceConfigCategoryMap VALUES(-2, 2);
 
