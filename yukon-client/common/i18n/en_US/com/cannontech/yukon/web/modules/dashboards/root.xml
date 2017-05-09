@@ -88,6 +88,8 @@
     
     <!-- Widget Parameters -->
     <entry key="yukon.web.modules.dashboard.widgetParameter.deviceId">Meter</entry>
+    <entry key="yukon.web.modules.dashboard.widgetParameter.deviceGroup">Device Group</entry>
+    <entry key="yukon.web.modules.dashboard.widgetParameter.includeDisabled">Include Disabled</entry>
     
     <!-- Visibility -->
     <entry key="yukon.web.modules.dashboard.visibility.SYSTEM">System</entry>

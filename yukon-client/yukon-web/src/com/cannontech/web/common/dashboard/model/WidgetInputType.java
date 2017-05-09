@@ -6,6 +6,8 @@ package com.cannontech.web.common.dashboard.model;
 public enum WidgetInputType {
     
     METER_PICKER(Integer.class, "meterPicker"),
+    DEVICE_GROUP(String.class, "deviceGroupPicker"),
+    CHECKBOX(Boolean.class, "checkbox")
     ;
     
     private final Class<?> inputClass;

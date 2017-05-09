@@ -2,8 +2,6 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
-<%@ taglib prefix="wp" tagdir="/WEB-INF/tags/widgetParameters" %>
-<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 
 <%@ attribute name="widget" required="true" type="java.lang.Object"%>
 <%@ attribute name="path" %>
@@ -22,6 +20,7 @@
                 <jsp:param name="parameterKey" value="${parameter.key}"/>
                 <jsp:param name="path" value="${path}"/>
             </jsp:include>
+            <br/>
     </c:forEach>
 
 </tags:boxContainer>

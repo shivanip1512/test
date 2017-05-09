@@ -28,7 +28,7 @@ public enum WidgetType implements DisplayableEnum {
     AMI_ACTIONS(DashboardScope.GENERAL, WidgetCategory.AMI, "systemActionsMenuWidget", "image-ami-actions"),
     SCHEDULED_REQUESTS(DashboardScope.GENERAL, WidgetCategory.AMI, "scheduledGroupRequestExecutionWidget", "image-scheduled-requests"),
     GATEWAY_STREAMING_CAPACITY(DashboardScope.GENERAL, WidgetCategory.AMI, "overloadedGatewaysWidget", "image-gateway-streaming"),
-    DATA_COLLECTION(DashboardScope.GENERAL, WidgetCategory.AMI, "dataCollectionWidget", "image-coming-soon"),
+    DATA_COLLECTION(DashboardScope.GENERAL, WidgetCategory.AMI, "dataCollectionWidget", "image-data-collection"),
     
     /*
     //Meter Detail
@@ -60,7 +60,9 @@ public enum WidgetType implements DisplayableEnum {
         );
         
         widgetParameters = ImmutableListMultimap.of(
-            TREND, new WidgetParameter("deviceId", WidgetInputType.METER_PICKER, MeterPickerValidator.get())
+            TREND, new WidgetParameter("deviceId", WidgetInputType.METER_PICKER, MeterPickerValidator.get()),
+            DATA_COLLECTION, new WidgetParameter("deviceGroup", WidgetInputType.DEVICE_GROUP, null),
+            DATA_COLLECTION, new WidgetParameter("includeDisabled", WidgetInputType.CHECKBOX, null)
         );
     }
     
