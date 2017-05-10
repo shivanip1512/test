@@ -91,40 +91,41 @@ yukon.widget.dataCollection = (function () {
     },
     
     /** Update the existing pie chart. */
-    _updateChart = function (chart, data) {
-        debug.log('updating chart');
-        console.log(data);
-        Highcharts.charts[0].series[0].setData(_getData(data));
+    _updateChart = function (data, idx) {
+        Highcharts.charts[idx].series[0].setData(_getData(data));
     },
     
     /** Update the page every so many seconds */
     _update = function () {
-        var deviceGroup = $('[name=groupName]').val(),
-            includeDisabled = $('#includeDisabled').is(":checked"),
-            chart = $('.js-pie-chart');
-        if (deviceGroup) {
-            $.ajax({
-                url: yukon.url('/amr/dataCollection/updateChart'),
-                data: {
-                    deviceGroup: deviceGroup,
-                    includeDisabled: includeDisabled
-                }        
-            }).done(function (data) {
-                if (data.summary != null) {
-                    if (chart.is('.js-initialize')) {
-                        _buildChart(chart, data);
-                    } else {
-                        _updateChart(chart, data);
+        $('.js-data-collection-widget').each(function (idx, item) {
+            var deviceGroup = $(item).find('input[name=groupName]').val(),
+            includeDisabled = $(item).find('#includeDisabled').is(":checked"),
+            chart = $(item).find('.js-pie-chart');
+            if (deviceGroup) {
+                $.ajax({
+                    url: yukon.url('/amr/dataCollection/updateChart'),
+                    data: {
+                        deviceGroup: deviceGroup,
+                        includeDisabled: includeDisabled
+                    }        
+                }).done(function (data) {
+                    if (data.summary != null) {
+                        if (chart.is('.js-initialize')) {
+                            _buildChart(chart, data);
+                        } else {
+                            _updateChart(data, idx);
+                        }
+                        var dateTime = moment(data.summary.collectionTime).tz(yg.timezone).format(yg.formats.date.both);
+                        $(item).find('.js-last-updated').text(dateTime);
                     }
-                    var dateTime = moment(data.summary.collectionTime).tz(yg.timezone).format(yg.formats.date.both);
-                    $('.js-last-updated').text(dateTime);
+                });
+            } else {
+                if (!chart.is('.js-initialize')) {
+                    Highcharts.charts[idx].series[0].setData(null);
                 }
-            });
-        } else {
-            if (!chart.is('.js-initialize')) {
-                Highcharts.charts[0].series[0].setData(null);
             }
-        }
+            
+        });
         setTimeout(_update, _updateInterval);
         
     },
