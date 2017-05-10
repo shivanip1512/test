@@ -139,7 +139,7 @@
 <entry key="yukon.web.widgets.dataCollectionWidget">Data Collection</entry>
 <entry key="yukon.web.widgets.dataCollectionWidget.helpText"><![CDATA[
         Select a Device Group to obtain data collection information for.  Check the include disabled checkbox to include any disabled devices in the calculations.  
-        The Force button will force an update of the data collected (if data has not been collected within 15 minutes).  
+        The Force Update button will force an update of the data collected (if data has not been collected within 15 minutes).  
         The Last Updated date displays the date/time that data collection was last updated.
         <ul>
             <li><b>Available (Green):</b> Data has been received for these devices within the desired number of days.</li>
@@ -149,6 +149,7 @@
         </ul>
 ]]></entry>
 <entry key="yukon.web.widgets.dataCollectionWidget.forceUpdate.label">Force Update</entry>
+<entry key="yukon.web.widgets.dataCollectionWidget.lastUpdated">Data Last Updated</entry>
 
 
 </properties>

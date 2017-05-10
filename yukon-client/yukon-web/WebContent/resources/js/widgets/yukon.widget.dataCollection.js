@@ -12,7 +12,6 @@ yukon.widget.dataCollection = (function () {
     
     var
     _initialized = false,
-    _deviceGroup,
     /** @type {number} - The setTimeout reference for periodic updating of the pie chart. */
     _updateInterval = 4000,
     
@@ -142,7 +141,7 @@ yukon.widget.dataCollection = (function () {
             $(document).on('click', '.js-force-update', function () {
                 $.ajax(yukon.url('/amr/dataCollection/forceUpdate'));
             });
-            
+
             _initialized = true;
         }
         

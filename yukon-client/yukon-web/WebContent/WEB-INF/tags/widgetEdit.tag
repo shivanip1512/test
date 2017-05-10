@@ -19,6 +19,7 @@
                 <jsp:param name="parameterName" value="${parameter.name}"/>
                 <jsp:param name="parameterKey" value="${parameter.key}"/>
                 <jsp:param name="path" value="${path}"/>
+                <jsp:param name="parameterValue" value="${widget.parameters[parameter.name]}"/>
             </jsp:include>
             <br/>
     </c:forEach>

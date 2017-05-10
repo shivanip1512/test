@@ -32,8 +32,13 @@ yukon.dashboards.edit = (function () {
                 
                 if (input.is('[name]')) {
                     name = input.attr('name');
-                    var widget = name.split('.')[0];
-                    input.attr('name', name.replace(widget, path + '[' + idx + ']'));
+                    if (name.indexOf('column') > -1) {
+                        //if name contains dashboard remove it - these were newly added widgets
+                        name = name.replace('dashboard.', '');
+                        var widget = name.split('.')[0];
+                        input.attr('name', name.replace(widget, path + '[' + idx + ']'));
+                    }
+
                 }
             });
         },

@@ -13,7 +13,7 @@
 
  <tags:nameValueContainer2>
     <tags:nameValue2 nameKey="${param.parameterKey}">
-        <cti:list var="group"><cti:item value="${dashboard.column1Widgets[0].parameters['deviceGroup']}"/></cti:list>
+        <cti:list var="group"><cti:item value="${param.parameterValue}"/></cti:list>
         <tags:deviceGroupPicker inputName="${param.path}.parameters['${param.parameterName}']" inputValue="${group}"/>
     </tags:nameValue2>
 </tags:nameValueContainer2>
