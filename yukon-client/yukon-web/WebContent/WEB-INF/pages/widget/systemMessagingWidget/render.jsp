@@ -3,7 +3,7 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:msgScope paths="modules.support.systemMessaging">
+<cti:msgScope paths="modules.support.systemHealth">
     <div id="systemMessagingTable">
         <c:if test="${not empty extendedQueueData}">
             <table class="compact-results-table stacked-md">

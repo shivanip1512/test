@@ -11,7 +11,7 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
  */
 public class QueueData implements SystemHealthMetric {
     
-    private static final String keyBase = "yukon.web.modules.support.systemMessaging.metric.";
+    private static final String keyBase = "yukon.web.modules.support.systemHealth.metric.";
     private static final DecimalFormat df = new DecimalFormat("##,###.## ms");
     
     private SystemHealthMetricIdentifier metricIdentifier;

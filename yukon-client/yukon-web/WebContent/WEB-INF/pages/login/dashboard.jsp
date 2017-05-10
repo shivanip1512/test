@@ -62,7 +62,7 @@
     
     <c:if test="${showSystemHealth}">
         <div class="column one nogutter">
-        <cti:msgScope paths="modules.support.systemMessaging">
+        <cti:msgScope paths="modules.support.systemHealth">
             <tags:sectionContainer2 nameKey="serverBrokerStatistics">
                 <c:if test="${not empty extendedQueueData}">
                     <table class="compact-results-table stacked-md">

@@ -80,6 +80,6 @@ public enum SystemHealthMetricIdentifier implements DisplayableEnum {
 
     @Override
     public String getFormatKey() {
-        return "yukon.web.modules.support.systemMessaging.metric." + keySuffix;
+        return "yukon.web.modules.support.systemHealth.metric." + keySuffix;
     }
 }

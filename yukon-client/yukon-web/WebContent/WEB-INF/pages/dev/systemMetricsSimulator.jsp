@@ -11,7 +11,7 @@
         <tags:checkbox path="active" descriptionNameKey=".active"/><br/><br/>
         <c:forEach items="${metricSimulatorValues.metricValues}" var="metrics">
             <div class="stacked-lg">
-                <h3><i:inline key="yukon.web.modules.support.systemMessaging.metric.${metrics.key.keySuffix}"/></h3>
+                <h3><i:inline key="yukon.web.modules.support.systemHealth.metric.${metrics.key.keySuffix}"/></h3>
                 <tags:nameValueContainer2>
                     <c:forEach items="${metrics.value}" var="metricValues" varStatus="status">
                         <tags:nameValue2 nameKey=".metrics.${metricValues.key}">

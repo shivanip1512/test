@@ -292,10 +292,10 @@
     <entry key="yukon.web.menu.tools.manageIndex">Manage Indexes</entry>
     
     <!-- systemHealth.jsp -->
-    <entry key="yukon.web.modules.support.systemMessaging.pageName">System Health</entry>
+    <entry key="yukon.web.modules.support.systemHealth.pageName">System Health</entry>
     
-    <entry key="yukon.web.modules.support.systemMessaging.serverBrokerStatistics.title">Inter-Service Messaging Statistics</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.serverBrokerStatistics.helpText">
+    <entry key="yukon.web.modules.support.systemHealth.serverBrokerStatistics.title">Inter-Service Messaging Statistics</entry>
+    <entry key="yukon.web.modules.support.systemHealth.serverBrokerStatistics.helpText">
         <![CDATA[
             <h3>Queues</h3>
             Queues handle messages between Service Manager and Network Manager that contain information for device creation, device editing, or data archival.
@@ -320,62 +320,62 @@
             </ul>
         ]]>
     </entry>
-    <entry key="yukon.web.modules.support.systemMessaging.widgetRedirect">Visit the <![CDATA[<a href="/yukon/support/systemHealth/home">System Metrics</a>]]> page to select the metrics displayed in this view.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.archivedReadings">Archived Readings</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.processedArchiveRequests">Processed Archive Requests</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.enqueuedCount">Enqueued Count</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.dequeuedCount">Dequeued Count</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.queueSize">Queue Size</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.averageEnqueueTime">Average Enqueue Time</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.queue">Queue</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.status">Status</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.sync">Request RF Data Sync</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.sync.throttle">RF data synchronization request already in progress. Please wait at least 5 minutes between requests.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.sync.success">RF data synchronization request initiated.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.widgetRedirect">Visit the <![CDATA[<a href="/yukon/support/systemHealth/home">System Metrics</a>]]> page to select the metrics displayed in this view.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.archivedReadings">Archived Readings</entry>
+    <entry key="yukon.web.modules.support.systemHealth.processedArchiveRequests">Processed Archive Requests</entry>
+    <entry key="yukon.web.modules.support.systemHealth.enqueuedCount">Enqueued Count</entry>
+    <entry key="yukon.web.modules.support.systemHealth.dequeuedCount">Dequeued Count</entry>
+    <entry key="yukon.web.modules.support.systemHealth.queueSize">Queue Size</entry>
+    <entry key="yukon.web.modules.support.systemHealth.averageEnqueueTime">Average Enqueue Time</entry>
+    <entry key="yukon.web.modules.support.systemHealth.queue">Queue</entry>
+    <entry key="yukon.web.modules.support.systemHealth.status">Status</entry>
+    <entry key="yukon.web.modules.support.systemHealth.sync">Request RF Data Sync</entry>
+    <entry key="yukon.web.modules.support.systemHealth.sync.throttle">RF data synchronization request already in progress. Please wait at least 5 minutes between requests.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.sync.success">RF data synchronization request initiated.</entry>
 
-    <entry key="yukon.web.modules.support.systemMessaging.metric.meterReads">RFN Meter Archive Request</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.metric.lcrReads">RFN LCR Archive Request</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.metric.gatewayArchive">Gateway Archive Request</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.metric.rfDa">RF DA Archive Request</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.metric.gatewayDataRequest">Gateway Data Request</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.metric.gatewayData">Gateway Data Response</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.meterReads">RFN Meter Archive Request</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.lcrReads">RFN LCR Archive Request</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.gatewayArchive">Gateway Archive Request</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.rfDa">RF DA Archive Request</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.gatewayDataRequest">Gateway Data Request</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.gatewayData">Gateway Data Response</entry>
     
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.default">No warnings have been raised for this metric.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.meterQueueSize.warn">The number of meter reading archive requests in the queue is more than 50% of the total number of meters in the system.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.meterQueueSize.error">The number of meter reading archive requests in the queue exceeds the total number of meters in the system.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.meterQueueSize.description">Queue Size: Compares number of queued meter reading archive requests to total number of meters in the system. Warn when there are 50% as many messages as meters. Error when there are more messages than meters.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.lcrQueueSize.warn">The number of LCR reading archive requests in the queue is more than 50% of the total number of LCRs in the system.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.lcrQueueSize.error">The number of LCR reading archive requests in the queue exceeds the total number of LCRs in the system.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.lcrQueueSize.description">Queue Size: Compares number of queued LCR reading archive requests to total number of LCRs in the system. Warn when there are 50% as many messages as LCRs. Error when there are more messages than LCRs.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.rfDaQueueSize.warn">The number of RF DA archive requests in the queue is more than 50% of the total number of RF DA devices in the system.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.rfDaQueueSize.error">The number of RF DA archive requests in the queue exceeds the total number of RF DA devices in the system.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.rfDaQueueSize.description">Queue Size: Compares number of queued RF DA archive requests to total number of RF DA devices in the system. Warn when there are 50% as many messages as devices. Error when there are more messages than devices.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.gatewayQueueSize.warn">The number of gateway data responses in the queue is more than 50% of the total number of gateways in the system.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.gatewayQueueSize.error">The number of gateway data responses in the queue exceeds the total number of gateways in the system.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.gatewayQueueSize.description">Queue Size: Compares number of queued gateway data responses to total number of gateways in the system. Warn when there are 50% as many messages as gateways. Error when there are more messages than gateways.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.gatewayRequestQueueSize.warn">The number of gateway data requests in the queue is more than 50% of the total number of gateways in the system.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.gatewayRequestQueueSize.error">The number of gateway data requests in the queue exceeds the total number of gateways in the system.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.gatewayRequestQueueSize.description">Queue Size: Compares number of queued gateway data requests to total number of gateways in the system. Warn when there are 50% as many messages as gateways. Error when there are more messages than gateways.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.gatewayArchiveQueueSize.warn">There are multiple gateway archive requests in the queue. Typically, there should be few of these requests, and they should be processed quickly.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.criteria.gatewayArchiveQueueSize.description">Queue Size: Evaluates number of queued gateway archive requests. Warn when the queue contains more than one message.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.default">No warnings have been raised for this metric.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.meterQueueSize.warn">The number of meter reading archive requests in the queue is more than 50% of the total number of meters in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.meterQueueSize.error">The number of meter reading archive requests in the queue exceeds the total number of meters in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.meterQueueSize.description">Queue Size: Compares number of queued meter reading archive requests to total number of meters in the system. Warn when there are 50% as many messages as meters. Error when there are more messages than meters.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.lcrQueueSize.warn">The number of LCR reading archive requests in the queue is more than 50% of the total number of LCRs in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.lcrQueueSize.error">The number of LCR reading archive requests in the queue exceeds the total number of LCRs in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.lcrQueueSize.description">Queue Size: Compares number of queued LCR reading archive requests to total number of LCRs in the system. Warn when there are 50% as many messages as LCRs. Error when there are more messages than LCRs.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.rfDaQueueSize.warn">The number of RF DA archive requests in the queue is more than 50% of the total number of RF DA devices in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.rfDaQueueSize.error">The number of RF DA archive requests in the queue exceeds the total number of RF DA devices in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.rfDaQueueSize.description">Queue Size: Compares number of queued RF DA archive requests to total number of RF DA devices in the system. Warn when there are 50% as many messages as devices. Error when there are more messages than devices.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayQueueSize.warn">The number of gateway data responses in the queue is more than 50% of the total number of gateways in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayQueueSize.error">The number of gateway data responses in the queue exceeds the total number of gateways in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayQueueSize.description">Queue Size: Compares number of queued gateway data responses to total number of gateways in the system. Warn when there are 50% as many messages as gateways. Error when there are more messages than gateways.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayRequestQueueSize.warn">The number of gateway data requests in the queue is more than 50% of the total number of gateways in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayRequestQueueSize.error">The number of gateway data requests in the queue exceeds the total number of gateways in the system.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayRequestQueueSize.description">Queue Size: Compares number of queued gateway data requests to total number of gateways in the system. Warn when there are 50% as many messages as gateways. Error when there are more messages than gateways.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayArchiveQueueSize.warn">There are multiple gateway archive requests in the queue. Typically, there should be few of these requests, and they should be processed quickly.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.criteria.gatewayArchiveQueueSize.description">Queue Size: Evaluates number of queued gateway archive requests. Warn when the queue contains more than one message.</entry>
     
-    <entry key="yukon.web.modules.support.systemMessaging.favMetricButton.hoverText">Favorite this metric to display it on your Yukon dashboard.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.unfavMetricButton.hoverText">Un-favorite this metric to remove it from your Yukon dashboard.</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.favoriteError">Error saving favorite settings.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.favMetricButton.hoverText">Favorite this metric to display it on your Yukon dashboard.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.unfavMetricButton.hoverText">Un-favorite this metric to remove it from your Yukon dashboard.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.favoriteError">Error saving favorite settings.</entry>
     
-    <entry key="yukon.web.modules.support.systemMessaging.metric.status.UNKNOWN">Unknown</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.metric.status.GOOD">Good</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.metric.status.WARN">Warning</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.metric.status.ERROR">Error</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.status.UNKNOWN">Unknown</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.status.GOOD">Good</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.status.WARN">Warning</entry>
+    <entry key="yukon.web.modules.support.systemHealth.metric.status.ERROR">Error</entry>
     
     <!-- system health detail.jsp -->
-    <entry key="yukon.web.modules.support.systemMessaging.detail.pageName">{0}</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.detail.pageDescription">{0}</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.detail.pageTitle">Metric Detail</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.detail.metricInfo.title">Metric Info</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.detail.status.title">Status</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.detail.moreStatusInfo">(More Information)</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.detail.moreStatusInfo.title">Status Information</entry>
-    <entry key="yukon.web.modules.support.systemMessaging.detail.moreStatusInfo.text">The following indicators are evaluated periodically to determine the status of this metric.</entry>
+    <entry key="yukon.web.modules.support.systemHealth.detail.pageName">{0}</entry>
+    <entry key="yukon.web.modules.support.systemHealth.detail.pageDescription">{0}</entry>
+    <entry key="yukon.web.modules.support.systemHealth.detail.pageTitle">Metric Detail</entry>
+    <entry key="yukon.web.modules.support.systemHealth.detail.metricInfo.title">Metric Info</entry>
+    <entry key="yukon.web.modules.support.systemHealth.detail.status.title">Status</entry>
+    <entry key="yukon.web.modules.support.systemHealth.detail.moreStatusInfo">(More Information)</entry>
+    <entry key="yukon.web.modules.support.systemHealth.detail.moreStatusInfo.title">Status Information</entry>
+    <entry key="yukon.web.modules.support.systemHealth.detail.moreStatusInfo.text">The following indicators are evaluated periodically to determine the status of this metric.</entry>
     
 </properties>
