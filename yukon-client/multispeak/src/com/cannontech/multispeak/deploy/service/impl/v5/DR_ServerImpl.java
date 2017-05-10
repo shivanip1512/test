@@ -49,6 +49,7 @@ public class DR_ServerImpl implements DR_Server {
     @Override
     public List<SubstationLoadControlStatus> getAllSubstationLoadControlStatuses() throws MultispeakWebServiceException {
         init();
+        multispeakFuncs.authenticateMsgHeader();
         return multispeakLMService.getActiveLoadControlStatus();
     }
 
