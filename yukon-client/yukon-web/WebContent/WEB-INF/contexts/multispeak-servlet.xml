@@ -41,35 +41,69 @@
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
+                <prop key="/CD_CBSoap.wsdl">cd_cbsoap</prop>
+                <prop key="/MR_CBSoap.wsdl">mr_cbsoap</prop>
+                <prop key="/MR_EASoap.wsdl">mr_easoap</prop>
+                <prop key="/OD_OASoap.wsdl">od_oasoap</prop>
                 <prop key="/CB_ServerSoap.wsdl">cb_server</prop>
                 <prop key="/CD_ServerSoap.wsdl">cd_server</prop>
                 <prop key="/EA_ServerSoap.wsdl">ea_server</prop>
                 <prop key="/LM_ServerSoap.wsdl">lm_server</prop>
+                <prop key="/MDM_ServerSaop.wsdl">mdm_server</prop>
                 <prop key="/MR_ServerSoap.wsdl">mr_server</prop>
                 <prop key="/OA_ServerSoap.wsdl">oa_server</prop>
                 <prop key="/OD_ServerSoap.wsdl">od_server</prop>
-                <prop key="/OD_ServerSoap_v5.wsdl">od_server_v5</prop>
-                <prop key="/MDM_ServerSaop.wsdl">mdm_server</prop>
                 <prop key="/SCADA_ServerSoap.wsdl">scada_server</prop>
-                <prop key="/SCADA_ServerSoap_v5.wsdl">scada_server_v5</prop>
-                <prop key="/CD_CBSoap.wsdl">cd_cbsoap</prop>
-                <prop key="/OD_OASoap.wsdl">od_oasoap</prop>
-                <prop key="/MR_CBSoap.wsdl">mr_cbsoap</prop>
-                <prop key="/MR_EASoap.wsdl">mr_easoap</prop>
-                <prop key="/DR_ServerSoap.wsdl">dr_server</prop>
-                <prop key="/NOT_ServerSoap.wsdl">not_server</prop>
-                <prop key="/NOT_ServerSoap.wsdl">mr_server_v5</prop>
+                <prop key="/v3/CB_Server.wsdl">cb_server</prop>
+                <prop key="/v3/CD_Server.wsdl">cd_server</prop>
+                <prop key="/v3/EA_Server.wsdl">ea_server</prop>
+                <prop key="/v3/LM_Server.wsdl">lm_server</prop>
+                <prop key="/v3/MDM_Server.wsdl">mdm_server</prop>
+                <prop key="/v3/MR_Server.wsdl">mr_server</prop>
+                <prop key="/v3/OA_Server.wsdl">oa_server</prop>
+                <prop key="/v3/OD_Server.wsdl">od_server</prop>
+                <prop key="/v3/SCADA_Server.wsdl">scada_server</prop>
+                <prop key="/v5/CB_Server.wsdl">cb_server_v5</prop>
+                <prop key="/v5/CD_Server.wsdl">cd_server_v5</prop>
+                <prop key="/v5/DR_Server.wsdl">dr_server_v5</prop>
+                <prop key="/v5/EA_Server.wsdl">ea_server_v5</prop>
+                <prop key="/v5/MDM_Server.wsdl">mdm_server_v5</prop>
+                <prop key="/v5/MR_Server.wsdl">mr_server_v5</prop>
+                <prop key="/v5/NOT_Server.wsdl">not_server_v5</prop>
+                <prop key="/v5/OA_Server.wsdl">oa_server_v5</prop>
+                <prop key="/v5/OD_Server.wsdl">od_server_v5</prop>
+                <prop key="/v5/SCADA_Server.wsdl">scada_server_v5</prop>
             </props>
         </property>
         <property name="defaultHandler" ref="messageDispatcher"/>
     </bean>
     
     <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
-       
+    
     <sws:interceptors>
         <bean class="org.springframework.ws.soap.server.endpoint.interceptor.SoapEnvelopeLoggingInterceptor"/>
     </sws:interceptors>
-
+    
+    <bean id="cd_cbsoap"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/2B_CD_CB.wsdl" />
+    </bean> 
+    
+    <bean id="mr_cbsoap"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/2A_MR_CB.wsdl" />
+    </bean>
+    
+    <bean id="mr_easoap"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/4_MR_EA.wsdl" />
+    </bean>
+    
+    <bean id="od_oasoap"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/5_OD_OA.wsdl" />
+    </bean> 
+    
     <bean id="cb_server"
         class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
         <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/CB_Server.wsdl" />
@@ -90,19 +124,9 @@
         <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/LM_Server.wsdl" />
     </bean> 
     
-    <bean id="dr_server"
+    <bean id="mdm_server"
         class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
-        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/DR_Server.wsdl" />
-    </bean>
-    
-    <bean id="not_server"
-        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
-        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/NOT_Server.wsdl" />
-    </bean>
-    
-    <bean id="mr_server_v5"
-        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
-        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/MR_Server.wsdl" />
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/MDM_Server.wsdl" />
     </bean>
     
     <bean id="mr_server"
@@ -120,44 +144,59 @@
         <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/OD_Server.wsdl" />
     </bean> 
     
-    <bean id="od_server_v5"
-        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
-        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/OD_Server.wsdl" />
-    </bean>
-    
-    <bean id="mdm_server"
-        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
-        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/MDM_Server.wsdl" />
-    </bean> 
-    
      <bean id="scada_server"
         class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
         <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/SCADA_Server.wsdl" />
     </bean>
     
+    <bean id="cb_server_v5"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/CB_Server.wsdl" />
+    </bean>
+    
+    <bean id="cd_server_v5"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/CD_Server.wsdl" />
+    </bean>
+    
+    <bean id="dr_server_v5"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/DR_Server.wsdl" />
+    </bean>
+    
+    <bean id="ea_server_v5"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/EA_Server.wsdl" />
+    </bean>
+    
+    <bean id="mdm_server_v5"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/MDM_Server.wsdl" />
+    </bean>
+    
+    <bean id="mr_server_v5"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/MR_Server.wsdl" />
+    </bean>
+    
+    <bean id="not_server_v5"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/NOT_Server.wsdl" />
+    </bean>
+    
+    <bean id="oa_server_v5"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/OA_Server.wsdl" />
+    </bean>
+    
+    <bean id="od_server_v5"
+        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
+        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/OD_Server.wsdl" />
+    </bean>
+    
     <bean id="scada_server_v5"
         class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
         <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/v5/SCADA_Server.wsdl" />
-    </bean>
-    
-    <bean id="cd_cbsoap"
-        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
-        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/2B_CD_CB.wsdl" />
-    </bean> 
-    
-    <bean id="od_oasoap"
-        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
-        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/5_OD_OA.wsdl" />
-    </bean> 
-    
-    <bean id="mr_cbsoap"
-        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
-        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/2A_MR_CB.wsdl" />
-    </bean>
-    
-    <bean id="mr_easoap"
-        class="org.springframework.ws.wsdl.wsdl11.SimpleWsdl11Definition">
-        <constructor-arg value="classpath:com/cannontech/multispeak/wsdl/4_MR_EA.wsdl" />
     </bean>
     
     <!-- Exception Handling -->
