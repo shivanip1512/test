@@ -7,7 +7,6 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.cbc.cache.CapControlCache;
@@ -33,7 +32,6 @@ import com.cannontech.web.capcontrol.service.FeederService;
 import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.cannontech.yukon.IDatabaseCache;
 
-@Service
 public class FeederServiceImpl implements FeederService {
 
     @Autowired private CapControlCache ccCache;

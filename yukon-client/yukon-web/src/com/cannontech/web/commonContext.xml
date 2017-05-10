@@ -350,4 +350,11 @@
         
     <bean name="dashboardUsersPicker" class="com.cannontech.web.picker.DashboardUsersPicker"/>
     
+    <bean class="com.cannontech.web.capcontrol.service.impl.CapBankServiceImpl"/>
+    <bean class="com.cannontech.web.capcontrol.service.impl.StrategyServiceImpl"/>
+    <bean class="com.cannontech.capcontrol.dao.impl.StrategyDaoImpl"/>
+    <bean class="com.cannontech.web.capcontrol.service.impl.BusServiceImpl"/>
+    <bean class="com.cannontech.web.capcontrol.service.impl.FeederServiceImpl"/>
+    <bean class="com.cannontech.web.capcontrol.util.service.impl.CapControlWebUtilsServiceImpl"/>
+    
 </beans>

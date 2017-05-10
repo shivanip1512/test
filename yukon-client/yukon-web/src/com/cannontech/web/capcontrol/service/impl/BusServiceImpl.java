@@ -7,7 +7,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
@@ -33,7 +32,6 @@ import com.cannontech.web.capcontrol.service.BusService;
 import com.cannontech.web.capcontrol.util.service.CapControlWebUtilsService;
 import com.cannontech.yukon.IDatabaseCache;
 
-@Service
 public class BusServiceImpl implements BusService {
 
     @Autowired private CapControlCache ccCache;

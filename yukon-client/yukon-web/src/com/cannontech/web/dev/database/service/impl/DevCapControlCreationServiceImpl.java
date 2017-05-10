@@ -2,38 +2,59 @@ package com.cannontech.web.dev.database.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
 import com.cannontech.capcontrol.ControlMethod;
+import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.creation.service.CapControlCreationService;
 import com.cannontech.capcontrol.dao.CapbankControllerDao;
 import com.cannontech.capcontrol.dao.CapbankDao;
 import com.cannontech.capcontrol.dao.FeederDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
 import com.cannontech.capcontrol.dao.SubstationDao;
+import com.cannontech.capcontrol.model.Regulator;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneGang;
+import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
+import com.cannontech.common.device.config.dao.InvalidDeviceTypeException;
 import com.cannontech.common.device.config.model.DeviceConfiguration;
 import com.cannontech.common.model.Phase;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.definition.model.PointTemplate;
+import com.cannontech.common.pao.model.CompleteDevice;
+import com.cannontech.common.pao.model.CompleteYukonPao;
+import com.cannontech.common.pao.service.PaoPersistenceService;
+import com.cannontech.common.pao.service.PointCreationService;
 import com.cannontech.core.dao.SeasonScheduleDao;
+import com.cannontech.database.TransactionType;
 import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.capcontrol.CapControlFeeder;
+import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointArchiveType;
+import com.cannontech.database.data.point.PointBase;
+import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.database.db.point.PointUnit;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.database.model.Season;
 import com.cannontech.development.model.DevCommChannel;
 import com.cannontech.development.model.DevPaoType;
 import com.cannontech.development.service.impl.DevObjectCreationBase;
+import com.cannontech.web.capcontrol.service.BusService;
 import com.cannontech.web.capcontrol.service.CapBankService;
+import com.cannontech.web.capcontrol.service.FeederService;
 import com.cannontech.web.capcontrol.service.StrategyService;
 import com.cannontech.web.dev.database.objects.DevCapControl;
 import com.cannontech.web.dev.database.service.DevCapControlCreationService;
@@ -52,6 +73,11 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     @Autowired private StrategyService strategyService;
     @Autowired private SeasonScheduleDao seasonScheduleDao;
     @Autowired private CapBankService capbankService;
+    @Autowired private BusService busService;
+    @Autowired private PointCreationService pointCreationService;
+    @Autowired private PaoPersistenceService paoPersistenceService;
+    @Autowired private FeederService feederService;
+    @Autowired private VoltageRegulatorService voltageRegulatorService;
 
     private static final ReentrantLock _lock = new ReentrantLock();
     private static int complete;
@@ -94,10 +120,17 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
             for (int subIndex = 0; subIndex < devCapControl.getNumSubs(); subIndex++) { // Substations
                 
                 PaoIdentifier substationPao = createSubstation(devCapControl, areaIndex, areaPao , subIndex);
-                               
+                
+                CompleteYukonPao substationPointHolder =  new CompleteDevice();
+                substationPointHolder.setPaoName("Sim RTU "  + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex));
+                paoPersistenceService.createPaoWithDefaultPoints(substationPointHolder, PaoType.VIRTUAL_SYSTEM);
+                        
+                int simRtuPointOffset = 1;
+                
                 for (int subBusIndex = 0; subBusIndex < devCapControl.getNumSubBuses(); subBusIndex++) { // Substations Buses
                     
                     PaoIdentifier subBusPao =  createAndAssignSubstationBus(devCapControl, areaIndex, subIndex, substationPao , subBusIndex, strategyId);
+                    attachPointsToSubBus(simRtuPointOffset, subBusPao, substationPointHolder.getPaoIdentifier());
                     
                     Integer parentZoneId = null;
                     double graphPosition = 0;
@@ -106,6 +139,8 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
                     for (int feederIndex = 0; feederIndex < devCapControl.getNumFeeders(); feederIndex++) { // Feeders
                         List<ZoneAssignmentCapBankRow> bankAssignments = new ArrayList<>();
                         PaoIdentifier feederPao = createAndAssignFeeder(devCapControl, areaIndex, subIndex, subBusIndex, subBusPao, feederIndex);
+                        attachPointsToFeeder(simRtuPointOffset, feederPao, substationPointHolder.getPaoIdentifier());
+                        
                         double zonePosition = graphPosition;
                         graphPosition += graphPositionOffset;
                         for (int capBankIndex = 0; capBankIndex < devCapControl.getNumCapBanks(); capBankIndex++) { // CapBanks & CBCs
@@ -116,6 +151,8 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
                         }
                         
                         PaoIdentifier regulatorPao = createRegulatorForSubBus(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex);
+                        attachPointsToRegulator(simRtuPointOffset, regulatorPao, substationPointHolder.getPaoIdentifier());
+                        
                         // The first time through the zone is the parent (no parent zone ID), each time after its parent is the previous zone.
                         parentZoneId = createAndAssignZone(devCapControl, areaIndex, subIndex, subBusPao, subBusIndex, regulatorPao.getPaoId(), bankAssignments, parentZoneId, zonePosition);
                     }
@@ -129,6 +166,96 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         for (int regIndex = 0; regIndex < devCapControl.getNumRegulators(); regIndex++) { // Additional Regulators
             createRegulators(devCapControl, regIndex);
         }
+    }
+
+    private void attachPointsToSubBus(int pointOffset, PaoIdentifier subBusPao, PaoIdentifier rtuPao) {
+        CapControlSubBus capControlSubBus = busService.get(subBusPao.getPaoId());
+        
+        PointBase voltLoadPoint = createAnalogPoint(capControlSubBus.getName() + " Volt Point", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
+        PointBase kwPoint = createAnalogPoint(capControlSubBus.getName() + " kWatt Point", UnitOfMeasure.KW, pointOffset++, rtuPao);
+        PointBase kvarPoint = createAnalogPoint(capControlSubBus.getName() + " kVar Point", UnitOfMeasure.KVAR, pointOffset++, rtuPao);
+
+        capControlSubBus.getCapControlSubstationBus().setCurrentVoltLoadPointID(voltLoadPoint.getPoint().getPointID());
+        capControlSubBus.getCapControlSubstationBus().setCurrentWattLoadPointID(kwPoint.getPoint().getPointID());
+        capControlSubBus.getCapControlSubstationBus().setCurrentVarLoadPointID(kvarPoint.getPoint().getPointID());
+        
+        PointBase busDisablePoint = createStatusPoint(capControlSubBus.getName() + " Bus Disabled", StateGroupUtils.STATEGROUP_TRUEFALSE, 500, subBusPao);
+        
+        capControlSubBus.getCapControlSubstationBus().setDisableBusPointId(busDisablePoint.getPoint().getPointID());
+
+        busService.save(capControlSubBus);
+    }
+    
+    private void attachPointsToFeeder(int pointOffset, PaoIdentifier feederBusPao, PaoIdentifier rtuPao) {
+        CapControlFeeder capControlFeeder = feederService.get(feederBusPao.getPaoId());
+        
+        PointBase voltLoadPoint = createAnalogPoint(capControlFeeder.getName() + " Volt Point", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
+        PointBase kwPoint = createAnalogPoint(capControlFeeder.getName() + " kWatt Point", UnitOfMeasure.KW, pointOffset++, rtuPao);
+        PointBase kvarPoint = createAnalogPoint(capControlFeeder.getName() + " kVar Point", UnitOfMeasure.KVAR, pointOffset++, rtuPao);
+
+        capControlFeeder.getCapControlFeeder().setCurrentVoltLoadPointID(voltLoadPoint.getPoint().getPointID());
+        capControlFeeder.getCapControlFeeder().setCurrentWattLoadPointID(kwPoint.getPoint().getPointID());
+        capControlFeeder.getCapControlFeeder().setCurrentVarLoadPointID(kvarPoint.getPoint().getPointID());
+
+        feederService.save(capControlFeeder);
+    }
+    
+    private void attachPointsToRegulator(int pointOffset, PaoIdentifier regulatorPao, PaoIdentifier rtuPao) {
+        Regulator regulator = voltageRegulatorService.getRegulatorById(regulatorPao.getPaoId());
+        
+        
+        PointBase autoRemoteControl = createStatusPoint(regulator.getName() + "-Auto Remote Control", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
+        PointBase autoBlockEnable = createStatusPoint(regulator.getName() + "-Auto Block Enable", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
+        PointBase tapUp = createStatusPoint(regulator.getName() + "-Tap Up", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
+        PointBase tapDown = createStatusPoint(regulator.getName() + "-Tap Down", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
+        PointBase terminate = createStatusPoint(regulator.getName() + "-Terminate", StateGroupUtils.STATEGROUPID_CAPBANK, pointOffset++, rtuPao);
+        
+        PointBase tapPosition = createAnalogPoint(regulator.getName() + "-Tap Position", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
+        PointBase voltageX = createAnalogPoint(regulator.getName() + "-Voltage X", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
+        PointBase voltageY = createAnalogPoint(regulator.getName() + "-Voltage Y", UnitOfMeasure.VOLTS, pointOffset++, rtuPao);
+        PointBase keepAlive = createAnalogPoint(regulator.getName() + "-Keep Alive", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
+        PointBase forwardSetPoint = createAnalogPoint(regulator.getName() + "-Forward Set Point", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
+        PointBase forwardBandwidth = createAnalogPoint(regulator.getName() + "-Forward Bandwidth", UnitOfMeasure.COUNTS, pointOffset++, rtuPao);
+        
+        Map<RegulatorPointMapping, Integer> mappings = new ImmutableMap.Builder<RegulatorPointMapping, Integer>()
+        .put(RegulatorPointMapping.AUTO_REMOTE_CONTROL, autoRemoteControl.getPoint().getPointID())
+        .put(RegulatorPointMapping.AUTO_BLOCK_ENABLE, autoBlockEnable.getPoint().getPointID())
+        .put(RegulatorPointMapping.TAP_UP, tapUp.getPoint().getPointID())
+        .put(RegulatorPointMapping.TAP_DOWN, tapDown.getPoint().getPointID())
+        .put(RegulatorPointMapping.TAP_POSITION, tapPosition.getPoint().getPointID())
+        .put(RegulatorPointMapping.TERMINATE, terminate.getPoint().getPointID())
+        .put(RegulatorPointMapping.VOLTAGE_X, voltageX.getPoint().getPointID())
+        .put(RegulatorPointMapping.VOLTAGE_Y, voltageY.getPoint().getPointID())
+        .put(RegulatorPointMapping.KEEP_ALIVE, keepAlive.getPoint().getPointID())
+        .put(RegulatorPointMapping.FORWARD_SET_POINT, forwardSetPoint.getPoint().getPointID())
+        .put(RegulatorPointMapping.FORWARD_BANDWIDTH, forwardBandwidth.getPoint().getPointID())
+        .build();
+        
+        regulator.setMappings(mappings);
+        
+        try {
+            voltageRegulatorService.save(regulator);
+        } catch (InvalidDeviceTypeException e) {
+            log.warn("caught exception in attachPointsToRegulator", e);
+        }
+    }
+    
+    private PointBase createAnalogPoint(String name, UnitOfMeasure unitOfMeasure, int pointOffset, PaoIdentifier pao) {
+        PointTemplate pointTemplate = new PointTemplate(name, PointType.Analog, pointOffset, 1, unitOfMeasure.getId(), StateGroupUtils.STATEGROUP_ANALOG, PointUnit.DEFAULT_DECIMAL_PLACES);
+        pointTemplate.setPointArchiveType(PointArchiveType.ON_CHANGE);
+        PointBase point = pointCreationService.createPoint(pao, pointTemplate );
+        dbPersistentDao.performDBChange(point, TransactionType.INSERT);
+        
+        return point;
+    }
+    
+    private PointBase createStatusPoint(String name, int stateGroup, int pointOffset, PaoIdentifier pao) {
+        PointTemplate pointTemplate = new PointTemplate(name, PointType.Status, pointOffset, 1, 1, stateGroup, PointUnit.DEFAULT_DECIMAL_PLACES);
+        pointTemplate.setPointArchiveType(PointArchiveType.ON_CHANGE);
+        PointBase point = pointCreationService.createPoint(pao, pointTemplate );
+        dbPersistentDao.performDBChange(point, TransactionType.INSERT);
+        
+        return point;
     }
 
     // This takes all unassigned points on the bank (CBC Points) and attaches them to the bank
