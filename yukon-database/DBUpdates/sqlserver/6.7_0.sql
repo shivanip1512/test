@@ -646,6 +646,10 @@ END;
 /* @end-block */
 /* End YUK-16593 */
 
+/* Start YUK-16614 */
+INSERT INTO YukonRoleProperty VALUES(-20021,-200,'Manage Dashboards','false','Controls access to manage all user defined dashboards.');
+/* End YUK-16614 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
