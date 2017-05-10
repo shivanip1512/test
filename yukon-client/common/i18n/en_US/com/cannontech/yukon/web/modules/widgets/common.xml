@@ -148,7 +148,6 @@
             <li><b>Unavailable (Gray):</b> Data has not been received for these devices for over 14 days.</li>
         </ul>
 ]]></entry>
-<entry key="yukon.web.widgets.dataCollectionWidget.includeDisabled">Include Disabled</entry>
 <entry key="yukon.web.widgets.dataCollectionWidget.forceUpdate.label">Force Update</entry>
 
 

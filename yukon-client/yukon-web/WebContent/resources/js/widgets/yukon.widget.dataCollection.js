@@ -105,7 +105,7 @@ yukon.widget.dataCollection = (function () {
             chart = $('.js-pie-chart');
         if (deviceGroup) {
             $.ajax({
-                url: yukon.url('/widget/dataCollectionWidget/updateChart'),
+                url: yukon.url('/amr/dataCollection/updateChart'),
                 data: {
                     deviceGroup: deviceGroup,
                     includeDisabled: includeDisabled
@@ -140,7 +140,7 @@ yukon.widget.dataCollection = (function () {
             _update();
             
             $(document).on('click', '.js-force-update', function () {
-                $.ajax(yukon.url('/widget/dataCollectionWidget/forceUpdate'));
+                $.ajax(yukon.url('/amr/dataCollection/forceUpdate'));
             });
             
             _initialized = true;
