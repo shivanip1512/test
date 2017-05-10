@@ -13,12 +13,12 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.type.InputOption;
 
 @Component
-public class HeartbeatModeInput implements DeviceConfigurationInputEnumeration {
+public class RegulatorHeartbeatModeInput implements DeviceConfigurationInputEnumeration {
 
-    private static final String baseKey = "yukon.web.modules.tools.configs.enum.heartbeatMode.";
+    private static final String baseKey = "yukon.web.modules.tools.configs.enum.regulatorHeartbeatMode.";
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
 
-    public enum HeartbeatMode implements DisplayableEnum {
+    public enum RegulatorHeartbeatMode implements DisplayableEnum {
         NONE,
         INCREMENT,
         COUNTDOWN
@@ -36,7 +36,7 @@ public class HeartbeatModeInput implements DeviceConfigurationInputEnumeration {
 
         List<InputOption> modes = new ArrayList<>();
 
-        for (HeartbeatMode mode : HeartbeatMode.values()) {
+        for (RegulatorHeartbeatMode mode : RegulatorHeartbeatMode.values()) {
             modes.add( new InputOption( mode.name(), messageAccessor.getMessage(mode)));
         }
         return modes;
@@ -44,7 +44,7 @@ public class HeartbeatModeInput implements DeviceConfigurationInputEnumeration {
 
     @Override
     public String getEnumOptionName() {
-        return "HeartbeatMode";
+        return "RegulatorHeartbeatMode";
     }
 
     @Override

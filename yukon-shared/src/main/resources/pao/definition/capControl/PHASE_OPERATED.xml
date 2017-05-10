@@ -5,7 +5,7 @@
         <tag name="VOLTAGE_REGULATOR"/>
     </tags>
     <configuration>
-        <category type="heartbeat"/>
+        <category type="regulatorHeartbeat"/>
         <category type="regulatorCategory"/>
     </configuration>
 </pao>

@@ -150,22 +150,42 @@ yukon.deviceConfig = (function () {
             ]
         },
         {
-            keyHolder: 'heartbeatMode',
+            keyHolder: 'regulatorHeartbeatMode',
             valueHideMap : [
                 {
                     value : 'NONE',
-                    hide : ['heartbeatPeriod', 'heartbeatValue'],
+                    hide : ['regulatorHeartbeatPeriod', 'regulatorHeartbeatValue'],
                     show : []
                 },
                 {
                     value : 'INCREMENT',
-                    hide : ['heartbeatValue'],
-                    show : ['heartbeatPeriod']
+                    hide : ['regulatorHeartbeatValue'],
+                    show : ['regulatorHeartbeatPeriod']
                 },
                 {
                     value : 'COUNTDOWN',
                     hide : [],
-                    show : ['heartbeatValue', 'heartbeatPeriod']
+                    show : ['regulatorHeartbeatValue', 'regulatorHeartbeatPeriod']
+                },
+            ]
+        },
+        {
+            keyHolder: 'cbcHeartbeatMode',
+            valueHideMap : [
+                {
+                    value : 'DISABLED',
+                    hide : ['cbcHeartbeatPeriod', 'cbcHeartbeatValue'],
+                    show : []
+                },
+                {
+                    value : 'ANALOG',
+                    hide : [],
+                    show : ['cbcHeartbeatValue', 'cbcHeartbeatPeriod']
+                },
+                {
+                    value : 'PULSED',
+                    hide : [],
+                    show : ['cbcHeartbeatValue', 'cbcHeartbeatPeriod']
                 },
             ]
         },

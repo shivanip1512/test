@@ -123,10 +123,10 @@ struct phase_operated_voltage_regulator_fixture_core
         regulator->setPaoType( VoltageRegulator::PhaseOperatedVoltageRegulator );
 
         fixtureConfig->insertValue( "voltageChangePerTap", "0.75" );
-        fixtureConfig->insertValue( "heartbeatPeriod",     "0" );
-        fixtureConfig->insertValue( "heartbeatValue",      "0" );
+        fixtureConfig->insertValue( "regulatorHeartbeatPeriod",     "0" );
+        fixtureConfig->insertValue( "regulatorHeartbeatValue",      "0" );
 
-        fixtureConfig->insertValue( "heartbeatMode",       "INCREMENT" );
+        fixtureConfig->insertValue( "regulatorHeartbeatMode",       "INCREMENT" );
     }
 };
 

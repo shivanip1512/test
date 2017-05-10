@@ -10,6 +10,7 @@
     </tags>
     <configuration>
         <category type="dnp"/>
+        <category type="cbcHeartbeat" />
     </configuration>
     <pointInfos>
         <pointInfo name="Capacitor Bank State" init="true" attributes="CONTROL_POINT"/>

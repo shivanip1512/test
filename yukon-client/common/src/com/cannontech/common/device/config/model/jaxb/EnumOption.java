@@ -39,12 +39,13 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;enumeration value="RecordingInterval"/>
  *     &lt;enumeration value="ReportingInterval"/>
  *     &lt;enumeration value="VoltageControlMode"/>
- *     &lt;enumeration value="HeartbeatMode"/>
+ *     &lt;enumeration value="RegulatorHeartbeatMode"/>
  *     &lt;enumeration value="VoltageAveragingInterval"/>
  *     &lt;enumeration value="VoltageDataStreamingInterval"/>
  *     &lt;enumeration value="DnpTimeOffset"/>
  *     &lt;enumeration value="WaterRecordingInterval"/>
  *     &lt;enumeration value="WaterReportingInterval"/>
+ *     &lt;enumeration value="CBCHeartbeatMode"/>
  *   &lt;/restriction>
  * &lt;/simpleType>
  * </pre>
@@ -104,8 +105,8 @@ public enum EnumOption {
     REPORTING_INTERVAL("ReportingInterval"),
     @XmlEnumValue("VoltageControlMode")
     VOLTAGE_CONTROL_MODE("VoltageControlMode"),
-    @XmlEnumValue("HeartbeatMode")
-    HEARTBEAT_MODE("HeartbeatMode"),
+    @XmlEnumValue("RegulatorHeartbeatMode")
+    REGULATOR_HEARTBEAT_MODE("RegulatorHeartbeatMode"),
     @XmlEnumValue("VoltageAveragingInterval")
     VOLTAGE_AVERAGING_INTERVAL("VoltageAveragingInterval"),
     @XmlEnumValue("VoltageDataStreamingInterval")
@@ -115,7 +116,9 @@ public enum EnumOption {
     @XmlEnumValue("WaterRecordingInterval")
     WATER_RECORDING_INTERVAL("WaterRecordingInterval"),
     @XmlEnumValue("WaterReportingInterval")
-    WATER_REPORTING_INTERVAL("WaterReportingInterval");
+    WATER_REPORTING_INTERVAL("WaterReportingInterval"),
+    @XmlEnumValue("CBCHeartbeatMode")
+    CBC_HEARTBEAT_MODE("CBCHeartbeatMode");
     private final String value;
 
     EnumOption(String v) {

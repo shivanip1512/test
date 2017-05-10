@@ -359,9 +359,9 @@ const string RfnStrings::WaterNodeConfiguration::RecordingIntervalSeconds = "rec
 // Regulators
 const string RegulatorStrings::voltageControlMode  = "voltageControlMode";
 const string RegulatorStrings::voltageChangePerTap = "voltageChangePerTap";
-const string RegulatorStrings::heartbeatPeriod     = "heartbeatPeriod";
-const string RegulatorStrings::heartbeatValue      = "heartbeatValue";
-const string RegulatorStrings::heartbeatMode       = "heartbeatMode";
+const string RegulatorStrings::heartbeatPeriod     = "regulatorHeartbeatPeriod";
+const string RegulatorStrings::heartbeatValue      = "regulatorHeartbeatValue";
+const string RegulatorStrings::heartbeatMode       = "regulatorHeartbeatMode";
 
 const string DisplayItemValues::SLOT_DISABLED = "SLOT_DISABLED";		    //0
 const string DisplayItemValues::NO_SEGMENTS = "NO_SEGMENTS";		        //1

@@ -374,9 +374,15 @@
         <enum field="voltageControlMode" type="VoltageControlMode" />
     </category>
 
-    <category type="heartbeat">
-        <enum field="heartbeatMode" type="HeartbeatMode" />
-        <float field="heartbeatPeriod" default="0" minValue="0" />
-        <float field="heartbeatValue" default="0" minValue="0" />
+    <category type="regulatorHeartbeat">
+        <enum field="regulatorHeartbeatMode" type="RegulatorHeartbeatMode" />
+        <float field="regulatorHeartbeatPeriod" default="0" minValue="0" />
+        <float field="regulatorHeartbeatValue" default="0" minValue="0" />
+    </category>
+    
+    <category type="cbcHeartbeat">
+        <enum field="cbcHeartbeatMode" type="CBCHeartbeatMode" default="DISABLED" />
+        <float field="cbcHeartbeatPeriod" default="0" minValue="0" />
+        <float field="cbcHeartbeatValue" default="0" minValue="0" />
     </category>
 </deviceConfigurationCategories>

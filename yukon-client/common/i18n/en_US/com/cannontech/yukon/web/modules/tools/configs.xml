@@ -105,9 +105,13 @@
     <entry key="yukon.web.modules.tools.configs.enum.voltageControlMode.DIRECT_TAP">Direct Tap</entry>
     <entry key="yukon.web.modules.tools.configs.enum.voltageControlMode.SET_POINT">Set Point</entry>
 
-    <entry key="yukon.web.modules.tools.configs.enum.heartbeatMode.NONE">None</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.heartbeatMode.INCREMENT">Increment</entry>
-    <entry key="yukon.web.modules.tools.configs.enum.heartbeatMode.COUNTDOWN">Countdown</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.regulatorHeartbeatMode.NONE">None</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.regulatorHeartbeatMode.INCREMENT">Increment</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.regulatorHeartbeatMode.COUNTDOWN">Countdown</entry>
+    
+    <entry key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.DISABLED">Disabled</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.ANALOG">Analog</entry>
+    <entry key="yukon.web.modules.tools.configs.enum.cbcHeartbeatMode.PULSED">Pulsed</entry>
 
     <entry key="yukon.web.modules.tools.configs.enum.dnpTimeOffset.UTC">UTC</entry>
     <entry key="yukon.web.modules.tools.configs.enum.dnpTimeOffset.LOCAL">Local</entry>
@@ -542,13 +546,21 @@
     <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.voltageChangePerTap">Volt Change Per Tap</entry>
     <entry key="yukon.web.modules.tools.configs.category.regulatorCategory.voltageControlMode">Control Mode</entry>
 
-    <entry key="yukon.web.modules.tools.configs.category.heartbeat.title">Regulator Heartbeat</entry>
-    <entry key="yukon.web.modules.tools.configs.category.heartbeat.definition">Heartbeat control parameters for Regulators</entry>
-    <entry key="yukon.web.modules.tools.configs.category.heartbeat.heartbeatMode">Heartbeat Mode</entry>
-    <entry key="yukon.web.modules.tools.configs.category.heartbeat.heartbeatPeriod">Heartbeat Period</entry>
-    <entry key="yukon.web.modules.tools.configs.category.heartbeat.heartbeatPeriod.description">The frequency (in seconds) to send the heartbeat message</entry>
-    <entry key="yukon.web.modules.tools.configs.category.heartbeat.heartbeatValue">Heartbeat Value</entry>
-    <entry key="yukon.web.modules.tools.configs.category.heartbeat.heartbeatValue.description">The value to send to the device for its heartbeat countdown</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorHeartbeat.title">Regulator Heartbeat</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorHeartbeat.definition">Heartbeat control parameters for Regulators</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorHeartbeat.regulatorHeartbeatMode">Heartbeat Mode</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorHeartbeat.regulatorHeartbeatPeriod">Heartbeat Period</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorHeartbeat.regulatorHeartbeatPeriod.description">The frequency (in seconds) to send the heartbeat message</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorHeartbeat.regulatorHeartbeatValue">Heartbeat Value</entry>
+    <entry key="yukon.web.modules.tools.configs.category.regulatorHeartbeat.regulatorHeartbeatValue.description">The value to send to the device for its heartbeat countdown</entry>
+
+    <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.title">CBC Heartbeat</entry>
+    <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.definition">Heartbeat control parameters for CBCs</entry>
+    <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatMode">Heartbeat Mode</entry>
+    <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatPeriod">Heartbeat Period</entry>
+    <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatPeriod.description">The frequency (in seconds) to send the heartbeat message</entry>
+    <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue">Heartbeat Value</entry>
+    <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue.description">The value to send to the device for its heartbeat countdown</entry>
 
     <!-- general entries -->
     <entry key="yukon.web.modules.tools.configs.errorsExist">Errors exist in the submitted form. Please correct the problem(s) and submit again.</entry>
