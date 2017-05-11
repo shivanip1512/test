@@ -21,7 +21,8 @@ public enum RfnMetadata implements Serializable {
     PRIMARY_NEIGHBOR_DATA_TIMESTAMP(Long.class), // Current Neighbor Data Timestamp
     PRIMARY_NEIGHBOR_LINK_COST(String.class), // Link Cost to Primary Neighbor
     PRODUCT_NUMBER(String.class), // Product Number
-    SUB_MODULE_FIRMWARE_VERSION(String.class); // Zigbee Firmware Version
+    SUB_MODULE_FIRMWARE_VERSION(String.class), // Zigbee Firmware Version
+    NUM_ASSOCIATIONS(Integer.class); // Number of associations
     
     private final Class<?> parseType;
     

@@ -9,6 +9,15 @@ public class Radio implements Serializable {
     private RadioType type;
     private String macAddress;
     private long timestamp; // The moment NM discovered radio on gateway
+    private String version;
+    
+    public String getVersion(){
+        return version;
+    }
+    
+    public void setVersion(String version){
+        this.version = version;
+    }
     
     public RadioType getType() {
         return type;
@@ -42,6 +51,8 @@ public class Radio implements Serializable {
                 + ((macAddress == null) ? 0 : macAddress.hashCode());
         result = prime * result + (int) (timestamp ^ (timestamp >>> 32));
         result = prime * result + ((type == null) ? 0 : type.hashCode());
+        result = prime * result
+            + ((version == null) ? 0 : version.hashCode());
         return result;
     }
 
@@ -63,12 +74,18 @@ public class Radio implements Serializable {
             return false;
         if (type != other.type)
             return false;
+        if (version == null) {
+            if (other.version != null)
+                return false;
+        } else if (!version.equals(other.version))
+            return false;
+        
         return true;
     }
 
     @Override
     public String toString() {
-        return String.format("Radio [type=%s, macAddress=%s, timestamp=%s]", type, macAddress, timestamp);
+        return String.format("Radio [type=%s, macAddress=%s, timestamp=%s, version=%s]", type, macAddress, timestamp,version);
     }
     
 }

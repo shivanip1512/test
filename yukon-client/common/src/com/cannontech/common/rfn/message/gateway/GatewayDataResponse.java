@@ -44,7 +44,14 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     
     //Data Streaming Information
     private double maxDataStreamingCapacity;
-    private double currentDataStreamingLoading;
+    private double currentDataStreamingLoading;  
+    private int gwTotalNodes;
+    private int gwTotalReadyNodes;
+    private int gwTotalNotReadyNodes;
+    private int gwTotalNodesWithSN;
+    private int gwTotalNodesWithInfo;
+    private int gwTotalNodesNoInfo;
+
 
     @Override
     public RfnIdentifier getRfnIdentifier() {
@@ -54,6 +61,55 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     public void setRfnIdentifier(RfnIdentifier rfnIdentifier) {
         this.rfnIdentifier = rfnIdentifier;
     }
+    
+    public int getGwTotalNodes() {
+        return gwTotalNodes;
+    }
+    
+    public void setGwTotalNodes(int gwTotalNodes) {
+        this.gwTotalNodes = gwTotalNodes;
+    }
+    
+    public int getGwTotalReadyNodes() {
+        return gwTotalReadyNodes;
+    }
+    
+    public void setGwTotalReadyNodes(int gwTotalReadyNodes) {
+        this.gwTotalReadyNodes = gwTotalReadyNodes;
+    }
+
+    public int getGwTotalNotReadyNodes() {
+        return gwTotalNotReadyNodes;
+    }
+    
+    public void setGwTotalNotReadyNodes(int gwTotalNotReadyNodes) {
+        this.gwTotalNotReadyNodes = gwTotalNotReadyNodes;
+    }
+ 
+    public int getGwTotalNodesWithSN() {
+        return gwTotalNodesWithSN;
+    }
+    
+    public void setGwTotalNodesWithSN(int gwTotalNodesWithSN) {
+        this.gwTotalNodesWithSN = gwTotalNodesWithSN;
+    }
+    
+    public int getGwTotalNodesWithInfo() {
+        return gwTotalNodesWithInfo;
+    }
+    
+    public void setGwTotalNodesWithInfo(int gwTotalNodesWithInfo) {
+        this.gwTotalNodesWithInfo = gwTotalNodesWithInfo;
+    }
+
+    public int getGwTotalNodesNoInfo() {
+        return gwTotalNodesNoInfo;
+    }
+    
+    public void setGwTotalNodesNoInfo(int gwTotalNodesNoInfo) {
+        this.gwTotalNodesNoInfo = gwTotalNodesNoInfo;
+    }
+
     
     public String getHardwareVersion() {
         return hardwareVersion;
@@ -270,6 +326,12 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         result = prime * result + ((updateServerUrl == null) ? 0 : updateServerUrl.hashCode());
         result = prime * result + ((upperStackVersion == null) ? 0 : upperStackVersion.hashCode());
         result = prime * result + ((versionConflicts == null) ? 0 : versionConflicts.hashCode());
+        result = prime * result + gwTotalNodes;
+        result = prime * result + gwTotalReadyNodes;
+        result = prime * result + gwTotalNotReadyNodes;
+        result = prime * result + gwTotalNodesWithSN;
+        result = prime * result + gwTotalNodesWithInfo;
+        result = prime * result + gwTotalNodesNoInfo;        
         return result;
     }
 
@@ -423,22 +485,53 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
         } else if (!versionConflicts.equals(other.versionConflicts)) {
             return false;
         }
+
+        if (gwTotalNodes != other.gwTotalNodes) {
+            return false;
+        }
+        if (gwTotalReadyNodes != other.gwTotalReadyNodes) {
+            return false;
+        }
+        if (gwTotalNotReadyNodes != other.gwTotalNotReadyNodes) {
+            return false;
+        }
+        if (gwTotalNodesWithSN != other.gwTotalNodesWithSN) {
+            return false;
+        }
+        if (gwTotalNodesWithInfo != other.gwTotalNodesWithInfo) {
+            return false;
+        }
+        if (gwTotalNodesNoInfo != other.gwTotalNodesNoInfo) {
+            return false;
+        }
+
         return true;
     }
 
     @Override
     public String toString() {
-        return "GatewayDataResponse [rfnIdentifier=" + rfnIdentifier + ", hardwareVersion=" + hardwareVersion
-               + ", softwareVersion=" + softwareVersion + ", upperStackVersion=" + upperStackVersion
-               + ", radioVersion=" + radioVersion + ", releaseVersion=" + releaseVersion + ", versionConflicts="
-               + versionConflicts + ", mode=" + mode + ", connectionType=" + connectionType + ", ipAddress="
-               + ipAddress + ", port=" + port + ", connectionStatus=" + connectionStatus + ", lastCommStatus="
-               + lastCommStatus + ", lastCommStatusTimestamp=" + lastCommStatusTimestamp + ", radios=" + radios
-               + ", routeColor=" + routeColor + ", superAdmin=" + superAdmin + ", admin=" + admin
-               + ", collectionSchedule=" + collectionSchedule + ", sequences=" + sequences + ", updateServerUrl="
-               + updateServerUrl + ", updateServerLogin=" + updateServerLogin + ", maxGatewayDataStreamingCapacity="
-               + maxDataStreamingCapacity + ", currentGatewayDataStreamingLoading="
-               + currentDataStreamingLoading + "]";
+        return "GatewayDataResponse [rfnIdentifier=" + rfnIdentifier
+            + ", hardwareVersion=" + hardwareVersion + ", softwareVersion="
+            + softwareVersion + ", upperStackVersion=" + upperStackVersion
+            + ", radioVersion=" + radioVersion + ", releaseVersion="
+            + releaseVersion + ", versionConflicts=" + versionConflicts
+            + ", mode=" + mode + ", connectionType=" + connectionType
+            + ", ipAddress=" + ipAddress + ", port=" + port
+            + ", connectionStatus=" + connectionStatus + ", lastCommStatus="
+            + lastCommStatus + ", lastCommStatusTimestamp="
+            + lastCommStatusTimestamp + ", radios=" + radios + ", routeColor="
+            + routeColor + ", superAdmin=" + superAdmin + ", admin=" + admin
+            + ", collectionSchedule=" + collectionSchedule + ", sequences="
+            + sequences + ", updateServerUrl=" + updateServerUrl
+            + ", updateServerLogin=" + updateServerLogin
+            + ", maxGatewayDataStreamingCapacity=" + maxDataStreamingCapacity
+            + ", currentGatewayDataStreamingLoading="
+            + currentDataStreamingLoading + ", gwTotalNodes=" + gwTotalNodes
+            + ", gwTotalReadyNodes=" + gwTotalReadyNodes
+            + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes
+            + ", gwTotalNodesWithSN=" + gwTotalNodesWithSN
+            + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo
+            + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + "]";
     }
     
 }
