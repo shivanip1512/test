@@ -50,7 +50,6 @@ public class PointDataCollectionService implements MessageListener {
     private JmsTemplate jmsTemplate;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
     private static final Logger log = YukonLogManager.getLogger(PointDataCollectionService.class);
-    private Instant lastCollectionTime;
     private boolean collectingData = false;
 
     @PostConstruct
@@ -70,9 +69,7 @@ public class PointDataCollectionService implements MessageListener {
             ObjectMessage objMessage = (ObjectMessage) message;
             try {
                 if (objMessage.getObject() instanceof CollectionRequest) {
-                    if (now().isAfter(lastCollectionTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION))) {
-                        collect();
-                    }
+                    collect();
                 }
             } catch (Exception e) {
                 log.error("Unable to process message", e);
@@ -88,46 +85,46 @@ public class PointDataCollectionService implements MessageListener {
             log.debug("Data collection already running.");
             return;
         }
-        try {
-            collectingData = true;
-            this.lastCollectionTime = new Instant();
-            List<LiteYukonPAObject> devices = databaseCache.getAllYukonPAObjects();
-            log.debug("Starting data collection for " + devices.size() + " devices.");
+        Instant lastCollectionTime = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.DATA_COLLECTION_TIME);
+        if (lastCollectionTime == null || now().isAfter(lastCollectionTime.plus(MINUTES_TO_WAIT_BEFORE_NEXT_COLLECTION))) {
+            try {
+                collectingData = true;
+                List<LiteYukonPAObject> devices = databaseCache.getAllYukonPAObjects();
+                log.debug("Starting data collection for " + devices.size() + " devices.");
 
-            List<LiteYukonPAObject> meters = new ArrayList<>();
-            List<LiteYukonPAObject> waterMeters = new ArrayList<>();
-            List<LiteYukonPAObject> lcrs = new ArrayList<>();
+                List<LiteYukonPAObject> meters = new ArrayList<>();
+                List<LiteYukonPAObject> waterMeters = new ArrayList<>();
+                List<LiteYukonPAObject> lcrs = new ArrayList<>();
 
-            devices.forEach(device -> {
-                if (device.getPaoType().isWaterMeter()) {
-                    waterMeters.add(device);
-                } else if (device.getPaoType().isMeter()) {
-                    meters.add(device);
-                } else if (device.getPaoType() == PaoType.LCR6200_RFN || device.getPaoType() == PaoType.LCR6600_RFN
-                    || device.getPaoType() == PaoType.LCR3102) {
-                    lcrs.add(device);
+                devices.forEach(device -> {
+                    if (device.getPaoType().isWaterMeter()) {
+                        waterMeters.add(device);
+                    } else if (device.getPaoType().isMeter()) {
+                        meters.add(device);
+                    } else if (device.getPaoType() == PaoType.LCR6200_RFN || device.getPaoType() == PaoType.LCR6600_RFN
+                        || device.getPaoType() == PaoType.LCR3102) {
+                        lcrs.add(device);
+                    }
+                });
+                Long lastChangeId = persistedSystemValueDao.getLongValue(PersistedSystemValueKey.DATA_COLLECTION_LAST_CHANGE_ID);
+                Long maxChangeId = rphDao.getMaxChangeId();
+                ReadableRange<Long> changeIdRange = Range.inclusive(lastChangeId, maxChangeId);
+                Map<PaoIdentifier, PointValueQualityHolder> recentValues = new HashMap<>();
+                addRecentValues(recentValues, waterMeters, BuiltInAttribute.USAGE_WATER, changeIdRange);
+                addRecentValues(recentValues, meters, BuiltInAttribute.USAGE, changeIdRange);
+                addRecentValues(recentValues, lcrs, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, changeIdRange);
+
+                log.debug("Got " + recentValues.size() + " rows of new data from RPH");
+                if (!recentValues.isEmpty()) {
+                    // recentPointValueDao.collectData(recentValues);
+                    persistedSystemValueDao.setValue(PersistedSystemValueKey.DATA_COLLECTION_LAST_CHANGE_ID,
+                        changeIdRange.getMax());
+                    jmsTemplate.convertAndSend(recalculationQueueName, new RecalculationRequest());
                 }
-            });
-            Long lastChangeId =
-                persistedSystemValueDao.getLongValue(PersistedSystemValueKey.DATA_COLLECTION_LAST_CHANGE_ID);
-            Long maxChangeId = rphDao.getMaxChangeId();
-            ReadableRange<Long> changeIdRange = Range.inclusive(lastChangeId, maxChangeId);
-            Map<PaoIdentifier, PointValueQualityHolder> recentValues = new HashMap<>();
-            addRecentValues(recentValues, waterMeters, BuiltInAttribute.USAGE_WATER, changeIdRange);
-            addRecentValues(recentValues, meters, BuiltInAttribute.USAGE, changeIdRange);
-            addRecentValues(recentValues, lcrs, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, changeIdRange);
-
-            log.debug("Got " + recentValues.size() + " rows of data from RPH");
-            if (!devices.isEmpty()) {
-               // recentPointValueDao.collectData(recentValues);
-
-                // send message to web server to start the data collection widget values recalculation
-                jmsTemplate.convertAndSend(recalculationQueueName, new RecalculationRequest(lastCollectionTime));
-                persistedSystemValueDao.setValue(PersistedSystemValueKey.DATA_COLLECTION_LAST_CHANGE_ID,
-                    changeIdRange.getMax());
+            } finally {
+                persistedSystemValueDao.setValue(PersistedSystemValueKey.DATA_COLLECTION_TIME, new Instant());
+                collectingData = false;
             }
-        } finally {
-            collectingData = false;
         }
     }
 

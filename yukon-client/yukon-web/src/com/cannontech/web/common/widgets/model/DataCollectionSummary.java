@@ -2,7 +2,10 @@ package com.cannontech.web.common.widgets.model;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 public class DataCollectionSummary {
 
@@ -68,10 +71,16 @@ public class DataCollectionSummary {
     @Override
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        if (collectionTime != null) {
+            final DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
+            String time = collectionTime.toString(df.withZone(DateTimeZone.getDefault()));
+            tsb.append("collection time=" + time);
+        }
         tsb.append("available="+ available);
         tsb.append("expected="+ expected);
         tsb.append("outdated="+ outdated);
         tsb.append("unavailable="+ unavailable);
+
         return tsb.toString();
     }
 }

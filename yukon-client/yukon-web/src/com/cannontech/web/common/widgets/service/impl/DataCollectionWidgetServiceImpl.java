@@ -33,6 +33,8 @@ import com.cannontech.common.device.data.collection.message.RecalculationRequest
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.Range;
+import com.cannontech.core.dao.PersistedSystemValueDao;
+import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.web.common.widgets.model.DataCollectionSummary;
 import com.cannontech.web.common.widgets.service.DataCollectionWidgetService;
 import com.google.common.collect.Lists;
@@ -46,12 +48,12 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
 
     @Autowired private RecentPointValueDao rpvDao;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     private JmsTemplate jmsTemplate;
     private static final String collectionQueueName = "yukon.qr.obj.data.collection.CollectionRequest";
     private static final Logger log = YukonLogManager.getLogger(DataCollectionWidgetServiceImpl.class);
     private Map<DeviceGroup, DataCollectionSummary> enabledDeviceSummary = new ConcurrentHashMap<>();
     private Map<DeviceGroup, DataCollectionSummary> allDeviceSummary = new ConcurrentHashMap<>();
-    private Instant lastCollectionTime;
     private boolean calculating = false;
 
     @Override
@@ -62,7 +64,12 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
         } else {
             summary = enabledDeviceSummary.get(group);
         }
-        return summary == null && !calculating ? recalculate(group, includeDisabled, getRanges()) : summary;
+        if (summary == null) {
+            //first time device group was added to widget or server restarted.
+            Instant lastCollectionTime = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.DATA_COLLECTION_TIME);
+            summary = recalculate(group, includeDisabled, getRanges(), lastCollectionTime);
+        }
+        return summary;
     }
 
     @Override
@@ -77,19 +84,11 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
             try {
                 if (objMessage.getObject() instanceof RecalculationRequest) {
                     // Received message from SM to start recalculation
-                    if (calculating) {
-                        log.debug("Recalculation already running.");
-                        return;
-                    }
-                    calculating = true;
-                    RecalculationRequest request = (RecalculationRequest) objMessage.getObject();
-                    lastCollectionTime = request.getCollectionTime();
                     recalculate();
                 }
             } catch (Exception e) {
                 log.error("Unable to process message", e);
             }
-            calculating = false;
         }
     }
 
@@ -97,20 +96,30 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
      * Recalculates summaries for all cached groups.
      */
     private void recalculate() {
-        Map<RangeType, Range<Instant>> ranges = getRanges();
-        enabledDeviceSummary.keySet().forEach(key -> {
-            enabledDeviceSummary.put(key, recalculate(key, false, ranges));
-        });
-        allDeviceSummary.keySet().forEach(key -> {
-            allDeviceSummary.put(key, recalculate(key, true, ranges));
-        });
+        if (calculating) {
+            log.debug("Recalculation already running.");
+            return;
+        }
+        try {
+            calculating = true;
+            Instant lastCollectionTime = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.DATA_COLLECTION_TIME);
+            Map<RangeType, Range<Instant>> ranges = getRanges();
+            enabledDeviceSummary.keySet().forEach(key -> {
+                enabledDeviceSummary.put(key, recalculate(key, false, ranges, lastCollectionTime));
+            });
+            allDeviceSummary.keySet().forEach(key -> {
+                allDeviceSummary.put(key, recalculate(key, true, ranges, lastCollectionTime));
+            });
+        } finally {
+            calculating = false;
+        }
     }
 
     /**
      * Creates and caches data collection summary.
      */
     private DataCollectionSummary recalculate(DeviceGroup group, boolean includeDisabled,
-            Map<RangeType, Range<Instant>> ranges) {
+            Map<RangeType, Range<Instant>> ranges, Instant lastCollectionTime) {
         DataCollectionSummary summary = new DataCollectionSummary(lastCollectionTime);
         summary.setAvailable(rpvDao.getDeviceCount(group, includeDisabled, ranges.get(RangeType.AVAILABLE)));
         summary.setExpected(rpvDao.getDeviceCount(group, includeDisabled, ranges.get(RangeType.EXPECTED)));
@@ -180,8 +189,7 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
         List<DeviceCollectionDetail> details = new ArrayList<>();
         Arrays.asList(ranges).forEach(type -> {
             Range<Instant> timeRange = allRanges.get(type);
-            List<DeviceCollectionDetail> detail =
-                rpvDao.getDeviceCollectionResult(group1, group2, includeDisabled, timeRange);
+            List<DeviceCollectionDetail> detail = rpvDao.getDeviceCollectionResult(group1, group2, includeDisabled, timeRange);
             log.debug("For date range " + getLogString(timeRange, type) + " got " + detail.size() + " results.");
             details.addAll(detail);
         });

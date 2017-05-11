@@ -11,6 +11,7 @@ public enum PersistedSystemValueKey {
     MSP_BILLING_CYCLE_DEVICE_GROUP_SYNC_LAST_COMPLETED(null, new InstantType()),
     CMEP_BILLING_FILE_LAST_CHANGE_ID(1, InputTypeFactory.longType()),
     DATA_COLLECTION_LAST_CHANGE_ID(-1, InputTypeFactory.longType()),
+    DATA_COLLECTION_TIME(null, new InstantType()),
     ;
     
     private final Object defaultValue;
