@@ -8,6 +8,7 @@
         <c:if test="${not empty extendedQueueData}">
             <table class="compact-results-table stacked-md">
                 <thead>
+                    <th class="vab"><i:inline key=".status"/></th>
                     <th class="vab"><i:inline key=".queue"/></th>
                     <th class="tar vab"><i:inline key=".archivedReadings"/></th>
                     <th class="tar vab"><i:inline key=".processedArchiveRequests"/></th>
@@ -15,12 +16,12 @@
                     <th class="tar vab"><i:inline key=".dequeuedCount"/></th>
                     <th class="tar vab"><i:inline key=".queueSize"/></th>
                     <th class="tar vab"><i:inline key=".averageEnqueueTime"/></th>
-                    <th class="vab"><i:inline key=".status"/></th>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
                     <c:forEach var="queue" items="${extendedQueueData}">
                         <tr>
+                            <td id="${queue.metricIdentifier}-status"><cti:icon icon="${queue.status.iconName}" title="${queue.status.allMessages}"/></td>
                             <td class="wsnw">
                                 <span title="${queue.queueName}">
                                     <cti:url var="detailUrl" value="/support/systemHealth/${queue.metricIdentifier}/detail"/>
@@ -35,7 +36,6 @@
                             <td class="tar" id="${queue.metricIdentifier}-deq">${queue.dequeuedCount}</td>
                             <td class="tar" id="${queue.metricIdentifier}-size">${queue.queueSize}</td>
                             <td class="tar" id="${queue.metricIdentifier}-avg">${queue.averageEnqueueTime}</td>
-                            <td id="${queue.metricIdentifier}-status"><cti:icon icon="${queue.status.iconName}" title="${queue.status.allMessages}"/></td>
                         </tr>
                     </c:forEach>
                 </tbody>
@@ -44,17 +44,18 @@
         <c:if test="${not empty queueData}">
             <table class="compact-results-table stacked-md">
                 <thead>
+                    <th class="vab"><i:inline key=".status"/></th>
                     <th class="vab"><i:inline key=".queue"/></th>
                     <th class="tar vab"><i:inline key=".enqueuedCount"/></th>
                     <th class="tar vab"><i:inline key=".dequeuedCount"/></th>
                     <th class="tar vab"><i:inline key=".queueSize"/></th>
                     <th class="tar vab"><i:inline key=".averageEnqueueTime"/></th>
-                    <th class="vab"><i:inline key=".status"/></th>
                 </thead>
                 <tfoot></tfoot>
                 <tbody>
                     <c:forEach var="queue" items="${queueData}">
                         <tr>
+                            <td id="${queue.metricIdentifier}-status"><cti:icon icon="${queue.status.iconName}" title="${queue.status.allMessages}"/></td>                        
                             <td class="wsnw">
                                 <span title="${queue.queueName}">
                                     <cti:url var="detailUrl" value="/support/systemHealth/${queue.metricIdentifier}/detail"/>
@@ -67,7 +68,6 @@
                             <td class="tar" id="${queue.metricIdentifier}-deq">${queue.dequeuedCount}</td>
                             <td class="tar" id="${queue.metricIdentifier}-size">${queue.queueSize}</td>
                             <td class="tar" id="${queue.metricIdentifier}-avg">${queue.averageEnqueueTime}</td>
-                            <td id="${queue.metricIdentifier}-status"><cti:icon icon="${queue.status.iconName}" title="${queue.status.allMessages}"/></td>
                         </tr>
                     </c:forEach>
                 </tbody>
