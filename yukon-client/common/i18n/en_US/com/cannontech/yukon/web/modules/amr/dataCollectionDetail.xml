@@ -4,4 +4,13 @@
     <entry key="yukon.web.modules.amr.dataCollection.detail.pageName">Data Collection Detail</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.pageDescription">Data Collection Detail</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.title">Data Collection Detail</entry>
+    
+    <entry key="yukon.web.modules.amr.dataCollection.detail.deviceName">Device Name</entry>
+    <entry key="yukon.web.modules.amr.dataCollection.detail.meterSerialNumber">Meter/Serial Number</entry>
+    <entry key="yukon.web.modules.amr.dataCollection.detail.deviceType">Device Type</entry>
+    <entry key="yukon.web.modules.amr.dataCollection.detail.address">Address</entry>
+    <entry key="yukon.web.modules.amr.dataCollection.detail.routeGateway">Route/Gateway</entry>
+    <entry key="yukon.web.modules.amr.dataCollection.detail.recentReading">Recent Reading</entry>
+    
+    
 </properties>
