@@ -119,6 +119,8 @@ void ActiveMQConnectionManager::run()
 
                 dispatchTempQueueReplies();
 
+                dispatchSessionReplies();
+
                 dispatchIncomingMessages();
             }
         }

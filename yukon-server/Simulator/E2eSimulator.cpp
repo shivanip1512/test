@@ -27,6 +27,7 @@ extern "C" {
 }
 
 #include <random>
+#include <future>
 
 using namespace Cti::Messaging::ActiveMQ;
 using namespace Cti::Messaging::Rfn;
@@ -105,8 +106,11 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
 
         auto e2eMsg = e2eMessageFactory.deserialize("com.eaton.eas.yukon.networkmanager.e2e.rfn.E2eDataRequest", payload);
 
-        if( E2eDataRequestMsg *requestMsg = dynamic_cast<E2eDataRequestMsg *>(e2eMsg.get()) )
+        if( E2eDataRequestMsg *requestMsgPtr = dynamic_cast<E2eDataRequestMsg *>(e2eMsg.get()) )
         {
+            e2eMsg.release();
+            std::unique_ptr<E2eDataRequestMsg> requestMsg { requestMsgPtr };
+
             CTILOG_INFO(dout, "Got new RfnE2eDataRequestMsg" << requestMsg->payload);
 
             if( requestMsg->payload.size() > COAP_MAX_PDU_SIZE )
@@ -131,28 +135,37 @@ void E2eSimulator::handleE2eDtRequest(const cms::Message* msg)
                 return;
             }
 
-            sendE2eDataConfirm(*requestMsg);
+            float delay = dist(rd) * gConfigParms.getValueAsDouble("SIMULATOR_RFN_NM_QUEUE_DELAY_SECONDS");
 
-            //  E2E timeout
-            if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_TIMEOUT_CHANCE") )
-            {
-                CTILOG_INFO(dout, "Not sending E2E indication for " << requestMsg->rfnIdentifier);
-                return;
-            }
+            std::async(std::launch::async,
+                [this](float delay, std::unique_ptr<E2eDataRequestMsg>&& requestMsg) {
 
-            if( auto e2edtRequest = parseE2eDtRequestPayload(requestMsg->payload, requestMsg->rfnIdentifier) )
-            {
-                e2edt_packet replyPacket;
+                    CTILOG_INFO(dout, "Delaying " << delay << " seconds");
+                    Sleep(delay * 1000);
 
-                replyPacket.id      = e2edtRequest->id;
-                replyPacket.token   = e2edtRequest->token;
-                replyPacket.payload = buildRfnResponse(e2edtRequest->payload, requestMsg->applicationServiceId, requestMsg->rfnIdentifier);
-                replyPacket.status  = COAP_RESPONSE_205_CONTENT;
+                    sendE2eDataConfirm(*requestMsg);
 
-                auto e2edtReply = buildE2eDtReplyPayload(replyPacket);
+                    //  E2E timeout
+                    if( dist(rd) < gConfigParms.getValueAsDouble("SIMULATOR_RFN_E2E_TIMEOUT_CHANCE") )
+                    {
+                        CTILOG_INFO(dout, "Not sending E2E indication for " << requestMsg->rfnIdentifier);
+                        return;
+                    }
 
-                sendE2eDataIndication(*requestMsg, e2edtReply);
-            }
+                    if( auto e2edtRequest = parseE2eDtRequestPayload(requestMsg->payload, requestMsg->rfnIdentifier) )
+                    {
+                        e2edt_packet replyPacket;
+
+                        replyPacket.id      = e2edtRequest->id;
+                        replyPacket.token   = e2edtRequest->token;
+                        replyPacket.payload = buildRfnResponse(e2edtRequest->payload, requestMsg->applicationServiceId, requestMsg->rfnIdentifier);
+                        replyPacket.status  = COAP_RESPONSE_205_CONTENT;
+
+                        auto e2edtReply = buildE2eDtReplyPayload(replyPacket);
+
+                        sendE2eDataIndication(*requestMsg, e2edtReply);
+                    }
+                }, delay, std::move(requestMsg));
         }
     }
 }

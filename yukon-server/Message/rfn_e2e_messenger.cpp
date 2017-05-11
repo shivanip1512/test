@@ -63,8 +63,8 @@ try
 
             const CtiTime Now;
 
-            handleTimeouts(Now, _awaitingAcks,     ClientErrors::NetworkManagerTimeout);
-            handleTimeouts(Now, _awaitingConfirms, ClientErrors::NetworkManagerTimeout);
+            handleTimeouts(Now, _ackTimeouts,     _awaitingAcks,     ClientErrors::NetworkManagerTimeout);
+            handleTimeouts(Now, _confirmTimeouts, _awaitingConfirms, ClientErrors::NetworkManagerTimeout);
         }
 
         WorkerThread::sleepFor(Timing::Chrono::seconds(1));
@@ -76,7 +76,7 @@ catch( WorkerThread::Interrupted &ex )
 }
 
 
-void E2eMessenger::handleTimeouts(const CtiTime Now, MessageExpirations& messageExpirations, const YukonError_t error)
+void E2eMessenger::handleTimeouts(const CtiTime Now, MessageExpirations& messageExpirations, HandlingPerMessage& messageHandling, const YukonError_t error)
 {
     const auto end = messageExpirations.upper_bound(Now);
 
@@ -86,15 +86,15 @@ void E2eMessenger::handleTimeouts(const CtiTime Now, MessageExpirations& message
         {
             const auto messageId = itr->second;
 
-            auto handlingItr = _messageHandling.find(messageId);
+            auto handlingItr = messageHandling.find(messageId);
 
-            if( handlingItr != _messageHandling.end() )
+            if( handlingItr != messageHandling.end() )
             {
                 CTILOG_DEBUG(dout, "Timeout occurred for message ID " << messageId);
 
                 handlingItr->second.timeoutCallback(error);
 
-                _messageHandling.erase(handlingItr);
+                messageHandling.erase(handlingItr);
             }
         }
 
@@ -315,15 +315,15 @@ void E2eMessenger::handleRfnE2eDataConfirmMsg(const SerializedMessage &msg)
 
             const auto messageId = confirmMsg->header->messageId;
 
-            auto itr = _messageHandling.find(messageId);
+            auto itr = _awaitingConfirms.find(messageId);
 
-            if( itr != _messageHandling.end() )
+            if( itr != _awaitingConfirms.end() )
             {
                 CTILOG_DEBUG(dout, "Confirm message received for message ID " << messageId << " with status " << yukonErrorCode << ", " << GetErrorString(yukonErrorCode));
 
                 confirmCallback = itr->second.confirmCallback;
 
-                _messageHandling.erase(itr);
+                _awaitingConfirms.erase(itr);
             }
             else
             {
@@ -438,11 +438,11 @@ void E2eMessenger::serializeAndQueue(const Request &req, const ApplicationServic
 
     const auto e2eNmTimeout = gConfigParms.getValueAsInt("E2EDT_NM_TIMEOUT", E2EDT_NM_TIMEOUT);
 
-    _awaitingAcks.emplace(
+    _ackTimeouts.emplace(
             CtiTime::now().addSeconds(e2eNmTimeout),
             msg.header.messageId);
 
-    _messageHandling.emplace(
+    _awaitingAcks.emplace(
             msg.header.messageId, 
             MessageHandling { req.expiration, successCallback, timeoutCallback });
 
@@ -524,13 +524,14 @@ void E2eMessenger::ackProcessor(const ActiveMQConnectionManager::MessageDescript
         {
             const auto messageId = reqMsg->header.messageId;
 
-            auto itr = _messageHandling.find(messageId);
+            auto itr = _awaitingAcks.find(messageId);
 
-            if( itr != _messageHandling.end() )
+            if( itr != _awaitingAcks.end() )
             {
                 CTILOG_DEBUG(dout, "Received ack for message ID " << messageId);
-                _awaitingAcks.erase(messageId);
-                _awaitingConfirms.emplace(itr->second.messageTimeout, messageId);
+                _confirmTimeouts.emplace(itr->second.messageTimeout, messageId);
+                _awaitingConfirms.emplace(*itr);
+                _awaitingAcks.erase(itr);
             }
             else
             {

@@ -119,13 +119,14 @@ private:
     using LockGuard = std::lock_guard<std::mutex>;
 
     Mutex              _expirationMux;
-    MessageExpirations _awaitingAcks;
-    MessageExpirations _awaitingConfirms;
-    HandlingPerMessage _messageHandling;
+    MessageExpirations _ackTimeouts;
+    HandlingPerMessage _awaitingAcks;
+    MessageExpirations _confirmTimeouts;
+    HandlingPerMessage _awaitingConfirms;
 
     ActiveMQConnectionManager::SessionCallback _ackProcessorHandle;
 
-    void handleTimeouts(const CtiTime Now, MessageExpirations& messageExpirations, const YukonError_t error);
+    void handleTimeouts(const CtiTime Now, MessageExpirations& messageExpirations, HandlingPerMessage& messageHandling, const YukonError_t error);
 };
 
 extern IM_EX_RFN_E2E std::unique_ptr<E2eMessenger> gE2eMessenger;
