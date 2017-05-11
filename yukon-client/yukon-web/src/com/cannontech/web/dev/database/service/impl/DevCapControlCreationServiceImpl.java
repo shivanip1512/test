@@ -1,6 +1,7 @@
 package com.cannontech.web.dev.database.service.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -25,6 +26,7 @@ import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
 import com.cannontech.capcontrol.model.ZoneGang;
+import com.cannontech.capcontrol.model.ZoneThreePhase;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.capcontrol.service.ZoneService;
 import com.cannontech.common.device.config.dao.DeviceConfigurationDao;
@@ -158,12 +160,16 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
                             assignCBCVoltagePointsToBank(capBankPao.getPaoId());
                         }
                         
-                        PaoIdentifier regulatorPao = createRegulatorForSubBus(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex);
-                        attachPointsToRegulator(simRtuPointOffset, regulatorPao, substationPointHolder.getPaoIdentifier());
+                        List<PaoIdentifier> regulatorsForZone = new ArrayList<>();
+                        for (int regulatorIndex = 0; regulatorIndex < 3; regulatorIndex++) {
+                            PaoIdentifier regulatorPao = createRegulatorForSubBus(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, regulatorIndex);
+                            attachPointsToRegulator(simRtuPointOffset, regulatorPao, substationPointHolder.getPaoIdentifier());
+                            regulatorsForZone.add(regulatorPao);
+                        }
                         
                         // The first time through the zone is the parent (no parent zone ID), each time after its parent is the previous zone.
                         double zonePosition = graphPositionOffset * feederIndex * (devCapControl.getNumCapBanks()+1); // Zones start at 0 (which includes the regulator), then are the capbanks, then another zone. The regulator adds the +1.
-                        parentZoneId = createAndAssignZone(devCapControl, areaIndex, subIndex, subBusPao, subBusIndex, regulatorPao.getPaoId(), bankAssignments, parentZoneId, zonePosition);
+                        parentZoneId = createAndAssignZone(devCapControl, areaIndex, subIndex, subBusPao, subBusIndex, regulatorsForZone, bankAssignments, parentZoneId, zonePosition);
                     }
 
                     
@@ -343,27 +349,37 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
     }
 
     private PaoIdentifier createRegulatorForSubBus(DevCapControl devCapControl, int areaIndex, int subIndex,
-                                          int subBusIndex, int feederIndex) {
-        String regName = "Sim Regulator " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex);
-        return createCapControlObject(devCapControl, PaoType.GANG_OPERATED, regName, false, 0);
+                                          int subBusIndex, int feederIndex, int regulatorIndex) {
+        String regName = "Sim Regulator " + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(feederIndex) + Integer.toString(regulatorIndex);
+        return createCapControlObject(devCapControl, PaoType.PHASE_OPERATED, regName, false, 0);
     }
 
     private Integer createAndAssignZone(DevCapControl devCapControl, int areaIndex,
                                               int subIndex, PaoIdentifier subBusPao,
-                                              int subBusIndex, int regulatorId, 
+                                              int subBusIndex, List<PaoIdentifier> regulatorsForZone, 
                                               List<ZoneAssignmentCapBankRow> bankAssignments, 
                                               Integer parentId, double zonePosition) {
         Zone createdZone = new Zone();
         createdZone.setName("Sim Zone" + devCapControl.getOffset() + "_" + Integer.toString(areaIndex) + Integer.toString(subIndex) + Integer.toString(subBusIndex) + Integer.toString(parentId == null?0:parentId));
-        RegulatorToZoneMapping regulatorToZoneMapping = new RegulatorToZoneMapping();
-        regulatorToZoneMapping.setRegulatorId(regulatorId);
-        regulatorToZoneMapping.setGraphStartPosition(1);
-        regulatorToZoneMapping.setPhase(Phase.ALL);
         createdZone.setParentId(parentId);
         
-        createdZone.setRegulators(ImmutableList.of(regulatorToZoneMapping));
+        List<RegulatorToZoneMapping> regulatorMappings = new ArrayList<>();
+        List<Phase> phases = Phase.getRealPhases();
+        for (PaoIdentifier regulator : regulatorsForZone) {
+            if(phases.isEmpty())
+                phases = Phase.getRealPhases();
+            
+            RegulatorToZoneMapping regulatorToZoneMapping = new RegulatorToZoneMapping();
+            regulatorToZoneMapping.setRegulatorId(regulator.getPaoId());
+            regulatorToZoneMapping.setGraphStartPosition(1);
+            regulatorToZoneMapping.setPhase(phases.remove(0));
+            
+            regulatorMappings.add(regulatorToZoneMapping);
+        }
         
-        ZoneGang zone = new ZoneGang(createdZone);
+        createdZone.setRegulators(regulatorMappings );
+        
+        ZoneThreePhase zone = new ZoneThreePhase(createdZone);
         zone.setSubstationBusId(subBusPao.getPaoId());
         zone.setBankAssignments(bankAssignments);
         zone.setGraphStartPosition(zonePosition);
