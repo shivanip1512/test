@@ -649,6 +649,60 @@ END;
 INSERT INTO YukonRoleProperty VALUES(-20021,-200,'Manage Dashboards','false','Controls access to manage all user defined dashboards.');
 /* End YUK-16614 */
 
+/* Start YUK-16434 */
+CREATE TABLE Dashboard  (
+   DashboardId          NUMBER                          NOT NULL,
+   Name                 VARCHAR2(100)                   NOT NULL,
+   Description          VARCHAR2(500),
+   OwnerId              NUMBER,
+   Visibility           VARCHAR2(20)                    NOT NULL,
+   CONSTRAINT PK_Dashboard PRIMARY KEY (DashboardId)
+);
+
+CREATE TABLE UserDashboard  (
+   UserId               NUMBER                          NOT NULL,
+   DashboardId          NUMBER                          NOT NULL,
+   PageAssignment       VARCHAR2(50)                    NOT NULL,
+   CONSTRAINT PK_UserDashboard PRIMARY KEY (UserId, DashboardId)
+);
+
+CREATE TABLE Widget  (
+   WidgetId             NUMBER                          NOT NULL,
+   WidgetType           VARCHAR2(50)                    NOT NULL,
+   DashboardId          NUMBER                          NOT NULL,
+   Ordering             NUMBER                          NOT NULL,
+   CONSTRAINT PK_Widget PRIMARY KEY (WidgetId)
+);
+
+CREATE TABLE WidgetSettings  (
+   SettingId            NUMBER                          NOT NULL,
+   WidgetId             NUMBER                          NOT NULL,
+   Name                 VARCHAR2(50)                    NOT NULL,
+   Value                VARCHAR2(500)                   NOT NULL,
+   CONSTRAINT PK_WidgetSettings PRIMARY KEY (SettingId)
+);
+
+ALTER TABLE UserDashboard
+   ADD CONSTRAINT FK_UserDashboard_Dashboard FOREIGN KEY (DashboardId)
+      REFERENCES Dashboard (DashboardId)
+      ON DELETE CASCADE;
+
+ALTER TABLE UserDashboard
+   ADD CONSTRAINT FK_UserDashboard_YukonUser FOREIGN KEY (UserId)
+      REFERENCES YukonUser (UserID)
+      ON DELETE CASCADE;
+
+ALTER TABLE Widget
+   ADD CONSTRAINT FK_Widget_Dashboard FOREIGN KEY (DashboardId)
+      REFERENCES Dashboard (DashboardId)
+      ON DELETE CASCADE;
+
+ALTER TABLE WidgetSettings
+   ADD CONSTRAINT FK_WidgetSettings_Widget FOREIGN KEY (WidgetId)
+      REFERENCES Widget (WidgetId)
+      ON DELETE CASCADE;
+/* End YUK-16434 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

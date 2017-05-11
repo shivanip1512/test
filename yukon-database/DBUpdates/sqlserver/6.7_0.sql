@@ -650,6 +650,62 @@ END;
 INSERT INTO YukonRoleProperty VALUES(-20021,-200,'Manage Dashboards','false','Controls access to manage all user defined dashboards.');
 /* End YUK-16614 */
 
+/* Start YUK-16434 */
+CREATE TABLE Dashboard (
+   DashboardId          NUMERIC              NOT NULL,
+   Name                 VARCHAR(100)         NOT NULL,
+   Description          VARCHAR(500)         NULL,
+   OwnerId              NUMERIC              NULL,
+   Visibility           VARCHAR(20)          NOT NULL,
+   CONSTRAINT PK_Dashboard PRIMARY KEY (DashboardId)
+);
+
+CREATE TABLE UserDashboard (
+   UserId               NUMERIC              NOT NULL,
+   DashboardId          NUMERIC              NOT NULL,
+   PageAssignment       VARCHAR(50)          NOT NULL,
+   CONSTRAINT PK_UserDashboard PRIMARY KEY (UserId, DashboardId)
+);
+
+CREATE TABLE Widget (
+   WidgetId             NUMERIC              NOT NULL,
+   WidgetType           VARCHAR(50)          NOT NULL,
+   DashboardId          NUMERIC              NOT NULL,
+   Ordering             NUMERIC              NOT NULL,
+   CONSTRAINT PK_Widget PRIMARY KEY (WidgetId)
+);
+
+CREATE TABLE WidgetSettings (
+   SettingId            NUMERIC              NOT NULL,
+   WidgetId             NUMERIC              NOT NULL,
+   Name                 VARCHAR(50)          NOT NULL,
+   Value                VARCHAR(500)         NOT NULL,
+   CONSTRAINT PK_WidgetSettings PRIMARY KEY (SettingId)
+);
+GO
+
+ALTER TABLE UserDashboard
+   ADD CONSTRAINT FK_UserDashboard_Dashboard FOREIGN KEY (DashboardId)
+      REFERENCES Dashboard (DashboardId)
+         ON DELETE CASCADE;
+
+ALTER TABLE UserDashboard
+   ADD CONSTRAINT FK_UserDashboard_YukonUser FOREIGN KEY (UserId)
+      REFERENCES YukonUser (UserID)
+         ON DELETE CASCADE;
+
+ALTER TABLE Widget
+   ADD CONSTRAINT FK_Widget_Dashboard FOREIGN KEY (DashboardId)
+      REFERENCES Dashboard (DashboardId)
+         ON DELETE CASCADE;
+
+ALTER TABLE WidgetSettings
+   ADD CONSTRAINT FK_WidgetSettings_Widget FOREIGN KEY (WidgetId)
+      REFERENCES Widget (WidgetId)
+         ON DELETE CASCADE;
+GO
+/* End YUK-16434 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

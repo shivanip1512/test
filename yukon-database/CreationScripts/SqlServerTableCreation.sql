@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/9/2017 2:30:27 PM                          */
+/* Created on:     5/10/2017 4:26:32 PM                         */
 /*==============================================================*/
 
 
@@ -2868,6 +2868,19 @@ create table DYNAMICPOINTDISPATCH (
    NEXTARCHIVE          datetime             not null,
    millis               smallint             not null,
    constraint PK_DYNAMICPOINTDISPATCH primary key (POINTID)
+)
+go
+
+/*==============================================================*/
+/* Table: Dashboard                                             */
+/*==============================================================*/
+create table Dashboard (
+   DashboardId          numeric              not null,
+   Name                 varchar(100)         not null,
+   Description          varchar(500)         null,
+   OwnerId              numeric              null,
+   Visibility           varchar(20)          not null,
+   constraint PK_Dashboard primary key (DashboardId)
 )
 go
 
@@ -9250,6 +9263,17 @@ INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 INSERT INTO UnitMeasure VALUES ( 56,'MB', 0, 'Megabytes', '(none)');
 
 /*==============================================================*/
+/* Table: UserDashboard                                         */
+/*==============================================================*/
+create table UserDashboard (
+   UserId               numeric              not null,
+   DashboardId          numeric              not null,
+   PageAssignment       varchar(50)          not null,
+   constraint PK_UserDashboard primary key (UserId, DashboardId)
+)
+go
+
+/*==============================================================*/
 /* Table: UserGroup                                             */
 /*==============================================================*/
 create table UserGroup (
@@ -9414,6 +9438,30 @@ create table Warehouse (
    Notes                varchar(300)         null,
    EnergyCompanyID      numeric              not null,
    constraint PK_WAREHOUSE primary key (WarehouseID)
+)
+go
+
+/*==============================================================*/
+/* Table: Widget                                                */
+/*==============================================================*/
+create table Widget (
+   WidgetId             numeric              not null,
+   WidgetType           varchar(50)          not null,
+   DashboardId          numeric              not null,
+   Ordering             numeric              not null,
+   constraint PK_Widget primary key (WidgetId)
+)
+go
+
+/*==============================================================*/
+/* Table: WidgetSettings                                        */
+/*==============================================================*/
+create table WidgetSettings (
+   SettingId            numeric              not null,
+   WidgetId             numeric              not null,
+   Name                 varchar(50)          not null,
+   Value                varchar(500)         not null,
+   constraint PK_WidgetSettings primary key (SettingId)
 )
 go
 
@@ -14198,6 +14246,18 @@ alter table ThermostatEventHistory
          on delete cascade
 go
 
+alter table UserDashboard
+   add constraint FK_UserDashboard_Dashboard foreign key (DashboardId)
+      references Dashboard (DashboardId)
+         on delete cascade
+go
+
+alter table UserDashboard
+   add constraint FK_UserDashboard_YukonUser foreign key (UserId)
+      references YukonUser (UserID)
+         on delete cascade
+go
+
 alter table UserGroupToYukonGroupMapping
    add constraint FK_UserGrpYukGrpMap_UserGroup foreign key (UserGroupId)
       references UserGroup (UserGroupId)
@@ -14263,6 +14323,18 @@ go
 alter table Warehouse
    add constraint FK_WAREHOUSE_EC foreign key (EnergyCompanyID)
       references EnergyCompany (EnergyCompanyID)
+go
+
+alter table Widget
+   add constraint FK_Widget_Dashboard foreign key (DashboardId)
+      references Dashboard (DashboardId)
+         on delete cascade
+go
+
+alter table WidgetSettings
+   add constraint FK_WidgetSettings_Widget foreign key (WidgetId)
+      references Widget (WidgetId)
+         on delete cascade
 go
 
 alter table WorkOrderBase
