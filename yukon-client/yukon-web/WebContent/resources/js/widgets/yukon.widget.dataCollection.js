@@ -142,6 +142,17 @@ yukon.widget.dataCollection = (function () {
             $(document).on('click', '.js-force-update', function () {
                 $.ajax(yukon.url('/amr/dataCollection/forceUpdate'));
             });
+            
+            $(document).on('click', '.js-pie-chart', function () {
+                var widget = $(this).closest('.js-data-collection-widget'),
+                    deviceGroup = $(widget).find('input[name=groupName]').val(),
+                    includeDisabled = $(widget).find('#includeDisabled').is(":checked");
+                var data = {
+                        deviceGroup: deviceGroup,
+                        includeDisabled: includeDisabled
+                }
+                window.open(yukon.url('/amr/dataCollection/detail?' + $.param(data)));
+            });
 
             _initialized = true;
         }
