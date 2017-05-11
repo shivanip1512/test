@@ -272,6 +272,16 @@ public interface RawPointHistoryDao {
             boolean excludeDisabledPaos,
             Set<PointQuality> excludeQualities);
 
+    /**
+     * Equivalent to calling
+     * getLimitedAttributeData(displayableDevices, attribute, null, changeIdRange, 1, excludeDisabledDevices,
+     * false, true);
+     *
+     * and converting the Multimap into a Map (because there will only be one value per key).
+     */
+    Map<PaoIdentifier, PointValueQualityHolder> getSingleAttributeData(Iterable<? extends YukonPao> displayableDevices,
+            Attribute attribute, boolean excludeDisabledPaos, Set<PointQuality> excludeQualities,
+            ReadableRange<Long> changeIdRange);
 
     /**
      * This method gets values from raw point history similarly to getPointData. But, it

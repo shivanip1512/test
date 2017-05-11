@@ -203,7 +203,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
     @Override
     public List<PointValueHolder> getPointDataWithDisabledPaos(int pointId, Date startDate, Date stopDate) {
-        Range<Date> dateRange = new Range<Date>(startDate, false, stopDate, true);
+        Range<Date> dateRange = new Range<>(startDate, false, stopDate, true);
         SqlFragmentSource sql = buildSql(dateRange.translate(CtiUtilities.INSTANT_FROM_DATE),
                                          Collections.singleton(pointId),
                                          Order.FORWARD,
@@ -213,7 +213,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
     @Override
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate) {
-    	Range<Date> dateRange = new Range<Date>(startDate, false, stopDate, true);
+    	Range<Date> dateRange = new Range<>(startDate, false, stopDate, true);
         return getPointData(pointId, dateRange.translate(CtiUtilities.INSTANT_FROM_DATE), Order.FORWARD);
     }
 
@@ -294,6 +294,25 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
                 return Iterables.getOnlyElement(from);
             }
         });
+    }
+    
+    @Override
+    public Map<PaoIdentifier, PointValueQualityHolder> getSingleAttributeData(
+            Iterable<? extends YukonPao> displayableDevices, Attribute attribute, boolean excludeDisabledPaos,
+            Set<PointQuality> excludeQualities, ReadableRange<Long> changeIdRange) {
+
+        Range<Instant> range = new Range<Date>(null, false, null, false).translate(CtiUtilities.INSTANT_FROM_DATE);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedStuff =
+            getLimitedAttributeData(displayableDevices, attribute, range, changeIdRange, 1, excludeDisabledPaos,
+                Order.REVERSE, OrderBy.TIMESTAMP, excludeQualities);
+
+        return Maps.transformValues(limitedStuff.asMap(),
+            new Function<Collection<PointValueQualityHolder>, PointValueQualityHolder>() {
+                @Override
+                public PointValueQualityHolder apply(Collection<PointValueQualityHolder> from) {
+                    return Iterables.getOnlyElement(from);
+                }
+            });
     }
 
     @Override
@@ -1036,13 +1055,13 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
 
         int pointId = pvh.getId();
         Date centerDate = pvh.getPointDataTimeStamp();
-        Range<Date> dateRange = new Range<Date>(null, true, centerDate, false);
+        Range<Date> dateRange = new Range<>(null, true, centerDate, false);
 		List<PointValueHolder> precedingList = getLimitedPointData(pointId,
 				dateRange.translate(CtiUtilities.INSTANT_FROM_DATE)
 				/* Clusivity.INCLUSIVE_EXCLUSIVE */, false,
 				Order.REVERSE, 1);
 		PointValueHolder preceding = Iterables.getOnlyElement(precedingList, null);
-		dateRange = new Range<Date>(centerDate, false, null, true);
+		dateRange = new Range<>(centerDate, false, null, true);
 		List<PointValueHolder> succeedingList = getLimitedPointData(pointId,
 				dateRange.translate(CtiUtilities.INSTANT_FROM_DATE)
 				/* Clusivity.EXCLUSIVE_INCLUSIVE */, false,

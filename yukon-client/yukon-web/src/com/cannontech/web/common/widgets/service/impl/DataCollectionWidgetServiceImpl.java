@@ -31,9 +31,11 @@ import com.cannontech.common.device.data.collection.dao.model.DeviceCollectionDe
 import com.cannontech.common.device.data.collection.message.CollectionRequest;
 import com.cannontech.common.device.data.collection.message.RecalculationRequest;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.Range;
 import com.cannontech.web.common.widgets.model.DataCollectionSummary;
 import com.cannontech.web.common.widgets.service.DataCollectionWidgetService;
+import com.google.common.collect.Lists;
 
 @Service
 public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetService, MessageListener {
@@ -41,7 +43,9 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
     private static final Duration DAYS_2 = Duration.standardDays(2);
     private static final Duration DAYS_7 = Duration.standardDays(7);
     private static final Duration DAYS_14 = Duration.standardDays(14);
-    
+
+    @Autowired private RecentPointValueDao rpvDao;
+    @Autowired private DeviceGroupService deviceGroupService;
     private JmsTemplate jmsTemplate;
     private static final String collectionQueueName = "yukon.qr.obj.data.collection.CollectionRequest";
     private static final Logger log = YukonLogManager.getLogger(DataCollectionWidgetServiceImpl.class);
@@ -49,7 +53,6 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
     private Map<DeviceGroup, DataCollectionSummary> allDeviceSummary = new ConcurrentHashMap<>();
     private Instant lastCollectionTime;
     private boolean calculating = false;
-    @Autowired private RecentPointValueDao rpvDao;
 
     @Override
     public DataCollectionSummary getDataCollectionSummary(DeviceGroup group, boolean includeDisabled) {
@@ -59,8 +62,7 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
         } else {
             summary = enabledDeviceSummary.get(group);
         }
-
-        return summary == null ? recalculate(group, includeDisabled, getRanges()) : summary;
+        return summary == null && !calculating ? recalculate(group, includeDisabled, getRanges()) : summary;
     }
 
     @Override
@@ -74,6 +76,7 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
             ObjectMessage objMessage = (ObjectMessage) message;
             try {
                 if (objMessage.getObject() instanceof RecalculationRequest) {
+                    // Received message from SM to start recalculation
                     if (calculating) {
                         log.debug("Recalculation already running.");
                         return;
@@ -90,6 +93,9 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
         }
     }
 
+    /**
+     * Recalculates summaries for all cached groups.
+     */
     private void recalculate() {
         Map<RangeType, Range<Instant>> ranges = getRanges();
         enabledDeviceSummary.keySet().forEach(key -> {
@@ -100,12 +106,21 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
         });
     }
 
-    private DataCollectionSummary recalculate(DeviceGroup group, boolean includeDisabled, Map<RangeType, Range<Instant>> ranges) {
+    /**
+     * Creates and caches data collection summary.
+     */
+    private DataCollectionSummary recalculate(DeviceGroup group, boolean includeDisabled,
+            Map<RangeType, Range<Instant>> ranges) {
         DataCollectionSummary summary = new DataCollectionSummary(lastCollectionTime);
         summary.setAvailable(rpvDao.getDeviceCount(group, includeDisabled, ranges.get(RangeType.AVAILABLE)));
         summary.setExpected(rpvDao.getDeviceCount(group, includeDisabled, ranges.get(RangeType.EXPECTED)));
         summary.setOutdated(rpvDao.getDeviceCount(group, includeDisabled, ranges.get(RangeType.OUTDATED)));
         summary.setUnavailable(rpvDao.getDeviceCount(group, includeDisabled, ranges.get(RangeType.UNAVAILABLE)));
+        // devices in a group subtract devices found in RecentPointValue 
+        int devicesWithoutData = deviceGroupService.getDeviceCount(Lists.newArrayList(group))
+            - summary.getTotalDeviceCount();
+        // add devices without data to unavailable device count
+        summary.getUnavailable().setDeviceCount(summary.getUnavailable().getDeviceCount() + devicesWithoutData);
         summary.calculatePrecentages();
         log.debug(summary);
         if (includeDisabled) {
@@ -116,16 +131,22 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
         return summary;
     }
     
+    /**
+     * Creates time ranges for each range type.
+     */
     private Map<RangeType, Range<Instant>> getRanges() {
         Map<RangeType, Range<Instant>> ranges = new HashMap<>();
         Instant startOfTheDay = new Instant(new DateTime().withTimeAtStartOfDay());
         Range<Instant> currentRange = buildRange(RangeType.AVAILABLE, ranges, startOfTheDay.minus(DAYS_2), now());
         currentRange = buildRange(RangeType.EXPECTED, ranges, currentRange.getMin().minus(DAYS_7), currentRange.getMin());
         currentRange = buildRange(RangeType.OUTDATED, ranges, currentRange.getMin().minus(DAYS_14), currentRange.getMin());
-        buildRange(RangeType.UNAVAILABLE, ranges, null, currentRange.getMax());
+        buildRange(RangeType.UNAVAILABLE, ranges, null, currentRange.getMin());
         return ranges;
     }
     
+    /**
+     * Constructs range, adds it list of ranges and logs the range information.
+     */
     private Range<Instant> buildRange(RangeType type, Map<RangeType, Range<Instant>> ranges, Instant min, Instant max) {
         Range<Instant> range = new Range<>(min, true, max, false);
         ranges.put(type, range);
@@ -133,11 +154,22 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
         return range;
     }
     
+    /**
+     * Builds a string message that describes the range. Used for logging.
+     */
     private String getLogString(Range<Instant> range, RangeType type) {
         final DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
         String min = range.getMin() == null ? "" : range.getMin().toString(df.withZone(DateTimeZone.getDefault()));
         String max = range.getMax() == null ? "" : range.getMax().toString(df.withZone(DateTimeZone.getDefault()));
-        return type + " : " + min + "-" + max + " ";
+        String includesMin = " [exclusive] ";
+        String includesMax = " [exclusive] ";
+        if (range.isIncludesMinValue()) {
+            includesMin = " [inclusive] ";
+        }
+        if (range.isIncludesMaxValue()) {
+            includesMax = " [inclusive] ";
+        }
+        return type + " : " + includesMin + min + " - " + includesMax + max + " ";
     }
    
     @Override
@@ -153,6 +185,9 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
             log.debug("For date range " + getLogString(timeRange, type) + " got " + detail.size() + " results.");
             details.addAll(detail);
         });
+        List<DeviceCollectionDetail> detail = rpvDao.getDeviceCollectionResult(group1, group2, includeDisabled);
+        log.debug("No entries in RecentPointValue table for " + detail.size() + " devices.");
+        details.addAll(detail);
         return details;
     }
 

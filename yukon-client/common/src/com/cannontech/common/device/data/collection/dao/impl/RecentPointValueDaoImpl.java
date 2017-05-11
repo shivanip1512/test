@@ -7,6 +7,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
@@ -39,8 +40,41 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DeviceGroupService deviceGroupService;
+
     private static final Logger log = YukonLogManager.getLogger(RecentPointValueDaoImpl.class);
 
+    @Override
+    public List<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, DeviceGroup subGroup,
+            boolean includeDisabled) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT PAObjectId, PAOName, Type");
+        sql.append("FROM YukonPAObject");
+        SqlFragmentSource groupSqlWhereClause =
+            deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "PAObjectId");
+        sql.append("WHERE").appendFragment(groupSqlWhereClause);
+        if (subGroup != null) {
+            SqlFragmentSource subGroupSqlWhereClause =
+                deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(subGroup), "PAObjectId");
+            sql.append("AND").appendFragment(subGroupSqlWhereClause);
+        }
+        if (!includeDisabled) {
+            sql.append("AND ypo.DisableFlag").eq_k(YNBoolean.NO);
+        }
+        sql.append("AND PAObjectId NOT IN (SELECT PAObjectId FROM RecentPointValue)");
+
+        List<DeviceCollectionDetail> values = jdbcTemplate.query(sql, new YukonRowMapper<DeviceCollectionDetail>() {
+            @Override
+            public DeviceCollectionDetail mapRow(YukonResultSet rs) throws SQLException {
+                DeviceCollectionDetail detail = new DeviceCollectionDetail();
+                detail.setPaoIdentifier(rs.getPaoIdentifier("PAObjectId", "Type"));
+                detail.setDeviceName(rs.getString("PAOName"));
+                return detail;
+            }
+        });
+        return values;
+    }
+    
     @Override
     public List<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, DeviceGroup subGroup,
             boolean includeDisabled, Range<Instant> range) {
@@ -55,7 +89,7 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
         sql.append("LEFT JOIN DeviceRoutes dr ON rpv.PAObjectId = dr.deviceId");
         sql.append("LEFT JOIN YukonPaObject rypo ON dr.RouteId = rypo.PAObjectID");
         sql.append("LEFT JOIN RFNAddress rfna ON rpv.PAObjectId = rfna.DeviceId");
-
+   
         SqlFragmentSource groupSqlWhereClause =
             deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "rpv.PAObjectId");
         sql.append("WHERE").appendFragment(groupSqlWhereClause);
@@ -70,9 +104,6 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
             sql.append("AND ypo.DisableFlag").eq_k(YNBoolean.NO);
         }
         appendTimeStampClause(sql, range);
-        
-        System.out.println(range);
-        System.out.println(sql.getDebugSql());
         
         List<DeviceCollectionDetail> values = jdbcTemplate.query(sql, new YukonRowMapper<DeviceCollectionDetail>() {
             @Override
@@ -116,7 +147,7 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
                 };
                 detail.setValue(value);
                 detail.setPaoIdentifier(rs.getPaoIdentifier("PAObjectId", "Type"));
-                detail.setDeviceName(rs.getString("paoName"));
+                detail.setDeviceName(rs.getString("PAOName"));
                 if (detail.getPaoIdentifier().getPaoType().isRfn()) {
                     detail.setMeterSerialNumber(rs.getString("SerialNumber"));
                 } else if (detail.getPaoIdentifier().getPaoType().isPlc()) {
@@ -133,15 +164,18 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
     @Override
     @Transactional
     public void collectData(Map<PaoIdentifier, PointValueQualityHolder> recentValues) {
-        log.debug("Deleting data from RecentPointValue");
+        
         log.debug("Inserting values:" + recentValues.size());
-        SqlStatementBuilder deleteSql = new SqlStatementBuilder();
-        deleteSql.append("DELETE FROM RecentPointValue");
-        jdbcTemplate.update(deleteSql);
-
         List<List<PaoIdentifier>> ids =
             Lists.partition(Lists.newArrayList(recentValues.keySet()), ChunkingSqlTemplate.DEFAULT_SIZE);
         ids.forEach(idBatch -> {
+            //delete 1000 rows
+            SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+            deleteSql.append("DELETE FROM RecentPointValue");
+            deleteSql.append("WHERE PAObjectId").in(idBatch.stream().map(PaoIdentifier::getPaoId).collect(Collectors.toList()));
+            jdbcTemplate.update(deleteSql);
+            
+            //insert 1000 rows
             SqlStatementBuilder insertSql = new SqlStatementBuilder();
             insertSql.append("INSERT INTO RecentPointValue");
             insertSql.append("(PAObjectId, PointId, Timestamp, Quality, Value)");
@@ -171,6 +205,7 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
 
     @Override
     public int getDeviceCount(DeviceGroup group, boolean includeDisabled, Range<Instant> range) {
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT count(*)");
         sql.append("FROM RecentPointValue rpv");
@@ -184,12 +219,11 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
             sql.append("AND ypo.DisableFlag").eq_k(YNBoolean.NO);
         }
         appendTimeStampClause(sql, range);
-        System.out.println(range);
-        System.out.println(sql.getDebugSql());
         return jdbcTemplate.queryForInt(sql);
     }
     
     private void appendTimeStampClause(SqlBuilder sql, ReadableRange<Instant> dateRange) {
+        
         Instant startDate = dateRange == null ? null : dateRange.getMin();
         if (startDate != null) {
             if (dateRange.isIncludesMinValue()) {

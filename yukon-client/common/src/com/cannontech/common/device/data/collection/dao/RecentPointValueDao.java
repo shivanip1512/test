@@ -21,9 +21,25 @@ public interface RecentPointValueDao {
     void collectData(Map<PaoIdentifier, PointValueQualityHolder> recentValues);
 
     /**
-     * Returns reading results for a date range and a group
+     * Returns the device collection detail.
+     * @param group1 - finds only devices within the group and its subgroups
+     * @param group2 - can be null, otherwise finds devices that are in group1 and group2
+     * @param includeDisabled - if false only enabled devices will be returned
+     * @param ranges - time period
      */
     List<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group1, DeviceGroup group2, boolean includeDisabled, Range<Instant> range);
 
+    /**
+     * Returns device count for range and group.
+     */
     int getDeviceCount(DeviceGroup group, boolean includeDisabled, Range<Instant> range);
+
+    /**
+     * Returns the device collection detail for devices that are not in RecentPointValue table
+     * @param group1 - finds only devices within the group and its subgroups
+     * @param group2 - can be null, otherwise finds devices that are in group1 and group2
+     * @param includeDisabled - if false only enabled devices will be returned
+     */
+    List<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, DeviceGroup subGroup,
+            boolean includeDisabled);
 }

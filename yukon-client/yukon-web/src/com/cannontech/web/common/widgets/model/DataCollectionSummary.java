@@ -53,12 +53,16 @@ public class DataCollectionSummary {
     }
     
     public void calculatePrecentages() {
-        Integer total = available.getDeviceCount() + expected.getDeviceCount() + outdated.getDeviceCount()
-            + unavailable.getDeviceCount();
+        int total = getTotalDeviceCount();
         available.calculatePrecentage(total);
         expected.calculatePrecentage(total);
         outdated.calculatePrecentage(total);
         unavailable.calculatePrecentage(total);
+    }
+    
+    public int getTotalDeviceCount(){
+        return available.getDeviceCount() + expected.getDeviceCount() + outdated.getDeviceCount()
+        + unavailable.getDeviceCount();
     }
     
     @Override

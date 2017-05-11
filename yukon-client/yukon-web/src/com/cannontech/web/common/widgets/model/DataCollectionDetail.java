@@ -1,6 +1,7 @@
 package com.cannontech.web.common.widgets.model;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -20,10 +21,14 @@ public class DataCollectionDetail {
     public int getDeviceCount() {
         return deviceCount;
     }
+    
+    public void setDeviceCount(int deviceCount) {
+        this.deviceCount = deviceCount;
+    }
 
     public void calculatePrecentage(int total) {
         if (total != 0) {
-            percentage = new BigDecimal((deviceCount / total) * 100).setScale(2, BigDecimal.ROUND_HALF_EVEN).doubleValue();
+            percentage = new BigDecimal(deviceCount).divide(new BigDecimal(total), 4, RoundingMode.HALF_EVEN).multiply(new BigDecimal(100)).doubleValue();
         }
     }
     
