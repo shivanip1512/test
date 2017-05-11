@@ -3,8 +3,12 @@ package com.cannontech.web.dev.database.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
 
+import org.joda.time.LocalTime;
+import org.joda.time.Minutes;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.capcontrol.ControlAlgorithm;
@@ -46,6 +50,11 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.data.point.UnitOfMeasure;
 import com.cannontech.database.db.capcontrol.CCMonitorBankList;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
+import com.cannontech.database.db.capcontrol.CapControlStrategy.DayOfWeek;
+import com.cannontech.database.db.capcontrol.PeakTargetSetting;
+import com.cannontech.database.db.capcontrol.TargetSettingType;
+import com.cannontech.database.db.capcontrol.VoltViolationType;
+import com.cannontech.database.db.capcontrol.VoltageViolationSetting;
 import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.database.model.Season;
@@ -133,7 +142,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
                     attachPointsToSubBus(simRtuPointOffset, subBusPao, substationPointHolder.getPaoIdentifier());
                     
                     Integer parentZoneId = null;
-                    double graphPosition = 0;
+                    
                     final double graphPositionOffset = 4.5; // How apart each regulator (zone) or cbc are
                     
                     for (int feederIndex = 0; feederIndex < devCapControl.getNumFeeders(); feederIndex++) { // Feeders
@@ -141,19 +150,19 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
                         PaoIdentifier feederPao = createAndAssignFeeder(devCapControl, areaIndex, subIndex, subBusIndex, subBusPao, feederIndex);
                         attachPointsToFeeder(simRtuPointOffset, feederPao, substationPointHolder.getPaoIdentifier());
                         
-                        double zonePosition = graphPosition;
-                        graphPosition += graphPositionOffset;
+                        double graphPosition = graphPositionOffset; // each bank is relative to the start of the zone it is assigned to
                         for (int capBankIndex = 0; capBankIndex < devCapControl.getNumCapBanks(); capBankIndex++) { // CapBanks & CBCs
                             PaoIdentifier capBankPao = createAndAssignCapBank(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, feederPao, capBankIndex, bankAssignments, graphPosition);
                             graphPosition += graphPositionOffset;
                             createAndAssignCBC(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex, capBankIndex, capBankPao);
-                            assignAllPointsToBank(capBankPao.getPaoId());
+                            assignCBCVoltagePointsToBank(capBankPao.getPaoId());
                         }
                         
                         PaoIdentifier regulatorPao = createRegulatorForSubBus(devCapControl, areaIndex, subIndex, subBusIndex, feederIndex);
                         attachPointsToRegulator(simRtuPointOffset, regulatorPao, substationPointHolder.getPaoIdentifier());
                         
                         // The first time through the zone is the parent (no parent zone ID), each time after its parent is the previous zone.
+                        double zonePosition = graphPositionOffset * feederIndex * (devCapControl.getNumCapBanks()+1); // Zones start at 0 (which includes the regulator), then are the capbanks, then another zone. The regulator adds the +1.
                         parentZoneId = createAndAssignZone(devCapControl, areaIndex, subIndex, subBusPao, subBusIndex, regulatorPao.getPaoId(), bankAssignments, parentZoneId, zonePosition);
                     }
 
@@ -179,9 +188,13 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         capControlSubBus.getCapControlSubstationBus().setCurrentWattLoadPointID(kwPoint.getPoint().getPointID());
         capControlSubBus.getCapControlSubstationBus().setCurrentVarLoadPointID(kvarPoint.getPoint().getPointID());
         
-        PointBase busDisablePoint = createStatusPoint(capControlSubBus.getName() + " Bus Disabled", StateGroupUtils.STATEGROUP_TRUEFALSE, 500, subBusPao);
+        // 2 special sub bus points, offset 300 and 500.
+        createStatusPoint(capControlSubBus.getName() + " Comms Lost", StateGroupUtils.STATEGROUP_TRUEFALSE, 300, subBusPao);
+        createStatusPoint(capControlSubBus.getName() + " Bus Disabled", StateGroupUtils.STATEGROUP_TRUEFALSE, 500, subBusPao);
         
-        capControlSubBus.getCapControlSubstationBus().setDisableBusPointId(busDisablePoint.getPoint().getPointID());
+        // Note we intentionally do not assign these 2 points, which is very confusing as the UI has 2 points that are not "assigned" but use magic offsets
+        // It is not currently known what these assignments acually do
+        // capControlSubBus.getCapControlSubstationBus().setDisableBusPointId(busDisablePoint.getPoint().getPointID());
 
         busService.save(capControlSubBus);
     }
@@ -258,12 +271,37 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         return point;
     }
 
-    // This takes all unassigned points on the bank (CBC Points) and attaches them to the bank
-    private void assignAllPointsToBank(int capbankId) {
+    // This takes all Voltage inputs on the CBC and attaches them to the bank, and assigns a phase.
+    private void assignCBCVoltagePointsToBank(int capbankId) {
         CapBank capbank = capbankService.getCapBank(capbankId);
         List<CCMonitorBankList> unassigned = capbankService.getUnassignedPoints(capbank);
-        Integer[] pointIds = unassigned.stream().map(CCMonitorBankList::getPointId).toArray(Integer[]::new);
+
+
+        Integer[] pointIds = unassigned.stream().filter(new Predicate<CCMonitorBankList>() {
+            @Override
+            public boolean test(CCMonitorBankList item) {
+                return item.getMonitorPoint().getPointName()
+                    .equalsIgnoreCase("Average Line Voltage")
+                       || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase B")
+                       || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase C");
+            }
+        }).map(CCMonitorBankList::getPointId).toArray(Integer[]::new);
+
         capbankService.savePoints(capbankId, pointIds);
+        capbank = capbankService.getCapBank(capbankId);
+        
+        List<CCMonitorBankList> ccMonitorBankList = capbank.getCcMonitorBankList();
+      
+        //There is something odd going on here where it did not load the point name so I based this on display order
+        for (CCMonitorBankList item : ccMonitorBankList) {
+            if (item.getDisplayOrder() == 2) {
+                item.setPhase('B');
+            } else if (item.getDisplayOrder() == 3) {
+                item.setPhase('C');
+            }
+        }
+  
+      capbankService.save(capbank);
     }
 
     private int createCapControlStrategy(DevCapControl devCapControl) {
@@ -271,8 +309,35 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         
         //These are currently in UI order
         strategy.setName("Sim IVVC Strategy " + devCapControl.getOffset());
-        strategy.setControlMethod(ControlMethod.SUBSTATION_BUS);
+        strategy.setControlMethod(ControlMethod.BUSOPTIMIZED_FEEDER);
         strategy.setAlgorithm(ControlAlgorithm.INTEGRATED_VOLT_VAR);
+        strategy.setControlInterval(Minutes.minutes(1).toStandardSeconds().getSeconds());
+        strategy.setMinResponseTime(Minutes.minutes(2).toStandardSeconds().getSeconds());
+        
+        Map<DayOfWeek, Boolean> peakDays = strategy.getPeakDays();
+        for (Entry<DayOfWeek, Boolean> peakDay : peakDays.entrySet()) {
+            if (peakDay.getKey() != DayOfWeek.HOLIDAY) {
+                peakDay.setValue(true);
+            }
+        }
+        
+        strategy.setPeakStartTime(LocalTime.fromMillisOfDay(28800 * 1000));
+        strategy.setPeakStopTime(LocalTime.fromMillisOfDay(72000 * 1000));
+        
+        Map<TargetSettingType, PeakTargetSetting> targetSettings = strategy.getTargetSettings();
+        targetSettings.get(TargetSettingType.UPPER_VOLT_LIMIT).setPeakValue(126);
+        targetSettings.get(TargetSettingType.UPPER_VOLT_LIMIT).setOffPeakValue(126);
+        targetSettings.get(TargetSettingType.LOWER_VOLT_LIMIT).setPeakValue(118);
+        targetSettings.get(TargetSettingType.LOWER_VOLT_LIMIT).setOffPeakValue(116);
+        targetSettings.get(TargetSettingType.VOLT_WEIGHT).setPeakValue(5);
+        targetSettings.get(TargetSettingType.VOLT_WEIGHT).setOffPeakValue(5);
+        targetSettings.get(TargetSettingType.PF_WEIGHT).setPeakValue(2);
+        targetSettings.get(TargetSettingType.PF_WEIGHT).setOffPeakValue(2);
+        targetSettings.get(TargetSettingType.VOLTAGE_REGULATION_MARGIN).setPeakValue(1.25);
+        targetSettings.get(TargetSettingType.VOLTAGE_REGULATION_MARGIN).setOffPeakValue(1.25);
+        
+        Map<VoltViolationType, VoltageViolationSetting> voltageViolationSettings = strategy.getVoltageViolationSettings();
+        voltageViolationSettings.get(VoltViolationType.LOW_VOLTAGE_VIOLATION).setCost(-1);
         
         return strategyService.save(strategy);
     }
@@ -357,6 +422,9 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
             PaoIdentifier cbcPao =  createCapControlCBC(devCapControl, paoType, cbcName, false, DevCommChannel.SIM);
             capbankControllerDao.assignController(capBankPao.getPaoId(), cbcPao.getPaoId());
             logCapControlAssignment(cbcName, capBankPao);
+            
+            createAnalogPoint("Voltage Phase B", UnitOfMeasure.VOLTS, 230, cbcPao);
+            createAnalogPoint("Voltage Phase C", UnitOfMeasure.VOLTS, 231, cbcPao);
         }
     }
     
@@ -377,6 +445,13 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
             bankAssignment.setName(capBankName);
             
             bankAssignments.add(bankAssignment);
+            
+            { // Set cap bank size to (1800, 1200, 900, 600, 600, 600....)
+                CapBank capBank = capbankService.getCapBank(capBankPao.getPaoId());
+                capBank.getCapBank().setBankSizeCustom(capBankIndex == 0 ? 1800 : capBankIndex == 1 ? 1200 : capBankIndex == 2 ? 900 : 600);
+                capbankService.save(capBank);
+            }
+            
         }
         return capBankPao;
     }
