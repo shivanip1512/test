@@ -69,8 +69,7 @@ yukon.widget.dataCollection = (function () {
                     return this.name + ': ' + yukon.percent(this.y, 100, 3) + ", " + this.x + " devices";
                 },
                 layout: 'vertical',
-                x: 0,
-                y: -50
+                verticalAlign: 'middle'
             },
             title: { text: null },
             tooltip: {
@@ -79,7 +78,6 @@ yukon.widget.dataCollection = (function () {
             plotOptions: {
                 pie: {
                     allowPointSelect: true,
-                    center: [80, 60],
                     cursor: 'pointer',
                     dataLabels: { enabled: false },
                     showInLegend: true,
