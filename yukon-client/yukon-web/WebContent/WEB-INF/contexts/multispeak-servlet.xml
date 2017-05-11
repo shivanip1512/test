@@ -49,7 +49,7 @@
                 <prop key="/CD_ServerSoap.wsdl">cd_server</prop>
                 <prop key="/EA_ServerSoap.wsdl">ea_server</prop>
                 <prop key="/LM_ServerSoap.wsdl">lm_server</prop>
-                <prop key="/MDM_ServerSaop.wsdl">mdm_server</prop>
+                <prop key="/MDM_ServerSoap.wsdl">mdm_server</prop>
                 <prop key="/MR_ServerSoap.wsdl">mr_server</prop>
                 <prop key="/OA_ServerSoap.wsdl">oa_server</prop>
                 <prop key="/OD_ServerSoap.wsdl">od_server</prop>
