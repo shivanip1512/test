@@ -19,41 +19,45 @@ yukon.widget.dataCollection = (function () {
         return [
             {
                 name: 'Available',
-                y: data.summary.available.percentage,
-                x: data.summary.available.deviceCount,
-                color: '#5cb85c'
+                y: data.available.percentage,
+                x: data.available.deviceCount,
+                color: '#5cb85c',
+                className: 'js-available'
             },
             {
                 name: 'Expected',
-                y: data.summary.expected.percentage,
-                x: data.summary.expected.deviceCount,
-                color: '#FFFF00'
+                y: data.expected.percentage,
+                x: data.expected.deviceCount,
+                color: '#FFFF00',
+                className: 'js-expected'
+                   
             },
             {
                 name: 'Outdated',
-                y: data.summary.outdated.percentage,
-                x: data.summary.outdated.deviceCount,
-                color: '#fb8521'
+                y: data.outdated.percentage,
+                x: data.outdated.deviceCount,
+                color: '#fb8521',
+                className: 'js-outdated'
             },
             {
                 name: 'Unavailable',
-                y: data.summary.unavailable.percentage,
-                x: data.summary.unavailable.deviceCount,
-                color: '#999999'
+                y: data.unavailable.percentage,
+                x: data.unavailable.deviceCount,
+                color: '#999999',
+                className: 'js-unavailable'
             }
         ]
     },
     
     /** Build the pie chart for the first time. */
     _buildChart = function (chart, data) {
-        
         debug.log('building chart');
         chart.highcharts({
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
                 plotShadow: false,
-                height: 220
+                height: 200
             },
             credits: {
                 enabled: false
@@ -66,7 +70,7 @@ yukon.widget.dataCollection = (function () {
                 },
                 layout: 'vertical',
                 x: 0,
-                y: -80
+                y: -50
             },
             title: { text: null },
             tooltip: {
@@ -75,10 +79,11 @@ yukon.widget.dataCollection = (function () {
             plotOptions: {
                 pie: {
                     allowPointSelect: true,
-                    center: [100, 60],
+                    center: [80, 60],
                     cursor: 'pointer',
                     dataLabels: { enabled: false },
-                    showInLegend: true
+                    showInLegend: true,
+                    borderWidth: 0
                 }
             },
             series: [{
@@ -107,13 +112,14 @@ yukon.widget.dataCollection = (function () {
                     data: {
                         deviceGroup: deviceGroup,
                         includeDisabled: includeDisabled
-                    }        
+                    },
+                    async: false
                 }).done(function (data) {
                     if (data.summary != null) {
                         if (chart.is('.js-initialize')) {
-                            _buildChart(chart, data);
+                            _buildChart(chart, data.summary, 220);
                         } else {
-                            _updateChart(data, idx);
+                            _updateChart(data.summary, idx);
                         }
                         var dateTime = moment(data.summary.collectionTime).tz(yg.timezone).format(yg.formats.date.both);
                         $(item).find('.js-last-updated').text(dateTime);
@@ -155,6 +161,10 @@ yukon.widget.dataCollection = (function () {
             });
 
             _initialized = true;
+        },
+        
+        buildChart : function (chart, data) {
+            _buildChart(chart, data);
         }
         
     };

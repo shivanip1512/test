@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.device.data.collection.dao.model.DeviceCollectionDetail;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -41,6 +43,7 @@ public class DataCollectionController {
     @Autowired private DataCollectionWidgetService dataCollectionWidgetService;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     
     private final static String baseKey = "yukon.web.modules.amr.dataCollection.detail.";
     
@@ -67,6 +70,12 @@ public class DataCollectionController {
                          @DefaultItemsPerPage(value=50) PagingParameters paging) throws Exception {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
+        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(group);
+        model.addAttribute("deviceCollection", deviceCollection);
+        
+        DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, true);
+        model.addAttribute("summary", summary);
+        
         List<DeviceCollectionDetail> detail = dataCollectionWidgetService.getDeviceCollectionResult(group, group, includeDisabled, RangeType.values());
         model.addAttribute("deviceGroup", deviceGroup);
         model.addAttribute("includeDisabled", includeDisabled);
@@ -88,8 +97,6 @@ public class DataCollectionController {
             comparator = (o1, o2) -> o1.getPaoIdentifier().getPaoType().getPaoTypeName().compareTo(o2.getPaoIdentifier().getPaoType().getPaoTypeName());
         } else if (sortBy == DetailSortBy.address) {
             comparator = (o1, o2) -> Integer.valueOf(o1.getAddress()).compareTo(Integer.valueOf(o2.getAddress()));
-        } else if (sortBy == DetailSortBy.routeGateway) {
-            comparator = (o1, o2) -> o1.getRoute().compareTo(o2.getRoute());
         } else if (sortBy == DetailSortBy.recentReading) {
             comparator = (o1, o2) -> o1.getValue().getPointDataTimeStamp().compareTo(o2.getValue().getPointDataTimeStamp());
         }
@@ -118,7 +125,6 @@ public class DataCollectionController {
         meterSerialNumber,
         deviceType,
         address,
-        routeGateway,
         recentReading;
 
         @Override

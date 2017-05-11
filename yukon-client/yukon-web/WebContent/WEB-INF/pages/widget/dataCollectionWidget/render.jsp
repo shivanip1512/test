@@ -16,7 +16,7 @@
         </tags:nameValue2>
     </tags:nameValueContainer2>
     
-    <div style="max-height: 220px;" class="js-pie-chart js-initialize"></div>
+    <div style="max-height: 200px;" class="js-pie-chart js-initialize"></div>
     
     <input type="checkbox" id="includeDisabled" <c:if test="${includeDisabled}">checked="checked"</c:if>/><cti:msg2 key=".widgetParameter.includeDisabled"/>
     <span class="fr"><cti:button nameKey="forceUpdate" classes="js-force-update"/><cti:icon icon="icon-clock" classes="cp" data-popup=".js-last-updated-popup${id}"/></span>
