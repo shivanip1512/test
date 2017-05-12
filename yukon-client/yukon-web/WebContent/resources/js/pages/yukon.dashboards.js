@@ -36,8 +36,7 @@ yukon.dashboards = (function () {
             
             $(document).on('yukon:dashboard:remove', function (ev) {
                 var container = $(ev.target),
-                dashboardId = container.data('dashboardId');
-                //window.location.href = yukon.url('/dashboards/' + dashboardId + '/delete');
+                    dashboardId = container.data('dashboardId');
                 $.ajax({
                     url: yukon.url('/dashboards/' + dashboardId + '/delete'),
                     type: 'post'
@@ -60,9 +59,9 @@ yukon.dashboards = (function () {
                 var selectedUsers = yukon.pickers['dashboardUsersPicker'].selectedItems,
                     selectedGroups = yukon.pickers['dashboardGroupsPicker'].selectedItems,
                     dashboardId = $('#dashboardId').val(),
-                    dashboardType = $('#dashboardType').val();
-                var users = selectedUsers.map(function (item) { return item.userId; });
-                var groups = selectedGroups.map(function (item) { return item.userGroupId; });
+                    dashboardType = $('#dashboardType').val(),
+                    users = selectedUsers.map(function (item) { return item.userId; }),
+                    groups = selectedGroups.map(function (item) { return item.userGroupId; });
                 
                 var data = {
                     pageType: dashboardType,

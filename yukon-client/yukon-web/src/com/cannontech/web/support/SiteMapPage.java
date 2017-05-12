@@ -31,6 +31,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRole.APPLICATION_BILLING),
     REVIEW_FLAGGED_POINTS(SiteMapCategory.AMI, "yukon.web.widgets.validationMonitorsWidget.review", "/amr/veeReview/home",
             MatchStyle.all, YukonRoleProperty.VALIDATION_ENGINE),
+    MANAGE_DASHBOARDS(SiteMapCategory.AMI, "yukon.web.modules.dashboard.manageDashboards", "/dashboards/manage",
+            MatchStyle.all),
 
     DR_DASHBOARD(SiteMapCategory.DR, "yukon.web.modules.dr.home.pageName", "/dr/home",
             MatchStyle.all, YukonRole.DEMAND_RESPONSE),
@@ -133,6 +135,8 @@ public enum SiteMapPage implements DisplayableEnum {
             MatchStyle.all, YukonRoleProperty.ADMIN_SUPER_USER),
     SURVEYS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.survey.list.pageName", "/stars/survey/list",
             MatchStyle.all, OtherPermission.HIDEABLE , YukonRoleProperty.OPERATOR_SURVEY_EDIT),
+    DASHBOARDS(SiteMapCategory.ADMIN, "yukon.web.modules.adminSetup.config.dashboards.pageName", "dashboards/admin",
+               MatchStyle.all, OtherPermission.HIDEABLE, YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS),
 
     BULK_OPERATIONS(SiteMapCategory.TOOLS, "yukon.web.modules.tools.bulk.home.pageName", "/bulk/bulkHome",
             MatchStyle.any, YukonRoleProperty.BULK_IMPORT_OPERATION, YukonRoleProperty.ADD_REMOVE_POINTS, YukonRoleProperty.FDR_TRANSLATION_MANAGER,

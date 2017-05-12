@@ -382,13 +382,14 @@ public class DashboardsController {
     
     @RequestMapping("{id}/delete")
     public void deleteDashboard(FlashScope flash, @PathVariable int id, LiteYukonUser user, HttpServletResponse resp) {
+        boolean adminDashboards = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS, user);
         Dashboard dashboard = dashboardService.getDashboard(id);
         LiteYukonUser owner = dashboard.getOwner();
         if (dashboard.getVisibility() == Visibility.SYSTEM) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.system", dashboard.getName()));
         } else if (dashboardDao.getAllUsersForDashboard(id).size() > 1) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.currentInUse", dashboard.getName()));
-        } else if (owner == null || owner.getUserID() == user.getUserID()) {
+        } else if (owner == null || owner.getUserID() == user.getUserID() || adminDashboards) {
             dashboardService.delete(id);
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", dashboard.getName()));
         } else {

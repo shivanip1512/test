@@ -80,7 +80,7 @@
                                 <cti:msg2 key=".viewUsers" />
                             </tags:pickerDialog>
                         </li>
-                        <div class="dn js-assign-users-${dashboardId}" data-dialog data-title="<cti:msg2 key=".assignUsers"/>" 
+                        <div class="dn js-assign-users-${dashboardId}" data-dialog data-title="<cti:msg2 key=".assignUsers.dialogTitle"/>" 
                             data-width="700" data-height="500" data-event="yukon:dashboard:assignUsers" 
                             data-url="<cti:url value="/dashboards/${dashboardId}/assignUsers"/>"></div>
                         <cm:dropdownOption key=".assignUsers" icon="icon-group-add" data-popup=".js-assign-users-${dashboardId}" endEvent="yukon:dashboard:assignUsers"/>

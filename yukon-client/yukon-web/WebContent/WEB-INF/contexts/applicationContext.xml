@@ -1315,7 +1315,6 @@
     <bean class="com.cannontech.web.amr.meter.MeterValidator"/>
     
     <bean class="com.cannontech.web.common.dashboard.service.impl.DashboardServiceImpl"/>
-    <bean class="com.cannontech.web.common.dashboard.dao.impl.DashboardDaoImpl"/>
     <bean class="com.cannontech.web.common.dashboard.widget.service.impl.WidgetServiceImpl"/>
     
     <bean id="dataCollectionWidgetListener" class="com.cannontech.web.common.widgets.service.impl.DataCollectionWidgetServiceImpl"/>
