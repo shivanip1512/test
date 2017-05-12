@@ -130,7 +130,7 @@ yukon.widget.dataCollection = (function () {
             }
             
         });
-        setTimeout(_update, _updateInterval);
+        //setTimeout(_update, _updateInterval);
         
     },
     
@@ -156,6 +156,10 @@ yukon.widget.dataCollection = (function () {
                         includeDisabled: includeDisabled
                 }
                 window.open(yukon.url('/amr/dataCollection/detail?' + $.param(data)));
+            });
+
+            $(document).on('dialogclose', '.js-device-group-picker-dialog', function (ev, ui) {
+                _update();
             });
 
             _initialized = true;
