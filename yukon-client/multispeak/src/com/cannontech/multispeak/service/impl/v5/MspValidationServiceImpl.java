@@ -70,10 +70,11 @@ public class MspValidationServiceImpl implements MspValidationService {
     @Override
     public ErrorObject isValidScadaAnalog(SCADAAnalog scadaAnalog) {
         ErrorObject errorObject = null;
-        if (StringUtils.isBlank(scadaAnalog.getObjectGUID())) {
+
+        if (StringUtils.isBlank(scadaAnalog.getSCADAPointID().getObjectGUID())) {
             errorObject =
-                mspObjectDao.getErrorObject(null, "ScadaAnalog objectId was not populated.", "ScadaAnalog",
-                    "isValidScadaAnalog", null);
+                mspObjectDao.getErrorObject(scadaAnalog.getObjectGUID(), "ScadaAnalog SCADAPointID was not populated.",
+                    "ScadaAnalog", "isValidScadaAnalog", null);
         } else if (scadaAnalog.getValue() == null) {
             errorObject =
                 mspObjectDao.getErrorObject(scadaAnalog.getObjectGUID(), "ScadaAnalog Value was not populated.",

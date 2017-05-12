@@ -302,7 +302,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 multispeakEventLogService.meterNotFound(mspMeter.getObjectRef().getPrimaryIdentifierValue(),
                     METER_DELETED_STRING, mspVendor.getCompanyName());
                 ErrorObject err =
-                    mspObjectDao.getNotFoundErrorObject(mspMeter.getObjectRef().getValue(), "MeterNumber",
+                    mspObjectDao.getNotFoundErrorObject(mspMeter.getObjectRef().getPrimaryIdentifierValue(), "MeterNumber",
                         "ObjectDeletion", METER_DELETED_STRING, mspVendor.getCompanyName());
                 errorObjects.add(err);
                 multispeakEventLogService.errorObject(err.getDisplayString(), METER_DELETED_STRING,

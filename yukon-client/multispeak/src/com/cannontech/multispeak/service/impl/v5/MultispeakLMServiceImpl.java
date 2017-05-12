@@ -117,7 +117,7 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
 
     @Override
     public ErrorObject writeAnalogPointData(SCADAAnalog scadaAnalog, LiteYukonUser liteYukonUser) {
-        String objectId = scadaAnalog.getObjectGUID().trim();
+        String objectId = scadaAnalog.getSCADAPointID().getObjectGUID().trim();
         String translationStr = buildFdrMultispeakLMTranslation(objectId);
         List<FdrTranslation> fdrTranslations =
             fdrTranslationDao.getByInterfaceTypeAndTranslation(FdrInterfaceType.MULTISPEAK_LM, translationStr);

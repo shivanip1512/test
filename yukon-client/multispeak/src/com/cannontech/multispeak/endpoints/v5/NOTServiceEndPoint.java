@@ -83,9 +83,9 @@ public class NOTServiceEndPoint {
         List<SCADAAnalog> scadaAnalogs =
             (null != scadaAnalogsChangedNotification.getArrayOfSCADAAnalog())
                 ? scadaAnalogsChangedNotification.getArrayOfSCADAAnalog().getSCADAAnalog() : null;
-
-        multispeakFuncs.addErrorObjectsInResponseHeader(not_server.scadaAnalogsChangedNotification(scadaAnalogs));
-
+        if (scadaAnalogs != null) {
+            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.scadaAnalogsChangedNotification(scadaAnalogs));
+        }
         return resonse;
     }
 
@@ -116,8 +116,9 @@ public class NOTServiceEndPoint {
             List<ElectricMeter> electricMeters =
                 (null != metersCreatedNotification.getMeters().getElectricMeters())
                     ? metersCreatedNotification.getMeters().getElectricMeters().getElectricMeter() : null;
-
-            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersCreatedNotification(electricMeters));
+            if (electricMeters != null) {
+                multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersCreatedNotification(electricMeters));
+            }
         }
         return response;
     }
@@ -131,9 +132,9 @@ public class NOTServiceEndPoint {
         List<ObjectDeletion> electricMeters =
             (null != metersDeletedNotification.getArrayOfObjectDeletion())
                 ? metersDeletedNotification.getArrayOfObjectDeletion().getObjectDeletion() : null;
-
-        multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersDeletedNotification(electricMeters));
-
+        if (electricMeters != null) {
+            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersDeletedNotification(electricMeters));
+        }
         return response;
     }
 
@@ -184,8 +185,9 @@ public class NOTServiceEndPoint {
             List<ElectricMeter> electricMeters =
                 (null != metersUninstalledNotification.getMeters().getElectricMeters())
                     ? metersUninstalledNotification.getMeters().getElectricMeters().getElectricMeter() : null;
-
-            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersUninstalledNotification(electricMeters));
+            if (electricMeters != null) {
+                multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersUninstalledNotification(electricMeters));
+            }
         }
         return response;
     }
