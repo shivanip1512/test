@@ -24,7 +24,7 @@ public class SystemMessagingWidget extends AdvancedWidgetControllerBase {
     
     @RequestMapping("render")
     public String render(ModelMap model, LiteYukonUser user) throws Exception {
-        
+        setLazyLoad(true);
         List<SystemHealthMetricIdentifier> favoriteIds = systemHealthService.getFavorites(user);
         Multimap<SystemHealthMetricType, SystemHealthMetric> metrics = systemHealthService.getMetricsByIdentifiers(favoriteIds);
         

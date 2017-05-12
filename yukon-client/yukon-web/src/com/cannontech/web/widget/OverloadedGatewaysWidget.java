@@ -26,7 +26,7 @@ public class OverloadedGatewaysWidget extends WidgetControllerBase {
     @Override
     @RequestMapping("render")
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws ServletRequestBindingException {
-        
+        setLazyLoad(true);
         ModelAndView mav = new ModelAndView("overloadedGatewaysWidget/render.jsp");
 
         List<RfnGateway> overloadedGateways = new ArrayList<>();
