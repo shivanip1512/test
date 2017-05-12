@@ -13,12 +13,10 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ScheduledExecutor;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.dev.service.SystemHealthMetricSimulatorService;
 import com.cannontech.web.dev.service.YsmJmxQueryService;
-import com.cannontech.web.support.dao.UserSystemMetricDao;
 import com.cannontech.web.support.service.SystemHealthService;
 import com.cannontech.web.support.systemMetrics.ExtendedQueueData;
 import com.cannontech.web.support.systemMetrics.MetricStatusWithMessages;
@@ -36,7 +34,6 @@ public class SystemHealthServiceImpl implements SystemHealthService {
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
     @Autowired List<MetricHealthCriteria> metricHealthCriteria;
     @Autowired private SystemHealthMetricSimulatorService metricSimulator;
-    @Autowired private UserSystemMetricDao userSystemMetricDao;
     @Autowired private YsmJmxQueryService jmxQueryService;
     @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     private SystemHealthStatusHelper statusHelper;
@@ -99,20 +96,6 @@ public class SystemHealthServiceImpl implements SystemHealthService {
             }
         }
         return metrics;
-    }
-    
-    @Override
-    public List<SystemHealthMetricIdentifier> getFavorites(LiteYukonUser user) {
-        return userSystemMetricDao.getFavorites(user);
-    }
-    
-    @Override
-    public void setFavorite(LiteYukonUser user, SystemHealthMetricIdentifier metric, boolean isFavorite) {
-        if (isFavorite) {
-            userSystemMetricDao.addFavorite(user, metric);
-        } else {
-            userSystemMetricDao.removeFavorite(user, metric);
-        }
     }
     
     @Override

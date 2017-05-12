@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.web.common.dashboard.widget.validator.MeterPickerValidator;
 import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.ImmutableListMultimap.Builder;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 
@@ -53,17 +54,25 @@ public enum WidgetType implements DisplayableEnum {
     
     static {
         widgetSpecificJavascript = ImmutableListMultimap.of(
+            SYSTEM_MESSAGING, "yukon.support.systemHealth.js"
         );
         
         widgetSpecificCss = ImmutableListMultimap.of(
             //Add specialized CSS (that only needs to be loaded when the widget is present)
         );
         
-        widgetParameters = ImmutableListMultimap.of(
-            TREND, new WidgetParameter("deviceId", WidgetInputType.METER_PICKER, MeterPickerValidator.get()),
-            DATA_COLLECTION, new WidgetParameter("deviceGroup", WidgetInputType.DEVICE_GROUP, null),
-            DATA_COLLECTION, new WidgetParameter("includeDisabled", WidgetInputType.CHECKBOX, null)
-        );
+        Builder<WidgetType, WidgetParameter> builder = new ImmutableListMultimap.Builder<WidgetType, WidgetParameter>()
+            .put(TREND, new WidgetParameter("deviceId", WidgetInputType.METER_PICKER, MeterPickerValidator.get()))
+            .putAll(SYSTEM_MESSAGING, new WidgetParameter("showRfnMeter", WidgetInputType.CHECKBOX, null),
+                                      new WidgetParameter("showRfnLcr", WidgetInputType.CHECKBOX, null),
+                                      new WidgetParameter("showRfGatewayArchive", WidgetInputType.CHECKBOX, null),
+                                      new WidgetParameter("showRfDa", WidgetInputType.CHECKBOX, null),
+                                      new WidgetParameter("showRfGatewayDataRequest", WidgetInputType.CHECKBOX, null),
+                                      new WidgetParameter("showRfGatewayData", WidgetInputType.CHECKBOX, null))
+            .putAll(DATA_COLLECTION, new WidgetParameter("deviceGroup", WidgetInputType.DEVICE_GROUP, null),
+                                     new WidgetParameter("includeDisabled", WidgetInputType.CHECKBOX, null));
+        
+        widgetParameters = builder.build();
     }
     
     public static Stream<WidgetType> stream() {

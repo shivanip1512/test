@@ -16,7 +16,7 @@ public enum WidgetInputType {
     
     private WidgetInputType(Class<?> inputClass, String jspName) {
         this.inputClass = inputClass;
-        this.setJspName(jspName);
+        setJspName(jspName);
     }
     
     /**

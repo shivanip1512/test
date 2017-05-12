@@ -17,6 +17,7 @@
     <tags:sectionContainer2 nameKey="serverBrokerStatistics">
         <table class="compact-results-table stacked-md">
             <thead>
+                <th></th>
                 <th><i:inline key=".queue"/></th>
                 <th class="tar"><i:inline key=".archivedReadings"/></th>
                 <th class="tar"><i:inline key=".processedArchiveRequests"/></th>
@@ -24,26 +25,14 @@
                 <th class="tar"><i:inline key=".dequeuedCount"/></th>
                 <th class="tar"><i:inline key=".queueSize"/></th>
                 <th class="tar"><i:inline key=".averageEnqueueTime"/></th>
-                <th><i:inline key=".status"/></th>
+                
             </thead>
             <tfoot></tfoot>
             <tbody>
                 <c:forEach var="queue" items="${extendedQueueData}">
                     <tr>
+                        <td id="${queue.metricIdentifier}-status"><cti:icon icon="${queue.status.iconName}" title="${queue.status.allMessages}"/></td>
                         <td class="wsnw">
-                            <c:choose>
-                                <c:when test="${favorites[queue.metricIdentifier]}">
-                                    <c:set var="favIcon" value="icon-star"/>
-                                    <c:set var="action" value="unfavorite"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <c:set var="favIcon" value="icon-favorite-not"/>
-                                    <c:set var="action" value="favorite"/>
-                                </c:otherwise>
-                            </c:choose>
-                            <cti:button id="favMetricButton" renderMode="image" icon="${favIcon}" 
-                                        data-metric="${queue.metricIdentifier}" data-action="${action}"
-                                        nameKey="favMetricButton"/>
                             <span title="${queue.queueName}">
                                 <cti:url var="detailUrl" value="/support/systemHealth/${queue.metricIdentifier}/detail"/>
                                 <a href="${detailUrl}">
@@ -57,7 +46,6 @@
                         <td class="tar" id="${queue.metricIdentifier}-deq">${queue.dequeuedCount}</td>
                         <td class="tar" id="${queue.metricIdentifier}-size">${queue.queueSize}</td>
                         <td class="tar" id="${queue.metricIdentifier}-avg">${queue.averageEnqueueTime}</td>
-                        <td id="${queue.metricIdentifier}-status"><cti:icon icon="${queue.status.iconName}" title="${queue.status.allMessages}"/></td>
                     </tr>
                 </c:forEach>
             </tbody>
@@ -65,31 +53,19 @@
         
         <table class="compact-results-table stacked-md">
             <thead>
+                <th></th>
                 <th><i:inline key=".queue"/></th>
                 <th class="tar"><i:inline key=".enqueuedCount"/></th>
                 <th class="tar"><i:inline key=".dequeuedCount"/></th>
                 <th class="tar"><i:inline key=".queueSize"/></th>
                 <th class="tar"><i:inline key=".averageEnqueueTime"/></th>
-                <th><i:inline key=".status"/></th>
             </thead>
             <tfoot></tfoot>
             <tbody>
                 <c:forEach var="queue" items="${queueData}">
                     <tr>
+                        <td id="${queue.metricIdentifier}-status"><cti:icon icon="${queue.status.iconName}" title="${queue.status.allMessages}"/></td>
                         <td class="wsnw">
-                            <c:choose>
-                                <c:when test="${favorites[queue.metricIdentifier]}">
-                                    <c:set var="favIcon" value="icon-star"/>
-                                    <c:set var="action" value="unfavorite"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <c:set var="favIcon" value="icon-favorite-not"/>
-                                    <c:set var="action" value="favorite"/>
-                                </c:otherwise>
-                            </c:choose>
-                            <cti:button id="favMetricButton" renderMode="image" icon="${favIcon}" 
-                                        data-metric="${queue.metricIdentifier}" data-action="${action}"
-                                        nameKey="favMetricButton"/>
                             <span title="${queue.queueName}">
                                 <cti:url var="detailUrl" value="/support/systemHealth/${queue.metricIdentifier}/detail"/>
                                 <a href="${detailUrl}">
@@ -101,7 +77,6 @@
                         <td class="tar" id="${queue.metricIdentifier}-deq">${queue.dequeuedCount}</td>
                         <td class="tar" id="${queue.metricIdentifier}-size">${queue.queueSize}</td>
                         <td class="tar" id="${queue.metricIdentifier}-avg">${queue.averageEnqueueTime}</td>
-                        <td id="${queue.metricIdentifier}-status"><cti:icon icon="${queue.status.iconName}" title="${queue.status.allMessages}"/></td>
                     </tr>
                 </c:forEach>
             </tbody>

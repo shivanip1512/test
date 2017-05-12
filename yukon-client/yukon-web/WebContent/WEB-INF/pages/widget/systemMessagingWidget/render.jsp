@@ -8,7 +8,7 @@
         <c:if test="${not empty extendedQueueData}">
             <table class="compact-results-table stacked-md">
                 <thead>
-                    <th class="vab"><i:inline key=".status"/></th>
+                    <th class="vab"></th>
                     <th class="vab"><i:inline key=".queue"/></th>
                     <th class="tar vab"><i:inline key=".archivedReadings"/></th>
                     <th class="tar vab"><i:inline key=".processedArchiveRequests"/></th>
@@ -44,7 +44,7 @@
         <c:if test="${not empty queueData}">
             <table class="compact-results-table stacked-md">
                 <thead>
-                    <th class="vab"><i:inline key=".status"/></th>
+                    <th class="vab"></th>
                     <th class="vab"><i:inline key=".queue"/></th>
                     <th class="tar vab"><i:inline key=".enqueuedCount"/></th>
                     <th class="tar vab"><i:inline key=".dequeuedCount"/></th>
@@ -55,7 +55,7 @@
                 <tbody>
                     <c:forEach var="queue" items="${queueData}">
                         <tr>
-                            <td id="${queue.metricIdentifier}-status"><cti:icon icon="${queue.status.iconName}" title="${queue.status.allMessages}"/></td>                        
+                            <td id="${queue.metricIdentifier}-status"><cti:icon icon="${queue.status.iconName}" title="${queue.status.allMessages}"/></td>
                             <td class="wsnw">
                                 <span title="${queue.queueName}">
                                     <cti:url var="detailUrl" value="/support/systemHealth/${queue.metricIdentifier}/detail"/>
@@ -74,8 +74,6 @@
             </table>
         </c:if>
     </div>
-    <br>
-    <span class="tar"><i:inline key=".widgetRedirect"/>
 </cti:msgScope>
 
 <style>

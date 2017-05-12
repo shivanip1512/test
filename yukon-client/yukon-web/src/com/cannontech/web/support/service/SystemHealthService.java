@@ -3,7 +3,6 @@ package com.cannontech.web.support.service;
 import java.util.Collection;
 import java.util.List;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetric;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
 import com.cannontech.web.support.systemMetrics.SystemHealthMetricType;
@@ -34,17 +33,6 @@ public interface SystemHealthService {
      * Retrieves the current data for all metrics with the specified identifiers.
      */
     Multimap<SystemHealthMetricType, SystemHealthMetric> getMetricsByIdentifiers(Collection<SystemHealthMetricIdentifier> metricIds);
-    
-    /**
-     * Retrieves the identifiers of favorite metrics for the specified user.
-     */
-    List<SystemHealthMetricIdentifier> getFavorites(LiteYukonUser user);
-    
-    /**
-     * Favorites or un-favorites the specified metric for the user.
-     * @param isFavorite If true, makes the metric a favorite. If false, un-favorites the metric.
-     */
-    void setFavorite(LiteYukonUser user, SystemHealthMetricIdentifier metric, boolean isFavorite);
     
     /**
      * Retrieves all MetricHealthCriteria that pertain to the specified metric.

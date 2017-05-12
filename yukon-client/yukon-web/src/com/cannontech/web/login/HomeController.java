@@ -1,7 +1,6 @@
 package com.cannontech.web.login;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -33,9 +32,6 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.userpage.service.UserPageService;
 import com.cannontech.web.support.service.SystemHealthService;
-import com.cannontech.web.support.systemMetrics.SystemHealthMetric;
-import com.cannontech.web.support.systemMetrics.SystemHealthMetricIdentifier;
-import com.cannontech.web.support.systemMetrics.SystemHealthMetricType;
 import com.google.common.base.Function;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.Multimap;
@@ -77,20 +73,6 @@ public class HomeController {
         model.put("favorites", favoritesMap.asMap());
 
         model.addAttribute("jreInstaller", CtiUtilities.getJREInstaller());
-        
-        // System health metrics
-        List<SystemHealthMetricIdentifier> favoriteIds = systemHealthService.getFavorites(userContext.getYukonUser());
-        Multimap<SystemHealthMetricType, SystemHealthMetric> metrics = systemHealthService.getMetricsByIdentifiers(favoriteIds);
-        
-        if (metrics.size() > 0) {
-            model.addAttribute("showSystemHealth", true);
-            Collection<SystemHealthMetric> extendedQueueData = metrics.get(SystemHealthMetricType.JMS_QUEUE_EXTENDED);
-            model.addAttribute("extendedQueueData", extendedQueueData);
-            Collection<SystemHealthMetric> queueData = metrics.get(SystemHealthMetricType.JMS_QUEUE);
-            model.addAttribute("queueData", queueData);
-        } else {
-            model.addAttribute("showSystemHealth", false);
-        }
         
         return "dashboard.jsp";
     }

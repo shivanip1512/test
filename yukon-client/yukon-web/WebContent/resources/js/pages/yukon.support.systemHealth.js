@@ -76,38 +76,6 @@ yukon.support.systemHealth = (function() {
             
             if (_initialized) return;
             
-            $(document).on('click', '#favMetricButton', function (event) {
-                var button = $(event.currentTarget),
-                    metric = button.data('metric'),
-                    action = button.data('action'),
-                    favUrl = yukon.url('/support/systemHealth/' + metric + '/' + action),
-                    csrfToken = $('#ajax-csrf-token').val();
-                
-                $.ajax({
-                   url: favUrl,
-                   type: 'POST',
-                   data: {"com.cannontech.yukon.request.csrf.token": csrfToken},
-                   success: function(data) {
-                       if (action == 'favorite') {
-                           button.data('action', 'unfavorite');
-                           button.children('.icon-favorite-not')
-                                 .removeClass('icon-favorite-not')
-                                 .addClass('icon-star');
-                       } else {
-                           button.data('action', 'favorite');
-                           button.children('.icon-star')
-                                 .removeClass('icon-star')
-                                 .addClass('icon-favorite-not');
-                       }
-                   },
-                   
-                   error: function(xhr, status, error) {
-                       var errorMsg = xhr.responseJSON.message;
-                       yukon.ui.alertError(errorMsg);
-                   }
-                });
-            });
-            
             $(document).on('yukon:support:systemhealth:sync', function(e) {
                 $.ajax({
                     url: yukon.url('/support/systemHealth/sync'),

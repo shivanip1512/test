@@ -91,6 +91,12 @@
     <entry key="yukon.web.modules.dashboard.widgetParameter.deviceId">Meter</entry>
     <entry key="yukon.web.modules.dashboard.widgetParameter.deviceGroup">Device Group</entry>
     <entry key="yukon.web.modules.dashboard.widgetParameter.includeDisabled">Include Disabled</entry>
+    <entry key="yukon.web.modules.dashboard.widgetParameter.showRfnMeter">Show Meter Queue</entry>
+    <entry key="yukon.web.modules.dashboard.widgetParameter.showRfnLcr">Show LCR Queue</entry>
+    <entry key="yukon.web.modules.dashboard.widgetParameter.showRfGatewayArchive">Show Gateway Archive Queue</entry>
+    <entry key="yukon.web.modules.dashboard.widgetParameter.showRfDa">Show DA Queue</entry>
+    <entry key="yukon.web.modules.dashboard.widgetParameter.showRfGatewayDataRequest">Show Gateway Data Request Queue</entry>
+    <entry key="yukon.web.modules.dashboard.widgetParameter.showRfGatewayData">Show Gateway Data Queue</entry>
     
     <!-- Visibility -->
     <entry key="yukon.web.modules.dashboard.visibility.SYSTEM">System</entry>

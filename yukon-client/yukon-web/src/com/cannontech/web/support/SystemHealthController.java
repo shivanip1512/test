@@ -22,7 +22,6 @@ import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -61,13 +60,6 @@ public class SystemHealthController {
     @RequestMapping("/home")
     public String home(ModelMap model, LiteYukonUser user) throws MessageConversionException, JMSException {
         
-        Map<SystemHealthMetricIdentifier, Boolean> favorites = new HashMap<>();
-        List<SystemHealthMetricIdentifier> favoriteIds = systemHealthService.getFavorites(user);
-        for (SystemHealthMetricIdentifier favoriteId : favoriteIds) {
-            favorites.put(favoriteId, true);
-        }
-        model.addAttribute("favorites", favorites);
-        
         List<SystemHealthMetric> extendedQueueData = systemHealthService.getMetricsByType(SystemHealthMetricType.JMS_QUEUE_EXTENDED);
         model.addAttribute("extendedQueueData", extendedQueueData);
         
@@ -75,22 +67,6 @@ public class SystemHealthController {
         model.addAttribute("queueData", queueData);
         
         return "systemHealth.jsp";
-    }
-    
-    @RequestMapping(value="{metric}/favorite", method=RequestMethod.POST)
-    public @ResponseBody Map<String, String> favorite(@PathVariable SystemHealthMetricIdentifier metric, 
-                                                      YukonUserContext userContext, 
-                                                      HttpServletResponse response) {
-        
-        return setFavorite(metric, userContext, response, true);
-    }
-    
-    @RequestMapping(value="{metric}/unfavorite", method=RequestMethod.POST)
-    public @ResponseBody Map<String, String> unfavorite(@PathVariable SystemHealthMetricIdentifier metric, 
-                                                        YukonUserContext userContext, 
-                                                        HttpServletResponse response) {
-        
-        return setFavorite(metric, userContext, response, false);
     }
     
     @RequestMapping("dataUpdate")
@@ -162,31 +138,6 @@ public class SystemHealthController {
         resp.setStatus(HttpStatus.OK.value());
         json.put("message", accessor.getMessage("yukon.web.modules.support.systemHealth.sync.success"));
         return json;
-    }
-    
-    /**
-     * Either favorites or un-favorites the specified metric for the user.
-     * @param isFavorite If true, sets the metric as a favorite. Otherwise, un-favorites the metric.
-     */
-    private Map<String, String> setFavorite(SystemHealthMetricIdentifier metric, YukonUserContext userContext, 
-                                            HttpServletResponse response, boolean isFavorite) {
-        
-        Map<String, String> json = new HashMap<>();
-        try {
-            systemHealthService.setFavorite(userContext.getYukonUser(), metric, isFavorite);
-            log.debug("Added favorite " + metric + " for user " + userContext.getYukonUser());
-            response.setStatus(HttpStatus.OK.value());
-            return json;
-        } catch (Exception e) {
-            log.error("Error saving favorite settings for system health metric.", e);
-            
-            MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            String message = accessor.getMessage("yukon.web.modules.support.systemHealth.favoriteError");
-            json.put("message", message);
-            
-            response.setStatus(HttpStatus.INTERNAL_SERVER_ERROR.value());
-            return json;
-        }
     }
     
     @InitBinder

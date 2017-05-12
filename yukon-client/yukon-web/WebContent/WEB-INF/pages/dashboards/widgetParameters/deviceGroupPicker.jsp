@@ -11,7 +11,7 @@
 <cti:includeScript link="JQUERY_TREE" force="true"/>
 <cti:includeScript link="JQUERY_TREE_HELPERS" force="true"/>
 
- <tags:nameValueContainer2>
+<tags:nameValueContainer2>
     <tags:nameValue2 nameKey="${param.parameterKey}">
         <cti:list var="group"><cti:item value="${param.parameterValue}"/></cti:list>
         <tags:deviceGroupPicker inputName="${param.path}.parameters['${param.parameterName}']" inputValue="${group}"/>
