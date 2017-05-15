@@ -1,5 +1,7 @@
 package com.cannontech.common.device.data.collection.dao.model;
 
+import java.util.Date;
+
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 
@@ -58,4 +60,12 @@ public class DeviceCollectionDetail {
     public void setValue(PointValueQualityHolder value) {
         this.value = value;
     }
+
+    public Date getDateTime() {
+        if (value != null) {
+            return value.getPointDataTimeStamp();
+        }
+        return null;
+    }
+
 }

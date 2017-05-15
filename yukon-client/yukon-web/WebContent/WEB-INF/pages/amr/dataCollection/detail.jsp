@@ -5,26 +5,51 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="amr" page="dataCollection.detail">
 
     <cti:toJson id="summaryData" object="${summary}"/>
     
-    <div class="column-12-12 clearfix">
-        <div class="column one">
-            <div style="max-height: 200px;" class="js-pie-chart-summary"></div>
+    <cti:url var="action" value="/amr/dataCollection/detail" />
+    <form action="${action}" method="GET">
+        <input type="hidden" name="deviceGroup" value="${deviceGroup}"/>
+        <input type="hidden" name="includeDisabled" value="${includeDisabled}"/>
+        <div class="column-12-12 clearfix">
+            <div class="column one">
+                <div style="max-height: 200px;" class="js-pie-chart-summary"></div>
+            </div>
+            <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;margin-top:20px;">
+                <tags:nameValueContainer2>
+                    <tags:nameValue2 nameKey=".deviceGroup">
+                        ${deviceGroup}
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".deviceGroups">
+                        <cti:list var="group"><cti:item value="${deviceSubGroup}"/></cti:list>
+                        <tags:deviceGroupPicker inputName="deviceSubGroup" inputValue="${group}"/>
+                    </tags:nameValue2>
+                    <tags:nameValue2 nameKey=".range">
+                        <div class="button-group stacked">
+                            <c:forEach var="range" items="${rangeTypes}">
+                                <c:set var="checked" value="${false}"/>
+                                <c:forEach var="rangeEnum" items="${ranges}">
+                                    <c:if test="${rangeEnum eq range}">
+                                        <c:set var="checked" value="${true}"/>
+                                    </c:if>
+                                </c:forEach>
+                                <tags:check name="ranges" key=".rangeType.${range}" checked="${checked}" value="${range}"></tags:check>
+                            </c:forEach>
+                        </div>
+                    </tags:nameValue2>
+                </tags:nameValueContainer2>
+                <div class="action-area">
+                    <cti:button classes="primary action" label="Filter" type="submit" busy="true"/>
+                </div>
+            </div>
         </div>
-        <div class="column two nogutter">
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".deviceGroup">
-                    ${deviceGroup}
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".deviceGroups">
-                    <tags:deviceGroupPicker inputName="deviceSubGroup" />
-                </tags:nameValue2>
-            </tags:nameValueContainer2>
-        </div>
-    </div>
+    
+    </form>
+
 
     <span class="fwn"><i:inline key=".devices"/>:</span>
     <span class="badge">${detail.hitCount}</span>
@@ -37,50 +62,43 @@
                         <cti:param name="${cp.key}" value="${cp.value}"/>
                     </c:forEach>
                 </cti:url>
-                <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/>    
+                <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go"/>    
                 <cti:url var="mapUrl" value="/tools/map">
                     <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                 </cti:url>
-                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>                
+                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}"/>     
+                <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
+                    <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                        <cti:param name="${cp.key}" value="${cp.value}"/>
+                    </c:forEach>                
+                </cti:url>
+                <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}"/>          
+                <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
+                    <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                        <cti:param name="${cp.key}" value="${cp.value}"/>
+                    </c:forEach>                
+                </cti:url>
+                <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}"/>   
+                <cti:url var="locateRouteUrl" value="/bulk/routeLocate/home">
+                    <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
+                        <cti:param name="${cp.key}" value="${cp.value}"/>
+                    </c:forEach>                
+                </cti:url>
+                <cm:dropdownOption icon="icon-connect" key=".locateRoute" href="${locateRouteUrl}"/>   
             </cm:dropdown>
         </span>
     </c:if>
 
-    <cti:url var="dataUrl" value="/amr/dataCollection/detail">
+    <cti:url var="dataUrl" value="/amr/dataCollection/deviceResults">
         <cti:param name="deviceGroup" value="${deviceGroup}"/>
+        <cti:param name="deviceSubGroup" value="${deviceSubGroup}"/>
         <cti:param name="includeDisabled" value="${includeDisabled}"/>
+        <c:forEach var="range" items="${ranges}">
+            <cti:param name="ranges" value="${range}"/>
+        </c:forEach>
     </cti:url>
-    <div data-url="${dataUrl}" data-static>
-        <table class="compact-results-table row-highlighting has-actions">
-            <tags:sort column="${deviceName}" />                
-            <tags:sort column="${meterSerialNumber}" />                
-            <tags:sort column="${deviceType}" />                
-            <tags:sort column="${address}" />                
-            <tags:sort column="${recentReading}" />                                
-            <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
-            <c:forEach var="device" items="${detail.resultList}">
-                <tr>
-                    <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}">${device.deviceName}</cti:paoDetailUrl></td>
-                    <td>${device.meterSerialNumber}</td>
-                    <td>${device.paoIdentifier.paoType.paoTypeName}</td>
-                    <td>${device.address}</td>
-                    <td>
-                        <cti:uniqueIdentifier var="popupId" prefix="historical-readings-"/>
-                        <cti:url var="historyUrl" value="/meter/historicalReadings/view">
-                            <cti:param name="pointId" value="${device.value.id}"/>
-                            <cti:param name="deviceId" value="${device.paoIdentifier.paoId}"/>
-                        </cti:url>
-                        <a href="javascript:void(0);" data-popup="#${popupId}" class="${pageScope.classes}">
-                            <cti:pointValueFormatter format="VALUE_UNIT" value="${device.value}" />
-                            &nbsp;<cti:formatDate type="BOTH" value="${device.value.pointDataTimeStamp}"/>
-                        </a>
-                        <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
-                    </td>
-                    <td></td>
-                </tr>
-            </c:forEach>
-        </table>
-        <tags:pagingResultsControls result="${detail}" adjustPageCount="true" thousands="true"/>
+    <div data-url="${dataUrl}">
+        <%@ include file="deviceTable.jsp" %>
     </div>
     
     <cti:includeScript link="HIGH_STOCK"/>

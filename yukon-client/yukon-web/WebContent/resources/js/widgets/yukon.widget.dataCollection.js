@@ -119,7 +119,7 @@ yukon.widget.dataCollection = (function () {
                         } else {
                             _updateChart(data.summary, idx);
                         }
-                        var dateTime = moment(data.summary.collectionTime).tz(yg.timezone).format(yg.formats.date.both);
+                        var dateTime = moment(data.summary.collectionTime).tz(data.summary.collectionTime.zone.id).format(yg.formats.date.both);
                         $(item).find('.js-last-updated').text(dateTime);
                     }
                 });
