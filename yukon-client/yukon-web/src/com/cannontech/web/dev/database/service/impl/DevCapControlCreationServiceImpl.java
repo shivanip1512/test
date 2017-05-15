@@ -1,12 +1,10 @@
 package com.cannontech.web.dev.database.service.impl;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Predicate;
 
 import org.joda.time.LocalTime;
 import org.joda.time.Minutes;
@@ -25,7 +23,6 @@ import com.cannontech.capcontrol.model.Regulator;
 import com.cannontech.capcontrol.model.RegulatorToZoneMapping;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.model.ZoneAssignmentCapBankRow;
-import com.cannontech.capcontrol.model.ZoneGang;
 import com.cannontech.capcontrol.model.ZoneThreePhase;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.capcontrol.service.ZoneService;
@@ -69,7 +66,6 @@ import com.cannontech.web.capcontrol.service.FeederService;
 import com.cannontech.web.capcontrol.service.StrategyService;
 import com.cannontech.web.dev.database.objects.DevCapControl;
 import com.cannontech.web.dev.database.service.DevCapControlCreationService;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 public class DevCapControlCreationServiceImpl extends DevObjectCreationBase implements DevCapControlCreationService {
@@ -199,7 +195,7 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         createStatusPoint(capControlSubBus.getName() + " Bus Disabled", StateGroupUtils.STATEGROUP_TRUEFALSE, 500, subBusPao);
         
         // Note we intentionally do not assign these 2 points, which is very confusing as the UI has 2 points that are not "assigned" but use magic offsets
-        // It is not currently known what these assignments acually do
+        // It is not currently known what these assignments actually do
         // capControlSubBus.getCapControlSubstationBus().setDisableBusPointId(busDisablePoint.getPoint().getPointID());
 
         busService.save(capControlSubBus);
@@ -283,15 +279,12 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         List<CCMonitorBankList> unassigned = capbankService.getUnassignedPoints(capbank);
 
 
-        Integer[] pointIds = unassigned.stream().filter(new Predicate<CCMonitorBankList>() {
-            @Override
-            public boolean test(CCMonitorBankList item) {
-                return item.getMonitorPoint().getPointName()
-                    .equalsIgnoreCase("Average Line Voltage")
-                       || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase B")
-                       || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase C");
-            }
-        }).map(CCMonitorBankList::getPointId).toArray(Integer[]::new);
+        Integer[] pointIds = unassigned.stream()
+                                       .filter(item -> item.getMonitorPoint().getPointName().equalsIgnoreCase("Average Line Voltage")
+                                               || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase B")
+                                               || item.getMonitorPoint().getPointName().equalsIgnoreCase("Voltage Phase C"))
+                                       .map(CCMonitorBankList::getPointId)
+                                       .toArray(Integer[]::new);
 
         capbankService.savePoints(capbankId, pointIds);
         capbank = capbankService.getCapBank(capbankId);
@@ -317,8 +310,8 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
         strategy.setName("Sim IVVC Strategy " + devCapControl.getOffset());
         strategy.setControlMethod(ControlMethod.BUSOPTIMIZED_FEEDER);
         strategy.setAlgorithm(ControlAlgorithm.INTEGRATED_VOLT_VAR);
-        strategy.setControlInterval(Minutes.minutes(1).toStandardSeconds().getSeconds());
-        strategy.setMinResponseTime(Minutes.minutes(2).toStandardSeconds().getSeconds());
+        strategy.setControlInterval(Minutes.ONE.toStandardSeconds().getSeconds());
+        strategy.setMinResponseTime(Minutes.TWO.toStandardSeconds().getSeconds());
         
         Map<DayOfWeek, Boolean> peakDays = strategy.getPeakDays();
         for (Entry<DayOfWeek, Boolean> peakDay : peakDays.entrySet()) {
@@ -327,8 +320,8 @@ public class DevCapControlCreationServiceImpl extends DevObjectCreationBase impl
             }
         }
         
-        strategy.setPeakStartTime(LocalTime.fromMillisOfDay(28800 * 1000));
-        strategy.setPeakStopTime(LocalTime.fromMillisOfDay(72000 * 1000));
+        strategy.setPeakStartTime(LocalTime.now().withHourOfDay(8));
+        strategy.setPeakStopTime(LocalTime.now().withHourOfDay(20));
         
         Map<TargetSettingType, PeakTargetSetting> targetSettings = strategy.getTargetSettings();
         targetSettings.get(TargetSettingType.UPPER_VOLT_LIMIT).setPeakValue(126);
