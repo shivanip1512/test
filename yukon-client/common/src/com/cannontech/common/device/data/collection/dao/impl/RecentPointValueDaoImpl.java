@@ -32,7 +32,6 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.YNBoolean;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
-import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.point.PointType;
 import com.google.common.collect.Lists;
 
@@ -63,14 +62,11 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
         }
         sql.append("AND PAObjectId NOT IN (SELECT PAObjectId FROM RecentPointValue)");
 
-        List<DeviceCollectionDetail> values = jdbcTemplate.query(sql, new YukonRowMapper<DeviceCollectionDetail>() {
-            @Override
-            public DeviceCollectionDetail mapRow(YukonResultSet rs) throws SQLException {
-                DeviceCollectionDetail detail = new DeviceCollectionDetail();
-                detail.setPaoIdentifier(rs.getPaoIdentifier("PAObjectId", "Type"));
-                detail.setDeviceName(rs.getString("PAOName"));
-                return detail;
-            }
+        List<DeviceCollectionDetail> values = jdbcTemplate.query(sql, (YukonResultSet rs) -> {
+            DeviceCollectionDetail detail = new DeviceCollectionDetail();
+            detail.setPaoIdentifier(rs.getPaoIdentifier("PAObjectId", "Type"));
+            detail.setDeviceName(rs.getString("PAOName"));
+            return detail;
         });
         return values;
     }
@@ -105,58 +101,55 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
         }
         appendTimeStampClause(sql, range);
         
-        List<DeviceCollectionDetail> values = jdbcTemplate.query(sql, new YukonRowMapper<DeviceCollectionDetail>() {
-            @Override
-            public DeviceCollectionDetail mapRow(YukonResultSet rs) throws SQLException {
-                DeviceCollectionDetail detail = new DeviceCollectionDetail();
-                int pointId = rs.getInt("PointId");
-                Date pointDataTimeStamp = rs.getDate("Timestamp");
-                double pointValue = rs.getDouble("Value");
-                PointQuality quality = PointQuality.getPointQuality(rs.getInt("Quality"));
-                PointType pointType = PointType.getForString(rs.getString("PointType"));
-                PointValueQualityHolder value = new PointValueQualityHolder() {
-                    @Override
-                    public int getId() {
-                        return pointId;
-                    }
-
-                    @Override
-                    public Date getPointDataTimeStamp() {
-                        return pointDataTimeStamp;
-                    }
-
-                    @Override
-                    public int getType() {
-                        return pointType.getPointTypeId();
-                    }
-
-                    @Override
-                    public double getValue() {
-                        return pointValue;
-                    }
-
-                    @Override
-                    public PointQuality getPointQuality() {
-                        return quality;
-                    }
-
-                    @Override
-                    public PointType getPointType() {
-                        return pointType;
-                    }
-                };
-                detail.setValue(value);
-                detail.setPaoIdentifier(rs.getPaoIdentifier("PAObjectId", "Type"));
-                detail.setDeviceName(rs.getString("PAOName"));
-                if (detail.getPaoIdentifier().getPaoType().isRfn()) {
-                    detail.setMeterSerialNumber(rs.getString("SerialNumber"));
-                } else if (detail.getPaoIdentifier().getPaoType().isPlc()) {
-                    detail.setRoute(rs.getString("Route"));
-                    detail.setAddress(rs.getInt("Address"));
-                    detail.setMeterSerialNumber(rs.getString("MeterNumber"));
+        List<DeviceCollectionDetail> values = jdbcTemplate.query(sql, (YukonResultSet rs) -> {
+            DeviceCollectionDetail detail = new DeviceCollectionDetail();
+            int pointId = rs.getInt("PointId");
+            Date pointDataTimeStamp = rs.getDate("Timestamp");
+            double pointValue = rs.getDouble("Value");
+            PointQuality quality = PointQuality.getPointQuality(rs.getInt("Quality"));
+            PointType pointType = PointType.getForString(rs.getString("PointType"));
+            PointValueQualityHolder value = new PointValueQualityHolder() {
+                @Override
+                public int getId() {
+                    return pointId;
                 }
-                return detail;
+
+                @Override
+                public Date getPointDataTimeStamp() {
+                    return pointDataTimeStamp;
+                }
+
+                @Override
+                public int getType() {
+                    return pointType.getPointTypeId();
+                }
+
+                @Override
+                public double getValue() {
+                    return pointValue;
+                }
+
+                @Override
+                public PointQuality getPointQuality() {
+                    return quality;
+                }
+
+                @Override
+                public PointType getPointType() {
+                    return pointType;
+                }
+            };
+            detail.setValue(value);
+            detail.setPaoIdentifier(rs.getPaoIdentifier("PAObjectId", "Type"));
+            detail.setDeviceName(rs.getString("PAOName"));
+            if (detail.getPaoIdentifier().getPaoType().isRfn()) {
+                detail.setMeterSerialNumber(rs.getString("SerialNumber"));
+            } else if (detail.getPaoIdentifier().getPaoType().isPlc()) {
+                detail.setRoute(rs.getString("Route"));
+                detail.setAddress(rs.getInt("Address"));
+                detail.setMeterSerialNumber(rs.getString("MeterNumber"));
             }
+            return detail;
         });
         return values;
     }

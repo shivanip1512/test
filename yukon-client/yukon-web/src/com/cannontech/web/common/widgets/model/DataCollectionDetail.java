@@ -28,7 +28,7 @@ public class DataCollectionDetail {
 
     public void calculatePrecentage(int total) {
         if (total != 0) {
-            percentage = new BigDecimal(deviceCount).divide(new BigDecimal(total), 4, RoundingMode.HALF_EVEN).multiply(new BigDecimal(100)).doubleValue();
+            percentage = new BigDecimal(deviceCount).divide(new BigDecimal(total), 10, RoundingMode.HALF_EVEN).multiply(new BigDecimal(100)).doubleValue();
         }
     }
     

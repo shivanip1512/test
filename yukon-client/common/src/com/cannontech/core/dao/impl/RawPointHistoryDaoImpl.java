@@ -56,7 +56,6 @@ import com.cannontech.database.data.point.PointType;
 import com.cannontech.database.vendor.DatabaseVendor;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilder;
 import com.cannontech.database.vendor.VendorSpecificSqlBuilderFactory;
-import com.google.common.base.Function;
 import com.google.common.base.Stopwatch;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
@@ -288,7 +287,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             getLimitedAttributeData(displayableDevices, attribute, 1, excludeDisabledPaos, range, Order.REVERSE,
                 excludeQualities);
 
-        return getSingleAttributeDataMap(limitedStuff);
+        return Maps.transformValues(limitedStuff.asMap(), Iterables::getOnlyElement);
     }
     
     @Override
@@ -301,18 +300,7 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
             getLimitedAttributeData(displayableDevices, attribute, range, changeIdRange, 1, excludeDisabledPaos,
                 Order.REVERSE, OrderBy.TIMESTAMP, excludeQualities);
 
-        return getSingleAttributeDataMap(limitedStuff);
-    }
-
-    private Map<PaoIdentifier, PointValueQualityHolder> getSingleAttributeDataMap(
-            ListMultimap<PaoIdentifier, PointValueQualityHolder> limitedStuff) {
-        return Maps.transformValues(limitedStuff.asMap(),
-            new Function<Collection<PointValueQualityHolder>, PointValueQualityHolder>() {
-                @Override
-                public PointValueQualityHolder apply(Collection<PointValueQualityHolder> from) {
-                    return Iterables.getOnlyElement(from);
-                }
-            });
+        return Maps.transformValues(limitedStuff.asMap(), Iterables::getOnlyElement);
     }
 
     @Override
