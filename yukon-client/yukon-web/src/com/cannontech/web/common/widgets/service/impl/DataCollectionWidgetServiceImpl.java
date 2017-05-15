@@ -193,9 +193,11 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
             log.debug("For date range " + getLogString(timeRange, type) + " got " + detail.size() + " results.");
             details.addAll(detail);
         });
-        List<DeviceCollectionDetail> detail = rpvDao.getDeviceCollectionResult(group1, group2, includeDisabled);
-        log.debug("No entries in RecentPointValue table for " + detail.size() + " devices.");
-        details.addAll(detail);
+        if(Arrays.asList(ranges).contains(RangeType.UNAVAILABLE)){
+            List<DeviceCollectionDetail> detail = rpvDao.getDeviceCollectionResult(group1, group2, includeDisabled);
+            log.debug("No entries in RecentPointValue table for " + detail.size() + " devices.");
+            details.addAll(detail);
+        }
         return details;
     }
 

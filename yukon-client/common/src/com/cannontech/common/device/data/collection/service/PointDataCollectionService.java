@@ -93,13 +93,10 @@ public class PointDataCollectionService implements MessageListener {
                 log.debug("Starting data collection for " + devices.size() + " devices.");
 
                 List<LiteYukonPAObject> meters = new ArrayList<>();
-                List<LiteYukonPAObject> waterMeters = new ArrayList<>();
                 List<LiteYukonPAObject> lcrs = new ArrayList<>();
 
                 devices.forEach(device -> {
-                    if (device.getPaoType().isWaterMeter()) {
-                        waterMeters.add(device);
-                    } else if (device.getPaoType().isMeter()) {
+                    if (device.getPaoType().isMeter()) {
                         meters.add(device);
                     } else if (device.getPaoType() == PaoType.LCR6200_RFN || device.getPaoType() == PaoType.LCR6600_RFN
                         || device.getPaoType() == PaoType.LCR3102) {
@@ -110,13 +107,12 @@ public class PointDataCollectionService implements MessageListener {
                 Long maxChangeId = rphDao.getMaxChangeId();
                 ReadableRange<Long> changeIdRange = Range.inclusive(lastChangeId, maxChangeId);
                 Map<PaoIdentifier, PointValueQualityHolder> recentValues = new HashMap<>();
-                addRecentValues(recentValues, waterMeters, BuiltInAttribute.USAGE_WATER, changeIdRange);
                 addRecentValues(recentValues, meters, BuiltInAttribute.USAGE, changeIdRange);
                 addRecentValues(recentValues, lcrs, BuiltInAttribute.RELAY_1_RUN_TIME_DATA_LOG, changeIdRange);
 
                 log.debug("Got " + recentValues.size() + " rows of new data from RPH");
                 if (!recentValues.isEmpty()) {
-                    // recentPointValueDao.collectData(recentValues);
+                    recentPointValueDao.collectData(recentValues);
                     persistedSystemValueDao.setValue(PersistedSystemValueKey.DATA_COLLECTION_LAST_CHANGE_ID,
                         changeIdRange.getMax());
                     jmsTemplate.convertAndSend(recalculationQueueName, new RecalculationRequest());
