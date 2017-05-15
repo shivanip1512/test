@@ -11,6 +11,10 @@
 
     <cti:toJson id="summaryData" object="${summary}"/>
     
+    <c:forEach var="range" items="${rangeTypes}">
+        <input type="hidden" class="js-${range}" value="<i:inline key=".rangeType.${range}"/>"></input>
+    </c:forEach>
+    
     <cti:url var="action" value="/amr/dataCollection/detail" />
     <form action="${action}" method="GET">
         <input type="hidden" name="deviceGroup" value="${deviceGroup}"/>

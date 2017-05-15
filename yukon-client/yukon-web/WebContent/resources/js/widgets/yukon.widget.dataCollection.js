@@ -18,33 +18,28 @@ yukon.widget.dataCollection = (function () {
     _getData = function (data) {
         return [
             {
-                name: 'Available',
+                name: $('.js-AVAILABLE').val(),
                 y: data.available.percentage,
                 x: data.available.deviceCount,
-                color: '#5cb85c',
-                className: 'js-available'
+                color: '#5cb85c'            
             },
             {
-                name: 'Expected',
+                name: $('.js-EXPECTED').val(),
                 y: data.expected.percentage,
                 x: data.expected.deviceCount,
-                color: '#FFFF00',
-                className: 'js-expected'
-                   
+                color: '#FFFF00'                   
             },
             {
-                name: 'Outdated',
+                name: $('.js-OUTDATED').val(),
                 y: data.outdated.percentage,
                 x: data.outdated.deviceCount,
-                color: '#fb8521',
-                className: 'js-outdated'
+                color: '#fb8521'
             },
             {
-                name: 'Unavailable',
+                name: $('.js-UNAVAILABLE').val(),
                 y: data.unavailable.percentage,
                 x: data.unavailable.deviceCount,
-                color: '#999999',
-                className: 'js-unavailable'
+                color: '#999999'            
             }
         ]
     },
@@ -119,7 +114,7 @@ yukon.widget.dataCollection = (function () {
                         } else {
                             _updateChart(data.summary, idx);
                         }
-                        var dateTime = moment(data.summary.collectionTime).tz(data.summary.collectionTime.zone.id).format(yg.formats.date.both);
+                        var dateTime = moment(data.summary.collectionTime.millis).format(yg.formats.date.both_with_ampm);
                         $(item).find('.js-last-updated').text(dateTime);
                     }
                 });

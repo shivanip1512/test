@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.web.common.widgets.service.DataCollectionWidgetService.RangeType;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -23,6 +24,8 @@ public class DataCollectionWidget extends AdvancedWidgetControllerBase {
         
         Boolean includeDisabled = WidgetParameterHelper.getBooleanParameter(request, "includeDisabled", true);
         model.addAttribute("includeDisabled", includeDisabled);
+        
+        model.addAttribute("rangeTypes", RangeType.values());
 
         return "dataCollectionWidget/render.jsp";
     }

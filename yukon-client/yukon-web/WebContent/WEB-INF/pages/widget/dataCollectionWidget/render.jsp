@@ -2,12 +2,17 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
 
 <cti:uniqueIdentifier var="id" />
 
 <cti:msgScope paths="modules.dashboard,widgets.dataCollectionWidget">
 
 <div class="js-data-collection-widget">
+
+    <c:forEach var="range" items="${rangeTypes}">
+        <input type="hidden" class="js-${range}" value="<i:inline key="yukon.web.modules.amr.dataCollection.detail.rangeType.${range}"/>"></input>
+    </c:forEach>
 
      <tags:nameValueContainer2>
         <tags:nameValue2 nameKey=".widgetParameter.deviceGroup">

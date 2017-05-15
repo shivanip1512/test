@@ -24,10 +24,6 @@ yukon.ami.dataCollection.detail = (function () {
                 data = yukon.fromJson('#summaryData');
                         
             yukon.widget.dataCollection.buildChart(chart, data);
-            
-            $(document).on('click', '.highcharts-legend-item', function () {
-
-            });
 
             _initialized = true;
         }
