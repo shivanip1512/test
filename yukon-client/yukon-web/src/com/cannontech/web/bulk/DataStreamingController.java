@@ -116,12 +116,11 @@ public class DataStreamingController {
             configuration.getAttributes().forEach(attribute -> attribute.setInterval(configuration.getSelectedInterval()));
         }
 
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        configuration.setAccessor(accessor);
-
         //  Don't save the config yet - just do a verification check.
         //    The config will be saved by dataStreamingService.assignDataStreamingConfig() during the verification POST.
         VerificationInformation verifyInfo = dataStreamingService.verifyConfiguration(configuration, deviceCollection.getDeviceList());
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        verifyInfo.getConfiguration().setAccessor(accessor);
 
         verifyInfo.getDeviceUnsupported().forEach(unsupported -> {
             unsupported.setDeviceCollection(dcProducer.createDeviceCollection(unsupported.getDeviceIds(), null));
