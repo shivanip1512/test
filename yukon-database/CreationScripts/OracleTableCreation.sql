@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/10/2017 4:24:35 PM                         */
+/* Created on:     5/15/2017 3:27:40 PM                         */
 /*==============================================================*/
 
 
@@ -7704,6 +7704,18 @@ create table RawPointHistoryDependentJob  (
 );
 
 /*==============================================================*/
+/* Table: RecentPointValue                                      */
+/*==============================================================*/
+create table RecentPointValue  (
+   PAObjectID           NUMBER                          not null,
+   PointID              NUMBER                          not null,
+   Timestamp            DATE                            not null,
+   Quality              NUMBER                          not null,
+   Value                FLOAT                           not null,
+   constraint PK_RecentPointValue primary key (PAObjectID)
+);
+
+/*==============================================================*/
 /* Table: Regulator                                             */
 /*==============================================================*/
 create table Regulator  (
@@ -12836,6 +12848,16 @@ alter table RPHTag
 alter table RawPointHistoryDependentJob
    add constraint FK_RPHDependentJob_Job foreign key (JobId, JobGroupId)
       references JOB (JobID, JobGroupId)
+      on delete cascade;
+
+alter table RecentPointValue
+   add constraint FK_RecentPointValue_Point foreign key (PointID)
+      references POINT (POINTID)
+      on delete cascade;
+
+alter table RecentPointValue
+   add constraint FK_RecentPointValue_YukonPAObject foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID)
       on delete cascade;
 
 alter table Regulator

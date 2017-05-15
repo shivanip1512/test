@@ -706,6 +706,29 @@ ALTER TABLE WidgetSettings
 GO
 /* End YUK-16434 */
 
+/* Start YUK-16646 */
+CREATE TABLE RecentPointValue (
+   PAObjectID           NUMERIC              NOT NULL,
+   PointID              NUMERIC              NOT NULL,
+   Timestamp            DATETIME             NOT NULL,
+   Quality              NUMERIC              NOT NULL,
+   Value                FLOAT                NOT NULL,
+   CONSTRAINT PK_RecentPointValue PRIMARY KEY (PAObjectID)
+);
+GO
+
+ALTER TABLE RecentPointValue
+   ADD CONSTRAINT FK_RecentPointValue_Point FOREIGN KEY (PointID)
+      REFERENCES POINT (POINTID)
+         ON DELETE CASCADE;
+
+ALTER TABLE RecentPointValue
+   ADD CONSTRAINT FK_RecentPointValue_YukonPAObject FOREIGN KEY (PAObjectID)
+      REFERENCES YukonPAObject (PAObjectID)
+         ON DELETE CASCADE;
+GO
+/* End YUK-16646 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

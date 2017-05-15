@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/10/2017 4:26:32 PM                         */
+/* Created on:     5/15/2017 3:26:49 PM                         */
 /*==============================================================*/
 
 
@@ -8175,6 +8175,19 @@ create table RawPointHistoryDependentJob (
 go
 
 /*==============================================================*/
+/* Table: RecentPointValue                                      */
+/*==============================================================*/
+create table RecentPointValue (
+   PAObjectID           numeric              not null,
+   PointID              numeric              not null,
+   Timestamp            datetime             not null,
+   Quality              numeric              not null,
+   Value                float                not null,
+   constraint PK_RecentPointValue primary key (PAObjectID)
+)
+go
+
+/*==============================================================*/
 /* Table: Regulator                                             */
 /*==============================================================*/
 create table Regulator (
@@ -13964,6 +13977,18 @@ go
 alter table RawPointHistoryDependentJob
    add constraint FK_RPHDependentJob_Job foreign key (JobId, JobGroupId)
       references JOB (JobID, JobGroupId)
+         on delete cascade
+go
+
+alter table RecentPointValue
+   add constraint FK_RecentPointValue_Point foreign key (PointID)
+      references POINT (POINTID)
+         on delete cascade
+go
+
+alter table RecentPointValue
+   add constraint FK_RecentPointValue_YukonPAObject foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID)
          on delete cascade
 go
 
