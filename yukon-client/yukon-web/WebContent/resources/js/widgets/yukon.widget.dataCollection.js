@@ -114,7 +114,7 @@ yukon.widget.dataCollection = (function () {
                         } else {
                             _updateChart(data.summary, idx);
                         }
-                        var dateTime = moment(data.summary.collectionTime.millis).format(yg.formats.date.both_with_ampm);
+                        var dateTime = moment(data.summary.collectionTime.millis).tz(yg.timezone).format(yg.formats.date.both_with_ampm);
                         $(item).find('.js-last-updated').text(dateTime);
                     }
                 });
