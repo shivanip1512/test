@@ -9,7 +9,7 @@
         <tag name="WATER_METER_DETAIL_DISPLAYABLE"/>
     </tags>
     <pointInfos>
-        <pointInfo name="Water Usage" init="true" attributes="USAGE_WATER"/>
+        <pointInfo name="Water Usage" init="true" attributes="USAGE_WATER, USAGE"/>
         <pointInfo name="Water Usage per Interval" init="true" attributes="WATER_USAGE_PER_INTERVAL"/>
     </pointInfos>
 </pao>

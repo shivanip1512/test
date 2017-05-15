@@ -24,7 +24,7 @@
         <pointInfo name="Meter Read - Protocol cannot be determined" attributes="METER_READ_PROTOCOL_CANNOT_BE_DETERMINED"/>
         <pointInfo name="Tamper - Cable Cut" attributes="TAMPER_CABLE_CUT"/>
         <pointInfo name="Temperature" init="true"/>
-        <pointInfo name="Water Usage" init="true" attributes="USAGE_WATER"/>
+        <pointInfo name="Water Usage" init="true" attributes="USAGE_WATER, USAGE"/>
         <pointInfo name="Water Usage per Interval" init="true" attributes="WATER_USAGE_PER_INTERVAL"/>
     </pointInfos>
 </pao>
