@@ -7,6 +7,7 @@ import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -133,54 +134,56 @@ public class CD_ServerImpl implements CD_Server {
         
         List<CDState> cdStates = new ArrayList<CDState>();
         YukonMeter meter = null;
-        for (CDDeviceIdentifier cdDeviceIdentifier : cdDeviceIdentifiers) {
-            if (cdDeviceIdentifier.getMeterID() != null) {
-                meter = mspValidationService.isYukonMeterNumber(cdDeviceIdentifier.getMeterID().getMeterName());
-            } else {
-                String errorMessage = "MeterID is not present in request";
-                log.error(errorMessage);
-                throw new MultispeakWebServiceException(errorMessage);
-            }
+        if (CollectionUtils.isNotEmpty(cdDeviceIdentifiers)) {
+            for (CDDeviceIdentifier cdDeviceIdentifier : cdDeviceIdentifiers) {
+                if (cdDeviceIdentifier.getMeterID() != null) {
+                    meter = mspValidationService.isYukonMeterNumber(cdDeviceIdentifier.getMeterID().getMeterName());
+                } else {
+                    String errorMessage = "MeterID is not present in request";
+                    log.error(errorMessage);
+                    throw new MultispeakWebServiceException(errorMessage);
+                }
 
-            boolean canInitiatePorterRequest =
-                paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
+                boolean canInitiatePorterRequest =
+                        paoDefinitionDao.isTagSupported(meter.getPaoIdentifier().getPaoType(), PaoTag.PORTER_COMMAND_REQUESTS);
 
-            RCDStateKind rcdStateKind;
-            // Performs an actual meter read instead of simply replying from the database.
-            // CDMeterState can handle multiple types of communications,
-            // but there is no gain from performing a real time read for non-porter meters...to-date.
-            if (canInitiatePorterRequest) {
-                rcdStateKind = multispeakMeterService.CDMeterState(vendor, meter);
-            } else { // if we can't initiate a new request (aka RFN meter), then just return what dispatch has stored.
-                rcdStateKind = getRCDStateFromCache(meter);
-            }
-            multispeakEventLogService.returnObject("RCDStateKind." + rcdStateKind.value(),
-                cdDeviceIdentifier.getMeterID().getMeterName(), "GetCDDeviceStates", vendor.getCompanyName());
+                RCDStateKind rcdStateKind;
+                // Performs an actual meter read instead of simply replying from the database.
+                // CDMeterState can handle multiple types of communications,
+                // but there is no gain from performing a real time read for non-porter meters...to-date.
+                if (canInitiatePorterRequest) {
+                    rcdStateKind = multispeakMeterService.CDMeterState(vendor, meter);
+                } else { // if we can't initiate a new request (aka RFN meter), then just return what dispatch has stored.
+                    rcdStateKind = getRCDStateFromCache(meter);
+                }
+                multispeakEventLogService.returnObject("RCDStateKind." + rcdStateKind.value(),
+                    cdDeviceIdentifier.getMeterID().getMeterName(), "GetCDDeviceStates", vendor.getCompanyName());
 
-            // TODO MeterID is also part of request CDDeviceIdentifier and also part of response and both are
-            // necessary objects in both (choose either CD device or meter)
-            // Can i pass request object's meterID in response if all the data are same.(probably RegisterName
-            // and SystemName will not be same)
+                // TODO MeterID is also part of request CDDeviceIdentifier and also part of response and both are
+                // necessary objects in both (choose either CD device or meter)
+                // Can i pass request object's meterID in response if all the data are same.(probably RegisterName
+                // and SystemName will not be same)
 
-            CDState cdState = new CDState();
-            CDDeviceIdentifier deviceIdentifier = new CDDeviceIdentifier();
+                CDState cdState = new CDState();
+                CDDeviceIdentifier deviceIdentifier = new CDDeviceIdentifier();
             
-            MeterID meterID = new MeterID();
-            meterID.setValue(cdDeviceIdentifier.getMeterID().getMeterName());
-            meterID.setMeterName(cdDeviceIdentifier.getMeterID().getMeterName());
-            meterID.setServiceType(cdDeviceIdentifier.getMeterID().getServiceType());
-            meterID.setCommunicationAddress(cdDeviceIdentifier.getMeterID().getCommunicationAddress());
-            meterID.setCommunicationAddress(cdDeviceIdentifier.getMeterID().getCommunicationsPort());
-            meterID.setRegisteredName("Eaton");
-            meterID.setSystemName("Yukon");
+                MeterID meterID = new MeterID();
+                meterID.setValue(cdDeviceIdentifier.getMeterID().getMeterName());
+                meterID.setMeterName(cdDeviceIdentifier.getMeterID().getMeterName());
+                meterID.setServiceType(cdDeviceIdentifier.getMeterID().getServiceType());
+                meterID.setCommunicationAddress(cdDeviceIdentifier.getMeterID().getCommunicationAddress());
+                meterID.setCommunicationAddress(cdDeviceIdentifier.getMeterID().getCommunicationsPort());
+                meterID.setRegisteredName("Eaton");
+                meterID.setSystemName("Yukon");
 
-            deviceIdentifier.setMeterID(meterID);
-            cdState.setCDDeviceIdentifier(deviceIdentifier);
+                deviceIdentifier.setMeterID(meterID);
+                cdState.setCDDeviceIdentifier(deviceIdentifier);
 
-            RCDState rcdState = new RCDState();
-            rcdState.setValue(rcdStateKind);
-            cdState.setRCDState(rcdState);
-            cdStates.add(cdState);
+                RCDState rcdState = new RCDState();
+                rcdState.setValue(rcdStateKind);
+                cdState.setRCDState(rcdState);
+                cdStates.add(cdState);
+            }
         }
         return cdStates;
     }
