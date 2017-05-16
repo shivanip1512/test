@@ -3568,6 +3568,7 @@
         </point>
         <point name="Current Angle Phase A">
             <uom>A degree</uom>
+            <multiplier value="0.001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase A</modifier>
@@ -3575,6 +3576,7 @@
         </point>
         <point name="Current Angle Phase B">
             <uom>A degree</uom>
+            <multiplier value="0.001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase B</modifier>
@@ -3582,6 +3584,7 @@
         </point>
         <point name="Current Angle Phase C">
             <uom>A degree</uom>
+            <multiplier value="0.001"/>
             <parseSiPrefix/>
             <modifiers match="equal">
                 <modifier>Phase C</modifier>
