@@ -71,6 +71,7 @@ import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.jobs.model.ScheduledRepeatingJob;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.service.JobManager;
+import com.cannontech.multispeak.client.MultiSpeakVersion;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
@@ -415,6 +416,8 @@ public class WaterLeakReportController {
 
     @RequestMapping(value = "cisDetails", method = RequestMethod.GET)
     public String cisDetails(ModelMap model, YukonUserContext userContext, int paoId) {
+        MultiSpeakVersion multiSpeakVersion = mspHandler.getMSPVersion();
+        model.addAttribute("multiSpeakVersion", multiSpeakVersion);
         return mspHandler.getCisDetails(model, userContext, paoId);
     }
 

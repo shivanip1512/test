@@ -10,7 +10,14 @@
             <i:inline key=".noVendor" />
         </c:when>
         <c:otherwise>
-            <%@ include file="../../widget/accountInformationWidget/accountInfoPartial.jspf" %>
+           <c:choose>
+               <c:when test="${multiSpeakVersion.version == V3}">
+                   <%@ include file="../../widget/accountInformationWidget/accountInfoPartial.jspf"%>
+               </c:when>
+               <c:otherwise>
+                   <%@ include file="../../widget/accountInformationWidget/accountInfoPartialV5.jspf"%>
+               </c:otherwise>
+           </c:choose>
         </c:otherwise>
     </c:choose>
 </cti:msgScope>
