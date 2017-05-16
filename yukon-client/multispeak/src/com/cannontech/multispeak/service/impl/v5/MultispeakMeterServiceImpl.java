@@ -2083,7 +2083,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
         ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 
-        List<String> mspMeters = meterIDs.stream().map(meterID -> meterID.getMeterName()).collect(Collectors.toList());
+        Set<String> mspMeters = meterIDs.stream().map(meterID -> meterID.getMeterName()).collect(Collectors.toSet());
 
         log.info("Received " + mspMeters.size() + " Meter(s) for MeterReading from " + mspVendor.getCompanyName());
         multispeakEventLogService.initiateMeterReadRequest(mspMeters.size(), "InitiateMeterReadingsByMeterIDs",
@@ -2092,21 +2092,20 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         ListMultimap<String, YukonMeter> meterNumberToMeterMap =
             meterDao.getMetersMapForMeterNumbers(Lists.newArrayList(mspMeters));
         boolean excludeDisabled = globalSettingDao.getBoolean(GlobalSettingType.MSP_EXCLUDE_DISABLED_METERS);
+        
+        Set<String> validMeters = meterNumberToMeterMap.keySet();
+        Set<String> invalidMeters = Sets.difference(mspMeters, validMeters);
+        for(String invalidMeter : invalidMeters) {
+            multispeakEventLogService.meterNotFound(invalidMeter, "InitiateMeterReadingsByMeterIDs",
+                mspVendor.getCompanyName());
+            errorObjects.add(mspObjectDao.getNotFoundErrorObject(invalidMeter, "MeterNumber", "MeterID", "MeterReadEvent",
+                mspVendor.getCompanyName()));
+        }
 
-        for (String meterNumber : mspMeters) {
+        for (String meterNumber : validMeters) {
             List<YukonMeter> meters = meterNumberToMeterMap.get(meterNumber); // this will most likely be size
                                                                               // 1
             for (YukonMeter meter : meters) {
-                if (meter == null) {
-                    multispeakEventLogService.meterNotFound(meterNumber, "InitiateMeterReadingsByMeterIDs",
-                        mspVendor.getCompanyName());
-                    ErrorObject err =
-                        mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "MeterID", "MeterReadEvent",
-                            mspVendor.getCompanyName());
-                    errorObjects.add(err);
-                    continue;
-                }
-
                 if (excludeDisabled && meter.isDisabled()) {
                     log.debug("Meter " + meter.getMeterNumber() + " is disabled, skipping.");
                     continue;
@@ -2244,7 +2243,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 
         log.info("Received " + meterIDs.size() + " for BlockMeterReading from " + mspVendor.getCompanyName());
-        multispeakEventLogService.initiateMeterReadRequest(1, "InitiateMeterReadingsByReadingTypeCodes",
+        multispeakEventLogService.initiateMeterReadRequest(meterIDs.size(), "InitiateMeterReadingsByReadingTypeCodes",
             mspVendor.getCompanyName());
 
         final EnumSet<BuiltInAttribute> attributes = blockProcessingService.getAttributeSet();
@@ -2259,9 +2258,20 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
         for (MeterID meterID : meterIDs) {
             String meter = meterID.getMeterName();
-            YukonMeter paoToRead = mspMeterDao.getMeterForMeterNumber(meter);
-            multispeakEventLogService.initiateMeterRead(meter, paoToRead, transactionId,
-                "InitiateMeterReadingsByReadingTypeCodes", mspVendor.getCompanyName());
+            YukonMeter paoToRead;
+            try {
+                paoToRead = mspMeterDao.getMeterForMeterNumber(meter);
+                multispeakEventLogService.initiateMeterRead(meter, paoToRead, transactionId,
+                    "InitiateMeterReadingsByReadingTypeCodes", mspVendor.getCompanyName());
+            } catch (NotFoundException e) {
+                multispeakEventLogService.meterNotFound(meter, "InitiateMeterReadByMeterNoAndType",
+                    mspVendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meter, "MeterNumber", "Meter", "MeterReadEvent",
+                                  mspVendor.getCompanyName());
+                errorObjects.add(err);
+                log.error(e);
+                continue;
+            }
 
             final ConcurrentMap<PaoIdentifier, FormattedBlockUpdater<Block>> updaterMap =
                 new MapMaker().concurrencyLevel(2).initialCapacity(1).makeMap();

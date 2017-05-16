@@ -737,21 +737,20 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         
         for (String meterNumber : meterNumbers) {
             List<YukonMeter> meters = meterNumberToMeterMap.get(meterNumber);    // this will most likely be size 1
-            for (YukonMeter meter : meters) {
-                if (meter == null) {
-                    multispeakEventLogService.meterNotFound(meterNumber, "InitiateMeterReadByMeterNumber", mspVendor.getCompanyName());
-                    ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", mspVendor.getCompanyName());
-                    errorObjects.add(err);
-                    continue;
+            if(CollectionUtils.isNotEmpty(meters)) {
+                for (YukonMeter meter : meters) {
+                    if (excludeDisabled && meter.isDisabled()) {
+                        log.debug("Meter " + meter.getMeterNumber() + " is disabled, skipping.");
+                        continue;
+                    }
+                    allPaosToRead.add(meter);
+                    multispeakEventLogService.initiateMeterRead(meterNumber, meter, transactionID, "InitiateMeterReadByMeterNumber", mspVendor.getCompanyName());
                 }
-    
-                if (excludeDisabled && meter.isDisabled()) {
-                    log.debug("Meter " + meter.getMeterNumber() + " is disabled, skipping.");
-                    continue;
-                }
-    
-                allPaosToRead.add(meter);
-                multispeakEventLogService.initiateMeterRead(meterNumber, meter, transactionID, "InitiateMeterReadByMeterNumber", mspVendor.getCompanyName());
+            } else {
+                multispeakEventLogService.meterNotFound(meterNumber, "InitiateMeterReadByMeterNumber", mspVendor.getCompanyName());
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", mspVendor.getCompanyName());
+                errorObjects.add(err);
+                continue;
             }
         }
 

@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -349,7 +350,7 @@ public class MRServiceEndPoint {
     }
     
     @PayloadRoot(localPart = "InitiateMeterReadingsByReadingTypeCodes", namespace = MR_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload InitiateMeterReadingsByReadingTypeCodesResponse InitiateMeterReadingsByReadingTypeCodes(
+    public @ResponsePayload InitiateMeterReadingsByReadingTypeCodesResponse initiateMeterReadingsByReadingTypeCodes(
             @RequestPayload InitiateMeterReadingsByReadingTypeCodes initiateMeterReadingsByReadingTypeCodes)
             throws MultispeakWebServiceException {
         InitiateMeterReadingsByReadingTypeCodesResponse response = objectFactory.createInitiateMeterReadingsByReadingTypeCodesResponse();
@@ -362,15 +363,15 @@ public class MRServiceEndPoint {
         List<MeterID> meterIDs = (initiateMeterReadingsByReadingTypeCodes.getArrayOfMeterID() != null) 
                 ? initiateMeterReadingsByReadingTypeCodes.getArrayOfMeterID().getMeterID() : null;
 
-        if (meterIDs == null) {
-            throw new MultispeakWebServiceException("Meter ID not available");
-        }
-        List<ReadingTypeCode> readingTypeCodes = initiateMeterReadingsByReadingTypeCodes.getArrayOfReadingTypeCode() != null 
-                ? initiateMeterReadingsByReadingTypeCodes.getArrayOfReadingTypeCode().getReadingTypeCode() : null;
+        if (CollectionUtils.isNotEmpty(meterIDs)) {
+            List<ReadingTypeCode> readingTypeCodes = initiateMeterReadingsByReadingTypeCodes.getArrayOfReadingTypeCode() != null 
+                    ? initiateMeterReadingsByReadingTypeCodes.getArrayOfReadingTypeCode().getReadingTypeCode() : null;
 
-        multispeakFuncs.addErrorObjectsInResponseHeader(mr_server.initiateMeterReadingsByReadingTypeCodes(meterIDs,
-                                                                 responseURL, readingTypeCodes, transactionId,
-                                                                 expirationTime, formattedBlockTemplateID));
+            multispeakFuncs.addErrorObjectsInResponseHeader(mr_server.initiateMeterReadingsByReadingTypeCodes(meterIDs,
+                                                                     responseURL, readingTypeCodes, transactionId,
+                                                                     expirationTime, formattedBlockTemplateID));
+        }
+        
         return response;
     }
     
@@ -393,22 +394,23 @@ public class MRServiceEndPoint {
         // Other option is:
         // demandResetEvents.get(0).getMeterGroups().getElectricMeterGroups().getMeterGroup().get(0).getMeterIDs().getMeterID().get(0).getMeterName();
                 
-        List<MeterIDs> meterIDs =
-            demandResetEvents.stream().map(DemandResetEvent -> DemandResetEvent.getMeterIDs()).collect(
-                Collectors.toList());
+        if (demandResetEvents != null) {
+            List<MeterIDs> meterIDs =
+                demandResetEvents.stream().map(DemandResetEvent -> DemandResetEvent.getMeterIDs()).collect(
+                    Collectors.toList());
 
-        List<MeterID> meterIDList = new ArrayList<MeterID>();
-       
-        for (MeterIDs meterIDsTemp : meterIDs) {
-            List<MeterID> meterIDTemp = meterIDsTemp.getMeterID();
-            for (MeterID meterID : meterIDTemp) {
-                meterIDList.add(meterID);
+            List<MeterID> meterIDList = new ArrayList<MeterID>();
+
+            for (MeterIDs meterIDsTemp : meterIDs) {
+                List<MeterID> meterIDTemp = meterIDsTemp.getMeterID();
+                for (MeterID meterID : meterIDTemp) {
+                    meterIDList.add(meterID);
+                }
             }
+
+            multispeakFuncs.addErrorObjectsInResponseHeader(mr_server.initiateDemandReset(meterIDList, responseURL,
+                transactionId, expirationTime));
         }
-        
-        multispeakFuncs.addErrorObjectsInResponseHeader(mr_server.initiateDemandReset(meterIDList,
-                                                                  responseURL, transactionId,
-                                                                  expirationTime));
 
         return response;
     }
