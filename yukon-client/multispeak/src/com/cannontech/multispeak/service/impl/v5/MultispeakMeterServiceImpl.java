@@ -1384,7 +1384,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             ErrorObject errorObject =
                 mspObjectDao.getErrorObject(mspMeter.getPrimaryIdentifier().getValue(), "Error: MeterNumber("
                     + mspMeter.getPrimaryIdentifier().getValue() + ") - SerialNumber "
-                    + "nor communication Address are invalid.  No updates were made.", "ElectricMeter", method,
+                    + "nor communication Address are valid.  No updates were made.", "ElectricMeter", method,
                     mspVendor.getCompanyName());
             throw new MspErrorObjectException(errorObject);
         }

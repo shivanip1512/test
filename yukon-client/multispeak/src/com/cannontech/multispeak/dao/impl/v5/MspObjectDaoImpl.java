@@ -5,8 +5,10 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
 import javax.xml.namespace.QName;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -189,7 +191,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                     getServiceLocationsByMeterIDsResponse.getArrayOfServiceLocation();
                 if (arrayOfServiceLocation != null) {
                     List<ServiceLocation> responseServiceLocations = arrayOfServiceLocation.getServiceLocation();
-                    if (!responseServiceLocations.isEmpty()) {
+                    if (!CollectionUtils.isEmpty(responseServiceLocations)) {
                         mspServiceLocation = responseServiceLocations.get(0);
                     }
                 }
@@ -232,7 +234,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 Meters meters = getMetersByServiceLocationIDsResponse.getMeters();
                 if (meters != null) {
                     ElectricMeters electricMeters = meters.getElectricMeters();
-                    if (electricMeters != null) {
+                    if (electricMeters != null && !CollectionUtils.isEmpty(electricMeters.getElectricMeter())) {
                         meterDetails = electricMeters.getElectricMeter();
                     }
                 }
