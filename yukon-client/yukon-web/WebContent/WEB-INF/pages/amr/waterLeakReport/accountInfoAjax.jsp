@@ -3,8 +3,9 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
-
+<%@ page import="com.cannontech.multispeak.client.MultiSpeakVersion" %>
 <cti:msgScope paths="widgets.accountInformationWidget">
+<c:set var="V3" value="<%= MultiSpeakVersion.V3.getVersion()%>"/>
     <c:choose>
         <c:when test="${!hasVendorId}">
             <i:inline key=".noVendor" />
