@@ -253,6 +253,7 @@ BOOST_AUTO_TEST_CASE(test_read_3_items)
 
         std::vector<unsigned char> response = boost::assign::list_of
                 (0x73)              // command code
+                (0x00)              // status code
                 (0x03)              // nbr of items
                 (0x15)              // duration
                 (0x00)(0x41)(0x42)  // item 1

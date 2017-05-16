@@ -42,6 +42,10 @@ struct MetricDescription
 typedef RfnFocusAlLcdConfigurationCommand Cmd;
 typedef MetricDescription MD;
 
+const std::map<unsigned char, std::string> StatusItems = boost::assign::map_list_of
+    ( 0x0, "Success" )
+    ( 0x1, "Failure" );
+
 const std::map<unsigned char, MetricDescription> MetricDescriptions = boost::assign::map_list_of
     ( 0x00, MD( Cmd::deliveredKwh6x1,  "Delivered kWh (6 digit)"       ) )
     ( 0x01, MD( Cmd::deliveredKwh5x1,  "Delivered kWh (5 digit)"       ) )
@@ -136,12 +140,13 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
      *
      */
 
-    validate( Condition( response.size() >= 3, ClientErrors::InvalidData )
-            << "Response too small - (" << response.size() << ", expecting >= 3)" );
+    validate( Condition( response.size() >= 4, ClientErrors::InvalidData )
+            << "Response too small - (" << response.size() << ", expecting >= 4)" );
 
     const unsigned char commandCode         = response[0],
-                        displayItemNbr      = response[1],
-                        displayItemDuration = response[2];
+                        statusCode          = response[1],
+                        displayItemNbr      = response[2],
+                        displayItemDuration = response[3];
 
     // check command
     validate( Condition( commandCode == FocusLcdConfig_CommandCode_Response, ClientErrors::InvalidData )
@@ -154,7 +159,12 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
 
     result.description += "\nLCD cycle time : " + CtiNumStr(displayItemDuration) + " seconds";
 
-    const unsigned responseSizeExp = 3 + displayItemNbr*3;
+    const boost::optional<string> statusResult = mapFind(StatusItems, statusCode);
+
+    validate(Condition( !! statusResult, ClientErrors::InvalidData )
+        << "Invalid status code - (" << statusCode << ")");
+
+    const unsigned responseSizeExp = 4 + displayItemNbr*3;
 
     validate( Condition( response.size() == responseSizeExp, ClientErrors::InvalidData )
             << "Invalid response size (" << response.size() << ", expecting " << responseSizeExp << ")" );
@@ -168,7 +178,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
         return result;
     }
 
-    Bytes::const_iterator response_iter = response.begin() + 3;
+    Bytes::const_iterator response_iter = response.begin() + 4;
 
     for(unsigned item = 0 ; item < displayItemNbr ; ++item)
     {
