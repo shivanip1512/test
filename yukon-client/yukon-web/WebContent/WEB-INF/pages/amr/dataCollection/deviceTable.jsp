@@ -12,6 +12,7 @@
     <tags:sort column="${recentReading}" />                                
     <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
     <c:forEach var="device" items="${detail.resultList}">
+        <c:set var="deviceId" value="${device.paoIdentifier.paoId}"/>
         <tr>
             <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}">${device.deviceName}</cti:paoDetailUrl></td>
             <td>${device.meterSerialNumber}</td>
@@ -21,15 +22,44 @@
                 <cti:uniqueIdentifier var="popupId" prefix="historical-readings-"/>
                 <cti:url var="historyUrl" value="/meter/historicalReadings/view">
                     <cti:param name="pointId" value="${device.value.id}"/>
-                    <cti:param name="deviceId" value="${device.paoIdentifier.paoId}"/>
+                    <cti:param name="deviceId" value="${deviceId}"/>
                 </cti:url>
                 <a href="javascript:void(0);" data-popup="#${popupId}" class="${pageScope.classes}">
                     <cti:pointValueFormatter format="VALUE_UNIT" value="${device.value}" />
-                    &nbsp;<cti:formatDate type="BOTH" value="${device.value.pointDataTimeStamp}"/>
+                    <cti:msg2 key=".noRecentReadingFound" var="notFound"/>
+                    &nbsp;<cti:formatDate type="BOTH" value="${device.value.pointDataTimeStamp}" nullText="${notFound}"/>
                 </a>
                 <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
             </td>
-            <td></td>
+            <td>
+            <cm:dropdown icon="icon-cog">
+                <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
+                    <cti:param name="collectionType" value="idList"/>
+                    <cti:param name="idList.ids" value="${deviceId}"/>
+                </cti:url>
+                <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go"/>    
+                <cti:url var="mapUrl" value="/tools/map">
+                    <cti:param name="collectionType" value="idList"/>
+                    <cti:param name="idList.ids" value="${deviceId}"/>
+                </cti:url>
+                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}"/>     
+                <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
+                    <cti:param name="collectionType" value="idList"/>
+                    <cti:param name="idList.ids" value="${deviceId}"/>           
+                </cti:url>
+                <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}"/>          
+                <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
+                    <cti:param name="collectionType" value="idList"/>
+                    <cti:param name="idList.ids" value="${deviceId}"/>               
+                </cti:url>
+                <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}"/>   
+                <cti:url var="locateRouteUrl" value="/bulk/routeLocate/home">
+                    <cti:param name="collectionType" value="idList"/>
+                    <cti:param name="idList.ids" value="${deviceId}"/>              
+                </cti:url>
+                <cm:dropdownOption icon="icon-connect" key=".locateRoute" href="${locateRouteUrl}"/>   
+            </cm:dropdown>
+            </td>
         </tr>
     </c:forEach>
 </table>

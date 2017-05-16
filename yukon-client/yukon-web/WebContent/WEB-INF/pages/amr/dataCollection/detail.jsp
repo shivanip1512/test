@@ -41,13 +41,23 @@
                                         <c:set var="checked" value="${true}"/>
                                     </c:if>
                                 </c:forEach>
-                                <tags:check name="ranges" key=".rangeType.${range}" checked="${checked}" value="${range}"></tags:check>
+                                <c:set var="buttonText" value="green"/>
+                                <c:if test="${range eq 'EXPECTED'}">
+                                    <c:set var="buttonText" value="yellow"/>
+                                </c:if> 
+                                <c:if test="${range eq 'UNAVAILABLE'}">
+                                    <c:set var="buttonText" value="grey"/>
+                                </c:if>
+                                <c:if test="${range eq 'OUTDATED'}">
+                                    <c:set var="buttonText" value="orange"/>
+                                </c:if>                                
+                                <tags:check name="ranges" key=".rangeType.${range}" buttonTextClasses="${buttonText}" checked="${checked}" value="${range}"></tags:check>
                             </c:forEach>
                         </div>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div class="action-area">
-                    <cti:button classes="primary action" label="Filter" type="submit" busy="true"/>
+                    <cti:button classes="primary action" nameKey="filter" type="submit" busy="true"/>
                 </div>
             </div>
         </div>

@@ -23,17 +23,11 @@
     
     <div style="max-height: 200px;" class="js-pie-chart js-initialize"></div>
     
-    <input type="checkbox" id="includeDisabled" <c:if test="${includeDisabled}">checked="checked"</c:if>/><cti:msg2 key=".widgetParameter.includeDisabled"/>
-    <span class="fr"><cti:button nameKey="forceUpdate" classes="js-force-update"/><cti:icon icon="icon-clock" classes="cp" data-popup=".js-last-updated-popup${id}"/></span>
-    
-        <%-- LAST UPDATED POPUP --%>
-    <div class="dn js-last-updated-popup${id}" data-dialog data-title="<cti:msg2 key=".lastUpdated"/>">
-        <tags:nameValueContainer2>
-            <tags:nameValue2 nameKey=".lastUpdated">
-                <span class="js-last-updated"></span>
-            </tags:nameValue2>
-        </tags:nameValueContainer2>
-    </div>
+    <input type="checkbox" id="includeDisabled" class="js-include-disabled" <c:if test="${includeDisabled}">checked="checked"</c:if>/><cti:msg2 key=".widgetParameter.includeDisabled"/>
+    <span class="fr">
+        <span class="js-last-updated fl" style="font-size:11px"></span>
+        <cti:icon icon="icon-arrow-refresh" title="Force Update of Data" classes=" js-force-update cp"/>
+    </span>
 
 </div>
 

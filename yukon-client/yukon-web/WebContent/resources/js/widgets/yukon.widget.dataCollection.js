@@ -21,25 +21,26 @@ yukon.widget.dataCollection = (function () {
                 name: $('.js-AVAILABLE').val(),
                 y: data.available.percentage,
                 x: data.available.deviceCount,
-                color: '#5cb85c'            
+                color: '#009933'            
             },
             {
                 name: $('.js-EXPECTED').val(),
                 y: data.expected.percentage,
                 x: data.expected.deviceCount,
-                color: '#FFFF00'                   
+                color: '#e9e647'
+                
             },
             {
                 name: $('.js-OUTDATED').val(),
                 y: data.outdated.percentage,
                 x: data.outdated.deviceCount,
-                color: '#fb8521'
+                color: '#EC971F'
             },
             {
                 name: $('.js-UNAVAILABLE').val(),
                 y: data.unavailable.percentage,
                 x: data.unavailable.deviceCount,
-                color: '#999999'            
+                color: '#888'            
             }
         ]
     },
@@ -68,7 +69,7 @@ yukon.widget.dataCollection = (function () {
             },
             title: { text: null },
             tooltip: {
-                pointFormat: '<b>{point.percentage:.3f}%</b>'
+                pointFormat: '<b>{point.percentage:.3f}%, {point.x} devices</b>'
             },
             plotOptions: {
                 pie: {
@@ -154,6 +155,10 @@ yukon.widget.dataCollection = (function () {
             });
 
             $(document).on('dialogclose', '.js-device-group-picker-dialog', function (ev, ui) {
+                _update();
+            });
+            
+            $(document).on('click', '.js-include-disabled', function (ev, ui) {
                 _update();
             });
 

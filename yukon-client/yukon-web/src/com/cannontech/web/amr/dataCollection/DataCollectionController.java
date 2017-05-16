@@ -66,7 +66,7 @@ public class DataCollectionController {
     public @ResponseBody Map<String, Object> updateChart(ModelMap model, String deviceGroup, Boolean includeDisabled, HttpServletResponse resp) throws Exception {
         Map<String, Object> json = new HashMap<>();
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
-        DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, true);
+        DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, includeDisabled);
         json.put("summary",  summary);
         return json;
     }
