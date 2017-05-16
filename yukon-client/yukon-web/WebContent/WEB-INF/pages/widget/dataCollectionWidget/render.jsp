@@ -25,8 +25,10 @@
     
     <input type="checkbox" id="includeDisabled" class="js-include-disabled" <c:if test="${includeDisabled}">checked="checked"</c:if>/><cti:msg2 key=".widgetParameter.includeDisabled"/>
     <span class="fr">
-        <span class="js-last-updated fl" style="font-size:11px"></span>
-        <cti:icon icon="icon-arrow-refresh" title="Force Update of Data" classes=" js-force-update cp"/>
+        <cti:msg2 key=".lastUpdated" var="lastUpdatedMsg"/>
+        <span class="js-last-updated fl" style="font-size:11px" title="${lastUpdatedMsg}"></span>
+        <cti:msg2 key=".forceUpdate" var="forceUpdateMsg"/>
+        <cti:icon icon="icon-arrow-refresh" title="${forceUpdateMsg}" classes=" js-force-update cp"/>
     </span>
 
 </div>

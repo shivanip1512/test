@@ -26,7 +26,7 @@
                 </cti:url>
                 <a href="javascript:void(0);" data-popup="#${popupId}" class="${pageScope.classes}">
                     <cti:pointValueFormatter format="VALUE_UNIT" value="${device.value}" />
-                    <cti:msg2 key=".noRecentReadingFound" var="notFound"/>
+                    <cti:msg2 key="yukon.web.modules.amr.dataCollection.detail.noRecentReadingFound" var="notFound"/>
                     &nbsp;<cti:formatDate type="BOTH" value="${device.value.pointDataTimeStamp}" nullText="${notFound}"/>
                 </a>
                 <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
