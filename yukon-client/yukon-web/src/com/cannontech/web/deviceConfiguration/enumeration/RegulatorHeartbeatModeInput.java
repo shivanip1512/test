@@ -1,7 +1,8 @@
 package com.cannontech.web.deviceConfiguration.enumeration;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -34,12 +35,9 @@ public class RegulatorHeartbeatModeInput implements DeviceConfigurationInputEnum
     public List<InputOption> getDisplayableValues(YukonUserContext userContext) {
         MessageSourceAccessor messageAccessor = messageResolver.getMessageSourceAccessor(userContext);
 
-        List<InputOption> modes = new ArrayList<>();
-
-        for (RegulatorHeartbeatMode mode : RegulatorHeartbeatMode.values()) {
-            modes.add( new InputOption( mode.name(), messageAccessor.getMessage(mode)));
-        }
-        return modes;
+        return Arrays.stream(RegulatorHeartbeatMode.values())
+                .map(mode -> new InputOption(mode.name(), messageAccessor.getMessage(mode)))
+                .collect(Collectors.toList());
     }
 
     @Override
