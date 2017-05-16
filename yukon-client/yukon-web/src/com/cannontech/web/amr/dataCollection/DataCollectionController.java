@@ -84,7 +84,7 @@ public class DataCollectionController {
                          @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
                          @DefaultItemsPerPage(value=50) PagingParameters paging) throws Exception {
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
-        DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, true);
+        DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, includeDisabled);
         model.addAttribute("summary", summary);
         model.addAttribute("rangeTypes", RangeType.values());
         
