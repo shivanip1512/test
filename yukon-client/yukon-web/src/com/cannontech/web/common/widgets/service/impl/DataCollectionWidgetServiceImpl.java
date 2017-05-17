@@ -2,11 +2,9 @@ package com.cannontech.web.common.widgets.service.impl;
 
 import static org.joda.time.Instant.now;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import javax.jms.ConnectionFactory;
@@ -27,17 +25,20 @@ import org.springframework.stereotype.Service;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.data.collection.dao.RecentPointValueDao;
+import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.RangeType;
+import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.SortBy;
 import com.cannontech.common.device.data.collection.dao.model.DeviceCollectionDetail;
 import com.cannontech.common.device.data.collection.message.CollectionRequest;
 import com.cannontech.common.device.data.collection.message.RecalculationRequest;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.web.common.widgets.model.DataCollectionSummary;
 import com.cannontech.web.common.widgets.service.DataCollectionWidgetService;
-import com.google.common.collect.Lists;
 
 @Service
 public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetService, MessageListener {
@@ -47,7 +48,6 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
     private static final Duration DAYS_14 = Duration.standardDays(14);
 
     @Autowired private RecentPointValueDao rpvDao;
-    @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     private JmsTemplate jmsTemplate;
     private static final String collectionQueueName = "yukon.qr.obj.data.collection.CollectionRequest";
@@ -121,15 +121,10 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
     private DataCollectionSummary recalculate(DeviceGroup group, boolean includeDisabled,
             Map<RangeType, Range<Instant>> ranges, Instant lastCollectionTime) {
         DataCollectionSummary summary = new DataCollectionSummary(lastCollectionTime);
-        summary.setAvailable(rpvDao.getDeviceCount(group, includeDisabled, ranges.get(RangeType.AVAILABLE)));
-        summary.setExpected(rpvDao.getDeviceCount(group, includeDisabled, ranges.get(RangeType.EXPECTED)));
-        summary.setOutdated(rpvDao.getDeviceCount(group, includeDisabled, ranges.get(RangeType.OUTDATED)));
-        summary.setUnavailable(rpvDao.getDeviceCount(group, includeDisabled, ranges.get(RangeType.UNAVAILABLE)));
-        // devices in a group subtract devices found in RecentPointValue 
-        int devicesWithoutData = deviceGroupService.getDeviceCount(Lists.newArrayList(group))
-            - summary.getTotalDeviceCount();
-        // add devices without data to unavailable device count
-        summary.getUnavailable().setDeviceCount(summary.getUnavailable().getDeviceCount() + devicesWithoutData);
+        summary.setAvailable(rpvDao.getDeviceCount(group, includeDisabled, RangeType.AVAILABLE, ranges.get(RangeType.AVAILABLE)));
+        summary.setExpected(rpvDao.getDeviceCount(group, includeDisabled, RangeType.EXPECTED, ranges.get(RangeType.EXPECTED)));
+        summary.setOutdated(rpvDao.getDeviceCount(group, includeDisabled, RangeType.OUTDATED, ranges.get(RangeType.OUTDATED)));
+        summary.setUnavailable(rpvDao.getDeviceCount(group, includeDisabled, RangeType.UNAVAILABLE, ranges.get(RangeType.UNAVAILABLE)));
         summary.calculatePrecentages();
         log.debug(summary);
         if (includeDisabled) {
@@ -144,7 +139,7 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
      * Creates time ranges for each range type.
      */
     private Map<RangeType, Range<Instant>> getRanges() {
-        Map<RangeType, Range<Instant>> ranges = new HashMap<>();
+        Map<RangeType, Range<Instant>> ranges = new TreeMap<>();
         Instant startOfTheDay = new Instant(new DateTime().withTimeAtStartOfDay());
         Range<Instant> currentRange = buildRange(RangeType.AVAILABLE, ranges, startOfTheDay.minus(DAYS_2), now());
         currentRange = buildRange(RangeType.EXPECTED, ranges, currentRange.getMin().minus(DAYS_7), currentRange.getMin());
@@ -159,14 +154,14 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
     private Range<Instant> buildRange(RangeType type, Map<RangeType, Range<Instant>> ranges, Instant min, Instant max) {
         Range<Instant> range = new Range<>(min, true, max, false);
         ranges.put(type, range);
-        log.debug(getLogString(range, type));
+        log.debug(getLogString(type, range));
         return range;
     }
     
     /**
      * Builds a string message that describes the range. Used for logging.
      */
-    private String getLogString(Range<Instant> range, RangeType type) {
+    private String getLogString(RangeType type, Range<Instant> range) {
         final DateTimeFormatter df = DateTimeFormat.forPattern("MMM dd YYYY HH:mm:ss");
         String min = range.getMin() == null ? "" : range.getMin().toString(df.withZone(DateTimeZone.getDefault()));
         String max = range.getMax() == null ? "" : range.getMax().toString(df.withZone(DateTimeZone.getDefault()));
@@ -182,23 +177,14 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
     }
    
     @Override
-    public List<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group1, DeviceGroup group2,
-            boolean includeDisabled, RangeType... ranges) {
+    public SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group1, DeviceGroup group2,
+            boolean includeDisabled, List<RangeType> ranges, PagingParameters paging, SortBy sortBy,
+            Direction direction) {
         Map<RangeType, Range<Instant>> allRanges = getRanges();
         log.debug("Getting device collection results:");
-        List<DeviceCollectionDetail> details = new ArrayList<>();
-        Arrays.asList(ranges).forEach(type -> {
-            Range<Instant> timeRange = allRanges.get(type);
-            List<DeviceCollectionDetail> detail = rpvDao.getDeviceCollectionResult(group1, group2, includeDisabled, timeRange);
-            log.debug("For date range " + getLogString(timeRange, type) + " got " + detail.size() + " results.");
-            details.addAll(detail);
-        });
-        if(Arrays.asList(ranges).contains(RangeType.UNAVAILABLE)){
-            List<DeviceCollectionDetail> detail = rpvDao.getDeviceCollectionResult(group1, group2, includeDisabled);
-            log.debug("No entries in RecentPointValue table for " + detail.size() + " devices.");
-            details.addAll(detail);
-        }
-        return details;
+        allRanges.keySet().removeIf(type -> !ranges.contains(type));
+        allRanges.forEach((k, v) -> log.debug(getLogString(k, v)));
+        return rpvDao.getDeviceCollectionResult(group1, group2, includeDisabled, allRanges, paging, sortBy, direction);
     }
 
     @Autowired

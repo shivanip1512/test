@@ -6,7 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.web.common.widgets.service.DataCollectionWidgetService.RangeType;
+import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.RangeType;
 import com.cannontech.web.widget.support.AdvancedWidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 

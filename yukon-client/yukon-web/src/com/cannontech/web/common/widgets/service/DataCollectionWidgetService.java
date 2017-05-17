@@ -3,15 +3,17 @@ package com.cannontech.web.common.widgets.service;
 
 import java.util.List;
 
+import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.RangeType;
+import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.SortBy;
 import com.cannontech.common.device.data.collection.dao.model.DeviceCollectionDetail;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.web.common.widgets.model.DataCollectionSummary;
 
 public interface DataCollectionWidgetService {
 
-    enum RangeType {
-        AVAILABLE, EXPECTED, OUTDATED, UNAVAILABLE
-    }
     /**
      * Returns cached collection summary for Device Group.
      *
@@ -26,12 +28,19 @@ public interface DataCollectionWidgetService {
     void collectData();
 
     /**
+     * 
      * Returns the device collection detail.
+     * 
      * @param group1 - finds only devices within the group and its subgroups
      * @param group2 - can be null, otherwise finds devices that are in group1 and group2
      * @param includeDisabled - if false only enabled devices will be returned
-     * @param ranges - time period
+     * @param ranges - time periods,  can't be null
+     * @param paging - paging information, can't be null
+     * @param sortBy - used by order by, can't be null
+     * @param direction - direction (asc/desc) for the order by, can't be null
+     * @return
      */
-    List<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group1, DeviceGroup group2,
-            boolean includeDisabled, RangeType... ranges);
+    SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group1, DeviceGroup group2,
+            boolean includeDisabled, List<RangeType> ranges, PagingParameters paging, SortBy sortBy,
+            Direction direction);
 }

@@ -21,10 +21,6 @@ public class DataCollectionDetail {
     public int getDeviceCount() {
         return deviceCount;
     }
-    
-    public void setDeviceCount(int deviceCount) {
-        this.deviceCount = deviceCount;
-    }
 
     public void calculatePrecentage(int total) {
         if (total != 0) {
