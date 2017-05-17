@@ -84,7 +84,7 @@ public class NOTServiceEndPoint {
         List<SCADAAnalog> scadaAnalogs =
             (null != scadaAnalogsChangedNotification.getArrayOfSCADAAnalog())
                 ? scadaAnalogsChangedNotification.getArrayOfSCADAAnalog().getSCADAAnalog() : null;
-        if (scadaAnalogs != null) {
+        if (CollectionUtils.isNotEmpty(scadaAnalogs)) {
             multispeakFuncs.addErrorObjectsInResponseHeader(not_server.scadaAnalogsChangedNotification(scadaAnalogs));
         }
         return resonse;
@@ -118,7 +118,7 @@ public class NOTServiceEndPoint {
             List<ElectricMeter> electricMeters =
                 (null != metersCreatedNotification.getMeters().getElectricMeters())
                     ? metersCreatedNotification.getMeters().getElectricMeters().getElectricMeter() : null;
-            if (electricMeters != null) {
+            if (CollectionUtils.isNotEmpty(electricMeters)) {
                 multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersCreatedNotification(electricMeters));
             }
         }
@@ -134,7 +134,7 @@ public class NOTServiceEndPoint {
         List<ObjectDeletion> electricMeters =
             (null != metersDeletedNotification.getArrayOfObjectDeletion())
                 ? metersDeletedNotification.getArrayOfObjectDeletion().getObjectDeletion() : null;
-        if (electricMeters != null) {
+        if (CollectionUtils.isNotEmpty(electricMeters)) {
             multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersDeletedNotification(electricMeters));
         }
         return response;
@@ -191,7 +191,7 @@ public class NOTServiceEndPoint {
             List<ElectricMeter> electricMeters =
                 (null != metersUninstalledNotification.getMeters().getElectricMeters())
                     ? metersUninstalledNotification.getMeters().getElectricMeters().getElectricMeter() : null;
-            if (electricMeters != null) {
+            if (CollectionUtils.isNotEmpty(electricMeters)) {
                 multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersUninstalledNotification(electricMeters));
             }
         }
