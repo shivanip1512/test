@@ -458,7 +458,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "ODEvent",
                         mspVendor.getCompanyName());
                 errorObjects.add(err);
-                multispeakEventLogService.meterNotFound(meterNumber, "InitiateEndDevicePings",
+                multispeakEventLogService.meterNotFound(meterNumber, "InitiateOutageDetectionEventRequest",
                     mspVendor.getCompanyName());
             }
 
