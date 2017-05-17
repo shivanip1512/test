@@ -191,7 +191,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                     getServiceLocationsByMeterIDsResponse.getArrayOfServiceLocation();
                 if (arrayOfServiceLocation != null) {
                     List<ServiceLocation> responseServiceLocations = arrayOfServiceLocation.getServiceLocation();
-                    if (!CollectionUtils.isEmpty(responseServiceLocations)) {
+                    if (CollectionUtils.isNotEmpty(responseServiceLocations)) {
                         mspServiceLocation = responseServiceLocations.get(0);
                     }
                 }

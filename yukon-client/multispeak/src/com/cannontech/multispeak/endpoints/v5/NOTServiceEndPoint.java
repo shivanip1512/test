@@ -101,7 +101,7 @@ public class NOTServiceEndPoint {
             List<ElectricMeter> electricMeters =
                 (null != metersChangedNotification.getMeters().getElectricMeters())
                     ? metersChangedNotification.getMeters().getElectricMeters().getElectricMeter() : null;
-            if (!CollectionUtils.isEmpty(electricMeters)) {
+            if (CollectionUtils.isNotEmpty(electricMeters)) {
                 multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersChangedNotification(electricMeters));
             }
         }
@@ -154,7 +154,7 @@ public class NOTServiceEndPoint {
                     ? null: (null != metersExchangedNotification.getMeterExchanges().getElectricMeterExchanges())
                         ? metersExchangedNotification.getMeterExchanges().getElectricMeterExchanges().getElectricMeterExchange() : null;
 
-            if (!CollectionUtils.isEmpty(exchangeMeters)) {
+            if (CollectionUtils.isNotEmpty(exchangeMeters)) {
                 multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersExchangedNotification(exchangeMeters));
             }
         }
@@ -173,7 +173,7 @@ public class NOTServiceEndPoint {
                 (null != metersInstalledNotification.getMeters().getElectricMeters())
                     ? metersInstalledNotification.getMeters().getElectricMeters().getElectricMeter() : null;
 
-            if (!CollectionUtils.isEmpty(electricMeters)) {
+            if (CollectionUtils.isNotEmpty(electricMeters)) {
                 multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersInstalledNotification(electricMeters));
             }
         }
@@ -208,7 +208,7 @@ public class NOTServiceEndPoint {
         List<ServiceLocation> serviceLocation =
             (null != serviceLocationsChangedNotification.getArrayOfServiceLocation())
                 ? serviceLocationsChangedNotification.getArrayOfServiceLocation().getServiceLocation() : null;
-        if (!CollectionUtils.isEmpty(serviceLocation)) {
+        if (CollectionUtils.isNotEmpty(serviceLocation)) {
             multispeakFuncs.addErrorObjectsInResponseHeader(not_server.serviceLocationsChangedNotification(serviceLocation));
         }
         return serviceLocationsChangedNotificationResponse;
