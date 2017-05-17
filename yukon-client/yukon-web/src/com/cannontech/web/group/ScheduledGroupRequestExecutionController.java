@@ -295,7 +295,6 @@ public class ScheduledGroupRequestExecutionController {
         // validate schedule name
         String scheduleName = ServletRequestUtils.getStringParameter(request, "scheduleName");
         if (StringUtils.isBlank(scheduleName)) {
-
             Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
             String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
             String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
@@ -306,6 +305,23 @@ public class ScheduledGroupRequestExecutionController {
             String maxTotalRunTimeHoursStr =
                 ServletRequestUtils.getStringParameter(request, "maxTotalRunTimeHours", null);
             return makeErrorMav("Schedule Must Have Name.", requestType, scheduleName, cronExpression,
+                makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString,
+                deviceGroupName, retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr,
+                editJobId);
+        }
+        
+        if(scheduleName.length() > 200) {
+            String scheduleNameSubstring = scheduleName.substring(0, 200);
+            Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
+            String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
+            String commandString = ServletRequestUtils.getStringParameter(request, "commandString");
+            boolean retryCheckbox = ServletRequestUtils.getBooleanParameter(request, "retryCheckbox", false);
+            String queuedRetryCountStr = ServletRequestUtils.getStringParameter(request, "queuedRetryCount", null);
+            String nonQueuedRetryCountStr =
+                ServletRequestUtils.getStringParameter(request, "nonQueuedRetryCount", null);
+            String maxTotalRunTimeHoursStr =
+                ServletRequestUtils.getStringParameter(request, "maxTotalRunTimeHours", null);
+            return makeErrorMav("Schedule Name Must Not Exceed 200 Characters.", requestType, scheduleNameSubstring, cronExpression,
                 makeSelectedAttributeStrsParameter(selectedAttributes), commandSelectValue, commandString,
                 deviceGroupName, retryCheckbox, queuedRetryCountStr, nonQueuedRetryCountStr, maxTotalRunTimeHoursStr,
                 editJobId);
@@ -428,7 +444,7 @@ public class ScheduledGroupRequestExecutionController {
         // attribute
         Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
         if (selectedAttributes.size() == 0) {
-            return makeErrorMav("No Attribute(s) Selected", DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ,
+            return makeErrorMav("No Attribute(s) Selected.", DeviceRequestType.SCHEDULED_GROUP_ATTRIBUTE_READ,
                 scheduleName, cronExpression, null, null, null, deviceGroupName, retryCheckbox, retryCount == 0 ? ""
                     : String.valueOf(retryCount),
                 stopRetryAfterHoursCount == null ? "" : stopRetryAfterHoursCount.toString(),
