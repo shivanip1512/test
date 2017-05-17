@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -55,17 +56,21 @@ public class OD_ServerImpl implements OD_Server {
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor,
                                                                   responseURL,
                                                                   MultispeakDefines.NOT_Server_STR);
-        List<ObjectRef> objectRefList = arrayOfObjectRef.getObjectRef();
         List<String> meterNos = new ArrayList<String>();
-        for (ObjectRef objectRef : objectRefList) {
-            String meterNumber = objectRef.getPrimaryIdentifierValue(); //TODO Please confirm that this field is mandatory 
-                                                                       //so null check is not required
-            meterNos.add(meterNumber);
+        
+        if (arrayOfObjectRef != null) {
+            List<ObjectRef> objectRefList = arrayOfObjectRef.getObjectRef();
+
+            for (ObjectRef objectRef : objectRefList) {
+                String meterNumber = objectRef.getPrimaryIdentifierValue(); 
+                meterNos.add(meterNumber);
+            }
         }
-        List<ErrorObject> errorObjects = multispeakMeterService.odEvent(vendor,
-                                                                        meterNos,
-                                                                        transactionID,
-                                                                        actualResponseUrl);
+        List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        if (!CollectionUtils.isEmpty(meterNos)) {
+            errorObjects = multispeakMeterService.odEvent(vendor, meterNos, transactionID, actualResponseUrl);
+
+        }
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.NOT_Server_STR,
                                         "InitiateEndDevicePings",

@@ -1,9 +1,11 @@
 package com.cannontech.multispeak.deploy.service.impl.v3;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +50,10 @@ public class OD_ServerImpl implements OD_Server {
         multispeakEventLogService.methodInvoked("InitiateOutageDetectionEventRequest", vendor.getCompanyName());
         String actualResponseUrl = multispeakFuncs.getResponseUrl(vendor, responseURL, MultispeakDefines.OA_Server_STR);
 
-        List<ErrorObject> errorObjects = multispeakMeterService.odEvent(vendor, meterNos, transactionID, actualResponseUrl);
+        List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        if (!CollectionUtils.isEmpty(meterNos)) {
+            errorObjects = multispeakMeterService.odEvent(vendor, meterNos, transactionID, actualResponseUrl);
+        }
         multispeakFuncs.logErrorObjects(MultispeakDefines.OD_Server_STR, "InitiateOutageDetectionEventRequest",
             errorObjects);
         return errorObjects;
