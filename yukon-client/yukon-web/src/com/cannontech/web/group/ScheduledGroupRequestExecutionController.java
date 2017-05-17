@@ -310,7 +310,7 @@ public class ScheduledGroupRequestExecutionController {
                 editJobId);
         }
         
-        if(scheduleName.length() > 200) {
+        if (scheduleName.length() > 200) {
             String scheduleNameSubstring = scheduleName.substring(0, 200);
             Set<Attribute> selectedAttributes = attributeSelectorHelperService.getAttributeSet(request, null, null);
             String commandSelectValue = ServletRequestUtils.getStringParameter(request, "commandSelectValue");
