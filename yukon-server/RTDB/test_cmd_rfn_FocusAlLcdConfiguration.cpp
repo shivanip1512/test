@@ -252,7 +252,8 @@ BOOST_AUTO_TEST_CASE(test_read_3_items)
                 (RfnFocusAlLcdConfigurationCommand::deliveredKwh4x1);
 
         std::vector<unsigned char> response = boost::assign::list_of
-                (0x73)(0x00)        // command code - operation
+                (0x73)              // command code
+                (0x00)              // success
                 (0x03)              // nbr of items
                 (0x15)              // duration
                 (0x00)(0x41)(0x42)  // item 1
@@ -305,7 +306,8 @@ BOOST_AUTO_TEST_CASE(test_read_fail)
     // decode
     {
         std::vector<unsigned char> response = boost::assign::list_of
-            (0x73)(0x01)        // command code - operation
+            (0x73)              // command code
+            (0x01)              // failure
             (0x00)              // nbr of items
             (0x15);             // duration
 
