@@ -167,7 +167,7 @@
                                         <tr>
                                             <td class="wsnw">
                                                 <tags:checkbox path="mspInterfaceList[${indexValue}].interfaceEnabled" id="${currentInterface.mspInterface}" 
-                                                    onclick="yukon.admin.multispeak.enableEndpointValue(this.checked, this.id)" />
+                                                    onclick="yukon.admin.multispeak.enableEndpointValue(this.checked,'${currentInterface.version}',this.id)" />
                                                 <span class="checkBoxLabel">
                                                     <spring:escapeBody htmlEscape="true">${currentInterface.mspInterface}</spring:escapeBody>
                                                 </span>

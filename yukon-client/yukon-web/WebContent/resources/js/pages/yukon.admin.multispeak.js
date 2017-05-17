@@ -13,9 +13,9 @@ yukon.admin.multispeak = (function () {
 	 var
 	    _initialized = false;
 	    mod = {
-	    	    enableEndpointValue : function (selected, mspInterface) {
-	    		    if($('#endpointURL_'+mspInterface).val() != null) {
-	    			    $('#endpointURL_'+mspInterface).prop('disabled', !selected);
+                enableEndpointValue : function (selected, version, mspInterface) {
+                    if($('#endpointURL_'+ version + "_" + mspInterface).val() != null) {
+                        $('#endpointURL_'+ version + "_" + mspInterface).prop('disabled', !selected);
 	    			}
 	    			if ($('#select'+mspInterface) != null) {
 	    				$('#select'+mspInterface).prop('disabled', !selected);
