@@ -19,17 +19,23 @@
             <td>${device.paoIdentifier.paoType.paoTypeName}</td>
             <td><c:if test="${device.address != 0}">${device.address}</c:if></td>
             <td>
-                <cti:uniqueIdentifier var="popupId" prefix="historical-readings-"/>
-                <cti:url var="historyUrl" value="/meter/historicalReadings/view">
-                    <cti:param name="pointId" value="${device.value.id}"/>
-                    <cti:param name="deviceId" value="${deviceId}"/>
-                </cti:url>
-                <a href="javascript:void(0);" data-popup="#${popupId}" class="${pageScope.classes}">
-                    <cti:pointValueFormatter format="VALUE_UNIT" value="${device.value}" />
-                    <cti:msg2 key="yukon.web.modules.amr.dataCollection.detail.noRecentReadingFound" var="notFound"/>
-                    &nbsp;<cti:formatDate type="BOTH" value="${device.value.pointDataTimeStamp}" nullText="${notFound}"/>
-                </a>
-                <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
+                <c:choose>
+                    <c:when test="${device.value != null}">
+                        <cti:uniqueIdentifier var="popupId" prefix="historical-readings-"/>
+                        <cti:url var="historyUrl" value="/meter/historicalReadings/view">
+                            <cti:param name="pointId" value="${device.value.id}"/>
+                            <cti:param name="deviceId" value="${deviceId}"/>
+                        </cti:url>
+                        <a href="javascript:void(0);" data-popup="#${popupId}" class="${pageScope.classes}">
+                            <cti:pointValueFormatter format="VALUE_UNIT" value="${device.value}" />
+                            &nbsp;<cti:formatDate type="BOTH" value="${device.value.pointDataTimeStamp}"/>
+                        </a>
+                        <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
+                    </c:when>
+                    <c:otherwise>
+                        <cti:msg2 key="yukon.web.modules.amr.dataCollection.detail.noRecentReadingFound"/>
+                    </c:otherwise>
+                </c:choose>
             </td>
             <td>
             <cm:dropdown icon="icon-cog">
