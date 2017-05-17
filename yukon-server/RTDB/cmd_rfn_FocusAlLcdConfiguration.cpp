@@ -5,7 +5,6 @@
 #include "cmd_rfn_helper.h"
 
 #include <boost/bimap.hpp>
-#include <boost/assign/list_of.hpp>
 
 using namespace std;
 
@@ -27,10 +26,6 @@ enum
     FocusLcdConfig_Operation_Read       = 0x01,
 };
 
-const std::map<unsigned char, std::string> statusResolver = boost::assign::map_list_of
-        ( 0x00, "Success" )
-        ( 0x01, "Failure" );
-
 struct MetricDescription
 {
     MetricDescription(RfnFocusAlLcdConfigurationCommand::Metrics metric_, std::string description_) : metric(metric_), description(description_) {}
@@ -40,32 +35,35 @@ struct MetricDescription
 };
 
 typedef RfnFocusAlLcdConfigurationCommand Cmd;
-typedef MetricDescription MD;
 
-const std::map<unsigned char, std::string> StatusItems = boost::assign::map_list_of
-    ( 0x0, "Success" )
-    ( 0x1, "Failure" );
+const std::map<unsigned char, std::string> StatusItems
+{
+    { 0x0, "Success"},
+    { 0x1, "Failure"}
+};
 
-const std::map<unsigned char, MetricDescription> MetricDescriptions = boost::assign::map_list_of
-    ( 0x00, MD( Cmd::deliveredKwh6x1,  "Delivered kWh (6 digit)"       ) )
-    ( 0x01, MD( Cmd::deliveredKwh5x1,  "Delivered kWh (5 digit)"       ) )
-    ( 0x02, MD( Cmd::deliveredKwh4x1,  "Delivered kWh (4 digit)"       ) )
-    ( 0x03, MD( Cmd::deliveredKwh4x10, "Delivered kWh (4 x 10  digit)" ) )
-    ( 0x04, MD( Cmd::reverseKwh6x1,    "Reverse kWh (6 digit)"         ) )
-    ( 0x05, MD( Cmd::reverseKwh5x1,    "Reverse kWh (5 digit)"         ) )
-    ( 0x06, MD( Cmd::reverseKwh4x1,    "Reverse kWh (4 digit)"         ) )
-    ( 0x07, MD( Cmd::receivedKwh4x10,  "Reverse kWh (4 x 10  digit)"   ) )
-    ( 0x08, MD( Cmd::totalKwh6x1,      "Total kWh (6 digit)"           ) )
-    ( 0x09, MD( Cmd::totalKwh5x1,      "Total kWh (5 digit)"           ) )
-    ( 0x0a, MD( Cmd::totalKwh4x1,      "Total kWh (4 digit)"           ) )
-    ( 0x0b, MD( Cmd::totalKwh4x10,     "Total kWh (4 x 10  digit)"     ) )
-    ( 0x0c, MD( Cmd::netKwh6x1,        "Net kWh (6 digit)"             ) )
-    ( 0x0d, MD( Cmd::netKwh5x1,        "Net kWh (5 digit)"             ) )
-    ( 0x0e, MD( Cmd::netKwh4x1,        "Net kWh (4 digit)"             ) )
-    ( 0x0f, MD( Cmd::netKwh4x10,       "Net kWh (4 x 10  digit)"       ) )
-    ( 0x10, MD( Cmd::diagnosticFlags,  "Diagnostic flags"              ) )
-    ( 0x11, MD( Cmd::allSegments,      "All Segments"                  ) )
-    ( 0x12, MD( Cmd::firmwareVersion,  "Firmware version"              ) );
+const std::map<unsigned char, MetricDescription> MetricDescriptions 
+{
+    { 0x00, {Cmd::deliveredKwh6x1,  "Delivered kWh (6 digit)"        }},
+    { 0x01, {Cmd::deliveredKwh5x1,  "Delivered kWh (5 digit)"        }},
+    { 0x02, {Cmd::deliveredKwh4x1,  "Delivered kWh (4 digit)"        }},
+    { 0x03, {Cmd::deliveredKwh4x10, "Delivered kWh (4 x 10  digit)"  }},
+    { 0x04, {Cmd::reverseKwh6x1,    "Reverse kWh (6 digit)"          }},
+    { 0x05, {Cmd::reverseKwh5x1,    "Reverse kWh (5 digit)"          }},
+    { 0x06, {Cmd::reverseKwh4x1,    "Reverse kWh (4 digit)"          }},
+    { 0x07, {Cmd::receivedKwh4x10,  "Reverse kWh (4 x 10  digit)"    }},
+    { 0x08, {Cmd::totalKwh6x1,      "Total kWh (6 digit)"            }},
+    { 0x09, {Cmd::totalKwh5x1,      "Total kWh (5 digit)"            }},
+    { 0x0a, {Cmd::totalKwh4x1,      "Total kWh (4 digit)"            }},
+    { 0x0b, {Cmd::totalKwh4x10,     "Total kWh (4 x 10  digit)"      }},
+    { 0x0c, {Cmd::netKwh6x1,        "Net kWh (6 digit)"              }},
+    { 0x0d, {Cmd::netKwh5x1,        "Net kWh (5 digit)"              }},
+    { 0x0e, {Cmd::netKwh4x1,        "Net kWh (4 digit)"              }},
+    { 0x0f, {Cmd::netKwh4x10,       "Net kWh (4 x 10  digit)"        }},
+    { 0x10, {Cmd::diagnosticFlags,  "Diagnostic flags"               }},
+    { 0x11, {Cmd::allSegments,      "All Segments"                   }},
+    { 0x12, {Cmd::firmwareVersion,  "Firmware version"               }}
+};
 
 typedef boost::bimap<unsigned char, char> AlphaDisplayBimap;
 
@@ -163,6 +161,9 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
 
     validate(Condition( !! statusResult, ClientErrors::InvalidData )
         << "Invalid status code - (" << statusCode << ")");
+
+    validate(Condition( statusCode == 0x00, ClientErrors::Unknown )
+        << "Failure Status (" << statusCode << ")");
 
     const unsigned responseSizeExp = 4 + displayItemNbr*3;
 
@@ -303,7 +304,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationWriteCommand::decodeCommand(const Cti
     validate( Condition( commandCode == FocusLcdConfig_CommandCode_Response, ClientErrors::InvalidData )
             << "Invalid command - (" << commandCode << ", expecting " << FocusLcdConfig_CommandCode_Response << ")" );
 
-    const boost::optional<std::string> status = mapFind(statusResolver, statusCode);
+    const boost::optional<std::string> status = mapFind(StatusItems, statusCode);
 
     validate( Condition( !! status, ClientErrors::InvalidData )
             << "Invalid Status (" << statusCode << ")");

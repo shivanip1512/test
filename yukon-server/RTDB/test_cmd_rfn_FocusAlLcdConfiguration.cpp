@@ -252,8 +252,7 @@ BOOST_AUTO_TEST_CASE(test_read_3_items)
                 (RfnFocusAlLcdConfigurationCommand::deliveredKwh4x1);
 
         std::vector<unsigned char> response = boost::assign::list_of
-                (0x73)              // command code
-                (0x00)              // status code
+                (0x73)(0x00)        // command code - operation
                 (0x03)              // nbr of items
                 (0x15)              // duration
                 (0x00)(0x41)(0x42)  // item 1
@@ -283,6 +282,44 @@ BOOST_AUTO_TEST_CASE(test_read_3_items)
         BOOST_CHECK_EQUAL_RANGES(
                  *display_items_received,
                  display_items);
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_read_fail)
+{
+
+    RfnFocusAlLcdConfigurationReadCommand lcdConfiguration;
+
+    // execute
+    {
+        RfnCommand::RfnRequestPayload rcv = lcdConfiguration.executeCommand(execute_time);
+
+        std::vector<unsigned char> exp = boost::assign::list_of
+            (0x72)(0x01); // command code - operation
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            rcv.begin(), rcv.end(),
+            exp.begin(), exp.end());
+    }
+
+    // decode
+    {
+        std::vector<unsigned char> response = boost::assign::list_of
+            (0x73)(0x01)        // command code - operation
+            (0x00)              // nbr of items
+            (0x15);             // duration
+
+        try 
+        {
+            RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
+            
+            BOOST_ERROR("Should have thrown");
+        }
+        catch (const RfnCommand::CommandException & ex)
+        {
+            BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::Unknown);
+            BOOST_CHECK_EQUAL(ex.error_description, "Failure Status (1)");
+        }
     }
 }
 
