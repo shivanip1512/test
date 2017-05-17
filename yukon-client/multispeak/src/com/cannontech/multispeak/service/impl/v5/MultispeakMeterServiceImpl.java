@@ -1840,6 +1840,14 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                 try {
                     YukonMeter meter = mspMeterDao.getMeterForMeterNumber(meterNumber);
+                    if (cdEvent.getLoadActionCode() == null) {
+                        ErrorObject err =
+                            mspObjectDao.getErrorObject(meterNumber, "MeterNumber (" + meterNumber
+                                + ") - Cannot InitiateConnectDisconnect as no load action code exists.", "Meter",
+                                "CDEvent", mspVendor.getCompanyName());
+                        errorObjects.add(err);
+                        continue;
+                    }
                     MspLoadActionCode mspLoadActionCode =
                         MspLoadActionCode.getForLoadActionCode(cdEvent.getLoadActionCode().getValue());
 
