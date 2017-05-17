@@ -234,7 +234,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
                 Meters meters = getMetersByServiceLocationIDsResponse.getMeters();
                 if (meters != null) {
                     ElectricMeters electricMeters = meters.getElectricMeters();
-                    if (electricMeters != null && !CollectionUtils.isEmpty(electricMeters.getElectricMeter())) {
+                    if (electricMeters != null && CollectionUtils.isNotEmpty(electricMeters.getElectricMeter())) {
                         meterDetails = electricMeters.getElectricMeter();
                     }
                 }
