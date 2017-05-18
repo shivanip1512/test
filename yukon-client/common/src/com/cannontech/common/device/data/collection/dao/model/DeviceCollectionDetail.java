@@ -8,9 +8,9 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 public class DeviceCollectionDetail {
     private PaoIdentifier paoIdentifier;
     private String deviceName;
-    private String meterSerialNumber;
+    private String meterNumber;
     private String route;
-    private int address;
+    private String addressSerialNumber;
     private PointValueQualityHolder value;
 
     public PaoIdentifier getPaoIdentifier() {
@@ -27,22 +27,6 @@ public class DeviceCollectionDetail {
 
     public void setDeviceName(String deviceName) {
         this.deviceName = deviceName;
-    }
-
-    public String getMeterSerialNumber() {
-        return meterSerialNumber;
-    }
-
-    public void setMeterSerialNumber(String meterSerialNumber) {
-        this.meterSerialNumber = meterSerialNumber;
-    }
-
-    public int getAddress() {
-        return address;
-    }
-
-    public void setAddress(int address) {
-        this.address = address;
     }
 
     public String getRoute() {
@@ -66,6 +50,22 @@ public class DeviceCollectionDetail {
             return value.getPointDataTimeStamp();
         }
         return null;
+    }
+
+    public String getMeterNumber() {
+        return meterNumber;
+    }
+
+    public void setMeterNumber(String meterNumber) {
+        this.meterNumber = meterNumber;
+    }
+
+    public String getAddressSerialNumber() {
+        return addressSerialNumber;
+    }
+
+    public void setAddressSerialNumber(String addressSerialNumber) {
+        this.addressSerialNumber = addressSerialNumber;
     }
 
 }

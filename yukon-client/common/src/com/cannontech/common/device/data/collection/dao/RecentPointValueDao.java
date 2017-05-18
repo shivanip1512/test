@@ -21,9 +21,9 @@ public interface RecentPointValueDao {
     
     public enum SortBy{
         DEVICE_NAME("ypo.PAOName"),
-        SERIAL_NUMBER("SerialNumber"),
+        METER_NUMBER("dmg.MeterNumber"),
         DEVICE_TYPE("ypo.Type"),
-        ADDRESS("dcs.Address"),
+        SERIAL_NUMBER_ADDRESS("SerialNumberAddress"),
         TIMESTAMP("Timestamp");
         
         private SortBy(String dbString) {

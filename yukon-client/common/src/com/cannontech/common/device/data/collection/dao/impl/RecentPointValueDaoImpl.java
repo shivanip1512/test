@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -40,12 +41,15 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.google.common.collect.Lists;
 
 public class RecentPointValueDaoImpl implements RecentPointValueDao {
 
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DeviceGroupService deviceGroupService;
+    @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
 
     private static final Logger log = YukonLogManager.getLogger(RecentPointValueDaoImpl.class);
 
@@ -76,10 +80,16 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
     private SqlStatementBuilder buildDetailSelect(DeviceGroup group1, DeviceGroup group2, boolean includeDisabled,
             Map<RangeType, Range<Instant>> ranges, SortBy sortBy, Direction direction) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
+        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+        String combineSerialNumberAndAddress="COALESCE(rfna.SerialNumber, CAST(dcs.Address AS varchar))";
+        if(databaseVendor.isOracle()){
+            combineSerialNumberAndAddress="COALESCE(rfna.SerialNumber, TO_CHAR(dcs.Address))";
+        }
+        
         if (sortBy == null) {
             sql.append( "SELECT count(ypo.PAObjectId)");
         } else {
-            sql.append( "SELECT ypo.PAObjectId, rpv.PointId, Timestamp, Quality, Value, ypo.Type, p.PointType, COALESCE(rfna.SerialNumber, dmg.MeterNumber) as SerialNumber, ypo.PAOName, dcs.Address, dr.RouteId, rypo.PAOName as Route");
+            sql.append( "SELECT ypo.PAObjectId, rpv.PointId, Timestamp, Quality, Value, ypo.Type, p.PointType, dmg.MeterNumber, "+combineSerialNumberAndAddress+" as SerialNumberAddress, ypo.PAOName, dr.RouteId, rypo.PAOName as Route");
         }
         sql.append("FROM YukonPaObject ypo");
         if (ranges.containsKey(RangeType.UNAVAILABLE)) {
@@ -212,11 +222,9 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
             }
             detail.setPaoIdentifier(rs.getPaoIdentifier("PAObjectId", "Type"));
             detail.setDeviceName(rs.getString("PAOName"));
-            detail.setMeterSerialNumber(rs.getString("SerialNumber"));
-            if (detail.getPaoIdentifier().getPaoType().isPlc()) {
-                detail.setRoute(rs.getString("Route"));
-                detail.setAddress(rs.getInt("Address"));
-            }
+            detail.setMeterNumber(Objects.toString(rs.getString("MeterNumber"), ""));
+            detail.setRoute(Objects.toString(rs.getString("Route"), ""));
+            detail.setAddressSerialNumber(Objects.toString(rs.getString("SerialNumberAddress"), ""));
             return detail;
         }
     }
