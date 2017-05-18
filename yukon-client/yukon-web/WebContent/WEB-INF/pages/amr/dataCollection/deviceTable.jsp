@@ -15,9 +15,9 @@
         <c:set var="deviceId" value="${device.paoIdentifier.paoId}"/>
         <tr>
             <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}">${device.deviceName}</cti:paoDetailUrl></td>
-            <td>${device.meterSerialNumber}</td>
+            <td>${device.meterNumber}</td>
             <td>${device.paoIdentifier.paoType.paoTypeName}</td>
-            <td><c:if test="${device.address != 0}">${device.address}</c:if></td>
+            <td>${device.addressSerialNumber}</td>
             <td>
                 <c:choose>
                     <c:when test="${device.value != null}">

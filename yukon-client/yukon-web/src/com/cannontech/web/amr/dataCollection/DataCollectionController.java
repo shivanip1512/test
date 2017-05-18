@@ -3,6 +3,7 @@ package com.cannontech.web.amr.dataCollection;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,9 +51,8 @@ import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.common.widgets.model.DataCollectionSummary;
 import com.cannontech.web.common.widgets.service.DataCollectionWidgetService;
-import com.google.common.collect.Lists;
 import com.cannontech.web.util.WebFileUtils;
-import java.util.Date;
+import com.google.common.collect.Lists;
 
 
 
@@ -177,9 +177,9 @@ public class DataCollectionController {
         for (DeviceCollectionDetail detail: details.getResultList()) {
             String[] dataRow = new String[5];
             dataRow[0] = detail.getDeviceName();
-            dataRow[1] = detail.getMeterSerialNumber();
+            dataRow[1] = detail.getMeterNumber();
             dataRow[2] = detail.getPaoIdentifier().getPaoType().getPaoTypeName();
-            dataRow[3] = detail.getAddress() > 0 ? String.valueOf(detail.getAddress())+"" : "";
+            dataRow[3] = detail.getAddressSerialNumber();
             if (detail.getValue() != null) {
                 DateTime timeStamp = new DateTime(detail.getDateTime(), userContext.getJodaTimeZone());
                 String valueString = pointFormattingService.getValueString(detail.getValue(), Format.VALUE_UNIT, userContext);
@@ -198,9 +198,9 @@ public class DataCollectionController {
     public enum DetailSortBy implements DisplayableEnum {
 
         deviceName(SortBy.DEVICE_NAME),
-        meterSerialNumber(SortBy.SERIAL_NUMBER),
+        meterSerialNumber(SortBy.METER_NUMBER),
         deviceType(SortBy.DEVICE_TYPE),
-        address(SortBy.ADDRESS),
+        address(SortBy.SERIAL_NUMBER_ADDRESS),
         recentReading(SortBy.TIMESTAMP);
         
         private DetailSortBy(SortBy value) {
