@@ -729,6 +729,11 @@ ALTER TABLE RecentPointValue
 GO
 /* End YUK-16646 */
 
+/* Start YUK-16660 */
+DROP TABLE UserSystemMetric
+GO
+/* End YUK-16660 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

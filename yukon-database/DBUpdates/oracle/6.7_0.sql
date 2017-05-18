@@ -724,6 +724,10 @@ ALTER TABLE RecentPointValue
       ON DELETE CASCADE;
 /* End YUK-16646 */
 
+/* Start YUK-16660 */
+DROP TABLE UserSystemMetric;
+/* End YUK-16660 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
