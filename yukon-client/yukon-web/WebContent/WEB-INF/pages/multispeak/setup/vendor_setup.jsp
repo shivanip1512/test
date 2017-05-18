@@ -133,84 +133,107 @@
         <c:choose>
             <c:when test="${!noVendorsExist || createMode}">
                 <tags:sectionContainer2 nameKey="mspInterfaces">
-                    <!-- Interfaces -->
-                    <table class="compact-results-table row-highlighting full-width">
-                        <thead>
-                            <tr>
-                                <th><i:inline key=".interface" /></th>
-                                <th><i:inline key=".url" /></th>
-                                <th><i:inline key=".version" /></th>
-                                <th><i:inline key=".actions" /></th>
-                                <th><i:inline key=".results" /></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <c:forEach var="mspPossibleInterfacev3" items="${multispeak.mspInterfaceList}" varStatus="status" begin="0">
-                                    <c:if test="${status.index % 2 == 0 || mspPossibleInterfacev3.mspInterface=='NOT_Server'}">
-                                        <c:choose>
-                                            <c:when test="${mspPossibleInterfacev3.mspInterface=='NOT_Server' || mspPossibleInterfacev3.mspInterface=='CB_CD'}">
-                                                <c:set var="currentInterface" value="${mspPossibleInterfacev3}" />
-                                                <c:set var="indexValue" value="${status.index}" />
-                                            </c:when>
-                                            <c:otherwise>
-                                                <c:set var="mspPossibleInterfacev5" value="${multispeak.mspInterfaceList[status.index+1]}" />
-                                                <c:set var="enabledV3" value="${mspPossibleInterfacev3.interfaceEnabled}" />
-                                                <c:set var="enabledV5" value="${mspPossibleInterfacev5.interfaceEnabled}" />
-                                                <c:set var="currentInterface" value="${mspPossibleInterfacev3}" />
-                                                <c:set var="indexValue" value="${status.index}" />
-                                                <c:if test="${enabledV5}">
-                                                    <c:set var="currentInterface" value="${mspPossibleInterfacev5}" />
-                                                    <c:set var="indexValue" value="${status.index + 1}" />
-                                                </c:if>
-                                            </c:otherwise>
-                                        </c:choose>
-                                        <tr>
-                                            <td class="wsnw">
-                                                <tags:checkbox path="mspInterfaceList[${indexValue}].interfaceEnabled" id="${currentInterface.mspInterface}" 
-                                                    onclick="yukon.admin.multispeak.enableEndpointValue(this.checked,'${currentInterface.version}',this.id)" />
-                                                <span class="checkBoxLabel">
-                                                    <spring:escapeBody htmlEscape="true">${currentInterface.mspInterface}</spring:escapeBody>
-                                                </span>
-                                                <form:hidden path="mspInterfaceList[${indexValue}].vendorID" />
-                                                <form:hidden path="mspInterfaceList[${indexValue}].mspInterface" />
-                                            </td>
-                                            <td class="wbba" style="max-width:320px;">
-                                                <tags:input id="endpointURL_${currentInterface.version}_${currentInterface.mspInterface}" path="mspInterfaceList[${indexValue}].mspEndpoint"
-                                                    size="35" disabled="${!currentInterface.interfaceEnabled}" />
-                                            </td>
-                                            <td>
-                                                <c:set var="versionOptions" value="${mspVersionList}"/>
-                                                <c:if test="${currentInterface.mspInterface=='NOT_Server'}">
-                                                    <c:set var="versionOptions" value="${mspVersion5}"/>
-                                                </c:if>
-                                                <c:if test="${currentInterface.mspInterface=='CB_CD'}">
-                                                    <c:set var="versionOptions" value="${mspVersion3}"/>
-                                                </c:if>
-                                                <tags:selectWithItems id="select${currentInterface.mspInterface}" path="mspInterfaceList[${indexValue}].version"
-                                                    disabled="${!currentInterface.interfaceEnabled}" items="${versionOptions}" inputClass="with-option-hiding" />
-                                            </td>
-                                            <td style="width: 90px;">
-                                                <div class="button-group fr wsnw oh">
-                                                    <cti:button icon="icon-ping" id="ping${currentInterface.mspInterface}" name="pingURL" renderMode="buttonImage"
-                                                        title="${pingTitle}" disabled="${!currentInterface.interfaceEnabled}"
-                                                        onclick="yukon.admin.multispeak.executeRequest('${currentInterface.mspInterface}',this.name,'${currentInterface.version}');" />
-                                                    <cti:button icon="icon-application-view-columns" id="getMethods${currentInterface.mspInterface}" name="getMethods" 
-                                                        renderMode="buttonImage" title="${getMethods}" disabled="${!currentInterface.interfaceEnabled}"
-                                                        onclick="yukon.admin.multispeak.executeRequest('${currentInterface.mspInterface}',this.name,'${currentInterface.version}');" />
-                                                </div>
-                                            </td>
-                                            <c:if test="${status.index == 0}">
-                                                <c:set var="interfaceListLength" value="${fn:length(multispeak.mspInterfaceList)/2}" />
-                                                <td rowspan='${interfaceListLength+3}'>
-                                                    <textarea cols="49" rows="${interfaceListLength*2+3}" name="Results" id="results" readonly
-                                                        wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>
+                    <div class="column-16-8 clearfix">
+                        <div class="column one">
+                            <!-- Interfaces -->
+                            <table class="compact-results-table row-highlighting full-width">
+                                <thead>
+                                    <tr>
+                                        <th><i:inline key=".interface" /></th>
+                                        <th><i:inline key=".url" /></th>
+                                        <th><i:inline key=".version" /></th>
+                                        <th><i:inline key=".actions" /></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <c:forEach var="mspPossibleInterfacev3" items="${multispeak.mspInterfaceList}"
+                                        varStatus="status" begin="0">
+                                        <c:if
+                                            test="${status.index % 2 == 0 || mspPossibleInterfacev3.mspInterface=='NOT_Server'}">
+                                            <c:choose>
+                                                <c:when
+                                                    test="${mspPossibleInterfacev3.mspInterface=='NOT_Server' || mspPossibleInterfacev3.mspInterface=='CB_CD'}">
+                                                    <c:set var="currentInterface" value="${mspPossibleInterfacev3}" />
+                                                    <c:set var="indexValue" value="${status.index}" />
+                                                </c:when>
+                                                <c:otherwise>
+                                                    <c:set var="mspPossibleInterfacev5"
+                                                        value="${multispeak.mspInterfaceList[status.index+1]}" />
+                                                    <c:set var="enabledV3"
+                                                        value="${mspPossibleInterfacev3.interfaceEnabled}" />
+                                                    <c:set var="enabledV5"
+                                                        value="${mspPossibleInterfacev5.interfaceEnabled}" />
+                                                    <c:set var="currentInterface" value="${mspPossibleInterfacev3}" />
+                                                    <c:set var="indexValue" value="${status.index}" />
+                                                    <c:if test="${enabledV5}">
+                                                        <c:set var="currentInterface" value="${mspPossibleInterfacev5}" />
+                                                        <c:set var="indexValue" value="${status.index + 1}" />
+                                                    </c:if>
+                                                </c:otherwise>
+                                            </c:choose>
+                                            <tr>
+                                                <td class="wsnw"><tags:checkbox
+                                                        path="mspInterfaceList[${indexValue}].interfaceEnabled"
+                                                        id="${currentInterface.mspInterface}"
+                                                        onclick="yukon.admin.multispeak.enableEndpointValue(this.checked,'${currentInterface.version}',this.id)" />
+                                                    <span class="checkBoxLabel"> <spring:escapeBody
+                                                            htmlEscape="true">${currentInterface.mspInterface}</spring:escapeBody>
+                                                </span> <form:hidden path="mspInterfaceList[${indexValue}].vendorID" /> <form:hidden
+                                                        path="mspInterfaceList[${indexValue}].mspInterface" /></td>
+                                                <td class="wbba" style="max-width: 320px;"><tags:input
+                                                        id="endpointURL_${currentInterface.version}_${currentInterface.mspInterface}"
+                                                        path="mspInterfaceList[${indexValue}].mspEndpoint" size="35"
+                                                        disabled="${!currentInterface.interfaceEnabled}" /></td>
+                                                <td><c:set var="versionOptions" value="${mspVersionList}" /> <c:if
+                                                        test="${currentInterface.mspInterface=='NOT_Server'}">
+                                                        <c:set var="versionOptions" value="${mspVersion5}" />
+                                                    </c:if> <c:if test="${currentInterface.mspInterface=='CB_CD'}">
+                                                        <c:set var="versionOptions" value="${mspVersion3}" />
+                                                    </c:if> <tags:selectWithItems id="select${currentInterface.mspInterface}"
+                                                        path="mspInterfaceList[${indexValue}].version"
+                                                        disabled="${!currentInterface.interfaceEnabled}"
+                                                        items="${versionOptions}" inputClass="with-option-hiding" /></td>
+                                                <td style="width: 90px;">
+                                                    <div class="button-group fr wsnw oh">
+                                                        <cti:button icon="icon-ping"
+                                                            id="ping${currentInterface.mspInterface}" name="pingURL"
+                                                            renderMode="buttonImage" title="${pingTitle}"
+                                                            disabled="${!currentInterface.interfaceEnabled}"
+                                                            onclick="yukon.admin.multispeak.executeRequest('${currentInterface.mspInterface}',this.name,'${currentInterface.version}');" />
+                                                        <cti:button icon="icon-application-view-columns"
+                                                            id="getMethods${currentInterface.mspInterface}"
+                                                            name="getMethods" renderMode="buttonImage"
+                                                            title="${getMethods}"
+                                                            disabled="${!currentInterface.interfaceEnabled}"
+                                                            onclick="yukon.admin.multispeak.executeRequest('${currentInterface.mspInterface}',this.name,'${currentInterface.version}');" />
+                                                    </div>
                                                 </td>
-                                            </c:if>
-                                        </tr>
-                                    </c:if>
-                            </c:forEach>
-                        </tbody>
-                    </table>
+                                            </tr>
+                                        </c:if>
+                                    </c:forEach>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="column two nogutter">
+                            <table class="compact-results-table">
+                                <thead>
+                                    <tr>
+                                        <th><i:inline key=".results" /></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <c:set var="interfaceListLength"
+                                            value="${fn:length(multispeak.mspInterfaceList)/2}" />
+                                        <td rowspan='${interfaceListLength+3}'><textarea cols="49"
+                                                rows="${interfaceListLength*2+3}" name="Results" id="results" readonly
+                                                wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </tags:sectionContainer2>
             </c:when>
             <c:otherwise>

@@ -52,10 +52,12 @@
                     <tags:nameValueContainer2 tableClass="natural-width ${tableClass}">
                         <c:if test="${showRoleProperties}">
                             <tags:nameValue2 nameKey=".companyName">
-                                <tags:input path="mspVendor.companyName" maxlength="32" readonly="true"/>
+                                <span>${multispeak.mspVendor.companyName}</span>
+                                <form:hidden path="mspVendor.companyName" />
                             </tags:nameValue2>
                             <tags:nameValue2 nameKey=".appName">
-                                <tags:input path="mspVendor.appName" maxlength="32" readonly="true"/>
+                                <span>${multispeak.mspVendor.appName}</span>
+                                <form:hidden path="mspVendor.appName" />
                             </tags:nameValue2>
                         </c:if>
                     </tags:nameValueContainer2>
@@ -76,13 +78,14 @@
                                 inputClass="with-option-hiding"/>
                             </tags:nameValue2>
                             
+                            <c:if test="${multispeak.paoNameUsesExtension || !viewMode}">
                             <tags:nameValue2 nameKey=".useExtension">
-                            <tags:switchButton path="paoNameUsesExtension" offClasses="M0"
+                            <tags:switchButton path="paoNameUsesExtension" offClasses="M0" hideValue="true"
                                 toggleGroup="mspPaoNameAliasExtension" toggleAction="hide" inputClass="js-use-offset" />
                             
                             <tags:input path="paoNameAliasExtension" size="6" toggleGroup="mspPaoNameAliasExtension"/>
                             </tags:nameValue2>
-                            
+                            </c:if>
                             <tags:nameValue2 nameKey=".meterLookupField">
                                 <tags:selectWithItems id="meterLookupField" path="meterLookupField" items="${meterLookupFields}" 
                                 inputClass="with-option-hiding"/>
@@ -116,10 +119,7 @@
                                 <td class="wbba" style="max-width:320px;">
                                     <tags:input id="endpointURL_${multispeakInterface.version}_${multispeakInterface.mspInterface}" path="mspInterfaceList[${i.index}].mspEndpoint" size="35" />
                                 </td>
-                                <td>
-                                    <span>${multispeakInterface.version.version}</span>
-                                    <tags:hidden path="mspInterfaceList[${i.index}].version" />
-                                </td>
+                                <tags:hidden path="mspInterfaceList[${i.index}].version" />
                                 <td style="width: 90px;">
                                     <div class="button-group fr wsnw oh">
                                         <cti:button icon="icon-ping" id="${multispeakInterface.mspInterface}" name="pingURL"
@@ -139,8 +139,11 @@
          <div class="column two nogutter"> <tags:nameValueContainer2></tags:nameValueContainer2>
          </div>
          <div class="column three nogutter">
-         <tags:nameValueContainer2><br>
-             <textarea cols="53" rows="${resultsCount * 2 + 1}" name="Results" id="results" readonly wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>
+             <tags:nameValueContainer2><br>
+                 <textarea cols="53" rows="${resultsCount * 2 + 1}" name="Results" id="results" readonly 
+                           style='color:<c:out value="${resultColor}"/>;width: 400px;max-width: 400px;word-wrap:normal;overflow-x: scroll;'>
+                     ${MSP_RESULT_MSG}
+                 </textarea>
              </tags:nameValueContainer2>
          </div>
          </div>

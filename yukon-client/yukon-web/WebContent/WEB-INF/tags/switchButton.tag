@@ -24,9 +24,9 @@
 <%@ attribute name="classes" description="CSS class names applied to the outer label element." %>
 <%@ attribute name="color" type="java.lang.Boolean" description="If 'true', buttons will have red and green text color.
                                                                  Default: 'true'." %>
-
+<%@ attribute name="hideValue" type="java.lang.Boolean" description="The html hidden attribute of the checkbox input." %>
 <%@ attribute name="inputClass" description="CSS class names applied to the input." %>
-<%@ attribute name="onClasses" description="CSS class names applied to the on button." %>
+<%@ attribute name="onClasses" description="CSS class names applied to the on button.Default: false." %>
 <%@ attribute name="offClasses" description="CSS class names applied to the off button." %>
 <%@ attribute name="id" description="The html id attribute of the checkbox input." %>
 
@@ -34,6 +34,7 @@
 <cti:default var="disabled" value="${false}"/>
 <cti:default var="inverse" value="${false}"/>
 <cti:default var="color" value="${true}"/>
+<cti:default var="hideValue" value="${false}"/>
 <cti:uniqueIdentifier prefix="switch-btn-" var="thisId"/>
 <cti:default var="id" value="${thisId}"/>
 <cti:default var="offNameKey" value=".off.label"/>
@@ -87,10 +88,10 @@
     <c:if test="${inverse}">
         <c:set var="checked" value="${not checked}"/>
     </c:if>
-    <c:if test="${checked}">
+    <c:if test="${checked && not hideValue}">
         <span class="${classes} ${color ? 'green' : ''}"><cti:msg2 key="${onNameKey}"/></span>
     </c:if>
-    <c:if test="${not checked}">
+    <c:if test="${not checked && not hideValue}">
         <span class="${classes} ${color ? 'red' : ''}"><cti:msg2 key="${offNameKey}"/></span>
     </c:if>
 </cti:displayForPageEditModes>
