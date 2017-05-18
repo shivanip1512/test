@@ -24,7 +24,8 @@ public interface RecentPointValueDao {
         METER_NUMBER("dmg.MeterNumber"),
         DEVICE_TYPE("ypo.Type"),
         SERIAL_NUMBER_ADDRESS("SerialNumberAddress"),
-        TIMESTAMP("Timestamp");
+        TIMESTAMP("Timestamp"),
+        ROUTE("Route");
         
         private SortBy(String dbString) {
             this.dbString = dbString;
