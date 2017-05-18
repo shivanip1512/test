@@ -39,7 +39,7 @@ import com.cannontech.msp.beans.v5.multispeak.Meters;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
-import com.cannontech.multispeak.dao.v5.MspMeterDao;
+import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.data.v5.MspCDDeviceReturnList;
 import com.cannontech.multispeak.data.v5.MspMeterReturnList;
 import com.cannontech.multispeak.exceptions.MultispeakWebServiceException;
@@ -86,7 +86,7 @@ public class CD_ServerImpl implements CD_Server {
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetAllCDDevices", vendor.getCompanyName());
         Date timerStart = new Date();
-        MspCDDeviceReturnList mspCDDevices = mspMeterDao.getAllCDDevices(lastReceived, vendor.getMaxReturnRecords());
+        MspCDDeviceReturnList mspCDDevices = (MspCDDeviceReturnList) mspMeterDao.getAllCDDevices(lastReceived, vendor.getMaxReturnRecords());
 
         multispeakFuncs.updateResponseHeader(mspCDDevices);
 
@@ -104,7 +104,7 @@ public class CD_ServerImpl implements CD_Server {
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetCDEnabledMeters", vendor.getCompanyName());
         Date timerStart = new Date();
-        MspMeterReturnList meterList = mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
+        MspMeterReturnList meterList = (MspMeterReturnList) mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
 
         multispeakFuncs.updateResponseHeader(meterList);
 

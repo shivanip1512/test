@@ -24,7 +24,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 
-public class MspMeterDaoBase {
+public abstract class MspMeterDaoBase implements MspMeterDao {
     @Autowired protected YukonJdbcTemplate jdbcTemplate;
     @Autowired protected PaoDefinitionDao paoDefinitionDao;
     @Autowired protected GlobalSettingDao globalSettingDao;

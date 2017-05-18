@@ -1,7 +1,7 @@
 package com.cannontech.multispeak.dao;
 
 import com.cannontech.amr.meter.model.YukonMeter;
-import com.cannontech.multispeak.data.MspMeterReturnList;
+import com.cannontech.multispeak.data.MspReturnList;
 
 public interface MspMeterDao
 {
@@ -11,9 +11,9 @@ public interface MspMeterDao
      * @param maxRecords
      * @return
      */
-    public MspMeterReturnList getAMRSupportedMeters(String lastReceived, int maxRecords);
+    public MspReturnList getAMRSupportedMeters(String lastReceived, int maxRecords);
     
-    public MspMeterReturnList getCDSupportedMeters(String lastReceived, int maxRecords);
+    public MspReturnList getCDSupportedMeters(String lastReceived, int maxRecords);
     
     public boolean isCDSupportedMeter(String meterNumber);
     
@@ -40,4 +40,13 @@ public interface MspMeterDao
      *  Use this method with caution! 
      */
     public YukonMeter getForSerialNumberOrAddress(String serialNumberOrAddress);
+    
+    /**
+     * Returns all meters that supports disconnect/connect
+     * 
+     * @param lastReceived
+     * @param maxRecords
+     * @return
+     */
+    public MspReturnList getAllCDDevices(String lastReceived, int maxRecords);
 }

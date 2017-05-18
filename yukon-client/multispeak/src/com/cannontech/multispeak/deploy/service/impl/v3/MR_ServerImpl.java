@@ -134,9 +134,8 @@ public class MR_ServerImpl implements MR_Server{
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetAMRSupportedMeters", vendor.getCompanyName());
 
-        MspMeterReturnList meterList = null;
         Date timerStart = new Date();
-        meterList = mspMeterDao.getAMRSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
+        MspMeterReturnList meterList = (MspMeterReturnList) mspMeterDao.getAMRSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
 
         multispeakFuncs.updateResponseHeader(meterList);
 

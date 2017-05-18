@@ -18,12 +18,12 @@ import com.cannontech.msp.beans.v3.ModuleList;
 import com.cannontech.msp.beans.v3.Nameplate;
 import com.cannontech.msp.beans.v3.UtilityInfo;
 import com.cannontech.multispeak.client.MultispeakDefines;
-import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.MspMeterDaoBase;
 import com.cannontech.multispeak.data.MspMeterReturnList;
+import com.cannontech.multispeak.data.MspReturnList;
 
-public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDao
-{
+public final class MspMeterDaoImpl extends MspMeterDaoBase {
+
     private static final YukonRowMapper<Meter> mspMeterRowMapper = new YukonRowMapper<Meter>() {
     	@Override
         public Meter mapRow(YukonResultSet rset) throws SQLException {
@@ -189,5 +189,11 @@ public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDa
         utilityInfo.setSubstationName();
         utilityInfo.setTransformerBankID();*/
         return utilityInfo;
+    }
+
+    @Override
+    public MspReturnList getAllCDDevices(String lastReceived, int maxRecords) {
+        // This method should not be called for v3, only v5 implementation.
+        return null;
     }
 }

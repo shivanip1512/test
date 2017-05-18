@@ -35,8 +35,8 @@ import com.cannontech.multispeak.block.v5.Block;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.client.v5.MultispeakFuncs;
+import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.dao.v5.FormattedBlockProcessingService;
-import com.cannontech.multispeak.dao.v5.MspMeterDao;
 import com.cannontech.multispeak.dao.v5.MspObjectDao;
 import com.cannontech.multispeak.dao.v5.MspRawPointHistoryDao;
 import com.cannontech.multispeak.dao.v5.MspRawPointHistoryDao.ReadBy;
@@ -166,9 +166,8 @@ public class MR_ServerImpl implements MR_Server{
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("GetAMRSupportedMeters", vendor.getCompanyName());
 
-        MspMeterReturnList meterList = null;
         Date timerStart = new Date();
-        meterList = mspMeterDao.getAMRSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
+        MspMeterReturnList meterList = (MspMeterReturnList) mspMeterDao.getAMRSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
 
         multispeakFuncs.updateResponseHeader(meterList);
 

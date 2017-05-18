@@ -63,15 +63,19 @@ public abstract class MspReturnList {
      * @param lastObject
      */
     private String getLastSentObjectId(Object lastObject) {
-    	if (lastObject instanceof YukonMeter) {
-    		return ((YukonMeter)lastObject).getMeterNumber();
-    	} else if (lastObject instanceof com.cannontech.msp.beans.v3.Meter) {
-    		return ((com.cannontech.msp.beans.v3.Meter)lastObject).getMeterNo();
-    	} else if (lastObject instanceof MspObject) {
-    	    return ((MspObject) lastObject).getObjectID();
-    	} else {
-    		log.error("Object unrecognized for parsing lastSent value. Returning toString of object:" + lastObject.toString());
-    		return lastObject.toString();
-    	}
+        if (lastObject instanceof YukonMeter) {
+            return ((YukonMeter)lastObject).getMeterNumber();
+        } else if (lastObject instanceof com.cannontech.msp.beans.v3.Meter) {
+            return ((com.cannontech.msp.beans.v3.Meter)lastObject).getMeterNo();
+        } else if (lastObject instanceof com.cannontech.msp.beans.v5.multispeak.ElectricMeter) {
+            return (((com.cannontech.msp.beans.v5.multispeak.ElectricMeter)lastObject).getPrimaryIdentifier().getValue());
+        } else if (lastObject instanceof MspObject) {
+            return ((MspObject) lastObject).getObjectID();
+        } else if (lastObject instanceof com.cannontech.msp.beans.v5.multispeak.MspObject) {
+            return ((com.cannontech.msp.beans.v5.multispeak.MspObject) lastObject).getPrimaryIdentifier().getValue();
+        } else {
+            log.error("Object unrecognized for parsing lastSent value. Returning toString of object:" + lastObject.toString());
+            return lastObject.toString();
+        }
     }
 }

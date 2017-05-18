@@ -23,11 +23,10 @@ import com.cannontech.msp.beans.v5.multispeak.Module;
 import com.cannontech.msp.beans.v5.multispeak.Modules;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MspMeterDaoBase;
-import com.cannontech.multispeak.dao.v5.MspMeterDao;
 import com.cannontech.multispeak.data.v5.MspCDDeviceReturnList;
 import com.cannontech.multispeak.data.v5.MspMeterReturnList;
 
-public final class MspMeterDaoImpl extends MspMeterDaoBase implements MspMeterDao {
+public final class MspMeterDaoImpl extends MspMeterDaoBase {
 
     private static final YukonRowMapper<ElectricMeter> mspMeterRowMapper = new YukonRowMapper<ElectricMeter>() {
         @Override

@@ -74,7 +74,7 @@ public class CD_ServerImpl implements CD_Server {
         multispeakEventLogService.methodInvoked("GetCDSupportedMeters", vendor.getCompanyName());
 
         Date timerStart = new Date();
-        MspMeterReturnList meterList = mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
+        MspMeterReturnList meterList = (MspMeterReturnList) mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
 
         multispeakFuncs.updateResponseHeader(meterList);
 
