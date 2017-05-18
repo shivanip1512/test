@@ -168,9 +168,9 @@ public class DataCollectionController {
         String[] headerRow = new String[5];
 
         headerRow[0] = accessor.getMessage(DetailSortBy.deviceName);
-        headerRow[1] = accessor.getMessage(DetailSortBy.meterSerialNumber);
+        headerRow[1] = accessor.getMessage(DetailSortBy.meterNumber);
         headerRow[2] = accessor.getMessage(DetailSortBy.deviceType);
-        headerRow[3] = accessor.getMessage(DetailSortBy.address);
+        headerRow[3] = accessor.getMessage(DetailSortBy.serialNumberAddress);
         headerRow[4] = accessor.getMessage(DetailSortBy.recentReading);
 
         List<String[]> dataRows = Lists.newArrayList();
@@ -198,9 +198,9 @@ public class DataCollectionController {
     public enum DetailSortBy implements DisplayableEnum {
 
         deviceName(SortBy.DEVICE_NAME),
-        meterSerialNumber(SortBy.METER_NUMBER),
+        meterNumber(SortBy.METER_NUMBER),
         deviceType(SortBy.DEVICE_TYPE),
-        address(SortBy.SERIAL_NUMBER_ADDRESS),
+        serialNumberAddress(SortBy.SERIAL_NUMBER_ADDRESS),
         recentReading(SortBy.TIMESTAMP);
         
         private DetailSortBy(SortBy value) {

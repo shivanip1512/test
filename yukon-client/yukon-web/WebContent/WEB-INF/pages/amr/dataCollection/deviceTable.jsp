@@ -6,9 +6,9 @@
 
 <table class="compact-results-table row-highlighting has-actions">
     <tags:sort column="${deviceName}" />                
-    <tags:sort column="${meterSerialNumber}" />                
+    <tags:sort column="${meterNumber}" />                
     <tags:sort column="${deviceType}" />                
-    <tags:sort column="${address}" />                
+    <tags:sort column="${serialNumberAddress}" />                
     <tags:sort column="${recentReading}" />                                
     <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
     <c:forEach var="device" items="${detail.resultList}">
