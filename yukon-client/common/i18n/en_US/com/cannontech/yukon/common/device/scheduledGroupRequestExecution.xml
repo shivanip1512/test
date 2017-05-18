@@ -58,6 +58,21 @@
     <entry key="yukon.common.device.schedules.home.disableAndDeleteJobButton">Delete</entry>
     <entry key="yukon.common.device.schedules.home.pastDate">Run Time must be in the future.</entry>
     
+    <entry key="yukon.web.modules.tools.schedules.error.time.invalid">Time/Frequency must be a valid time and frequency.</entry>
+    <entry key="yukon.web.modules.tools.schedules.error.deviceGroup.blank">Device group cannot be blank.</entry>
+    <entry key="yukon.web.modules.tools.schedules.error.name.blank">Schedule name cannot be blank.</entry>
+    <entry key="yukon.web.modules.tools.schedules.error.name.length">Schedule name cannot exceed 200 characters.</entry>
+    <entry key="yukon.web.modules.tools.schedules.error.attribute.blank">One or more attribute(s) must be selected.</entry>
+    <entry key="yukon.web.modules.tools.schedules.error.queuedRetryCount.integer">Number of queued retries must be an integer. You entered: </entry>
+    <entry key="yukon.web.modules.tools.schedules.error.queuedRetryCount.bounds">Number of queued retries must be non-negative. You entered: </entry>
+    <entry key="yukon.web.modules.tools.schedules.error.nonQueuedRetryCount.integer">Number of non-queued retries must be an integer. You entered: </entry>
+    <entry key="yukon.web.modules.tools.schedules.error.nonQueuedRetryCount.bounds">Number of non-queued retries must be non-negative. You entered: </entry>
+    <entry key="yukon.web.modules.tools.schedules.error.maxRunTime.integer">Maximum total run-time hours must be an integer. You entered: </entry>
+    <entry key="yukon.web.modules.tools.schedules.error.maxRunTime.bounds">Maximum total run-time hours must be at least 1.</entry>
+    <entry key="yukon.web.modules.tools.schedules.error.totalRetryCount.bounds">Total number of retries must be in the range 1-10.</entry>
+    <entry key="yukon.web.modules.tools.schedules.error.command.blank">One or more commands must be selected.</entry>
+    <entry key="yukon.web.modules.tools.schedules.error.command.authorized">You are not authorized to execute this command: </entry>
+    
     <!-- ScheduledGroupRequestExecutionController jobs.jsp -->
     <!-- ================================================================================================================================================= -->
     <!-- ================================================================================================================================================= -->
@@ -132,6 +147,7 @@
     <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.executionsButton">View All Executions</entry>
     <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.runningWarning">Edit functionality is disabled while schedule is running.</entry>
     <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.error.editDeletedJob">Cannot edit a deleted job.</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.error.date">Invalid date.</entry>
     <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.info.popInfo.deviceGroup"><![CDATA[
     	 <br>
 	     View the device group in the Device Group Editor page.
@@ -152,7 +168,7 @@
 	     <br><br>
     ]]></entry>
     <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.editScheduleButton">Edit</entry>
-    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.queuedRetryCount">Number of queued retries</entry>
+    <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.queuedRetryCount">Number of queued retries.</entry>
     <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.nonQueuedRetryCount">Number of non-queued retries.</entry>
     <entry key="yukon.web.modules.tools.schedules.VIEW.results.jobDetail.maxTotalRunTimeHours">Maximum total run-time hours.</entry>
     
