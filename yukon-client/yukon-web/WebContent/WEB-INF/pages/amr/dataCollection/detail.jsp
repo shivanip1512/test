@@ -16,7 +16,7 @@
     </c:forEach>
     
     <cti:url var="action" value="/amr/dataCollection/detail" />
-    <form action="${action}" method="GET">
+    <form id="collectionDetail" action="${action}" method="GET">
         <input type="hidden" name="deviceGroup" value="${deviceGroup}"/>
         <input type="hidden" name="includeDisabled" value="${includeDisabled}"/>
         <div class="column-12-12 clearfix">
@@ -51,7 +51,7 @@
                                 <c:if test="${range eq 'OUTDATED'}">
                                     <c:set var="buttonText" value="orange"/>
                                 </c:if>                                
-                                <tags:check name="ranges" key=".rangeType.${range}" buttonTextClasses="${buttonText}" checked="${checked}" value="${range}"></tags:check>
+                                <tags:check name="ranges" key=".rangeType.${range}" classes="M0" buttonTextClasses="${buttonText}" checked="${checked}" value="${range}"></tags:check>
                             </c:forEach>
                         </div>
                     </tags:nameValue2>
@@ -80,7 +80,8 @@
                 <cti:url var="mapUrl" value="/tools/map">
                     <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                 </cti:url>
-                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}"/>     
+                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}"/>
+                <cm:dropdownOption icon="icon-csv" key=".download" classes="js-download"/>     
                 <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
                     <c:forEach items="${deviceCollection.collectionParameters}" var="cp">
                         <cti:param name="${cp.key}" value="${cp.value}"/>

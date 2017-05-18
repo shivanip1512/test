@@ -17,6 +17,7 @@
     <entry key="yukon.web.modules.amr.dataCollection.detail.devices">Devices</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.collectionActions">Collection Actions</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.mapDevices">Map Devices</entry>
+    <entry key="yukon.web.modules.amr.dataCollection.detail.download">Download</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.readAttribute">Read Attribute</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.sendCommand">Send Command</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.locateRoute">Locate Route</entry>

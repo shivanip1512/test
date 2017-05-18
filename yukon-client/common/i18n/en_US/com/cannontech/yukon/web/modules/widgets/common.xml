@@ -139,6 +139,7 @@
 <entry key="yukon.web.widgets.dataCollectionWidget">Data Collection</entry>
 <entry key="yukon.web.widgets.dataCollectionWidget.helpText"><![CDATA[
         Select a Device Group to obtain data collection information for.  Check the include disabled checkbox to include any disabled devices in the calculations.  
+        Click on the pie chart to view detailed device information.
         The Refresh button will force an update of the data collected (if data has not been collected within 15 minutes).  
         The date/time displays the date/time that data collection was last updated.
         <ul>

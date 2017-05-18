@@ -9,7 +9,7 @@
     <entry key="yukon.web.modules.dashboard.manage.crumbTitle">Dashboards</entry>
     <entry key="yukon.web.modules.dashboard.manage.pageTitle">Dashboards: Manage</entry>
     <entry key="yukon.web.modules.dashboard.dashboardsTab">Dashboards</entry>
-    <entry key="yukon.web.modules.dashboard.settingsTab">Settings</entry>
+    <entry key="yukon.web.modules.dashboard.settingsTab">Assignments</entry>
     <entry key="yukon.web.modules.dashboard.createDashboard.label">Create Dashboard</entry>
     <entry key="yukon.web.modules.dashboard.copyDashboard.label">Copy Dashboard</entry>
     <entry key="yukon.web.modules.dashboard.filters">Filter:</entry>

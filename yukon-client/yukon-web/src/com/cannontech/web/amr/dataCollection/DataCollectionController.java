@@ -1,5 +1,7 @@
 package com.cannontech.web.amr.dataCollection;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +11,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -38,6 +42,8 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.service.PointFormattingService;
+import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
@@ -45,6 +51,10 @@ import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.common.widgets.model.DataCollectionSummary;
 import com.cannontech.web.common.widgets.service.DataCollectionWidgetService;
 import com.google.common.collect.Lists;
+import com.cannontech.web.util.WebFileUtils;
+import java.util.Date;
+
+
 
 @Controller
 @RequestMapping("/dataCollection/*")
@@ -58,6 +68,7 @@ public class DataCollectionController {
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private PointFormattingService pointFormattingService;
     
     private final static String baseKey = "yukon.web.modules.amr.dataCollection.detail.";
     
@@ -136,6 +147,53 @@ public class DataCollectionController {
         model.addAttribute("detail", detail);
         
     }
+    
+    @RequestMapping("download")
+    public String download(YukonUserContext userContext, String deviceGroup, String deviceSubGroup, Boolean includeDisabled, RangeType[] ranges, 
+                          @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
+                          @DefaultItemsPerPage(value=50) PagingParameters paging,
+                          HttpServletResponse response) throws IOException {
+        paging = PagingParameters.EVERYTHING;
+        DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
+        DeviceGroup subGroup = null;
+        if (deviceSubGroup != null && !deviceSubGroup.isEmpty()) {
+            subGroup = deviceGroupService.resolveGroupName(deviceSubGroup);
+        }
+        DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
+        Direction dir = sorting.getDirection();
+        SearchResults<DeviceCollectionDetail> details = dataCollectionWidgetService.getDeviceCollectionResult(group,
+            subGroup, includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String[] headerRow = new String[5];
+
+        headerRow[0] = accessor.getMessage(DetailSortBy.deviceName);
+        headerRow[1] = accessor.getMessage(DetailSortBy.meterSerialNumber);
+        headerRow[2] = accessor.getMessage(DetailSortBy.deviceType);
+        headerRow[3] = accessor.getMessage(DetailSortBy.address);
+        headerRow[4] = accessor.getMessage(DetailSortBy.recentReading);
+
+        List<String[]> dataRows = Lists.newArrayList();
+        for (DeviceCollectionDetail detail: details.getResultList()) {
+            String[] dataRow = new String[5];
+            dataRow[0] = detail.getDeviceName();
+            dataRow[1] = detail.getMeterSerialNumber();
+            dataRow[2] = detail.getPaoIdentifier().getPaoType().getPaoTypeName();
+            dataRow[3] = detail.getAddress() > 0 ? String.valueOf(detail.getAddress())+"" : "";
+            if (detail.getValue() != null) {
+                DateTime timeStamp = new DateTime(detail.getDateTime(), userContext.getJodaTimeZone());
+                String valueString = pointFormattingService.getValueString(detail.getValue(), Format.VALUE_UNIT, userContext);
+                dataRow[4] = valueString + " " + timeStamp.toString(DateTimeFormat.mediumDateTime());
+            } else {
+                dataRow[4] = accessor.getMessage(baseKey + "noRecentReadingFound");
+            }
+            dataRows.add(dataRow);
+        }
+        String now = new SimpleDateFormat("MM/dd/yyyy HH:mm").format(new Date());
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "recentReadings_" + now + ".csv");
+        return null;
+      }
+
     
     public enum DetailSortBy implements DisplayableEnum {
 

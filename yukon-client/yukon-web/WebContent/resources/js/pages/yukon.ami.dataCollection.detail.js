@@ -24,6 +24,13 @@ yukon.ami.dataCollection.detail = (function () {
                 data = yukon.fromJson('#summaryData');
                         
             yukon.widget.dataCollection.buildChart(chart, data);
+            
+            $(document).on('click', '.js-download', function () {
+                var form = $('#collectionDetail');
+                form.attr('action', yukon.url('/amr/dataCollection/download'));
+                form.submit();
+                form.attr('action', yukon.url('/amr/dataCollection/detail'));
+            });
 
             _initialized = true;
         }

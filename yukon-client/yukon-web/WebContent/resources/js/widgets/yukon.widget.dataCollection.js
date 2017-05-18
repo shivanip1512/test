@@ -13,7 +13,8 @@ yukon.widget.dataCollection = (function () {
     var
     _initialized = false,
     /** @type {number} - The setTimeout reference for periodic updating of the pie chart. */
-    _updateInterval = 4000,
+    _updateInterval = 6000,
+    _updateTimeout = null,
     
     _getData = function (data) {
         return [
@@ -27,7 +28,7 @@ yukon.widget.dataCollection = (function () {
                 name: $('.js-EXPECTED').val(),
                 y: data.expected.percentage,
                 x: data.expected.deviceCount,
-                color: '#e9e647'
+                color: '#cecb34'
                 
             },
             {
@@ -111,7 +112,7 @@ yukon.widget.dataCollection = (function () {
                 }).done(function (data) {
                     if (data.summary != null) {
                         if (chart.is('.js-initialize')) {
-                            _buildChart(chart, data.summary, 220);
+                            _buildChart(chart, data.summary);
                         } else {
                             _updateChart(data.summary, idx);
                         }
@@ -126,7 +127,10 @@ yukon.widget.dataCollection = (function () {
             }
             
         });
-        //setTimeout(_update, _updateInterval);
+        if (_updateTimeout) {
+            clearTimeout(_updateTimeout);
+        }
+        _updateTimeout = setTimeout(_update, _updateInterval);
         
     },
     
