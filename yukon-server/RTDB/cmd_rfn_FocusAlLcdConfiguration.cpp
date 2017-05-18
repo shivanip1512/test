@@ -138,12 +138,24 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
      *
      */
 
+    validate(Condition( response.size() >= 2, ClientErrors::Unknown )
+        << "Response too small - (" << response.size() << ", expecting >= 2)");
+
+    const unsigned char commandCode     = response[0],
+                        statusCode      = response[1];
+
+    const boost::optional<string> statusResult = mapFind( StatusItems, statusCode );
+
+    validate(Condition( !! statusResult, ClientErrors::InvalidData )
+        << "Invalid status code - (" << statusCode << ")");
+
+    validate(Condition( statusCode == 0x00, ClientErrors::Unknown )
+        << "Failure Status (" << statusCode << ")");
+
     validate( Condition( response.size() >= 4, ClientErrors::InvalidData )
             << "Response too small - (" << response.size() << ", expecting >= 4)" );
 
-    const unsigned char commandCode         = response[0],
-                        statusCode          = response[1],
-                        displayItemNbr      = response[2],
+    const unsigned char displayItemNbr      = response[2],
                         displayItemDuration = response[3];
 
     // check command
@@ -155,15 +167,7 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
 
     result.description += "Display items received:";
 
-    result.description += "\nLCD cycle time : " + CtiNumStr(displayItemDuration) + " seconds";
-
-    const boost::optional<string> statusResult = mapFind(StatusItems, statusCode);
-
-    validate(Condition( !! statusResult, ClientErrors::InvalidData )
-        << "Invalid status code - (" << statusCode << ")");
-
-    validate(Condition( statusCode == 0x00, ClientErrors::Unknown )
-        << "Failure Status (" << statusCode << ")");
+    result.description += "\nLCD cycle time : " + CtiNumStr( displayItemDuration ) + " seconds";
 
     const unsigned responseSizeExp = 4 + displayItemNbr*3;
 
