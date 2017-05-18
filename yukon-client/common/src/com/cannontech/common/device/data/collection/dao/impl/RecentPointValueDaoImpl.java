@@ -78,7 +78,7 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
             Map<RangeType, Range<Instant>> ranges, SortBy sortBy, Direction direction) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         if (sortBy == null) {
-            sql.append( "SELECT count(*)");
+            sql.append( "SELECT count(ypo.PAObjectId)");
         } else {
             sql.append( "SELECT ypo.PAObjectId, rpv.PointId, Timestamp, Quality, Value, ypo.Type, p.PointType, COALESCE(rfna.SerialNumber, dmg.MeterNumber) as SerialNumber, ypo.PAOName, dcs.Address, dr.RouteId, rypo.PAOName as Route");
         }
@@ -124,17 +124,17 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
      * 
      * sql generated for all 4 
      * AND ( rpv.Timestamp is NULL 
-     * OR ( ( rpv.timestamp >= ? AND rpv.timestamp < ? ) 
-     * OR ( rpv.timestamp >= ? AND rpv.timestamp < ? ) 
-     * OR ( rpv.timestamp >= ? AND rpv.timestamp < ? ) 
-     * OR  rpv.timestamp < ? ) ) 
+     * OR ( ( rpv.timestamp > ? AND rpv.timestamp <= ? ) 
+     * OR ( rpv.timestamp > ? AND rpv.timestamp <= ? ) 
+     * OR ( rpv.timestamp > ? AND rpv.timestamp <= ? ) 
+     * OR  rpv.timestamp <= ? ) ) 
      * 
      * AVAILABLE and OUTDATED only
-     * AND ( ( rpv.timestamp >= ? AND rpv.timestamp < ? ) 
-     * OR ( rpv.timestamp >= ? AND rpv.timestamp < ? ) )
+     * AND ( ( rpv.timestamp > ? AND rpv.timestamp <= ? ) 
+     * OR ( rpv.timestamp > ? AND rpv.timestamp <= ? ) )
      * 
      * UNAVAILABLE only
-     * AND ( rpv.Timestamp is NULL OR (  rpv.timestamp < ? ) )
+     * AND ( rpv.Timestamp is NULL OR (  rpv.timestamp <= ? ) )
      * 
      * 
      * NOTE: ranges sorted by keys in alphabetical order -  UNAVAILABLE is always last

@@ -152,7 +152,7 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
      * Constructs range, adds it list of ranges and logs the range information.
      */
     private Range<Instant> buildRange(RangeType type, Map<RangeType, Range<Instant>> ranges, Instant min, Instant max) {
-        Range<Instant> range = new Range<>(min, true, max, false);
+        Range<Instant> range = new Range<>(min, false, max, true);
         ranges.put(type, range);
         log.debug(getLogString(type, range));
         return range;
