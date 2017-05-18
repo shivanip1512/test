@@ -714,12 +714,12 @@ CREATE TABLE RecentPointValue  (
 );
 
 ALTER TABLE RecentPointValue
-   ADD CONSTRAINT FK_RecentPointValue_Point FOREIGN KEY (PointID)
+   ADD CONSTRAINT FK_RPV_Point FOREIGN KEY (PointID)
       REFERENCES POINT (POINTID)
       ON DELETE CASCADE;
 
 ALTER TABLE RecentPointValue
-   ADD CONSTRAINT FK_RecentPointValue_YukonPAObject FOREIGN KEY (PAObjectID)
+   ADD CONSTRAINT FK_RPV_YukonPAObject FOREIGN KEY (PAObjectID)
       REFERENCES YukonPAObject (PAObjectID)
       ON DELETE CASCADE;
 /* End YUK-16646 */

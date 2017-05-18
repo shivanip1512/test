@@ -12842,12 +12842,12 @@ alter table RawPointHistoryDependentJob
       on delete cascade;
 
 alter table RecentPointValue
-   add constraint FK_RecentPointValue_Point foreign key (PointID)
+   add constraint FK_RPV_Point foreign key (PointID)
       references POINT (POINTID)
       on delete cascade;
 
 alter table RecentPointValue
-   add constraint FK_RecentPointValue_YukonPAObject foreign key (PAObjectID)
+   add constraint FK_RPV_YukonPAObject foreign key (PAObjectID)
       references YukonPAObject (PAObjectID)
       on delete cascade;
 

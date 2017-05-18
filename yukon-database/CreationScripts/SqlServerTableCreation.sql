@@ -13971,13 +13971,13 @@ alter table RawPointHistoryDependentJob
 go
 
 alter table RecentPointValue
-   add constraint FK_RecentPointValue_Point foreign key (PointID)
+   add constraint FK_RPV_Point foreign key (PointID)
       references POINT (POINTID)
          on delete cascade
 go
 
 alter table RecentPointValue
-   add constraint FK_RecentPointValue_YukonPAObject foreign key (PAObjectID)
+   add constraint FK_RPV_YukonPAObject foreign key (PAObjectID)
       references YukonPAObject (PAObjectID)
          on delete cascade
 go
