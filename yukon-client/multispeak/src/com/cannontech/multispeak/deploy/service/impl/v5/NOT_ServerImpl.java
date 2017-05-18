@@ -3,6 +3,7 @@ package com.cannontech.multispeak.deploy.service.impl.v5;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -65,13 +66,15 @@ public class NOT_ServerImpl implements NOT_Server {
         // - stop logging this, it's occurring every minute or more
 
         List<ErrorObject> errorObjects = Lists.newArrayList();
-        for (SCADAAnalog scadaAnalog : scadaAnalogs) {
-            ErrorObject errorObject = mspValidationService.isValidScadaAnalog(scadaAnalog);
-            if (errorObject == null) {
-                errorObject = multispeakLMService.writeAnalogPointData(scadaAnalog, user);
-            }
-            if (errorObject != null) {
-                errorObjects.add(errorObject);
+        if (CollectionUtils.isNotEmpty(scadaAnalogs)) {
+            for (SCADAAnalog scadaAnalog : scadaAnalogs) {
+                ErrorObject errorObject = mspValidationService.isValidScadaAnalog(scadaAnalog);
+                if (errorObject == null) {
+                    errorObject = multispeakLMService.writeAnalogPointData(scadaAnalog, user);
+                }
+                if (errorObject != null) {
+                    errorObjects.add(errorObject);
+                }
             }
         }
         return errorObjects;
@@ -94,8 +97,11 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersCreatedNotification", vendor.getCompanyName());
-        List<ErrorObject> errorObject = multispeakMeterService.metersCreated(vendor, electricCreatedMeters);
-        return errorObject;
+        List<ErrorObject> errorObjects = Lists.newArrayList();
+        if (CollectionUtils.isNotEmpty(electricCreatedMeters)) {
+            errorObjects = multispeakMeterService.metersCreated(vendor, electricCreatedMeters);
+        }
+        return errorObjects;
     }
  
     @Override
@@ -112,8 +118,11 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersUninstalledNotification", vendor.getCompanyName());
-        List<ErrorObject> errorObject = multispeakMeterService.metersUninstalled(vendor, electricUninstalledMeters);
-        return errorObject;
+        List<ErrorObject> errorObjects = Lists.newArrayList();
+        if (CollectionUtils.isNotEmpty(electricUninstalledMeters)) {
+            errorObjects = multispeakMeterService.metersUninstalled(vendor, electricUninstalledMeters);
+        }
+        return errorObjects;
     }
 
     @Override
@@ -141,8 +150,11 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersDeletedNotification", vendor.getCompanyName());
-        List<ErrorObject> errorObject = multispeakMeterService.metersDeleted(vendor, electricMeters);
-        return errorObject;
+        List<ErrorObject> errorObjects = Lists.newArrayList();
+        if (CollectionUtils.isNotEmpty(electricMeters)) {
+            errorObjects = multispeakMeterService.metersDeleted(vendor, electricMeters);
+        }
+        return errorObjects;
     }
 
 
