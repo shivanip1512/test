@@ -67,7 +67,6 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
         searchResult.setBounds(paging.getStartIndex(), paging.getItemsPerPage(), totalCount);
         searchResult.setResultList(rse.getResultList());
         
-        System.out.println(allRowsSql.getDebugSql());
         return searchResult;
     }
 
@@ -158,7 +157,6 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
                 appendTimeStampClause(sql, entry.getValue());
                 sql.append(")");
             }
-            System.out.println(entry.getValue());
             i++;
         }
         if (ranges.containsKey(RangeType.UNAVAILABLE)) {
