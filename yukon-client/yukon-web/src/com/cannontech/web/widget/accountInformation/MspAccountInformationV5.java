@@ -45,12 +45,16 @@ public class MspAccountInformationV5 implements MspAccountInformation {
 
         mav.addObject("mspCustomer", mspCustomer);
         mav.addObject("mspServLoc", mspServLoc);
-
+        if (mspServLoc != null && mspServLoc.getContactInfo() != null
+            && mspServLoc.getContactInfo().getAddressItems() != null) {
+            List<Address> servLocAddresses = getAddressList(mspServLoc.getContactInfo().getAddressItems());
+            mav.addObject("servLocAddresses", servLocAddresses);
+        }
         Map<PhoneTypeKind, String> primaryContact = getPrimaryContacts(mspCustomer);
         mav.addObject("homePhone", primaryContact.get(PhoneTypeKind.HOME));
         mav.addObject("dayPhone", primaryContact.get(PhoneTypeKind.BUSINESS));
 
-        if (mspCustomer.getContactInfo() != null) {
+        if (mspCustomer.getContactInfo() != null && mspCustomer.getContactInfo().getAddressItems() != null) {
             List<Address> custAddressInfo = getAddressList(mspCustomer.getContactInfo().getAddressItems());
             mav.addObject("custAddressInfo", custAddressInfo);
         }
@@ -149,7 +153,9 @@ public class MspAccountInformationV5 implements MspAccountInformation {
             List<String> emailAddresses =
                 multispeakCustomerInfoService.getEmailAddresses(contactInfo.getEMailAddresses(), userContext);
             contact.setEmailAddresses(emailAddresses);
-            contact.setAddresses(getAddressList(contactInfo.getAddressItems()));
+            if (contactInfo.getAddressItems() != null) {
+                contact.setAddresses(getAddressList(contactInfo.getAddressItems()));
+            }
             info.add(contact);
         }
         return info;
@@ -289,7 +295,7 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                 Contact contact =
                     new Contact(alternateContact.getFirstName(), alternateContact.getMName(),
                         alternateContact.getLastName(), phoneNumbers, emailAddresses,
-                        getAddressList(contactInfo.getAddressItems()));
+                        contactInfo.getAddressItems() != null ? getAddressList(contactInfo.getAddressItems()) : null);
                 info.add(contact);
 
             });
@@ -305,6 +311,7 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                 address.setLocationAddress2(addressItem.getAddress().getAddress2());
                 address.setCityName(addressItem.getAddress().getCity());
                 address.setStateCode(addressItem.getAddress().getState());
+                address.setCounty(addressItem.getAddress().getCountry());
                 address.setZipCode(addressItem.getAddress().getPostalCode());
                 addressList.add(address);
             }
@@ -327,8 +334,11 @@ public class MspAccountInformationV5 implements MspAccountInformation {
         add("GPS Location ", mspServLoc.getGPSLocation(), false, infoList, userContext);
         add("GML Location ", mspServLoc.getGMLLocation(), false, infoList, userContext);
         add("Grid Location ", mspServLoc.getGridLocation(), false, infoList, userContext);
-        add("Rotation ", mspServLoc.getRotation(), false, infoList, userContext);
-
+        if (mspServLoc.getRotation() != null) {
+            add("Rotation ", mspServLoc.getRotation().getValue() + StringUtils.SPACE
+                + (mspServLoc.getRotation().getUnits() != null ? mspServLoc.getRotation().getUnits() : ""), false,
+                infoList, userContext);
+        }
         // Location Information
         if (mspServLoc.getLocationInformation() != null) {
             add("City ", mspServLoc.getLocationInformation().getCity(), false, infoList, userContext);
@@ -391,8 +401,11 @@ public class MspAccountInformationV5 implements MspAccountInformation {
             add(null, "Meter Information", false, info, userContext);
             // Electric Meter
             if (electricServicePoint.getElectricMeter() != null) {
-                add("Meter ID", electricServicePoint.getElectricMeterID().getPrimaryIdentifier().getValue(), false,
-                    info, userContext);
+                if (electricServicePoint.getElectricMeterID() != null
+                    && electricServicePoint.getElectricMeterID().getPrimaryIdentifier() != null) {
+                    add("Meter ID", electricServicePoint.getElectricMeterID().getPrimaryIdentifier().getValue(), false,
+                        info, userContext);
+                }
                 add("Meter Base ID", electricServicePoint.getElectricMeter().getMeterBaseID(), false, info, userContext);
                 if (electricServicePoint.getElectricMeter().getMeterConnectionStatus() != null) {
                     add("Connection Status",
@@ -454,9 +467,9 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                         false, info, userContext);
                 }
 
-                add(null, "Nameplate Information", false, info, userContext);
                 if (electricServicePoint.getElectricMeter() != null
                     && electricServicePoint.getElectricMeter().getElectricNameplate() != null) {
+                    add(null, "Nameplate Information", false, info, userContext);
                     add("kh", electricServicePoint.getElectricMeter().getElectricNameplate().getKh(), false, info,
                         userContext);
                     add("kr", electricServicePoint.getElectricMeter().getElectricNameplate().getKr(), false, info,
@@ -563,25 +576,25 @@ public class MspAccountInformationV5 implements MspAccountInformation {
 
             // Electric Location Fields
             add(null, "Utility Information", false, info, userContext);
-            if (electricServicePoint.getElectricLocationFields().getSubstationRef() != null) {
-                add("Substation Ref - Code",
-                    electricServicePoint.getElectricLocationFields().getSubstationRef().getSubstationCode(), false,
-                    info, userContext);
-                add("Substation Ref - Name ",
-                    electricServicePoint.getElectricLocationFields().getSubstationRef().getSubstationName(), false,
-                    info, userContext);
-            }
-            if (electricServicePoint.getElectricLocationFields().getFeederRef() != null) {
-                add("Feeder Ref - Code",
-                    electricServicePoint.getElectricLocationFields().getFeederRef().getPrimaryIdentifierValue(), false,
-                    info, userContext);
-                add("Feeder Ref - Noun", electricServicePoint.getElectricLocationFields().getFeederRef().getNoun(),
-                    false, info, userContext);
-            }
-
-            add("Bus", electricServicePoint.getElectricLocationFields().getBus(), false, info, userContext);
-
             if (electricServicePoint.getElectricLocationFields() != null) {
+                if (electricServicePoint.getElectricLocationFields().getSubstationRef() != null) {
+                    add("Substation Ref - Code",
+                        electricServicePoint.getElectricLocationFields().getSubstationRef().getSubstationCode(), false,
+                        info, userContext);
+                    add("Substation Ref - Name ",
+                        electricServicePoint.getElectricLocationFields().getSubstationRef().getSubstationName(), false,
+                        info, userContext);
+                }
+                if (electricServicePoint.getElectricLocationFields().getFeederRef() != null) {
+                    add("Feeder Ref - Code",
+                        electricServicePoint.getElectricLocationFields().getFeederRef().getPrimaryIdentifierValue(),
+                        false, info, userContext);
+                    add("Feeder Ref - Noun", electricServicePoint.getElectricLocationFields().getFeederRef().getNoun(),
+                        false, info, userContext);
+                }
+
+                add("Bus", electricServicePoint.getElectricLocationFields().getBus(), false, info, userContext);
+
                 add("Phase Code", electricServicePoint.getElectricLocationFields().getPhaseCode(), false, info,
                     userContext);
                 add("Linemen Service Area", electricServicePoint.getElectricLocationFields().getLinemenServiceArea(),
@@ -755,9 +768,9 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                 add("Disconnect Date", propaneServicePoint.getDisconnectDate(), false, info, userContext);
 
                 // Gas Meter
-                add(null, "Nameplate Information", false, info, userContext);
                 if (propaneServicePoint.getPropaneMeter() != null
                     && propaneServicePoint.getPropaneMeter().getPropaneNameplate() != null) {
+                    add(null, "Nameplate Information", false, info, userContext);
                     if (propaneServicePoint.getPropaneMeter().getPropaneNameplate().getMechanicalForm() != null) {
                         add("Mechanical Form",
                             propaneServicePoint.getPropaneMeter().getPropaneNameplate().getMechanicalForm().value(),

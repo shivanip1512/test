@@ -29,8 +29,12 @@
                 <cti:msg2 var="customerContactInfo" key=".customerContactInfo" />
                 <tags:sectionContainer title="${customerContactInfo}">
                     <tags:nameValueContainer2 tableClass="name-value-table natural-width  stacked-md natural-width">
-                        <tags:nameValue2 nameKey=".phoneNumbers">${cti:join(custBasicContact.phoneNumbers,",")}</tags:nameValue2>
-                        <tags:nameValue2 nameKey=".emailAddresses">${cti:join(custBasicContact.emailAddresses,",")}</tags:nameValue2>
+                        <c:if test="${not empty custBasicContact.phoneNumbers}">
+                            <tags:nameValue2 nameKey=".phoneNumbers">${cti:join(custBasicContact.phoneNumbers,",")}</tags:nameValue2>
+                        </c:if>
+                        <c:if test="${not empty custBasicContact.emailAddresses}">
+                            <tags:nameValue2 nameKey=".emailAddresses">${cti:join(custBasicContact.emailAddresses,",")}</tags:nameValue2>
+                        </c:if>
                     </tags:nameValueContainer2>
                     <c:forEach var="address" items="${custBasicContact.addresses}" varStatus="addressStatus">
                         <h3>
@@ -287,8 +291,12 @@
                         <tags:nameValue2 nameKey=".lastName">${custAlternateContact.lastName}</tags:nameValue2>
                         <tags:nameValue2 nameKey=".firstName">${custAlternateContact.firstName}</tags:nameValue2>
                         <tags:nameValue2 nameKey=".middleName">${custAlternateContact.middleName}</tags:nameValue2>
-                        <tags:nameValue2 nameKey=".phoneNumbers">${cti:join(custAlternateContact.phoneNumbers,",")}</tags:nameValue2>
-                        <tags:nameValue2 nameKey=".emailAddresses">${cti:join(custAlternateContact.emailAddresses,",")}</tags:nameValue2>
+                        <c:if test="${not empty custAlternateContact.phoneNumbers}">
+                            <tags:nameValue2 nameKey=".phoneNumbers">${cti:join(custAlternateContact.phoneNumbers,",")}</tags:nameValue2>
+                        </c:if>
+                        <c:if test="${not empty custAlternateContact.emailAddresses}">
+                            <tags:nameValue2 nameKey=".emailAddresses">${cti:join(custAlternateContact.emailAddresses,",")}</tags:nameValue2>
+                        </c:if>
                     </tags:nameValueContainer2>
                     <c:forEach var="address" items="${custAlternateContact.addresses}" varStatus="addressStatus">
                         <h3>

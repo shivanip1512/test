@@ -57,9 +57,5 @@
             </tags:nameValue2>
         </c:forEach>
 
-        <tags:nameValue2 nameKey=".address">
-            <tags:address address="${servLocAddress}" />
-        </tags:nameValue2>
-
     </tags:nameValueContainer2>
 </tags:sectionContainer>
