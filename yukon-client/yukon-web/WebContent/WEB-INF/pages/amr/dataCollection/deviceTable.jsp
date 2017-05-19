@@ -14,7 +14,7 @@
     <c:forEach var="device" items="${detail.resultList}">
         <c:set var="deviceId" value="${device.paoIdentifier.paoId}"/>
         <tr>
-            <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}">${device.deviceName}</cti:paoDetailUrl></td>
+            <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${device.deviceName}</cti:paoDetailUrl></td>
             <td>${device.meterNumber}</td>
             <td>${device.paoIdentifier.paoType.paoTypeName}</td>
             <td>${device.addressSerialNumber}</td>
@@ -43,27 +43,30 @@
                     <cti:param name="collectionType" value="idList"/>
                     <cti:param name="idList.ids" value="${deviceId}"/>
                 </cti:url>
-                <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go"/>    
+                <cm:dropdownOption key=".collectionActions" href="${collectionActionsUrl}" icon="icon-cog-go" newTab="true"/>
+                <c:if test="${device.paoIdentifier.paoType.isMct()}">
+                    <cti:url var="locateRouteUrl" value="/bulk/routeLocate/home">
+                        <cti:param name="collectionType" value="idList"/>
+                        <cti:param name="idList.ids" value="${deviceId}"/>              
+                    </cti:url>
+                    <cm:dropdownOption icon="icon-connect" key=".locateRoute" href="${locateRouteUrl}" newTab="true"/>
+                </c:if>
                 <cti:url var="mapUrl" value="/tools/map">
                     <cti:param name="collectionType" value="idList"/>
                     <cti:param name="idList.ids" value="${deviceId}"/>
                 </cti:url>
-                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}"/>     
+                <cm:dropdownOption icon="icon-map-sat" key=".mapDevices" href="${mapUrl}" newTab="true"/>     
                 <cti:url var="readUrl" value="/group/groupMeterRead/homeCollection">
                     <cti:param name="collectionType" value="idList"/>
                     <cti:param name="idList.ids" value="${deviceId}"/>           
                 </cti:url>
-                <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}"/>          
+                <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>          
                 <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
                     <cti:param name="collectionType" value="idList"/>
                     <cti:param name="idList.ids" value="${deviceId}"/>               
                 </cti:url>
-                <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}"/>   
-                <cti:url var="locateRouteUrl" value="/bulk/routeLocate/home">
-                    <cti:param name="collectionType" value="idList"/>
-                    <cti:param name="idList.ids" value="${deviceId}"/>              
-                </cti:url>
-                <cm:dropdownOption icon="icon-connect" key=".locateRoute" href="${locateRouteUrl}"/>   
+                <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/>   
+
             </cm:dropdown>
             </td>
         </tr>

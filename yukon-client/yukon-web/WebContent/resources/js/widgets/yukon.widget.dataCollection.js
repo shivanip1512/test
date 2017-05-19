@@ -22,13 +22,13 @@ yukon.widget.dataCollection = (function () {
                 name: $('.js-AVAILABLE').val(),
                 y: data.available.percentage,
                 x: data.available.deviceCount,
-                color: '#009933'            
+                color: '#009933'
             },
             {
                 name: $('.js-EXPECTED').val(),
                 y: data.expected.percentage,
                 x: data.expected.deviceCount,
-                color: '#cecb34'
+                color: '#fff77d'
                 
             },
             {
@@ -41,7 +41,7 @@ yukon.widget.dataCollection = (function () {
                 name: $('.js-UNAVAILABLE').val(),
                 y: data.unavailable.percentage,
                 x: data.unavailable.deviceCount,
-                color: '#888'            
+                color: '#888'
             }
         ]
     },
