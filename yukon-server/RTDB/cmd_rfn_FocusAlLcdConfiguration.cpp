@@ -139,18 +139,18 @@ RfnCommandResult RfnFocusAlLcdConfigurationReadCommand::decodeCommand(const CtiT
      */
 
     validate(Condition( response.size() >= 2, ClientErrors::Unknown )
-        << "Response too small - (" << response.size() << ", expecting >= 2)");
+            << "Response too small - (" << response.size() << ", expecting >= 2)");
 
     const unsigned char commandCode     = response[0],
                         statusCode      = response[1];
 
     const boost::optional<string> statusResult = mapFind( StatusItems, statusCode );
 
-    validate(Condition( !! statusResult, ClientErrors::InvalidData )
-        << "Invalid status code - (" << statusCode << ")");
+    validate( Condition( !! statusResult, ClientErrors::InvalidData )
+            << "Invalid status - (" << statusCode << ")");
 
     validate(Condition( statusCode == 0x00, ClientErrors::Unknown )
-        << "Failure Status (" << statusCode << ")");
+            << "Failure status - (" << statusCode << ")");
 
     validate( Condition( response.size() >= 4, ClientErrors::InvalidData )
             << "Response too small - (" << response.size() << ", expecting >= 4)" );

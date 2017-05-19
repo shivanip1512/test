@@ -306,10 +306,8 @@ BOOST_AUTO_TEST_CASE(test_read_fail)
     // decode
     {
         std::vector<unsigned char> response = boost::assign::list_of
-            (0x73)              // command code
-            (0x01)              // failure
-            (0x00)              // nbr of items
-            (0x15);             // duration
+            (0x73)               // command code
+            (0x01);              // failure
 
         try 
         {
@@ -320,7 +318,44 @@ BOOST_AUTO_TEST_CASE(test_read_fail)
         catch (const RfnCommand::CommandException & ex)
         {
             BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::Unknown);
-            BOOST_CHECK_EQUAL(ex.error_description, "Failure Status (1)");
+            BOOST_CHECK_EQUAL(ex.error_description, "Failure status - (1)");
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(test_invalid_status)
+{
+
+    RfnFocusAlLcdConfigurationReadCommand lcdConfiguration;
+
+    // execute
+    {
+        RfnCommand::RfnRequestPayload rcv = lcdConfiguration.executeCommand(execute_time);
+
+        std::vector<unsigned char> exp = boost::assign::list_of
+        (0x72)(0x01); // command code - operation
+
+        BOOST_CHECK_EQUAL_COLLECTIONS(
+            rcv.begin(), rcv.end(),
+            exp.begin(), exp.end());
+    }
+
+    // decode
+    {
+        std::vector<unsigned char> response = boost::assign::list_of
+            (0x73)               // command code
+            (0x02);              // invalid status
+
+        try
+        {
+            RfnCommandResult rcv = lcdConfiguration.decodeCommand(execute_time, response);
+
+            BOOST_ERROR("Should have thrown");
+        }
+        catch (const RfnCommand::CommandException & ex)
+        {
+            BOOST_CHECK_EQUAL(ex.error_code, ClientErrors::InvalidData);
+            BOOST_CHECK_EQUAL(ex.error_description, "Invalid status - (2)");
         }
     }
 }
