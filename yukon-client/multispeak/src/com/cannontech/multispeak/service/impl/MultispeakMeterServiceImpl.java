@@ -1600,26 +1600,32 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         ArrayList<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 
         for (Meter mspMeter : removeMeters) {
-            // Lookup meter in Yukon by msp meter number
-            YukonMeter meter;
-            try {
-                meter = getMeterByMeterNumber(mspMeter.getMeterNo().trim());
+            if (mspMeter.getMeterNo() != null) {
+                // Lookup meter in Yukon by msp meter number
+                YukonMeter meter;
+                try {
+                    meter = getMeterByMeterNumber(mspMeter.getMeterNo().trim());
 
-                // Added meter to Inventory
-                addMeterToGroup(meter, SystemGroupEnum.INVENTORY, METER_REMOVE_STRING, mspVendor);
-                if (!meter.isDisabled()) {// enabled
-                    meter.setDisabled(true);    //update local object reference
-                    deviceDao.disableDevice(meter);
-                    multispeakEventLogService.disableDevice(meter.getMeterNumber(), meter, METER_REMOVE_STRING, mspVendor.getCompanyName());
+                    // Added meter to Inventory
+                    addMeterToGroup(meter, SystemGroupEnum.INVENTORY, METER_REMOVE_STRING, mspVendor);
+                    if (!meter.isDisabled()) {// enabled
+                        meter.setDisabled(true); // update local object reference
+                        deviceDao.disableDevice(meter);
+                        multispeakEventLogService.disableDevice(meter.getMeterNumber(), meter, METER_REMOVE_STRING,
+                            mspVendor.getCompanyName());
+                    }
+
+                } catch (NotFoundException e) {
+                    multispeakEventLogService.meterNotFound(mspMeter.getMeterNo(), METER_REMOVE_STRING,
+                        mspVendor.getCompanyName());
+                    ErrorObject err =
+                        mspObjectDao.getNotFoundErrorObject(mspMeter.getMeterNo().trim(), "MeterNumber", "Meter",
+                            METER_REMOVE_STRING, mspVendor.getCompanyName());
+                    errorObjects.add(err);
+                    multispeakEventLogService.errorObject(err.getErrorString(), METER_REMOVE_STRING,
+                        mspVendor.getCompanyName());
+                    log.error(e);
                 }
-
-            } catch (NotFoundException e) {
-                multispeakEventLogService.meterNotFound(mspMeter.getMeterNo(), METER_REMOVE_STRING, mspVendor.getCompanyName());
-                ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getMeterNo().trim(), "MeterNumber", "Meter", 
-                                                                      METER_REMOVE_STRING, mspVendor.getCompanyName());
-                errorObjects.add(err);
-                multispeakEventLogService.errorObject(err.getErrorString(), METER_REMOVE_STRING, mspVendor.getCompanyName());
-                log.error(e);
             }
         }
 
@@ -1795,32 +1801,36 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     public List<ErrorObject> addMetersToGroup(MeterGroup meterGroup, String mspMethod, MultispeakVendor mspVendor) {
 
         List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
-
-        // Convert MeterNumbers to YukonDevices
-        List<SimpleDevice> yukonDevices = new ArrayList<SimpleDevice>();
-        if (meterGroup.getMeterList() != null) {
-            for (String meterNumber : meterGroup.getMeterList().getMeterID()) {
+        if (meterGroup != null && meterGroup.getGroupName() != null && meterGroup.getMeterList() != null) {
+            // Convert MeterNumbers to YukonDevices
+            List<SimpleDevice> yukonDevices = new ArrayList<SimpleDevice>();
+            for (String meterNumber : CollectionUtils.emptyIfNull(meterGroup.getMeterList().getMeterID())) {
                 try {
                     SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
                     yukonDevices.add(yukonDevice);
                 } catch (EmptyResultDataAccessException e) {
                     String exceptionMessage = "Unknown meter number " + meterNumber;
-                    ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "addMetersToGroup", mspVendor.getCompanyName(), exceptionMessage);
+                    ErrorObject errorObject =
+                        mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "addMetersToGroup",
+                            mspVendor.getCompanyName(), exceptionMessage);
                     errorObjects.add(errorObject);
                     log.error(e);
                 } catch (IncorrectResultSizeDataAccessException e) {
                     String exceptionMessage = "Duplicate meters were found for this meter number  " + meterNumber;
-                    ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "addMetersToGroup", mspVendor.getCompanyName(), exceptionMessage);
+                    ErrorObject errorObject =
+                        mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "addMetersToGroup",
+                            mspVendor.getCompanyName(), exceptionMessage);
                     errorObjects.add(errorObject);
                     log.error(e);
                 }
             }
-        }
 
-        String groupName = meterGroup.getGroupName();
-        StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, true);
-        deviceGroupMemberEditorDao.addDevices(storedGroup, yukonDevices);
-        multispeakEventLogService.addMetersToGroup(yukonDevices.size(), storedGroup.getFullName(), mspMethod, mspVendor.getCompanyName());
+            String groupName = meterGroup.getGroupName();
+            StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, true);
+            deviceGroupMemberEditorDao.addDevices(storedGroup, yukonDevices);
+            multispeakEventLogService.addMetersToGroup(yukonDevices.size(), storedGroup.getFullName(), mspMethod,
+                mspVendor.getCompanyName());
+        }
         return errorObjects;
     }
 
@@ -1828,46 +1838,57 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     public List<ErrorObject> removeMetersFromGroup(String groupName, List<String> meterNumbers, MultispeakVendor mspVendor) {
         List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
         List<SimpleDevice> yukonDevices = new ArrayList<SimpleDevice>();
-
+        
+        if (groupName!=null){
         try {
             StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
-            if (meterNumbers != null) {
-                for (String meterNumber : meterNumbers) {
-                    try {
-                        SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
-                        yukonDevices.add(yukonDevice);
-                    } catch (EmptyResultDataAccessException e) {
-                        String exceptionMessage = "Unknown meter number " + meterNumber;
-                        ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "removeMetersFromGroup", mspVendor.getCompanyName(), exceptionMessage);
-                        errorObjects.add(errorObject);
-                        log.error(e);
-                    } catch (IncorrectResultSizeDataAccessException e) {
-                        String exceptionMessage = "Duplicate meters were found for this meter number  " + meterNumber;
-                        ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "removeMetersFromGroup", mspVendor.getCompanyName(), exceptionMessage);
-                        errorObjects.add(errorObject);
-                        log.error(e);
-                    }
+            for (String meterNumber : meterNumbers) {
+                try {
+                    SimpleDevice yukonDevice = deviceDao.getYukonDeviceObjectByMeterNumber(meterNumber);
+                    yukonDevices.add(yukonDevice);
+                } catch (EmptyResultDataAccessException e) {
+                    String exceptionMessage = "Unknown meter number " + meterNumber;
+                    ErrorObject errorObject =
+                        mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter",
+                            "removeMetersFromGroup", mspVendor.getCompanyName(), exceptionMessage);
+                    errorObjects.add(errorObject);
+                    log.error(e);
+                } catch (IncorrectResultSizeDataAccessException e) {
+                    String exceptionMessage = "Duplicate meters were found for this meter number  " + meterNumber;
+                    ErrorObject errorObject =
+                        mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter",
+                            "removeMetersFromGroup", mspVendor.getCompanyName(), exceptionMessage);
+                    errorObjects.add(errorObject);
+                    log.error(e);
                 }
             }
 
             deviceGroupMemberEditorDao.removeDevices(storedGroup, yukonDevices);
-            multispeakEventLogService.removeMetersFromGroup(yukonDevices.size(), storedGroup.getFullName(), "RemoveMetersFromMeterGroup", mspVendor.getCompanyName());
+            multispeakEventLogService.removeMetersFromGroup(yukonDevices.size(), storedGroup.getFullName(),
+                "RemoveMetersFromMeterGroup", mspVendor.getCompanyName());
         } catch (NotFoundException e) {
-            ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(groupName, "GroupName", "MeterGroup", "removeMetersFromGroup", mspVendor.getCompanyName());
+            ErrorObject errorObject =
+                mspObjectDao.getNotFoundErrorObject(groupName, "GroupName", "MeterGroup", "removeMetersFromGroup",
+                    mspVendor.getCompanyName());
             errorObjects.add(errorObject);
             log.error(e);
+        }
         }
         return errorObjects;
     }
 
     @Override
     public ErrorObject deleteGroup(String groupName, MultispeakVendor mspVendor) {
-        try {
-            StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
-            deviceGroupEditorDao.removeGroup(storedGroup);
-        } catch (NotFoundException e) {
-            ErrorObject errorObject = mspObjectDao.getNotFoundErrorObject(groupName, "meterGroupId", "MeterGroup", "deleteGroup", mspVendor.getCompanyName());
-            return errorObject;
+        if (groupName != null) {
+            try {
+                StoredDeviceGroup storedGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
+                deviceGroupEditorDao.removeGroup(storedGroup);
+            } catch (NotFoundException e) {
+                ErrorObject errorObject =
+                    mspObjectDao.getNotFoundErrorObject(groupName, "meterGroupId", "MeterGroup", "deleteGroup",
+                        mspVendor.getCompanyName());
+                return errorObject;
+            }
         }
         return new ErrorObject();
     }

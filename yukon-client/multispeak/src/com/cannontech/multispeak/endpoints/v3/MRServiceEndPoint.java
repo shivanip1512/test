@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -137,9 +138,11 @@ public class MRServiceEndPoint {
         String responseURL = initiateDemandReset.getResponseURL();
         String transactionId = initiateDemandReset.getTransactionID();
         List<MeterIdentifier> meterIdentifiers =
-                (null != initiateDemandReset.getMeterIDs()) ? initiateDemandReset.getMeterIDs().getMeterIdentifier() : null;
-        List<ErrorObject> errorObjects = mr_server.initiateDemandReset(meterIdentifiers, responseURL, transactionId, expirationTime);
-        
+            (null != initiateDemandReset.getMeterIDs()) ? initiateDemandReset.getMeterIDs().getMeterIdentifier() : null;
+        List<ErrorObject> errorObjects =
+            mr_server.initiateDemandReset(ListUtils.emptyIfNull(meterIdentifiers), responseURL, transactionId,
+                expirationTime);
+
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         response.setInitiateDemandResetResult(arrayOfErrorObject);
@@ -212,7 +215,7 @@ public class MRServiceEndPoint {
 
         List<Meter> meters =
             (null != meterAddNotification.getAddedMeters()) ? meterAddNotification.getAddedMeters().getMeter() : null;
-         List<ErrorObject> errorObjects = mr_server.meterAddNotification(meters);
+        List<ErrorObject> errorObjects = mr_server.meterAddNotification(ListUtils.emptyIfNull(meters));
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
@@ -228,7 +231,7 @@ public class MRServiceEndPoint {
 
         List<String> meterNumbers =
             (null != initiateUsageMonitoring.getMeterNos()) ? initiateUsageMonitoring.getMeterNos().getString() : null;
-        List<ErrorObject> errorObjects = mr_server.initiateUsageMonitoring(meterNumbers);
+        List<ErrorObject> errorObjects = mr_server.initiateUsageMonitoring(ListUtils.emptyIfNull(meterNumbers));
 
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
@@ -244,7 +247,7 @@ public class MRServiceEndPoint {
 
         List<String> meterNumbers =
                 (null != cancelDisconnectedStatus.getMeterNos()) ? cancelDisconnectedStatus.getMeterNos().getString() : null;
-        List<ErrorObject> errorObjects = mr_server.cancelDisconnectedStatus(meterNumbers);
+        List<ErrorObject> errorObjects = mr_server.cancelDisconnectedStatus(ListUtils.emptyIfNull(meterNumbers));
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
@@ -372,9 +375,8 @@ public class MRServiceEndPoint {
         List<Meter> meters =
             (null != meterChangedNotification.getChangedMeters())
                 ? meterChangedNotification.getChangedMeters().getMeter() : null;
+        List<ErrorObject> errorObjects = mr_server.meterChangedNotification(ListUtils.emptyIfNull(meters));
 
-        List<ErrorObject> errorObjects = mr_server.meterChangedNotification(meters);
-        
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         response.setMeterChangedNotificationResult(arrayOfErrorObject);
@@ -391,7 +393,7 @@ public class MRServiceEndPoint {
             (null != initiateDisconnectedStatus.getMeterNos()) ? initiateDisconnectedStatus.getMeterNos().getString()
                 : null;
 
-        List<ErrorObject> errorObjects = mr_server.initiateDisconnectedStatus(meterNumbers);
+        List<ErrorObject> errorObjects = mr_server.initiateDisconnectedStatus(ListUtils.emptyIfNull(meterNumbers));
 
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
@@ -421,8 +423,8 @@ public class MRServiceEndPoint {
         List<String> meterNumbers =
             (null != removeMetersFromMeterGroup.getMeterNumbers())
                 ? removeMetersFromMeterGroup.getMeterNumbers().getString() : null;
-        List<ErrorObject> errorObjects = mr_server.removeMetersFromMeterGroup(meterNumbers, meterGroupIds);
-        
+        List<ErrorObject> errorObjects =
+            mr_server.removeMetersFromMeterGroup(ListUtils.emptyIfNull(meterNumbers), meterGroupIds);
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         response.setRemoveMetersFromMeterGroupResult(arrayOfErrorObject);
@@ -449,7 +451,7 @@ public class MRServiceEndPoint {
 
         List<String> meterNumbers =
             (null != cancelUsageMonitoring.getMeterNos()) ? cancelUsageMonitoring.getMeterNos().getString() : null;
-        List<ErrorObject> errorObjects = mr_server.cancelUsageMonitoring(meterNumbers);
+        List<ErrorObject> errorObjects = mr_server.cancelUsageMonitoring(ListUtils.emptyIfNull(meterNumbers));
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
@@ -467,8 +469,8 @@ public class MRServiceEndPoint {
         List<Meter> meters =
             (null != meterRemoveNotification.getRemovedMeters())
                 ? meterRemoveNotification.getRemovedMeters().getMeter() : null;
-        List<ErrorObject> errorObjects = mr_server.meterRemoveNotification(meters);
-        
+        List<ErrorObject> errorObjects = mr_server.meterRemoveNotification(ListUtils.emptyIfNull(meters));
+
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         meterRemoveNotificationResponse.setMeterRemoveNotificationResult(arrayOfErrorObject);
@@ -486,8 +488,9 @@ public class MRServiceEndPoint {
         List<ServiceLocation> serviceLocation =
             (null != serviceLocationChangedNotification.getChangedServiceLocations())
                 ? serviceLocationChangedNotification.getChangedServiceLocations().getServiceLocation() : null;
-        List<ErrorObject> errorObjects = mr_server.serviceLocationChangedNotification(serviceLocation);
-        
+        List<ErrorObject> errorObjects =
+            mr_server.serviceLocationChangedNotification(ListUtils.emptyIfNull(serviceLocation));
+
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         serviceLocationChangedNotificationResponse.setServiceLocationChangedNotificationResult(arrayOfErrorObject);
@@ -505,7 +508,8 @@ public class MRServiceEndPoint {
             (null != insertMeterInMeterGroup.getMeterNumbers()) ? insertMeterInMeterGroup.getMeterNumbers().getString()
                 : null;
         String meterGroupID = insertMeterInMeterGroup.getMeterGroupID();
-        List<ErrorObject> errorObjects = mr_server.insertMeterInMeterGroup(meterNumbers, meterGroupID);
+        List<ErrorObject> errorObjects =
+            mr_server.insertMeterInMeterGroup(ListUtils.emptyIfNull(meterNumbers), meterGroupID);
         
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
@@ -527,8 +531,10 @@ public class MRServiceEndPoint {
         List<String> meterNumbers =
             (null != initiateMeterReadByMeterNumber.getMeterNos())
                 ? initiateMeterReadByMeterNumber.getMeterNos().getString() : null;
-        List<ErrorObject> errorObjects = mr_server.initiateMeterReadByMeterNumber(meterNumbers, responseURL, transactionID, expirationTime);
-        
+        List<ErrorObject> errorObjects =
+            mr_server.initiateMeterReadByMeterNumber(ListUtils.emptyIfNull(meterNumbers), responseURL, transactionID,
+                expirationTime);
+
         ArrayOfErrorObject arrayOfErrorObject = objectFactory.createArrayOfErrorObject();
         arrayOfErrorObject.getErrorObject().addAll(errorObjects);
         initiateMeterReadByMeterNumberResponse.setInitiateMeterReadByMeterNumberResult(arrayOfErrorObject);
