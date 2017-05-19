@@ -740,7 +740,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
         
         for (String meterNumber : meterNumbers) {
             List<YukonMeter> meters = meterNumberToMeterMap.get(meterNumber);    // this will most likely be size 1
-            if(CollectionUtils.isNotEmpty(meters)) {
+            if (CollectionUtils.isNotEmpty(meters)) {
                 for (YukonMeter meter : meters) {
                     if (excludeDisabled && meter.isDisabled()) {
                         log.debug("Meter " + meter.getMeterNumber() + " is disabled, skipping.");
@@ -750,8 +750,11 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     multispeakEventLogService.initiateMeterRead(meterNumber, meter, transactionID, "InitiateMeterReadByMeterNumber", mspVendor.getCompanyName());
                 }
             } else {
-                multispeakEventLogService.meterNotFound(meterNumber, "InitiateMeterReadByMeterNumber", mspVendor.getCompanyName());
-                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", mspVendor.getCompanyName());
+                multispeakEventLogService.meterNotFound(meterNumber, "InitiateMeterReadByMeterNumber",
+                    mspVendor.getCompanyName());
+                ErrorObject err =
+                    mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent",
+                        mspVendor.getCompanyName());
                 errorObjects.add(err);
                 continue;
             }
@@ -885,7 +888,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             multispeakEventLogService.initiateMeterRead(meterNumber, paoToRead, transactionId, "InitiateMeterReadByMeterNoAndType", mspVendor.getCompanyName());
         } catch (NotFoundException e) {
             multispeakEventLogService.meterNotFound(meterNumber, "InitiateMeterReadByMeterNoAndType", mspVendor.getCompanyName());
-            ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "MeterReadEvent", mspVendor.getCompanyName());
+            ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter", "BlockMeterReadEvent", mspVendor.getCompanyName());
             errorObjects.add(err);
             log.error(e);
             return errorObjects;

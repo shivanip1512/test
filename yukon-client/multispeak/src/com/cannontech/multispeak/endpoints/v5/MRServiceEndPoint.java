@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -394,23 +395,21 @@ public class MRServiceEndPoint {
         // Other option is:
         // demandResetEvents.get(0).getMeterGroups().getElectricMeterGroups().getMeterGroup().get(0).getMeterIDs().getMeterID().get(0).getMeterName();
                 
-        if (demandResetEvents != null) {
-            List<MeterIDs> meterIDs =
-                demandResetEvents.stream().map(DemandResetEvent -> DemandResetEvent.getMeterIDs()).collect(
-                    Collectors.toList());
+        List<MeterIDs> meterIDs =
+            ListUtils.emptyIfNull(demandResetEvents).stream().map(DemandResetEvent -> DemandResetEvent.getMeterIDs()).collect(
+                Collectors.toList());
 
-            List<MeterID> meterIDList = new ArrayList<MeterID>();
+        List<MeterID> meterIDList = new ArrayList<MeterID>();
 
-            for (MeterIDs meterIDsTemp : meterIDs) {
-                List<MeterID> meterIDTemp = meterIDsTemp.getMeterID();
-                for (MeterID meterID : meterIDTemp) {
-                    meterIDList.add(meterID);
-                }
+        for (MeterIDs meterIDsTemp : meterIDs) {
+            List<MeterID> meterIDTemp = meterIDsTemp.getMeterID();
+            for (MeterID meterID : meterIDTemp) {
+                meterIDList.add(meterID);
             }
-
-            multispeakFuncs.addErrorObjectsInResponseHeader(mr_server.initiateDemandReset(meterIDList, responseURL,
-                transactionId, expirationTime));
         }
+
+        multispeakFuncs.addErrorObjectsInResponseHeader(mr_server.initiateDemandReset(meterIDList, responseURL,
+            transactionId, expirationTime));
 
         return response;
     }
@@ -457,7 +456,7 @@ public class MRServiceEndPoint {
     }
     
     @PayloadRoot(localPart = "CancelEndDeviceEventMonitoring", namespace = MR_V5_ENDPOINT_NAMESPACE)
-    public @ResponsePayload CancelEndDeviceEventMonitoringResponse CancelEndDeviceEventMonitoring(
+    public @ResponsePayload CancelEndDeviceEventMonitoringResponse cancelEndDeviceEventMonitoring(
             @RequestPayload CancelEndDeviceEventMonitoring cancelEndDeviceEventMonitoring)
             throws MultispeakWebServiceException {
         CancelEndDeviceEventMonitoringResponse cancelEndDeviceEventMonitoringResponse = objectFactory.createCancelEndDeviceEventMonitoringResponse();
