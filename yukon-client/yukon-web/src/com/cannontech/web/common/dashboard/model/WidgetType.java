@@ -56,7 +56,7 @@ public enum WidgetType implements DisplayableEnum {
         widgetSpecificJavascript = ImmutableListMultimap.of(
             SYSTEM_MESSAGING, "/resources/js/widgets/yukon.support.systemHealth.js",
             DATA_COLLECTION, "/resources/js/widgets/yukon.widget.dataCollection.js",
-            DATA_COLLECTION, "/resources/js/lib/highstock/highstock.js"
+            DATA_COLLECTION, "HIGH_STOCK"
         );
         
         widgetSpecificCss = ImmutableListMultimap.of(
