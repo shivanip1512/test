@@ -39,4 +39,11 @@
         </div>
     </div>
     
+    <c:forEach var="widgetJsLink" items="${widgetJavascript}">
+        <cti:includeScript link="${widgetJsLink}"/>
+    </c:forEach>
+    <c:forEach var="widgetCssLink" items="${widgetCss}">
+        <cti:includeScript link="${widgetCssLink}"/>
+    </c:forEach>
+    
 </cti:standardPage>

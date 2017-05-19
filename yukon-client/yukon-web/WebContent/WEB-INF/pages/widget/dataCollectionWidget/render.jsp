@@ -35,6 +35,3 @@
 
 </cti:msgScope>
 
-<cti:includeScript link="HIGH_STOCK"/>
-<cti:includeScript link="/resources/js/widgets/yukon.widget.dataCollection.js"/>
-

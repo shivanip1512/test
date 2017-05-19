@@ -7,6 +7,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -286,6 +288,18 @@ public class DashboardsController {
         if (adminDashboards || dashboardService.isVisible(userContext.getYukonUser().getUserID(), id)) {
             model.addAttribute("mode", PageEditMode.VIEW);
             model.addAttribute("dashboard", dashboard);
+            Set<String> widgetJavascript = dashboard.getAllWidgets()
+                                                    .stream()
+                                                    .map(widget -> widget.getType().getRequiredJavascript())
+                                                    .flatMap(jsSet -> jsSet.stream())
+                                                    .collect(Collectors.toSet());
+            Set<String> widgetCss = dashboard.getAllWidgets()
+                                              .stream()
+                                              .map(widget -> widget.getType().getRequiredCss())
+                                              .flatMap(cssSet -> cssSet.stream())
+                                              .collect(Collectors.toSet());
+            model.addAttribute("widgetJavascript", widgetJavascript);
+            model.addAttribute("widgetCss", widgetCss);
             List<LiteDashboard> ownedDashboards = dashboardService.getOwnedDashboards(userContext.getYukonUser().getUserID());
             model.addAttribute("ownedDashboards", ownedDashboards);
             return "dashboardView.jsp";
