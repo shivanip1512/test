@@ -291,30 +291,30 @@ public class ScheduledGroupRequestExecutionController {
                     try {
                         queuedRetryCount = Integer.valueOf(queuedRetryCountStr);
                     } catch (NumberFormatException e) {
-                        errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.queuedRetryCount.integer") + queuedRetryCountStr;
+                        errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.queuedRetryCount.integer", queuedRetryCountStr);
                     }
                 }
                 if (!StringUtils.isBlank(nonQueuedRetryCountStr) && (errorMsg == null)) {
                     try {
                         nonQueuedRetryCount = Integer.valueOf(nonQueuedRetryCountStr);
                     } catch (NumberFormatException e) {
-                        errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.nonQueuedRetryCount.integer") + nonQueuedRetryCountStr;
+                        errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.nonQueuedRetryCount.integer", nonQueuedRetryCountStr);
                     }
                 }
                 if (!StringUtils.isBlank(maxTotalRunTimeHoursStr) && (errorMsg == null)) {
                     try {
                         maxTotalRunTimeHours = Integer.valueOf(maxTotalRunTimeHoursStr);
                     } catch (NumberFormatException e) {
-                        errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.maxRunTime.integer") + maxTotalRunTimeHoursStr;
+                        errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.maxRunTime.integer", maxTotalRunTimeHoursStr);
                     }
                 }
     
                 // additional retry options validation
                 if (errorMsg == null && queuedRetryCount != null && queuedRetryCount < 0) {
-                    errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.queuedRetryCount.bounds") + queuedRetryCountStr;
+                    errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.queuedRetryCount.bounds", queuedRetryCountStr);
                 }
                 if (errorMsg == null && nonQueuedRetryCount != null && nonQueuedRetryCount < 0) {
-                    errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.nonQueuedRetryCount.bounds") + nonQueuedRetryCountStr;
+                    errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.nonQueuedRetryCount.bounds", nonQueuedRetryCountStr);
                 }
     
                 int totalRetryCount = 0;
@@ -329,7 +329,7 @@ public class ScheduledGroupRequestExecutionController {
                     errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.totalRetryCount.bounds");
                 }
                 if (errorMsg == null && maxTotalRunTimeHours != null && maxTotalRunTimeHours < 1) {
-                    errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.maxRunTime.bounds");
+                    errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.maxRunTime.bounds", maxTotalRunTimeHoursStr);
                 }
             }
         }
@@ -431,7 +431,7 @@ public class ScheduledGroupRequestExecutionController {
         } else if (rolePropertyDao.checkProperty(YukonRoleProperty.EXECUTE_MANUAL_COMMAND, userContext.getYukonUser())) {
             // check that it is authorized
             if (!paoCommandAuthorizationService.isAuthorized(userContext.getYukonUser(), commandString)) {
-                errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.command.authorized") + commandString;
+                errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.command.authorized", commandString);
             }
 
         } else {
@@ -445,7 +445,7 @@ public class ScheduledGroupRequestExecutionController {
                     }
                 });
             if (!commandStrings.contains(commandString)) {
-                errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.command.authorized") + commandString;
+                errorMsg = messageSourceAccessor.getMessage("yukon.web.modules.tools.schedules.error.command.authorized", commandString);
             }
         }
 
