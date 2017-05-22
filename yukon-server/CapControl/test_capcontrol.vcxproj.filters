@@ -356,9 +356,18 @@
     <ClCompile Include="Conductor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="test_ccCapbanks.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="cbcHeartbeatPolicy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\capcontrol_test_helpers.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cbcHeartbeatPolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

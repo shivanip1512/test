@@ -76,6 +76,10 @@ const PointAttribute PointAttribute::LastControlReason             = PointAttrib
 const PointAttribute PointAttribute::ForwardSetPoint               = PointAttribute(PointAttribute::ForwardSetPointAttribute,              "FORWARD_SET_POINT");
 const PointAttribute PointAttribute::ForwardBandwidth              = PointAttribute(PointAttribute::ForwardBandwidthAttribute,             "FORWARD_BANDWIDTH");
 
+const PointAttribute PointAttribute::ScadaOverrideCountdownTimer   = PointAttribute(PointAttribute::ScadaOverrideCountdownTimerAttribute,  "SCADA_OVERRIDE_COUNTDOWN_TIMER");
+const PointAttribute PointAttribute::ScadaOverrideHeartbeat        = PointAttribute(PointAttribute::ScadaOverrideHeartbeatAttribute,       "SCADA_OVERRIDE_HEARTBEAT");
+const PointAttribute PointAttribute::ScadaOverrideType             = PointAttribute(PointAttribute::ScadaOverrideTypeAttribute,            "SCADA_OVERRIDE_TYPE");
+const PointAttribute PointAttribute::ScadaOverrideEnable           = PointAttribute(PointAttribute::ScadaOverrideEnableAttribute,          "SCADA_OVERRIDE_ENABLE");
 
 
 const PointAttribute& PointAttribute::valueOf(const std::string& name)

@@ -365,6 +365,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     </ClCompile>
     <ClCompile Include="CapControlPointDatahandler.cpp">
     </ClCompile>
+    <ClCompile Include="cbcHeartbeatPolicy.cpp" />
     <ClCompile Include="cc_message_serialization.cpp">
     </ClCompile>
     <ClCompile Include="cc_server_client_serialization_test.cpp">
@@ -544,6 +545,7 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
     <ClInclude Include="include\capcontroller.h" />
     <ClInclude Include="include\CapControlPao.h" />
     <ClInclude Include="include\CapControlPointDataHandler.h" />
+    <ClInclude Include="include\cbcHeartbeatPolicy.h" />
     <ClInclude Include="include\cc_message_serialization.h" />
     <ClInclude Include="include\ccarea.h" />
     <ClInclude Include="include\ccAreaBase.h" />

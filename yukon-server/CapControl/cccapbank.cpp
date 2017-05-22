@@ -11,6 +11,10 @@
 #include "database_util.h"
 #include "utility.h"
 #include "PointResponseManager.h"
+#include "std_helper.h"
+#include "capcontroller.h"
+#include "mgr_config.h"
+#include "config_data_cbc.h"
 
 using namespace Cti::CapControl;
 using namespace std;
@@ -2129,4 +2133,120 @@ const string CtiCCCapBank::SwitchedOperationalState = "Switched";
 const string CtiCCCapBank::FixedOperationalState = "Fixed";
 const string CtiCCCapBank::UninstalledState = "Uninstalled";
 const string CtiCCCapBank::StandAloneState = "StandAlone";
+
+
+void CtiCCCapBank::executeSendHeartbeat( const std::string & user )
+try
+{
+    const CtiTime Now;
+
+    if ( heartbeat.isTimeToSend( Now ) )
+    {
+        for ( auto & action : heartbeat._policy->SendHeartbeat( heartbeat._value ) )
+        {
+            auto & signal  = action.first;
+            auto & request = action.second;
+
+            signal->setText( signal->getText() /*+ getPhaseString()*/ );
+            signal->setAdditionalInfo( "Capbank Name: " + getPaoName() );
+
+            CtiCapController::getInstance()->sendMessageToDispatch( signal.release(), CALLSITE );
+
+            CtiCapController::getInstance()->manualCapBankControl( request.release() );
+        }
+    }
+}
+catch ( FailedAttributeLookup & missingAttribute )
+{
+    CTILOG_EXCEPTION_ERROR( dout, missingAttribute );
+}
+
+void CtiCCCapBank::loadAttributes( AttributeService * service )
+{
+    heartbeat.initialize( this );
+
+    heartbeat._policy->loadAttributes( *service, getControlDeviceId() );
+}
+
+bool CtiCCCapBank::Heartbeat::isTimeToSend( const CtiTime & now )
+{
+    if ( _period > 0 && now >= _sendTime )
+    {
+        _sendTime = now + ( _period * 60 );     // _period is in minutes
+
+        return true;
+    }
+    
+    return false;
+}
+
+CtiCCCapBank::Heartbeat::Heartbeat()
+    :   _period( 0 ),
+        _value( 0 ),
+        _mode( "DISABLED" ),
+        _policy( std::make_unique<NoCbcHeartbeatPolicy>() ),
+        _sendTime( CtiTime::neg_infin )
+{
+
+}
+
+void CtiCCCapBank::Heartbeat::initialize( CtiCCCapBank * bank )
+{
+    using Cti::Config::CbcStrings;
+
+    auto deviceConfig = 
+        Cti::ConfigManager::getConfigForIdAndType( bank->getControlDeviceId(),
+                                                   static_cast<DeviceTypes>( resolvePAOType( bank->getPaoCategory(),
+                                                                                             bank->getControlDeviceType() ) ) );
+    if ( deviceConfig )
+    {
+        if ( auto mode = deviceConfig->findValue<std::string>( CbcStrings::cbcHeartbeatMode ) )
+        {
+            _mode = *mode;
+        }
+        else
+        {
+            _mode = "DISABLED";
+            CTILOG_DEBUG( dout, "Heartbeat Config error: \"" << CbcStrings::cbcHeartbeatMode << "\" not found. Setting to: " << _mode );
+        }
+
+        if ( auto period = deviceConfig->findValue<double>( CbcStrings::cbcHeartbeatPeriod ) )
+        {
+            _period = *period;
+        }
+        else
+        {
+            _period = 0;
+            CTILOG_DEBUG( dout, "Heartbeat Config error: \"" << CbcStrings::cbcHeartbeatPeriod << "\" not found. Setting to: " << _period );
+        }
+
+        if ( auto value = deviceConfig->findValue<double>( CbcStrings::cbcHeartbeatValue ) )
+        {
+            _value = *value;
+        }
+        else
+        {
+            _value = 0;
+            CTILOG_DEBUG( dout, "Heartbeat Config error: \"" << CbcStrings::cbcHeartbeatValue << "\" not found. Setting to: " << _value );
+        }
+
+        static const std::map< std::string,
+                               std::function< std::unique_ptr<CbcHeartbeatPolicy>() > > Lookup
+        {
+            { "DISABLED",   std::make_unique<NoCbcHeartbeatPolicy> },
+            { "ANALOG",     std::make_unique<AnalogCbcHeartbeatPolicy> },
+            { "PULSED",     std::make_unique<PulsedCbcHeartbeatPolicy> }
+        };
+
+        if ( auto & result = Cti::mapFind( Lookup, _mode ) )
+        {
+            _policy = (*result)();
+        }
+        else
+        {
+            _policy = std::make_unique<NoCbcHeartbeatPolicy>();
+            CTILOG_DEBUG( dout, "Heartbeat Config error: \"" << CbcStrings::cbcHeartbeatValue << "\" not found. Setting to: " << _value );
+        }
+    }
+}
 

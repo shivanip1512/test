@@ -361,6 +361,7 @@
     </ClCompile>
     <ClCompile Include="CapControlPointDatahandler.cpp">
     </ClCompile>
+    <ClCompile Include="cbcHeartbeatPolicy.cpp" />
     <ClCompile Include="cc_message_serialization.cpp">
     </ClCompile>
     <ClCompile Include="ccarea.cpp">
@@ -521,6 +522,7 @@
     <ClCompile Include="test_capcontroller.cpp">
     </ClCompile>
     <ClCompile Include="test_ccAreas.cpp" />
+    <ClCompile Include="test_ccCapbanks.cpp" />
     <ClCompile Include="test_ccexecutor.cpp">
     </ClCompile>
     <ClCompile Include="test_ccFeeder.cpp">
@@ -574,6 +576,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\capcontrol_test_helpers.h" />
+    <ClInclude Include="include\cbcHeartbeatPolicy.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

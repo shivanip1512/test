@@ -10,6 +10,8 @@
 #include "PointResponse.h"
 #include "PointResponseManager.h"
 
+#include "cbcHeartbeatPolicy.h"
+
 #include <boost/scoped_ptr.hpp>
 
 namespace Cti {
@@ -274,6 +276,31 @@ public:
     static constexpr int CloseFail          = STATEFIVE;
     static constexpr int OpenPending        = STATESIX;
     static constexpr int ClosePending       = STATESEVEN;
+
+//private:
+
+    void executeSendHeartbeat( const std::string & user );
+
+    void loadAttributes( AttributeService * service );
+
+    struct Heartbeat
+    {
+        long    _period,
+                _value;
+
+        std::string _mode;
+
+        std::unique_ptr<Cti::CapControl::CbcHeartbeatPolicy>    _policy;
+
+        CtiTime _sendTime;
+
+        Heartbeat();
+
+        void initialize( CtiCCCapBank * bank );
+
+        bool isTimeToSend( const CtiTime & now );
+	}
+    heartbeat;
 
 private:
 

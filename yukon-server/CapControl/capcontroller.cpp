@@ -61,6 +61,7 @@ extern bool  _ALLOW_PARALLEL_TRUING;
 extern bool  _ENABLE_IVVC;
 extern bool  _AUTO_VOLT_REDUCTION;
 extern long  _VOLT_REDUCTION_SYSTEM_POINTID;
+extern bool  _CBC_HEARTBEAT_ENABLE;
 
 using Cti::ThreadStatusKeeper;
 using std::endl;
@@ -841,6 +842,25 @@ void CtiCapController::controlLoop()
             {
                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Exception while updating Voltage Regulators.");
             }
+
+            // jmoc -- testing the cbc heartbeat stuff...
+            if ( _CBC_HEARTBEAT_ENABLE )
+            {
+                CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+
+                for ( auto & bus : *store->getCCSubstationBuses( CtiTime().seconds() ) )
+                {
+                    for ( auto & feeder : bus->getCCFeeders() )
+                    {
+                        for ( auto & bank : feeder->getCCCapBanks() )
+                        {
+                            bank->executeSendHeartbeat( "TEST -- jmoc" );
+                        }
+                    }
+                }
+            }
+            // end cbc heartbeat testing
+
             threadStatus.monitorCheck();
 
             if(pointID != 0)
@@ -1523,6 +1543,11 @@ void CtiCapController::registerForPoints( const RegistrationMethod m )
                     if ( currentCapBank->isControlDeviceTwoWay() )
                     {
                         currentCapBank->getTwoWayPoints().addAllCBCPointsToRegMsg(registrationIds);
+                    }
+
+                    for ( auto pointID : currentCapBank->heartbeat._policy->getRegistrationPointIDs() )
+                    {
+                        registrationIds.insert( pointID );
                     }
                 }
             }
@@ -2270,6 +2295,16 @@ void CtiCapController::pointDataMsg ( const CtiPointDataMsg & message )
         if (Cti::CapControl::isQualityOk(quality))
         {
             pointDataMsgByCapBank(pointID, value, quality, tags, timestamp);
+
+            // gross... process point update messages for cbc heartbeat points...
+            PointIdToCapBankMultiMap::iterator capIter, end;
+            store->findCapBankByPointID(pointID, capIter, end);
+
+            while ( capIter != end )
+            {
+                capIter->second->heartbeat._policy->updatePointData( const_cast<CtiPointDataMsg *>( &message ) );  // <-- sigh again
+                ++capIter;
+            }
         }
 
         // Areas, Special Areas and Substations handled here

@@ -6313,6 +6313,33 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                 }
             }
         }
+        {   // load the point attributes for the CBC heartbeat if available
+
+            if ( capBankId > 0 )    // this guy only
+            {
+                if ( CtiCCCapBankPtr bank = findInMap( capBankId, paobject_capbank_map ) )
+                {
+                    bank->loadAttributes( _attributeService.get() );
+
+                    for ( auto pointID : bank->heartbeat._policy->getRegistrationPointIDs() )
+                    {
+                        pointid_capbank_map->insert( std::make_pair( pointID, bank ) );
+                    }
+                }
+            }
+            else    // do them all
+            {
+                for ( auto & item : *paobject_capbank_map )
+                {
+                    item.second->loadAttributes( _attributeService.get() );
+
+                    for ( auto pointID : item.second->heartbeat._policy->getRegistrationPointIDs() )
+                    {
+                        pointid_capbank_map->insert( std::make_pair( pointID, item.second ) );
+                    }
+                }
+            }
+        }
         if (capBankId > 0)
         {
             reloadOperationStatsFromDatabase(capBankId, paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,

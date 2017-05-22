@@ -3,6 +3,7 @@
 #include "config_data_mct.h"
 #include "config_data_dnp.h"
 #include "config_data_rfn.h"
+#include "config_data_cbc.h"
 #include "config_data_regulator.h"
 #include "config_device.h"
 
@@ -363,6 +364,12 @@ const string RegulatorStrings::heartbeatPeriod     = "regulatorHeartbeatPeriod";
 const string RegulatorStrings::heartbeatValue      = "regulatorHeartbeatValue";
 const string RegulatorStrings::heartbeatMode       = "regulatorHeartbeatMode";
 
+// CBC
+const string CbcStrings::cbcHeartbeatPeriod     = "cbcHeartbeatPeriod";
+const string CbcStrings::cbcHeartbeatValue      = "cbcHeartbeatValue";
+const string CbcStrings::cbcHeartbeatMode       = "cbcHeartbeatMode";
+
+// Display Items
 const string DisplayItemValues::SLOT_DISABLED = "SLOT_DISABLED";		    //0
 const string DisplayItemValues::NO_SEGMENTS = "NO_SEGMENTS";		        //1
 const string DisplayItemValues::ALL_SEGMENTS = "ALL_SEGMENTS";		        //2

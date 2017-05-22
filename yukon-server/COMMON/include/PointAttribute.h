@@ -79,7 +79,12 @@ class IM_EX_CTIBASE PointAttribute
             LastControlReasonAttribute,
 
             ForwardSetPointAttribute,
-            ForwardBandwidthAttribute
+            ForwardBandwidthAttribute,
+
+            ScadaOverrideCountdownTimerAttribute,
+            ScadaOverrideHeartbeatAttribute,
+            ScadaOverrideTypeAttribute,
+            ScadaOverrideEnableAttribute
         };
 
         static const PointAttribute Unknown;
@@ -151,6 +156,11 @@ class IM_EX_CTIBASE PointAttribute
 
         static const PointAttribute ForwardSetPoint;
         static const PointAttribute ForwardBandwidth;
+
+        static const PointAttribute ScadaOverrideCountdownTimer;
+        static const PointAttribute ScadaOverrideHeartbeat;
+        static const PointAttribute ScadaOverrideType;
+        static const PointAttribute ScadaOverrideEnable;
 
         std::string name() const;
         Attribute value() const;

@@ -300,6 +300,9 @@
     <ClCompile Include="Conductor.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cbcHeartbeatPolicy.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\CapControlDispatchConnection.h">
@@ -612,6 +615,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Conductor.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\cbcHeartbeatPolicy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
