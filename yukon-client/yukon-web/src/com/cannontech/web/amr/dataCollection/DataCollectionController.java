@@ -90,7 +90,7 @@ public class DataCollectionController {
     }
     
     @RequestMapping("detail")
-    public String detail(ModelMap model, String deviceGroup, String deviceSubGroup, Boolean includeDisabled, RangeType[] ranges, YukonUserContext userContext,
+    public String detail(ModelMap model, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges, YukonUserContext userContext,
                          @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
                          @DefaultItemsPerPage(value=50) PagingParameters paging) throws Exception {
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
@@ -98,38 +98,40 @@ public class DataCollectionController {
         model.addAttribute("summary", summary);
         model.addAttribute("rangeTypes", RangeType.values());
         
-        getDeviceResults(model, sorting, paging, userContext, deviceGroup, deviceSubGroup, includeDisabled, ranges);
+        getDeviceResults(model, sorting, paging, userContext, deviceGroup, deviceSubGroups, includeDisabled, ranges);
 
         return "dataCollection/detail.jsp";
     }
     
     @RequestMapping("deviceResults")
     public String deviceResults(@DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
-            PagingParameters paging, ModelMap model, YukonUserContext userContext, String deviceGroup, String deviceSubGroup, Boolean includeDisabled, RangeType[] ranges, 
+            PagingParameters paging, ModelMap model, YukonUserContext userContext, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges, 
             HttpServletRequest request, FlashScope flash) throws ServletException {
-        getDeviceResults(model, sorting, paging, userContext, deviceGroup, deviceSubGroup, includeDisabled, ranges);
+        getDeviceResults(model, sorting, paging, userContext, deviceGroup, deviceSubGroups, includeDisabled, ranges);
         return "dataCollection/deviceTable.jsp";
     }
     
     private void getDeviceResults(ModelMap model, SortingParameters sorting, PagingParameters paging, 
-                                  YukonUserContext userContext, String deviceGroup, String deviceSubGroup, Boolean includeDisabled, RangeType[] ranges) {
+                                  YukonUserContext userContext, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
-        DeviceGroup subGroup = null;
-        if (deviceSubGroup != null && !deviceSubGroup.isEmpty()) {
-            subGroup = deviceGroupService.resolveGroupName(deviceSubGroup);
+        List<DeviceGroup> subGroups = new ArrayList<>();
+        if (deviceSubGroups != null) {
+            for (String subGroup : deviceSubGroups) {
+                subGroups.add(deviceGroupService.resolveGroupName(subGroup));
+            }
         }
         if (ranges == null) {
             ranges = RangeType.values();
         }
         model.addAttribute("deviceGroup", deviceGroup);
-        model.addAttribute("deviceSubGroup", deviceSubGroup);
+        model.addAttribute("deviceSubGroups", deviceSubGroups);
         model.addAttribute("includeDisabled", includeDisabled);
         model.addAttribute("ranges", ranges);
 
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
-        SearchResults<DeviceCollectionDetail> detail = dataCollectionWidgetService.getDeviceCollectionResult(group,  Lists.newArrayList(subGroup), includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
+        SearchResults<DeviceCollectionDetail> detail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
         List<SimpleDevice> devices = new ArrayList<>();
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         detail.getResultList().forEach(item -> devices.add(deviceDao.getYukonDevice(item.getPaoIdentifier().getPaoId())));

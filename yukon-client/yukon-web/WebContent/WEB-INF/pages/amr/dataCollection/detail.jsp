@@ -23,14 +23,15 @@
             <div class="column one">
                 <div style="max-height: 200px;" class="js-pie-chart-summary"></div>
             </div>
-            <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;margin-top:20px;">
+            <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;margin-top:40px;">
                 <tags:nameValueContainer2>
-                    <tags:nameValue2 nameKey=".deviceGroup">
-                        ${deviceGroup}
-                    </tags:nameValue2>
                     <tags:nameValue2 nameKey=".deviceGroups">
-                        <cti:list var="group"><cti:item value="${deviceSubGroup}"/></cti:list>
-                        <tags:deviceGroupPicker inputName="deviceSubGroup" inputValue="${group}"/>
+                        <cti:list var="groups">
+                            <c:forEach var="subGroup" items="${deviceSubGroups}">
+                                <cti:item value="${subGroup}"/>
+                            </c:forEach>
+                        </cti:list>
+                        <tags:deviceGroupPicker inputName="deviceSubGroups" inputValue="${groups}" multi="true"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".range">
                         <div class="button-group stacked">

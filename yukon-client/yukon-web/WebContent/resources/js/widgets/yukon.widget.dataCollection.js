@@ -63,14 +63,18 @@ yukon.widget.dataCollection = (function () {
                 align: 'right',
                 borderWidth: 0,
                 labelFormatter: function (point) {
-                    return this.name + ': ' + yukon.percent(this.y, 100, 3) + ", " + this.x + " devices";
+                    var percentage = yukon.percent(this.y, 100, 1);
+                    if (this.y < 1 && this.y != 0) {
+                        percentage = "<1%";
+                    }
+                    return this.name + ': ' + percentage + ", " + this.x + " devices";
                 },
                 layout: 'vertical',
                 verticalAlign: 'middle'
             },
             title: { text: null },
             tooltip: {
-                pointFormat: '<b>{point.percentage:.3f}%, {point.x} devices</b>'
+                pointFormat: '<b>{point.percentage:.1f}%, {point.x} devices</b>'
             },
             plotOptions: {
                 pie: {
@@ -78,7 +82,7 @@ yukon.widget.dataCollection = (function () {
                     cursor: 'pointer',
                     dataLabels: { enabled: false },
                     showInLegend: true,
-                    borderWidth: 0
+                    borderWidth: 0.25,
                 }
             },
             series: [{

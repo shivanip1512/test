@@ -166,7 +166,9 @@
           </page>
           <page name="waterLeakReport.jobs" type="BASIC"/>
           <page name="billing" type="BASIC"/>
-          <page name="dataCollection.detail" type="BASIC"/>
+          <page name="dataCollection.detail" type="BASIC">
+            <labelArgument>${deviceGroup}</labelArgument>
+          </page>
         </pages>
       </page>
     </pages>
