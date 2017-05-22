@@ -1,5 +1,6 @@
 package com.cannontech.common.device.data.collection.dao;
 
+import java.util.List;
 import java.util.Map;
 
 import org.joda.time.Instant;
@@ -47,9 +48,9 @@ public interface RecentPointValueDao {
     /**
      * 
      * Returns the device collection detail.
-     * 
-     * @param group1 - finds only devices within the group and its subgroups
-     * @param group2 - can be null, otherwise finds devices that are in group1 and group2
+     *  
+     * @param group - finds only devices within the group and its subgroups
+     * @param groups - can be null, otherwise finds devices that are in "group" and in "groups"
      * @param includeDisabled - if false only enabled devices will be returned
      * @param ranges - time periods,  can't be null
      * @param paging - paging information, can't be null
@@ -58,7 +59,7 @@ public interface RecentPointValueDao {
      * @return
      */
   
-    SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, DeviceGroup subGroup,
+    SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, List<DeviceGroup> groups,
             boolean includeDisabled, Map<RangeType, Range<Instant>> ranges, PagingParameters paging, SortBy sortBy,
             Direction direction);
 

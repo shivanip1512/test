@@ -129,7 +129,7 @@ public class DataCollectionController {
 
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
-        SearchResults<DeviceCollectionDetail> detail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroup, includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
+        SearchResults<DeviceCollectionDetail> detail = dataCollectionWidgetService.getDeviceCollectionResult(group,  Lists.newArrayList(subGroup), includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
         List<SimpleDevice> devices = new ArrayList<>();
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
         detail.getResultList().forEach(item -> devices.add(deviceDao.getYukonDevice(item.getPaoIdentifier().getPaoId())));
@@ -162,7 +162,7 @@ public class DataCollectionController {
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         SearchResults<DeviceCollectionDetail> details = dataCollectionWidgetService.getDeviceCollectionResult(group,
-            subGroup, includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
+            Lists.newArrayList(subGroup), includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
 
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String[] headerRow = new String[5];

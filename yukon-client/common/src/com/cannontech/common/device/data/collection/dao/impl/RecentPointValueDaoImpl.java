@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -54,11 +55,12 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
     private static final Logger log = YukonLogManager.getLogger(RecentPointValueDaoImpl.class);
 
     @Override
-    public SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group1, DeviceGroup group2,
+    public SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, List<DeviceGroup> groups,
             boolean includeDisabled, Map<RangeType, Range<Instant>> ranges, PagingParameters paging, SortBy sortBy, Direction direction) {
 
-        SqlStatementBuilder allRowsSql = buildDetailSelect(group1, group2, includeDisabled, ranges, sortBy, direction);
-        SqlStatementBuilder countSql = buildDetailSelect(group1, group2, includeDisabled, ranges, null, null);
+        SqlStatementBuilder allRowsSql = buildDetailSelect(group, groups, includeDisabled, ranges, sortBy, direction);
+        System.out.println(allRowsSql.getDebugSql());
+        SqlStatementBuilder countSql = buildDetailSelect(group, groups, includeDisabled, ranges, null, null);
         
         int start = paging.getStartIndex();
         int count = paging.getItemsPerPage();
@@ -77,7 +79,7 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
     /**
      * If sortBy is not returns count sql, otherwise returns all the fields
      */
-    private SqlStatementBuilder buildDetailSelect(DeviceGroup group1, DeviceGroup group2, boolean includeDisabled,
+    private SqlStatementBuilder buildDetailSelect(DeviceGroup group, List<DeviceGroup> groups, boolean includeDisabled,
             Map<RangeType, Range<Instant>> ranges, SortBy sortBy, Direction direction) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
@@ -104,16 +106,14 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
         sql.append("LEFT JOIN YukonPaObject rypo ON dr.RouteId = rypo.PAObjectID");
         sql.append("LEFT JOIN RFNAddress rfna ON ypo.PAObjectId = rfna.DeviceId");
    
-        SqlFragmentSource groupSqlWhereClause =
-            deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group1), "ypo.PAObjectId");
+        SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "ypo.PAObjectId");
         sql.append("WHERE").appendFragment(groupSqlWhereClause);
 
-        if (group2 != null) {
-            SqlFragmentSource subGroupSqlWhereClause =
-                deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group2), "ypo.PAObjectId");
-            sql.append("AND").appendFragment(subGroupSqlWhereClause);
-        }
-
+        Optional.ofNullable(groups).ifPresent(grps -> grps.forEach(grp -> {
+            SqlFragmentSource subGroupSql = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(grp), "ypo.PAObjectId");
+            sql.append("AND").appendFragment(subGroupSql);
+        }));
+   
         if (!includeDisabled) {
             sql.append("AND ypo.DisableFlag").eq_k(YNBoolean.NO);
         }

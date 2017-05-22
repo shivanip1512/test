@@ -177,14 +177,14 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
     }
    
     @Override
-    public SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group1, DeviceGroup group2,
+    public SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, List<DeviceGroup> groups,
             boolean includeDisabled, List<RangeType> ranges, PagingParameters paging, SortBy sortBy,
             Direction direction) {
         Map<RangeType, Range<Instant>> allRanges = getRanges();
         log.debug("Getting device collection results:");
         allRanges.keySet().removeIf(type -> !ranges.contains(type));
         allRanges.forEach((k, v) -> log.debug(getLogString(k, v)));
-        return rpvDao.getDeviceCollectionResult(group1, group2, includeDisabled, allRanges, paging, sortBy, direction);
+        return rpvDao.getDeviceCollectionResult(group, groups, includeDisabled, allRanges, paging, sortBy, direction);
     }
 
     @Autowired

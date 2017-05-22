@@ -31,8 +31,8 @@ public interface DataCollectionWidgetService {
      * 
      * Returns the device collection detail.
      * 
-     * @param group1 - finds only devices within the group and its subgroups
-     * @param group2 - can be null, otherwise finds devices that are in group1 and group2
+     * @param group - finds only devices within the group and its subgroups
+     * @param groups - can be null, otherwise finds devices that are in "group" and in "groups"
      * @param includeDisabled - if false only enabled devices will be returned
      * @param ranges - time periods,  can't be null
      * @param paging - paging information, can't be null
@@ -40,7 +40,7 @@ public interface DataCollectionWidgetService {
      * @param direction - direction (asc/desc) for the order by, can't be null
      * @return
      */
-    SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group1, DeviceGroup group2,
+    SearchResults<DeviceCollectionDetail> getDeviceCollectionResult(DeviceGroup group, List<DeviceGroup> groups,
             boolean includeDisabled, List<RangeType> ranges, PagingParameters paging, SortBy sortBy,
             Direction direction);
 }
