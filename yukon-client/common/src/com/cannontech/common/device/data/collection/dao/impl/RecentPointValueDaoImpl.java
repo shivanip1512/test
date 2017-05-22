@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
@@ -33,7 +32,6 @@ import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.ReadableRange;
 import com.cannontech.common.util.SqlBuilder;
-import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.PagingResultSetExtractor;
@@ -105,13 +103,11 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
         sql.append("LEFT JOIN YukonPaObject rypo ON dr.RouteId = rypo.PAObjectID");
         sql.append("LEFT JOIN RFNAddress rfna ON ypo.PAObjectId = rfna.DeviceId");
    
-        SqlFragmentSource groupSqlWhereClause = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "ypo.PAObjectId");
-        sql.append("WHERE").appendFragment(groupSqlWhereClause);
+        sql.append("WHERE").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(group), "ypo.PAObjectId"));
 
-        Optional.ofNullable(groups).ifPresent(grps -> grps.forEach(grp -> {
-            SqlFragmentSource subGroupSql = deviceGroupService.getDeviceGroupSqlWhereClause(Collections.singleton(grp), "ypo.PAObjectId");
-            sql.append("AND").appendFragment(subGroupSql);
-        }));
+        if(groups != null && !groups.isEmpty()){
+            sql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(groups, "ypo.PAObjectId"));
+        };
    
         if (!includeDisabled) {
             sql.append("AND ypo.DisableFlag").eq_k(YNBoolean.NO);
