@@ -59,7 +59,6 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
             boolean includeDisabled, Map<RangeType, Range<Instant>> ranges, PagingParameters paging, SortBy sortBy, Direction direction) {
 
         SqlStatementBuilder allRowsSql = buildDetailSelect(group, groups, includeDisabled, ranges, sortBy, direction);
-        System.out.println(allRowsSql.getDebugSql());
         SqlStatementBuilder countSql = buildDetailSelect(group, groups, includeDisabled, ranges, null, null);
         
         int start = paging.getStartIndex();
