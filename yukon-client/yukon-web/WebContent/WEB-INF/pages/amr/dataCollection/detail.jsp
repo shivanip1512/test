@@ -101,7 +101,9 @@
 
     <cti:url var="dataUrl" value="/amr/dataCollection/deviceResults">
         <cti:param name="deviceGroup" value="${deviceGroup}"/>
-        <cti:param name="deviceSubGroup" value="${deviceSubGroup}"/>
+        <c:forEach var="subGroup" items="${deviceSubGroups}">
+            <cti:param name="deviceSubGroups" value="${subGroup}"/>
+        </c:forEach>
         <cti:param name="includeDisabled" value="${includeDisabled}"/>
         <c:forEach var="range" items="${ranges}">
             <cti:param name="ranges" value="${range}"/>

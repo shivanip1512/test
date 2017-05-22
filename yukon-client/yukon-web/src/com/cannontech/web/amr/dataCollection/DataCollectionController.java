@@ -151,20 +151,22 @@ public class DataCollectionController {
     }
     
     @RequestMapping("download")
-    public String download(YukonUserContext userContext, String deviceGroup, String deviceSubGroup, Boolean includeDisabled, RangeType[] ranges, 
+    public String download(YukonUserContext userContext, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges, 
                           @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
                           @DefaultItemsPerPage(value=50) PagingParameters paging,
                           HttpServletResponse response) throws IOException {
         paging = PagingParameters.EVERYTHING;
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
-        DeviceGroup subGroup = null;
-        if (deviceSubGroup != null && !deviceSubGroup.isEmpty()) {
-            subGroup = deviceGroupService.resolveGroupName(deviceSubGroup);
+        List<DeviceGroup> subGroups = new ArrayList<>();
+        if (deviceSubGroups != null) {
+            for (String subGroup : deviceSubGroups) {
+                subGroups.add(deviceGroupService.resolveGroupName(subGroup));
+            }
         }
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         SearchResults<DeviceCollectionDetail> details = dataCollectionWidgetService.getDeviceCollectionResult(group,
-            Lists.newArrayList(subGroup), includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
+            subGroups, includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
 
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         String[] headerRow = new String[5];
