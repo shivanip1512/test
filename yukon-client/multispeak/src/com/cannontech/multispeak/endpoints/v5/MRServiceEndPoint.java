@@ -2,12 +2,12 @@ package com.cannontech.multispeak.endpoints.v5;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -67,13 +67,11 @@ import com.cannontech.msp.beans.v5.mr_server.RemoveMetersFromMeterGroup;
 import com.cannontech.msp.beans.v5.mr_server.RemoveMetersFromMeterGroupResponse;
 import com.cannontech.msp.beans.v5.mr_server.SetDisconnectedStatus;
 import com.cannontech.msp.beans.v5.mr_server.SetDisconnectedStatusResponse;
-import com.cannontech.msp.beans.v5.multispeak.DemandResetEvent;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeter;
 import com.cannontech.msp.beans.v5.multispeak.ElectricMeters;
 import com.cannontech.msp.beans.v5.multispeak.EventMonitoringItem;
 import com.cannontech.msp.beans.v5.multispeak.FormattedBlock;
 import com.cannontech.msp.beans.v5.multispeak.MeterGroup;
-import com.cannontech.msp.beans.v5.multispeak.MeterIDs;
 import com.cannontech.msp.beans.v5.multispeak.MeterReading;
 import com.cannontech.msp.beans.v5.multispeak.Meters;
 import com.cannontech.msp.beans.v5.multispeak.ReadingTypeCode;
@@ -386,27 +384,19 @@ public class MRServiceEndPoint {
         String responseURL = initiateDemandReset.getResponseURL();
         String transactionId = initiateDemandReset.getTransactionID();
 
-        List<DemandResetEvent> demandResetEvents = (null == initiateDemandReset.getArrayOfDemandResetEvent()) ? null
-                : (null != initiateDemandReset.getArrayOfDemandResetEvent()) 
-                ? initiateDemandReset.getArrayOfDemandResetEvent().getDemandResetEvent() : null;
-
         // TODO Currently meterID are taken from this
         // demandResetEvents.get(0).getMeterIDs().getMeterID().get(0).getMeterName()
         // Other option is:
         // demandResetEvents.get(0).getMeterGroups().getElectricMeterGroups().getMeterGroup().get(0).getMeterIDs().getMeterID().get(0).getMeterName();
                 
-        List<MeterIDs> meterIDs =
-            ListUtils.emptyIfNull(demandResetEvents).stream().map(DemandResetEvent -> DemandResetEvent.getMeterIDs()).collect(
-                Collectors.toList());
-
-        List<MeterID> meterIDList = new ArrayList<MeterID>();
-
-        for (MeterIDs meterIDsTemp : meterIDs) {
-            List<MeterID> meterIDTemp = meterIDsTemp.getMeterID();
-            for (MeterID meterID : meterIDTemp) {
-                meterIDList.add(meterID);
-            }
-        }
+        List<MeterID> meterIDList = Optional.ofNullable(initiateDemandReset.getArrayOfDemandResetEvent()) //get ArrayOfDemandResetEvent if it exists
+                .map(array -> array.getDemandResetEvent())                    //get list of events (if it exists)
+                .orElse(new ArrayList<>())                                    //if it doesn't exist, just use an empty list
+                .stream()                                                     //convert to stream
+                .flatMap(demandResetEvent -> demandResetEvent.getMeterIDs()   //flatten meter id lists into a single stream
+                                                             .getMeterID()
+                                                             .stream())
+                .collect(Collectors.toList());                                //collect to list
 
         multispeakFuncs.addErrorObjectsInResponseHeader(mr_server.initiateDemandReset(meterIDList, responseURL,
             transactionId, expirationTime));
