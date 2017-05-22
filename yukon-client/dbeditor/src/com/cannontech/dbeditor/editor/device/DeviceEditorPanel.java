@@ -51,6 +51,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PaoType.RFN510FL, PaoType.RFN520FAX, PaoType.RFN520FRX, PaoType.RFN520FAXD, PaoType.RFN520FRXD,
             PaoType.RFN530FAX, PaoType.RFN530FRX, 
             PaoType.RFN530S4X, PaoType.RFN530S4EAX, PaoType.RFN530S4EAXR, PaoType.RFN530S4ERX, PaoType.RFN530S4ERXR,
+            PaoType.RFN_1200,
 		},
 		{ 	//1 - DeviceMeterGroupEditorPanel
 			PaoType.ALPHA_A1, PaoType.ALPHA_PPLUS, PaoType.FULCRUM, PaoType.VECTRON, PaoType.QUANTUM, 
