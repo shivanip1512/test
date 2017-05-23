@@ -7497,6 +7497,11 @@ void CtiCCSubstationBusStore::deleteCapBank(long capBankId)
             }
             capBankToDelete->getMonitorPoint().clear();
 
+            for ( long pointID : capBankToDelete->heartbeat._policy->getRegistrationPointIDs() )
+            {
+                _pointid_capbank_map.erase( pointID );
+            }
+
             try
             {
                 CtiCCFeederPtr feeder = NULL;
