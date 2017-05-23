@@ -1,7 +1,6 @@
 package com.cannontech.web.amr.dataCollection;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -43,6 +42,8 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -69,6 +70,7 @@ public class DataCollectionController {
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PointFormattingService pointFormattingService;
+    @Autowired private DateFormattingService dateFormattingService;
     
     private final static String baseKey = "yukon.web.modules.amr.dataCollection.detail.";
     
@@ -193,7 +195,7 @@ public class DataCollectionController {
             }
             dataRows.add(dataRow);
         }
-        String now = new SimpleDateFormat("MM/dd/yyyy HH:mm").format(new Date());
+        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
         WebFileUtils.writeToCSV(response, headerRow, dataRows, "recentReadings_" + now + ".csv");
         return null;
       }
