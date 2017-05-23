@@ -215,7 +215,7 @@
                             </table>
                         </div>
                         <div class="column two nogutter">
-                            <table class="compact-results-table">
+                            <table>
                                 <thead>
                                     <tr>
                                         <th><i:inline key=".results" /></th>
@@ -225,7 +225,7 @@
                                     <tr>
                                         <c:set var="interfaceListLength"
                                             value="${fn:length(multispeak.mspInterfaceList)/2}" />
-                                        <td rowspan='${interfaceListLength+3}'><textarea cols="49"
+                                        <td rowspan='${interfaceListLength+3}'><textarea cols="40"
                                                 rows="${interfaceListLength*2+3}" name="Results" id="results" readonly
                                                 wrap="VIRTUAL" style='color:<c:out value="${resultColor}"/>'>${MSP_RESULT_MSG}</textarea>
                                         </td>
