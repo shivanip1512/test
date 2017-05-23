@@ -63,12 +63,9 @@
     <entry key="yukon.web.modules.tools.schedules.error.name.blank">Schedule name cannot be blank.</entry>
     <entry key="yukon.web.modules.tools.schedules.error.name.length">Schedule name cannot exceed 200 characters.</entry>
     <entry key="yukon.web.modules.tools.schedules.error.attribute.blank">One or more attribute(s) must be selected.</entry>
-    <entry key="yukon.web.modules.tools.schedules.error.queuedRetryCount.integer">Number of queued retries must be an integer. You entered: {0}</entry>
-    <entry key="yukon.web.modules.tools.schedules.error.queuedRetryCount.bounds">Number of queued retries must be non-negative. You entered: {0}</entry>
-    <entry key="yukon.web.modules.tools.schedules.error.nonQueuedRetryCount.integer">Number of non-queued retries must be an integer. You entered: {0}</entry>
-    <entry key="yukon.web.modules.tools.schedules.error.nonQueuedRetryCount.bounds">Number of non-queued retries must be non-negative. You entered: {0}</entry>
-    <entry key="yukon.web.modules.tools.schedules.error.maxRunTime.integer">Maximum total run-time hours must be an integer. You entered: {0}</entry>
-    <entry key="yukon.web.modules.tools.schedules.error.maxRunTime.bounds">Maximum total run-time hours must be at least 1. You entered: {0}</entry>
+    <entry key="yukon.web.modules.tools.schedules.error.queuedRetryCount">Queued retries must be an integer greater than or equal to 0. Invalid value: {0}</entry>
+    <entry key="yukon.web.modules.tools.schedules.error.nonQueuedRetryCount">Non-queued retries must be an integer greater than or equal to 0. Invalid value: {0}</entry>
+    <entry key="yukon.web.modules.tools.schedules.error.maxRunTime">Maximum total run-time hours must be a positive integer. Invalid value: {0}</entry>
     <entry key="yukon.web.modules.tools.schedules.error.totalRetryCount.bounds">Total number of retries must be in the range 1-10.</entry>
     <entry key="yukon.web.modules.tools.schedules.error.command.blank">One or more commands must be selected.</entry>
     <entry key="yukon.web.modules.tools.schedules.error.command.authorized">You are not authorized to execute this command: {0}</entry>

@@ -111,7 +111,7 @@
                                     <cti:url var="jobDetailUrl" value="/group/scheduledGroupRequestExecutionResults/detail">
                                         <cti:param name="jobId" value="${jobId}"/>
                                     </cti:url>
-                                    <a href="${jobDetailUrl}">${fn:escapeXml(jobWrapper.name)}</a>
+                                    <a href="${jobDetailUrl}">${fn:escapeXml(jobWrapper.shortName)}</a>
                                 </td>
                                 <td>
                                     <c:choose>

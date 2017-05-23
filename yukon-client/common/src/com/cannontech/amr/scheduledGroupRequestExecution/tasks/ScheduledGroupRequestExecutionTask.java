@@ -130,6 +130,10 @@ public class ScheduledGroupRequestExecutionTask extends YukonTaskBase {
 		return name;
 	}
     
+    public String getShortName() {
+        return com.cannontech.common.util.StringUtils.elideCenter(name, 60);
+    }
+    
     public void setName(String name) {
 		this.name = name;
 	}

@@ -51,7 +51,7 @@ public class PageDetailProducer {
         pageDetail.setPageTitle(pageTitle);
 
         String pageHeading = getPagePart(PAGE_HEADING, pageContext, messageSourceAccessor);
-        pageDetail.setPageHeading(pageHeading);
+        pageDetail.setPageHeading(StringUtils.elideCenter(pageHeading, 60));
 
         String crumbs = renderCrumbsFinal(pageContext, request, messageSourceAccessor);
 
