@@ -37,18 +37,20 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.web.common.widgets.model.DataCollectionSummary;
 import com.cannontech.web.common.widgets.service.DataCollectionWidgetService;
 
 @Service
 public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetService, MessageListener {
 
-    private static final Duration DAYS_2 = Duration.standardDays(2);
     private static final Duration DAYS_7 = Duration.standardDays(7);
     private static final Duration DAYS_14 = Duration.standardDays(14);
 
     @Autowired private RecentPointValueDao rpvDao;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
+    @Autowired private GlobalSettingDao globalSettingDao;
     private JmsTemplate jmsTemplate;
     private static final String collectionQueueName = "yukon.qr.obj.data.collection.CollectionRequest";
     private static final Logger log = YukonLogManager.getLogger(DataCollectionWidgetServiceImpl.class);
@@ -139,9 +141,10 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
      * Creates time ranges for each range type.
      */
     private Map<RangeType, Range<Instant>> getRanges() {
+        Duration days = Duration.standardDays(globalSettingDao.getInteger(GlobalSettingType.READ_AVAILABILITY_WINDOW_IN_DAYS));
         Map<RangeType, Range<Instant>> ranges = new TreeMap<>();
         Instant startOfTheDay = new Instant(new DateTime().withTimeAtStartOfDay());
-        Range<Instant> currentRange = buildRange(RangeType.AVAILABLE, ranges, startOfTheDay.minus(DAYS_2), now());
+        Range<Instant> currentRange = buildRange(RangeType.AVAILABLE, ranges, startOfTheDay.minus(days), now());
         currentRange = buildRange(RangeType.EXPECTED, ranges, currentRange.getMin().minus(DAYS_7), currentRange.getMin());
         currentRange = buildRange(RangeType.OUTDATED, ranges, currentRange.getMin().minus(DAYS_14), currentRange.getMin());
         buildRange(RangeType.UNAVAILABLE, ranges, null, currentRange.getMin());

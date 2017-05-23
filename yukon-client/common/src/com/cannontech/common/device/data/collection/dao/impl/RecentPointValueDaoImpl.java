@@ -107,7 +107,7 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
 
         if(groups != null && !groups.isEmpty()){
             sql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(groups, "ypo.PAObjectId"));
-        };
+        }
    
         if (!includeDisabled) {
             sql.append("AND ypo.DisableFlag").eq_k(YNBoolean.NO);

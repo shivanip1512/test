@@ -1,6 +1,9 @@
 package com.cannontech.system;
 
-import static com.cannontech.core.roleproperties.InputTypeFactory.*;
+import static com.cannontech.core.roleproperties.InputTypeFactory.booleanType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.integerType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.userType;
 
 import java.math.RoundingMode;
 import java.util.Set;
@@ -138,6 +141,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     // This may eventually be a "Device" setting, just just "AMR", This is to disable "route lookup" during the OLD bulk importer process; reduces comms
     BULK_IMPORTER_COMMUNICATIONS_ENABLED(GlobalSettingSubCategory.AMI, booleanType(), true),
     PRESERVE_ENDPOINT_LOCATION(GlobalSettingSubCategory.AMI, booleanType(), true),
+    READ_AVAILABILITY_WINDOW_IN_DAYS(GlobalSettingSubCategory.AMI, integerType(), 2),
 
     // Misc.
     SYSTEM_TIMEZONE(GlobalSettingSubCategory.MISC, stringType(), null),
