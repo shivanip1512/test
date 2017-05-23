@@ -2286,7 +2286,7 @@ void CtiCapController::pointDataMsg ( const CtiPointDataMsg & message )
     try
     {
         CapControlPointDataHandler pointHandler = store->getPointDataHandler();
-        pointHandler.processIncomingPointData( const_cast<CtiPointDataMsg *>( &message ) );  // <-- sigh...
+        pointHandler.processIncomingPointData( message );
 
         pointDataMsgBySubBus(pointID, value, quality, timestamp);
 
@@ -2302,7 +2302,7 @@ void CtiCapController::pointDataMsg ( const CtiPointDataMsg & message )
 
             while ( capIter != end )
             {
-                capIter->second->heartbeat._policy->updatePointData( const_cast<CtiPointDataMsg *>( &message ) );  // <-- sigh again
+                capIter->second->heartbeat._policy->updatePointData( message );
                 ++capIter;
             }
         }

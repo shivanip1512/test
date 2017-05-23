@@ -3,33 +3,32 @@
 #include "yukon.h"
 #include "pointtypes.h"
 #include "ctitime.h"
-#include "msg_pdata.h"
 
-#include <map>
+class CtiPointDataMsg;
+
 
 class PointValueHolder
 {
-    public:
-        PointValueHolder();
+public:
 
-        virtual void addPointValue(int pointId, double pointValue, CtiTime pointTime);
-        virtual void updatePointValue(CtiPointDataMsg* message);
+    PointValueHolder() {    }
 
-        bool getPointValue(int pointId, double& result) const;
-        bool getPointTime(int pointId, CtiTime& time) const;
+    virtual void addPointValue( const int pointId, const double pointValue, const CtiTime & pointTime );
+    virtual void updatePointValue( const CtiPointDataMsg & message );
 
-        PointValueHolder& operator=(const PointValueHolder& right);
+    bool getPointValue( const int pointId, double & result ) const;
+    bool getPointTime( const int pointId, CtiTime & time ) const;
 
-    private:
+private:
 
-        struct ValueTimePair
-        {
-            double value;
-            CtiTime time;
-        };
+    struct ValueTimePair
+    {
+        double value;
+        CtiTime time;
+    };
 
-        typedef std::map<int,ValueTimePair> ValueMap;
-        typedef ValueMap::const_iterator ValueMapItr;
+    typedef std::map<int, ValueTimePair> ValueMap;
 
-        ValueMap _valueMap;
+    ValueMap _valueMap;
 };
+

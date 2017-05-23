@@ -50,9 +50,9 @@ double Policy::getValueByAttribute( const PointAttribute & attribute ) const
     return currentValue;
 }
 
-void Policy::updatePointData( CtiPointDataMsg * message )
+void Policy::updatePointData( const CtiPointDataMsg & message )
 {
-    if ( _pointIDs.count( message->getId() ) )
+    if ( _pointIDs.count( message.getId() ) )
     {
         _pointValues.updatePointValue( message );
     }

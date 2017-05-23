@@ -6,5 +6,5 @@
 class UpdatablePao
 {
     public:
-        virtual void handlePointData(CtiPointDataMsg* message)=0;
+        virtual void handlePointData( const CtiPointDataMsg & message ) = 0;
 };

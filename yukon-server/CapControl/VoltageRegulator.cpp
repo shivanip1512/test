@@ -149,7 +149,7 @@ VoltageRegulator::VoltageRegulator(const VoltageRegulator & toCopy)
 }
 
 
-void VoltageRegulator::handlePointData(CtiPointDataMsg * message)
+void VoltageRegulator::handlePointData( const CtiPointDataMsg & message )
 {
     setUpdated(true);
 

@@ -22,7 +22,7 @@ class IM_EX_MSG PointDataHandler : public MessageListener
         bool removePointId(int pointId);
 
         //Change this one to use the new one (processNewMessage) and not be called from the store.
-        bool processIncomingPointData(CtiPointDataMsg* message);
+        bool processIncomingPointData( const CtiPointDataMsg & message );
         void processNewMessage(CtiMessage* message);
 
         void getAllPointIds(std::set<long>& pointIds);

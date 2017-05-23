@@ -448,7 +448,7 @@ public:
     Cti::CapControl::CapControlType determineTypeById(int paoId);
 
     CapControlPointDataHandler& getPointDataHandler();
-    virtual bool handlePointDataByPaoId(int paoId, CtiPointDataMsg* message);
+    bool handlePointDataByPaoId( const int paoId, const CtiPointDataMsg & message ) override;
 
     bool isAnyBankOpen(int paoId, Cti::CapControl::CapControlType type);
     bool isAnyBankClosed(int paoId, Cti::CapControl::CapControlType type);

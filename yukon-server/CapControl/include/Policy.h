@@ -25,7 +25,7 @@ struct Policy
     LitePoint getPointByAttribute( const PointAttribute & attribute ) const;
     double    getValueByAttribute( const PointAttribute & attribute ) const;
 
-    void updatePointData( CtiPointDataMsg * message );
+    void updatePointData( const CtiPointDataMsg & message );
 
     IDSet getRegistrationPointIDs() const;
 

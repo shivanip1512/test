@@ -141,10 +141,10 @@ bool PointDataHandler::removePointId(int pointId)
  *
  * @return bool
  */
-bool PointDataHandler::processIncomingPointData(CtiPointDataMsg* message)
+bool PointDataHandler::processIncomingPointData( const CtiPointDataMsg & message )
 {
     PointDataListener* listener = NULL;
-    int pointId = message->getId();
+    int pointId = message.getId();
 
     PointIdMapItr pointItr = _pointIdMap.find(pointId);
     if (pointItr != _pointIdMap.end())

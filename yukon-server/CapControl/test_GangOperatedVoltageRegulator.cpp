@@ -693,7 +693,7 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_RaiseSetPoint_Success,
 
     CtiPointDataMsg setPointData( 7000, 120.0, NormalQuality, AnalogPointType );
 
-    regulator->handlePointData( &setPointData );
+    regulator->handlePointData( setPointData );
 
 
     BOOST_CHECK_CLOSE( 0.75, regulator->adjustVoltage( 0.75 ),  1e-6 );
@@ -766,11 +766,11 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_LowerSetPoint_Success,
 
     CtiPointDataMsg setPointData( 7000, 120.0, NormalQuality, AnalogPointType );
 
-    regulator->handlePointData( &setPointData );
+    regulator->handlePointData( setPointData );
 
     CtiPointDataMsg tapPositionData( 3500, 3.0, NormalQuality, AnalogPointType );
 
-    regulator->handlePointData( &tapPositionData );
+    regulator->handlePointData( tapPositionData );
 
 
     BOOST_CHECK_CLOSE( -0.75, regulator->adjustVoltage( -0.75 ),    1e-6 );

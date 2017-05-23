@@ -920,14 +920,14 @@ CapControlPointDataHandler& CtiCCSubstationBusStore::getPointDataHandler()
     return _pointDataHandler;
 }
 
-bool CtiCCSubstationBusStore::handlePointDataByPaoId(int paoId, CtiPointDataMsg* message)
+bool CtiCCSubstationBusStore::handlePointDataByPaoId( const int paoId, const CtiPointDataMsg & message )
 {
     // Currently only Voltage Regulator types do this.
     // The idea will be all types do it, this can be accomplished once all objects inherit off CapControlPao
 
     bool handled = false;
 
-    if (message->isA() == MSG_POINTDATA)
+    if (message.isA() == MSG_POINTDATA)
     {
         CapControlType type = determineTypeById(paoId);
         switch (type)

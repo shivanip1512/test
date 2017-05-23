@@ -6,5 +6,5 @@
 class PointDataListener
 {
     public:
-        virtual bool handlePointDataByPaoId(int paoId, CtiPointDataMsg* message)=0;
+        virtual bool handlePointDataByPaoId( const int paoId, const CtiPointDataMsg & message ) = 0;
 };

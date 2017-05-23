@@ -1,62 +1,39 @@
 #include "precompiled.h"
 
 #include "PointValueHolder.h"
+#include "std_helper.h"
+#include "msg_pdata.h"
 
-PointValueHolder::PointValueHolder()
+
+void PointValueHolder::addPointValue( const int pointId, const double pointValue, const CtiTime & pointTime )
 {
-
+    _valueMap[ pointId ] = { pointValue, pointTime };
 }
 
-void PointValueHolder::addPointValue(int pointId, double pointValue, CtiTime pointTime)
+bool PointValueHolder::getPointValue( const int pointId, double & value ) const
 {
-    ValueTimePair vt;
-
-    vt.value = pointValue;
-    vt.time = pointTime;
-
-    _valueMap[pointId] = vt;
-}
-
-bool PointValueHolder::getPointValue(int pointId, double& value) const
-{
-    ValueMapItr itr = _valueMap.find(pointId);
-
-    if (itr == _valueMap.end())
+    if ( auto result = Cti::mapFind( _valueMap, pointId ) )
     {
-        return false;
+        value = result->value;
+        return true;
+    }
+    
+    return false;
+}
+
+bool PointValueHolder::getPointTime( const int pointId, CtiTime & time ) const
+{
+    if ( auto result = Cti::mapFind( _valueMap, pointId ) )
+    {
+        time = result->time;
+        return true;
     }
 
-    value = itr->second.value;
-    return true;
+    return false;
 }
 
-bool PointValueHolder::getPointTime(int pointId, CtiTime& time) const
+void PointValueHolder::updatePointValue( const CtiPointDataMsg & message )
 {
-    ValueMapItr itr = _valueMap.find(pointId);
-
-    if (itr == _valueMap.end())
-    {
-        return false;
-    }
-
-    time = itr->second.time;
-    return true;
+    addPointValue( message.getId(), message.getValue(), message.getTime() );
 }
 
-void PointValueHolder::updatePointValue(CtiPointDataMsg* message)
-{
-    addPointValue(message->getId(),message->getValue(),message->getTime());
-}
-
-PointValueHolder& PointValueHolder::operator=(const PointValueHolder& right)
-{
-    for each (const std::pair<int,ValueTimePair> itr in right._valueMap)
-    {
-        int pointId = itr.first;
-        ValueTimePair newValue = itr.second;
-
-        _valueMap[pointId] = newValue;
-    }
-
-    return *this;
-}

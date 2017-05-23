@@ -9,7 +9,7 @@
 #include "CapControlPao.h"
 #include "PointResponse.h"
 #include "PointResponseManager.h"
-
+#include "pointdefs.h"
 #include "cbcHeartbeatPolicy.h"
 
 #include <boost/scoped_ptr.hpp>
