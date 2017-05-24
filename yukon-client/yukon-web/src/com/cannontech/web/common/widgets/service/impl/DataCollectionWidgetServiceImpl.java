@@ -141,7 +141,7 @@ public class DataCollectionWidgetServiceImpl implements DataCollectionWidgetServ
      * Creates time ranges for each range type.
      */
     private Map<RangeType, Range<Instant>> getRanges() {
-        Duration days = Duration.standardDays(globalSettingDao.getInteger(GlobalSettingType.READ_AVAILABILITY_WINDOW_IN_DAYS));
+        Duration days = Duration.standardDays(globalSettingDao.getInteger(GlobalSettingType.DATA_AVAILABILITY_WINDOW_IN_DAYS));
         Map<RangeType, Range<Instant>> ranges = new TreeMap<>();
         Instant startOfTheDay = new Instant(new DateTime().withTimeAtStartOfDay());
         Range<Instant> currentRange = buildRange(RangeType.AVAILABLE, ranges, startOfTheDay.minus(days), now());

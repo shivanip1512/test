@@ -387,8 +387,8 @@
     <entry key="yukon.common.setting.PRESERVE_ENDPOINT_LOCATION">Preserve Endpoint Location</entry>
     <entry key="yukon.common.setting.PRESERVE_ENDPOINT_LOCATION.description">When true, location coordinates are retained following remove, disable, or return to warehouse action. Otherwise they are deleted</entry>
     
-    <entry key="yukon.common.setting.READ_AVAILABILITY_WINDOW_IN_DAYS">Read Availability Window</entry>
-    <entry key="yukon.common.setting.READ_AVAILABILITY_WINDOW_IN_DAYS.description">Window for minimum number of days required for a device's data to be considered available.</entry>
+    <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS">Data Availability Window</entry>
+    <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS.description">Window for minimum number of days required for a device's data to be considered available.</entry>
     
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS">Admin Email Address</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS.description">Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.</entry>

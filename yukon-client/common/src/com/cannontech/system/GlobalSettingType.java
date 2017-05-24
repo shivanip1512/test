@@ -141,7 +141,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     // This may eventually be a "Device" setting, just just "AMR", This is to disable "route lookup" during the OLD bulk importer process; reduces comms
     BULK_IMPORTER_COMMUNICATIONS_ENABLED(GlobalSettingSubCategory.AMI, booleanType(), true),
     PRESERVE_ENDPOINT_LOCATION(GlobalSettingSubCategory.AMI, booleanType(), true),
-    READ_AVAILABILITY_WINDOW_IN_DAYS(GlobalSettingSubCategory.AMI, integerType(), 3),
+    DATA_AVAILABILITY_WINDOW_IN_DAYS(GlobalSettingSubCategory.AMI, integerType(), 3),
 
     // Misc.
     SYSTEM_TIMEZONE(GlobalSettingSubCategory.MISC, stringType(), null),
