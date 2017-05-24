@@ -44,6 +44,7 @@ public enum SystemGroupEnum {
     BC,
     ABC,
     UNKNOWN,
+    ALL_METERS,
     ;
 }
 

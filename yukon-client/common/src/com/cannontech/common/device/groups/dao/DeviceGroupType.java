@@ -17,5 +17,6 @@ public enum DeviceGroupType {
     METERS_DISCONNECT_COLLAR,
     ATTRIBUTE_DEFINED,
     ATTRIBUTE_EXISTS,
+    ALLMETERS
     ;
 }
