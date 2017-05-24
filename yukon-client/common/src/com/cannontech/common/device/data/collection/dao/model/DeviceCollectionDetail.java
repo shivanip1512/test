@@ -2,6 +2,7 @@ package com.cannontech.common.device.data.collection.dao.model;
 
 import java.util.Date;
 
+import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.RangeType;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 
@@ -11,6 +12,8 @@ public class DeviceCollectionDetail {
     private String meterNumber;
     private String route;
     private String addressSerialNumber;
+    private boolean isEnabled;
+    private RangeType range;
     private PointValueQualityHolder value;
 
     public PaoIdentifier getPaoIdentifier() {
@@ -66,6 +69,22 @@ public class DeviceCollectionDetail {
 
     public void setAddressSerialNumber(String addressSerialNumber) {
         this.addressSerialNumber = addressSerialNumber;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean isEnabled) {
+        this.isEnabled = isEnabled;
+    }
+
+    public RangeType getRange() {
+        return range;
+    }
+
+    public void setRange(RangeType range) {
+        this.range = range;
     }
 
 }

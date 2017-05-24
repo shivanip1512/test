@@ -62,7 +62,7 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
         int start = paging.getStartIndex();
         int count = paging.getItemsPerPage();
         
-        PagingResultSetExtractor<DeviceCollectionDetail> rse = new PagingResultSetExtractor<>(start, count, new DetailRowMapper());
+        PagingResultSetExtractor<DeviceCollectionDetail> rse = new PagingResultSetExtractor<>(start, count, new DetailRowMapper(ranges));
         jdbcTemplate.query(allRowsSql, rse);
 
         SearchResults<DeviceCollectionDetail> searchResult = new SearchResults<>();
@@ -88,7 +88,7 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
         if (sortBy == null) {
             sql.append( "SELECT count(ypo.PAObjectId)");
         } else {
-            sql.append( "SELECT ypo.PAObjectId, rpv.PointId, Timestamp, Quality, Value, ypo.Type, p.PointType, dmg.MeterNumber, "+combineSerialNumberAndAddress+" as SerialNumberAddress, ypo.PAOName, dr.RouteId, rypo.PAOName as Route");
+            sql.append( "SELECT ypo.PAObjectId, rpv.PointId, Timestamp, Quality, Value, ypo.Type, p.PointType, dmg.MeterNumber, "+combineSerialNumberAndAddress+" as SerialNumberAddress, ypo.PAOName, ypo.DisableFlag, dr.RouteId, rypo.PAOName as Route");
         }
         sql.append("FROM YukonPaObject ypo");
         if (ranges.containsKey(RangeType.UNAVAILABLE)) {
@@ -173,6 +173,11 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
 
     
     private class DetailRowMapper implements YukonRowMapper<DeviceCollectionDetail> {
+        private Map<Range<Instant>, RangeType> rangeToType;
+        public DetailRowMapper(Map<RangeType, Range<Instant>> ranges){
+            rangeToType = ranges.entrySet().stream().collect(Collectors.toMap(Map.Entry::getValue, Map.Entry::getKey));
+        }
+        
         @Override
         public DeviceCollectionDetail mapRow(YukonResultSet rs) throws SQLException {
             DeviceCollectionDetail detail = new DeviceCollectionDetail();
@@ -214,13 +219,29 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
                     }
                 };
                 detail.setValue(value);
+                detail.setRange(getRangeType(new Instant(pointDataTimeStamp)));
             }
             detail.setPaoIdentifier(rs.getPaoIdentifier("PAObjectId", "Type"));
             detail.setDeviceName(rs.getString("PAOName"));
             detail.setMeterNumber(Objects.toString(rs.getString("MeterNumber"), ""));
             detail.setRoute(Objects.toString(rs.getString("Route"), ""));
             detail.setAddressSerialNumber(Objects.toString(rs.getString("SerialNumberAddress"), ""));
+            detail.setEnabled(rs.getBoolean("DisableFlag"));
             return detail;
+        }
+
+        /**
+         * Finds range type based on the point data timestamp.
+         */
+        private RangeType getRangeType(Instant pointDate) {       
+            for (Range<Instant> range : rangeToType.keySet()) {
+                boolean containsPointDate =
+                    (!pointDate.isBefore(range.getMin())) && (pointDate.isBefore(range.getMax()));
+                if (containsPointDate) {
+                    return rangeToType.get(range);
+                }
+            }
+            return null;
         }
     }
 
