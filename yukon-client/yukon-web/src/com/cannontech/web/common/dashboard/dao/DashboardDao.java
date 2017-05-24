@@ -1,6 +1,7 @@
 package com.cannontech.web.common.dashboard.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardBase;
@@ -85,5 +86,12 @@ public interface DashboardDao {
     /**
      * Retrieves all dashboards.
      */
-    List<LiteDashboard> getAllDashboards();  
+    List<LiteDashboard> getAllDashboards();
+
+    /**
+     * Retrieves map of users and all the page assignments for a specific dashboard.
+     * @param dashboardId
+     * @return
+     */
+    Map<Integer, List<DashboardPageType>> getUserIdDashboardAssignmentMap(int dashboardId);  
 }

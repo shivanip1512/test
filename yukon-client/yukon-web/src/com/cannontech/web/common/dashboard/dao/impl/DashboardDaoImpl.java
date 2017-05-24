@@ -1,9 +1,11 @@
 package com.cannontech.web.common.dashboard.dao.impl;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -306,5 +309,29 @@ public class DashboardDaoImpl implements DashboardDao {
         unassignSql.append("WHERE UserId").in(userIds);
         unassignSql.append("AND PageAssignment").eq_k(type);
         jdbcTemplate.update(unassignSql);
+    }
+    
+    @Override
+    public Map<Integer, List<DashboardPageType>> getUserIdDashboardAssignmentMap(int dashboardId) {
+        HashMap<Integer, List<DashboardPageType>> resultMap = new HashMap<>();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT UserId, PageAssignment FROM UserDashboard");
+        sql.append("WHERE dashboardId").eq(dashboardId);
+        
+        jdbcTemplate.query(sql, new RowCallbackHandler() {
+            @Override
+            public void processRow(ResultSet rs) throws SQLException {
+                Integer key = rs.getInt("UserId");
+                DashboardPageType value = DashboardPageType.valueOf(rs.getString("PageAssignment"));
+                if (resultMap.containsKey(key)){
+                    resultMap.get(key).add(value);
+                }
+                else {
+                    resultMap.put(key, Collections.singletonList(value));
+                }
+            }
+        });
+        
+        return resultMap;
     }
 }
