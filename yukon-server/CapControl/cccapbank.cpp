@@ -2190,6 +2190,24 @@ CtiCCCapBank::Heartbeat::Heartbeat()
 
 }
 
+namespace
+{
+
+template <typename T>
+T retrieveConfigValue( Cti::Config::DeviceConfigSPtr & deviceConfig, const std::string & configItemKey, const T & defaultValue )
+{
+    if ( auto value = deviceConfig->findValue<T>( configItemKey ) )
+    {
+        return *value;
+    }
+
+    CTILOG_DEBUG( dout, "Heartbeat Config error: \"" << configItemKey << "\" not found. Setting to: " << defaultValue );
+
+    return defaultValue;
+}
+
+}
+
 void CtiCCCapBank::Heartbeat::initialize( CtiCCCapBank * bank )
 {
     using Cti::Config::CbcStrings;
@@ -2200,35 +2218,10 @@ void CtiCCCapBank::Heartbeat::initialize( CtiCCCapBank * bank )
                                                                                              bank->getControlDeviceType() ) ) );
     if ( deviceConfig )
     {
-        if ( auto mode = deviceConfig->findValue<std::string>( CbcStrings::cbcHeartbeatMode ) )
-        {
-            _mode = *mode;
-        }
-        else
-        {
-            _mode = "DISABLED";
-            CTILOG_DEBUG( dout, "Heartbeat Config error: \"" << CbcStrings::cbcHeartbeatMode << "\" not found. Setting to: " << _mode );
-        }
+        _period = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatPeriod, 0L );
+        _value  = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatValue,  0L );
 
-        if ( auto period = deviceConfig->findValue<double>( CbcStrings::cbcHeartbeatPeriod ) )
-        {
-            _period = *period;
-        }
-        else
-        {
-            _period = 0;
-            CTILOG_DEBUG( dout, "Heartbeat Config error: \"" << CbcStrings::cbcHeartbeatPeriod << "\" not found. Setting to: " << _period );
-        }
-
-        if ( auto value = deviceConfig->findValue<double>( CbcStrings::cbcHeartbeatValue ) )
-        {
-            _value = *value;
-        }
-        else
-        {
-            _value = 0;
-            CTILOG_DEBUG( dout, "Heartbeat Config error: \"" << CbcStrings::cbcHeartbeatValue << "\" not found. Setting to: " << _value );
-        }
+        _mode = retrieveConfigValue<std::string>( deviceConfig, CbcStrings::cbcHeartbeatMode, "DISABLED" );
 
         static const std::map< std::string,
                                std::function< std::unique_ptr<CbcHeartbeatPolicy>() > > Lookup
@@ -2245,7 +2238,9 @@ void CtiCCCapBank::Heartbeat::initialize( CtiCCCapBank * bank )
         else
         {
             _policy = std::make_unique<NoCbcHeartbeatPolicy>();
-            CTILOG_DEBUG( dout, "Heartbeat Config error: \"" << CbcStrings::cbcHeartbeatValue << "\" not found. Setting to: " << _value );
+
+            CTILOG_DEBUG( dout, "Heartbeat Config error: Mode \"" << _mode
+                                    << "\" not valid. Disabling CBC Heartbeat on Bank: " << bank->getPaoName() );
         }
     }
 }

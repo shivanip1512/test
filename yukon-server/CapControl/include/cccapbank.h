@@ -299,7 +299,7 @@ public:
         void initialize( CtiCCCapBank * bank );
 
         bool isTimeToSend( const CtiTime & now );
-	}
+    }
     heartbeat;
 
 private:
