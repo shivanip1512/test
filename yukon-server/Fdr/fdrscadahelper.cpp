@@ -6,9 +6,6 @@
 #include "fdrdebuglevel.h"
 #include "logger.h"
 
-using std::string;
-using std::endl;
-
 static bool checkStatusType(CtiPointType_t type);
 static bool checkValueType(CtiPointType_t type);
 
@@ -71,16 +68,16 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
                                         CtiTime timestamp, CheckStatusFunc checkFunc) const
 {
     bool sentAPoint = false;
-    ReceiveMap::const_iterator destIter, destEnd;
-    destIter = receiveMap.lower_bound(id);
-    destEnd = receiveMap.upper_bound(id);
-    for (; destIter != destEnd; ++destIter)
+
+    for ( auto range = receiveMap.equal_range( id );
+          range.first != range.second;
+          ++range.first )
     {
-        const CtiFDRDestination& dest = (*destIter).second;
-        CtiFDRPointSPtr point = dest.findPointFromList( _parent->getSendToList() );
+        const CtiFDRDestination& dest = range.first->second;
+        CtiFDRPointSPtr point = dest.findPointFromList( _parent->getReceiveFromList() );
         if( point == nullptr )
         {
-            CTILOG_ERROR( dout, "Point was not found in send list: " << dest );
+            CTILOG_ERROR( dout, "Point was not found in receive list: " << dest );
             continue;
         }
 
@@ -157,13 +154,13 @@ bool CtiFDRScadaHelper<T>::handleControl(const T& id, int controlState) const
     }
 
     bool sentAControl = false;
-    ReceiveMap::const_iterator destIter, destEnd;
-    destIter = receiveMap.lower_bound(id);
-    destEnd = receiveMap.upper_bound(id);
-    for (; destIter != destEnd; ++destIter)
+
+    for ( auto range = receiveMap.equal_range( id );
+          range.first != range.second;
+          ++range.first )
     {
-        const CtiFDRDestination& dest = (*destIter).second;
-        CtiFDRPointSPtr point = dest.findPointFromList( _parent->getSendToList() );
+        const CtiFDRDestination& dest = range.first->second;
+        CtiFDRPointSPtr point = dest.findPointFromList( _parent->getReceiveFromList() );
         if( point == nullptr )
         {
             CTILOG_ERROR( dout, "Point was not found in destination list: " << dest );
@@ -256,12 +253,13 @@ template<typename T>
 void CtiFDRScadaHelper<T>::removeReceiveMapping(const T& id, const CtiFDRDestination& pointDestination)
 {
     //Remove on the iterator that matches id and pointdestination
-    ReceiveMap::iterator itr;
-    for (itr = receiveMap.equal_range(id).first; itr != receiveMap.equal_range(id).second; itr++ )
+    for ( auto range = receiveMap.equal_range( id );
+          range.first != range.second;
+          ++range.first )
     {
-        if ((*itr).second == pointDestination)
+        if ( range.first->second == pointDestination )
         {
-            receiveMap.erase(itr);
+            receiveMap.erase( range.first );
             break;
         }
     }
