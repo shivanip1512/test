@@ -6345,7 +6345,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
             reloadOperationStatsFromDatabase(capBankId, paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
                                              &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
         }
-        //_reregisterforpoints = true;
+        _reregisterforpoints = true;
     }
     catch(...)
     {
