@@ -141,7 +141,7 @@
          <div class="column three nogutter">
              <tags:nameValueContainer2><br>
                  <textarea cols="53" rows="${resultsCount * 2 + 1}" name="Results" id="results" readonly 
-                           style='color:<c:out value="${resultColor}"/>;width: 400px;max-width: 400px;word-wrap:normal;overflow-x: scroll;'>
+                           style='color:<c:out value="${resultColor}"/>;width: 400px;overflow-x: scroll;'>
                      ${MSP_RESULT_MSG}
                  </textarea>
              </tags:nameValueContainer2>

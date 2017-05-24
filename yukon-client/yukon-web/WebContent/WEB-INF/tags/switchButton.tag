@@ -26,7 +26,7 @@
                                                                  Default: 'true'." %>
 <%@ attribute name="hideValue" type="java.lang.Boolean" description="The html hidden attribute of the checkbox input." %>
 <%@ attribute name="inputClass" description="CSS class names applied to the input." %>
-<%@ attribute name="onClasses" description="CSS class names applied to the on button.Default: false." %>
+<%@ attribute name="onClasses" description="CSS class names applied to the on button." %>
 <%@ attribute name="offClasses" description="CSS class names applied to the off button." %>
 <%@ attribute name="id" description="The html id attribute of the checkbox input." %>
 
