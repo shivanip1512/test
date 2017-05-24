@@ -181,6 +181,7 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
         @Override
         public DeviceCollectionDetail mapRow(YukonResultSet rs) throws SQLException {
             DeviceCollectionDetail detail = new DeviceCollectionDetail();
+            detail.setRange(RangeType.UNAVAILABLE);
             if (rs.getString("PointType") != null) {
                 int pointId = rs.getInt("PointId");
                 Date pointDataTimeStamp = rs.getDate("Timestamp");
@@ -241,7 +242,7 @@ public class RecentPointValueDaoImpl implements RecentPointValueDao {
                     return rangeToType.get(range);
                 }
             }
-            return null;
+            return RangeType.UNAVAILABLE;
         }
     }
 
