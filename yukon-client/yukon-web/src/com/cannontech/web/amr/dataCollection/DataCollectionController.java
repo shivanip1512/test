@@ -11,8 +11,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -171,32 +169,37 @@ public class DataCollectionController {
             subGroups, includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
 
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String[] headerRow = new String[5];
+        String[] headerRow = new String[8];
 
         headerRow[0] = accessor.getMessage(DetailSortBy.deviceName);
         headerRow[1] = accessor.getMessage(DetailSortBy.meterNumber);
         headerRow[2] = accessor.getMessage(DetailSortBy.deviceType);
         headerRow[3] = accessor.getMessage(DetailSortBy.serialNumberAddress);
-        headerRow[4] = accessor.getMessage(DetailSortBy.recentReading);
+        headerRow[4] = accessor.getMessage(baseKey + "timestamp");
+        headerRow[5] = accessor.getMessage(baseKey + "value");
+        headerRow[6] = accessor.getMessage(baseKey + "units");
+        headerRow[7] = accessor.getMessage(baseKey + "quality");
+
 
         List<String[]> dataRows = Lists.newArrayList();
         for (DeviceCollectionDetail detail: details.getResultList()) {
-            String[] dataRow = new String[5];
+            String[] dataRow = new String[8];
             dataRow[0] = detail.getDeviceName();
             dataRow[1] = detail.getMeterNumber();
             dataRow[2] = detail.getPaoIdentifier().getPaoType().getPaoTypeName();
             dataRow[3] = detail.getAddressSerialNumber();
             if (detail.getValue() != null) {
-                DateTime timeStamp = new DateTime(detail.getDateTime(), userContext.getJodaTimeZone());
-                String valueString = pointFormattingService.getValueString(detail.getValue(), Format.VALUE_UNIT, userContext);
-                dataRow[4] = valueString + " " + timeStamp.toString(DateTimeFormat.mediumDateTime());
+                dataRow[4] = pointFormattingService.getValueString(detail.getValue(), Format.DATE, userContext);
+                dataRow[5] = pointFormattingService.getValueString(detail.getValue(), Format.VALUE, userContext);
+                dataRow[6] = pointFormattingService.getValueString(detail.getValue(), Format.UNIT, userContext);
+                dataRow[7] = pointFormattingService.getValueString(detail.getValue(), Format.QUALITY, userContext);
             } else {
                 dataRow[4] = accessor.getMessage(baseKey + "noRecentReadingFound");
             }
             dataRows.add(dataRow);
         }
         String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "recentReadings_" + now + ".csv");
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "recentReadings_" + group.getName() + "_" + now + ".csv");
         return null;
       }
 
