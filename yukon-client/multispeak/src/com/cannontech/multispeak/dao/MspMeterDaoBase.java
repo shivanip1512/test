@@ -134,12 +134,15 @@ public abstract class MspMeterDaoBase implements MspMeterDao {
         }
     }
 
+    @Override
     public YukonMeter getForSerialNumberOrAddress(String serialNumberOrAddress) {
         try {
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append(meterRowMapper.getSql());
-            sql.append("WHERE dcs.Address").eq(serialNumberOrAddress);
-            sql.append("OR SerialNumber").eq(serialNumberOrAddress);
+            sql.append("WHERE SerialNumber").eq(serialNumberOrAddress);
+            if (StringUtils.isNumeric(serialNumberOrAddress)) {
+                sql.append("OR dcs.Address").eq(serialNumberOrAddress);
+            }
             YukonMeter meter = jdbcTemplate.queryForObject(sql, meterRowMapper);
             return meter;
         } catch (EmptyResultDataAccessException e) {
