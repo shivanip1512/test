@@ -19,11 +19,8 @@ import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateResult;
 import com.cannontech.common.rfn.model.RfnGatewayFirmwareUpdateSummary;
 import com.cannontech.common.rfn.service.RfnGatewayFirmwareUpgradeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
-import com.cannontech.core.roleproperties.YukonRole;
-import com.cannontech.web.security.annotation.CheckRole;
 
 @Controller
-@CheckRole(YukonRole.INVENTORY)
 public class GatewayFirmwareUpdateController {
     
     @Autowired private RfnGatewayFirmwareUpgradeService firmwareUpgradeService;
