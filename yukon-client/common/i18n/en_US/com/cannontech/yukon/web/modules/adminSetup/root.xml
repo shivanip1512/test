@@ -34,7 +34,9 @@
     <entry key="yukon.web.modules.adminSetup.config.error.invalidTimeZone">Invalid TimeZone</entry>
     <entry key="yukon.web.modules.adminSetup.config.error.invalidJodaTimeZone">Invalid TimeZone. Must be exact case (e.g. America/Chicago not america/chicago)</entry>
     <entry key="yukon.web.modules.adminSetup.config.error.invalidProxy">Invalid Proxy Setting</entry>
-    <entry key="yukon.web.modules.adminSetup.config.error.invalidURL">Invalid URL </entry>
+    <entry key="yukon.web.modules.adminSetup.config.error.invalidURL">Invalid URL</entry>
+    <entry key="yukon.web.modules.adminSetup.config.error.invalidIPHostName">Invalid IP/Host Name</entry>
+    <entry key="yukon.web.modules.adminSetup.config.error.invalidEmail">Invalid Email Address</entry>
     
     <entry key="yukon.web.modules.adminSetup.config.themes.pageName">Themes</entry>
     <entry key="yukon.web.modules.adminSetup.config.themes.primaryColors">Primary Colors:</entry>
