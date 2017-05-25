@@ -86,9 +86,11 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("ServiceLocationsChangedNotification", vendor.getCompanyName());
-
-        List<ErrorObject> errorObject = multispeakMeterService.serviceLocationsChanged(vendor, changedServiceLocations);
-        return errorObject;
+        List<ErrorObject> errorObjects = Lists.newArrayList();
+        if (CollectionUtils.isNotEmpty(changedServiceLocations)) {
+            errorObjects = multispeakMeterService.serviceLocationsChanged(vendor, changedServiceLocations);
+        }
+        return errorObjects;
     }
     
    
@@ -109,8 +111,11 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersInstalledNotification", vendor.getCompanyName());
-        List<ErrorObject> errorObject = multispeakMeterService.metersInstalled(vendor, electricInstalledMeters);
-        return errorObject;
+        List<ErrorObject> errorObjects = Lists.newArrayList();
+        if (CollectionUtils.isNotEmpty(electricInstalledMeters)) {
+            errorObjects = multispeakMeterService.metersInstalled(vendor, electricInstalledMeters);
+        }
+        return errorObjects;
     }
     
     @Override
@@ -130,9 +135,11 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersChangedNotification", vendor.getCompanyName());
-        
-        List<ErrorObject> errorObject = multispeakMeterService.metersChanged(vendor, electricChangedMeters);
-        return errorObject;
+        List<ErrorObject> errorObjects = Lists.newArrayList();
+        if (CollectionUtils.isNotEmpty(electricChangedMeters)) {
+        errorObjects = multispeakMeterService.metersChanged(vendor, electricChangedMeters);
+        }
+        return errorObjects;
     }
 
     @Override
@@ -140,8 +147,11 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersExchangedNotification", vendor.getCompanyName());
-        List<ErrorObject> errorObject = multispeakMeterService.metersExchanged(vendor, exchangeMeters);
-        return errorObject;
+        List<ErrorObject> errorObjects = Lists.newArrayList();
+        if (CollectionUtils.isNotEmpty(exchangeMeters)) {
+            errorObjects = multispeakMeterService.metersExchanged(vendor, exchangeMeters);
+        }
+        return errorObjects;
     }
 
     @Override

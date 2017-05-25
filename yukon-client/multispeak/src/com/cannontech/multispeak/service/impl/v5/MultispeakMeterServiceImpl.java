@@ -41,9 +41,7 @@ import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.config.ConfigurationSource;
-import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigHelper;
-import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
@@ -54,7 +52,6 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
 import com.cannontech.common.events.loggers.MultispeakEventLogService;
@@ -63,7 +60,6 @@ import com.cannontech.common.exception.InsufficientMultiSpeakDataException;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
-import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -384,10 +380,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             String billingCycle = mspMeter.getBillingCycle();
                             updateBillingCyle(billingCycle, newMeter.getMeterNumber(), newMeter,
                                 METER_INSTALLED_STRING, mspVendor);
-                            // TODO is it necessary to make call for CB server to get the information related
-                            // to alt group
-                            updateAltGroup(mspServiceLocation, newMeter.getMeterNumber(), newMeter,
-                                METER_INSTALLED_STRING, mspVendor);
                         } else {
                             multispeakEventLogService.objectNotFoundByVendor(
                                 mspMeter.getPrimaryIdentifier().getValue(), "GetServiceLocationsByMeterIDs",
@@ -395,8 +387,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                         }
 
                         // Must complete route locate after meter is enabled
-                        verifyAndUpdateSubstationGroupAndRoute(newMeter, mspVendor, mspMeter, mspServiceLocation,
-                            METER_INSTALLED_STRING);
+                        verifyAndUpdateSubstationGroupAndRoute(newMeter, mspVendor, mspMeter, METER_INSTALLED_STRING);
                     };
                 });
             } catch (MspErrorObjectException e) {
@@ -505,10 +496,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                             electricMeterExchange.getReplacementMeter().getBillingCycle();
                                         updateBillingCyle(billingCycle, replacementMeter.getMeterNumber(),
                                             replacementMeter, METER_EXCHANGED_STRING, mspVendor);
-                                        // TODO is it necessary to make call for CB server to get the
-                                        // information related to alt group
-                                        updateAltGroup(mspServiceLocation, replacementMeter.getMeterNumber(),
-                                            replacementMeter, METER_EXCHANGED_STRING, mspVendor);
                                     } else {
                                         multispeakEventLogService.objectNotFoundByVendor(
                                             electricMeterExchange.getReplacementMeter().getPrimaryIdentifier().getValue(),
@@ -518,8 +505,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                                     // Must complete route locate after meter is enabled
                                     verifyAndUpdateSubstationGroupAndRoute(replacementMeter, mspVendor,
-                                        electricMeterExchange.getReplacementMeter(), mspServiceLocation,
-                                        METER_EXCHANGED_STRING);
+                                        electricMeterExchange.getReplacementMeter(), METER_EXCHANGED_STRING);
                                 } catch (MspErrorObjectException e) {
                                     errorObjects.add(e.getErrorObject());
                                     multispeakEventLogService.errorObject(e.getErrorObject().getDisplayString(),
@@ -593,10 +579,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                             meterToChange =
                                 updateExistingMeter(mspMeter, meterToChange, templateMeter, METER_CHANGED_STRING,
                                     mspVendor, false);
-
-                            // using null for mspServiceLocation. See comments in
-                            // getSubstationNameFromMspMeter(...)
-                            verifyAndUpdateSubstationGroupAndRoute(meterToChange, mspVendor, mspMeter, null,
+                            verifyAndUpdateSubstationGroupAndRoute(meterToChange, mspVendor, mspMeter,
                                 SERV_LOC_CHANGED_STRING);
                         } catch (NotFoundException e) {
                             multispeakEventLogService.meterNotFound(mspMeter.getPrimaryIdentifier().getValue(),
@@ -865,16 +848,14 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
      * @param mspMeter - the multispeak meter to process (if null, most likely will not change substation and
      *        routing info)
      *        - See {@link #getSubstationNameFromMspObjects(ElectricMeter, ServiceLocation, MultispeakVendor)}
-     * @param mspServiceLocation - the multispeak serviceLocation to process (will be lazy loaded if needed)
-     *        - See {@link #getSubstationNameFromMspObjects(ElectricMeter, ServiceLocation, MultispeakVendor)}
      */
     private void verifyAndUpdateSubstationGroupAndRoute(YukonMeter meterToUpdate, MultispeakVendor mspVendor,
-            ElectricMeter mspMeter, ServiceLocation mspServiceLocation, String mspMethod) {
+            ElectricMeter mspMeter, String mspMethod) {
 
         String meterNumber = meterToUpdate.getMeterNumber();
 
         // Verify substation name
-        String substationName = getSubstationNameFromMspObjects(mspMeter, mspServiceLocation, mspVendor);
+        String substationName = getSubstationNameFromMspObjects(mspMeter, mspVendor);
         // Validate, verify and update substationName
         checkAndUpdateSubstationName(substationName, meterNumber, mspMethod, mspVendor, meterToUpdate);
     }
@@ -962,13 +943,11 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                         String billingCycle = servicePoint.getBillingCycle();
                                         updateBillingCyle(billingCycle, meter.getMeterNumber(), meter,
                                             SERV_LOC_CHANGED_STRING, mspVendor);
-                                        updateAltGroup(mspServiceLocation, meter.getMeterNumber(), meter,
-                                            SERV_LOC_CHANGED_STRING, mspVendor);
 
                                         // using null for mspMeter. See comments in
                                         // getSubstationNameFromMspMeter(...)
                                         verifyAndUpdateSubstationGroupAndRoute(meter, mspVendor, null,
-                                            mspServiceLocation, SERV_LOC_CHANGED_STRING);
+                                            SERV_LOC_CHANGED_STRING);
                                     }
                                     // TODO if above both optional fields (ElectricMeterID/ElectricMeter ) are
                                     // not present in ServiceLocation then should we need to send any error
@@ -995,11 +974,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                         String billingCycle = mspMeter.getBillingCycle();
                                         updateBillingCyle(billingCycle, meter.getMeterNumber(), meter,
                                             SERV_LOC_CHANGED_STRING, mspVendor);
-                                        updateAltGroup(mspServiceLocation, meter.getMeterNumber(), meter,
-                                            SERV_LOC_CHANGED_STRING, mspVendor);
 
                                         verifyAndUpdateSubstationGroupAndRoute(meter, mspVendor, mspMeter,
-                                            mspServiceLocation, SERV_LOC_CHANGED_STRING);
+                                            SERV_LOC_CHANGED_STRING);
                                     } catch (NotFoundException e) {
                                         multispeakEventLogService.meterNotFound(
                                             mspMeter.getPrimaryIdentifier().getValue(), SERV_LOC_CHANGED_STRING,
@@ -1113,29 +1090,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             }
         }
         return null;
-    }
-
-    /**
-     * Updates an alternate device grouping.
-     * The exact parent group to update is configured by MSP_ALTGROUP_EXTENSION.
-     * This functionality was added specifically for DEMCO.
-     */
-    @Override
-    public boolean updateAltGroup(ServiceLocation mspServiceLocation, String meterNumber, YukonDevice yukonDevice,
-            String mspMethod, MultispeakVendor mspVendor) {
-        boolean updateAltGroup = configurationSource.getBoolean(MasterConfigBoolean.MSP_ENABLE_ALTGROUP_EXTENSION);
-        if (updateAltGroup) {
-            String extensionName = configurationSource.getString(MasterConfigString.MSP_ALTGROUP_EXTENSION, "altGroup");
-            String altGroup = getExtensionValue(mspServiceLocation.getExtensionsList(), extensionName, null);
-            if (!StringUtils.isBlank(altGroup)) {
-
-                // Remove from all alt group membership groups
-                DeviceGroup altGroupDeviceGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.ALTERNATE);
-                StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(altGroupDeviceGroup);
-                return updatePrefixGroup(altGroup, meterNumber, yukonDevice, mspMethod, mspVendor, deviceGroupParent);
-            }
-        }
-        return false;
     }
 
     /**
@@ -1262,62 +1216,19 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     }
 
     /**
-     * Return the substation name of a Meter. If meter is null, return empty
-     * string. If MSP_ENABLE_SUBSTATIONNAME_EXTENSION cparm is set, then attempt
-     * to return from mspMeter extensions. If mspMeter returns nothing, then
-     * call mspVendor to load the related ServiceLocation. Attempt to return
-     * from mspServiceLocation extensions. If ServiceLocation extensions return
-     * nothing, then return null. If MSP_ENABLE_SUBSTATIONNAME_EXTENSION cparm
-     * is NOT set, use normal loading from Meter object. Normal loading: If the
+     * Return the substation name of a Meter. If the
      * Meter does not contain a substation name in its utility info, return
      * null.
      * 
-     * @param ServiceLocation mspServiceLocation - will be lazy loaded (if
-     *        needed) and null passed in.
      * @return String substationName
      */
-    private String getSubstationNameFromMspObjects(ElectricMeter mspMeter, ServiceLocation mspServiceLocation,
-            MultispeakVendor mspVendor) {
-
-        boolean useExtension = configurationSource.getBoolean(MasterConfigBoolean.MSP_ENABLE_SUBSTATIONNAME_EXTENSION);
-        if (useExtension) { // custom for DEMCO/SEDC integration
-            String extensionName =
-                configurationSource.getString(MasterConfigString.MSP_SUBSTATIONNAME_EXTENSION, "readPath");
-            String extensionValue;
-
-            if (mspMeter != null) {
-                log.debug("Attempting to load extension value for substation name from multispeak _meter_.");
-                extensionValue = getExtensionValue(mspMeter.getExtensionsList(), extensionName, null);
-                if (StringUtils.isNotBlank(extensionValue)) {
-                    return extensionValue;
-                }
-
-                log.debug("Not found in meter. Attempting to load extension value for substation name from multispeak _serviceLocation_.");
-                if (mspServiceLocation == null) {
-                    log.debug("Calling CB to load ServiceLocation for Meter.");
-                    mspServiceLocation =
-                        mspObjectDao.getMspServiceLocation(mspMeter.getPrimaryIdentifier().getValue(), mspVendor);
-                }
-            }
-
-            if (mspServiceLocation != null) {
-                extensionValue = getExtensionValue(mspServiceLocation.getExtensionsList(), extensionName, null);
-                if (StringUtils.isNotBlank(extensionValue)) {
-                    return extensionValue;
-                }
-            }
-
-            log.debug("Extension value for substation name NOT found for meter or service location, returning empty substationName.");
-            return "";
-
-        } else { // Normal loading
-            if (mspMeter == null || mspMeter.getElectricLocationFields() == null
-                || mspMeter.getElectricLocationFields().getSubstationRef() == null
-                || StringUtils.isBlank(mspMeter.getElectricLocationFields().getSubstationRef().getSubstationName())) {
-                return null;
-            } else {
-                return mspMeter.getElectricLocationFields().getSubstationRef().getSubstationName();
-            }
+    private String getSubstationNameFromMspObjects(ElectricMeter mspMeter, MultispeakVendor mspVendor) {
+        if (mspMeter == null || mspMeter.getElectricLocationFields() == null
+            || mspMeter.getElectricLocationFields().getSubstationRef() == null
+            || StringUtils.isBlank(mspMeter.getElectricLocationFields().getSubstationRef().getSubstationName())) {
+            return null;
+        } else {
+            return mspMeter.getElectricLocationFields().getSubstationRef().getSubstationName();
         }
     }
 

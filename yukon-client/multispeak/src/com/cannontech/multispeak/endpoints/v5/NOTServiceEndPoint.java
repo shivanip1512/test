@@ -2,7 +2,6 @@ package com.cannontech.multispeak.endpoints.v5;
 
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
@@ -101,9 +100,7 @@ public class NOTServiceEndPoint {
             List<ElectricMeter> electricMeters =
                 (null != metersChangedNotification.getMeters().getElectricMeters())
                     ? metersChangedNotification.getMeters().getElectricMeters().getElectricMeter() : null;
-            if (CollectionUtils.isNotEmpty(electricMeters)) {
-                multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersChangedNotification(electricMeters));
-            }
+            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersChangedNotification(electricMeters));
         }
         return response;
     }
@@ -150,10 +147,7 @@ public class NOTServiceEndPoint {
                 (null == metersExchangedNotification.getMeterExchanges())
                     ? null: (null != metersExchangedNotification.getMeterExchanges().getElectricMeterExchanges())
                         ? metersExchangedNotification.getMeterExchanges().getElectricMeterExchanges().getElectricMeterExchange() : null;
-
-            if (CollectionUtils.isNotEmpty(exchangeMeters)) {
-                multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersExchangedNotification(exchangeMeters));
-            }
+            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersExchangedNotification(exchangeMeters));
         }
         return response;
     }
@@ -169,10 +163,8 @@ public class NOTServiceEndPoint {
             List<ElectricMeter> electricMeters =
                 (null != metersInstalledNotification.getMeters().getElectricMeters())
                     ? metersInstalledNotification.getMeters().getElectricMeters().getElectricMeter() : null;
-
-            if (CollectionUtils.isNotEmpty(electricMeters)) {
-                multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersInstalledNotification(electricMeters));
-            }
+                    
+            multispeakFuncs.addErrorObjectsInResponseHeader(not_server.metersInstalledNotification(electricMeters));
         }
         return response;
     }
@@ -204,9 +196,7 @@ public class NOTServiceEndPoint {
         List<ServiceLocation> serviceLocation =
             (null != serviceLocationsChangedNotification.getArrayOfServiceLocation())
                 ? serviceLocationsChangedNotification.getArrayOfServiceLocation().getServiceLocation() : null;
-        if (CollectionUtils.isNotEmpty(serviceLocation)) {
             multispeakFuncs.addErrorObjectsInResponseHeader(not_server.serviceLocationsChangedNotification(serviceLocation));
-        }
         return serviceLocationsChangedNotificationResponse;
     }
 }
