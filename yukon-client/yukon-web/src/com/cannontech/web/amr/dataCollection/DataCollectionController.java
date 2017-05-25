@@ -169,32 +169,36 @@ public class DataCollectionController {
             subGroups, includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
 
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String[] headerRow = new String[8];
+        String[] headerRow = new String[9];
 
         headerRow[0] = accessor.getMessage(DetailSortBy.deviceName);
         headerRow[1] = accessor.getMessage(DetailSortBy.meterNumber);
         headerRow[2] = accessor.getMessage(DetailSortBy.deviceType);
         headerRow[3] = accessor.getMessage(DetailSortBy.serialNumberAddress);
-        headerRow[4] = accessor.getMessage(baseKey + "timestamp");
-        headerRow[5] = accessor.getMessage(baseKey + "value");
-        headerRow[6] = accessor.getMessage(baseKey + "units");
-        headerRow[7] = accessor.getMessage(baseKey + "quality");
+        headerRow[4] = accessor.getMessage(baseKey + "category");
+        headerRow[5] = accessor.getMessage(baseKey + "timestamp");
+        headerRow[6] = accessor.getMessage(baseKey + "value");
+        headerRow[7] = accessor.getMessage(baseKey + "units");
+        headerRow[8] = accessor.getMessage(baseKey + "quality");
 
 
         List<String[]> dataRows = Lists.newArrayList();
         for (DeviceCollectionDetail detail: details.getResultList()) {
-            String[] dataRow = new String[8];
+            String[] dataRow = new String[9];
             dataRow[0] = detail.getDeviceName();
             dataRow[1] = detail.getMeterNumber();
             dataRow[2] = detail.getPaoIdentifier().getPaoType().getPaoTypeName();
             dataRow[3] = detail.getAddressSerialNumber();
+            if (detail.getRange() != null) {
+                dataRow[4] = accessor.getMessage(baseKey + "rangeType." + detail.getRange().name());
+            }
             if (detail.getValue() != null) {
-                dataRow[4] = pointFormattingService.getValueString(detail.getValue(), Format.DATE, userContext);
-                dataRow[5] = pointFormattingService.getValueString(detail.getValue(), Format.VALUE, userContext);
-                dataRow[6] = pointFormattingService.getValueString(detail.getValue(), Format.UNIT, userContext);
-                dataRow[7] = pointFormattingService.getValueString(detail.getValue(), Format.QUALITY, userContext);
+                dataRow[5] = pointFormattingService.getValueString(detail.getValue(), Format.DATE, userContext);
+                dataRow[6] = pointFormattingService.getValueString(detail.getValue(), Format.VALUE, userContext);
+                dataRow[7] = pointFormattingService.getValueString(detail.getValue(), Format.UNIT, userContext);
+                dataRow[8] = pointFormattingService.getValueString(detail.getValue(), Format.QUALITY, userContext);
             } else {
-                dataRow[4] = accessor.getMessage(baseKey + "noRecentReadingFound");
+                dataRow[5] = accessor.getMessage(baseKey + "noRecentReadingFound");
             }
             dataRows.add(dataRow);
         }

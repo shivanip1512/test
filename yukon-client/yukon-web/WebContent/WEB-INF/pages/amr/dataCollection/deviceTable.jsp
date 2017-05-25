@@ -4,7 +4,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<table class="compact-results-table row-highlighting has-actions">
+<table class="compact-results-table row-highlighting has-alerts has-actions">
+    <th></th>
     <tags:sort column="${deviceName}" />                
     <tags:sort column="${meterNumber}" />                
     <tags:sort column="${deviceType}" />                
@@ -14,6 +15,19 @@
     <c:forEach var="device" items="${detail.resultList}">
         <c:set var="deviceId" value="${device.paoIdentifier.paoId}"/>
         <tr>
+            <td style="vertical-align:middle">
+                <c:set var="circleColor" value="green-background"/>
+                <c:if test="${device.range eq 'EXPECTED'}">
+                    <c:set var="circleColor" value="yellow-background"/>
+                </c:if>
+                <c:if test="${device.range eq 'OUTDATED'}">
+                    <c:set var="circleColor" value="orange-background"/>
+                </c:if>
+                <c:if test="${device.range eq 'UNAVAILABLE'}">
+                    <c:set var="circleColor" value="green-background"/>
+                </c:if>
+                <div class="small-circle ${circleColor}"></div>
+            </td>
             <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${device.deviceName}</cti:paoDetailUrl></td>
             <td>${device.meterNumber}</td>
             <td>${device.paoIdentifier.paoType.paoTypeName}</td>

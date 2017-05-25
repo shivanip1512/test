@@ -32,6 +32,7 @@
     <entry key="yukon.web.modules.amr.dataCollection.detail.value">Value</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.units">Units</entry>
     <entry key="yukon.web.modules.amr.dataCollection.detail.quality">Quality</entry>
+    <entry key="yukon.web.modules.amr.dataCollection.detail.category">Category</entry>
     
     
 </properties>
