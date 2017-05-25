@@ -29,13 +29,16 @@ import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.rfn.service.RfnGatewayCertificateUpdateService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.google.common.collect.Lists;
 
 @Controller
+@CheckRole(YukonRole.DEVICE_MANAGEMENT)
 public class GatewayCertificateController {
     
     private static final String baseKey = "yukon.web.modules.operator.gateways.";
