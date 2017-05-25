@@ -1,9 +1,7 @@
 package com.cannontech.web.common.dashboard.service.impl;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -19,6 +17,7 @@ import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.model.Visibility;
 import com.cannontech.web.common.dashboard.service.DashboardService;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
 public class DashboardServiceImpl implements DashboardService {
@@ -103,13 +102,11 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     @Transactional
     public int update(Dashboard dashboard) {
-        Map<Integer, List<DashboardPageType>> userPageMap = dashboardDao.getUserIdDashboardAssignmentMap(dashboard.getDashboardId());
+        ListMultimap<DashboardPageType, Integer> userPageMap = dashboardDao.getPageAssignmentToUserIdMap(dashboard.getDashboardId());
         dashboardDao.deleteDashboard(dashboard.getDashboardId());
         int dashboardId = create(dashboard);
-        for (Integer userId : userPageMap.keySet()) {
-            for (DashboardPageType type : userPageMap.get(userId)) {
-                dashboardDao.assignDashboard(Collections.singleton(userId), type, dashboardId);
-            }
+        for (DashboardPageType type : userPageMap.keySet()) {
+            dashboardDao.assignDashboard(userPageMap.get(type), type, dashboardId);
         }
         return dashboardId;
     }

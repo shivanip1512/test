@@ -1,7 +1,6 @@
 package com.cannontech.web.common.dashboard.dao;
 
 import java.util.List;
-import java.util.Map;
 
 import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardBase;
@@ -9,6 +8,7 @@ import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.model.Visibility;
 import com.cannontech.web.common.dashboard.model.Widget;
+import com.google.common.collect.ListMultimap;
 
 /**
  * Dao for saving and retrieving information about dashboards and widgets.
@@ -93,5 +93,5 @@ public interface DashboardDao {
      * @param dashboardId
      * @return
      */
-    Map<Integer, List<DashboardPageType>> getUserIdDashboardAssignmentMap(int dashboardId);  
+    ListMultimap<DashboardPageType, Integer> getPageAssignmentToUserIdMap(int dashboardId);  
 }

@@ -5,7 +5,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +32,8 @@ import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.LiteDashboard;
 import com.cannontech.web.common.dashboard.model.Visibility;
 import com.cannontech.web.common.dashboard.model.Widget;
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
 
 public class DashboardDaoImpl implements DashboardDao {
@@ -312,8 +313,8 @@ public class DashboardDaoImpl implements DashboardDao {
     }
     
     @Override
-    public Map<Integer, List<DashboardPageType>> getUserIdDashboardAssignmentMap(int dashboardId) {
-        HashMap<Integer, List<DashboardPageType>> resultMap = new HashMap<>();
+    public ListMultimap<DashboardPageType, Integer> getPageAssignmentToUserIdMap(int dashboardId) {
+        ListMultimap<DashboardPageType, Integer> resultMap = ArrayListMultimap.create();
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT UserId, PageAssignment FROM UserDashboard");
         sql.append("WHERE dashboardId").eq(dashboardId);
@@ -321,14 +322,9 @@ public class DashboardDaoImpl implements DashboardDao {
         jdbcTemplate.query(sql, new RowCallbackHandler() {
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-                Integer key = rs.getInt("UserId");
-                DashboardPageType value = DashboardPageType.valueOf(rs.getString("PageAssignment"));
-                if (resultMap.containsKey(key)){
-                    resultMap.get(key).add(value);
-                }
-                else {
-                    resultMap.put(key, Collections.singletonList(value));
-                }
+                Integer userId = rs.getInt("UserId");
+                DashboardPageType type = DashboardPageType.valueOf(rs.getString("PageAssignment"));
+                resultMap.put(type, userId);
             }
         });
         
