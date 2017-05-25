@@ -717,7 +717,7 @@ public class MspAccountInformationV5 implements MspAccountInformation {
                     add("Gas Internal Pipe Diameter",
                         gasServicePoint.getGasMeter().getGasNameplate().getInternalPipeDiameter().value(), true, info,
                         userContext);
-                    add("Gas Temprature Compensation Type",
+                    add("Gas Temperature Compensation Type",
                         gasServicePoint.getGasMeter().getGasNameplate().getTemperatureCompensationType().value(), true, info,
                         userContext);
                     add("Gas Pressure Compensation Type",
