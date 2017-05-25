@@ -25,13 +25,13 @@ public class MultispeakCustomerInfoServiceImpl implements MultispeakCustomerInfo
             phoneNumbersList = Lists.newArrayList();
             for (PhoneNumber p : phoneNumbers.getPhoneNumber()) {
                 StringBuffer fullPhone = new StringBuffer();
+                if (p.getPhoneType() != null && p.getPhoneType() != null) {
+                    fullPhone.append(p.getPhoneType().getValue());
+                    fullPhone.append(":" + StringUtils.SPACE);
+                }
                 if (p.getPhone() != null) {
                     fullPhone.append(phoneNumberFormattingService.formatPhone(p.getPhone().getAreaCode(),
                         p.getPhone().getLocalNumber()));
-                }
-                if (p.getPhoneType() != null && p.getPhoneType() != null) {
-                    fullPhone.append(StringUtils.SPACE);
-                    fullPhone.append(p.getPhoneType().getValue());
                 }
                 if (!StringUtils.isBlank(fullPhone)) {
                     phoneNumbersList.add(fullPhone.toString());
@@ -50,11 +50,11 @@ public class MultispeakCustomerInfoServiceImpl implements MultispeakCustomerInfo
             for (EMailAddress e : emailAddresses.getEMailAddress()) {
                 StringBuffer fullEmail = new StringBuffer();
                 if (e.getEMail() != null) {
-                    fullEmail.append(e.getEMail());
                     if (e.getEMailType() != null) {
-                        fullEmail.append(StringUtils.SPACE);
                         fullEmail.append(e.getEMailType().getValue());
+                        fullEmail.append(":" + StringUtils.SPACE);
                     }
+                    fullEmail.append(e.getEMail());
                 }
                 if (!StringUtils.isBlank(fullEmail)) {
                     emails.add(fullEmail.toString());
