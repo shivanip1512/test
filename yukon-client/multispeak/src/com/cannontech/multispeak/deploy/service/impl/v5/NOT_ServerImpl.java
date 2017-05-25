@@ -3,7 +3,7 @@ package com.cannontech.multispeak.deploy.service.impl.v5;
 import java.util.Arrays;
 import java.util.List;
 
-import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -66,8 +66,7 @@ public class NOT_ServerImpl implements NOT_Server {
         // - stop logging this, it's occurring every minute or more
 
         List<ErrorObject> errorObjects = Lists.newArrayList();
-        if (CollectionUtils.isNotEmpty(scadaAnalogs)) {
-            for (SCADAAnalog scadaAnalog : scadaAnalogs) {
+            for (SCADAAnalog scadaAnalog : ListUtils.emptyIfNull(scadaAnalogs)) {
                 ErrorObject errorObject = mspValidationService.isValidScadaAnalog(scadaAnalog);
                 if (errorObject == null) {
                     errorObject = multispeakLMService.writeAnalogPointData(scadaAnalog, user);
@@ -75,7 +74,6 @@ public class NOT_ServerImpl implements NOT_Server {
                 if (errorObject != null) {
                     errorObjects.add(errorObject);
                 }
-            }
         }
         return errorObjects;
     }
@@ -86,10 +84,8 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("ServiceLocationsChangedNotification", vendor.getCompanyName());
-        List<ErrorObject> errorObjects = Lists.newArrayList();
-        if (CollectionUtils.isNotEmpty(changedServiceLocations)) {
-            errorObjects = multispeakMeterService.serviceLocationsChanged(vendor, changedServiceLocations);
-        }
+        List<ErrorObject> errorObjects =
+            multispeakMeterService.serviceLocationsChanged(vendor, ListUtils.emptyIfNull(changedServiceLocations));
         return errorObjects;
     }
     
@@ -99,10 +95,8 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersCreatedNotification", vendor.getCompanyName());
-        List<ErrorObject> errorObjects = Lists.newArrayList();
-        if (CollectionUtils.isNotEmpty(electricCreatedMeters)) {
-            errorObjects = multispeakMeterService.metersCreated(vendor, electricCreatedMeters);
-        }
+        List<ErrorObject> errorObjects =
+            multispeakMeterService.metersCreated(vendor, ListUtils.emptyIfNull(electricCreatedMeters));
         return errorObjects;
     }
  
@@ -111,10 +105,8 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersInstalledNotification", vendor.getCompanyName());
-        List<ErrorObject> errorObjects = Lists.newArrayList();
-        if (CollectionUtils.isNotEmpty(electricInstalledMeters)) {
-            errorObjects = multispeakMeterService.metersInstalled(vendor, electricInstalledMeters);
-        }
+        List<ErrorObject> errorObjects =
+            multispeakMeterService.metersInstalled(vendor, ListUtils.emptyIfNull(electricInstalledMeters));
         return errorObjects;
     }
     
@@ -123,10 +115,8 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersUninstalledNotification", vendor.getCompanyName());
-        List<ErrorObject> errorObjects = Lists.newArrayList();
-        if (CollectionUtils.isNotEmpty(electricUninstalledMeters)) {
-            errorObjects = multispeakMeterService.metersUninstalled(vendor, electricUninstalledMeters);
-        }
+        List<ErrorObject> errorObjects =
+            multispeakMeterService.metersUninstalled(vendor, ListUtils.emptyIfNull(electricUninstalledMeters));
         return errorObjects;
     }
 
@@ -135,10 +125,8 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersChangedNotification", vendor.getCompanyName());
-        List<ErrorObject> errorObjects = Lists.newArrayList();
-        if (CollectionUtils.isNotEmpty(electricChangedMeters)) {
-        errorObjects = multispeakMeterService.metersChanged(vendor, electricChangedMeters);
-        }
+        List<ErrorObject> errorObjects =
+            multispeakMeterService.metersChanged(vendor, ListUtils.emptyIfNull(electricChangedMeters));
         return errorObjects;
     }
 
@@ -147,10 +135,8 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersExchangedNotification", vendor.getCompanyName());
-        List<ErrorObject> errorObjects = Lists.newArrayList();
-        if (CollectionUtils.isNotEmpty(exchangeMeters)) {
-            errorObjects = multispeakMeterService.metersExchanged(vendor, exchangeMeters);
-        }
+        List<ErrorObject> errorObjects =
+            multispeakMeterService.metersExchanged(vendor, ListUtils.emptyIfNull(exchangeMeters));
         return errorObjects;
     }
 
@@ -160,10 +146,8 @@ public class NOT_ServerImpl implements NOT_Server {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         multispeakEventLogService.methodInvoked("MetersDeletedNotification", vendor.getCompanyName());
-        List<ErrorObject> errorObjects = Lists.newArrayList();
-        if (CollectionUtils.isNotEmpty(electricMeters)) {
-            errorObjects = multispeakMeterService.metersDeleted(vendor, electricMeters);
-        }
+        List<ErrorObject> errorObjects =
+            multispeakMeterService.metersDeleted(vendor, ListUtils.emptyIfNull(electricMeters));
         return errorObjects;
     }
 

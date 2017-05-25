@@ -368,24 +368,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                         removeFromGroup(newMeter, SystemGroupEnum.INVENTORY, METER_INSTALLED_STRING, mspVendor);
 
-                        // TODO Consider moving this stuff out of this transaction....requesting
-                        // serviceLocaiton could fail and shouldn't roll back the rest of this.
-                        ServiceLocation mspServiceLocation =
-                            mspObjectDao.getMspServiceLocation(mspMeter.getPrimaryIdentifier().getValue(), mspVendor);
-
-                        // update the billing group from CIS billingCyle
-                        if (mspServiceLocation != null) {
-                            // TODO we are getting billingCycle from ElectricMeter instead of
-                            // serviceLocation.Is it correct way to get this information.
-                            String billingCycle = mspMeter.getBillingCycle();
-                            updateBillingCyle(billingCycle, newMeter.getMeterNumber(), newMeter,
-                                METER_INSTALLED_STRING, mspVendor);
-                        } else {
-                            multispeakEventLogService.objectNotFoundByVendor(
-                                mspMeter.getPrimaryIdentifier().getValue(), "GetServiceLocationsByMeterIDs",
-                                METER_INSTALLED_STRING, mspVendor.getCompanyName());
-                        }
-
+                        String billingCycle = mspMeter.getBillingCycle();
+                        updateBillingCyle(billingCycle, newMeter.getMeterNumber(), newMeter, METER_INSTALLED_STRING,
+                            mspVendor);
                         // Must complete route locate after meter is enabled
                         verifyAndUpdateSubstationGroupAndRoute(newMeter, mspVendor, mspMeter, METER_INSTALLED_STRING);
                     };
@@ -481,28 +466,9 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                                             existingMeter, METER_EXCHANGED_STRING, mspVendor.getCompanyName());
                                     }
 
-                                    // TODO Consider moving this stuff out of this transaction....requesting
-                                    // serviceLocaiton could fail and shouldn't roll back the rest of this.
-                                    ServiceLocation mspServiceLocation =
-                                        mspObjectDao.getMspServiceLocation(
-                                            electricMeterExchange.getReplacementMeter().getPrimaryIdentifier().getValue(),
-                                            mspVendor);
-
-                                    // update the billing group from CIS billingCyle
-                                    if (mspServiceLocation != null) {
-                                        // TODO we are getting billingCycle from ElectricMeter instead of
-                                        // serviceLocation.Is it correct way to get this information.
-                                        String billingCycle =
-                                            electricMeterExchange.getReplacementMeter().getBillingCycle();
-                                        updateBillingCyle(billingCycle, replacementMeter.getMeterNumber(),
-                                            replacementMeter, METER_EXCHANGED_STRING, mspVendor);
-                                    } else {
-                                        multispeakEventLogService.objectNotFoundByVendor(
-                                            electricMeterExchange.getReplacementMeter().getPrimaryIdentifier().getValue(),
-                                            "GetServiceLocationsByMeterIDs", METER_EXCHANGED_STRING,
-                                            mspVendor.getCompanyName());
-                                    }
-
+                                    String billingCycle = electricMeterExchange.getReplacementMeter().getBillingCycle();
+                                    updateBillingCyle(billingCycle, replacementMeter.getMeterNumber(),
+                                        replacementMeter, METER_EXCHANGED_STRING, mspVendor);
                                     // Must complete route locate after meter is enabled
                                     verifyAndUpdateSubstationGroupAndRoute(replacementMeter, mspVendor,
                                         electricMeterExchange.getReplacementMeter(), METER_EXCHANGED_STRING);
