@@ -92,7 +92,7 @@ public class DataCollectionController {
     @RequestMapping("detail")
     public String detail(ModelMap model, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges, YukonUserContext userContext,
                          @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
-                         @DefaultItemsPerPage(value=50) PagingParameters paging) throws Exception {
+                         @DefaultItemsPerPage(value=250) PagingParameters paging) throws Exception {
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);
         DataCollectionSummary summary = dataCollectionWidgetService.getDataCollectionSummary(group, includeDisabled);
         model.addAttribute("summary", summary);
@@ -153,7 +153,7 @@ public class DataCollectionController {
     @RequestMapping("download")
     public String download(YukonUserContext userContext, String deviceGroup, String[] deviceSubGroups, Boolean includeDisabled, RangeType[] ranges, 
                           @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
-                          @DefaultItemsPerPage(value=50) PagingParameters paging,
+                          @DefaultItemsPerPage(value=250) PagingParameters paging,
                           HttpServletResponse response) throws IOException {
         paging = PagingParameters.EVERYTHING;
         DeviceGroup group = deviceGroupService.resolveGroupName(deviceGroup);

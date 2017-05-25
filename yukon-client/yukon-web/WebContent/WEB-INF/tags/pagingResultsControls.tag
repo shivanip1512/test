@@ -24,12 +24,14 @@
                 <c:if test="${!thousands}">
                     <tags:itemsPerPage result="${result}" itemsPerPage="10"/>&nbsp;
                     <tags:itemsPerPage result="${result}" itemsPerPage="25"/>&nbsp;
-                </c:if>
-                <tags:itemsPerPage result="${result}" itemsPerPage="50"/>&nbsp;
-                <c:if test="${hundreds || thousands}">
-                    <tags:itemsPerPage result="${result}" itemsPerPage="100"/>&nbsp;
+                    <tags:itemsPerPage result="${result}" itemsPerPage="50"/>&nbsp;
+                    <c:if test="${hundreds}">
+                        <tags:itemsPerPage result="${result}" itemsPerPage="100"/>&nbsp;
+                    </c:if>
                 </c:if>
                 <c:if test="${thousands}">
+                    <tags:itemsPerPage result="${result}" itemsPerPage="250"/>&nbsp;
+                    <tags:itemsPerPage result="${result}" itemsPerPage="500"/>&nbsp;
                     <tags:itemsPerPage result="${result}" itemsPerPage="1000"/>&nbsp;
                 </c:if>
             </span>

@@ -49,6 +49,7 @@
 @orange: #ec971f;
 @yellow: #fff77d;
 @yellow-button: #ebde1f;
+@grey: #888;
 
 @border-radius: 2px;
 @form-control-height: 26px;
@@ -981,8 +982,8 @@ ol.error{ list-style-type: none; }
 .grey, 
 .disabled, 
 .disabled a { 
-    color:#888 !important; 
-    cursor:default;
+    color: @grey !important; 
+    cursor: default;
 }
 
 .disabled, 
@@ -991,6 +992,13 @@ ol.error{ list-style-type: none; }
 .disabled a:hover { text-decoration: none; }
 
 .setting .detail > span { color: @font-color; }
+
+/* CIRCLES */
+.small-circle { border-radius: 50%; width: 12px; height: 12px; }
+.green-background { background: @green; }
+.yellow-background { background: @yellow; }
+.orange-background { background: @orange; }
+.grey-background { background: @grey; }
 
 /* FLASH SCOPES */
 .page-help, 
