@@ -24,7 +24,7 @@
                     <c:set var="circleColor" value="orange-background"/>
                 </c:if>
                 <c:if test="${device.range eq 'UNAVAILABLE'}">
-                    <c:set var="circleColor" value="green-background"/>
+                    <c:set var="circleColor" value="grey-background"/>
                 </c:if>
                 <div class="small-circle ${circleColor}"></div>
             </td>
