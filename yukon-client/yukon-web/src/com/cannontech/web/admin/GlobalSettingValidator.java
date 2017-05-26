@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.routines.EmailValidator;
-import org.apache.commons.validator.routines.InetAddressValidator;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.joda.time.DateTimeZone;
 import org.springframework.validation.Errors;
@@ -25,6 +24,42 @@ import com.cannontech.web.admin.YukonConfigurationController.GlobalSettingsEdito
 public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditorBean> {
     private static Map<GlobalSettingType, TypeValidator> validators =  new HashMap<>();
     private static String baseKey = "yukon.web.modules.adminSetup.config.error.";
+
+    private static TypeValidator urlValidator = new TypeValidator() {
+        private final String[] schemes = { "http", "https" };
+
+        @Override
+        public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
+            String url = (String) value;
+
+            UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
+            if (!urlValidator.isValid(url)) {
+                errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidURL");
+            }
+        }
+    };
+
+    private static TypeValidator emailValidator = new TypeValidator() {
+        @Override
+        public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
+            boolean emailValid = EmailValidator.getInstance().isValid(value.toString());
+            if (!emailValid) {
+                errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidEmail");
+            }
+
+        }
+    };
+
+    private static TypeValidator ipHostNameValidator = new TypeValidator() {
+        @Override
+        public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
+            try {
+                InetAddress.getByName(value.toString());
+            } catch (UnknownHostException e) {
+                errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidIPHostName");
+            }
+        }
+    };    
 
     // To add validation for a field, add the TypeValidator to validators map
     static {
@@ -60,18 +95,18 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
             }
         });
 
-        validators.put(GlobalSettingType.ECOBEE_SERVER_URL, getURLValidator());
-        validators.put(GlobalSettingType.HONEYWELL_SERVER_URL, getURLValidator());
-        validators.put(GlobalSettingType.NETWORK_MANAGER_ADDRESS, getURLValidator());
-        validators.put(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER, getURLValidator());
+        validators.put(GlobalSettingType.ECOBEE_SERVER_URL, urlValidator);
+        validators.put(GlobalSettingType.HONEYWELL_SERVER_URL, urlValidator);
+        validators.put(GlobalSettingType.NETWORK_MANAGER_ADDRESS, urlValidator);
+        validators.put(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER, urlValidator);
 
-        validators.put(GlobalSettingType.JMS_BROKER_HOST, getIPHostNameValidator());
-        validators.put(GlobalSettingType.SERVER_ADDRESS, getIPHostNameValidator());
-        validators.put(GlobalSettingType.LDAP_SERVER_ADDRESS, getIPHostNameValidator());
-        validators.put(GlobalSettingType.AD_SERVER_ADDRESS, getIPHostNameValidator());
+        validators.put(GlobalSettingType.JMS_BROKER_HOST, ipHostNameValidator);
+        validators.put(GlobalSettingType.SERVER_ADDRESS, ipHostNameValidator);
+        validators.put(GlobalSettingType.LDAP_SERVER_ADDRESS, ipHostNameValidator);
+        validators.put(GlobalSettingType.AD_SERVER_ADDRESS, ipHostNameValidator);
 
-        validators.put(GlobalSettingType.CONTACT_EMAIL, getEmailValidator());
-        validators.put(GlobalSettingType.MAIL_FROM_ADDRESS, getEmailValidator());
+        validators.put(GlobalSettingType.CONTACT_EMAIL, emailValidator);
+        validators.put(GlobalSettingType.MAIL_FROM_ADDRESS, emailValidator);
     }
 
     public GlobalSettingValidator() {
@@ -90,52 +125,6 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
                 validators.get(globalSettingType).validate(values.get(globalSettingType), errors, globalSettingType);
             }
         }
-    }
-    
-    
-    private static TypeValidator getURLValidator() {
-        return new TypeValidator() {
-            private final String[] schemes = { "http", "https" };
-
-            @Override
-            public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
-                String url = (String) value;
-
-                UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
-                if (!urlValidator.isValid(url)) {
-                    errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidURL");
-                }
-            }
-        };
-    }
-
-    private static TypeValidator getEmailValidator() {
-        return new TypeValidator() {
-            @Override
-            public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
-                boolean emailValid = EmailValidator.getInstance().isValid(value.toString());
-                if (!emailValid) {
-                    errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidEmail");
-                }
-
-            }
-        };
-    }
-
-    private static TypeValidator getIPHostNameValidator() {
-        return new TypeValidator() {
-            @Override
-            public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
-                boolean ipValid = InetAddressValidator.getInstance().isValid(value.toString());
-                if (!ipValid) {
-                    try {
-                        InetAddress.getByName(value.toString());
-                    } catch (UnknownHostException e) {
-                        errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidIPHostName");
-                    }
-                }
-            }
-        };
     }
 
     interface TypeValidator {
