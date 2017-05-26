@@ -413,7 +413,7 @@
                             </td>
                             <c:if test="${capbank.overrideFeederLimitsSupported}">
                                 <td>
-                                    <tags:switchButton path="ccMonitorBankList[${idx}].overrideStrategySettings" offNameKey=".no.label" onNameKey=".yes.label" toggleGroup="overrideFeederLimits_${idx}" toggleAction="readonly"/>
+                                    <tags:switchButton path="ccMonitorBankList[${idx}].overrideStrategySettings" offNameKey=".no.label" onNameKey=".yes.label" toggleGroup="overrideFeederLimits_${idx}" toggleAction="invisible"/>
                                 </td>
         
                                 <td style="max-width:150px;" class="db wrbw wsn">
