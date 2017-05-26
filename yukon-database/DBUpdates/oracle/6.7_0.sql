@@ -728,6 +728,50 @@ ALTER TABLE RecentPointValue
 DROP TABLE UserSystemMetric;
 /* End YUK-16660 */
 
+/* Start YUK-16540 */
+CREATE TABLE ControlEvent  (
+   ControlEventId       NUMBER                          NOT NULL,
+   StartTime            DATE                            NOT NULL,
+   ScheduledStopTime    DATE                            NOT NULL,
+   GroupId              NUMBER                          NOT NULL,
+   LMControlHistoryId   NUMBER,
+   CONSTRAINT PK_ControlEvent PRIMARY KEY (ControlEventId)
+);
+
+ALTER TABLE ControlEvent
+   ADD CONSTRAINT FK_ContEvent_LMGroup FOREIGN KEY (GroupId)
+      REFERENCES LMGroup (DeviceID)
+      ON DELETE CASCADE;
+
+ALTER TABLE ControlEvent
+   ADD CONSTRAINT FK_ContEvent_LMContHist FOREIGN KEY (LMControlHistoryId)
+      REFERENCES LMControlHistory (LMCtrlHistID);
+
+CREATE TABLE ControlEventDevice  (
+   DeviceId             NUMBER                          NOT NULL,
+   ControlEventId       NUMBER                          NOT NULL,
+   OptOutEventId        NUMBER,
+   Result               VARCHAR2(30)                    NOT NULL,
+   DeviceReceivedTime   DATE,
+   CONSTRAINT PK_ControlEventDevice PRIMARY KEY (DeviceId, ControlEventId)
+);
+
+ALTER TABLE ControlEventDevice
+   ADD CONSTRAINT FK_ContEventDev_YukonPAObject FOREIGN KEY (DeviceId)
+      REFERENCES YukonPAObject (PAObjectID)
+      ON DELETE CASCADE;
+
+ALTER TABLE ControlEventDevice
+   ADD CONSTRAINT FK_ContEventDev_ContEvent FOREIGN KEY (ControlEventId)
+      REFERENCES ControlEvent (ControlEventId)
+      ON DELETE CASCADE;
+
+ALTER TABLE ControlEventDevice
+   ADD CONSTRAINT FK_ContEventDev_OptOutEvent FOREIGN KEY (OptOutEventId)
+      REFERENCES OptOutEvent (OptOutEventId)
+      ON DELETE CASCADE;
+/* End YUK-16540 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

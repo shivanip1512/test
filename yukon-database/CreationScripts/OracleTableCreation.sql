@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/18/2017 12:29:37 AM                        */
+/* Created on:     5/26/2017 4:26:04 AM                         */
 /*==============================================================*/
 
 
@@ -1877,6 +1877,30 @@ create index Indx_CntNotif_CntId on ContactNotification (
 /*==============================================================*/
 create index Indx_ContNot_Not on ContactNotification (
    Notification ASC
+);
+
+/*==============================================================*/
+/* Table: ControlEvent                                          */
+/*==============================================================*/
+create table ControlEvent  (
+   ControlEventId       NUMBER                          not null,
+   StartTime            DATE                            not null,
+   ScheduledStopTime    DATE                            not null,
+   GroupId              NUMBER                          not null,
+   LMControlHistoryId   NUMBER,
+   constraint PK_ControlEvent primary key (ControlEventId)
+);
+
+/*==============================================================*/
+/* Table: ControlEventDevice                                    */
+/*==============================================================*/
+create table ControlEventDevice  (
+   DeviceId             NUMBER                          not null,
+   ControlEventId       NUMBER                          not null,
+   OptOutEventId        NUMBER,
+   Result               VARCHAR2(30)                    not null,
+   DeviceReceivedTime   DATE,
+   constraint PK_ControlEventDevice primary key (DeviceId, ControlEventId)
 );
 
 /*==============================================================*/
@@ -11261,6 +11285,30 @@ alter table ContactNotifGroupMap
 alter table ContactNotification
    add constraint FK_Cnt_CntNot foreign key (ContactID)
       references Contact (ContactID);
+
+alter table ControlEvent
+   add constraint FK_ContEvent_LMContHist foreign key (LMControlHistoryId)
+      references LMControlHistory (LMCtrlHistID);
+
+alter table ControlEvent
+   add constraint FK_ContEvent_LMGroup foreign key (GroupId)
+      references LMGroup (DeviceID)
+      on delete cascade;
+
+alter table ControlEventDevice
+   add constraint FK_ContEventDev_ContEvent foreign key (ControlEventId)
+      references ControlEvent (ControlEventId)
+      on delete cascade;
+
+alter table ControlEventDevice
+   add constraint FK_ContEventDev_OptOutEvent foreign key (OptOutEventId)
+      references OptOutEvent (OptOutEventId)
+      on delete cascade;
+
+alter table ControlEventDevice
+   add constraint FK_ContEventDev_YukonPAObject foreign key (DeviceId)
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table Customer
    add constraint FK_Cst_Cnt foreign key (PrimaryContactID)

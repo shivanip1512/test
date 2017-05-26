@@ -734,6 +734,56 @@ DROP TABLE UserSystemMetric
 GO
 /* End YUK-16660 */
 
+/* Start YUK-16540 */
+CREATE TABLE ControlEvent (
+   ControlEventId       NUMERIC              NOT NULL,
+   StartTime            DATETIME             NOT NULL,
+   ScheduledStopTime    DATETIME             NOT NULL,
+   GroupId              NUMERIC              NOT NULL,
+   LMControlHistoryId   NUMERIC              NULL,
+   CONSTRAINT PK_ControlEvent PRIMARY KEY (ControlEventId)
+);
+
+ALTER TABLE ControlEvent
+   ADD CONSTRAINT FK_ContEvent_LMContHist FOREIGN KEY (LMControlHistoryId)
+      REFERENCES LMControlHistory (LMCtrlHistID);
+
+
+ALTER TABLE ControlEvent
+   ADD CONSTRAINT FK_ContEvent_LMGroup FOREIGN KEY (GroupId)
+      REFERENCES LMGroup (DeviceID)
+         ON DELETE CASCADE;
+
+GO
+
+CREATE TABLE ControlEventDevice (
+   DeviceId             NUMERIC              NOT NULL,
+   ControlEventId       NUMERIC              NOT NULL,
+   OptOutEventId        NUMERIC              NULL,
+   Result               VARCHAR(30)          NOT NULL,
+   DeviceReceivedTime   DATETIME             NULL,
+   CONSTRAINT PK_ControlEventDevice PRIMARY KEY (DeviceId, ControlEventId)
+);
+
+ALTER TABLE ControlEventDevice
+   ADD CONSTRAINT FK_ContEventDev_ContEvent FOREIGN KEY (ControlEventId)
+      REFERENCES ControlEvent (ControlEventId)
+         ON DELETE CASCADE;
+
+ALTER TABLE ControlEventDevice
+   ADD CONSTRAINT FK_ContEventDev_OptOutEvent FOREIGN KEY (OptOutEventId)
+      REFERENCES OptOutEvent (OptOutEventId)
+         ON DELETE CASCADE;
+
+ALTER TABLE ControlEventDevice
+   ADD CONSTRAINT FK_ContEventDev_YukonPAObject FOREIGN KEY (DeviceId)
+      REFERENCES YukonPAObject (PAObjectID)
+         ON DELETE CASCADE;
+
+GO
+/* End YUK-16540 */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

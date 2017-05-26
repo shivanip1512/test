@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     5/18/2017 12:33:44 AM                        */
+/* Created on:     5/26/2017 4:23:47 AM                         */
 /*==============================================================*/
 
 
@@ -2004,6 +2004,32 @@ go
 /*==============================================================*/
 create index Indx_ContNot_Not on ContactNotification (
 Notification ASC
+)
+go
+
+/*==============================================================*/
+/* Table: ControlEvent                                          */
+/*==============================================================*/
+create table ControlEvent (
+   ControlEventId       numeric              not null,
+   StartTime            datetime             not null,
+   ScheduledStopTime    datetime             not null,
+   GroupId              numeric              not null,
+   LMControlHistoryId   numeric              null,
+   constraint PK_ControlEvent primary key (ControlEventId)
+)
+go
+
+/*==============================================================*/
+/* Table: ControlEventDevice                                    */
+/*==============================================================*/
+create table ControlEventDevice (
+   DeviceId             numeric              not null,
+   ControlEventId       numeric              not null,
+   OptOutEventId        numeric              null,
+   Result               varchar(30)          not null,
+   DeviceReceivedTime   datetime             null,
+   constraint PK_ControlEventDevice primary key (DeviceId, ControlEventId)
 )
 go
 
@@ -12021,6 +12047,35 @@ go
 alter table ContactNotification
    add constraint FK_Cnt_CntNot foreign key (ContactID)
       references Contact (ContactID)
+go
+
+alter table ControlEvent
+   add constraint FK_ContEvent_LMContHist foreign key (LMControlHistoryId)
+      references LMControlHistory (LMCtrlHistID)
+go
+
+alter table ControlEvent
+   add constraint FK_ContEvent_LMGroup foreign key (GroupId)
+      references LMGroup (DeviceID)
+         on delete cascade
+go
+
+alter table ControlEventDevice
+   add constraint FK_ContEventDev_ContEvent foreign key (ControlEventId)
+      references ControlEvent (ControlEventId)
+         on delete cascade
+go
+
+alter table ControlEventDevice
+   add constraint FK_ContEventDev_OptOutEvent foreign key (OptOutEventId)
+      references OptOutEvent (OptOutEventId)
+         on delete cascade
+go
+
+alter table ControlEventDevice
+   add constraint FK_ContEventDev_YukonPAObject foreign key (DeviceId)
+      references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table Customer
