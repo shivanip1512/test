@@ -30,7 +30,14 @@
                         <td>${result.meter.paoIdentifier.paoType.paoTypeName}</td>
                         <td>${result.meter.rfnIdentifier.sensorSerialNumber}</td>
                         <td>
-                            <a href="${gatewayUrl}">${fn:escapeXml(result.gateway.name)}</a>
+                            <c:choose>
+                                <c:when test="${result.gateway == null}">
+                                    <i:inline key="yukon.common.na" />
+                                </c:when>
+                                <c:otherwise>
+                                    <a href="${gatewayUrl}">${fn:escapeXml(result.gateway.name)}</a>
+                                </c:otherwise>
+                            </c:choose>
                         </td>
                         <td><fmt:formatNumber pattern="###.##%" value="${result.gateway.data.dataStreamingLoadingPercent / 100}"/></td>
                         <td class="wrbw" style="max-width:200px;">${result.config.commaDelimitedAttributes}</td>

@@ -1,6 +1,7 @@
 package com.cannontech.web.rfn.dataStreaming.service.impl;
 
-import static java.util.stream.Collectors.*;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -283,9 +284,12 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             DataStreamingConfig config = configs.get(configId);
             result.setConfig(config);
             if (deviceInfo == null) {
-                result.setMeter(rfnDeviceDao.getDeviceForId(deviceId));
-                log.error("GatewayDataStreamingInfo didn't include device=" + result.getMeter());
-                results.add(result);
+                //only add devices without gateway if no gateways were selected ("Any" option in gateway criteria).
+                if (!criteria.isGatewaySelected()) {
+                    result.setMeter(rfnDeviceDao.getDeviceForId(deviceId));
+                    log.error("GatewayDataStreamingInfo didn't include device=" + result.getMeter());
+                    results.add(result);
+                }
             } else {
                 RfnGateway gateway = gatewaysForLoadingRange.get(deviceInfo.gatewayRfnIdentifier);
                 if (gateway != null) {
