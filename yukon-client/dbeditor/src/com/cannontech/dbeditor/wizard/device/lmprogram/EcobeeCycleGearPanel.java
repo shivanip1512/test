@@ -114,7 +114,6 @@ public class EcobeeCycleGearPanel extends GenericGearPanel {
                 ivjJComboBoxHowToStop.setName("JComboBoxHowToStop");
                 ivjJComboBoxHowToStop.setPreferredSize(new Dimension(95, 23));
                 ivjJComboBoxHowToStop.setAlignmentY(TOP_ALIGNMENT);
-                ivjJComboBoxHowToStop.addItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_TIME_IN));
                 ivjJComboBoxHowToStop.addItem(StringUtils.addCharBetweenWords(' ', LMProgramDirectGear.STOP_RESTORE));
             } catch (Throwable ivjExc) {
                 handleException(ivjExc);
