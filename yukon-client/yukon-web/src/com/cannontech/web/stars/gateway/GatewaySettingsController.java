@@ -97,8 +97,6 @@ public class GatewaySettingsController {
             @ModelAttribute("settings") GatewaySettings settings,
             BindingResult result) {
         
-        settings.setUseDefault(true);
-        
         validator.validate(settings, result);
         
         if (result.hasErrors()) {

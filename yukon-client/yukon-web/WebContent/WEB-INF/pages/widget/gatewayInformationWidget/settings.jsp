@@ -110,7 +110,7 @@
                 </spring:bind>
                 <spring:bind path="updateServerLogin.password">
                     <c:set var="clazz" value="${status.error ? 'error' : ''}"/>
-                    <tags:password path="updateServerLogin.password" cssClass="M0 right"
+                    <tags:password path="updateServerLogin.password" cssClass="M0 left "
                         placeholder="${phPassword}" showPassword="true" includeShowHideButton="true"/>
                 </spring:bind>
             </td>
