@@ -78,11 +78,6 @@
         class="com.cannontech.common.device.groups.dao.impl.providers.DeviceTypeGroupProvider">
         <property name="mainDelegator" ref="deviceGroupDao"/>
     </bean>
-    
-    <bean id="allMetersGroupProvider"
-        class="com.cannontech.common.device.groups.dao.impl.providers.AllMetersGroupProvider">
-        <property name="mainDelegator" ref="deviceGroupDao"/>
-    </bean>
     <bean id="mctMetersGroupProvider"
         class="com.cannontech.common.device.groups.dao.impl.providers.MctMetersGroupProvider">
         <property name="mainDelegator" ref="deviceGroupDao"/>
@@ -177,7 +172,6 @@
                 <entry key="COMPOSED" value-ref="composedGroupProvider"/>
                 <entry key="ATTRIBUTE_DEFINED" value-ref="attributeDefinedGroupProvider"/>
                 <entry key="ATTRIBUTE_EXISTS" value-ref="attributeExistsGroupProvider"/>
-                <entry key="METERS_ALL_METERS" value-ref="allMetersGroupProvider"/>
                 <entry key="METERS_ALL_PLC_METERS" value-ref="mctMetersGroupProvider"/>
                 <entry key="METERS_ALL_RFN_METERS" value-ref="rfnMetersGroupProvider"/>
                 <entry key="METERS_ALL_RFW_METERS" value-ref="rfwMetersGroupProvider"/>
