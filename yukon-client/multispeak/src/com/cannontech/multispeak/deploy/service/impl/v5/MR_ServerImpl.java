@@ -15,6 +15,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.demandreset.service.DemandResetService;
@@ -57,7 +58,7 @@ import com.google.common.collect.Sets;
 public class MR_ServerImpl implements MR_Server{
 
     @Autowired private DemandResetService demandResetService;
-    @Autowired private MspMeterDao mspMeterDao;
+    @Autowired @Qualifier("mspMeterDaoV5") private MspMeterDao mspMeterDao;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private MspRawPointHistoryDao mspRawPointHistoryDao;
     @Autowired private MspValidationService mspValidationService;

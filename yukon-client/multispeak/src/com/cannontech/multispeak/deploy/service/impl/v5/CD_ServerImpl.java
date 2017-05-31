@@ -10,6 +10,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.cannontech.amr.meter.model.YukonMeter;
@@ -54,7 +55,7 @@ public class CD_ServerImpl implements CD_Server {
 
     @Autowired private AttributeService attributeService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
-    @Autowired private MspMeterDao mspMeterDao;
+    @Autowired @Qualifier("mspMeterDaoV5") private MspMeterDao mspMeterDao;
     @Autowired private MspValidationService mspValidationService;
     @Autowired private MultispeakEventLogService multispeakEventLogService;
     @Autowired private MultispeakMeterService multispeakMeterService;

@@ -49,17 +49,17 @@ public class MultispeakMeterServiceBase {
     
     private static final Logger log = YukonLogManager.getLogger(MultispeakMeterServiceBase.class);
     
-    @Autowired private MultispeakFuncs multispeakFuncs;
-    @Autowired private DeviceGroupEditorDao deviceGroupEditorDao;
-    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    @Autowired private MultispeakEventLogService multispeakEventLogService;
-    @Autowired private MeterDao meterDao;
-    @Autowired private MspMeterDao mspMeterDao;
-    @Autowired private ConfigurationSource configurationSource;
     @Autowired private ChangeDeviceTypeService changeDeviceTypeService;
-    @Autowired private DeviceDao deviceDao;
-    @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired protected ConfigurationSource configurationSource;
+    @Autowired protected DeviceDao deviceDao;
+    @Autowired protected DeviceGroupEditorDao deviceGroupEditorDao;
+    @Autowired protected DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceUpdateService deviceUpdateService;
+    @Autowired protected MeterDao meterDao;
+    @Autowired private MspMeterDao mspMeterDao; // caution! this is a v3 dao, only intended for calling mspMeterDaoBase methods
+    @Autowired protected MultispeakEventLogService multispeakEventLogService;
+    @Autowired private MultispeakFuncs multispeakFuncs; // caution! this is a v3 dao, only intended for calling multispeakFuncsBase methods
+    @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private SubstationDao substationDao;
     @Autowired private SubstationToRouteMappingDao substationToRouteMappingDao;
     

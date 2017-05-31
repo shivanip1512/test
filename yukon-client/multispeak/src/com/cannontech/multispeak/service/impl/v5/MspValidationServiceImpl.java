@@ -7,6 +7,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.clientutils.YukonLogManager;
@@ -29,7 +30,7 @@ import com.cannontech.multispeak.service.v5.MspValidationService;
 
 public class MspValidationServiceImpl implements MspValidationService {
 
-    @Autowired private MspMeterDao mspMeterDao;
+    @Autowired @Qualifier("mspMeterDaoV5") private MspMeterDao mspMeterDao;
     @Autowired private MspObjectDao mspObjectDao;
     @Autowired private MultispeakFuncs multispeakFuncs;
     
