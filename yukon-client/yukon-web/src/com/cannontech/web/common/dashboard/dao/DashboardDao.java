@@ -89,9 +89,7 @@ public interface DashboardDao {
     List<LiteDashboard> getAllDashboards();
 
     /**
-     * Retrieves map of users and all the page assignments for a specific dashboard.
-     * @param dashboardId
-     * @return
+     * Retrieves a map of user IDs with the pageType as the key for a specific dashboard.
      */
     ListMultimap<DashboardPageType, Integer> getPageAssignmentToUserIdMap(int dashboardId);  
 }
