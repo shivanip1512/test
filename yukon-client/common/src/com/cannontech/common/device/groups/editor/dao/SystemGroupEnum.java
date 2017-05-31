@@ -45,6 +45,9 @@ public enum SystemGroupEnum {
     ABC,
     UNKNOWN,
     ALL_METERS,
+    ALL_MCT_METERS,
+    ALL_RFN_METERS,
+    ALL_RFW_METERS,
     ;
 }
 
