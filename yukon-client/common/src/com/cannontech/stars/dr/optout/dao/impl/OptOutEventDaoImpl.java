@@ -37,6 +37,9 @@ import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -69,6 +72,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	@Autowired private YukonJdbcTemplate jdbcTemplate;
 	private ChunkingSqlTemplate chunkingSqlTemplate;
 	@Autowired private NextValueHelper nextValueHelper;
+    @Autowired private DbChangeManager dbChangeManager;
 
 	@Autowired private InventoryDao inventoryDao;
 	@Autowired private EnrollmentDao enrollmentDao;
@@ -83,7 +87,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 	@Override
 	@Transactional
 	public OptOutLog save(OptOutEvent event, OptOutAction action, LiteYukonUser user) {
-
+        boolean isOptOutUpdate = false;
 		SqlStatementBuilder eventSql = new SqlStatementBuilder();
 		if(event.getEventId() == null) {
 			// No event id, do an insert
@@ -95,6 +99,7 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 			eventSql.append(", EventCounts, EventState, OptOutEventId)");
 			eventSql.append("VALUES (?,?,?,?,?,?,?,?)");
 		} else {
+            isOptOutUpdate = true;
 			// event id exists, do an update
 			eventSql.append("UPDATE OptOutEvent");
 			eventSql.append("SET InventoryId = ?, CustomerAccountId = ?, ScheduledDate = ?");
@@ -120,6 +125,9 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 				event.getState().toString(),
 				event.getEventId());
 
+        dbChangeManager.processDbChange(event.getEventId(), DBChangeMsg.CHANGE_OPTOUT_DB, DBChangeMsg.CAT_OPTOUT_DB,
+            "optOutEventId", isOptOutUpdate ? DbChangeType.UPDATE : DbChangeType.ADD);
+        
 		OptOutLog log = new OptOutLog();
 		log.setAction(action);
 		log.setCustomerAccountId(customerAccountId);
