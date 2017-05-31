@@ -78,7 +78,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
             PaoType.RFN530S4X, PaoType.RFN530S4EAX, PaoType.RFN530S4EAXR, PaoType.RFN530S4ERX, PaoType.RFN530S4ERXR
 		},
       	{   //2 - CapBankController
-         PaoType.CAPBANKCONTROLLER, PaoType.CBC_FP_2800, PaoType.DNP_CBC_6510, PaoType.CBC_EXPRESSCOM,
+         PaoType.CAPBANKCONTROLLER, PaoType.CBC_FP_2800, PaoType.CBC_EXPRESSCOM,
          PaoType.CBC_7010, PaoType.CBC_7020
      	 },
 	  	{	//3 - Series5SettingsEditorPanel
@@ -94,7 +94,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PaoType.MCT210, PaoType.MCT213, PaoType.REPEATER, PaoType.REPEATER_902, PaoType.REPEATER_800, PaoType.REPEATER_801, PaoType.REPEATER_850, PaoType.REPEATER_921,
 			PaoType.RTUILEX, PaoType.RTUWELCO, PaoType.DR_87, PaoType.SIXNET, 
 			PaoType.MCT310ID, PaoType.MCT310IL, PaoType.MCT318L, PaoType.DCT_501,
-         	PaoType.DNP_CBC_6510, PaoType.RTU_DNP, PaoType.MCT310CT, PaoType.MCT310IM,
+         	PaoType.RTU_DNP, PaoType.MCT310CT, PaoType.MCT310IM,
          	PaoType.ION_7700, PaoType.ION_7330, PaoType.ION_8300, PaoType.RTU_DART,
          	PaoType.MCT310IDL, PaoType.TRANSDATA_MARKV, PaoType.SERIES_5_LMI, PaoType.RTU_MODBUS,
          	PaoType.RTC,  PaoType.KV, PaoType.KVII, PaoType.RTM, PaoType.MCT410IL, PaoType.MCT410CL,
@@ -124,7 +124,7 @@ public class DeviceEditorPanel extends com.cannontech.common.editor.PropertyPane
 			PAOGroups.RTUWELCO, PAOGroups.TAPTERMINAL, PAOGroups.WCTP_TERMINAL, PAOGroups.SNPP_TERMINAL, 
 			PAOGroups.MCT213, PAOGroups.SIXNET, PAOGroups.MCT310CT, PAOGroups.MCT310IM,
 			PAOGroups.DR_87, PAOGroups.MCT310ID, PAOGroups.MCT310IL, PAOGroups.MCT318L,
-			PAOGroups.DCT_501, PAOGroups.DNP_CBC_6510, PAOGroups.RTU_DNP, PAOGroups.RTU_DART,
+			PAOGroups.DCT_501, PAOGroups.RTU_DNP, PAOGroups.RTU_DART,
 			PAOGroups.ION_7700, PAOGroups.ION_7330, PAOGroups.ION_8300, PAOGroups.MCT310IDL,
 			PAOGroups.MCT410_KWH_ONLY, PAOGroups.TRANSDATA_MARKV,  PAOGroups.KV, PAOGroups.KVII,
 			PAOGroups.RTM, PAOGroups.SENTINEL, PAOGroups.ALPHA_A3

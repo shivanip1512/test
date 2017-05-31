@@ -19,7 +19,6 @@ import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SwingUtil;
-import com.cannontech.database.data.capcontrol.CapBankController6510;
 import com.cannontech.database.data.capcontrol.CapBankController702x;
 import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
 import com.cannontech.database.data.device.CCU721;
@@ -1004,7 +1003,7 @@ public class DeviceScanRateEditorPanel extends DataInputPanel implements ActionL
                 Integer generalGroup = new Integer(getPeriodicHealthGroupComboBox().getSelectedIndex());
                 newScanRateMap.put(DeviceScanRate.TYPE_GENERAL, new DeviceScanRate(deviceID, DeviceScanRate.TYPE_GENERAL, generalRate, generalGroup, altRate));
             }
-        } else if ((val instanceof RTUBase) || (val instanceof MCTBase) || (val instanceof LCUBase) || (val instanceof CapBankController6510) || (val instanceof CapBankController702x) ||
+        } else if ((val instanceof RTUBase) || (val instanceof MCTBase) || (val instanceof LCUBase) || (val instanceof CapBankController702x) ||
                 (val instanceof CapBankControllerDNP) || (val instanceof DNPBase) || (val instanceof Series5Base) || (val instanceof TwoWayLCR) || (val instanceof IonBase)) {
             if (getPeriodicHealthCheckBox().isSelected() && getPeriodicHealthCheckBox().isVisible()) {
                 if (val instanceof MCTBase) {
@@ -1286,7 +1285,7 @@ public class DeviceScanRateEditorPanel extends DataInputPanel implements ActionL
                 getPeriodicHealthCheckBox().setText("General Scan");
                 getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
                 getAccumulatorRateComboBox().setSelectedItem("15 minute");
-            } else if (paoType == PaoType.RTU_DNP || paoType == PaoType.RTU_DART || paoType == PaoType.DNP_CBC_6510) {
+            } else if (paoType == PaoType.RTU_DNP || paoType == PaoType.RTU_DART) {
                 getPeriodicHealthCheckBox().setText("Class 1,2,3 Scan");
                 getPeriodicHealthIntervalComboBox().setSelectedItem("15 second");
 
@@ -1325,7 +1324,6 @@ public class DeviceScanRateEditorPanel extends DataInputPanel implements ActionL
                     paoType.isTwoWayLcr()));
 
             setAccumulatorObjectsVisible(!(paoType == PaoType.DCT_501 || 
-                    paoType == PaoType.DNP_CBC_6510 || 
                     paoType == PaoType.RTU_DNP || 
                     paoType == PaoType.RTU_DART || 
                     paoType == PaoType.LCU_T3026 || 
@@ -1404,7 +1402,7 @@ public class DeviceScanRateEditorPanel extends DataInputPanel implements ActionL
                     SwingUtil.setIntervalComboBoxSelectedItem(getJComboBoxAltHealthChk(), scanRate.getAlternateRate().intValue());
                 }
             }
-        } else if ((val instanceof RTUBase) || (val instanceof MCTBase) || (val instanceof LCUBase) || (val instanceof CapBankController6510) || (val instanceof CapBankController702x) ||
+        } else if ((val instanceof RTUBase) || (val instanceof MCTBase) || (val instanceof LCUBase) || (val instanceof CapBankController702x) ||
                 (val instanceof CapBankControllerDNP) || (val instanceof DNPBase) || (val instanceof Series5Base) || (val instanceof TwoWayLCR) || (val instanceof IonBase)) {
 
             DeviceScanRate statusRate = scanRateMap.get(DeviceScanRate.TYPE_EXCEPTION);

@@ -784,6 +784,36 @@ GO
 /* End YUK-16540 */
 
 
+/* Start YUK-16299 */
+DELETE FROM DeviceAddress WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'CBC 6510');
+
+DELETE FROM DeviceCBC WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'CBC 6510');
+
+DELETE FROM DeviceDirectCommSettings WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'CBC 6510');
+
+DELETE FROM DeviceWindow WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'CBC 6510');
+
+DELETE FROM DEVICE WHERE DEVICEID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'CBC 6510');
+
+DELETE FROM POINTSTATUS WHERE POINTID IN
+    (SELECT POINTID FROM POINT WHERE PAObjectID IN
+            (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'CBC 6510'));
+
+DELETE FROM PointAlarming WHERE POINTID IN
+    (SELECT POINTID FROM POINT WHERE PAObjectID IN
+            (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'CBC 6510'));
+
+DELETE FROM POINT WHERE PAObjectID IN
+    (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'CBC 6510');
+
+DELETE FROM YukonPAObject WHERE TYPE = 'CBC 6510';
+/* End YUK-16299 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -31,8 +31,7 @@ public final class DeviceTypesFuncs {
                 paoType.isMct() || 
                 paoType.isRepeater() || 
                 paoType.isRtu() ||
-                paoType.isIon() ||
-                paoType == PaoType.DNP_CBC_6510)
+                paoType.isIon())
             return true;
         else
             return false;
@@ -339,7 +338,6 @@ public final class DeviceTypesFuncs {
 
     public static boolean isCBCTwoWay(PaoType deviceType) {
         switch (deviceType) {
-        case DNP_CBC_6510:
         case CBC_7020:
         case CBC_7022:
         case CBC_7023:

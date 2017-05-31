@@ -3100,7 +3100,6 @@ create table DeviceConfigDeviceTypes (
 )
 go
 
-INSERT INTO DeviceConfigDeviceTypes VALUES (0, -1, 'CBC 6510');
 INSERT INTO DeviceConfigDeviceTypes VALUES (1, -1, 'CBC 7020');
 INSERT INTO DeviceConfigDeviceTypes VALUES (2, -1, 'CBC 7022');
 INSERT INTO DeviceConfigDeviceTypes VALUES (3, -1, 'CBC 7023');
@@ -3423,10 +3422,6 @@ INSERT INTO DeviceTypeCommand VALUES (-23, -27, 'Macro Group', 1, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-24, -28, 'Macro Group', 2, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-25, -29, 'Alpha A1', 1, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-26, -29, 'Alpha Power Plus', 1, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-27, -30, 'CBC 6510', 1, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-28, -31, 'CBC 6510', 2, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-29, -32, 'CBC 6510', 3, 'Y', -1);
-INSERT INTO DeviceTypeCommand VALUES (-30, -33, 'CBC 6510', 4, 'Y', -1);
 
 INSERT INTO DeviceTypeCommand VALUES (-31, -30, 'CBC FP-2800', 1, 'Y', -1);
 INSERT INTO DeviceTypeCommand VALUES (-32, -31, 'CBC FP-2800', 2, 'Y', -1);

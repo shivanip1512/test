@@ -350,7 +350,6 @@ BOOST_AUTO_TEST_CASE(test_isKnownUnsupportedDevice)
     BOOST_CHECK(isKnownUnsupportedDevice("honeywell wi-fi thermostat"));
     BOOST_CHECK(isKnownUnsupportedDevice("honeywell wi-fi visionpro 8000"));
     BOOST_CHECK(isKnownUnsupportedDevice("rfn relay"));
-    BOOST_CHECK(isKnownUnsupportedDevice("cbc 6510"));
     // Make sure it doesn't always return true
     BOOST_CHECK( ! isKnownUnsupportedDevice("alpha power plus"));
 }

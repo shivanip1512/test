@@ -4,7 +4,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.database.data.capcontrol.CapBankController6510;
 import com.cannontech.database.data.capcontrol.CapBankController7010;
 import com.cannontech.database.data.capcontrol.CapBankController7011;
 import com.cannontech.database.data.capcontrol.CapBankController7012;
@@ -441,9 +440,6 @@ public final class DeviceFactory {
             break;    
         case CBC_FP_2800:
             returnDevice = new CapBankController_FP_2800();
-            break;
-        case DNP_CBC_6510:
-            returnDevice = new CapBankController6510();
             break;
 
         case CBC_DNP:

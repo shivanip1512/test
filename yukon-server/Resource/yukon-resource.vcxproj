@@ -160,6 +160,9 @@
       <Command>
       </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>powershell -executionpolicy unrestricted -file ..\..\yukon-shared\src\main\scripts\generate_resources.ps1 -vstudio</Command>
+    </PreBuildEvent>
     <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
  -->
@@ -208,6 +211,9 @@
       <Command>
       </Command>
     </PostBuildEvent>
+    <PreBuildEvent>
+      <Command>powershell -executionpolicy unrestricted -file ..\..\yukon-shared\src\main\scripts\generate_resources.ps1 -vstudio</Command>
+    </PreBuildEvent>
     <!-- "postclean" was made-up by MPC for use by vs_postclean.pl.
      Check if msbuild has any support for a custom post-cleaning step
  -->
@@ -334,8 +340,6 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
 -->
   </ItemDefinitionGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="dllmain.cpp">
     </ClCompile>
   </ItemGroup>
@@ -345,6 +349,16 @@ if exist $(OutDir)$(TargetName).pdb xcopy /d/y/f $(OutDir)$(TargetName).pdb $(So
   <ItemGroup>
     <ResourceCompile Include="..\versioninfo.rc" />
     <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\pao.xsd" />
+    <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\deviceConfigurationCategory.xsd" />
+    <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\override.xsd" />
+    <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\point.xsd" />
+    <Text Include="..\..\yukon-shared\src\main\resources\pao\definition\points.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Xml Include="..\..\yukon-shared\src\main\resources\pao\definition\**\*.xml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

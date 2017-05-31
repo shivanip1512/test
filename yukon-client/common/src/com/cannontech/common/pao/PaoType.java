@@ -208,7 +208,6 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     CBC_8024(DeviceTypes.CBC_8024, "CBC 8024", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     CBC_DNP(DeviceTypes.CBC_DNP, "CBC DNP", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     CBC_FP_2800(DeviceTypes.CBC_FP_2800, "CBC FP-2800", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
-    DNP_CBC_6510(DeviceTypes.DNP_CBC_6510, "CBC 6510", PaoCategory.DEVICE, PaoClass.CAPCONTROL),
     
     CAP_CONTROL_SUBBUS(CapControlTypes.CAP_CONTROL_SUBBUS, CapControlType.SUBBUS.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
     CAP_CONTROL_FEEDER(CapControlTypes.CAP_CONTROL_FEEDER, CapControlType.FEEDER.getDbValue(), PaoCategory.CAPCONTROL, PaoClass.CAPCONTROL),
@@ -354,8 +353,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
             CBC_8020,
             CBC_8024,
             CBC_DNP,
-            CBC_FP_2800,
-            DNP_CBC_6510);
+            CBC_FP_2800);
         
         regulatorTypes = ImmutableSet.of(
             GANG_OPERATED,

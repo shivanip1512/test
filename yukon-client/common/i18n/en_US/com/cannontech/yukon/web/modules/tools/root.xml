@@ -343,8 +343,6 @@
     <entry key="yukon.web.modules.search.capcontrol.edit.CBC_DNP.summary"></entry>
     <entry key="yukon.web.modules.search.capcontrol.edit.CBC_FP_2800.title">CBC Editor: {0}</entry>
     <entry key="yukon.web.modules.search.capcontrol.edit.CBC_FP_2800.summary"></entry>
-    <entry key="yukon.web.modules.search.capcontrol.edit.DNP_CBC_6510.title">CBC Editor: {0}</entry>
-    <entry key="yukon.web.modules.search.capcontrol.edit.DNP_CBC_6510.summary"></entry>
 
     <entry key="yukon.web.modules.search.capcontrol.edit.CAP_CONTROL_SUBBUS.title">Substation Bus Editor: {0}</entry>
     <entry key="yukon.web.modules.search.capcontrol.edit.CAP_CONTROL_SUBBUS.summary"></entry>

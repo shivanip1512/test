@@ -403,13 +403,29 @@ const CtiTableDeviceCBC& CtiDeviceCBC::getCBC() const
 
 string CtiDeviceCBC::getSQLCoreStatement() const
 {
-    static const string sqlCore =  "SELECT YP.paobjectid, YP.category, YP.paoclass, YP.paoname, YP.type, "
-                                     "YP.disableflag, DV.deviceid, DV.alarminhibit, DV.controlinhibit, CBC.serialnumber, "
-                                     "CBC.routeid "
-                                   "FROM YukonPAObject YP, Device DV, DeviceCBC CBC "
-                                   "WHERE YP.paobjectid = CBC.deviceid AND YP.paobjectid = DV.deviceid AND "
-                                     "upper (YP.Type) NOT IN ('CBC 6510', 'CBC 7020', 'CBC 7022', 'CBC 7023', 'CBC 7024', 'CBC DNP', "
-                                     "'CBC 8020', 'CBC 8024')";
+    static const string sqlCore =   "SELECT "
+                                        "YP.paobjectid, "
+                                        "YP.category, "
+                                        "YP.paoclass, "
+                                        "YP.paoname, "
+                                        "YP.type, "
+                                        "YP.disableflag, "
+                                        "DV.deviceid, "
+                                        "DV.alarminhibit, "
+                                        "DV.controlinhibit, "
+                                        "CBC.serialnumber, "
+                                        "CBC.routeid "
+                                    "FROM "
+                                        "YukonPAObject YP "
+                                    "JOIN "
+                                        "Device DV ON YP.paobjectid = DV.deviceid "
+                                    "JOIN "
+                                        "DeviceCBC CBC ON YP.PAObjectID = CBC.DEVICEID "
+                                    "WHERE " 
+                                        "UPPER(YP.Type) NOT IN( "
+                                            "'CBC 7020', 'CBC 7022', 'CBC 7023', 'CBC 7024', "
+                                            "'CBC DNP',  'CBC 8020', 'CBC 8024')";
+
     return sqlCore;
 }
 

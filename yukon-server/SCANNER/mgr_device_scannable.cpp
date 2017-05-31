@@ -261,17 +261,22 @@ void ScannableDeviceManager::refreshDeviceWindows(Database::id_set &paoids)
 
         rdr["deviceid"] >> device_id;
 
-        CtiDeviceSPtr devsptr = getDeviceByID(device_id);
-
-        if( devsptr && devsptr->isSingle() )
+        if ( CtiDeviceSPtr devsptr = getDeviceByID( device_id ) )
         {
-            //  The device ID just returned from the rdr is already in my list, and is a
-            //    scannable device....  We need to update the list entry with the new scan windows!
-            boost::static_pointer_cast<CtiDeviceSingle>(devsptr)->DecodeDeviceWindowDatabaseReader(rdr);
+            if ( devsptr->isSingle() )
+            {
+                //  The device ID just returned from the rdr is already in my list, and is a
+                //    scannable device....  We need to update the list entry with the new scan windows!
+                boost::static_pointer_cast<CtiDeviceSingle>( devsptr )->DecodeDeviceWindowDatabaseReader( rdr );
+            }
+            else
+            {
+                CTILOG_WARN( dout, "There are scan windows in the device window table for a nonscannable device: " << devsptr->getName() );
+            }
         }
         else
         {
-            CTILOG_WARN(dout, "There are scan windows in the device window table for a nonscannable device: " << devsptr->getName());
+            CTILOG_WARN( dout, "Device to refresh not found, exiting device window refresh attempt." );
         }
     }
 }
