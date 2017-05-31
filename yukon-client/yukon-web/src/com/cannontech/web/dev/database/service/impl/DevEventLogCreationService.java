@@ -578,6 +578,7 @@ public class DevEventLogCreationService {
                 multispeakEventLogService.initiateDemandResetRequest(20,  15,  3,  2, mspMethod, mspVendor);
                 multispeakEventLogService.initiateODEvent(meterNumber, plcMeter, "1000", mspMethod, mspVendor);
                 multispeakEventLogService.initiateODEventRequest(30, mspMethod, mspVendor);
+                multispeakEventLogService.invalidSubstationName(mspMethod, "ErrorObject", mspVendor);
                 multispeakEventLogService.meterCreated(paoName, plcMeter, mspMethod, mspVendor);
                 multispeakEventLogService.meterFound(meterNumber, plcMeter, mspMethod, mspVendor);
                 multispeakEventLogService.meterNotFound(meterNumber, mspMethod, mspVendor);
@@ -587,8 +588,10 @@ public class DevEventLogCreationService {
                 multispeakEventLogService.notificationResponse(mspMethod, "1000", meterNumber, "additional information", 0, "http://cis:80/soap/CB_ServerSoap");
                 multispeakEventLogService.objectNotFoundByVendor("123456789", "getMeterByServLoc", mspMethod, mspVendor);
                 multispeakEventLogService.paoNameUpdated("456456-Name", plcMeter, mspMethod, mspVendor);
+                multispeakEventLogService.removeDevice(meterNumber, plcMeter, mspMethod, mspVendor);
                 multispeakEventLogService.removeMeterFromGroup(meterNumber, deviceGroup, mspMethod, mspVendor);
                 multispeakEventLogService.removeMetersFromGroup(7, deviceGroup, mspMethod, mspVendor);
+                multispeakEventLogService.returnObject("MeterRead", 0, mspMethod, mspVendor);
                 multispeakEventLogService.returnObject("MeterRead", meterNumber, mspMethod, mspVendor);
                 multispeakEventLogService.returnObjects(42, 0, "MeterRead", "999999", mspMethod, mspVendor);
                 multispeakEventLogService.routeNotFound(substationName, routeName, meterNumber, mspMethod, mspVendor);
@@ -886,7 +889,7 @@ public class DevEventLogCreationService {
         DATABASE_MIGRATION(DatabaseMigrationEventLogService.class, 3),
         DEMAND_RESET(DemandResetEventLogService.class, 5),
         DEMAND_RESPONSE(DemandResponseEventLogService.class, 37),
-        DEVICE_CONFIG(DeviceConfigEventLogService.class, 8),
+        DEVICE_CONFIG(DeviceConfigEventLogService.class, 16),
         DISCONNECT(DisconnectEventLogService.class, 6),
         ECOBEE(EcobeeEventLogService.class, 3),
         ENDPOINT(EndpointEventLogService.class, 2),
@@ -894,11 +897,11 @@ public class DevEventLogCreationService {
         HARDWARE(HardwareEventLogService.class, 23),
         INVENTORY_CONFIG(InventoryConfigEventLogService.class, 5),
         METERING(MeteringEventLogService.class, 12),
-        MULTISPEAK(MultispeakEventLogService.class, 32),
+        MULTISPEAK(MultispeakEventLogService.class, 35),
         OUTAGE(OutageEventLogService.class, 10),
         RFN_DEVICE(RfnDeviceEventLogService.class, 3),
         STARS(StarsEventLogService.class, 26),
-        SYSTEM(SystemEventLogService.class, 19),
+        SYSTEM(SystemEventLogService.class, 25),
         TOOLS(ToolsEventLogService.class, 19),
         VALIDATION(ValidationEventLogService.class, 10),
         ZIGBEE(ZigbeeEventLogService.class, 12),
