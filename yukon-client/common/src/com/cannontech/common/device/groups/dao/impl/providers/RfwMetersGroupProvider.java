@@ -39,9 +39,8 @@ public class RfwMetersGroupProvider extends DeviceGroupProviderSqlBase {
     @Override
     public boolean isChildDevice(DeviceGroup group, YukonDevice device) {
         String rfTemplatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
-        dbCache.getAllPaosMap().get(device.getPaoIdentifier()).getPaoName().matches("*rfn");
         return device.getPaoIdentifier().getPaoType().isWaterMeter()
-                &&!dbCache.getAllPaosMap().get(device.getPaoIdentifier()).getPaoName().matches(rfTemplatePrefix);
+                &&!dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName().startsWith(rfTemplatePrefix);
     }
 
 }

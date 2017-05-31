@@ -42,7 +42,7 @@ public class RfnMetersGroupProvider extends DeviceGroupProviderSqlBase {
         String rfTemplatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
         return device.getPaoIdentifier().getPaoType().isRfMeter()
                 &&!device.getPaoIdentifier().getPaoType().isWaterMeter()
-                &&!dbCache.getAllPaosMap().get(device.getPaoIdentifier()).getPaoName().matches(rfTemplatePrefix);
+                &&!dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName().startsWith(rfTemplatePrefix);
     }
 
 }
