@@ -41,6 +41,9 @@ import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
 import com.cannontech.dr.rfn.service.RfnMeterDataSimulatorService;
+import com.cannontech.simulators.SimulatorType;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
@@ -58,6 +61,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private UnitOfMeasureToPointMapper unitOfMeasureToPointMapper;
     @Autowired private AttributeService attributeService;
+    @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
 
     // minute of the day to send a request at/list of devices to send a read request to
     private SetMultimap<Integer, RfnDevice> meters = HashMultimap.create();
@@ -81,6 +85,9 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     @Override
     public synchronized void startSimulator(SimulatorSettings settings) {
         if (!status.isRunning().get()) {
+            log.info("Saving RfnMeterDataSimulatorSettings to YukonSimulatorSettings table");
+            yukonSimulatorSettingsDao.setSimulatorSettings(settings, SimulatorType.RFN_METER);
+            
             log.debug("Start simulator");
             status = new RfnDataSimulatorStatus();
             status.setRunning(new AtomicBoolean(true));
@@ -171,7 +178,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
 
     @Override
     public SimulatorSettings getCurrentSettings() {
-        return settings;
+        return yukonSimulatorSettingsDao.getSimulatorSettings(SimulatorType.RFN_METER);
     }
 
     @Override

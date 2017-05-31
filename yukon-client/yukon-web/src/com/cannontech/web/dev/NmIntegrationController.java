@@ -605,10 +605,8 @@ public class NmIntegrationController {
         if(response == null){
             return "rfn/rfnMeterSimulator.jsp";
         }
-        if (response.getStatus().isRunning().get()) {
-            model.addAttribute("currentSettings", response.getSettings());
-            model.addAttribute("selectedReportingInterval", response.getSettings().getReportingInterval());
-        }
+        model.addAttribute("currentSettings", response.getSettings());
+        model.addAttribute("selectedReportingInterval", response.getSettings().getReportingInterval());
 
         model.addAttribute("rfnMeterSimulatorStatus", buildSimulatorStatusJson(response.getStatus()));
         return "rfn/rfnMeterSimulator.jsp";

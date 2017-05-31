@@ -11,6 +11,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.core.JmsTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.dr.rfn.model.SimulatorSettings;
+import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
+import com.cannontech.dr.rfn.service.impl.RfnMeterDataSimulatorServiceImpl;
+import com.cannontech.simulators.SimulatorType;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.simulators.handler.SimulatorMessageHandler;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -22,6 +30,9 @@ public class SimulatorsService {
     private static final Logger log = YukonLogManager.getLogger(SimulatorsService.class);
     private static final int incomingMessageWaitMillis = 1000;
     
+    @Autowired private ConfigurationSource configSource;
+    @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
+    @Autowired private RfnMeterDataSimulatorServiceImpl rfnMeterDataSimulatorServiceImpl;
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private Set<SimulatorMessageHandler> messageHandlers;
     private SimulatorMessageListener messageListener;
@@ -53,7 +64,23 @@ public class SimulatorsService {
     private synchronized void start() {
         messageListener = new SimulatorMessageListener(jmsTemplate, messageHandlers);
         messageListener.start();
+        autoStartSimulators();
         log.info("Started simulators service.");
+    }
+    
+    private void autoStartSimulators() {
+        if (configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
+            if (yukonSimulatorSettingsDao.initYukonSimulatorSettings()) {
+                for (SimulatorType simType : SimulatorType.values()) {
+                    if (simType.name() == "RFN_METER") {
+                        SimulatorSettings settings = yukonSimulatorSettingsDao.getSimulatorSettings(SimulatorType.RFN_METER);
+                        if (settings.getRunOnStartup()) {
+                            rfnMeterDataSimulatorServiceImpl.startSimulator(settings);
+                        }
+                    }
+                }
+            }
+        }
     }
     
     @PostConstruct
