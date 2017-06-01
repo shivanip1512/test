@@ -8,7 +8,7 @@ namespace CapControl    {
 
 Policy::Action CbcHeartbeatPolicy::WriteAnalogValue( const PointAttribute & attribute, const long keepAliveValue )
 {
-    LitePoint point = getPointByAttribute( PointAttribute::ScadaOverrideHeartbeat );
+    LitePoint point = getPointByAttribute( attribute );
 
     const long pointOffset =
         point.getControlOffset() ?
@@ -57,6 +57,8 @@ Policy::AttributeList AnalogCbcHeartbeatPolicy::getSupportedAttributes()
 
 Policy::Actions AnalogCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveValue )
 {
+    // Write the current keep alive value to the CBC
+
     Actions    actions;
 
     actions.emplace_back( WriteAnalogValue( PointAttribute::ScadaOverrideHeartbeat, keepAliveValue ) );
@@ -64,18 +66,32 @@ Policy::Actions AnalogCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveVal
     return actions;
 }
 
-Policy::Actions AnalogCbcHeartbeatPolicy::StopHeartbeat( const long keepAliveValue )
+Policy::Actions AnalogCbcHeartbeatPolicy::StopHeartbeat( const long keepAliveValue /* ignored */ )
 {
-    return SendHeartbeat( keepAliveValue );
+    // Read the current heartbeat config value, if it's not zero then write a zero to put the CBC into
+    //  local mode.  If it is zero, the CBC is already released, do nothing.
+
+    Actions    actions;
+
+    if ( readCurrentValue() )   // != 0
+    {
+        actions.emplace_back( WriteAnalogValue( PointAttribute::ScadaOverrideHeartbeat, 0L ) );
+    }
+
+    return actions;
+}
+
+long AnalogCbcHeartbeatPolicy::readCurrentValue()
+try
+{
+    return getValueByAttribute( PointAttribute::ScadaOverrideHeartbeat );
+}
+catch ( UninitializedPointValue & )
+{
+    return 0L;  // can't read value -- send default of 0
 }
 
 /// 
-
-PulsedCbcHeartbeatPolicy::PulsedCbcHeartbeatPolicy()
-    :   firstRun( true )
-{
-    // empty
-}
 
 Policy::AttributeList PulsedCbcHeartbeatPolicy::getSupportedAttributes()
 {
@@ -89,27 +105,51 @@ Policy::AttributeList PulsedCbcHeartbeatPolicy::getSupportedAttributes()
 
 Policy::Actions PulsedCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveValue )
 {
+    // If the value in the CBC doesn't match the value in the config, then update it.  Then pulse the enable
+    //  to put the CBC in remote mode if the config value is non zero.
+
     Actions    actions;
 
-    if ( firstRun )
+    if ( readCurrentValue() != keepAliveValue )
     {
-        firstRun = false;
         actions.emplace_back( WriteAnalogValue( PointAttribute::ScadaOverrideCountdownTimer, keepAliveValue ) );
     }
-
-    actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( PointAttribute::ScadaOverrideEnable ),
-                                                      "CBC Heartbeat Pulse" ) );
+    
+    if ( keepAliveValue > 0 )
+    {
+        actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( PointAttribute::ScadaOverrideEnable ),
+                                                          "CBC Heartbeat Pulse" ) );
+    }
 
     return actions;
 }
 
-Policy::Actions PulsedCbcHeartbeatPolicy::StopHeartbeat( const long keepAliveValue )
+Policy::Actions PulsedCbcHeartbeatPolicy::StopHeartbeat( const long keepAliveValue /* ignored */ )
 {
-    return
+    // If the value in the CBC is non zero, then update it to zero.  Then pulse the enable
+    //  to put the CBC into local mode.
+
+    Actions    actions;
+
+    if ( readCurrentValue() )   // != 0
     {
-    };
+        actions.emplace_back( WriteAnalogValue( PointAttribute::ScadaOverrideCountdownTimer, 0L ) );
+    }
+
+    actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( PointAttribute::ScadaOverrideEnable ),
+                                                          "CBC Heartbeat Pulse" ) );
+    return actions;
 }
 
+long PulsedCbcHeartbeatPolicy::readCurrentValue()
+try
+{
+    return getValueByAttribute( PointAttribute::ScadaOverrideCountdownTimer );
+}
+catch ( UninitializedPointValue & )
+{
+    return 0L;  // can't read value -- send default of 0
+}
 
 }
 }

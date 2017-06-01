@@ -20,7 +20,6 @@ struct CbcHeartbeatPolicy : Policy
 
 struct NoCbcHeartbeatPolicy : CbcHeartbeatPolicy
 {
-
     Actions SendHeartbeat( const long keepAliveValue ) override;
 
     Actions StopHeartbeat( const long keepAliveValue ) override;
@@ -33,7 +32,6 @@ protected:
 
 struct AnalogCbcHeartbeatPolicy : CbcHeartbeatPolicy
 {
-
     Actions SendHeartbeat( const long keepAliveValue ) override;
 
     Actions StopHeartbeat( const long keepAliveValue ) override;
@@ -41,13 +39,13 @@ struct AnalogCbcHeartbeatPolicy : CbcHeartbeatPolicy
 protected:
 
     AttributeList getSupportedAttributes() override;
+
+    long readCurrentValue();
 };
 
 
 struct PulsedCbcHeartbeatPolicy : CbcHeartbeatPolicy
 {
-    PulsedCbcHeartbeatPolicy();
-
     Actions SendHeartbeat( const long keepAliveValue ) override;
 
     Actions StopHeartbeat( const long keepAliveValue ) override;
@@ -56,7 +54,7 @@ protected:
 
     AttributeList getSupportedAttributes() override;
 
-    bool firstRun;
+    long readCurrentValue();
 };
 
 

@@ -2134,6 +2134,26 @@ const string CtiCCCapBank::FixedOperationalState = "Fixed";
 const string CtiCCCapBank::UninstalledState = "Uninstalled";
 const string CtiCCCapBank::StandAloneState = "StandAlone";
 
+void CtiCCCapBank::handlePointData( const CtiPointDataMsg & message )
+{
+    heartbeat._policy->updatePointData( message );
+}
+
+void CtiCCCapBank::submitHeartbeatCommands( Cti::CapControl::Policy::Actions & actions )
+{
+    for ( auto & action : actions )
+    {
+        auto & signal  = action.first;
+        auto & request = action.second;
+
+        signal->setText( signal->getText() );
+        signal->setAdditionalInfo( "Capbank Name: " + getPaoName() );
+
+        CtiCapController::getInstance()->sendMessageToDispatch( signal.release(), CALLSITE );
+
+        CtiCapController::getInstance()->manualCapBankControl( request.release() );
+    }
+}
 
 void CtiCCCapBank::executeSendHeartbeat( const std::string & user )
 try
@@ -2142,18 +2162,22 @@ try
 
     if ( heartbeat.isTimeToSend( Now ) )
     {
-        for ( auto & action : heartbeat._policy->SendHeartbeat( heartbeat._value ) )
-        {
-            auto & signal  = action.first;
-            auto & request = action.second;
+        submitHeartbeatCommands( heartbeat._policy->SendHeartbeat( heartbeat._value ) );
+    }
+}
+catch ( FailedAttributeLookup & missingAttribute )
+{
+    CTILOG_EXCEPTION_ERROR( dout, missingAttribute );
+}
 
-            signal->setText( signal->getText() /*+ getPhaseString()*/ );
-            signal->setAdditionalInfo( "Capbank Name: " + getPaoName() );
+void CtiCCCapBank::executeStopHeartbeat( const std::string & user )
+try
+{
+    const CtiTime Now;
 
-            CtiCapController::getInstance()->sendMessageToDispatch( signal.release(), CALLSITE );
-
-            CtiCapController::getInstance()->manualCapBankControl( request.release() );
-        }
+    if ( heartbeat.isTimeToSend( Now ) )
+    {
+        submitHeartbeatCommands( heartbeat._policy->StopHeartbeat( heartbeat._value ) );
     }
 }
 catch ( FailedAttributeLookup & missingAttribute )
@@ -2194,7 +2218,7 @@ namespace
 {
 
 template <typename T>
-T retrieveConfigValue( Cti::Config::DeviceConfigSPtr & deviceConfig, const std::string & configItemKey, const T & defaultValue )
+T retrieveConfigValue( Cti::Config::DeviceConfigSPtr & deviceConfig, const std::string & configItemKey, const T && defaultValue )
 {
     if ( auto value = deviceConfig->findValue<T>( configItemKey ) )
     {
@@ -2218,10 +2242,11 @@ void CtiCCCapBank::Heartbeat::initialize( CtiCCCapBank * bank )
                                                                                              bank->getControlDeviceType() ) ) );
     if ( deviceConfig )
     {
+        using namespace std::string_literals;
+
         _period = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatPeriod, 0L );
         _value  = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatValue,  0L );
-
-        _mode = retrieveConfigValue<std::string>( deviceConfig, CbcStrings::cbcHeartbeatMode, "DISABLED" );
+        _mode   = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatMode,   "DISABLED"s );
 
         static const std::map< std::string,
                                std::function< std::unique_ptr<CbcHeartbeatPolicy>() > > Lookup
