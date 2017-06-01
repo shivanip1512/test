@@ -109,6 +109,7 @@
     <entry key="yukon.web.widgets.cayentaAccountInformationWidget.mapNum">Map Number</entry>
 
     <!-- csrTrendWidget/render.jsp -->
+    <entry key="yukon.web.widgetClasses.CsrTrendWidget.meter">Meter:</entry>
     <entry key="yukon.web.widgetClasses.CsrTrendWidget.whatsThis">What's this?</entry>
     <entry key="yukon.web.widgetClasses.CsrTrendWidget.graphType">Graph Type:</entry>
     <entry key="yukon.web.widgetClasses.CsrTrendWidget.timePeriod">Time Period:</entry>

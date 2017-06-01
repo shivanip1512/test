@@ -21,6 +21,8 @@ $(function () {
 <c:choose>
     
     <c:when test="${attributeGraphType != null}">
+    
+        <h4 class="tac"><cti:msg2 key=".meter"/> <cti:deviceName deviceId="${widgetParameters.deviceId}"/></h4>
 
         <%-- THE CHART --%>
         <flot:trend title="${title}" pointIds="${pointId}"
