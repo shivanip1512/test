@@ -282,7 +282,7 @@ public:
     int getLastError() const;
 
     // Returns a copy of the current sockets
-    std::vector<SOCKET> getSockets() const;
+    SocketsVec getSockets() const;
 
     // Returns a copy of the current sockets
     SocketDescriptors getSocketDescriptors() const;

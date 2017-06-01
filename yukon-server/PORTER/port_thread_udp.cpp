@@ -518,11 +518,14 @@ YukonError_t UdpPortHandler::sendOutbound( device_record &dr )
     /* This is not tested until I get a Lantronix device. */
     vector<unsigned char> cipher;
     _encodingFilter->encode((unsigned char *)dr.xfer.getOutBuffer(),dr.xfer.getOutCount(),cipher);
+    const auto cipher_data = reinterpret_cast<const char*>(cipher.data());
 
     try
     {
         const auto destination = getDestinationForAddress(pAddrInfo);
-        auto send_result = sendto(destination.socket, reinterpret_cast<const char*>(cipher.data()), cipher.size(), 0, reinterpret_cast<const sockaddr*>(destination.sockaddr.data()), destination.sockaddr.size());
+        const auto sockaddr_data = reinterpret_cast<const sockaddr*>(destination.sockaddr.data());
+
+        auto send_result = sendto(destination.socket, cipher_data, cipher.size(), 0, sockaddr_data, destination.sockaddr.size());
         
         if( send_result == SOCKET_ERROR )
         {
