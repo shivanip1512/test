@@ -245,22 +245,35 @@ IM_EX_CTIBASE AddrInfo makeUdpServerSocketAddress(const unsigned short nport);
 //-----------------------------------------------------------------------------
 class IM_EX_CTIBASE ServerSockets
 {
-    typedef std::vector<SOCKET> SocketsVec;
-    SocketsVec _sockets;
+public:
 
-    mutable CtiCriticalSection _socketsMux;
+    struct SocketDescriptor
+    {
+        int family;
+        int type;
+        int protocol;
+    };
+
+    using SocketsVec = std::vector<SOCKET>;
+    using SocketDescriptors = std::map<SOCKET, SocketDescriptor>;
+
+private:
+
+    SocketDescriptors _descriptors;
+
+    mutable CtiCriticalSection _descriptorsMux;
 
     int  _lastError;
 
     SocketsEventsManager _socketsEventsManager;
 
+    // Shutdown and close a collection of sockets
+    void shutdownAndClose(SocketDescriptors& sockets);
+
 public:
 
     ServerSockets();
     ~ServerSockets();
-
-    // Shutdown and close a vector sockets
-    void shutdownAndClose(SocketsVec &sockets);
 
     // Shutdown and close all sockets
     // Note: sockets can still be (re)created afterwards
@@ -269,7 +282,10 @@ public:
     int getLastError() const;
 
     // Returns a copy of the current sockets
-    SocketsVec getSockets() const;
+    std::vector<SOCKET> getSockets() const;
+
+    // Returns a copy of the current sockets
+    SocketDescriptors getSocketDescriptors() const;
 
     // creates sockets from addr info
     void createSockets(PADDRINFOA p_ai);
@@ -295,9 +311,6 @@ public:
     // wrapper using a socket address storage
     // note : available storage length shall be set prior by the user
     SOCKET accept(SocketAddress& addr, const Timing::Chrono &timeout, const HANDLE *hAbort);
-
-    // Return first socket corresponding to the family given in argument
-    SOCKET const getFamilySocket(const int family);
 
     // Return true if sockets are all valid, false otherwise
     bool areSocketsValid() const;

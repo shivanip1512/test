@@ -2,10 +2,6 @@
 
 #include "port_thread_udp.h"
 
-#include <boost/shared_ptr.hpp>
-#include <boost/scoped_array.hpp>
-#include "boostutil.h"
-
 #include "c_port_interface.h"
 
 #include "prot_gpuff.h"
@@ -24,6 +20,10 @@
 #include "portfield.h"
 
 #include "connection_client.h"
+
+#include "boostutil.h"
+
+#include <mstcpip.h>
 
 // Some Global Manager types to allow us some RTDB stuff.
 
@@ -459,6 +459,43 @@ void UdpPortHandler::sendDeviceIpAndPort( const CtiDeviceSingleSPtr &device, str
 }
 
 
+// Return the socket and socket address for use with the given address
+auto UdpPortHandler::getDestinationForAddress(const AddrInfo& address) -> OutboundDestination
+{
+    for( auto descriptor : _udp_sockets.getSocketDescriptors() )
+    {
+        auto socket   = descriptor.first;
+        auto sockinfo = descriptor.second;
+
+        if( sockinfo.family == address->ai_family )
+        {
+            auto addr = reinterpret_cast<const char*>(address->ai_addr);
+
+            return { socket, { addr, addr + address->ai_addrlen } };
+        }
+        //  Is this a dual-stack socket?
+        else if( sockinfo.family == AF_INET6 && address->ai_family == AF_INET )
+        {
+            //  All IPv6 ServerSockets are dual-stack, which means IPv4 addresses have to be translated to IPv6
+            SOCKADDR_IN6 addr6;
+            auto addr4 = reinterpret_cast<const SOCKADDR_IN*>(address->ai_addr);
+
+            IN6_SET_ADDR_V4MAPPED(&addr6.sin6_addr, &addr4->sin_addr);
+            addr6.sin6_family = AF_INET6;
+            addr6.sin6_port = addr4->sin_port;
+            addr6.sin6_flowinfo = 0;  //  Reserved/unused as of June 2017
+            addr6.sin6_scope_id = 0;  //  Only used for link-/site-local addresses, see https://msdn.microsoft.com/en-us/library/windows/desktop/ms739166.aspx
+
+            auto addr = reinterpret_cast<const char*>(&addr6);
+
+            return { socket, { addr, addr + sizeof(addr6) } };
+        }
+    }
+
+    throw YukonErrorException(ClientErrors::PortWrite, "failed to retrieve socket for family " + std::to_string(address->ai_family) + " for " + address.toString());
+}
+
+
 YukonError_t UdpPortHandler::sendOutbound( device_record &dr )
 {
     string  device_ip   = getDeviceIp  (dr.device->getID());
@@ -482,19 +519,30 @@ YukonError_t UdpPortHandler::sendOutbound( device_record &dr )
     vector<unsigned char> cipher;
     _encodingFilter->encode((unsigned char *)dr.xfer.getOutBuffer(),dr.xfer.getOutCount(),cipher);
 
-    // send data with the socket of the same family
-    if( sendto(_udp_sockets.getFamilySocket(pAddrInfo->ai_family), (const char*) &*cipher.begin(), cipher.size(), 0, pAddrInfo->ai_addr, pAddrInfo->ai_addrlen) == SOCKET_ERROR )
+    try
     {
-        if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+        const auto destination = getDestinationForAddress(pAddrInfo);
+        auto send_result = sendto(destination.socket, reinterpret_cast<const char*>(cipher.data()), cipher.size(), 0, reinterpret_cast<const sockaddr*>(destination.sockaddr.data()), destination.sockaddr.size());
+        
+        if( send_result == SOCKET_ERROR )
         {
-            const DWORD error = WSAGetLastError();
-            CTILOG_DEBUG(dout, "sendto() failed with error code "<< error <<" / "<< Cti::getSystemErrorMessage(error));
+            if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
+            {
+                const DWORD error = WSAGetLastError();
+                CTILOG_DEBUG(dout, "sendto() failed with error code "<< error <<" / "<< Cti::getSystemErrorMessage(error));
+            }
+
+            return ClientErrors::PortWrite;
         }
 
-        return ClientErrors::PortWrite;
+        dr.last_outbound = CtiTime::now();
     }
+    catch( const YukonErrorException& ex )
+    {
+        CTILOG_EXCEPTION_ERROR(dout, ex);
 
-    dr.last_outbound = CtiTime::now();
+        return ex.error_code;
+    }
 
     return ClientErrors::None;
 }
@@ -550,12 +598,11 @@ UdpPortHandler::ip_packet *UdpPortHandler::recvPacket(unsigned char * const recv
     int recv_len = SOCKET_ERROR;
 
     // check if we receive data from each family of sockets
-    std::vector<SOCKET> const& sockets = _udp_sockets.getSockets();
-    for(std::vector<SOCKET>::const_iterator socket_it = sockets.begin() ; socket_it != sockets.end() ; ++socket_it)
+    for( const auto s : _udp_sockets.getSockets() )
     {
         from.reset( Cti::SocketAddress::STORAGE_SIZE );
 
-        recv_len = recvfrom(*socket_it, (char*)recv_buf, max_len, 0, &from._addr.sa, &from._addrlen);
+        recv_len = recvfrom(s, (char*)recv_buf, max_len, 0, &from._addr.sa, &from._addrlen);
         if( recv_len != SOCKET_ERROR )
         {
             break; // break from the loop

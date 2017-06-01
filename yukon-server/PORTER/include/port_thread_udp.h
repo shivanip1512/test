@@ -75,6 +75,14 @@ private:
 
     void loadEncodingFilter();
 
+    struct OutboundDestination
+    {
+        SOCKET socket;
+        std::vector<char> sockaddr;
+    };
+
+    OutboundDestination getDestinationForAddress(const AddrInfo& address);
+
 protected:
 
     virtual std::string describePort( void ) const;

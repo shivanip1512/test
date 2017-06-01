@@ -9,7 +9,7 @@
 #include "dlldefs.h"
 
 #include <boost/asio/ip/address.hpp>
-#include "boost/lexical_cast.hpp"
+#include <boost/range/adaptor/map.hpp>
 
 //-----------------------------------------------------------------------------
 //  Server socket wrapper
@@ -52,10 +52,7 @@ SocketAbortException::SocketAbortException() : SocketException("WaitForSocketEve
 //-----------------------------------------------------------------------------
 IM_EX_CTIBASE std::string socketAddressToString(const SOCKADDR *addr, int addrlen)
 {
-    // [0000:0000:0000:0000:0000:0000:127.127.127.127]:65535
-    // maximum length of address (IPV6) with port including null terminator = 54
-
-    char  str[54];              // array of byte that can contain the largest address (IPV6) with port
+    char  str[INET6_ADDRSTRLEN]; // array of byte that can contain the largest address (IPV6) with port
     DWORD strlen = sizeof(str);  // in case of a WSAEFAULT error, this parameter will contain the required length
 
     if (WSAAddressToString((LPSOCKADDR)addr, (DWORD)addr, NULL, str, &strlen) == SOCKET_ERROR
@@ -461,7 +458,7 @@ AddrInfo::AddrInfo(PCSTR pNodeName, PCSTR pServiceName, const ADDRINFOA *pHints)
     _err_code = getaddrinfo(pNodeName, pServiceName, pHints, &_p_ai);
 }
 
-IM_EX_CTIBASE AddrInfo::~AddrInfo()
+AddrInfo::~AddrInfo()
 {
     if (_p_ai)
     {
@@ -531,8 +528,8 @@ IM_EX_CTIBASE AddrInfo makeSocketAddress(const char *nodename, const char* servn
 
     // Set requirements
     if (nodename == 0)
-        {                                                   // Listening socket
-            hints.ai_family = AF_INET6;                     // accept either IPv4 or IPv6
+    {                                                   // Listening socket
+        hints.ai_family = AF_INET6;                     // accept either IPv4 or IPv6
     }
     else
     {                                                   // connect socket
@@ -555,7 +552,7 @@ IM_EX_CTIBASE AddrInfo makeTcpClientSocketAddress(const std::string &nodename, c
 
 IM_EX_CTIBASE AddrInfo makeTcpClientSocketAddress(const std::string &nodename, const unsigned short nport)
 {
-    return makeTcpClientSocketAddress(nodename, boost::lexical_cast<std::string>(nport));
+    return makeTcpClientSocketAddress(nodename, std::to_string(nport));
 };
 
 //-----------------------------------------------------------------------------
@@ -568,7 +565,7 @@ IM_EX_CTIBASE AddrInfo makeTcpServerSocketAddress(const std::string &servname)
 
 IM_EX_CTIBASE AddrInfo makeTcpServerSocketAddress(const unsigned short nport)
 {
-    return makeTcpServerSocketAddress(boost::lexical_cast<std::string>(nport));
+    return makeTcpServerSocketAddress(std::to_string(nport));
 };
 
 //-----------------------------------------------------------------------------
@@ -581,7 +578,7 @@ IM_EX_CTIBASE AddrInfo makeUdpClientSocketAddress(const std::string &nodename, c
 
 IM_EX_CTIBASE AddrInfo makeUdpClientSocketAddress(const std::string &nodename, const unsigned short nport)
 {
-    return makeUdpClientSocketAddress(nodename, boost::lexical_cast<std::string>(nport));
+    return makeUdpClientSocketAddress(nodename, std::to_string(nport));
 };
 
 //-----------------------------------------------------------------------------
@@ -594,7 +591,7 @@ IM_EX_CTIBASE AddrInfo makeUdpServerSocketAddress(const std::string &servname)
 
 IM_EX_CTIBASE AddrInfo makeUdpServerSocketAddress(const unsigned short nport)
 {
-    return makeUdpServerSocketAddress(boost::lexical_cast<std::string>(nport));
+    return makeUdpServerSocketAddress(std::to_string(nport));
 };
 
 ServerSockets::ServerSockets() : _lastError(0) {}
@@ -610,26 +607,27 @@ ServerSockets::~ServerSockets()
     }
 }
 
-// Shutdown and close a vector sockets
-void ServerSockets::shutdownAndClose(SocketsVec &sockets)
+// Shutdown and close a collection of sockets
+void ServerSockets::shutdownAndClose(SocketDescriptors& descriptors)
 {
-    for each(SOCKET s in sockets)
+    for( const auto desc : descriptors )
     {
+        auto s = desc.first;
         if (s != INVALID_SOCKET)
         {
             shutdown(s, SD_BOTH);
             closesocket(s);
         }
     }
-    sockets.clear();
+    descriptors.clear();
 }
 
 // Shutdown and close all sockets
 // Note: sockets can still be (re)created afterwards
 void ServerSockets::shutdownAndClose()
 {
-    CtiLockGuard<CtiCriticalSection> guard(_socketsMux);
-    shutdownAndClose(_sockets);
+    CtiLockGuard<CtiCriticalSection> guard(_descriptorsMux);
+    shutdownAndClose(_descriptors);
     _socketsEventsManager.interruptBlockingWait();
 }
 
@@ -639,10 +637,17 @@ int ServerSockets::getLastError() const
 }
 
 // Returns a copy of the current sockets
-ServerSockets::SocketsVec ServerSockets::getSockets() const
+auto ServerSockets::getSockets() const -> SocketsVec 
 {
-    CtiLockGuard<CtiCriticalSection> guard(_socketsMux);
-    return _sockets; // return a copy
+    CtiLockGuard<CtiCriticalSection> guard(_descriptorsMux);
+    return boost::copy_range<SocketsVec>(_descriptors | boost::adaptors::map_keys);
+}
+
+// Returns a copy of the current socket descriptors
+auto ServerSockets::getSocketDescriptors() const -> SocketDescriptors
+{
+    CtiLockGuard<CtiCriticalSection> guard(_descriptorsMux);
+    return _descriptors;
 }
 
 // creates sockets from addr info
@@ -656,7 +661,7 @@ void ServerSockets::createSockets(PADDRINFOA p_ai)
         throw SocketException("PADDRINFOA is NULL");
     }
 
-    SocketsVec sockets;
+    SocketDescriptors descriptors;
 
     while (p_ai != NULL)
     {
@@ -664,17 +669,17 @@ void ServerSockets::createSockets(PADDRINFOA p_ai)
         if (s_new == INVALID_SOCKET)
         {
             _lastError = WSAGetLastError();
-            shutdownAndClose(sockets);
+            shutdownAndClose(descriptors);
             throw SocketException("socket creation has failed", _lastError);
         }
         CTILOG_DEBUG(dout, "Created socket " << s_new << " for family " << p_ai->ai_family << " type " << p_ai->ai_socktype << " protocol " << p_ai->ai_protocol);
-        sockets.push_back(s_new);
+        descriptors.emplace(s_new, SocketDescriptor{ p_ai->ai_family, p_ai->ai_socktype, p_ai->ai_protocol });
         p_ai = p_ai->ai_next;
     }
 
     {
-        CtiLockGuard<CtiCriticalSection> guard(_socketsMux);
-        _sockets = sockets;
+        CtiLockGuard<CtiCriticalSection> guard(_descriptorsMux);
+        _descriptors.swap(descriptors);
     }
 
     DWORD v6only = 0;
@@ -828,28 +833,6 @@ SOCKET ServerSockets::accept(const Timing::Chrono &timeout, const HANDLE *hAbort
 SOCKET ServerSockets::accept(SocketAddress& addr, const Timing::Chrono &timeout, const HANDLE *hAbort)
 {
     return accept(&addr._addr.sa, &addr._addrlen, timeout, hAbort);
-}
-
-// Return first socket corresponding to the family given in argument
-SOCKET const ServerSockets::getFamilySocket(const int family)
-{
-    SocketsVec sockets = getSockets();
-    for each(SOCKET s in sockets)
-    {
-        SocketAddress addr(SocketAddress::STORAGE_SIZE);
-        if (::getsockname(s, &addr._addr.sa, &addr._addrlen) == SOCKET_ERROR)
-        {
-            _lastError = WSAGetLastError();
-            return INVALID_SOCKET;
-        }
-
-        if (addr._addr.sa.sa_family == family)
-        {
-            return s;
-        }
-    }
-
-    return INVALID_SOCKET;
 }
 
 // Return true if sockets are all valid, false otherwise
