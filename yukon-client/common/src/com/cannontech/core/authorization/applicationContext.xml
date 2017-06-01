@@ -267,14 +267,14 @@
                 
                 <!-- 
                     Ignore pao permissions check will return Authorized for any pao if the
-                    IGNORE_PER_PAO_PERMISSIONS role property is set to true and return Unknown 
+                    USE_PAO_PERMISSIONS role property is set to false and return Unknown 
                     otherwise so that subsequent authorizers can determine authorization
                 -->
                 <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAcceptor">
                     <property name="objectChecker" ref="loadManagementPaoCheck" />
                     <property name="roleChecker">
                         <bean factory-bean="roleAndPropertyDescriptionService" factory-method="compile">
-                            <constructor-arg value="IGNORE_PER_PAO_PERMISSIONS"/>
+                            <constructor-arg value="USE_PAO_PERMISSIONS"/>
                         </bean>
                     </property>
                     <property name="permission" value="LM_VISIBLE"/>

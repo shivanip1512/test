@@ -12,7 +12,7 @@ public class PaoPermissionRoleAcceptor extends PermissionRoleAuthorizationBase<Y
     
     @Override
     protected AuthorizationResponse isRoleAuthorized(boolean roleValue) {
-        if (roleValue) {
+        if (!roleValue) {
             return AuthorizationResponse.AUTHORIZED;
         } else {
             return AuthorizationResponse.UNKNOWN;

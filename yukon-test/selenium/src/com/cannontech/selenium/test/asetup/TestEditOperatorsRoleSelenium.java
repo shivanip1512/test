@@ -91,7 +91,7 @@ public class TestEditOperatorsRoleSelenium extends SolventSeleniumTestCase{
 		//common.selectDropDownMenuByName("3 Tier Direct Control:", "TRUE");
 		common.selectDropDownMenu(updateRoleFormAction, "values[ALLOW_STOP_GEAR_ACCESS]", "TRUE");
         common.selectDropDownMenu(updateRoleFormAction, "values[DEMAND_RESPONSE]", "TRUE");
-        common.selectDropDownMenu(updateRoleFormAction, "values[IGNORE_PER_PAO_PERMISSIONS]", "TRUE");
+        common.selectDropDownMenu(updateRoleFormAction, "values[USE_PAO_PERMISSIONS]", "TRUE");
         common.clickFormButton(updateRoleFormAction, "save");
 		Assert.assertEquals("Login Group Role Updated Successfully", common.getYukonText("Login Group Role Updated Successfully"));
 		

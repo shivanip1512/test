@@ -802,6 +802,12 @@ DELETE FROM POINT WHERE PAObjectID IN
 DELETE FROM YukonPAObject WHERE TYPE = 'CBC 6510';
 /* End YUK-16299 */
 
+/* Start YUK-16604 */
+UPDATE YukonRoleProperty SET KeyName = 'Use Pao Permissions', 
+    Description='Allow access to all load management objects. Set to true to force the use of per pao permissions.' 
+        WHERE RolePropertyID = -90009 AND RoleID = -900;
+/* End YUK-16604 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

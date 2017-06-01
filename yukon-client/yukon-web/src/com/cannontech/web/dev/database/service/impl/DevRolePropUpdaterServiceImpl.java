@@ -169,7 +169,7 @@ public class DevRolePropUpdaterServiceImpl extends DevObjectCreationBase impleme
                     setRoleProperty(group, YukonRoleProperty.DR_VIEW_CONTROL_AREA_TRIGGER_INFO, true);                    
                     setRoleProperty(group, YukonRoleProperty.DR_VIEW_PRIORITY, true);
                     setRoleProperty(group, YukonRoleProperty.DR_VIEW_REDUCTION, true);
-                    setRoleProperty(group, YukonRoleProperty.IGNORE_PER_PAO_PERMISSIONS, true);
+                    setRoleProperty(group, YukonRoleProperty.USE_PAO_PERMISSIONS, true);
                     results.put(YukonRole.DEMAND_RESPONSE, true);
                 } else {
                     results.put(YukonRole.DEMAND_RESPONSE, false);

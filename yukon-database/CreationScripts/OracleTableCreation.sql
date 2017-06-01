@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/26/2017 4:26:04 AM                         */
+/* Created on:     6/1/2017 7:46:39 AM                          */
 /*==============================================================*/
 
 
@@ -9956,7 +9956,7 @@ INSERT INTO YukonRoleProperty VALUES (-90005,-900,'Constraint Observe','true','A
 INSERT INTO YukonRoleProperty VALUES (-90006,-900,'Constraint Override','true','Allow load management program constraints to be OVERRIDDEN before starting');
 INSERT INTO YukonRoleProperty VALUES (-90007,-900,'Constraint Default','Check','The default program constraint selection prior to starting a program');
 INSERT INTO YukonRoleProperty VALUES (-90008,-900,'Allow Gear Change for Stop','false','Activates the ability to change gears as part of manually stopping a load program'); 
-INSERT INTO YukonRoleProperty VALUES (-90009,-900,'Ignore LM Pao Permissions','false','Allow access to all load management objects. Set to false to force the use of per pao permissions.');
+INSERT INTO YukonRoleProperty VALUES (-90009,-900,'Use Pao Permissions','false','Allow access to all load management objects. Set to true to force the use of per pao permissions.');
 INSERT INTO YukonRoleProperty VALUES (-90010,-900,'Control Areas','true','Controls access to view Control Areas');
 INSERT INTO YukonRoleProperty VALUES (-90011,-900,'Scenarios','true','Controls access to view Scenarios');
 
