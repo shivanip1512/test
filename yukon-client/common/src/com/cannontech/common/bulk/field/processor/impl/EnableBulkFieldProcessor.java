@@ -9,12 +9,10 @@ import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.user.YukonUserContext;
 
 public class EnableBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
     
     private DeviceDao deviceDao;
-    @Autowired private LocationService locationService;
     
     @Override
     public void updateField(SimpleDevice device, YukonDeviceDto value) {
@@ -32,7 +30,6 @@ public class EnableBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
             }
             else if (!enable) {
                 this.deviceDao.disableDevice(device);
-                locationService.deleteLocation(device.getDeviceId(), YukonUserContext.system.getYukonUser());
             }
         }
         catch (DataAccessException e) {

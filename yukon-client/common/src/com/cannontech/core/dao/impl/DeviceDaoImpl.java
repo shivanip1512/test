@@ -44,7 +44,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
@@ -59,6 +58,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private MeterDao meterDao;
+    @Autowired private LocationService locationService;
 
     public static final YukonRowMapper<SimpleDevice> SIMPLE_DEVICE_MAPPER = new YukonRowMapper<SimpleDevice>() {
         @Override
@@ -76,7 +76,6 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public void disableDevice(YukonDevice device) {
-        LocationService locationService = YukonSpringHook.getBean(LocationService.class);
         locationService.deleteLocation(device.getPaoIdentifier().getPaoId(), YukonUserContext.system.getYukonUser());
         enableDisableDevice(device, YNBoolean.YES);
     }
