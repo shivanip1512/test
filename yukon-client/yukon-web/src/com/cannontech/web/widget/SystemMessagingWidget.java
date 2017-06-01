@@ -39,6 +39,8 @@ public class SystemMessagingWidget extends AdvancedWidgetControllerBase {
     
     @RequestMapping("render")
     public String render(ModelMap model, HttpServletRequest request) throws Exception {
+        setLazyLoad(true);
+
         List<SystemHealthMetricIdentifier> favoriteIds = widgetParameterToMetric.entrySet()
             .stream()
             .filter(entry -> WidgetParameterHelper.getBooleanParameter(request, entry.getKey(), false))
