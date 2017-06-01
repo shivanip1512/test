@@ -964,7 +964,7 @@
       <page name="view" type="BASIC">
         <labelArgument>${dashboard.name}</labelArgument>
       </page>
-      <page name="edit" type="BASIC">
+      <page name="edit" type="BASIC" hideFavorite="true">
         <labelArgument>${dashboard.name}</labelArgument>
       </page>
     </pages>
