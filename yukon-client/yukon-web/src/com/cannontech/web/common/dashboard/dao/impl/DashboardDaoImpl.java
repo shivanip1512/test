@@ -1,7 +1,6 @@
 package com.cannontech.web.common.dashboard.dao.impl;
 
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,7 +13,6 @@ import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
@@ -319,11 +317,11 @@ public class DashboardDaoImpl implements DashboardDao {
         sql.append("SELECT UserId, PageAssignment FROM UserDashboard");
         sql.append("WHERE dashboardId").eq(dashboardId);
         
-        jdbcTemplate.query(sql, new RowCallbackHandler() {
+        jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
             @Override
-            public void processRow(ResultSet rs) throws SQLException {
+            public void processRow(YukonResultSet rs) throws SQLException {
                 Integer userId = rs.getInt("UserId");
-                DashboardPageType type = DashboardPageType.valueOf(rs.getString("PageAssignment"));
+                DashboardPageType type = rs.getEnum("PageAssignment", DashboardPageType.class);
                 resultMap.put(type, userId);
             }
         });
