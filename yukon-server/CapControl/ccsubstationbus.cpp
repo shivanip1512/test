@@ -742,9 +742,12 @@ void CtiCCSubstationBus::setEstimatedVarLoadPointValue( const double aValue )
 
     Sets the flag if the substation is in peak time
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBus::setPeakTimeFlag(bool peaktime)
+void CtiCCSubstationBus::setPeakTimeFlag( bool peaktime )
 {
-    updateDynamicValue( _peaktimeflag, peaktime );
+    if ( updateDynamicValue( _peaktimeflag, peaktime ) )
+    {
+        setBusUpdatedFlag( true );
+    }
 }
 
 /*---------------------------------------------------------------------------

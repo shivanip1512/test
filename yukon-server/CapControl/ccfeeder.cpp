@@ -286,9 +286,18 @@ void CtiCCFeeder::setBusOptimizedVarOffset(const double varoffset)
 
     Sets the ParentPeakTimeFlag in the feeder
 ---------------------------------------------------------------------------*/
-void CtiCCFeeder::setPeakTimeFlag(bool peakTimeFlag)
+void CtiCCFeeder::setPeakTimeFlag( bool peakTimeFlag )
 {
-    updateDynamicValue( _peakTimeFlag, peakTimeFlag );
+    if ( updateDynamicValue( _peakTimeFlag, peakTimeFlag ) )
+    {
+        CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+        CtiCCSubstationBusPtr sub = store->findSubBusByPAObjectID( CtiCCFeeder::getParentId() );
+
+        if ( sub != NULL )
+        {
+            sub->setBusUpdatedFlag( true );
+        }
+    }
 }
 
 void CtiCCFeeder::setPorterRetFailFlag(bool flag)
