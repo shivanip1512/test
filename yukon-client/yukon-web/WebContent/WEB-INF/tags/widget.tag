@@ -7,6 +7,7 @@
 <%@ attribute name="bean" required="true" %>
 <%@ attribute name="paramMap" type="java.util.Map" %>
 <%@ attribute name="hideEnabled" type="java.lang.Boolean" %>
+<%@ attribute name="displayUnauthorizedMessage" type="java.lang.Boolean" %>
 <%@ attribute name="title" %>
 
 <%@ attribute name="helpText" description="The text to put inside of a help popup." %>
@@ -22,7 +23,9 @@
 <cti:beanLookup bean="${bean}" var="beanInst"/>
 
 <%-- AUTHORIZE VISIBLITY BASED ON ROLE/ROLE PROPERTY --%>
-<cti:checkUserChecker userChecker="${beanInst.roleAndPropertiesChecker}">
+<cti:checkUserChecker var="authorized" userChecker="${beanInst.roleAndPropertiesChecker}"/>
+
+<c:if test="${displayUnauthorizedMessage || authorized}">
 
 <!--  Widget: ${beanInst.shortName}  -->
 <c:set var="widgetParameters" value="${cti:combineWidgetParams(pageScope.paramMap,null)}" scope="request"/>
@@ -96,4 +99,4 @@
         </tags:sectionContainer>
     </c:if>
 </div>
-</cti:checkUserChecker>
+</c:if>

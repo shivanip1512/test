@@ -28,13 +28,13 @@
         <div class="column one" style="min-height:100px;">
             <c:forEach var="widget" items="${dashboard.column1Widgets}">
                 <cti:msg2 key="yukon.web.widgets.${widget.type.beanName}.helpText" var="helpText" blankIfMissing="true"/>
-                <tags:widget bean="${widget.type.beanName}" paramMap="${widget.parameters}" helpText="${helpText}"/>
+                <tags:widget bean="${widget.type.beanName}" paramMap="${widget.parameters}" helpText="${helpText}" displayUnauthorizedMessage="true"/>
             </c:forEach>
         </div>
         <div class="column two nogutter" style="min-height:100px;">
             <c:forEach var="widget" items="${dashboard.column2Widgets}">
                 <cti:msg2 key="yukon.web.widgets.${widget.type.beanName}.helpText" var="helpText" blankIfMissing="true"/>
-                <tags:widget bean="${widget.type.beanName}" paramMap="${widget.parameters}" helpText="${helpText}"/>
+                <tags:widget bean="${widget.type.beanName}" paramMap="${widget.parameters}" helpText="${helpText}" displayUnauthorizedMessage="true"/>
             </c:forEach>        
         </div>
     </div>
