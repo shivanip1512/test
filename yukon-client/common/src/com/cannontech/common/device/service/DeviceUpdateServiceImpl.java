@@ -35,10 +35,8 @@ import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoDefinition;
 import com.cannontech.common.pao.definition.model.PointIdentifier;
 import com.cannontech.common.pao.definition.model.PointTemplate;
-import com.cannontech.common.pao.definition.service.PaoDefinitionService;
+import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.pao.service.PointCreationService;
-import com.cannontech.common.pao.service.PointService;
-import com.cannontech.common.pao.service.impl.PaoCreationHelper;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.model.RfnManufacturerModel;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
@@ -95,14 +93,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     @Autowired private DlcAddressRangeService dlcAddressRangeService;
     @Autowired private PaoDao paoDao;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
-    @Autowired private PaoDefinitionService paoDefinitionService;
     @Autowired private PointCreationService pointCreationService;
-    @Autowired private PointService pointService;
     @Autowired private RouteDiscoveryService routeDiscoveryService;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
     @Autowired private PointDao pointDao;
-    @Autowired private PaoCreationHelper paoCreationHelper;
-
+    @Autowired private LocationService locationService;
     private final Logger log = YukonLogManager.getLogger(DeviceUpdateServiceImpl.class);
 
     @Override
@@ -739,5 +734,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
                 }
             }
         }
+    }
+    
+    @Override
+    public void disableDevice(YukonDevice device){
+        locationService.deleteLocation(device.getPaoIdentifier().getPaoId(), YukonUserContext.system.getYukonUser());
+        deviceDao.disableDevice(device);
     }
 }

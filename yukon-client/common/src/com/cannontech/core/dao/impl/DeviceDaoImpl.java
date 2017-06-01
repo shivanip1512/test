@@ -23,7 +23,6 @@ import com.cannontech.common.pao.PaoClass;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.YukonDevice;
-import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.util.ChunkingMappedSqlTemplate;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -44,7 +43,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableSet;
@@ -58,7 +56,6 @@ public final class DeviceDaoImpl implements DeviceDao {
     @Autowired private DBPersistentDao dbPersistentDao;
     @Autowired private DbChangeManager dbChangeManager;
     @Autowired private MeterDao meterDao;
-    @Autowired private LocationService locationService;
 
     public static final YukonRowMapper<SimpleDevice> SIMPLE_DEVICE_MAPPER = new YukonRowMapper<SimpleDevice>() {
         @Override
@@ -76,7 +73,6 @@ public final class DeviceDaoImpl implements DeviceDao {
 
     @Override
     public void disableDevice(YukonDevice device) {
-        locationService.deleteLocation(device.getPaoIdentifier().getPaoId(), YukonUserContext.system.getYukonUser());
         enableDisableDevice(device, YNBoolean.YES);
     }
 

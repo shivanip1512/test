@@ -59,6 +59,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
+import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.InsufficientMultiSpeakDataException;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -174,7 +175,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private PointDao pointDao;
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
- 
+    @Autowired private DeviceUpdateService deviceUpdateService;
+    
     @Autowired private TransactionTemplate transactionTemplate;
     @Autowired private ObjectFactory objectFactory;
     @Autowired private OAClient oaClient;
@@ -1599,7 +1601,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                     addMeterToGroup(meter, SystemGroupEnum.INVENTORY, METER_REMOVE_STRING, mspVendor);
                     if (!meter.isDisabled()) {// enabled
                         meter.setDisabled(true); // update local object reference
-                        deviceDao.disableDevice(meter);
+                        deviceUpdateService.disableDevice(meter);
                         multispeakEventLogService.disableDevice(meter.getMeterNumber(), meter, METER_REMOVE_STRING,
                             mspVendor.getCompanyName());
                     }
@@ -1979,7 +1981,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             try {
                 YukonMeter meter = meterDao.getForMeterNumber(meterNumber);
                 if (disable && !meter.isDisabled()) {
-                    deviceDao.disableDevice(meter);
+                    deviceUpdateService.disableDevice(meter);
                 }
                 addMeterToGroup(meter, systemGroup, mspMethod, mspVendor);
             } catch (NotFoundException e) {

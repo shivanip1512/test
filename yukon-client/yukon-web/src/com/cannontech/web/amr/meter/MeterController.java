@@ -41,6 +41,7 @@ import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.model.PreviousReadings;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
@@ -123,6 +124,8 @@ public class MeterController {
     @Autowired private ServerDatabaseCache serverDatabaseCache;
     @Autowired private MeterTypeHelper meterTypeHelper;
     @Autowired private MeterDao meterDao;
+    @Autowired private DeviceUpdateService deviceUpdateService;
+    
     private static final Logger log = YukonLogManager.getLogger(MeterController.class); 
 
     private static final String baseKey = "yukon.web.modules.amr.meterSearchResults";
@@ -381,7 +384,7 @@ public class MeterController {
         
         deviceDao.changeMeterNumber(device, meter.getMeterNumber());
         if (meter.isDisabled()) {
-           deviceDao.disableDevice(device); 
+           deviceUpdateService.disableDevice(device); 
         }
         Map<String, Object> json = new HashMap<>();
         json.put("deviceId", device.getDeviceId());
@@ -417,7 +420,7 @@ public class MeterController {
         
         deviceDao.changeMeterNumber(device, meter.getMeterNumber());
         if (meter.isDisabled()) {
-           deviceDao.disableDevice(device); 
+           deviceUpdateService.disableDevice(device); 
         }
         Map<String, Object> json = new HashMap<>();
         json.put("deviceId", device.getDeviceId());

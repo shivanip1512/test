@@ -117,4 +117,8 @@ public interface DeviceUpdateService {
      * User created points are ignored.
      */
     PointsToProcess getPointsToProccess(DeviceBase oldDevice, PaoType newType);
+    /**
+     * Should be used to disableDevice versus using the deviceDao directly since it will deleteLocation of the global settings allow for it.
+     */
+    void disableDevice(YukonDevice device);
 }

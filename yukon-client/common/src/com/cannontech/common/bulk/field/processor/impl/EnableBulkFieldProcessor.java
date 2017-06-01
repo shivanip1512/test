@@ -7,12 +7,13 @@ import org.springframework.dao.DataAccessException;
 import com.cannontech.common.bulk.field.impl.YukonDeviceDto;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.device.model.SimpleDevice;
-import com.cannontech.common.pao.service.LocationService;
+import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.core.dao.DeviceDao;
 
 public class EnableBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
     
     private DeviceDao deviceDao;
+    @Autowired private DeviceUpdateService deviceUpdateService;
     
     @Override
     public void updateField(SimpleDevice device, YukonDeviceDto value) {
@@ -29,7 +30,7 @@ public class EnableBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
                 this.deviceDao.enableDevice(device);
             }
             else if (!enable) {
-                this.deviceDao.disableDevice(device);
+                this.deviceUpdateService.disableDevice(device);
             }
         }
         catch (DataAccessException e) {

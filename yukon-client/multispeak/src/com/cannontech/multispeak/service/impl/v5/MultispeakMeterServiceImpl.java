@@ -52,6 +52,7 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.device.service.CommandCompletionCallbackAdapter;
+import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.InsufficientMultiSpeakDataException;
 import com.cannontech.common.pao.PaoIdentifier;
@@ -168,7 +169,8 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
     @Autowired private MeterReadProcessingService meterReadProcessingService;
     @Autowired private NOTClient notClient;
     @Autowired private ObjectFactory objectFactory;
-
+    @Autowired private DeviceUpdateService deviceUpdateService;
+    
     private static final String EXTENSION_DEVICE_TEMPLATE_STRING = "AMRMeterType";
 
     private ImmutableSet<EndDeviceStateKind> supportedEndDeviceStateTypes;
@@ -314,7 +316,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 addMeterToGroup(meter, SystemGroupEnum.INVENTORY, METER_UNINSTALL_STRING, mspVendor);
                 if (!meter.isDisabled()) {// enabled
                     meter.setDisabled(true); // update local object reference
-                    deviceDao.disableDevice(meter);
+                    deviceUpdateService.disableDevice(meter);
                     multispeakEventLogService.disableDevice(meter.getMeterNumber(), meter, METER_UNINSTALL_STRING,
                         mspVendor.getCompanyName());
                 }
@@ -451,7 +453,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
 
                                     if (!existingMeter.isDisabled()) {// enabled
                                         existingMeter.setDisabled(true); // update local object reference
-                                        deviceDao.disableDevice(existingMeter);
+                                        deviceUpdateService.disableDevice(existingMeter);
                                         multispeakEventLogService.disableDevice(existingMeter.getMeterNumber(),
                                             existingMeter, METER_EXCHANGED_STRING, mspVendor.getCompanyName());
                                     }
@@ -1070,7 +1072,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             try {
                 YukonMeter meter = meterDao.getForMeterNumber(meterNumber);
                 if (disable && !meter.isDisabled()) {
-                    deviceDao.disableDevice(meter);
+                    deviceUpdateService.disableDevice(meter);
                 }
                 addMeterToGroup(meter, systemGroup, mspMethod, mspVendor);
             } catch (NotFoundException e) {
