@@ -284,7 +284,7 @@ public class DashboardsController {
     @RequestMapping("{id}/view")
     public String viewDashboard(@PathVariable int id, ModelMap model, YukonUserContext userContext, FlashScope flash) {
         Dashboard dashboard = dashboardService.getDashboard(id);
-        boolean adminDashboards = rolePropertyDao.getPropertyBooleanValue(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS, userContext.getYukonUser());
+        boolean adminDashboards = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS, userContext.getYukonUser());
         if (adminDashboards || dashboardService.isVisible(userContext.getYukonUser().getUserID(), id)) {
             model.addAttribute("mode", PageEditMode.VIEW);
             model.addAttribute("dashboard", dashboard);
