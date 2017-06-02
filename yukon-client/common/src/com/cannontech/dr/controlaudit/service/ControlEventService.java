@@ -25,14 +25,13 @@ public interface ControlEventService {
     public void createDeviceControlEvent(int eventId, int groupId, Instant startTime, Instant stopTime);
     
     /**
-     * Retrieves the most recent event summary information (Program, StartTime, Confirmed & Unknown count)
-     * associated with the specified event IDs.
+     * Retrieves the most recent event summary information associated with the specified event IDs.
      */
     List<ControlAuditSummary> getControlAuditSummary(int numberOfEvents);
 
     /**
-     * Returned as a list of ControlAuditStats (EventId, Program, Group, StartTime, Confirmed & Unknown count)
-     * associated with the specified range and based on paging and sorting parameters
+     * Returned as a list of ControlAuditStats associated with the specified range and based on paging and
+     * sorting parameters
      */
 
     List<ControlAuditStats> getControlAuditStats(Range<Instant> range, PagingParameters pagingParameters,
