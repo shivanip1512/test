@@ -1,6 +1,8 @@
 package com.cannontech.dr.controlaudit.dao;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.joda.time.Instant;
 
@@ -59,4 +61,9 @@ public interface ControlEventDao {
      * Returns list of ControlDeviceDetail for specified event
      */
     List<ControlDeviceDetail> getControlEventDeviceData(int eventId);
+    
+    /**
+     * Gets status count for devices for specified date range
+     */
+    Map<Integer, Integer> getControlEventDeviceStatus(List<Integer> deviceId, Date startDate, Date endDate);
 }

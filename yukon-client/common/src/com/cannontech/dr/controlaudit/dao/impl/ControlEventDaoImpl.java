@@ -3,7 +3,9 @@ package com.cannontech.dr.controlaudit.dao.impl;
 import static com.cannontech.dr.controlaudit.ControlEventDeviceStatus.UNKNOWN;
 
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -20,6 +22,7 @@ import com.cannontech.core.dynamic.DatabaseChangeEventListener;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.dr.controlaudit.ControlEventDeviceStatus;
 import com.cannontech.dr.controlaudit.ControlOptOutStatus;
@@ -35,6 +38,7 @@ import com.cannontech.stars.database.data.lite.LiteInventoryBase;
 import com.cannontech.stars.dr.optout.dao.OptOutEventDao;
 import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
+import com.google.common.collect.Maps;
 
 public class ControlEventDaoImpl implements ControlEventDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
@@ -274,6 +278,31 @@ public class ControlEventDaoImpl implements ControlEventDao {
         return controlAuditDetails;
     }
 
+    @Override
+    public Map<Integer, Integer> getControlEventDeviceStatus(List<Integer> deviceId, Date startDate, Date endDate) {
+        SqlStatementBuilder selectSql = new SqlStatementBuilder();
+
+        selectSql.append("SELECT DeviceId,");
+        selectSql.append("  SUM(CASE WHEN Result ").in_k(ControlEventDeviceStatus.getAllDeviceStatus());
+        selectSql.append("  THEN 1 ELSE 0 END) AS StatusCount");
+        selectSql.append("FROM ControlEvent ce, ControlEventDevice ced");
+        selectSql.append("WHERE ce.ControlEventId = ced.ControlEventId");
+        selectSql.append("  AND StartTime").gte(startDate);
+        selectSql.append("  AND ScheduledStopTime").lte(endDate);
+        selectSql.append("GROUP BY DeviceId");
+
+        final Map<Integer, Integer> deviceStatus = Maps.newHashMap();
+        jdbcTemplate.query(selectSql, new YukonRowCallbackHandler() {
+            @Override
+            public void processRow(YukonResultSet rs) throws SQLException {
+                int deviceId = rs.getInt("DeviceId");
+                int statusCount = rs.getInt("StatusCount");
+                deviceStatus.put(deviceId, statusCount);
+            }
+        });
+        return deviceStatus;
+    }
+    
     private SqlFragmentSource getControlAuditBaseQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ce.ControlEventId AS EventId, ce.StartTime, ce.ScheduledStopTime AS StopTime, ");

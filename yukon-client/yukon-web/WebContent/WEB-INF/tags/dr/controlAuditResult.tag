@@ -43,7 +43,15 @@
                     </c:if>
                 </td>
                 <c:if test="${controlled}">
-                    <td><cti:formatDuration type="DHMS_REDUCED" value="${row.control}"/></td>
+                    <c:choose>
+                        <c:when test="${row.control == null}">
+                            <td><i:inline key="yukon.common.na"/></td>
+                        </c:when>
+                        <c:otherwise>
+                            <td><cti:formatDuration type="DHMS_REDUCED" value="${row.control}"/></td>
+                        </c:otherwise>
+                    </c:choose>
+                    
                 </c:if>
             </tr>
         </c:forEach>

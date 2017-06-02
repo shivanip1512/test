@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.dr.operator.inventory.service.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.dr.controlaudit.dao.ControlEventDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.model.LiteLmHardware;
@@ -58,6 +60,7 @@ public class ControlAuditServiceImpl implements ControlAuditService {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired @Qualifier("inventoryTasks") private RecentResultsCache<AbstractInventoryTask> resultsCache;
     @Autowired @Qualifier("longRunning") private Executor executor;
+    @Autowired private ControlEventDao controlEventDao;
     
     private static final Logger log = YukonLogManager.getLogger(ControlAuditServiceImpl.class);
     
@@ -144,6 +147,7 @@ public class ControlAuditServiceImpl implements ControlAuditService {
                 
                 ListMultimap<BuiltInAttribute, YukonPao> paosByAttribute = ArrayListMultimap.create();
                 Map<YukonPao, InventoryIdentifier> inventoryByPao = new HashMap<>();
+                Map<Integer, InventoryIdentifier> honeywellDevices = new HashMap<>();
                 
                 AuditSettings settings = task.getSettings();
                 List<InventoryIdentifier> identifiers = task.getCollection().getList();
@@ -174,18 +178,23 @@ public class ControlAuditServiceImpl implements ControlAuditService {
                         } else {
                             YukonPao pao = paosById.get(deviceId);
                             inventoryByPao.put(pao, identifier);
-                            
-                            // Devices that support relay shed time will always at least support relay #1 shed time.
-                            if (!doesPaoSupport(pao, r1)) {
-                                isSupported = false;
+                            Boolean isHoneywell = identifier.getHardwareType().isHoneywell();
+                            if (!isHoneywell) {
+                                // Devices that support relay shed time will always at least support relay #1
+                                // shed time.
+                                if (!doesPaoSupport(pao, r1)) {
+                                    isSupported = false;
+                                } else {
+                                    paosByAttribute.put(r1, pao);
+                                    if (doesPaoSupport(pao, r2)) {
+                                        paosByAttribute.put(r2, pao);
+                                    }
+                                    if (doesPaoSupport(pao, r3)) {
+                                        paosByAttribute.put(r3, pao);
+                                    }
+                                }
                             } else {
-                                paosByAttribute.put(r1, pao);
-                                if (doesPaoSupport(pao, r2)) {
-                                    paosByAttribute.put(r2, pao);
-                                }
-                                if (doesPaoSupport(pao, r3)) {
-                                    paosByAttribute.put(r3, pao);
-                                }
+                                honeywellDevices.put(deviceId, identifier);
                             }
                         }
                         if (!isSupported) {
@@ -233,6 +242,31 @@ public class ControlAuditServiceImpl implements ControlAuditService {
                             }
                         }
                         task.addSuccess();
+                    }
+                    
+                    if (!honeywellDevices.isEmpty()) {
+                        List<Integer> deviceList = new ArrayList<>(honeywellDevices.keySet());
+
+                        Map<Integer, Integer> deviceControlStatus =
+                            controlEventDao.getControlEventDeviceStatus(deviceList, from, to);
+
+                        honeywellDevices.forEach((key, value) -> {
+                            AuditRow row = new AuditRow();
+                            row.setHardware(inventoryDao.getLiteLmHardwareByInventory(honeywellDevices.get(key)));
+
+                            // For honeywell, controlled means any device reported a message during this window.
+                            // Unknown - Not received any message, Uncontrolled - No event send for that device.
+                            if (deviceControlStatus.containsKey(key)) {
+                                if (deviceControlStatus.get(key) != 0) {
+                                    task.getControlled().add(row);
+                                } else {
+                                    task.getUnknown().add(row);
+                                }
+                            } else {
+                                task.getUncontrolled().add(row);
+                            }
+                            task.addSuccess();
+                        });
                     }
                 }
                 

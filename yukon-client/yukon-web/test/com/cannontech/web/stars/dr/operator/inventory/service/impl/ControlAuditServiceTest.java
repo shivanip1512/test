@@ -8,6 +8,7 @@ import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,6 +48,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.dr.controlaudit.dao.ControlEventDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.PointData;
@@ -63,6 +65,7 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class ControlAuditServiceTest {
@@ -71,6 +74,7 @@ public class ControlAuditServiceTest {
     private InventoryDao inventoryDao;
     private PaoDao paoDao;
     private RawPointHistoryDao rphDao;
+    private ControlEventDao controlEventDao;
     private YukonUserContextMessageSourceResolver resolver;
     private MemoryCollectionProducer collectionProducer;
     private PaoDefinitionDao paoDefinitionDao;
@@ -82,6 +86,7 @@ public class ControlAuditServiceTest {
     private PaoType supportsOne = PaoType.LCR3102;
     private PaoType supportsTwo = PaoType.LCR6200_RFN;
     private PaoType supportsAll = PaoType.LCR6600_RFN;
+    private PaoType honeywell = PaoType.HONEYWELL_9000;
 
     private Map<PaoType, Set<BuiltInAttribute>> attributeSupport = new HashMap<>();
     private Map<Integer, PaoIdentifier> controlledPaos = new HashMap<>();
@@ -105,16 +110,19 @@ public class ControlAuditServiceTest {
             controlledPaos.put(id, new PaoIdentifier(id++, supportsOne));
             controlledPaos.put(id, new PaoIdentifier(id++, supportsTwo));
             controlledPaos.put(id, new PaoIdentifier(id++, supportsAll));
+            controlledPaos.put(id, new PaoIdentifier(id++, honeywell));
         }
         for (int i = 0; i < 5; i++) {
             uncontrolledPaos.put(id, new PaoIdentifier(id++, supportsOne));
             uncontrolledPaos.put(id, new PaoIdentifier(id++, supportsTwo));
             uncontrolledPaos.put(id, new PaoIdentifier(id++, supportsAll));
+            uncontrolledPaos.put(id, new PaoIdentifier(id++, honeywell));
         }
         for (int i = 0; i < 5; i++) {
             unknownPaos.put(id, new PaoIdentifier(id++, supportsOne));
             unknownPaos.put(id, new PaoIdentifier(id++, supportsTwo));
             unknownPaos.put(id, new PaoIdentifier(id++, supportsAll));
+            unknownPaos.put(id, new PaoIdentifier(id++, honeywell));
         }
         for (int i = 0; i < 5; i++) {
             unsupportedPaos.put(id, new PaoIdentifier(id++, supportsZero));
@@ -158,7 +166,12 @@ public class ControlAuditServiceTest {
                 List<LiteLmHardware> lmHardwares = new ArrayList<>();
                 for (Integer deviceId : allPaos.keySet()) {
                     LiteLmHardware hardware = new LiteLmHardware();
-                    HardwareType type = HardwareType.getForPaoType(allPaos.get(deviceId).getPaoType()).get(0);
+                    HardwareType type = null;
+                    if (!allPaos.get(deviceId).getPaoType().isHoneywell()) {
+                        type = HardwareType.getForPaoType(allPaos.get(deviceId).getPaoType()).get(0);
+                    } else {
+                        type = HardwareType.HONEYWELL_9000;
+                    }
                     hardware.setIdentifier(new InventoryIdentifier(deviceId, type));
                     hardware.setDeviceId(deviceId);
                     lmHardwares.add(hardware);
@@ -259,6 +272,27 @@ public class ControlAuditServiceTest {
             }
         }).anyTimes();
         
+        controlEventDao = createNiceMock(ControlEventDao.class);
+        controlEventDao.getControlEventDeviceStatus(EasyMock.<List<Integer>>anyObject(), 
+                                EasyMock.<Date> anyObject(), EasyMock.<Date> anyObject());
+        expectLastCall().andAnswer(new IAnswer<Map<Integer, Integer>>() {
+            @Override
+            public Map<Integer, Integer> answer() throws Throwable {
+                List<Integer> deviceIds = (List<Integer>) getCurrentArguments()[0];
+                
+                Map<Integer, Integer> result = Maps.newHashMap();
+                for (Integer deviceId : deviceIds) {
+                    if (controlledPaos.containsKey(deviceId)) {
+                        result.put(deviceId, 1);
+                    } else if (unknownPaos.containsKey(deviceId)) {
+                        result.put(deviceId, 0);
+                    }
+                    // unknown and unsupported have no data
+                }
+                return result;
+            }
+        }).anyTimes();
+        
         resultsCache = new RecentResultsCache<AbstractInventoryTask>();
         
         executor = createNiceMock(Executor.class);
@@ -268,13 +302,14 @@ public class ControlAuditServiceTest {
         ReflectionTestUtils.setField(service, "inventoryDao", inventoryDao);
         ReflectionTestUtils.setField(service, "paoDao", paoDao);
         ReflectionTestUtils.setField(service, "rphDao", rphDao);
+        ReflectionTestUtils.setField(service, "controlEventDao", controlEventDao);
         ReflectionTestUtils.setField(service, "resolver", resolver);
         ReflectionTestUtils.setField(service, "collectionProducer", collectionProducer);
         ReflectionTestUtils.setField(service, "paoDefinitionDao", paoDefinitionDao);
         ReflectionTestUtils.setField(service, "resultsCache", resultsCache);
         ReflectionTestUtils.setField(service, "executor", executor);
         
-        replay(inventoryDao, paoDao, rphDao, collectionProducer, resolver, paoDefinitionDao, executor);
+        replay(inventoryDao, paoDao, rphDao, controlEventDao, collectionProducer, resolver, paoDefinitionDao, executor);
     }
 
     @Test
@@ -399,7 +434,11 @@ public class ControlAuditServiceTest {
     private InventoryCollection getStartingCollection() {
         List<InventoryIdentifier> inventory = new ArrayList<>();
         for (int id : allPaos.keySet()) {
-            inventory.add(new InventoryIdentifier(id, HardwareType.getForPaoType(allPaos.get(id).getPaoType()).get(0)));
+            if (!allPaos.get(id).getPaoType().isHoneywell()) {
+                inventory.add(new InventoryIdentifier(id, HardwareType.getForPaoType(allPaos.get(id).getPaoType()).get(0)));
+            } else {
+                inventory.add(new InventoryIdentifier(id, HardwareType.HONEYWELL_9000));
+            }
         }
         
         return getInventoryCollection(inventory);
