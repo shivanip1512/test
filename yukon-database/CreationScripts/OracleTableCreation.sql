@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/1/2017 7:46:39 AM                          */
+/* Created on:     6/2/2017 4:05:22 PM                          */
 /*==============================================================*/
 
 
@@ -3055,6 +3055,11 @@ INSERT INTO DeviceGroup VALUES (42, 'AC', 37, 'NOEDIT_MOD', 'STATIC', '01-JAN-20
 INSERT INTO DeviceGroup VALUES (43, 'BC', 37, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'BC');
 INSERT INTO DeviceGroup VALUES (44, 'ABC', 37, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'ABC');
 INSERT INTO DeviceGroup VALUES (45, 'UNKNOWN', 37, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'UNKNOWN');
+INSERT INTO DeviceGroup VALUES (46, 'All Meters', 15, 'NOEDIT_NOMOD', 'STATIC', '02-JUN-2017', 'ALL_METERS');
+INSERT INTO DeviceGroup VALUES (47, 'All MCT Meters', 46, 'NOEDIT_NOMOD', 'METERS_ALL_PLC_METERS', '02-JUN-2017', 'ALL_MCT_METERS');
+INSERT INTO DeviceGroup VALUES (48, 'All RF Meters', 46, 'NOEDIT_NOMOD', 'STATIC', '02-JUN-2017', 'ALL_METERS');
+INSERT INTO DeviceGroup VALUES (49, 'All RF Electric Meters', 48, 'NOEDIT_NOMOD', 'METERS_ALL_RFN_METERS', '02-JUN-2017', 'ALL_RFN_METERS');
+INSERT INTO DeviceGroup VALUES (50, 'All RFW Meters', 48, 'NOEDIT_NOMOD', 'METERS_ALL_RFW_METERS', '02-JUN-2017', 'ALL_RFW_METERS');
 
 alter table DeviceGroup
    add constraint AK_DeviceGroup_ParentDG_GrpNam unique (GroupName, ParentDeviceGroupId);

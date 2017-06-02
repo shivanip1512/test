@@ -813,6 +813,41 @@ UPDATE YukonRoleProperty SET KeyName = 'Use Pao Permissions',
         WHERE RolePropertyID = -90009 AND RoleID = -900;
 /* End YUK-16604 */
 
+/* Start YUK-16740 */
+/* @start-block */
+/* We'll need to take the next five ID's, so we'll make sure we don't hit 100 by looking for ID's less than 96 */
+/* If this value overlaps with an existing one, we'll make sure to not ignore the insert error so tech services can handle the special case */
+/* Most of the dynamic values we'll calculate will be based on this v_MaxDeviceGroupId */
+
+DECLARE 
+    v_MaxDeviceGroupId NUMBER; 
+    v_RootParentGroupId NUMBER; 
+BEGIN
+
+SELECT MAX(DG.DeviceGroupId) INTO v_MaxDeviceGroupId FROM DeviceGroup DG WHERE DG.DeviceGroupId < 96;
+SELECT MAX(DG.DeviceGroupId) INTO v_RootParentGroupId FROM DeviceGroup DG WHERE SystemGroupEnum = 'SYSTEM_METERS';
+
+INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
+    VALUES(v_MaxDeviceGroupId + 1, 'All Meters', v_RootParentGroupId, 'NOEDIT_NOMOD', 'STATIC', SYSDATE(), 'ALL_METERS');
+
+/* The next two's parent should be 'All Meters', so v_MaxDeviceGroupId + 1 */
+INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
+    VALUES(v_MaxDeviceGroupId + 2, 'All MCT Meters', v_MaxDeviceGroupId + 1, 'NOEDIT_NOMOD', 'METERS_ALL_PLC_METERS', SYSDATE(), 'ALL_MCT_METERS');
+
+INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
+    VALUES(v_MaxDeviceGroupId + 3, 'All RF Meters', v_MaxDeviceGroupId + 1, 'NOEDIT_NOMOD', 'STATIC', SYSDATE(), 'ALL_METERS');
+    
+/* The last two's parent should be 'All RF Meters', so v_MaxDeviceGroupId + 3 */
+INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
+    VALUES(v_MaxDeviceGroupId + 4, 'All RF Electric Meters', v_MaxDeviceGroupId + 3, 'NOEDIT_NOMOD', 'METERS_ALL_RFN_METERS', SYSDATE(), 'ALL_RFN_METERS');
+
+INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
+    VALUES(v_MaxDeviceGroupId + 5, 'All RFW Meters', v_MaxDeviceGroupId + 3, 'NOEDIT_NOMOD', 'METERS_ALL_RFW_METERS', SYSDATE(), 'ALL_RFW_METERS');
+END;
+/
+/* @end-block */
+/* End YUK-16740 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
