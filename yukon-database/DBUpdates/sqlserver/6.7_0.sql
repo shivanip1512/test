@@ -812,6 +812,10 @@ DELETE FROM POINT WHERE PAObjectID IN
     (SELECT Y.PAObjectID FROM YukonPAObject Y WHERE Y.type = 'CBC 6510');
 
 DELETE FROM YukonPAObject WHERE TYPE = 'CBC 6510';
+
+DELETE FROM DeviceConfigDeviceTypes WHERE PaoType = 'CBC 6510';
+
+DELETE FROM DeviceTypeCommand WHERE DeviceType = 'CBC 6510';
 /* End YUK-16299 */
 
 /* Start YUK-16604 */
