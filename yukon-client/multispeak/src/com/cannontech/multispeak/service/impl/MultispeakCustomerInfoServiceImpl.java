@@ -25,7 +25,7 @@ public class MultispeakCustomerInfoServiceImpl implements MultispeakCustomerInfo
             if (p.getPhone() != null) {
                 fullPhone += p.getPhone();
             }
-            if (p.getPhoneType() != null && p.getPhoneType() != null) {
+            if (p.getPhoneType() != null) {
                 fullPhone += " " + p.getPhoneType();
             }
             if (!StringUtils.isBlank(fullPhone)) {
