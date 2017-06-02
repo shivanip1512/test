@@ -76,7 +76,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SUM_KVAH_RATE_B("Sum kVAh Rate B", AttributeGroup.USAGE),
     SUM_KVAH_RATE_C("Sum kVAh Rate C", AttributeGroup.USAGE),
     SUM_KVAH_RATE_D("Sum kVAh Rate D", AttributeGroup.USAGE),
-    KVAR("kVAr", AttributeGroup.REACTIVE),  // Delivered kVar / also instantaneous
+    KVAR("kVAr", AttributeGroup.REACTIVE),  // instantaneous
+    DELIVERED_KVAR("Delivered kVAr", AttributeGroup.REACTIVE),
     RECEIVED_KVAR("Received kVAr", AttributeGroup.REACTIVE),
     KVARH("kVArh", AttributeGroup.REACTIVE),    // Delivered kVArh
     KVARH_RATE_A("kVArh Rate A", AttributeGroup.REACTIVE),
@@ -89,8 +90,19 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     METER_BOX_COVER_REMOVAL_FLAG("Meter Box Cover Removal", AttributeGroup.STATUS, false),   //440 types only
     MAXIMUM_VOLTAGE("Maximum Voltage", AttributeGroup.VOLTAGE),
     MAXIMUM_VOLTAGE_FROZEN("Maximum Voltage Frozen", AttributeGroup.VOLTAGE),
+    MAXIMUM_VOLTAGE_PHASE_A("Maximum Voltage (Phase A)", AttributeGroup.VOLTAGE),
+    MAXIMUM_VOLTAGE_PHASE_B("Maximum Voltage (Phase B)", AttributeGroup.VOLTAGE),
+    MAXIMUM_VOLTAGE_PHASE_C("Maximum Voltage (Phase C)", AttributeGroup.VOLTAGE),
     MINIMUM_VOLTAGE("Minimum Voltage", AttributeGroup.VOLTAGE),
     MINIMUM_VOLTAGE_FROZEN("Minimum Voltage Frozen", AttributeGroup.VOLTAGE),
+    MINIMUM_VOLTAGE_PHASE_A("Minimum Voltage (Phase A)", AttributeGroup.VOLTAGE),
+    MINIMUM_VOLTAGE_PHASE_B("Minimum Voltage (Phase B)", AttributeGroup.VOLTAGE),
+    MINIMUM_VOLTAGE_PHASE_C("Minimum Voltage (Phase C)", AttributeGroup.VOLTAGE),
+    AVERAGE_VOLTAGE("Average Voltage", AttributeGroup.VOLTAGE),
+    AVERAGE_VOLTAGE_PHASE_A("Average Voltage (Phase A)", AttributeGroup.VOLTAGE),
+    AVERAGE_VOLTAGE_PHASE_B("Average Voltage (Phase B)", AttributeGroup.VOLTAGE),
+    AVERAGE_VOLTAGE_PHASE_C("Average Voltage (Phase C)", AttributeGroup.VOLTAGE),
+    
     OUTAGE_LOG("Outage Log", AttributeGroup.BLINK_AND_OUTAGE),
     OUTAGE_STATUS("Outage Status", AttributeGroup.STATUS),
     OUT_OF_VOLTAGE_FLAG("Out of Voltage", AttributeGroup.STATUS, false),   //440 types only
@@ -217,15 +229,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     VOLTAGE_PHASE_A("Voltage (Phase A)", AttributeGroup.VOLTAGE),
     VOLTAGE_PHASE_B("Voltage (Phase B)", AttributeGroup.VOLTAGE),
     VOLTAGE_PHASE_C("Voltage (Phase C)", AttributeGroup.VOLTAGE),
-    MINIMUM_VOLTAGE_PHASE_A("Minimum Voltage (Phase A)", AttributeGroup.VOLTAGE),
-    MINIMUM_VOLTAGE_PHASE_B("Minimum Voltage (Phase B)", AttributeGroup.VOLTAGE),
-    MINIMUM_VOLTAGE_PHASE_C("Minimum Voltage (Phase C)", AttributeGroup.VOLTAGE),
-    AVERAGE_VOLTAGE_PHASE_A("Average Voltage (Phase A)", AttributeGroup.VOLTAGE),
-    AVERAGE_VOLTAGE_PHASE_B("Average Voltage (Phase B)", AttributeGroup.VOLTAGE),
-    AVERAGE_VOLTAGE_PHASE_C("Average Voltage (Phase C)", AttributeGroup.VOLTAGE),
-    MAXIMUM_VOLTAGE_PHASE_A("Maximum Voltage (Phase A)", AttributeGroup.VOLTAGE),
-    MAXIMUM_VOLTAGE_PHASE_B("Maximum Voltage (Phase B)", AttributeGroup.VOLTAGE),
-    MAXIMUM_VOLTAGE_PHASE_C("Maximum Voltage (Phase C)", AttributeGroup.VOLTAGE),
     VOLTAGE_PROFILE("Voltage Profile", AttributeGroup.PROFILE, false),    //require extra input, not "attribute" based readable
     WATT_HOUR_PULSE_FAILURE("Watt-Hour Pulse Failure", AttributeGroup.RFN_HARDWARE_EVENT, false),
     ZERO_USAGE_FLAG("Zero Usage Flag", AttributeGroup.STATUS),
@@ -259,12 +262,12 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SUM_KWH_RATE_B("Sum kWh Rate B", AttributeGroup.USAGE),
     SUM_KWH_RATE_C("Sum kWh Rate C", AttributeGroup.USAGE),
     SUM_KWH_RATE_D("Sum kWh Rate D", AttributeGroup.USAGE),
-    SUM_KVAH("Sum kVAh", AttributeGroup.USAGE),
-    SUM_KVARH("Sum kVArh", AttributeGroup.USAGE),
-    SUM_KVARH_RATE_A("Sum kVArh Rate A", AttributeGroup.USAGE),
-    SUM_KVARH_RATE_B("Sum kVArh Rate B", AttributeGroup.USAGE),
-    SUM_KVARH_RATE_C("Sum kVArh Rate C", AttributeGroup.USAGE),
-    SUM_KVARH_RATE_D("Sum kVArh Rate D", AttributeGroup.USAGE),
+    SUM_KVAH("Sum kVAh", AttributeGroup.REACTIVE),
+    SUM_KVARH("Sum kVArh", AttributeGroup.REACTIVE),
+    SUM_KVARH_RATE_A("Sum kVArh Rate A", AttributeGroup.REACTIVE),
+    SUM_KVARH_RATE_B("Sum kVArh Rate B", AttributeGroup.REACTIVE),
+    SUM_KVARH_RATE_C("Sum kVArh Rate C", AttributeGroup.REACTIVE),
+    SUM_KVARH_RATE_D("Sum kVArh Rate D", AttributeGroup.REACTIVE),
 
     USAGE_PER_INTERVAL("Usage per Interval", AttributeGroup.USAGE, false),   //calculated, not readable
     DELIVERED_KWH_PER_INTERVAL("Delivered kWh per Interval", AttributeGroup.USAGE, false),   //calculated, not readable

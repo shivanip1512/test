@@ -395,6 +395,7 @@ public:
     static const Attribute  MinimumVoltagePhaseA;
     static const Attribute  MinimumVoltagePhaseB;
     static const Attribute  MinimumVoltagePhaseC;
+    static const Attribute  AverageVoltage;
     static const Attribute  AverageVoltagePhaseA;
     static const Attribute  AverageVoltagePhaseB;
     static const Attribute  AverageVoltagePhaseC;

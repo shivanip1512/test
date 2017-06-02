@@ -57,13 +57,18 @@
                 { "metricId" : 105, "attribute" : "CURRENT_PHASE_C" },
 
                 { "metricId" : 112, "attribute" : "MINIMUM_VOLTAGE" },
-
+                { "metricId" : 113, "attribute" : "AVERAGE_VOLTAGE" },
                 { "metricId" : 114, "attribute" : "MAXIMUM_VOLTAGE" },
                 { "metricId" : 115, "attribute" : "VOLTAGE" },
-
+                { "metricId" : 116, "attribute" : "MINIMUM_VOLTAGE_PHASE_A" },
+                { "metricId" : 117, "attribute" : "MINIMUM_VOLTAGE_PHASE_B" },
+                { "metricId" : 118, "attribute" : "MINIMUM_VOLTAGE_PHASE_C" },
                 { "metricId" : 119, "attribute" : "AVERAGE_VOLTAGE_PHASE_A" },
                 { "metricId" : 120, "attribute" : "AVERAGE_VOLTAGE_PHASE_B" },
                 { "metricId" : 121, "attribute" : "AVERAGE_VOLTAGE_PHASE_C" },
+                { "metricId" : 122, "attribute" : "MAXIMUM_VOLTAGE_PHASE_A" },
+                { "metricId" : 123, "attribute" : "MAXIMUM_VOLTAGE_PHASE_B" },
+                { "metricId" : 124, "attribute" : "MAXIMUM_VOLTAGE_PHASE_C" },
                 
                 { "metricId" : 128, "attribute" : "NEUTRAL_CURRENT" },
 
@@ -126,7 +131,6 @@
         ],
         "attributeOverrides" : [
                 { "attribute" : "DEMAND",        "metricId" : 200, "paoTypes" : [ "rfn-430sl1", "rfn-430sl2", "rfn-430sl3", "rfn-430sl4" ] },
-                { "attribute" : "KVAR",          "metricId" : 201, "paoTypes" : [ "rfn-430sl1", "rfn-430sl2", "rfn-430sl3", "rfn-430sl4" ] },
                 { "attribute" : "DELIVERED_KVA", "metricId" : 202, "paoTypes" : [ "rfn-430sl1", "rfn-430sl2", "rfn-430sl3", "rfn-430sl4" ] },
                 { "attribute" : "PEAK_DEMAND", "metricId" :  13, "paoTypes" : [ "rfn-530s4x", "rfn-530s4eax", "rfn-530s4eaxr", "rfn-530s4erx", "rfn-530s4erxr" ] }
         ]

@@ -346,6 +346,7 @@ const Attribute Attribute::VoltagePhaseC                                    = At
 const Attribute Attribute::MinimumVoltagePhaseA                             = Attribute( "MINIMUM_VOLTAGE_PHASE_A" );
 const Attribute Attribute::MinimumVoltagePhaseB                             = Attribute( "MINIMUM_VOLTAGE_PHASE_B" );
 const Attribute Attribute::MinimumVoltagePhaseC                             = Attribute( "MINIMUM_VOLTAGE_PHASE_C" );
+const Attribute Attribute::AverageVoltage                                   = Attribute( "AVERAGE_VOLTAGE" );
 const Attribute Attribute::AverageVoltagePhaseA                             = Attribute( "AVERAGE_VOLTAGE_PHASE_A" );
 const Attribute Attribute::AverageVoltagePhaseB                             = Attribute( "AVERAGE_VOLTAGE_PHASE_B" );
 const Attribute Attribute::AverageVoltagePhaseC                             = Attribute( "AVERAGE_VOLTAGE_PHASE_C" );
