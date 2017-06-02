@@ -447,8 +447,7 @@ public class ZoneDetailController {
         // to the number of decimal places stored in the PointUnit table for that point
         for (CapBankPointDelta pointDelta: pointDeltas) {
             LitePointUnit pointUnit = pointDao.getPointUnit(pointDelta.getPointId());
-            BigDecimal bdDelta = new BigDecimal(pointDelta.getDelta()).setScale(pointUnit.getDecimalPlaces(),
-                                                               RoundingMode.HALF_DOWN);
+            BigDecimal bdDelta = new BigDecimal(pointDelta.getDelta()).setScale(2, RoundingMode.HALF_DOWN);
             pointDelta.setDeltaRounded(bdDelta.doubleValue());
             BigDecimal preOpValue = new BigDecimal(pointDelta.getPreOpValue()).setScale(pointUnit.getDecimalPlaces(),
                 RoundingMode.HALF_DOWN);
