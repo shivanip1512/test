@@ -76,8 +76,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     SUM_KVAH_RATE_B("Sum kVAh Rate B", AttributeGroup.USAGE),
     SUM_KVAH_RATE_C("Sum kVAh Rate C", AttributeGroup.USAGE),
     SUM_KVAH_RATE_D("Sum kVAh Rate D", AttributeGroup.USAGE),
-    KVAR("kVAr", AttributeGroup.REACTIVE),  // instantaneous
-    DELIVERED_KVAR("Delivered kVAr", AttributeGroup.REACTIVE),
+    KVAR("kVAr", AttributeGroup.REACTIVE),  // Delivered kVar / also instantaneous
     RECEIVED_KVAR("Received kVAr", AttributeGroup.REACTIVE),
     KVARH("kVArh", AttributeGroup.REACTIVE),    // Delivered kVArh
     KVARH_RATE_A("kVArh Rate A", AttributeGroup.REACTIVE),
