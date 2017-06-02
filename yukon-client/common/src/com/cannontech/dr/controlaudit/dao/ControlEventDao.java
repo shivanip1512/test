@@ -8,8 +8,10 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.controlaudit.ControlEventDeviceStatus;
+import com.cannontech.dr.controlaudit.model.ControlAuditDetail;
 import com.cannontech.dr.controlaudit.model.ControlAuditStats;
 import com.cannontech.dr.controlaudit.model.ControlAuditSummary;
+import com.cannontech.dr.controlaudit.model.ControlDeviceDetail;
 
 public interface ControlEventDao {
     /**
@@ -42,4 +44,19 @@ public interface ControlEventDao {
 
     List<ControlAuditStats> getControlAuditStats(Range<Instant> range, PagingParameters pagingParameters,
             SortingParameters sortingParameters);
+
+    /**
+     * Returns ControlAuditDetail for specified event
+     */
+    ControlAuditDetail getControlAuditDetail(int eventId);
+
+    /**
+     * Returns list of ControlAuditDetail for specified date range
+     */
+    List<ControlAuditDetail> getControlAuditDetails(Range<Instant> range);
+
+    /**
+     * Returns list of ControlDeviceDetail for specified event
+     */
+    List<ControlDeviceDetail> getControlEventDeviceData(int eventId);
 }

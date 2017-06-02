@@ -12,6 +12,7 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.controlaudit.ControlEventDeviceStatus;
 import com.cannontech.dr.controlaudit.dao.ControlEventDao;
+import com.cannontech.dr.controlaudit.model.ControlAuditDetail;
 import com.cannontech.dr.controlaudit.model.ControlAuditStats;
 import com.cannontech.dr.controlaudit.model.ControlAuditSummary;
 import com.cannontech.dr.controlaudit.service.ControlEventService;
@@ -53,4 +54,19 @@ public class ControlEventServiceImpl implements ControlEventService {
         return controlEventDao.getControlAuditStats(range, pagingParameters, sortingParameters);
     }
 
+    @Override
+    public ControlAuditDetail getControlAuditDetail(int eventId) {
+        ControlAuditDetail controlAuditDetail = controlEventDao.getControlAuditDetail(eventId);
+        controlAuditDetail.setDeviceDetails(controlEventDao.getControlEventDeviceData(eventId));
+        return controlAuditDetail;
+    }
+
+    @Override
+    public List<ControlAuditDetail> getControlAuditDetails(Range<Instant> range) {
+        List<ControlAuditDetail> controlAuditDetails = controlEventDao.getControlAuditDetails(range);
+        for (ControlAuditDetail controlAuditDetail : controlAuditDetails) {
+            controlAuditDetail.setDeviceDetails(controlEventDao.getControlEventDeviceData(controlAuditDetail.getControlEventId()));
+        }
+        return controlAuditDetails;
+    }
 }

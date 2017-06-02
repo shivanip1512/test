@@ -22,9 +22,12 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.dr.controlaudit.ControlEventDeviceStatus;
+import com.cannontech.dr.controlaudit.ControlOptOutStatus;
 import com.cannontech.dr.controlaudit.dao.ControlEventDao;
+import com.cannontech.dr.controlaudit.model.ControlAuditDetail;
 import com.cannontech.dr.controlaudit.model.ControlAuditStats;
 import com.cannontech.dr.controlaudit.model.ControlAuditSummary;
+import com.cannontech.dr.controlaudit.model.ControlDeviceDetail;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
@@ -232,4 +235,100 @@ public class ControlEventDaoImpl implements ControlEventDao {
         return auditStats;
     }
 
+    private final static YukonRowMapper<ControlAuditDetail> controlAuditDetailRowMapper =
+        new YukonRowMapper<ControlAuditDetail>() {
+            @Override
+            public ControlAuditDetail mapRow(YukonResultSet rs) throws SQLException {
+
+                int eventId = rs.getInt("EventId");
+                String programName = rs.getString("ProgramName");
+                String groupName = rs.getString("LoadGroup");
+                Instant startTime = rs.getInstant("StartTime");
+                Instant stopTime = rs.getInstant("StopTime");
+                String accountNumber = rs.getString("AccountNumber");
+                ControlAuditDetail controlAuditDetail =
+                    new ControlAuditDetail(eventId, programName, groupName, startTime, stopTime, accountNumber, null);
+                return controlAuditDetail;
+            }
+        };
+
+    @Override
+    public ControlAuditDetail getControlAuditDetail(int eventId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(getControlAuditBaseQuery());
+        sql.append("AND ce.ControlEventId").eq_k(eventId);
+        ControlAuditDetail controlAuditDetail = jdbcTemplate.queryForObject(sql, controlAuditDetailRowMapper);
+        return controlAuditDetail;
+    }
+
+    @Override
+    public List<ControlAuditDetail> getControlAuditDetails(Range<Instant> range) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.appendFragment(getControlAuditBaseQuery());
+        sql.append("AND ce.StartTime").gt(range.getMin());
+        sql.append("AND ce.StartTime").lt(range.getMax());
+        sql.append("ORDER BY ce.ControlEventId");
+        List<ControlAuditDetail> controlAuditDetails = jdbcTemplate.query(sql, controlAuditDetailRowMapper);
+
+        return controlAuditDetails;
+    }
+
+    private SqlFragmentSource getControlAuditBaseQuery() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ce.ControlEventId AS EventId, ce.StartTime, ce.ScheduledStopTime AS StopTime, ");
+        sql.append("lgypo.PAOName AS LoadGroup, pgypo.PAOName AS ProgramName, ca.AccountNumber");
+        sql.append("FROM ControlEvent ce");
+        sql.append("  JOIN ControlEventDevice ced ON ced.ControlEventId = ce.ControlEventId");
+        sql.append("  JOIN YukonPAObject dypo ON dypo.PAObjectId = ced.DeviceId");
+        sql.append("  JOIN InventoryBase inv ON inv.DeviceId = ced.DeviceId");
+        sql.append("  JOIN CustomerAccount ca ON ca.AccountId = inv.AccountId");
+        sql.append("  JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryId = inv.InventoryId");
+        sql.append("  JOIN YukonPAObject lgypo on lgypo.PAObjectId = lmhcg.LMGroupId");
+        sql.append("  JOIN LMProgramWebPublishing lmpwp ON lmpwp.ProgramId = lmhcg.ProgramId");
+        sql.append("  JOIN YukonPAObject pgypo on pgypo.PAObjectId = lmpwp.DeviceId");
+        sql.append("WHERE NOT lmhcg.GroupEnrollStart IS NULL ");
+        sql.append("  AND lmhcg.GroupEnrollStop IS NULL");
+        sql.append("ORDER BY ce.ControlEventId");
+        return sql;
+    }
+
+    private final static YukonRowMapper<ControlDeviceDetail> controlDeviceDetailMapper =
+        new YukonRowMapper<ControlDeviceDetail>() {
+
+            @Override
+            public ControlDeviceDetail mapRow(YukonResultSet rs) throws SQLException {
+                String deviceName = rs.getString("DeviceName");
+                String serialNumber = rs.getString("SerialNumber");
+                String eventPhase = rs.getString("EventPhase");
+                String participationState =
+                    eventPhase == ControlEventDeviceStatus.UNKNOWN.name() ? "Unreported" : "Confirmed";
+                ControlOptOutStatus optOutStatus = ControlOptOutStatus.valueOf(rs.getString("OptoutStatus"));
+                ControlDeviceDetail controlDeviceDetail =
+                    new ControlDeviceDetail(deviceName, serialNumber, participationState, eventPhase, optOutStatus);
+                return controlDeviceDetail;
+            }
+        };
+
+    @Override
+    public List<ControlDeviceDetail> getControlEventDeviceData(int eventId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT dypo.PAOName AS DeviceName, ced.Result AS EventPhase, lmbh.ManufacturerSerialNumber AS SerialNumber,");
+        sql.append("  CASE WHEN ced.OptOutEventId IS NULL THEN").appendArgument_k(ControlOptOutStatus.NONE);
+        sql.append("       WHEN ced.OptOutEventId IS NOT NULL THEN ");
+        sql.append("         CASE WHEN (SELECT StopDate FROM OptOutEvent WHERE OptOutEventId = ced.OptOutEventId) ");
+        sql.append("         BETWEEN ce.StartTime AND ce.ScheduledStopTime THEN ").appendArgument_k(
+            ControlOptOutStatus.PRE_OPTOUT);
+        sql.append("         END");
+        sql.append("       ELSE ").appendArgument_k(ControlOptOutStatus.POST_OPTOUT);
+        sql.append("  END AS OptoutStatus");
+        sql.append("FROM ControlEvent ce");
+        sql.append("  JOIN ControlEventDevice ced ON ced.ControlEventId = ce.ControlEventId");
+        sql.append("  JOIN YukonPAObject dypo ON dypo.PAObjectID = ced.DeviceId");
+        sql.append("  JOIN InventoryBase inv ON inv.DeviceID = ced.DeviceId");
+        sql.append("  JOIN LMHardwareBase lmbh ON lmbh.InventoryID= inv.InventoryID");
+        sql.append("WHERE ce.ControlEventId").eq_k(eventId);
+        List<ControlDeviceDetail> controlDeviceDetails = jdbcTemplate.query(sql, controlDeviceDetailMapper);
+        return controlDeviceDetails;
+    }
 }
