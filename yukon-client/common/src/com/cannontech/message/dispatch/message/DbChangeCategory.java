@@ -29,6 +29,8 @@ public enum DbChangeCategory {
     REPEATING_JOB("RepeatingJob"),
     DATA_EXPORT_FORMAT("DataExportFormat"),
     MONITOR("Monitor"),
+    CHANGE_OPTOUT,
+    
     
 //  WORK_ORDER("WorkOrder"),
 //  CBC_ADDINFO("CB Additional Info"),

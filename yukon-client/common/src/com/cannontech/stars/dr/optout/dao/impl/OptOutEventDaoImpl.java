@@ -38,7 +38,7 @@ import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.stars.database.data.lite.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -125,8 +125,8 @@ public class OptOutEventDaoImpl implements OptOutEventDao {
 				event.getState().toString(),
 				event.getEventId());
 
-        dbChangeManager.processDbChange(event.getEventId(), DBChangeMsg.CHANGE_OPTOUT_DB, DBChangeMsg.CAT_OPTOUT_DB,
-            "optOutEventId", isOptOutUpdate ? DbChangeType.UPDATE : DbChangeType.ADD);
+        DbChangeType dbChangeType = isOptOutUpdate ? DbChangeType.UPDATE : DbChangeType.ADD;
+        dbChangeManager.processDbChange(dbChangeType, DbChangeCategory.CHANGE_OPTOUT, event.getEventId());
         
 		OptOutLog log = new OptOutLog();
 		log.setAction(action);

@@ -7,8 +7,13 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
+import com.cannontech.common.util.Range;
 import com.cannontech.dr.controlaudit.ControlEventDeviceStatus;
 import com.cannontech.dr.controlaudit.dao.ControlEventDao;
+import com.cannontech.dr.controlaudit.model.ControlAuditStats;
+import com.cannontech.dr.controlaudit.model.ControlAuditSummary;
 import com.cannontech.dr.controlaudit.service.ControlEventService;
 import com.cannontech.dr.honeywellWifi.azure.event.EventPhase;
 import com.google.common.collect.ImmutableList;
@@ -36,4 +41,16 @@ public class ControlEventServiceImpl implements ControlEventService {
         controlEventDao.createNewEventMapping(eventId, groupId, startTime, stopTime);
         controlEventDao.insertDeviceControlEvent(eventId, groupId);
     }
+
+    @Override
+    public List<ControlAuditSummary> getControlAuditSummary(int numberOfEvents) {
+        return controlEventDao.getControlAuditSummary(numberOfEvents);
+    }
+
+    @Override
+    public List<ControlAuditStats> getControlAuditStats(Range<Instant> range, PagingParameters pagingParameters,
+            SortingParameters sortingParameters) {
+        return controlEventDao.getControlAuditStats(range, pagingParameters, sortingParameters);
+    }
+
 }
