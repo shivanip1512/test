@@ -113,6 +113,12 @@
     <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_BC">/System/Meters/Phase Detect/Last Results/BC</entry>
     <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_ABC">/System/Meters/Phase Detect/Last Results/ABC</entry>
     <entry key="yukon.common.systemGroupEnum.PHASE_DETECT_LAST_RESULTS_UNKNOWN">/System/Meters/Phase Detect/Last Results/UNKNOWN</entry>
+    <entry key="yukon.common.systemGroupEnum.ALLMETERS">/System/Meters/All Meters</entry>
+    <entry key="yukon.common.systemGroupEnum.ALLMETERSMCTMETERS">/System/Meters/All Meters/All MCT Meters</entry>
+    <entry key="yukon.common.systemGroupEnum.ALLMETERSRFNMETERS">/System/Meters/All Meters/All RF Meters/All RF Electric Meters</entry>
+    <entry key="yukon.common.systemGroupEnum.ALLMETERSRFWMETERS">/System/Meters/All Meters/All RF Meters/All RFW Meters</entry>
+    
+    
     
     <!-- OutageActionTypeEnum -->
     <entry key="yukon.common.outageActionType.Outage">Outage</entry>

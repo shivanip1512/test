@@ -14,12 +14,12 @@ public class MctMetersGroupProvider extends DeviceGroupProviderSqlBase {
     @Override
     public SqlFragmentSource getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(identifier +" IN (");
-        sql.append("SELECT ypo.paobjectid");
-        sql.append("FROM Device d");
-        sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
-        sql.append("WHERE ypo.Type").in(PaoType.getMctTypes()).append(")");
-        return sql;
+        SqlStatementBuilder inClause = new SqlStatementBuilder();
+        inClause.append("SELECT ypo.paobjectid");
+        inClause.append("FROM Device d");
+        inClause.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
+        inClause.append("WHERE ypo.Type").in(PaoType.getMctTypes());
+        return sql.append(identifier).in(inClause);
     }
 
     @Override

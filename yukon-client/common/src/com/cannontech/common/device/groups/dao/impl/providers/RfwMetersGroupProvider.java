@@ -3,6 +3,8 @@ package com.cannontech.common.device.groups.dao.impl.providers;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.config.ConfigurationSource;
@@ -18,17 +20,24 @@ public class RfwMetersGroupProvider extends DeviceGroupProviderSqlBase {
     @Autowired IDatabaseCache dbCache;
     @Autowired ConfigurationSource configurationSource;
     
+    private String rfTemplatePrefix;
+    
+    @PostConstruct
+    public void initialize() {
+         rfTemplatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
+
+    }
+    
     @Override
     public SqlFragmentSource getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
-        String rfTemplatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append(identifier +" IN (");
-        sql.append("SELECT ypo.paobjectid");
-        sql.append("FROM Device d");
-        sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
-        sql.append("WHERE ypo.Type").in(PaoType.getWaterMeterTypes());
-        sql.append("AND ypo.PAOName NOT").startsWith(rfTemplatePrefix+"%").append(")");
-        return sql;
+        SqlStatementBuilder inClause = new SqlStatementBuilder();
+        inClause.append("SELECT ypo.paobjectid");
+        inClause.append("FROM Device d");
+        inClause.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
+        inClause.append("WHERE ypo.Type").in(PaoType.getWaterMeterTypes());
+        inClause.append("AND ypo.PAOName NOT").startsWith(rfTemplatePrefix);
+        return sql.append(identifier).in(inClause);
     }
 
     @Override
@@ -38,7 +47,6 @@ public class RfwMetersGroupProvider extends DeviceGroupProviderSqlBase {
 
     @Override
     public boolean isChildDevice(DeviceGroup group, YukonDevice device) {
-        String rfTemplatePrefix = configurationSource.getString(MasterConfigString.RFN_METER_TEMPLATE_PREFIX, "*RfnTemplate_");
         return device.getPaoIdentifier().getPaoType().isWaterMeter()
                 &&!dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName().startsWith(rfTemplatePrefix);
     }

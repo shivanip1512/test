@@ -280,6 +280,7 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
     private final static ImmutableSet<PaoType> meterTypes;
     private final static ImmutableSet<PaoType> rfTypes;
     private final static ImmutableSet<PaoType> rfMeterTypes;
+    private final static ImmutableSet<PaoType> rfElectricTypes;
     private final static ImmutableSet<PaoType> cbcTypes;
     private final static ImmutableSet<PaoType> regulatorTypes;
     private final static ImmutableSet<PaoType> mctTypes;
@@ -525,6 +526,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         
         rfMeterTypes = Sets.intersection(rfTypes, meterTypes).immutableCopy();
         
+        
+        
         mctTypes = ImmutableSet.of(
             MCT213,
             MCT310,
@@ -672,6 +675,8 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         	RFWMETER, 
         	RFW201, 
         	RFW205);
+        
+        rfElectricTypes = Sets.difference(rfMeterTypes, waterMeterTypes).immutableCopy();
     }
     
     /**
@@ -903,12 +908,20 @@ public enum PaoType implements DisplayableEnum, DatabaseRepresentationSource {
         return rfMeterTypes;
     }
     
+    public static ImmutableSet<PaoType> getRfElectricTypes() {
+        return rfElectricTypes;
+    }
+    
     public static ImmutableSet<PaoType> getRfDaTypes() {
         return rfDaTypes;
     }
     
     public boolean isRfMeter() {
         return rfMeterTypes.contains(this);
+    }
+    
+    public boolean isRfElectric() {
+        return rfElectricTypes.contains(this);
     }
     
     public boolean isRfGateway() {
