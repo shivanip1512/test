@@ -736,6 +736,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
         }
     }
     
+    @Transactional
     @Override
     public void disableDevice(YukonDevice device){
         locationService.deleteLocation(device.getPaoIdentifier().getPaoId(), YukonUserContext.system.getYukonUser());
