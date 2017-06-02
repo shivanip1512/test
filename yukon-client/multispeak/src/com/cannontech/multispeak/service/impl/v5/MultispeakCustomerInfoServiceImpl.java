@@ -25,7 +25,7 @@ public class MultispeakCustomerInfoServiceImpl implements MultispeakCustomerInfo
             phoneNumbersList = Lists.newArrayList();
             for (PhoneNumber p : phoneNumbers.getPhoneNumber()) {
                 StringBuffer fullPhone = new StringBuffer();
-                if (p.getPhoneType() != null && p.getPhoneType() != null) {
+                if (p.getPhoneType() != null && p.getPhoneType().getValue() != null) {
                     fullPhone.append(p.getPhoneType().getValue());
                     fullPhone.append(":" + StringUtils.SPACE);
                 }
