@@ -291,9 +291,7 @@ void CtiCCFeeder::setPeakTimeFlag( bool peakTimeFlag )
     if ( updateDynamicValue( _peakTimeFlag, peakTimeFlag ) )
     {
         CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-        CtiCCSubstationBusPtr sub = store->findSubBusByPAObjectID( CtiCCFeeder::getParentId() );
-
-        if ( sub != NULL )
+        if ( auto sub = store->findSubBusByPAObjectID( getParentId() ) )
         {
             sub->setBusUpdatedFlag( true );
         }
