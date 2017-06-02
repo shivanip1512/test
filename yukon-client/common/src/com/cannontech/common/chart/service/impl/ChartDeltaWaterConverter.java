@@ -67,12 +67,12 @@ public class ChartDeltaWaterConverter implements ChartDataConverter {
 	                    chartValue.setValue(deltaValue);
 	                    chartValue.setFormattedValue(pointValueFormat.format(deltaValue));
 	                    convertedValues.add(chartValue);
-	                    log.debug(i +"=millisecondDelta:" + millisecondDelta + "; deltaValue:" + deltaValue);
+	                    log.debug(chartValue.toString() +  " " + i +"=millisecondDelta:" + millisecondDelta + "; deltaValue:" + deltaValue);
 	                    i++;
                     } else {	// otherwise discard and log
                     	log.warn("Delta is greater than expected delta...value will be skipped: " +
                     			chartValue.toString());
-                    	log.debug("Interval: " + interval +
+                    	log.debug(chartValue.toString() + " Interval: " + interval +
                     			"; Curr:" + new Date(currTime) + 
                     			"; Prev:" + new Date(previousTime) + 
                     			"; Millis: " + millisecondDelta + " > " + expectedMaxDeltaInMillis);
