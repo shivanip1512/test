@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/2/2017 4:04:36 PM                          */
+/* Created on:     6/5/2017 3:08:42 PM                          */
 /*==============================================================*/
 
 
@@ -3257,8 +3257,8 @@ INSERT INTO DeviceGroup VALUES (44, 'ABC', 37, 'NOEDIT_MOD', 'STATIC', '01-JAN-2
 INSERT INTO DeviceGroup VALUES (45, 'UNKNOWN', 37, 'NOEDIT_MOD', 'STATIC', '01-JAN-2013', 'UNKNOWN');
 INSERT INTO DeviceGroup VALUES (46, 'All Meters', 15, 'NOEDIT_NOMOD', 'STATIC', '02-JUN-2017', 'ALL_METERS');
 INSERT INTO DeviceGroup VALUES (47, 'All MCT Meters', 46, 'NOEDIT_NOMOD', 'METERS_ALL_PLC_METERS', '02-JUN-2017', 'ALL_MCT_METERS');
-INSERT INTO DeviceGroup VALUES (48, 'All RF Meters', 46, 'NOEDIT_NOMOD', 'STATIC', '02-JUN-2017', 'ALL_METERS');
-INSERT INTO DeviceGroup VALUES (49, 'All RF Electric Meters', 48, 'NOEDIT_NOMOD', 'METERS_ALL_RFN_METERS', '02-JUN-2017', 'ALL_RFN_METERS');
+INSERT INTO DeviceGroup VALUES (48, 'All RFN Meters', 46, 'NOEDIT_NOMOD', 'STATIC', '02-JUN-2017', 'ALL_RFN_METERS');
+INSERT INTO DeviceGroup VALUES (49, 'All RF Electric Meters', 48, 'NOEDIT_NOMOD', 'METERS_ALL_RF_ELECTRIC_METERS', '02-JUN-2017', 'ALL_RF_ELECTRIC_METERS');
 INSERT INTO DeviceGroup VALUES (50, 'All RFW Meters', 48, 'NOEDIT_NOMOD', 'METERS_ALL_RFW_METERS', '02-JUN-2017', 'ALL_RFW_METERS');
 
 alter table DeviceGroup

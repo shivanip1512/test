@@ -841,11 +841,11 @@ INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permissi
     VALUES(@MaxDeviceGroupId + 2, 'All MCT Meters', @MaxDeviceGroupId + 1, 'NOEDIT_NOMOD', 'METERS_ALL_PLC_METERS', GETDATE(), 'ALL_MCT_METERS')
 
 INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
-    VALUES(@MaxDeviceGroupId + 3, 'All RF Meters', @MaxDeviceGroupId + 1, 'NOEDIT_NOMOD', 'STATIC', GETDATE(), 'ALL_METERS')
+    VALUES(@MaxDeviceGroupId + 3, 'All RFN Meters', @MaxDeviceGroupId + 1, 'NOEDIT_NOMOD', 'STATIC', GETDATE(), 'ALL_RFN_METERS')
     
 /* The last two's parent should be 'All RF Meters', so @MaxDeviceGroupId + 3 */
 INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
-    VALUES(@MaxDeviceGroupId + 4, 'All RF Electric Meters', @MaxDeviceGroupId + 3, 'NOEDIT_NOMOD', 'METERS_ALL_RFN_METERS', GETDATE(), 'ALL_RFN_METERS')
+    VALUES(@MaxDeviceGroupId + 4, 'All RF Electric Meters', @MaxDeviceGroupId + 3, 'NOEDIT_NOMOD', 'METERS_ALL_RF_ELECTRIC_METERS', GETDATE(), 'ALL_RF_ELECTRIC_METERS')
 
 INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type, CreatedDate, SystemGroupEnum)
     VALUES(@MaxDeviceGroupId + 5, 'All RFW Meters', @MaxDeviceGroupId + 3, 'NOEDIT_NOMOD', 'METERS_ALL_RFW_METERS', GETDATE(), 'ALL_RFW_METERS')
