@@ -1171,6 +1171,21 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
             }
         }
     }
+
+    // capbanks
+
+    for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+    {
+        ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
+
+        for ( const long bankID : zone->getBankIds() )
+        {
+            if ( auto bank = store->findCapBankByPAObjectID( bankID ) )
+            {
+                bank->executeSendHeartbeat( Cti::CapControl::SystemUser );
+            }
+        }
+    }
 }
 
 
@@ -2348,6 +2363,8 @@ void IVVCAlgorithm::sendDisableRemoteControl( CtiCCSubstationBusPtr subbus )
     {
         ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
+        // regulators
+
         for each ( const Zone::PhaseIdMap::value_type & mapping in zone->getRegulatorIds() )
         {
             try
@@ -2370,6 +2387,16 @@ void IVVCAlgorithm::sendDisableRemoteControl( CtiCCSubstationBusPtr subbus )
                 {
                     CTILOG_EXCEPTION_ERROR(dout, missingAttribute);
                 }
+            }
+        }
+
+        // capbanks
+
+        for ( const long bankID : zone->getBankIds() )
+        {
+            if ( auto bank = store->findCapBankByPAObjectID( bankID ) )
+            {
+                bank->executeStopHeartbeat( Cti::CapControl::SystemUser );
             }
         }
     }

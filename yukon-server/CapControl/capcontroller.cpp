@@ -61,7 +61,6 @@ extern bool  _ALLOW_PARALLEL_TRUING;
 extern bool  _ENABLE_IVVC;
 extern bool  _AUTO_VOLT_REDUCTION;
 extern long  _VOLT_REDUCTION_SYSTEM_POINTID;
-extern bool  _CBC_HEARTBEAT_ENABLE;
 
 using Cti::ThreadStatusKeeper;
 using std::endl;
@@ -843,23 +842,96 @@ void CtiCapController::controlLoop()
                 CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Exception while updating Voltage Regulators.");
             }
 
-            // jmoc -- testing the cbc heartbeat stuff...
-            if ( _CBC_HEARTBEAT_ENABLE )
+            // This is the main spot for sending the CBC heartbeats out for banks that are not
+            //  under IVVC control.  If all the hierarchy is enabled then we send the heartbeat message 
+            //  for the banks.  If any part of the heirarchy is disabled then we stop the heartbeat.
             {
-                CtiLockGuard<CtiCriticalSection>  guard(store->getMux());
+                CtiLockGuard<CtiCriticalSection>  guard( store->getMux() );
 
                 for ( auto & bus : *store->getCCSubstationBuses( CtiTime().seconds() ) )
                 {
-                    for ( auto & feeder : bus->getCCFeeders() )
+                    if ( bus->getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar )
                     {
-                        for ( auto & bank : feeder->getCCCapBanks() )
+                        continue;   // don't handle IVVC controlled busses here
+                    }
+
+                    long stationID, areaID, spAreaID;
+                    store->getSubBusParentInfo( bus, spAreaID, areaID, stationID );
+
+                    bool sendStop = true;
+
+                    if ( ! bus->getDisableFlag() )
+                    {
+                        if ( auto station = store->findSubstationByPAObjectID( stationID ) )
                         {
-                            bank->executeSendHeartbeat( "TEST -- jmoc" );
+                            if ( ! station->getDisableFlag() )
+                            {
+                                if ( areaID > 0 )
+                                {
+                                    if ( auto area = store->findAreaByPAObjectID( areaID ) )
+                                    {
+                                        if ( ! area->getDisableFlag() )
+                                        {
+                                            sendStop = false;   // bus, station, area are all enabled
+                                        }
+                                    }
+                                }
+                                if ( spAreaID > 0 )
+                                {
+                                    if ( auto area = store->findSpecialAreaByPAObjectID( spAreaID ) )
+                                    {
+                                        if ( ! area->getDisableFlag() )
+                                        {
+                                            sendStop = false;   // bus, station, special area are all enabled
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if ( sendStop )     // someone up top was disabled so send a stop to all this busses capbanks
+                    {
+                        for ( auto feeder : bus->getCCFeeders() )
+                        {
+                            if ( feeder->getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar )
+                            {
+                                continue;   // don't handle IVVC controlled feeders here
+                            }
+
+                            for ( auto bank : feeder->getCCCapBanks() )
+                            {
+                                bank->executeStopHeartbeat( Cti::CapControl::SystemUser );
+                            }
+                        }
+                    }
+                    else    // everyone above the feeder is enabled so check feeder status and send messages to banks accordingly
+                    {
+                        for ( auto feeder : bus->getCCFeeders() )
+                        {
+                            if ( feeder->getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar )
+                            {
+                                continue;   // don't handle IVVC controlled feeders here
+                            }
+
+                            if ( feeder->getDisableFlag() )     // this feeder is disabled so stop heartbeats to its banks
+                            {
+                                for ( auto bank : feeder->getCCCapBanks() )
+                                {
+                                    bank->executeStopHeartbeat( Cti::CapControl::SystemUser );
+                                }
+                            }
+                            else    // feeder is enabled so send heartbeats
+                            {
+                                for ( auto bank : feeder->getCCCapBanks() )
+                                {
+                                    bank->executeSendHeartbeat( Cti::CapControl::SystemUser );
+                                }
+                            }
                         }
                     }
                 }
             }
-            // end cbc heartbeat testing
 
             threadStatus.monitorCheck();
 
