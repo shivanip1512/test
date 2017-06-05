@@ -48,7 +48,7 @@ public class ThresholdReportFilter {
         tsb.append("group", group);
         tsb.append("threshold", thresholdDescriptor.getValue() + " " + thershold);
         tsb.append("dataCompleteness", dataCompleteness);
-        tsb.append("", includeDisabled);
+        tsb.append("includeDisabled", includeDisabled);
         return tsb.toString();
     }
 }
