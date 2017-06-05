@@ -26,7 +26,7 @@ public interface ControlEventService {
     public void createDeviceControlEvent(int eventId, int groupId, Instant startTime, Instant stopTime);
     
     /**
-     * Retrieves the most recent event summary information associated with the specified event IDs.
+     * Retrieves as a list of ControlAuditSummary associated with the specified event IDs.
      */
     List<ControlAuditSummary> getControlAuditSummary(int numberOfEvents);
 

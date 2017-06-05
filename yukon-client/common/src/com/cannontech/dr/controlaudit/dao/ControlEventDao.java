@@ -34,7 +34,7 @@ public interface ControlEventDao {
     void insertDeviceControlEvent(int eventId, int loadGroupId);
 
     /**
-     * Retrieves the most recent event summary information associated with the specified event IDs.
+     * Retrieves as a list of ControlAuditSummary associated with the specified event IDs.
      */
 
     List<ControlAuditSummary> getControlAuditSummary(int numberOfEvents);
