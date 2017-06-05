@@ -1,13 +1,13 @@
 package com.cannontech.web.amr.usageThresholdReport.model;
 
-public enum ThresholdDesctiptor {
+public enum ThresholdDescriptor {
     
     LESS_OR_EQUAL("<="), 
     GREATOR_OR_EQUAL(">=");
 
     private String value;
 
-    ThresholdDesctiptor(String value) {
+    ThresholdDescriptor(String value) {
         this.value = value;
     }
 

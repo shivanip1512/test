@@ -9,15 +9,15 @@ public class ThresholdReportFilter {
 
     private DeviceGroup group;
     private double thershold;
-    private ThresholdDesctiptor thresholdDesctiptor;
+    private ThresholdDescriptor thresholdDescriptor;
     private DataCompleteness dataCompleteness;
     private boolean includeDisabled;
 
-    public ThresholdReportFilter(DeviceGroup group, double thershold, ThresholdDesctiptor thresholdDesctiptor,
+    public ThresholdReportFilter(DeviceGroup group, double thershold, ThresholdDescriptor thresholdDescriptor,
             DataCompleteness dataCompleteness, boolean includeDisabled) {
         this.group = group;
         this.thershold = thershold;
-        this.thresholdDesctiptor = thresholdDesctiptor;
+        this.thresholdDescriptor = thresholdDescriptor;
         this.dataCompleteness = dataCompleteness;
         this.includeDisabled = includeDisabled;
     }
@@ -30,8 +30,8 @@ public class ThresholdReportFilter {
         return thershold;
     }
 
-    public ThresholdDesctiptor getThresholdDesctiptor() {
-        return thresholdDesctiptor;
+    public ThresholdDescriptor getThresholdDescriptor() {
+        return thresholdDescriptor;
     }
 
     public DataCompleteness getDataCompleteness() {
@@ -46,9 +46,9 @@ public class ThresholdReportFilter {
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
         tsb.append("group", group);
-        tsb.append("threshold", thresholdDesctiptor.getValue() + " " + thershold);
+        tsb.append("threshold", thresholdDescriptor.getValue() + " " + thershold);
         tsb.append("dataCompleteness", dataCompleteness);
-        tsb.append("includeDisabled", includeDisabled);
+        tsb.append("", includeDisabled);
         return tsb.toString();
     }
 }
