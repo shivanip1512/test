@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -14,8 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.Errors;
-import org.springframework.validation.Validator;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,15 +26,13 @@ import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
 import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.util.JsonUtils;
-import com.cannontech.common.validator.SimpleValidator;
-import com.cannontech.common.validator.YukonValidationUtils;
 import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.PaoDao;
@@ -47,7 +42,6 @@ import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.device.range.DlcAddressRangeService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.mbean.ServerDatabaseCache;
@@ -55,7 +49,6 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meter.MeterValidator;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
-import com.cannontech.web.widget.meterInfo.model.CreateMeterModel;
 import com.cannontech.web.widget.meterInfo.model.MeterModel;
 import com.cannontech.web.widget.meterInfo.model.PlcMeterModel;
 import com.cannontech.web.widget.meterInfo.model.RfMeterModel;
@@ -87,11 +80,11 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     @Autowired private CommandRequestDeviceExecutor cre;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private ServerDatabaseCache cache;
-    @Autowired private DlcAddressRangeService addressRangeService;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private MeterValidator meterValidator;
-
+    @Autowired private DeviceUpdateService deviceUpdateService;
+    
     @RequestMapping("render")
     public String render(ModelMap model, int deviceId) {
         
@@ -194,7 +187,9 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
                 null, meter.getRouteId(), Integer.toString(meter.getAddress()));
         
         meterDao.update(plc);
-        
+        if (meter.isDisabled()) {
+            deviceUpdateService.disableDevice(plc);
+        }
         // Success
         model.clear();
         Map<String, Object> json = new HashMap<>();
@@ -244,7 +239,9 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             model.addAttribute("errorMsg", errorMsg);
             return "meterInformationWidget/edit.jsp";
         }
-        
+        if (meter.isDisabled()) {
+            deviceUpdateService.disableDevice(rfn);
+        }
         // Success
         model.clear();
         Map<String, Object> json = new HashMap<>();
@@ -277,7 +274,9 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         IedMeter ied = new IedMeter(pao.getPaoIdentifier(), meter.getMeterNumber(), meter.getName(), meter.isDisabled());
         
         meterDao.update(ied);
-        
+        if (meter.isDisabled()) {
+            deviceUpdateService.disableDevice(ied);
+        }
         // Success
         model.clear();
         Map<String, Object> json = new HashMap<>();
