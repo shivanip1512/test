@@ -3743,7 +3743,7 @@ void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBankPtr currentCapBank
     // Yuck!
     const bool isStandardOp = ( opText == "Open" || opText == "Close" );
 
-    opText += " Sent, CBC Local Change";
+    opText += ", CBC Local Change";
     currentCapBank->setControlStatusQuality(CC_UnSolicited);
 
     sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE), CALLSITE);

@@ -123,9 +123,9 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
 
     BOOST_CHECK_EQUAL_RANGES( registrationPoints, expected );
 
-    BOOST_CHECK_EQUAL( "Uninitialized", points->getLastControlText() );
+    BOOST_CHECK_EQUAL( "", points->getLastControlText() );
 
-    BOOST_CHECK_EQUAL( "Uninitialized", points->getIgnoredControlText() );
+    BOOST_CHECK_EQUAL( "", points->getIgnoredControlText() );
 
     BOOST_CHECK_EQUAL( false, points->controlRejectedByVoltageLimits() );
     BOOST_CHECK_EQUAL( false, points->isControlAccepted() );

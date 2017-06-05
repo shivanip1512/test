@@ -10,7 +10,7 @@
 
 std::string LastControlReasonCbcDnp::getText( const CtiCCTwoWayPoints & points )
 {
-    return "Uninitialized";
+    return "";
 }
 
 long LastControlReasonCbcDnp::serialize( const CtiCCTwoWayPoints & points )
