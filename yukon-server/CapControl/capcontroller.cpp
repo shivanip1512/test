@@ -901,7 +901,10 @@ void CtiCapController::controlLoop()
 
                             for ( auto bank : feeder->getCCCapBanks() )
                             {
-                                bank->executeStopHeartbeat( Cti::CapControl::SystemUser );
+                                if ( ! bank->getDisableFlag() )
+                                {
+                                    bank->executeStopHeartbeat( Cti::CapControl::SystemUser );
+                                }
                             }
                         }
                     }
@@ -918,14 +921,20 @@ void CtiCapController::controlLoop()
                             {
                                 for ( auto bank : feeder->getCCCapBanks() )
                                 {
-                                    bank->executeStopHeartbeat( Cti::CapControl::SystemUser );
+                                    if ( ! bank->getDisableFlag() )
+                                    {
+                                        bank->executeStopHeartbeat( Cti::CapControl::SystemUser );
+                                    }
                                 }
                             }
                             else    // feeder is enabled so send heartbeats
                             {
                                 for ( auto bank : feeder->getCCCapBanks() )
                                 {
-                                    bank->executeSendHeartbeat( Cti::CapControl::SystemUser );
+                                    if ( ! bank->getDisableFlag() )
+                                    {
+                                        bank->executeSendHeartbeat( Cti::CapControl::SystemUser );
+                                    }
                                 }
                             }
                         }

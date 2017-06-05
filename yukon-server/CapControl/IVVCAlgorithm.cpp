@@ -1174,7 +1174,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
 
     // capbanks
 
-    for each ( const Zone::IdSet::value_type & ID in subbusZoneIds )
+    for ( const auto & ID : subbusZoneIds )
     {
         ZoneManager::SharedPtr  zone = zoneManager.getZone(ID);
 
