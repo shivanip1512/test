@@ -144,8 +144,8 @@
                                     </c:choose>
                                 </c:forEach>
                             </select>
-                         </tags:nameValue2>
-                         <tags:checkboxNameValue nameKey=".rfnMeterSimulator.runOnStartup" path="currentSettings.runOnStartup"/>
+                            </tags:nameValue2>
+                            <tags:checkboxNameValue nameKey=".rfnMeterSimulator.runOnStartup" path="currentSettings.runOnStartup"/>
                         </tags:nameValueContainer2>
                     </div>
                     <div>

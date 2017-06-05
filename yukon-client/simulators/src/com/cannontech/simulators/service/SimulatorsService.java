@@ -72,8 +72,12 @@ public class SimulatorsService {
         if (configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
             if (yukonSimulatorSettingsDao.initYukonSimulatorSettings()) {
                 for (SimulatorType simType : SimulatorType.values()) {
-                    if (simType.name() == "RFN_METER") {
-                        SimulatorSettings settings = yukonSimulatorSettingsDao.getSimulatorSettings(SimulatorType.RFN_METER);
+                    if (simType == SimulatorType.RFN_METER) {
+                        SimulatorSettings settings = new SimulatorSettings();
+                        settings.setPaoType(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_METER_TYPE));
+                        settings.setPercentOfDuplicates(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE));
+                        settings.setReportingInterval(ReportingInterval.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_REPORTING_INTERVAL)));
+                        settings.setRunOnStartup(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_RUN_ON_STARTUP));
                         if (settings.getRunOnStartup()) {
                             rfnMeterDataSimulatorServiceImpl.startSimulator(settings);
                         }

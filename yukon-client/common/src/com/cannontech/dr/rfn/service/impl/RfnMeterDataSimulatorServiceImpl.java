@@ -41,7 +41,6 @@ import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
 import com.cannontech.dr.rfn.service.RfnMeterDataSimulatorService;
-import com.cannontech.simulators.SimulatorType;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.google.common.collect.HashMultimap;
@@ -64,12 +63,12 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
 
     // minute of the day to send a request at/list of devices to send a read request to
-    private SetMultimap<Integer, RfnDevice> meters = HashMultimap.create();
+    private final SetMultimap<Integer, RfnDevice> meters = HashMultimap.create();
     private RfnDataSimulatorStatus status = new RfnDataSimulatorStatus();
     private Multimap<PaoType, PointMapper> pointMappers;
 
-    private Map<RfnDevice, Map<Attribute, TimestampValue>> billingStoredValue = new HashMap<>();
-    private Map<RfnDevice, Map<Attribute, TimestampValue>> intervalStoredValue = new HashMap<>();
+    private final Map<RfnDevice, Map<Attribute, TimestampValue>> billingStoredValue = new HashMap<>();
+    private final Map<RfnDevice, Map<Attribute, TimestampValue>> intervalStoredValue = new HashMap<>();
 
     private final static int secondsPerYear = 31556926;
     private final static long epoch =
@@ -85,8 +84,11 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     @Override
     public synchronized void startSimulator(SimulatorSettings settings) {
         if (!status.isRunning().get()) {
-            log.info("Saving RfnMeterDataSimulatorSettings to YukonSimulatorSettings table");
-            yukonSimulatorSettingsDao.setSimulatorSettings(settings, SimulatorType.RFN_METER);
+            log.debug("Saving RfnMeterDataSimulatorSettings to YukonSimulatorSettings table.");
+            yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_METER_TYPE, settings.getPaoType());
+            yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE, settings.getPercentOfDuplicates());
+            yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_REPORTING_INTERVAL, settings.getReportingInterval());
+            yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_RUN_ON_STARTUP, settings.getRunOnStartup());
             
             log.debug("Start simulator");
             status = new RfnDataSimulatorStatus();
@@ -178,7 +180,13 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
 
     @Override
     public SimulatorSettings getCurrentSettings() {
-        return yukonSimulatorSettingsDao.getSimulatorSettings(SimulatorType.RFN_METER);
+        SimulatorSettings settings = new SimulatorSettings();
+        log.debug("Getting rfnMeterSimulator data from db.");
+        settings.setPaoType(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_METER_TYPE));
+        settings.setPercentOfDuplicates(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE));
+        settings.setReportingInterval(ReportingInterval.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_REPORTING_INTERVAL)));
+        settings.setRunOnStartup(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_RUN_ON_STARTUP));
+        return settings;
     }
 
     @Override

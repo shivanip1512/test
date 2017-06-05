@@ -10,183 +10,145 @@ import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
-import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
-import com.cannontech.simulators.SimulatorType;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.YukonJdbcTemplate;
-import com.cannontech.dr.rfn.model.SimulatorSettings;
-import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
+import com.cannontech.database.vendor.DatabaseVendor;
+import com.cannontech.database.vendor.DatabaseVendorResolver;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 
 public class YukonSimulatorSettingsDaoImpl implements YukonSimulatorSettingsDao {
+    @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
+    @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
+
     private final Logger log = YukonLogManager.getLogger(YukonSimulatorSettingsDaoImpl.class);
 
-    private YukonJdbcTemplate yukonJdbcTemplate;
-    
     @Override
     public boolean initYukonSimulatorSettings() {
-        SqlStatementBuilder sql = new SqlStatementBuilder("IF OBJECT_ID(N'dbo.YukonSimulatorSettings', N'U') IS NOT NULL "
-                                                        + "SELECT 1 ELSE SELECT 0");
-        try {
-            int result = yukonJdbcTemplate.queryForInt(sql);
-            if (result == 1) {
-                log.info("YukonSimulatorSettings table exists in the database.");
-                return populateYukonSimulatorSettingsTable();
-            }
-            else {
-                log.info("YukonSimulatorSettings table doesn't exist in the database, attempting to create it...");
-                return createYukonSimulatorSettingsTable();
-            }
-            
-        } catch (Exception e) {
-            log.error(e);
-            log.info("Attempting to create YukonSimulatorSettings table in database.");
-            return createYukonSimulatorSettingsTable();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+        if (databaseVendor.isOracle()) {
+            sql.append("SELECT COUNT(*)");
+            sql.append("FROM user_tables");
+            sql.append("WHERE table_name = 'YUKONSIMULATORSETTINGS'");
+        } else {
+            sql.append("SELECT COUNT(*)");
+            sql.append("FROM information_schema.tables");
+            sql.append("WHERE table_name = 'YUKONSIMULATORSETTINGS'");
         }
-    }
-    
-    @Override
-    public boolean createYukonSimulatorSettingsTable() {
-        SqlStatementBuilder sql = new SqlStatementBuilder("create table YukonSimulatorSettings "
-                                                        + "(Name                varchar(50)          not null, "
-                                                        + "Value                text                 not null, "
-                                                        + "constraint PK_YukSimSet primary key (Name)); select 'success';");
-        try {
-            yukonJdbcTemplate.queryForString(sql);
-            log.info("YukonSimulatorSettings table successfully created. Setting default values...");
+        int result = yukonJdbcTemplate.queryForInt(sql);
+        if (result == 1) {
+            log.debug("YukonSimulatorSettings table exists in the database.");
             return populateYukonSimulatorSettingsTable();
-        } catch (Exception e){
-            log.error("Could not create YukonSimulatorSettings table " + e);
-            return false;
+        } else {
+            log.debug("YukonSimulatorSettings table doesn't exist in the database, attempting to create it...");
+            return createYukonSimulatorSettingsTable(databaseVendor);
         }
     }
-    
-    @Override
-    public boolean populateYukonSimulatorSettingsTable() {
-        try {
-            for (YukonSimulatorSettingsKey property : YukonSimulatorSettingsKey.values()) {
-                SqlStatementBuilder sql = new SqlStatementBuilder("if exists"
-                                                                + "(select value from YukonSimulatorSettings "
-                                                                + "where name = '" + property.name() + "') "
-                                                                + "select 1 else select 0");
-                int fieldExists = yukonJdbcTemplate.queryForInt(sql);
-                if (fieldExists == 0) {
-                    setValue(property, property.getDefaultValue());
-                }
-            }
-            log.info("Successfully set default values of previously unpopulated rows in the YukonSimulatorSettings table.");
-            return true;
-        } catch (Exception e) {
-            log.error("Error while trying to set default values in the YukonSimulatorSettings table " + e);
-            return false;
+
+    private boolean createYukonSimulatorSettingsTable(DatabaseVendor databaseVendor) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        if (databaseVendor.isOracle()) {
+            sql.append("CREATE TABLE YukonSimulatorSettings");
+            sql.append("(Name VARCHAR2(50) NOT NULL,");
+            sql.append("Value CLOB NOT NULL,");
+            sql.append("CONSTRAINT PK_YukSimSet PRIMARY KEY(Name))");
+        } else {
+            sql.append("CREATE TABLE YukonSimulatorSettings");
+            sql.append("(Name VARCHAR(50) NOT NULL,");
+            sql.append("Value TEXT NOT NULL,");
+            sql.append("CONSTRAINT PK_YukSimSet PRIMARY KEY (Name))");
         }
+        yukonJdbcTemplate.update(sql);
+        log.debug("YukonSimulatorSettings table successfully created. Setting default values...");
+        return populateYukonSimulatorSettingsTable();
     }
-    
-    public SimulatorSettings getSimulatorSettings(SimulatorType simType) {
-        SimulatorSettings settings = new SimulatorSettings();
-        try {
-            if (initYukonSimulatorSettings()) {
-                if (simType == SimulatorType.RFN_METER) {
-                    settings.setPaoType(getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_METER_TYPE, simType));
-                    settings.setPercentOfDuplicates(getIntegerValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE, simType));
-                    settings.setReportingInterval(ReportingInterval.valueOf(getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_REPORTING_INTERVAL, simType)));
-                    settings.setRunOnStartup(getBooleanValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_RUN_ON_STARTUP, simType));
-                    return settings;
-                }
+
+    private boolean populateYukonSimulatorSettingsTable() {
+        for (YukonSimulatorSettingsKey property : YukonSimulatorSettingsKey.values()) {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append("SELECT COUNT(*)");
+            sql.append("FROM YukonSimulatorSettings");
+            sql.append("WHERE Name").eq_k(property);
+            int recordExists = yukonJdbcTemplate.queryForInt(sql);
+            if (recordExists == 0) {
+                setValue(property, property.getDefaultValue());
             }
-            return null;
-        } catch (Exception e) {
-            log.error("Unable to get settings from YukonSimulatorSettings table " + e);
-            return null;   
         }
-    }
-    
-    public boolean setSimulatorSettings(SimulatorSettings settings, SimulatorType simType) {
-        try {
-            if (initYukonSimulatorSettings()) {
-                if (simType == SimulatorType.RFN_METER) {
-                    setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_METER_TYPE, settings.getPaoType());
-                    setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE, settings.getPercentOfDuplicates());
-                    setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_REPORTING_INTERVAL, settings.getReportingInterval());
-                    setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_RUN_ON_STARTUP, settings.getRunOnStartup());
-                }
-            }
-        } catch (Exception e) {
-            log.error("Unable to set YukonSimulatorSettings in database, " + e);
-            return false;
-        }
+        log.debug("Successfully set default values of previously unpopulated rows in the YukonSimulatorSettings table.");
         return true;
     }
-    
+
+    @Override
     public void setValue(YukonSimulatorSettingsKey property, Object value) {
         PropertyEditor propertyEditor = property.getInputType().getPropertyEditor();
         propertyEditor.setValue(value);
         String asText = propertyEditor.getAsText();
-        
+
         // try update
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("update YukonSimulatorSettings");
-        sql.append("set Value").eq(asText);
-        sql.append("where Name").eq(property);
-        int rows = yukonJdbcTemplate.update(sql);
+        SqlStatementBuilder sqlUpdate = new SqlStatementBuilder();
+        sqlUpdate.update("YukonSimulatorSettings");
+        sqlUpdate.append("Value").eq(asText);
+        sqlUpdate.append("WHERE Name").eq_k(property);
+        int rows = yukonJdbcTemplate.update(sqlUpdate);
         if (rows == 1) {
             return;
         }
         // try insert
-        SqlStatementBuilder sql2 = new SqlStatementBuilder();
-        sql2.append("insert into YukonSimulatorSettings");
-        sql2.append("values (").appendArgument(property).append(",").appendArgument(asText).append(")");
-        yukonJdbcTemplate.update(sql2);
+        SqlStatementBuilder sqlInsert = new SqlStatementBuilder();
+        sqlInsert.append("INSERT INTO YukonSimulatorSettings");
+        sqlInsert.values(property, asText);
+        yukonJdbcTemplate.update(sqlInsert);
     }
-    
+
     @Override
-    public boolean getBooleanValue(YukonSimulatorSettingsKey property, SimulatorType simulatorType) {
-        Boolean convertedValue = getConvertedValue(property, Boolean.class, simulatorType);
+    public boolean getBooleanValue(YukonSimulatorSettingsKey property) {
+        Boolean convertedValue = getConvertedValue(property, Boolean.class);
         return convertedValue.booleanValue();
     }
 
     @Override
-    public double getDoubleValue(YukonSimulatorSettingsKey property, SimulatorType simulatorType) {
-        Number convertedValue = getConvertedValue(property, Number.class, simulatorType);
+    public double getDoubleValue(YukonSimulatorSettingsKey property) {
+        Number convertedValue = getConvertedValue(property, Number.class);
         return convertedValue.doubleValue();
     }
 
     @Override
-    public float getFloatValue(YukonSimulatorSettingsKey property, SimulatorType simulatorType) {
-        Number convertedValue = getConvertedValue(property, Number.class, simulatorType);
+    public float getFloatValue(YukonSimulatorSettingsKey property) {
+        Number convertedValue = getConvertedValue(property, Number.class);
         return convertedValue.floatValue();
     }
 
     @Override
-    public int getIntegerValue(YukonSimulatorSettingsKey property, SimulatorType simulatorType) {
-        Number convertedValue = getConvertedValue(property, Number.class, simulatorType);
+    public int getIntegerValue(YukonSimulatorSettingsKey property) {
+        Number convertedValue = getConvertedValue(property, Number.class);
         return convertedValue.intValue();
     }
 
     @Override
-    public long getLongValue(YukonSimulatorSettingsKey property, SimulatorType simulatorType) {
-        Number convertedValue = getConvertedValue(property, Number.class, simulatorType);
+    public long getLongValue(YukonSimulatorSettingsKey property) {
+        Number convertedValue = getConvertedValue(property, Number.class);
         return convertedValue.longValue();
     }
 
     @Override
-    public String getStringValue(YukonSimulatorSettingsKey property, SimulatorType simulatorType) {
-        Object convertedValue = getConvertedValue(property, Object.class, simulatorType);
+    public String getStringValue(YukonSimulatorSettingsKey property) {
+        Object convertedValue = getConvertedValue(property, Object.class);
         return convertedValue.toString();
     }
-    
+
     @Override
-    public Instant getInstantValue(YukonSimulatorSettingsKey property, SimulatorType simulatorType) {
-        Instant convertedValue = getConvertedValue(property, Instant.class, simulatorType);
+    public Instant getInstantValue(YukonSimulatorSettingsKey property) {
+        Instant convertedValue = getConvertedValue(property, Instant.class);
         return convertedValue;
     }
-    
-    public <T> T getConvertedValue(YukonSimulatorSettingsKey property, Class<T> returnType, SimulatorType simulatorType) throws BadSimulatorSettingTypeException {
+
+    public <T> T getConvertedValue(YukonSimulatorSettingsKey property, Class<T> returnType) throws BadSimulatorSettingTypeException {
         if (log.isDebugEnabled()) {
             log.debug("getting converted value of " + property + " as " + returnType.getSimpleName());
         }
         Validate.isTrue(returnType.isAssignableFrom(property.getInputType().getTypeClass()), "can't convert " + property + " to " + returnType);
-        String stringValue = getPropertyValue(property, simulatorType);
+        String stringValue = getPropertyValue(property);
         Object convertedValue = convertPropertyValue(property, stringValue);
         if (convertedValue == null) {
             log.debug("convertedValue was null, using default");
@@ -198,25 +160,23 @@ public class YukonSimulatorSettingsDaoImpl implements YukonSimulatorSettingsDao 
         T result = returnType.cast(convertedValue);
         return result;
     }
-    
-    public String getPropertyValue(YukonSimulatorSettingsKey property, SimulatorType simulatorType) {
+
+    public String getPropertyValue(YukonSimulatorSettingsKey property) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("select Value");
-        sql.append("from YukonSimulatorSettings");
-//        sql.append("where Name").eq(property.name());
-//        sql.append("and Name").contains(simulatorType.name());
-        sql.append("where Name = '" + property.name() + "' and Name like '%" + simulatorType.name() + "%';");
-        
+        sql.append("SELECT Value");
+        sql.append("FROM YukonSimulatorSettings");
+        sql.append("WHERE Name").eq_k(property);
+
         String result;
         try {
             result = yukonJdbcTemplate.queryForString(sql);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
-        
+
         return result;
     }
-    
+
     public Object convertPropertyValue(YukonSimulatorSettingsKey property, String value) throws BadSimulatorSettingTypeException {
         try {
             return InputTypeFactory.convertPropertyValue(property.getInputType(), value);
@@ -224,10 +184,4 @@ public class YukonSimulatorSettingsDaoImpl implements YukonSimulatorSettingsDao 
             throw new BadSimulatorSettingTypeException(property, value, e);
         }
     }
-    
-    @Autowired
-    public void setYukonJdbcTemplate(YukonJdbcTemplate yukonJdbcTemplate) {
-        this.yukonJdbcTemplate = yukonJdbcTemplate;
-    }
-
 }

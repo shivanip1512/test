@@ -7,24 +7,24 @@ import org.joda.time.Duration;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 
-public class SimulatorSettings implements Serializable{
+public class SimulatorSettings implements Serializable {
 
-    //lcr data simulator
+    // lcr data simulator
     private int lcr6200serialFrom;
     private int lcr6200serialTo;
     private int lcr6600serialFrom;
     private int lcr6600serialTo;
 
-    //meter data simulator
+    // meter data simulator
     private String paoType;
 
-    //% of duplicates to generate
+    // % of duplicates to generate
     private int percentOfDuplicates;
 
-    //used for testing simulator
+    // used for testing simulator
     private int deviceId;
-    
-    //used for automatically starting simulators on simulator service startup
+
+    // used for automatically starting simulators on simulator service startup
     private boolean runOnStartup;
 
     private ReportingInterval reportingInterval = ReportingInterval.REPORTING_INTERVAL_24_HOURS;
@@ -32,7 +32,7 @@ public class SimulatorSettings implements Serializable{
     public static enum ReportingInterval implements DisplayableEnum {
         REPORTING_INTERVAL_1_HOURS(Duration.standardHours(1)),
         REPORTING_INTERVAL_4_HOURS(Duration.standardHours(4)),
-        REPORTING_INTERVAL_24_HOURS(Duration.standardDays(1)), ;
+        REPORTING_INTERVAL_24_HOURS(Duration.standardDays(1)),;
         private static final String prefix = "yukon.web.modules.dev.rfnMeterSimulator.reportingInterval.types.";
         private Duration duration;
 
@@ -57,59 +57,72 @@ public class SimulatorSettings implements Serializable{
             return prefix + name();
         }
     }
+
     public SimulatorSettings(int lcr6200serialFrom, int lcr6200serialTo, int lcr6600serialFrom, int lcr6600serialTo, int percentOfDuplicates, ReportingInterval reportingInterval) {
         this.lcr6200serialFrom = lcr6200serialFrom;
         this.lcr6200serialTo = lcr6200serialTo;
         this.lcr6600serialFrom = lcr6600serialFrom;
         this.lcr6600serialTo = lcr6600serialTo;
-        this.percentOfDuplicates =  percentOfDuplicates;
+        this.percentOfDuplicates = percentOfDuplicates;
         this.reportingInterval = reportingInterval;
     }
 
     public SimulatorSettings(String paoType, int percentOfDuplicates, ReportingInterval reportingInterval) {
         this.paoType = paoType;
-        this.percentOfDuplicates =  percentOfDuplicates;
+        this.percentOfDuplicates = percentOfDuplicates;
         this.reportingInterval = reportingInterval;
     }
+
     public SimulatorSettings(String paoType, int percentOfDuplicates, ReportingInterval reportingInterval, boolean runOnStartup) {
         this.paoType = paoType;
-        this.percentOfDuplicates =  percentOfDuplicates;
+        this.percentOfDuplicates = percentOfDuplicates;
         this.reportingInterval = reportingInterval;
         this.runOnStartup = runOnStartup;
     }
+
     public SimulatorSettings(int deviceId) {
         this.setDeviceId(deviceId);
     }
+
     public SimulatorSettings() {
     }
 
     public int getLcr6200serialFrom() {
         return lcr6200serialFrom;
     }
+
     public void setLcr6200serialFrom(int lcr6200serialFrom) {
         this.lcr6200serialFrom = lcr6200serialFrom;
     }
+
     public int getLcr6200serialTo() {
         return lcr6200serialTo;
     }
+
     public void setLcr6200serialTo(int lcr6200serialTo) {
         this.lcr6200serialTo = lcr6200serialTo;
     }
+
     public int getLcr6600serialFrom() {
         return lcr6600serialFrom;
     }
+
     public void setLcr6600serialFrom(int lcr6600serialFrom) {
         this.lcr6600serialFrom = lcr6600serialFrom;
     }
+
     public int getLcr6600serialTo() {
         return lcr6600serialTo;
     }
+
     public void setLcr6600serialTo(int lcr6600serialTo) {
         this.lcr6600serialTo = lcr6600serialTo;
     }
+
     public int getPercentOfDuplicates() {
         return percentOfDuplicates;
     }
+
     public void setPercentOfDuplicates(int percentOfDuplicates) {
         this.percentOfDuplicates = percentOfDuplicates;
     }
@@ -137,11 +150,11 @@ public class SimulatorSettings implements Serializable{
     public void setReportingInterval(ReportingInterval reportingInterval) {
         this.reportingInterval = reportingInterval;
     }
-    
+
     public boolean getRunOnStartup() {
         return runOnStartup;
     }
-    
+
     public void setRunOnStartup(boolean runOnStartup) {
         this.runOnStartup = runOnStartup;
     }
