@@ -3,6 +3,9 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
+
+<cti:msgScope paths="modules.amr.dataCollection.detail">
 
 <table class="compact-results-table row-highlighting has-alerts has-actions">
     <th></th>
@@ -81,10 +84,11 @@
                     <cti:param name="idList.ids" value="${deviceId}"/>               
                 </cti:url>
                 <cm:dropdownOption icon="icon-ping" key=".sendCommand" href="${commandUrl}" newTab="true"/>   
-
             </cm:dropdown>
             </td>
         </tr>
     </c:forEach>
 </table>
 <tags:pagingResultsControls result="${detail}" adjustPageCount="true" thousands="true"/>
+
+</cti:msgScope>
