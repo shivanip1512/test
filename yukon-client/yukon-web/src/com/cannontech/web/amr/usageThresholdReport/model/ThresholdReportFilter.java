@@ -8,15 +8,15 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 public class ThresholdReportFilter {
 
     private DeviceGroup group;
-    private double thershold;
+    private double threshold;
     private ThresholdDescriptor thresholdDescriptor;
     private DataCompleteness dataCompleteness;
     private boolean includeDisabled;
 
-    public ThresholdReportFilter(DeviceGroup group, double thershold, ThresholdDescriptor thresholdDescriptor,
+    public ThresholdReportFilter(DeviceGroup group, double threshold, ThresholdDescriptor thresholdDescriptor,
             DataCompleteness dataCompleteness, boolean includeDisabled) {
         this.group = group;
-        this.thershold = thershold;
+        this.threshold = threshold;
         this.thresholdDescriptor = thresholdDescriptor;
         this.dataCompleteness = dataCompleteness;
         this.includeDisabled = includeDisabled;
@@ -26,8 +26,8 @@ public class ThresholdReportFilter {
         return group;
     }
 
-    public double getThershold() {
-        return thershold;
+    public double getThreshold() {
+        return threshold;
     }
 
     public ThresholdDescriptor getThresholdDescriptor() {
@@ -46,7 +46,7 @@ public class ThresholdReportFilter {
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
         tsb.append("group", group);
-        tsb.append("threshold", thresholdDescriptor.getValue() + " " + thershold);
+        tsb.append("threshold", thresholdDescriptor.getValue() + " " + threshold);
         tsb.append("dataCompleteness", dataCompleteness);
         tsb.append("includeDisabled", includeDisabled);
         return tsb.toString();
