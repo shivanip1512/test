@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
@@ -34,7 +36,9 @@ import com.google.common.cache.RemovalCause;
 import com.google.common.cache.RemovalListener;
 import com.google.common.cache.RemovalNotification;
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ListMultimap;
+import com.google.common.collect.Sets;
 
 public class PointUpdateBackingService implements BulkUpdateBackingService, PointDataListener {
     private final static Logger log = YukonLogManager.getLogger(PointUpdateBackingService.class);
@@ -98,19 +102,18 @@ public class PointUpdateBackingService implements BulkUpdateBackingService, Poin
     private List<DatedPointValue> getLatestValuesAndAlwaysRegisterForPoints(Set<Integer> pointIds, long afterDate,
             boolean canWait) {
         asyncDataSource.registerForPointData(this, pointIds);
-        List<DatedPointValue> values = new ArrayList<>();
-        for (Integer pointId : pointIds) {
-            DatedPointValue value = cache.getIfPresent(pointId);
-            if (value == null && canWait) {
-                PointValueQualityHolder pointValue = asyncDataSource.getPointValue(pointId);
-                value = new DatedPointValue(pointValue);
-                cache.put(pointId, value);
-            }
-            if (value != null && value.receivedTime >= afterDate) {
-                values.add(value);
-            }
+        ImmutableMap<Integer, DatedPointValue> cachedValues = cache.getAllPresent(pointIds);
+        Map<Integer, DatedPointValue> dispatchValues = Collections.emptyMap();
+        if (cachedValues.size() < pointIds.size() && canWait) {
+            Set<Integer> pointsNotInCache = Sets.difference(pointIds, cachedValues.keySet());
+            dispatchValues = 
+                    asyncDataSource.getPointValues(pointsNotInCache).stream()
+                            .collect(Collectors.toMap(PointValueQualityHolder::getId, DatedPointValue::new));
+            cache.putAll(dispatchValues);
         }
-        return values;
+        return Stream.concat(cachedValues.values().stream(), dispatchValues.values().stream())
+            .filter(dpv -> dpv.receivedTime >= afterDate)
+            .collect(Collectors.toList());
     }
     
     /**
