@@ -144,7 +144,7 @@
         The date/time displays the date/time that data collection was last updated.
         <ul>
             <li><b>Available (Green):</b> Data has been received for these devices within the desired number of days.</li>
-            <li><b>Expected (Yellow):</b> Data has been received for these devices within 7 days.</li>
+            <li><b>Expected (Blue):</b> Data has been received for these devices within 7 days.</li>
             <li><b>Outdated (Orange):</b> Data has been received for these devices within 14 days.</li>
             <li><b>Unavailable (Gray):</b> Data has not been received for these devices for over 14 days.</li>
         </ul>

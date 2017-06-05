@@ -20,26 +20,30 @@ yukon.widget.dataCollection = (function () {
         return [
             {
                 name: $('.js-AVAILABLE').val(),
-                y: data.available.percentage,
+                displayPercentage: data.available.percentage < 1 && data.available.percentage != 0 ? '&lt;1%' : yukon.percent(data.available.percentage, 100, 1),
+                y: (data.available.percentage < 1 && data.available.percentage != 0 ? 1 : data.available.percentage),
                 x: data.available.deviceCount,
                 color: '#009933'
             },
             {
                 name: $('.js-EXPECTED').val(),
-                y: data.expected.percentage,
+                displayPercentage: data.expected.percentage < 1 && data.expected.percentage != 0 ? '&lt;1%' : yukon.percent(data.expected.percentage, 100, 1),
+                y: (data.expected.percentage < 1 && data.expected.percentage != 0 ? 1 : data.expected.percentage),
                 x: data.expected.deviceCount,
-                color: '#fff77d'
+                color: '#4d90fe'
                 
             },
             {
                 name: $('.js-OUTDATED').val(),
-                y: data.outdated.percentage,
+                displayPercentage: data.outdated.percentage < 1 && data.outdated.percentage != 0 ? '&lt;1%' : yukon.percent(data.outdated.percentage, 100, 1),
+                y: (data.outdated.percentage < 1 && data.outdated.percentage != 0 ? 1 : data.outdated.percentage),
                 x: data.outdated.deviceCount,
-                color: '#EC971F'
+                color: '#ec971f'
             },
             {
                 name: $('.js-UNAVAILABLE').val(),
-                y: data.unavailable.percentage,
+                displayPercentage: data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? '&lt;1%' : yukon.percent(data.unavailable.percentage, 100, 1),
+                y: (data.unavailable.percentage < 1 && data.unavailable.percentage != 0 ? 1 : data.unavailable.percentage),
                 x: data.unavailable.deviceCount,
                 color: '#888'
             }
@@ -60,21 +64,23 @@ yukon.widget.dataCollection = (function () {
                 enabled: false
             },
             legend: {
+                symbolPadding: -60,
+                symbolWidth: 0.001,
+                symbolHeight: 0.001,
+                symbolRadius: 0,
                 align: 'right',
                 borderWidth: 0,
+                useHTML: true,
                 labelFormatter: function (point) {
-                    var percentage = yukon.percent(this.y, 100, 1);
-                    if (this.y < 1 && this.y != 0) {
-                        percentage = "<1%";
-                    }
-                    return this.name + ': ' + percentage + ", " + this.x + " devices";
+                    var spanText = '<span class="badge" style="margin:2px;width:60px;color:white;background-color:' + this.color + '">' + this.x + '</span> ';
+                    return spanText + this.name + ': ' + this.displayPercentage;
                 },
                 layout: 'vertical',
                 verticalAlign: 'middle'
             },
             title: { text: null },
             tooltip: {
-                pointFormat: '<b>{point.percentage:.1f}%, {point.x} devices</b>'
+                pointFormat: '<b>{point.displayPercentage}, {point.x} devices</b>'
             },
             plotOptions: {
                 pie: {
@@ -82,7 +88,7 @@ yukon.widget.dataCollection = (function () {
                     cursor: 'pointer',
                     dataLabels: { enabled: false },
                     showInLegend: true,
-                    borderWidth: 0.25,
+                    borderWidth: 0.25
                 }
             },
             series: [{

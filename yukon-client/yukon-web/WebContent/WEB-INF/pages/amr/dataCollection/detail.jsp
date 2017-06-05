@@ -44,14 +44,14 @@
                                 </c:forEach>
                                 <c:set var="buttonText" value="green"/>
                                 <c:if test="${range eq 'EXPECTED'}">
-                                    <c:set var="buttonText" value="yellow-button"/>
+                                    <c:set var="buttonText" value="pie-blue"/>
                                 </c:if> 
+                                <c:if test="${range eq 'OUTDATED'}">
+                                    <c:set var="buttonText" value="orange"/>
+                                </c:if>
                                 <c:if test="${range eq 'UNAVAILABLE'}">
                                     <c:set var="buttonText" value="grey"/>
                                 </c:if>
-                                <c:if test="${range eq 'OUTDATED'}">
-                                    <c:set var="buttonText" value="orange"/>
-                                </c:if>                                
                                 <tags:check name="ranges" key=".rangeType.${range}" classes="M0" buttonTextClasses="${buttonText}" checked="${checked}" value="${range}"></tags:check>
                             </c:forEach>
                         </div>

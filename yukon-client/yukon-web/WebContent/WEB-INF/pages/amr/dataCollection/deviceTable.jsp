@@ -18,7 +18,7 @@
             <td style="vertical-align:middle">
                 <c:set var="circleColor" value="green-background"/>
                 <c:if test="${device.range eq 'EXPECTED'}">
-                    <c:set var="circleColor" value="yellow-background"/>
+                    <c:set var="circleColor" value="blue-background"/>
                 </c:if>
                 <c:if test="${device.range eq 'OUTDATED'}">
                     <c:set var="circleColor" value="orange-background"/>
@@ -26,7 +26,8 @@
                 <c:if test="${device.range eq 'UNAVAILABLE'}">
                     <c:set var="circleColor" value="grey-background"/>
                 </c:if>
-                <div class="small-circle ${circleColor}"></div>
+                <cti:msg2 var="rangeText" key=".rangeType.${device.range}"/>
+                <div class="small-circle ${circleColor}" title="${rangeText}"></div>
             </td>
             <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${device.deviceName}</cti:paoDetailUrl></td>
             <td>${device.meterNumber}</td>
@@ -47,7 +48,7 @@
                         <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
                     </c:when>
                     <c:otherwise>
-                        <cti:msg2 key="yukon.web.modules.amr.dataCollection.detail.noRecentReadingFound"/>
+                        <cti:msg2 key=".noRecentReadingFound"/>
                     </c:otherwise>
                 </c:choose>
             </td>
