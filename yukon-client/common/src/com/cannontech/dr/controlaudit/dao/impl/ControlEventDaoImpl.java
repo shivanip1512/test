@@ -270,8 +270,16 @@ public class ControlEventDaoImpl implements ControlEventDao {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(getControlAuditBaseQuery());
-        sql.append("AND ce.StartTime").gt(range.getMin());
-        sql.append("AND ce.StartTime").lt(range.getMax());
+        if (range.isIncludesMaxValue()) {
+            sql.append("AND ce.StartTime").gte(range.getMin());
+        } else {
+            sql.append("AND ce.StartTime").gt(range.getMin());
+        }
+        if (range.isIncludesMinValue()) {
+            sql.append("AND ce.StartTime").lte(range.getMax());
+        } else {
+            sql.append("AND ce.StartTime").lt(range.getMax());
+        }
         sql.append("ORDER BY ce.ControlEventId");
         List<ControlAuditDetail> controlAuditDetails = jdbcTemplate.query(sql, controlAuditDetailRowMapper);
 
@@ -318,7 +326,6 @@ public class ControlEventDaoImpl implements ControlEventDao {
         sql.append("  JOIN YukonPAObject pgypo on pgypo.PAObjectId = lmpwp.DeviceId");
         sql.append("WHERE NOT lmhcg.GroupEnrollStart IS NULL ");
         sql.append("  AND lmhcg.GroupEnrollStop IS NULL");
-        sql.append("ORDER BY ce.ControlEventId");
         return sql;
     }
 
