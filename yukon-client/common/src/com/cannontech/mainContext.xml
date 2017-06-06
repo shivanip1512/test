@@ -202,6 +202,7 @@
                 <value>classpath:com/cannontech/yukon/web/modules/amr/porterResponseMonitor</value>
                 <value>classpath:com/cannontech/yukon/web/modules/amr/porterResponseMonitorsWidget</value>
                 <value>classpath:com/cannontech/yukon/web/modules/amr/waterLeakReport</value>
+                <value>classpath:com/cannontech/yukon/web/modules/amr/usageThresholdReport</value>
                 <value>classpath:com/cannontech/yukon/web/modules/common/contextualMenu/contextualMenu</value>
                 <value>classpath:com/cannontech/yukon/web/modules/amr/vee/vee</value>
                 <value>classpath:com/cannontech/yukon/web/modules/amr/commandRequestExecution</value>

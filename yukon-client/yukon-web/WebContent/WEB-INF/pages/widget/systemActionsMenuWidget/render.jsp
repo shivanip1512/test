@@ -6,6 +6,7 @@
 <cti:url var="archiveDataAnalysesUrl" value="/bulk/archiveDataAnalysis/list/view"/>
 <cti:url var="meterEventsReportUrl" value="/amr/meterEventsReport/home"/>
 <cti:url var="waterLeakReportUrl" value="/amr/waterLeakReport/report"/>
+<cti:url var="usageThresholdReportUrl" value="/amr/usageThresholdReport/report"/>
 
 <div>
     <cti:checkRolesAndProperties value="ARCHIVED_DATA_ANALYSIS">
@@ -22,4 +23,5 @@
             <a href="${waterLeakReportUrl}"><i:inline key=".waterLeakReport"/></a><br/>
         </cti:checkRolesAndProperties>
     </c:if>
+    <a href="${usageThresholdReportUrl}"><i:inline key=".usageThresholdReport"/></a><br/>
 </div>

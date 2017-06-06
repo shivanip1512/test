@@ -169,6 +169,7 @@
           <page name="dataCollection.detail" type="BASIC">
             <labelArgument>${deviceGroup}</labelArgument>
           </page>
+          <page name="usageThresholdReport.report" type="BASIC"/>
         </pages>
       </page>
     </pages>
