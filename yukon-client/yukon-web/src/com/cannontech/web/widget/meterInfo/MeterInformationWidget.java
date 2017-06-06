@@ -26,7 +26,6 @@ import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -83,7 +82,6 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private MeterValidator meterValidator;
-    @Autowired private DeviceUpdateService deviceUpdateService;
     
     @RequestMapping("render")
     public String render(ModelMap model, int deviceId) {
@@ -187,9 +185,6 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
                 null, meter.getRouteId(), Integer.toString(meter.getAddress()));
         
         meterDao.update(plc);
-        if (meter.isDisabled()) {
-            deviceUpdateService.disableDevice(plc);
-        }
         // Success
         model.clear();
         Map<String, Object> json = new HashMap<>();
@@ -239,9 +234,6 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
             model.addAttribute("errorMsg", errorMsg);
             return "meterInformationWidget/edit.jsp";
         }
-        if (meter.isDisabled()) {
-            deviceUpdateService.disableDevice(rfn);
-        }
         // Success
         model.clear();
         Map<String, Object> json = new HashMap<>();
@@ -274,9 +266,6 @@ public class MeterInformationWidget extends AdvancedWidgetControllerBase {
         IedMeter ied = new IedMeter(pao.getPaoIdentifier(), meter.getMeterNumber(), meter.getName(), meter.isDisabled());
         
         meterDao.update(ied);
-        if (meter.isDisabled()) {
-            deviceUpdateService.disableDevice(ied);
-        }
         // Success
         model.clear();
         Map<String, Object> json = new HashMap<>();

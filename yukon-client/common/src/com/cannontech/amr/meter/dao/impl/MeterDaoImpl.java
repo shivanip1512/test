@@ -26,6 +26,7 @@ import com.cannontech.common.pao.DisplayablePao;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoUtils;
 import com.cannontech.common.pao.YukonPao;
+import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentGenerator;
@@ -43,6 +44,7 @@ import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.NaturalOrderComparator;
 import com.google.common.base.Function;
 import com.google.common.collect.ArrayListMultimap;
@@ -57,6 +59,7 @@ public class MeterDaoImpl implements MeterDao {
     @Autowired private GlobalSettingDao globalSettingDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private LocationService locationService;
     
     @Autowired private MeterRowMapper meterRowMapper;
     
@@ -115,6 +118,10 @@ public class MeterDaoImpl implements MeterDao {
         }
         
         dbChangeManager.processPaoDbChange(meter, DbChangeType.UPDATE);
+        
+        if (meter.isDisabled()) {
+            locationService.deleteLocation(meter.getDeviceId(), YukonUserContext.system.getYukonUser());
+        }
     }
     
     @Override
