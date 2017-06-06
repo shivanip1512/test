@@ -158,7 +158,7 @@ public class GroupEditorController {
         model.addAttribute("extSelectedNodePath", extSelectedNodePath);
         
         String allGroupsDataJson = JsonUtils.toJson(allGroupsRoot.toMap());
-        model.addAttribute("allGroupsDataJson", allGroupsDataJson);
+        model.addAttribute("allGroupsDataJson", JsonUtils.sanitizeJson(allGroupsDataJson));
         
         model.addAttribute("subGroupMap",subGroupMap);
         Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices", false);
@@ -198,7 +198,7 @@ public class GroupEditorController {
         JsTreeNode moveGroupRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(moveGroupHierarchy, groupsLabel, Collections.emptySet());
         
         String moveGroupJson = JsonUtils.toJson(moveGroupRoot.toMap());
-        model.addAttribute("moveGroupDataJson", moveGroupJson); 
+        model.addAttribute("moveGroupDataJson", JsonUtils.sanitizeJson(moveGroupJson)); 
         
         // COPY GROUPS TREE JSON
         Predicate<DeviceGroup> canCopyIntoPredicate = new Predicate<DeviceGroup>() {
@@ -211,7 +211,7 @@ public class GroupEditorController {
         JsTreeNode copyExtRoot = DeviceGroupTreeUtils.makeDeviceGroupJsTree(copyGroupHierarchy, groupsLabel, Collections.emptySet());
         
         String copyGroupJson = JsonUtils.toJson(copyExtRoot.toMap());
-        model.addAttribute("copyGroupDataJson", copyGroupJson); 
+        model.addAttribute("copyGroupDataJson", JsonUtils.sanitizeJson(copyGroupJson)); 
         
         // DEVICE COLLECTION
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(selectedDeviceGroup);

@@ -75,10 +75,12 @@ public class DeviceGroupHierarchyJsonTag extends YukonTagSupport {
             }
         }
         
+        String deviceGroupHeirarchyJson = JsonUtils.toJson(root.toMap());
+        String sanitizedJson = JsonUtils.sanitizeJson(deviceGroupHeirarchyJson);
         if (var == null) {
-            getJspContext().getOut().write(JsonUtils.toJson(root.toMap()));
+            getJspContext().getOut().write(sanitizedJson);
         } else {
-            getJspContext().setAttribute(var, JsonUtils.toJson(root.toMap()));
+            getJspContext().setAttribute(var, sanitizedJson);
         }
     }
     

@@ -110,7 +110,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
             }
         });
         
-        mav.addObject("currentGroupsDataJson", currentGroupsDataJson);
+        mav.addObject("currentGroupsDataJson", JsonUtils.sanitizeJson(currentGroupsDataJson));
         mav.addObject("device", device);
         mav.addObject("deviceId", deviceId);
         

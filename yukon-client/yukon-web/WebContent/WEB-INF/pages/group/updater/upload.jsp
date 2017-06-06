@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:url var="parseUploadURL" value="/group/updater/parseUpload"/>
 
@@ -27,7 +28,7 @@
 
 <c:choose>
 <c:when test="${not empty error}">
-    <div class="error">${error}</div>
+    <div class="error">${fn:escapeXml(error)}</div>
 </c:when>
 <c:when test="${success}">
     <div class="success"><i:inline key=".success" arguments="${deviceCount}"/></div>

@@ -2,6 +2,7 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="tools" page="bulk.updateUpload">
 
@@ -33,7 +34,8 @@
                 <c:if test="${not empty headersErrorResolverList}">
                     <div class="stacked lite-container scroll-md">
                         <c:forEach var="headersErrorResolver" items="${headersErrorResolverList}">
-                            <div class="error"><cti:msg key="${headersErrorResolver}"/></div>
+                            <cti:msg var="errorMessage" key="${headersErrorResolver}"/>
+                            <div class="error">${fn:escapeXml(errorMessage)}</div>
                         </c:forEach>
                     </div>
                 </c:if>

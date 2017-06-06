@@ -20,7 +20,7 @@
                     <tr>
                         <td>${importError.lineNumber}</td> 
                         <td>
-                            <div style="border-bottom: 1px dashed #ccc"><strong><i:inline key="yukon.web.modules.operator.accountImport.errorMessage"/>:</strong>${importError.errorMessage}</div> 
+                            <div style="border-bottom: 1px dashed #ccc"><strong><i:inline key="yukon.web.modules.operator.accountImport.errorMessage"/>:</strong>${fn:escapeXml(importError.errorMessage)}</div> 
                             <div><strong><i:inline key="yukon.web.modules.operator.accountImport.importAccount"/>:</strong>${fn:escapeXml(importError.importAccount)}</div>
                         </td>
                     </tr>
