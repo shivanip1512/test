@@ -10,15 +10,15 @@ public class ThresholdReportFilter {
     private DeviceGroup group;
     private double threshold;
     private ThresholdDescriptor thresholdDescriptor;
-    private DataCompleteness dataCompleteness;
+    private DataAvailability availability;
     private boolean includeDisabled;
 
     public ThresholdReportFilter(DeviceGroup group, double threshold, ThresholdDescriptor thresholdDescriptor,
-            DataCompleteness dataCompleteness, boolean includeDisabled) {
+            DataAvailability availability, boolean includeDisabled) {
         this.group = group;
         this.threshold = threshold;
         this.thresholdDescriptor = thresholdDescriptor;
-        this.dataCompleteness = dataCompleteness;
+        this.availability = availability;
         this.includeDisabled = includeDisabled;
     }
 
@@ -34,8 +34,8 @@ public class ThresholdReportFilter {
         return thresholdDescriptor;
     }
 
-    public DataCompleteness getDataCompleteness() {
-        return dataCompleteness;
+    public DataAvailability getAvailability() {
+        return availability;
     }
 
     public boolean isIncludeDisabled() {
@@ -47,7 +47,7 @@ public class ThresholdReportFilter {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
         tsb.append("group", group);
         tsb.append("threshold", thresholdDescriptor.getValue() + " " + threshold);
-        tsb.append("dataCompleteness", dataCompleteness);
+        tsb.append("availability", availability);
         tsb.append("includeDisabled", includeDisabled);
         return tsb.toString();
     }

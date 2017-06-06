@@ -1,8 +1,9 @@
 package com.cannontech.web.amr.usageThresholdReport.model;
 
-public enum DataCompleteness {
+public enum DataAvailability {
     
     COMPLETE, 
-    PARTIAL, 
+    PARTIAL,
+    UNSUPPORTED,
     NONE;
 }

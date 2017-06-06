@@ -7,7 +7,6 @@ import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.Range;
 
@@ -18,12 +17,13 @@ public class ThresholdReportCriteria {
     private BuiltInAttribute attribute;
     private Range<Instant> range;
     private Instant runTime;
-    private DeviceGroup group;
+    //description - if individual devices were selected “X devices” otherwise a group name
+    private String description;
 
-    public ThresholdReportCriteria(DeviceGroup group, BuiltInAttribute attribute, Range<Instant> range) {
+    public ThresholdReportCriteria(String description, BuiltInAttribute attribute, Instant start, Instant end) {
+        range = new Range<>(start, false, end, true);
         this.attribute = attribute;
-        this.range = range;
-        this.group = group;
+        this.description = description;
     }
 
     public BuiltInAttribute getAttribute() {
@@ -34,8 +34,8 @@ public class ThresholdReportCriteria {
         return range;
     }
 
-    public DeviceGroup getGroup() {
-        return group;
+    public String getDescription() {
+        return description;
     }
 
     public Instant getRunTime() {
@@ -49,7 +49,7 @@ public class ThresholdReportCriteria {
     @Override
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
-        tsb.append("group", group);
+        tsb.append("description", description);
         tsb.append("attribute", attribute);
         if (runTime != null) {
             tsb.append("Run time", runTime.toString(df.withZone(DateTimeZone.getDefault())));
