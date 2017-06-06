@@ -85,7 +85,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     KVARH_RATE_D("kVArh Rate D", AttributeGroup.REACTIVE),
     LM_GROUP_STATUS("LM Group Status", AttributeGroup.STATUS, false),
     LOAD_PROFILE("Load Profile", AttributeGroup.PROFILE, false),    //require extra input, not "attribute" based readable
-    LOAD_SIDE_VOLTAGE_DETECTED_FLAG("Load Side Voltage Detected", AttributeGroup.STATUS, false),   //440 types only
+    LOAD_SIDE_VOLTAGE_DETECTED_FLAG("Load Side Voltage Detected", AttributeGroup.STATUS, false),   
     METER_BOX_COVER_REMOVAL_FLAG("Meter Box Cover Removal", AttributeGroup.STATUS, false),   //440 types only
     MAXIMUM_VOLTAGE("Maximum Voltage", AttributeGroup.VOLTAGE),
     MAXIMUM_VOLTAGE_FROZEN("Maximum Voltage Frozen", AttributeGroup.VOLTAGE),

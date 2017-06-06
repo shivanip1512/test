@@ -444,6 +444,7 @@ public class DevEventLogCreationService {
                 disconnectEventLogService.groupActionCompleted(yukonUser, DisconnectCommand.CONNECT, 20, 15, 3, 2);
                 disconnectEventLogService.groupCancelAttempted(yukonUser, DisconnectCommand.CONNECT);
                 disconnectEventLogService.groupDisconnectAttempted(yukonUser, DisconnectCommand.DISCONNECT);
+                disconnectEventLogService.loadSideVoltageDetectedWhileDisconnected(yukonUser, deviceName);
             }
         });
         executables.put(LogType.ENDPOINT, new DevEventLogExecutable() {

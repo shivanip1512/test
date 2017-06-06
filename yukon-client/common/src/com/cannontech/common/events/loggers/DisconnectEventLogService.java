@@ -42,5 +42,9 @@ public interface DisconnectEventLogService {
                                 @Arg(ArgEnum.failureCount) Integer failure,
                                 @Arg(ArgEnum.notAttemptedCount) Integer notAttempted
             );
-    
+    @YukonEventLog(transactionality = ExecutorTransactionality.FORCED, category = "amr.disconnect")
+    public void loadSideVoltageDetectedWhileDisconnected(@Arg(ArgEnum.username) LiteYukonUser user,
+                                        @Arg(ArgEnum.deviceName) String deviceName
+                                        );
+
 }

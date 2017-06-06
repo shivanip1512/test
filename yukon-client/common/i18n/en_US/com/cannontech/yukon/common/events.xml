@@ -314,6 +314,7 @@
     <entry key="yukon.common.events.amr.disconnect.groupDisconnectAttempted">{2} command collection action attempted by {1}.</entry>
     <entry key="yukon.common.events.amr.disconnect.groupCancelAttempted">{2} command collection action canceled by {1}.</entry>
     <entry key="yukon.common.events.amr.disconnect.groupActionCompleted">{2} command collection action initiated on {7} device(s) by {1}. (Success:{8} Failure:{9} Not Attempted:{10})</entry>
+    <entry key="yukon.common.events.amr.disconnect.loadSideVoltageDetectedWhileDisconnected">Load side voltage detected on device {2} by {1}.</entry>
     
     <!--  Device Config -->
     <entry key="yukon.common.events.device.configuration.assignConfigInitiated">Assign device configuration {1} to {7} device(s) initiated by {2}.</entry>
