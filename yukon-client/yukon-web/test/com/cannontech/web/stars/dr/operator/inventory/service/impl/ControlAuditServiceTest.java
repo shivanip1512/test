@@ -273,8 +273,7 @@ public class ControlAuditServiceTest {
         }).anyTimes();
         
         controlEventDao = createNiceMock(ControlEventDao.class);
-        controlEventDao.getControlEventDeviceStatus(EasyMock.<List<Integer>>anyObject(), 
-                                EasyMock.<Date> anyObject(), EasyMock.<Date> anyObject());
+        controlEventDao.getControlEventDeviceStatus(anyObject(), anyObject(), anyObject());
         expectLastCall().andAnswer(new IAnswer<Map<Integer, Integer>>() {
             @Override
             public Map<Integer, Integer> answer() throws Throwable {
