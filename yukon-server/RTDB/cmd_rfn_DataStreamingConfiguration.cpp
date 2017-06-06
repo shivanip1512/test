@@ -53,7 +53,14 @@ auto RfnDataStreamingConfigurationCommand::decodeConfigResponse(const RfnRespons
     validate(Condition(responseCode == getResponseCode(), ClientErrors::InvalidData) 
         << "Invalid response code (" << responseCode << " != " << getResponseCode() << ")");
 
-    const auto metricCount = response[1];
+    const auto metricCount  = response[1];
+    const auto globalEnable = response[2];
+
+    if( globalEnable > 1 )
+    {
+        CTILOG_WARN(dout, "Streaming enable status is " << static_cast<int>(globalEnable) << ", expecting 0 or 1");
+    }
+
     cr.streamingEnabled = response[2];
 
     const auto expectedLength = ResponseHeaderLength + (metricCount * BytesPerMetric) + SequenceLength;
@@ -69,7 +76,12 @@ auto RfnDataStreamingConfigurationCommand::decodeConfigResponse(const RfnRespons
         const auto interval = response[offset + 3];
         const auto status   = response[offset + 4];
 
-        ConfigResponse::MetricConfiguration mc { metricId, enabled, interval, status };
+        if( enabled > 1 )
+        {
+            CTILOG_WARN(dout, "Channel " << i << " enabled status is " << static_cast<int>(enabled) << ", expecting 0 or 1");
+        }
+
+        ConfigResponse::MetricConfiguration mc { static_cast<uint16_t>(metricId), static_cast<bool>(enabled), interval, status };
 
         cr.metrics.emplace_back(mc);
     }
@@ -237,7 +249,7 @@ RfnCommandResult RfnDataStreamingSetMetricsCommand::decodeCommand(const CtiTime 
     auto json = createJson(cr, _paoType);
 
     //  If we've gotten this far, all of the enabled channels have an a MetricStatus of OK.
-    if( _enabled != cr.streamingEnabled )
+    if( !!_enabled != cr.streamingEnabled )
     {
         throw YukonErrorException(ClientErrors::ConfigNotCurrent, json);
     }

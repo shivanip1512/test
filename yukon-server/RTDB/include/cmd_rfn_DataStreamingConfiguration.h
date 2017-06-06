@@ -10,7 +10,7 @@ namespace Commands {
 class IM_EX_DEVDB RfnDataStreamingConfigurationCommand : public RfnCommand
 {
 public:
-    enum StreamingState : unsigned char
+    enum StreamingState
     {
         StreamingDisabled,
         StreamingEnabled
