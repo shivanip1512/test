@@ -6,6 +6,7 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 public class ThresholdReportDetail {
     
     private PaoIdentifier paoIdentifier;
+    private int pointId;
     private String deviceName;
     private String meterNumber;
     private String addressSerialNumber;
@@ -61,5 +62,11 @@ public class ThresholdReportDetail {
     }
     public void setLatestReading(PointValueQualityHolder latestReading) {
         this.latestReading = latestReading;
+    }
+    public int getPointId() {
+        return pointId;
+    }
+    public void setPointId(int pointId) {
+        this.pointId = pointId;
     }
 }
