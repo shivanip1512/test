@@ -240,12 +240,15 @@ std::vector<unsigned char> makeDataStreamingResponse(const unsigned char respons
     //      0x00, 0x05,  //  metric ID 1
     //      0x01,        //  metric ID 1 enable/disable
     //      0x05,        //  metric ID 1 interval
+    //      0x00,        //  metric ID 1 status
     //      0x00, 0x73,  //  metric ID 2
     //      0x00,        //  metric ID 2 enable/disable
     //      0x0f,        //  metric ID 2 interval
+    //      0x00,        //  metric ID 2 status
     //      0x00, 0x53,  //  metric ID 3
     //      0x01,        //  metric ID 3 enable/disable
     //      0x1e,        //  metric ID 3 interval
+    //      0x00,        //  metric ID 3 status
     //      0xde, 0xad, 0xbe, 0xef };  //  DS metrics sequence number
 
     std::vector<unsigned char> response { responseCode };
