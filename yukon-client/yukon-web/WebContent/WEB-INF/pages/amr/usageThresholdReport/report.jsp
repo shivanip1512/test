@@ -26,15 +26,10 @@
                 </tags:nameValue2>
                 
                 <tags:nameValue2 nameKey=".filter.dateRange">
-<%--                     <dt:dateTime path="startDate" value="${filter.startDate}"
-                        stepMinute="60" stepHour="1" cssDialogClass="hide_minutes" />
-                    <dt:dateTime path="endDate" value="${filter.endDate}"
-                        stepMinute="60" stepHour="1" cssDialogClass="hide_minutes" /> --%>
-<%--                     <dt:dateRange startPath="startDate" endPath="endDate"/> --%>
                     <dt:dateRange startValue="${filter.startDate}" endValue="${filter.endDate}" startName="minDate" endName="maxDate"/>
                 </tags:nameValue2>
 
-                </tags:nameValueContainer2>
+            </tags:nameValueContainer2>
             
             <div class="page-action-area">
                 <cti:button type="submit" nameKey="run" classes="primary button"/>
