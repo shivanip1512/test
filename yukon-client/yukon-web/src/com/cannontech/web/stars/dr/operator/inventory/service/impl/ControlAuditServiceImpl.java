@@ -180,8 +180,7 @@ public class ControlAuditServiceImpl implements ControlAuditService {
                             inventoryByPao.put(pao, identifier);
                             Boolean isHoneywell = identifier.getHardwareType().isHoneywell();
                             if (!isHoneywell) {
-                                // Devices that support relay shed time will always at least support relay #1
-                                // shed time.
+                                // Devices that support relay shed time will always at least support relay #1 shed time.
                                 if (!doesPaoSupport(pao, r1)) {
                                     isSupported = false;
                                 } else {
