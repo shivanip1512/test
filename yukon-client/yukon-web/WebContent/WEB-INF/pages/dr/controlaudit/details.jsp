@@ -3,7 +3,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
-<%@ taglib prefix="dr" tagdir="/WEB-INF/tags/dr" %>
 <%@ taglib prefix="dt" tagdir="/WEB-INF/tags/dateTime" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n" %>
@@ -92,7 +91,7 @@ $(function () {
                     <cm:dropdown triggerClasses="fr" menuClasses="no-icons">
                             <cti:url var="mapNetworkUrl" value="/dr/controlaudit/download?eventId=${auditEventMessageStat.controlEventId}"/>
                             <cm:dropdownOption icon="icon-download" key=".download" href="${mapNetworkUrl}"/>
-                        </cm:dropdown>
+                    </cm:dropdown>
                     </td>
                 </tr>
             </c:forEach>
