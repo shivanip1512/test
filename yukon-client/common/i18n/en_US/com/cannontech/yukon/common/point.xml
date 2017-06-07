@@ -264,7 +264,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.INVALID_SERVICE">Invalid Service</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LINE_FREQUENCY_WARNING">Line Frequency Warning</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOAD_SIDE_VOLTAGE_IS_MISSING">Load Side Voltage Is Missing</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.LOAD_SIDE_VOLTAGE_DETECTED_FLAG">Load Side Voltage Detected</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED">Load Side Voltage Detected</entry>
     <entry key="yukon.common.attribute.builtInAttribute.CURRENT_WITHOUT_VOLTAGE_FLAG">Current Without Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOSS_OF_ALL_CURRENT">Loss Of All Current</entry>
     <entry key="yukon.common.attribute.builtInAttribute.LOSS_OF_PHASE_A_CURRENT">Loss Of Phase A Current</entry>

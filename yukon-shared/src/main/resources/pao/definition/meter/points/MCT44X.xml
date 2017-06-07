@@ -297,7 +297,7 @@
         <stategroup value="TrueFalse"/>
     </point>
     <point offset="57" type="Status">
-        <name>Load Side Voltage Detected, Relay Open</name>
+        <name>Load Side Voltage Detected While Disconnected</name>
         <stategroup value="TrueFalse"/>
     </point>
     <point offset="1000" type="Status">

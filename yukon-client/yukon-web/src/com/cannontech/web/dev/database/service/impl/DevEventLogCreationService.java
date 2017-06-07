@@ -891,7 +891,7 @@ public class DevEventLogCreationService {
         DEMAND_RESET(DemandResetEventLogService.class, 5),
         DEMAND_RESPONSE(DemandResponseEventLogService.class, 37),
         DEVICE_CONFIG(DeviceConfigEventLogService.class, 16),
-        DISCONNECT(DisconnectEventLogService.class, 6),
+        DISCONNECT(DisconnectEventLogService.class, 7),
         ECOBEE(EcobeeEventLogService.class, 3),
         ENDPOINT(EndpointEventLogService.class, 2),
         GATEWAY(GatewayEventLogService.class, 7),

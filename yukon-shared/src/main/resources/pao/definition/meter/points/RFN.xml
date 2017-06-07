@@ -2162,6 +2162,11 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <archive interval="ZERO" type="ON_CHANGE"/>
         <stategroup value="Event Status"/>
     </point>
+        <point offset="81" type="Status">
+        <name>Load Side Voltage Detected While Disconnected</name>
+        <archive interval="ZERO" type="ON_CHANGE"/>
+        <stategroup value="TrueFalse"/>
+    </point>
     <point offset="90" type="Status">
         <name>TOU Schedule Change</name>
         <archive interval="ZERO" type="ON_CHANGE"/>

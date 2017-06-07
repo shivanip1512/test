@@ -49,7 +49,7 @@
         <pointInfo name="Frozen Reverse kWh" init="true" attributes="RECEIVED_KWH_FROZEN"/>
         <pointInfo name="General Alarm" init="true" attributes="GENERAL_ALARM_FLAG"/>
         <pointInfo name="Internal Error" init="true" attributes="INTERNAL_ERROR_FLAG"/>
-        <pointInfo name="Load Side Voltage Detected, Relay Open" init="true" attributes="LOAD_SIDE_VOLTAGE_DETECTED_FLAG"/>
+        <pointInfo name="Load Side Voltage Detected While Disconnected" init="true" attributes="LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED"/>
         <pointInfo name="Low Battery" init="true" attributes="LOW_BATTERY_WARNING"/>
         <pointInfo name="Max Volts" attributes="MAXIMUM_VOLTAGE"/>
         <pointInfo name="Meter Box Cover Removal" init="true" attributes="METER_BOX_COVER_REMOVAL_FLAG"/>
