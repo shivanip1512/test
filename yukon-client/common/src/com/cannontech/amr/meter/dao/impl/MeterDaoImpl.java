@@ -117,11 +117,12 @@ public class MeterDaoImpl implements MeterDao {
             // do nothing special
         }
         
-        dbChangeManager.processPaoDbChange(meter, DbChangeType.UPDATE);
-        
         if (meter.isDisabled()) {
             locationService.deleteLocation(meter.getDeviceId(), YukonUserContext.system.getYukonUser());
         }
+        
+        dbChangeManager.processPaoDbChange(meter, DbChangeType.UPDATE);
+        
     }
     
     @Override
