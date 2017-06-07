@@ -18,16 +18,28 @@ yukon.ami.usageThresholdReport = (function () {
             
             if (_initialized) return;
             
+            /** Filter the results */
+            $(document).on('click', '.js-filter', function (ev) {
+                $('#filter-results-form').ajaxSubmit({
+                    success: function(data, status, xhr, $form) {
+                        $('#usage-device-table').html(data);
+                    },
+                    error: function(xhr, status, error, $form) {
+                        $('#usage-device-table').html(xhr.responseText);
+                    }
+                });
+            });
+            
             _initialized = true;
         },
         
-        /** Adjust device collection input after user selects a device group in filter settings. */
-        filter_group_selected_callback: function () {
+        /** Adjust device collection input after user selects a device group in criteria. */
+        criteria_group_selected_callback: function () {
             $('#filter-form input[name="collectionType"]').val('group');
         },
         
-        /** Adjust device collection input after user selects devices individually in filter settings. */
-        filter_individual_selected_callback: function () {
+        /** Adjust device collection input after user selects devices individually in criteria. */
+        criteria_individual_selected_callback: function () {
             $('#filter-form input[name="collectionType"]').val('idList');
         }
         

@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
+import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
@@ -29,7 +32,10 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.usageThresholdReport.model.DataAvailability;
+import com.cannontech.web.amr.usageThresholdReport.model.ThresholdDescriptor;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
+import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFilter;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFormCriteria;
 import com.cannontech.web.amr.usageThresholdReport.service.ThresholdReportService;
 
@@ -40,6 +46,7 @@ public class UsageThresholdReportController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private ThresholdReportService reportService;
 
     @RequestMapping(value="report", method = RequestMethod.GET)
@@ -54,29 +61,53 @@ public class UsageThresholdReportController {
         ThresholdReportFormCriteria criteria = new ThresholdReportFormCriteria();
         criteria.setStartDate(min);
         criteria.setEndDate(max);
-        model.addAttribute("filter", criteria);
+        model.addAttribute("criteria", criteria);
         return "usageThresholdReport/report.jsp";
     }
     
 
     @RequestMapping(value="report", method = RequestMethod.POST)
-    public String runReport(@ModelAttribute ThresholdReportFormCriteria filter, ModelMap model, HttpServletRequest request, 
+    public String runReport(@ModelAttribute ThresholdReportFormCriteria criteria, ModelMap model, HttpServletRequest request, 
                             @RequestParam String minDate, @RequestParam String maxDate, YukonUserContext userContext) 
             throws ServletRequestBindingException, DeviceCollectionCreationException {
+        model.addAttribute("dataAvailabilityOptions", DataAvailability.values());
+        model.addAttribute("thresholdOptions", ThresholdDescriptor.values());
         DeviceCollection collection = deviceCollectionFactory.createDeviceCollection(request);
-        filter.setDeviceCollection(collection);
+        criteria.setDeviceCollection(collection);
         DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
         Instant start = Instant.parse(minDate, formatter);
         Instant end = Instant.parse(maxDate, formatter);
-        filter.setStartDate(start);
-        filter.setEndDate(end);
-        filter.setDescription("test");
-        int reportId = reportService.createThresholdReport(filter, collection.getDeviceList());
-        SearchResults<ThresholdReportDetail> reportDetail =
-            reportService.getReportDetail(reportId, null, null, null, null);
-        System.out.println(reportDetail);
-        
-        //TODO: get results
+        criteria.setStartDate(start);
+        criteria.setEndDate(end);
+        criteria.setRunTime(new Instant());
+        if (collection.getCollectionType() == DeviceCollectionType.group) {
+            String groupName = collection.getCollectionParameters().get("group.name");
+            DeviceGroup grp = deviceGroupService.resolveGroupName(groupName);
+            criteria.setDescription(grp.getName());
+        } else {
+            criteria.setDescription(collection.getDeviceCount() + " devices");
+        }
+        model.addAttribute("filter", new ThresholdReportFilter(null, 0, null, null, false));
+        int reportId = reportService.createThresholdReport(criteria, collection.getDeviceList());
+        criteria.setReportId(reportId);
+        model.addAttribute("criteria", criteria);
         return "usageThresholdReport/results.jsp";
+    }
+    
+    @RequestMapping(value="results", method = RequestMethod.POST)
+    public String filterResults(@ModelAttribute ThresholdReportFilter filter, String[] deviceSubGroups, int reportId, ModelMap model) {
+        List<DeviceGroup> subGroups = new ArrayList<>();
+        if (deviceSubGroups != null) {
+            for (String subGroup : deviceSubGroups) {
+                subGroups.add(deviceGroupService.resolveGroupName(subGroup));
+            }
+            filter.setGroups(subGroups);
+        }
+        SearchResults<ThresholdReportDetail> reportDetail =
+                reportService.getReportDetail(reportId, filter, null, null, null);
+        System.out.println(reportDetail);
+        model.addAttribute("detail", reportDetail);
+        return "usageThresholdReport/deviceTable.jsp";
+
     }
 }

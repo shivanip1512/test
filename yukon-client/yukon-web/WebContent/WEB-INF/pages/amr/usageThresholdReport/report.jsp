@@ -10,23 +10,23 @@
 
 <cti:standardPage module="amr" page="usageThresholdReport.report">
         
-        <form:form id="filter-form" action="report" method="post" commandName="filter">
+        <form:form id="filter-form" action="report" method="post" commandName="criteria">
             <cti:csrfToken/>
             
-            <tags:nameValueContainer2 tableClass="with-form-controls">
-                <tags:nameValue2 nameKey=".filter.devices">
+            <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey=".criteria.devices">
                     <tags:selectDevicesTabbed deviceCollection="${filter.deviceCollection}" 
                         pickerType="meterPicker" 
-                        groupCallback="yukon.ami.usageThresholdReport.filter_group_selected_callback" 
-                        deviceCallback="yukon.ami.usageThresholdReport.filter_individual_selected_callback"/>
+                        groupCallback="yukon.ami.usageThresholdReport.criteria_group_selected_callback" 
+                        deviceCallback="yukon.ami.usageThresholdReport.criteria_individual_selected_callback"/>
                 </tags:nameValue2>
                 
-                <tags:nameValue2 nameKey=".filter.attribute">
+                <tags:nameValue2 nameKey=".criteria.attribute">
                     <tags:selectWithItems path="attribute" items="${usageAttributes}"/>
                 </tags:nameValue2>
                 
-                <tags:nameValue2 nameKey=".filter.dateRange">
-                    <dt:dateRange startValue="${filter.startDate}" endValue="${filter.endDate}" startName="minDate" endName="maxDate"/>
+                <tags:nameValue2 nameKey=".criteria.dateRange">
+                    <dt:dateRange startValue="${criteria.startDate}" endValue="${criteria.endDate}" startName="minDate" endName="maxDate"/>
                 </tags:nameValue2>
 
             </tags:nameValueContainer2>

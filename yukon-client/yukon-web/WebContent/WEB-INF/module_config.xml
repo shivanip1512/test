@@ -170,6 +170,9 @@
             <labelArgument>${deviceGroup}</labelArgument>
           </page>
           <page name="usageThresholdReport.report" type="BASIC"/>
+          <page name="usageThresholdReport.results" type="BASIC" hideFavorite="true">
+            <labelArgument>${criteria.description}</labelArgument>
+          </page>
         </pages>
       </page>
     </pages>
