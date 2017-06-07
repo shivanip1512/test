@@ -13,17 +13,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultItemsPerPage;
-import com.cannontech.common.model.DefaultSort;
-import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.roleproperties.YukonRole;
@@ -58,34 +54,33 @@ public class ControlAuditController {
 
     @RequestMapping(value = "/controlaudit/details", method = RequestMethod.GET)
     public String details(ModelMap model, @RequestParam(required = false) Instant from,
-            @RequestParam(required = false) Instant to, @DefaultItemsPerPage(15) PagingParameters paging,
-            @DefaultSort(dir = Direction.asc, sort = "EventId") SortingParameters sorting) {
-        if (from == null) {
-            from = new Instant().minus(Duration.standardDays(7));
+            @RequestParam(required = false) Instant to, @DefaultItemsPerPage(15) PagingParameters paging) {
+        Instant toFullDay = null;
+        if (to != null) {
+            toFullDay = to.plus(Duration.standardDays(1)).toDateTime().withTimeAtStartOfDay().toInstant();
         }
-        if (to == null) {
-            to = new Instant();
-        }
-        Instant toFullDay = to.plus(Duration.standardDays(1)).toDateTime().withTimeAtStartOfDay().toInstant();
-
-        model.addAttribute("from", from);
-        model.addAttribute("to", to);
-
-        List<ControlAuditStats> result =
-            controlEventService.getControlAuditStats(Range.inclusiveExclusive(from, toFullDay), paging, sorting);
+        Range<Instant> range = (from != null && to != null) ? Range.inclusiveExclusive(from, toFullDay) : null;
+        List<ControlAuditStats> result = controlEventService.getControlAuditStats(range, paging);
         int totalCount = result != null ? result.size() : 0;
         SearchResults<ControlAuditStats> auditEventMessageStats =
             SearchResults.pageBasedForSublist(result, paging, totalCount);
         model.addAttribute("auditEventMessageStats", auditEventMessageStats);
+        if (from == null) {
+            ControlAuditStats controlAuditStats = result.get(0);
+            from = controlAuditStats.getStartTime();
+        }
+        if (to == null) {
+            to = new Instant();
+        }
+        model.addAttribute("from", from);
+        model.addAttribute("to", to);
         return "dr/controlaudit/details.jsp";
     }
 
-    @RequestMapping(value = "/controlaudit/details/{export}", method = RequestMethod.GET)
-    public void downloadDetails(ModelMap model, @PathVariable String export,
-            @RequestParam(required = false) Instant from, @RequestParam(required = false) Instant to,
-            @DefaultItemsPerPage(15) PagingParameters paging,
-            @DefaultSort(dir = Direction.asc, sort = "EventId") SortingParameters sorting,
-            YukonUserContext userContext, HttpServletResponse response) throws IOException {
+    @RequestMapping(value = "/controlaudit/details/export", method = RequestMethod.GET)
+    public void downloadDetails(ModelMap model, @RequestParam(required = false) Instant from,
+            @RequestParam(required = false) Instant to, YukonUserContext userContext, HttpServletResponse response)
+            throws IOException {
         if (from == null) {
             from = new Instant().minus(Duration.standardDays(7));
         }
@@ -118,9 +113,8 @@ public class ControlAuditController {
     }
 
     @RequestMapping("/controlaudit/download")
-    private void downloadAuditReportForEvent(@RequestParam("eventId") int eventId,
-            @RequestParam(required = false) Instant from, @RequestParam(required = false) Instant to,
-            YukonUserContext userContext, HttpServletResponse response) throws IOException {
+    private void downloadAuditReportForEvent(@RequestParam("eventId") int eventId, YukonUserContext userContext,
+            HttpServletResponse response) throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         ControlAuditDetail controlAuditDetail = controlEventService.getControlAuditDetail(eventId);
 

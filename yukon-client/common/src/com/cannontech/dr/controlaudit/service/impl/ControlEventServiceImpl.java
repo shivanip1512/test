@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.controlaudit.ControlEventDeviceStatus;
 import com.cannontech.dr.controlaudit.dao.ControlEventDao;
@@ -49,9 +48,8 @@ public class ControlEventServiceImpl implements ControlEventService {
     }
 
     @Override
-    public List<ControlAuditStats> getControlAuditStats(Range<Instant> range, PagingParameters pagingParameters,
-            SortingParameters sortingParameters) {
-        return controlEventDao.getControlAuditStats(range, pagingParameters, sortingParameters);
+    public List<ControlAuditStats> getControlAuditStats(Range<Instant> range, PagingParameters pagingParameters) {
+        return controlEventDao.getControlAuditStats(range, pagingParameters);
     }
 
     @Override

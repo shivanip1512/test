@@ -5,7 +5,6 @@ import java.util.List;
 import org.joda.time.Instant;
 
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.controlaudit.ControlEventDeviceStatus;
 import com.cannontech.dr.controlaudit.model.ControlAuditDetail;
@@ -31,12 +30,11 @@ public interface ControlEventService {
     List<ControlAuditSummary> getControlAuditSummary(int numberOfEvents);
 
     /**
-     * Returned as a list of ControlAuditStats associated with the specified range and based on paging and
-     * sorting parameters
+     * Returned as a list of ControlAuditStats associated with the specified range and based on paging
+     * parameters
      */
 
-    List<ControlAuditStats> getControlAuditStats(Range<Instant> range, PagingParameters pagingParameters,
-            SortingParameters sortingParameters);
+    List<ControlAuditStats> getControlAuditStats(Range<Instant> range, PagingParameters pagingParameters);
 
     /**
      * Returns ControlAuditDetail for specified event

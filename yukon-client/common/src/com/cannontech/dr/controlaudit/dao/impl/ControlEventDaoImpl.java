@@ -13,7 +13,6 @@ import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -204,14 +203,11 @@ public class ControlEventDaoImpl implements ControlEventDao {
         };
 
     @Override
-    public List<ControlAuditStats> getControlAuditStats(Range<Instant> range, PagingParameters pagingParameters,
-            SortingParameters sortingParameters) {
+    public List<ControlAuditStats> getControlAuditStats(Range<Instant> range, PagingParameters pagingParameters) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         sql.append("SELECT * FROM (");
-        sql.append("    SELECT ROW_NUMBER() OVER (ORDER BY ");
-        sql.append(sortingParameters.getSort());
-        sql.append(sortingParameters.getDirection());
+        sql.append("    SELECT ROW_NUMBER() OVER (ORDER BY EventId DESC");
         sql.append("    ) AS RowNumber, EventId, Program, LoadGroup, StartTime, Unknown, Confirmed ");
         sql.append("    FROM (");
         sql.append("        SELECT ce.ControlEventId AS EventId, pgypo.PAOName AS Program, lgypo.PAOName AS LoadGroup, ce.StartTime AS StartTime,");
