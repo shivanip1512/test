@@ -17,7 +17,6 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
@@ -36,12 +35,11 @@ public class ThresholdReportServiceImpl implements ThresholdReportService{
     
     @Autowired private ThresholdReportDao thresholdReportDao;
     @Autowired private RawPointHistoryDao rphDao;
-    @Autowired private DeviceDao deviceDao;
        
     //exclude all qualities other then normal
     private final static Set<PointQuality> excludedQualities = Sets.newHashSet(PointQuality.values());
     {
-        excludedQualities.removeIf(quality -> quality == PointQuality.Normal);
+        excludedQualities.remove(PointQuality.Normal);
     }
     
     @Override
@@ -57,8 +55,8 @@ public class ThresholdReportServiceImpl implements ThresholdReportService{
                
         log.debug("Creating threshold for " + devices.size() + " for criteria=" + criteria);
        
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> latest = getReading(criteria, devices, Order.FORWARD);
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> earliest = getReading(criteria, devices, Order.REVERSE);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> latest = getReading(criteria, devices, Order.REVERSE);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> earliest = getReading(criteria, devices, Order.FORWARD);
         
         List<ThresholdReportDetail> details = new ArrayList<>();
         devices.forEach(device -> {
@@ -73,7 +71,6 @@ public class ThresholdReportServiceImpl implements ThresholdReportService{
                 detail.setEarliestReading(earliestReading.get(0));
             }
             detail.calculateDelta();
-            log.debug("--detail="+detail);
             details.add(detail);
         });
 
