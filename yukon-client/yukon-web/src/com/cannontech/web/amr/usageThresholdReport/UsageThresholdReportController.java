@@ -24,11 +24,14 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFormCriteria;
+import com.cannontech.web.amr.usageThresholdReport.service.ThresholdReportService;
 
 @Controller
 @RequestMapping("/usageThresholdReport/*")
@@ -37,6 +40,7 @@ public class UsageThresholdReportController {
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private DateFormattingService dateFormattingService;
+    @Autowired private ThresholdReportService reportService;
 
     @RequestMapping(value="report", method = RequestMethod.GET)
     public String report(ModelMap model, YukonUserContext userContext) {
@@ -66,6 +70,12 @@ public class UsageThresholdReportController {
         Instant end = Instant.parse(maxDate, formatter);
         filter.setStartDate(start);
         filter.setEndDate(end);
+        filter.setDescription("test");
+        int reportId = reportService.createThresholdReport(filter, collection.getDeviceList());
+        SearchResults<ThresholdReportDetail> reportDetail =
+            reportService.getReportDetail(reportId, null, null, null, null);
+        System.out.println(reportDetail);
+        
         //TODO: get results
         return "usageThresholdReport/results.jsp";
     }

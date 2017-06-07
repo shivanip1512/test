@@ -387,5 +387,8 @@
       <sequence name="WidgetSettings">
         <table name="WidgetSettings" identitycolumn="SettingId" initsequence="true"/>
       </sequence>
+      <sequence name="UsageThresholdReport">
+        <table name="UsageThresholdReport" identitycolumn="UsageThresholdReportId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

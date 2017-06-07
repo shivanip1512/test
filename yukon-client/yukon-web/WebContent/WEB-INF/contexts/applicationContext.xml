@@ -1323,5 +1323,8 @@
         <property name="concurrentConsumers" value="1"/>
         <property name="connectionFactory" ref="connectionFactory" />
         <property name="messageListener" ref="dataCollectionWidgetListener"/>
-    </bean> 
+    </bean>
+     
+     <bean class="com.cannontech.web.amr.usageThresholdReport.service.impl.ThresholdReportServiceImpl"/>
+     <bean class="com.cannontech.web.amr.usageThresholdReport.dao.impl.ThresholdReportDaoImpl"/>
 </beans>
