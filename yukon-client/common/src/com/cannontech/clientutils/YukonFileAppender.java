@@ -57,7 +57,7 @@ public class YukonFileAppender extends AppenderSkeleton {
      * the log level left justified, the logger name which is usually the fq-class name,
      * log message and newline]
      */
-    private static String conversionPattern = "%d{MM/dd/yyyy HH:mm:ss,SSS z} [%t] %-5p %c - %m%n";
+    private static String conversionPattern = "%d{ISO8601} %d{z} [%t] %-5p %c - %m%n";
 
     /**
      *  The appender that YukonFileAppender delegates its work

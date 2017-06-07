@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(test_formatSystemTime)
     stm.wSecond = 56;
     stm.wMilliseconds = 789;
 
-    BOOST_CHECK_EQUAL(Cti::formatSystemTime(stm), "12/25/2014 12:34:56.789");
+    BOOST_CHECK_EQUAL(Cti::formatSystemTime(stm), "2014-12-25 12:34:56.789");
 }
 
 BOOST_AUTO_TEST_CASE(test_commaFormatted)

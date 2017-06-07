@@ -94,7 +94,7 @@ void reversePutDigits(std::string::iterator &itr, const int digits, int value)
 
 std::string formatSystemTime(SYSTEMTIME systime)
 {
-    std::string timeStr(10 + //  mm/dd/YYYY
+    std::string timeStr(10 + //  YYYY-mm-dd
                          1 + //  space
                         12,  //  hh:mm:ss.SSS
                         ' ');
@@ -111,11 +111,11 @@ std::string formatSystemTime(SYSTEMTIME systime)
 
     *(--itr) = ' ';
 
-    reversePutDigits(itr, 4, systime.wYear);
-    *(--itr) = '/';
     reversePutDigits(itr, 2, systime.wDay);
-    *(--itr) = '/';
+    *(--itr) = '-';
     reversePutDigits(itr, 2, systime.wMonth);
+    *(--itr) = '-';
+    reversePutDigits(itr, 4, systime.wYear);
 
     return timeStr;
 }

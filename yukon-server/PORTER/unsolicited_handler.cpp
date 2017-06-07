@@ -776,9 +776,12 @@ void UnsolicitedHandler::traceOutbound( const device_record &dr, YukonError_t st
     CtiTraceMsg mTrace;
     string msg;
 
+    SYSTEMTIME stm;
+    GetLocalTime(&stm);
+
     //  set bright yellow for the time message
     mTrace.setBrightYellow();
-    mTrace.setTrace( CtiTime().asString() );
+    mTrace.setTrace(Cti::formatSystemTime(stm));
     mTrace.setEnd(false);
     _traceList.push_back(mTrace.replicateMessage());
 
@@ -820,10 +823,13 @@ void UnsolicitedHandler::traceInbound( string address, YukonError_t status, cons
 {
     CtiTraceMsg mTrace;
     string msg;
+    
+    SYSTEMTIME stm;
+    GetLocalTime(&stm);
 
     //  set bright yellow for the time message
     mTrace.setBrightYellow();
-    mTrace.setTrace( CtiTime().asString() );
+    mTrace.setTrace(Cti::formatSystemTime(stm));
     mTrace.setEnd(false);
     _traceList.push_back(mTrace.replicateMessage());
 
