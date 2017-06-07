@@ -81,10 +81,12 @@ $(function () {
                     <td>
                         <div class="progress" style="width: 80px; float: left;">
                             <div class="progress-bar progress-bar-success" role="progressbar"
-                                aria-valuenow="${auditEventMessageStat.eventStats.percentConfirmed}%" aria-valuemin="0" title="${auditEventMessageStat.numConfirmed}"
+                                aria-valuenow="${auditEventMessageStat.eventStats.percentConfirmed}%" aria-valuemin="0" 
+                                title="${auditEventMessageStat.numConfirmed} <i:inline key=".confirmed" />"
                                 aria-valuemax="100" style="width: ${successWidth}%"></div>
                             <div class="progress-bar progress-bar-warning" role="progressbar"
-                                aria-valuenow="${auditEventMessageStat.eventStats.percentUnknown}%" aria-valuemin="0" title="${auditEventMessageStat.numUnknowns}"
+                                aria-valuenow="${auditEventMessageStat.eventStats.percentUnknown}%" aria-valuemin="0" 
+                                title="${auditEventMessageStat.numUnknowns} <i:inline key=".unreported" />"
                                 aria-valuemax="100" style="width: ${failedWidth}%"></div>
                         </div> 
                     </td>
