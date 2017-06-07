@@ -79,6 +79,8 @@
                 { "metricId" : 163, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_PHASE_B" },
                 { "metricId" : 164, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_PHASE_C" },
 
+                { "metricId" : 202, "attributeMagnitude" : 3, "attribute" : "KVA" },
+
                 { "metricId" : 257, "attribute" : "TEMPERATURE_DEVICE" },
 
                 { "metricId" : 1001, "attributeMagnitude" : 3, "attribute" : "USAGE_RATE_A" },
@@ -132,7 +134,6 @@
         "attributeOverrides" : [
                 { "attribute" : "DEMAND",        "metricId" : 200, "paoTypes" : [ "rfn-430sl1", "rfn-430sl2", "rfn-430sl3", "rfn-430sl4" ] },
                 { "attribute" : "KVAR",          "metricId" : 201, "paoTypes" : [ "rfn-430sl1", "rfn-430sl2", "rfn-430sl3", "rfn-430sl4" ] },
-                { "attribute" : "DELIVERED_KVA", "metricId" : 202, "paoTypes" : [ "rfn-430sl1", "rfn-430sl2", "rfn-430sl3", "rfn-430sl4" ] },
                 { "attribute" : "PEAK_DEMAND", "metricId" :  13, "paoTypes" : [ "rfn-530s4x", "rfn-530s4eax", "rfn-530s4eaxr", "rfn-530s4erx", "rfn-530s4erxr" ] }
         ]
 }

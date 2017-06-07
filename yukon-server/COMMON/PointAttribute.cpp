@@ -250,6 +250,7 @@ const Attribute Attribute::ReceivedPeakDemandRateA                          = At
 const Attribute Attribute::ReceivedPeakDemandRateB                          = Attribute( "RECEIVED_PEAK_DEMAND_RATE_B" );
 const Attribute Attribute::ReceivedPeakDemandRateC                          = Attribute( "RECEIVED_PEAK_DEMAND_RATE_C" );
 const Attribute Attribute::ReceivedPeakDemandRateD                          = Attribute( "RECEIVED_PEAK_DEMAND_RATE_D" );
+const Attribute Attribute::kVA                                              = Attribute( "KVA" );
 const Attribute Attribute::DeliveredkVA                                     = Attribute( "DELIVERED_KVA" );
 const Attribute Attribute::ReceivedkVA                                      = Attribute( "RECEIVED_KVA" );
 const Attribute Attribute::SumkVA                                           = Attribute( "SUM_KVA" );

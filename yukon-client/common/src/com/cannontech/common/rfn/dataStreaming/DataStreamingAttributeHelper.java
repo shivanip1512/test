@@ -366,7 +366,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 200 (overrides 5)
                 BuiltInAttribute.KVAR,            //metric 201 (overrides 32)
-                BuiltInAttribute.DELIVERED_KVA,   //metric 202 (overrides 49) 
+                BuiltInAttribute.KVA,             //metric 202 
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
@@ -378,7 +378,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 200 (overrides 5)
                 BuiltInAttribute.KVAR,            //metric 201 (overrides 32)
-                BuiltInAttribute.DELIVERED_KVA,   //metric 202 (overrides 49) 
+                BuiltInAttribute.KVA,             //metric 202 
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
@@ -390,7 +390,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 200 (overrides 5)
                 BuiltInAttribute.KVAR,            //metric 201 (overrides 32)
-                BuiltInAttribute.DELIVERED_KVA,   //metric 202 (overrides 49) 
+                BuiltInAttribute.KVA,             //metric 202 
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101
@@ -402,7 +402,7 @@ public class DataStreamingAttributeHelper {
                 BuiltInAttribute.RECEIVED_KWH,    //metric 2
                 BuiltInAttribute.DEMAND,          //metric 200 (overrides 5)
                 BuiltInAttribute.KVAR,            //metric 201 (overrides 32)
-                BuiltInAttribute.DELIVERED_KVA,   //metric 202 (overrides 49) 
+                BuiltInAttribute.KVA,             //metric 202 
                 BuiltInAttribute.POWER_FACTOR,    //metric 80
                 BuiltInAttribute.VOLTAGE_PHASE_A, //metric 100
                 BuiltInAttribute.VOLTAGE_PHASE_B, //metric 101

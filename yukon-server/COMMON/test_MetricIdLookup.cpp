@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(test_GetMetricId_success)
         BOOST_CHECK_EQUAL(metricId, 201);
     }
     {
-        const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::DeliveredkVA, TYPE_RFN430SL1);
+        const auto metricId = Cti::MetricIdLookup::GetMetricId(Attribute::kVA, TYPE_RFN430SL1);
 
         BOOST_CHECK_EQUAL(metricId, 202);
     }

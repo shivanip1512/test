@@ -56,7 +56,7 @@
         <pointInfo name="Demand Reads And Reset" attributes="DEMAND_READS_AND_RESET"/>
         <pointInfo name="Failed Upgrade Signature Verification" attributes="FAILED_UPGRADE_SIGNATURE_VERIF"/>
         <pointInfo name="Inactive Phase Current Diagnostic Error" attributes="INACTIVE_PHASE_CURRENT_DIAGNOSTIC_ERROR"/>
-        <pointInfo name="kVA" attributes="DELIVERED_KVA"/>
+        <pointInfo name="kVA" attributes="KVA"/>
         <pointInfo name="kVAh" attributes="KVAH"/>
         <pointInfo name="kVAh Lagging"/>
         <pointInfo name="kVAh Lagging Rate A"/>

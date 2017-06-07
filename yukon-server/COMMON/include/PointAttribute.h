@@ -299,6 +299,7 @@ public:
     static const Attribute  ReceivedPeakDemandRateB;
     static const Attribute  ReceivedPeakDemandRateC;
     static const Attribute  ReceivedPeakDemandRateD;
+    static const Attribute  kVA;
     static const Attribute  DeliveredkVA;
     static const Attribute  ReceivedkVA;
     static const Attribute  SumkVA;
