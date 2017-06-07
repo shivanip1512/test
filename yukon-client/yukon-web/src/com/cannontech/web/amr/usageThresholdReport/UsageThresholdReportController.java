@@ -24,7 +24,12 @@ import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultSort;
+import com.cannontech.common.model.Direction;
+import com.cannontech.common.model.PagingParameters;
+import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.search.result.SearchResults;
@@ -38,16 +43,20 @@ import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFilter;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFormCriteria;
 import com.cannontech.web.amr.usageThresholdReport.service.ThresholdReportService;
+import com.cannontech.web.common.sort.SortableColumn;
 
 @Controller
 @RequestMapping("/usageThresholdReport/*")
 public class UsageThresholdReportController {
+    
+    private final static String baseKey = "yukon.web.modules.amr.usageThresholdReport.";
     
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
     @Autowired private DateFormattingService dateFormattingService;
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private ThresholdReportService reportService;
+    @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @RequestMapping(value="report", method = RequestMethod.GET)
     public String report(ModelMap model, YukonUserContext userContext) {
@@ -95,7 +104,10 @@ public class UsageThresholdReportController {
     }
     
     @RequestMapping(value="results", method = RequestMethod.POST)
-    public String filterResults(@ModelAttribute ThresholdReportFilter filter, String[] deviceSubGroups, int reportId, ModelMap model) {
+    public String filterResults(@ModelAttribute ThresholdReportFilter filter, String[] deviceSubGroups, int reportId, 
+                                @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
+                                PagingParameters paging, ModelMap model, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         List<DeviceGroup> subGroups = new ArrayList<>();
         if (deviceSubGroups != null) {
             for (String subGroup : deviceSubGroups) {
@@ -103,11 +115,32 @@ public class UsageThresholdReportController {
             }
             filter.setGroups(subGroups);
         }
+        DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
+        Direction dir = sorting.getDirection();
+        for (DetailSortBy column : DetailSortBy.values()) {
+            String text = accessor.getMessage(column);
+            SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
+            model.addAttribute(column.name(), col);
+        }
         SearchResults<ThresholdReportDetail> reportDetail =
-                reportService.getReportDetail(reportId, filter, null, null, null);
+                reportService.getReportDetail(reportId, filter, paging, null, dir);
         System.out.println(reportDetail);
         model.addAttribute("detail", reportDetail);
         return "usageThresholdReport/deviceTable.jsp";
 
+    }
+    
+    public enum DetailSortBy implements DisplayableEnum {
+
+        deviceName,
+        meterNumber,
+        deviceType,
+        serialNumberAddress,
+        delta;
+
+        @Override
+        public String getFormatKey() {
+            return baseKey + "results." + name();
+        }
     }
 }
