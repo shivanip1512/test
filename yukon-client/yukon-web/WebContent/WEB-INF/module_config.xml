@@ -599,6 +599,9 @@
           <page name="ecobee.details" type="BASIC">
             <link>/dr/ecobee/details</link>
           </page>
+          <page name="controlaudit.details" type="BASIC">
+            <link>/dr/controlaudit/details</link>
+          </page>
           <page name="scenarioList" type="BASIC">
             <link>/dr/scenario/list</link>
             <pages>

@@ -8,12 +8,18 @@ public class ControlAuditSummary {
     private final Instant startTime;
     private final int numConfirmed;
     private final int numUnknowns;
+    private final ControlAuditEventStats eventStats;
 
     public ControlAuditSummary(String programName, Instant startTime, int numConfirmed, int numUnknowns) {
         this.programName = programName;
         this.startTime = startTime;
         this.numConfirmed = numConfirmed;
         this.numUnknowns = numUnknowns;
+        this.eventStats = new ControlAuditEventStats(numConfirmed, numUnknowns);
+    }
+
+    public ControlAuditEventStats getEventStats() {
+        return eventStats;
     }
 
     public int getNumUnknowns() {

@@ -172,6 +172,9 @@
         <cti:checkRolesAndProperties value="SHOW_ECOBEE">
             <jsp:include page="/dr/ecobee/statistics"/>
         </cti:checkRolesAndProperties>
+        <cti:checkRolesAndProperties value="HONEYWELL_SUPPORT_ENABLED">
+            <jsp:include page="/dr/controlaudit/auditReport"/>
+        </cti:checkRolesAndProperties>
     </div>
     <div class="column two nogutter">
         <tags:sectionContainer2 nameKey="quickSearches" styleClass="stacked">
