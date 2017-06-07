@@ -138,7 +138,7 @@ R"SQUID(json{
     "status" : "OK"
   },
   {
-    "attribute" : "DELIVERED_KVA",
+    "attribute" : "KVA",
     "interval" : 5,
     "enabled" : true,
     "status" : "OK"

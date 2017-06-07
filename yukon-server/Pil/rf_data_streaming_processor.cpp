@@ -348,9 +348,11 @@ void RfDataStreamingProcessor::handleStatistics()
 
         size_t row {}, maxCol {};
 
-        report.setCell(row++, maxCol++) << "Device ID";
+        report.setCell(row, maxCol++) << "Device ID";
         report.setCell(row, maxCol++) << "Device name";
         report.setCell(row, maxCol++) << "RFN Identifier";
+
+        ++row;
 
         for( const auto& dev : stats )
         {
@@ -393,7 +395,7 @@ void RfDataStreamingProcessor::handleStatistics()
                  //  Use metricColumn->second to get the column number
                  report.setCell(row, metricColumn->second) << metricCounts.second;
              }
-             row++;
+             ++row;
         }
 
         //  Set the headers
