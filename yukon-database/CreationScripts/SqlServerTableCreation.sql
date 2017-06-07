@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/5/2017 3:08:42 PM                          */
+/* Created on:     6/7/2017 11:09:20 AM                         */
 /*==============================================================*/
 
 
@@ -9302,6 +9302,36 @@ INSERT INTO UnitMeasure VALUES ( 55,'m^3', 0, 'Cubic Meters', '(none)');
 INSERT INTO UnitMeasure VALUES ( 56,'MB', 0, 'Megabytes', '(none)');
 
 /*==============================================================*/
+/* Table: UsageThresholdReport                                  */
+/*==============================================================*/
+create table UsageThresholdReport (
+   UsageThresholdReportId numeric              not null,
+   Attribute            varchar(60)          not null,
+   StartDate            datetime             not null,
+   EndDate              datetime             not null,
+   RunTime              datetime             not null,
+   DevicesDescription   varchar(255)         not null,
+   constraint PK_UTReport primary key (UsageThresholdReportId)
+)
+go
+
+/*==============================================================*/
+/* Table: UsageThresholdReportRow                               */
+/*==============================================================*/
+create table UsageThresholdReportRow (
+   UsageThresholdReportId numeric              not null,
+   PaoId                numeric              not null,
+   PointId              numeric              null,
+   FirstTimestamp       datetime             null,
+   FirstValue           float                null,
+   LastTimestamp        datetime             null,
+   LastValue            float                null,
+   Delta                float                null,
+   constraint PK_UTReportRow primary key (UsageThresholdReportId, PaoId)
+)
+go
+
+/*==============================================================*/
 /* Table: UserDashboard                                         */
 /*==============================================================*/
 create table UserDashboard (
@@ -14313,6 +14343,24 @@ go
 alter table ThermostatEventHistory
    add constraint FK_ThermEventHist_InvBase foreign key (ThermostatId)
       references InventoryBase (InventoryID)
+         on delete cascade
+go
+
+alter table UsageThresholdReportRow
+   add constraint FK_UTReportRow_Point foreign key (PointId)
+      references POINT (POINTID)
+         on delete cascade
+go
+
+alter table UsageThresholdReportRow
+   add constraint FK_UTReportRow_UTReport foreign key (UsageThresholdReportId)
+      references UsageThresholdReport (UsageThresholdReportId)
+         on delete cascade
+go
+
+alter table UsageThresholdReportRow
+   add constraint FK_UTReportRow_YukonPAObject foreign key (PaoId)
+      references YukonPAObject (PAObjectID)
          on delete cascade
 go
 

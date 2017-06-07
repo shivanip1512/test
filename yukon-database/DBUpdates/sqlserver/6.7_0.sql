@@ -854,6 +854,47 @@ GO
 /* @end-block */
 /* End YUK-16740 */
 
+/* Start YUK-16765 */
+CREATE TABLE UsageThresholdReport (
+   UsageThresholdReportId NUMERIC              NOT NULL,
+   Attribute            VARCHAR(60)          NOT NULL,
+   StartDate            DATETIME             NOT NULL,
+   EndDate              DATETIME             NOT NULL,
+   RunTime              DATETIME             NOT NULL,
+   DevicesDescription   VARCHAR(255)         NOT NULL,
+   CONSTRAINT PK_UTReport PRIMARY KEY (UsageThresholdReportId)
+);
+
+CREATE TABLE UsageThresholdReportRow (
+   UsageThresholdReportId NUMERIC              NOT NULL,
+   PaoId                NUMERIC              NOT NULL,
+   PointId              NUMERIC              NULL,
+   FirstTimestamp       DATETIME             NULL,
+   FirstValue           FLOAT                NULL,
+   LastTimestamp        DATETIME             NULL,
+   LastValue            FLOAT                NULL,
+   Delta                FLOAT                NULL,
+   CONSTRAINT PK_UTReportRow PRIMARY KEY (UsageThresholdReportId, PaoId)
+);
+GO
+
+ALTER TABLE UsageThresholdReportRow
+   ADD CONSTRAINT FK_UTReportRow_Point FOREIGN KEY (PointId)
+      REFERENCES POINT (POINTID)
+         ON DELETE CASCADE;
+
+ALTER TABLE UsageThresholdReportRow
+   ADD CONSTRAINT FK_UTReportRow_UTReport FOREIGN KEY (UsageThresholdReportId)
+      REFERENCES UsageThresholdReport (UsageThresholdReportId)
+         ON DELETE CASCADE;
+
+ALTER TABLE UsageThresholdReportRow
+   ADD CONSTRAINT FK_UTReportRow_YukonPAObject FOREIGN KEY (PaoId)
+      REFERENCES YukonPAObject (PAObjectID)
+         ON DELETE CASCADE;
+GO
+/* End YUK-16765 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
