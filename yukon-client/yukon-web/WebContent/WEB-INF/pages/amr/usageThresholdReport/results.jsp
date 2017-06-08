@@ -9,7 +9,7 @@
 
     <div class="column-12-12 clearfix">
         <div class="column one" style="border:1px solid #ccc;padding:5px;">
-            <form:form id="filter-results-form" action="results" method="post" commandName="filter">
+            <form:form id="filter-results-form" action="results" method="get" commandName="filter">
                 <cti:csrfToken/>
                 <input type="hidden" name="reportId" value="${criteria.reportId}"/>
                 <tags:nameValueContainer2>
@@ -24,9 +24,11 @@
                         <tags:input path="threshold"/>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".filter.dataAvailability">
-                        <c:forEach var="availability" items="${dataAvailabilityOptions}">
-                            <tags:check name="availability" key=".dataAvailability.${availability}" classes="M0" value="${availability}"></tags:check>
-                        </c:forEach>
+                        <div class="button-group stacked">
+                            <c:forEach var="availability" items="${dataAvailabilityOptions}">
+                                <tags:check name="availability" key=".dataAvailability.${availability}" classes="M0" value="${availability}" checked="true"></tags:check>
+                            </c:forEach>
+                        </div>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
                 <div class="action-area">
@@ -50,14 +52,13 @@
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>
-        
-        <cti:url var="dataUrl" value="/amr/usageThresholdReport/results"/>
-        <div id="usage-device-table" data-url="${dataUrl}">
-            <%@ include file="deviceTable.jsp" %>
-        </div>
-
     </div>
     
+    <br/>
+    <div id="usage-device-table">
+    
+    </div>
+
     <cti:includeScript link="/resources/js/pages/yukon.ami.usage.threshold.report.js"/>
 
 </cti:standardPage>

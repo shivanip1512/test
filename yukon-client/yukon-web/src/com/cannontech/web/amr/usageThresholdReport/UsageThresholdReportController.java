@@ -10,6 +10,7 @@ import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestBindingException;
@@ -18,12 +19,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
+import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollectionType;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
+import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.model.DefaultSort;
@@ -33,6 +40,7 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.search.result.SearchResults;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
@@ -40,9 +48,9 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.usageThresholdReport.dao.ThresholdReportDao.SortBy;
 import com.cannontech.web.amr.usageThresholdReport.model.DataAvailability;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdDescriptor;
+import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportCriteria;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFilter;
-import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFormCriteria;
 import com.cannontech.web.amr.usageThresholdReport.service.ThresholdReportService;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.google.common.collect.Lists;
@@ -59,6 +67,11 @@ public class UsageThresholdReportController {
     @Autowired private DeviceGroupService deviceGroupService;
     @Autowired private ThresholdReportService reportService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
+    @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
+    @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
+    @Autowired private DeviceDao deviceDao;
+    @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
+    @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
 
     @RequestMapping(value="report", method = RequestMethod.GET)
     public String report(ModelMap model, YukonUserContext userContext) {
@@ -69,7 +82,7 @@ public class UsageThresholdReportController {
         model.addAttribute("usageAttributes", sortedAttributes);
         Instant max = new Instant();
         Instant min = max.minus(Duration.standardDays(7));
-        ThresholdReportFormCriteria criteria = new ThresholdReportFormCriteria();
+        ThresholdReportCriteria criteria = new ThresholdReportCriteria();
         criteria.setStartDate(min);
         criteria.setEndDate(max);
         model.addAttribute("criteria", criteria);
@@ -78,13 +91,12 @@ public class UsageThresholdReportController {
     
 
     @RequestMapping(value="report", method = RequestMethod.POST)
-    public String runReport(@ModelAttribute ThresholdReportFormCriteria criteria, ModelMap model, HttpServletRequest request, 
+    public String runReport(@ModelAttribute ThresholdReportCriteria criteria, ModelMap model, HttpServletRequest request, 
                             @RequestParam String minDate, @RequestParam String maxDate, YukonUserContext userContext) 
             throws ServletRequestBindingException, DeviceCollectionCreationException {
         model.addAttribute("dataAvailabilityOptions", DataAvailability.values());
         model.addAttribute("thresholdOptions", ThresholdDescriptor.values());
         DeviceCollection collection = deviceCollectionFactory.createDeviceCollection(request);
-        criteria.setDeviceCollection(collection);
         DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
         Instant start = Instant.parse(minDate, formatter);
         Instant end = Instant.parse(maxDate, formatter);
@@ -98,17 +110,19 @@ public class UsageThresholdReportController {
         } else {
             criteria.setDescription(collection.getDeviceCount() + " devices");
         }
-        model.addAttribute("filter", new ThresholdReportFilter(null, 0, null, null, false));
+        model.addAttribute("filter", new ThresholdReportFilter());
         int reportId = reportService.createThresholdReport(criteria, collection.getDeviceList());
         criteria.setReportId(reportId);
         model.addAttribute("criteria", criteria);
         return "usageThresholdReport/results.jsp";
     }
     
-    @RequestMapping(value="results", method = RequestMethod.POST)
-    public String filterResults(@ModelAttribute ThresholdReportFilter filter, String[] deviceSubGroups, int reportId, 
+    @RequestMapping(value="results", method = RequestMethod.GET)
+    public String filterResults(int reportId, String[] deviceSubGroups, Boolean includeDisabled, 
+                                ThresholdDescriptor thresholdDescriptor, double threshold, DataAvailability[] availability,
                                 @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
                                 PagingParameters paging, ModelMap model, YukonUserContext userContext) {
+        ThresholdReportFilter filter = new ThresholdReportFilter();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         List<DeviceGroup> subGroups = new ArrayList<>();
         if (deviceSubGroups != null) {
@@ -117,6 +131,10 @@ public class UsageThresholdReportController {
             }
             filter.setGroups(subGroups);
         }
+        filter.setIncludeDisabled(includeDisabled);
+        filter.setThresholdDescriptor(thresholdDescriptor);
+        filter.setThreshold(threshold);
+        filter.setAvailability(Lists.newArrayList(availability));
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         for (DetailSortBy column : DetailSortBy.values()) {
@@ -129,6 +147,19 @@ public class UsageThresholdReportController {
             reportService.getReportDetail(reportId, filter, paging, sortBy.getValue(), dir);
         System.out.println(reportDetail.getCount());
         model.addAttribute("detail", reportDetail);
+        List<SimpleDevice> devices = new ArrayList<>();
+        StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
+        reportDetail.getResultList().forEach(item -> devices.add(deviceDao.getYukonDevice(item.getPaoIdentifier().getPaoId())));
+        deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
+        
+        DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
+        model.addAttribute("deviceCollection", deviceCollection);
+        model.addAttribute("deviceSubGroups", deviceSubGroups);
+        model.addAttribute("reportId", reportId);
+        model.addAttribute("includeDisabled", includeDisabled);
+        model.addAttribute("thresholdDescriptor", thresholdDescriptor);
+        model.addAttribute("threshold", threshold);
+        model.addAttribute("availability", availability);
         return "usageThresholdReport/deviceTable.jsp";
 
     }
