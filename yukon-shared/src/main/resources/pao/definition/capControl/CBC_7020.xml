@@ -13,10 +13,10 @@
     </configuration>
     <pointInfos>
         <pointInfo name="3 Phase kVARs" init="true"/>
-        <pointInfo name="Analog Input 1" init="true"/>
-        <pointInfo name="Auto Volt Control" init="true"/>
+        <pointInfo name="Analog Input 1" init="true" attributes="ANALOG_INPUT_ONE"/>
+        <pointInfo name="Auto Volt Control" init="true" attributes="AUTO_VOLTAGE_CONTROL"/>
         <pointInfo name="Average Line Voltage" init="true" attributes="VOLTAGE"/>
-        <pointInfo name="Bad Relay" init="true"/>
+        <pointInfo name="Bad Relay" init="true" attributes="BAD_RELAY"/>
         <pointInfo name="Bank Control Time" init="true"/>
         <pointInfo name="Capacitor Bank State" init="true" attributes="CONTROL_POINT"/>
         <pointInfo name="CDMA Ec/Io" init="true"/>
@@ -24,63 +24,63 @@
         <pointInfo name="Close Delay Time" init="true"/>
         <pointInfo name="Com Retry Delay Time" init="true"/>
         <pointInfo name="Comms Loss Time" init="true"/>
-        <pointInfo name="Control Ignored Indicator" init="true"/>
-        <pointInfo name="Control Ignored Reason" init="true"/>
-        <pointInfo name="Control Mode" init="true"/>
-        <pointInfo name="Control OVUV Track Time" init="true"/>
+        <pointInfo name="Control Ignored Indicator" init="true" attributes="IGNORED_INDICATOR"/>
+        <pointInfo name="Control Ignored Reason" init="true" attributes="IGNORED_CONTROL_REASON"/>
+        <pointInfo name="Control Mode" init="true" attributes="CONTROL_MODE"/>
+        <pointInfo name="Control OVUV Track Time" init="true" attributes="OVER_UNDER_VOLTAGE_TRACKING_TIME"/>
         <pointInfo name="Daily Control Limit" init="true"/>
-        <pointInfo name="Daily Max Ops" init="true"/>
-        <pointInfo name="Delta Voltage" init="true"/>
+        <pointInfo name="Daily Max Ops" init="true" attributes="DAILY_MAX_OPERATION"/>
+        <pointInfo name="Delta Voltage" init="true" attributes="DELTA_VOLTAGE"/>
         <pointInfo name="Device Reset Indicator" init="true"/>
-        <pointInfo name="DST Active" init="true"/>
+        <pointInfo name="DST Active" init="true" attributes="DST_ACTIVE"/>
         <pointInfo name="Emergency OV Threshold" init="true"/>
         <pointInfo name="Emergency OVUV Track Time" init="true"/>
         <pointInfo name="Emergency UV Threshold" init="true"/>
         <pointInfo name="Firmware Version" init="true" attributes="FIRMWARE_VERSION"/>
-        <pointInfo name="High Voltage" init="true"/>
+        <pointInfo name="High Voltage" init="true" attributes="HIGH_VOLTAGE"/>
         <pointInfo name="IP Address" init="true" attributes="IP_ADDRESS"/>
-        <pointInfo name="Last Control - Analog" init="true"/>
-        <pointInfo name="Last Control - Local" init="true"/>
-        <pointInfo name="Last Control - Neutral Fault" init="true"/>
-        <pointInfo name="Last Control - OVUV" init="true"/>
-        <pointInfo name="Last Control - Remote" init="true"/>
-        <pointInfo name="Last Control - Scheduled" init="true"/>
-        <pointInfo name="Last Control - Temperature" init="true"/>
-        <pointInfo name="Last Control - VAR" init="true"/>
-        <pointInfo name="Low Voltage" init="true"/>
-        <pointInfo name="Neutral Current Alarm Threshold" init="true"/>
-        <pointInfo name="Neutral Current Fault" init="true"/>
+        <pointInfo name="Last Control - Analog" init="true" attributes="LAST_CONTROL_REASON_ANALOG"/>
+        <pointInfo name="Last Control - Local" init="true" attributes="LAST_CONTROL_REASON_LOCAL"/>
+        <pointInfo name="Last Control - Neutral Fault" init="true" attributes="LAST_CONTROL_REASON_NEUTRAL_FAULT"/>
+        <pointInfo name="Last Control - OVUV" init="true" attributes="LAST_CONTROL_REASON_OVUV"/>
+        <pointInfo name="Last Control - Remote" init="true" attributes="LAST_CONTROL_REASON_REMOTE"/>
+        <pointInfo name="Last Control - Scheduled" init="true" attributes="LAST_CONTROL_REASON_SCHEDULED"/>
+        <pointInfo name="Last Control - Temperature" init="true" attributes="LAST_CONTROL_REASON_TEMPERATURE"/>
+        <pointInfo name="Last Control - VAR" init="true" attributes="LAST_CONTROL_REASON_DIGITAL"/>
+        <pointInfo name="Low Voltage" init="true" attributes="LOW_VOLTAGE"/>
+        <pointInfo name="Neutral Current Alarm Threshold" init="true" attributes="NEUTRAL_CURRENT_ALARM_THRESHOLD"/>
+        <pointInfo name="Neutral Current Fault" init="true" attributes="NEUTRAL_CURRENT_FAULT"/>
         <pointInfo name="Neutral Current Sensor" init="true" attributes="NEUTRAL_CURRENT_SENSOR"/>
-        <pointInfo name="Neutral Lockout" init="true"/>
-        <pointInfo name="Op Failed - Neutral Current" init="true"/>
-        <pointInfo name="OV Condition" init="true"/>
-        <pointInfo name="OV Op Count" init="true"/>
-        <pointInfo name="OV Threshold" init="true"/>
+        <pointInfo name="Neutral Lockout" init="true" attributes="NEUTRAL_LOCKOUT"/>
+        <pointInfo name="Op Failed - Neutral Current" init="true" attributes="OPERATION_FAILED_NEUTRAL_CURRENT"/>
+        <pointInfo name="OV Condition" init="true" attributes="OVER_VOLTAGE"/>
+        <pointInfo name="OV Op Count" init="true" attributes="OVER_VOLTAGE_COUNT"/>
+        <pointInfo name="OV Threshold" init="true" attributes="OVER_VOLTAGE_THRESHOLD"/>
         <pointInfo name="Power Flow" init="true"/>
-        <pointInfo name="Re-Close Blocked" init="true"/>
+        <pointInfo name="Re-Close Blocked" init="true" attributes="RECLOSE_BLOCKED"/>
         <pointInfo name="Re-Close Delay Time" init="true"/>
-        <pointInfo name="RSSI" init="true"/>
-        <pointInfo name="Season One Control" init="true"/>
-        <pointInfo name="Season Two Control" init="true"/>
-        <pointInfo name="Temp Alarm" init="true"/>
-        <pointInfo name="Temperature" init="true"/>
-        <pointInfo name="Total Op Count" init="true"/>
+        <pointInfo name="RSSI" init="true" attributes="RADIO_SIGNAL_STRENGTH_INDICATOR"/>
+        <pointInfo name="Season One Control" init="true" attributes="TIME_TEMP_CONTROL_SEASON_ONE"/>
+        <pointInfo name="Season Two Control" init="true" attributes="TIME_TEMP_CONTROL_SEASON_TWO"/>
+        <pointInfo name="Temp Alarm" init="true" attributes="TEMPERATURE_ALARM"/>
+        <pointInfo name="Temperature" init="true" attributes="TEMPERATURE_DEVICE"/>
+        <pointInfo name="Total Op Count" init="true" attributes="TOTAL_OPERATION_COUNT"/>
         <pointInfo name="Trip Delay Time" init="true"/>
         <pointInfo name="True VAR RMS Current" init="true"/>
         <pointInfo name="UDP Port" init="true" attributes="UDP_PORT"/>
-        <pointInfo name="UV Condition" init="true"/>
-        <pointInfo name="UV Op Count" init="true"/>
-        <pointInfo name="UV Threshold" init="true"/>
+        <pointInfo name="UV Condition" init="true" attributes="UNDER_VOLTAGE"/>
+        <pointInfo name="UV Op Count" init="true" attributes="UNDER_VOLTAGE_COUNT"/>
+        <pointInfo name="UV Threshold" init="true" attributes="UNDER_VOLTAGE_THRESHOLD"/>
         <pointInfo name="VAR 1 Phase kVA" init="true"/>
         <pointInfo name="VAR 1 Phase kWatts" init="true"/>
         <pointInfo name="VAR Alarm" init="true"/>
         <pointInfo name="VAR Close Point" init="true"/>
-        <pointInfo name="Var Control" init="true"/>
+        <pointInfo name="Var Control" init="true" attributes="VAR_CONTROL"/>
         <pointInfo name="VAR Power Factor" init="true"/>
         <pointInfo name="VAR RMS Voltage" init="true"/>
         <pointInfo name="VAR Trip Point" init="true"/>
-        <pointInfo name="Voltage Control" init="true"/>
-        <pointInfo name="Voltage Delta Abnormal" init="true"/>
+        <pointInfo name="Voltage Control" init="true" attributes="VOLTAGE_CONTROL"/>
+        <pointInfo name="Voltage Delta Abnormal" init="true" attributes="VOLTAGE_DELTA_ABNORMAL"/>
         <pointInfo name="Yukon Poll Time" init="true"/>
     </pointInfos>
     <commands>

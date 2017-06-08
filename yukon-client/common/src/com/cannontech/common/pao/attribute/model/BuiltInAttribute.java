@@ -450,6 +450,58 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     LOAD_MANAGEMENT_MEMORY_UTILIZATION("Load Management Memory Utilization", AttributeGroup.SYSTEM, false),
 
     THERMOSTAT_RELAY_STATE("Thermostat Relay State", AttributeGroup.RELAY, false),
+   
+    ANALOG_INPUT_ONE("Analog Input 1", AttributeGroup.CAPCONTROL, false),
+    AUTO_BLOCK_ENABLE("Auto Block Enable", AttributeGroup.CAPCONTROL, false),
+    AUTO_REMOTE_CONTROL("Auto Remote Control", AttributeGroup.CAPCONTROL, false),
+    AUTO_VOLTAGE_CONTROL("Auto Voltage Control", AttributeGroup.CAPCONTROL, false),
+    BAD_RELAY("Bad Relay", AttributeGroup.CAPCONTROL, false),
+    CLOSE_OPERATION_COUNT("Close Operation Count", AttributeGroup.CAPCONTROL, false),
+    CONTROL_MODE("Control Mode", AttributeGroup.CAPCONTROL, false),
+    DAILY_MAX_OPERATION("Daily Max Operation", AttributeGroup.CAPCONTROL, false),
+    DELTA_VOLTAGE("Delta Voltage", AttributeGroup.CAPCONTROL, false),
+    DST_ACTIVE("DST Active", AttributeGroup.CAPCONTROL, false),
+    FORWARD_BANDWIDTH("Forward Bandwidth", AttributeGroup.CAPCONTROL, false),
+    FORWARD_SET_POINT("Forward Set Point", AttributeGroup.CAPCONTROL, false),
+    HEARTBEAT_TIMER_CONFIG("Heartbeat Timer Config", AttributeGroup.CAPCONTROL, false),
+    HIGH_VOLTAGE("High Voltage", AttributeGroup.CAPCONTROL, false),
+    IGNORED_INDICATOR("Ignored Indicator", AttributeGroup.CAPCONTROL, false),
+    KEEP_ALIVE("Keep Alive", AttributeGroup.CAPCONTROL, false),
+    LAST_CONTROL_REASON_ANALOG("Last Control Reason - Analog", AttributeGroup.CAPCONTROL, false),
+    LAST_CONTROL_REASON_DIGITAL("Last Control Reason - Digital", AttributeGroup.CAPCONTROL, false),
+    LAST_CONTROL_REASON_LOCAL("Last Control Reason - Local", AttributeGroup.CAPCONTROL, false),
+    LAST_CONTROL_REASON_NEUTRAL_FAULT("Last Control Reason - Neutral Fault", AttributeGroup.CAPCONTROL, false),
+    LAST_CONTROL_REASON_OVUV("Last Control Reason - OvUv", AttributeGroup.CAPCONTROL, false),
+    LAST_CONTROL_REASON_REMOTE("Last Control Reason - Remote", AttributeGroup.CAPCONTROL, false),
+    LAST_CONTROL_REASON_SCHEDULED("Last Control Reason - Scheduled", AttributeGroup.CAPCONTROL, false),
+    LAST_CONTROL_REASON_TEMPERATURE("Last Control Reason - Temperature", AttributeGroup.CAPCONTROL, false),
+    LOW_VOLTAGE("Low Voltage", AttributeGroup.CAPCONTROL, false),
+    NEUTRAL_CURRENT_ALARM_THRESHOLD("Neutral Current Alarm Threshold", AttributeGroup.CAPCONTROL, false),
+    NEUTRAL_CURRENT_FAULT("Neutral Current Fault", AttributeGroup.CAPCONTROL, false),
+    NEUTRAL_LOCKOUT("Neutral Lockout", AttributeGroup.CAPCONTROL, false),
+    OPEN_OPERATION_COUNT("Open Operation Count", AttributeGroup.CAPCONTROL, false),
+    OPERATION_FAILED_NEUTRAL_CURRENT("Operation Failed Neutral Current", AttributeGroup.CAPCONTROL, false),
+    OVER_UNDER_VOLTAGE_TRACKING_TIME("OvUv Tracking Time", AttributeGroup.CAPCONTROL, false),
+    OVER_VOLTAGE_COUNT("Over Voltage Count", AttributeGroup.CAPCONTROL, false),
+    RADIO_SIGNAL_STRENGTH_INDICATOR("RSSI", AttributeGroup.CAPCONTROL, false),
+    RECLOSE_BLOCKED("Reclose Blocked", AttributeGroup.CAPCONTROL, false),
+    SCADA_OVERRIDE_COUNTDOWN_TIMER("SCADA Override Countdown Timer", AttributeGroup.CAPCONTROL, false),
+    SCADA_OVERRIDE_ENABLE("SCADA Override Enable", AttributeGroup.CAPCONTROL, false),
+    SCADA_OVERRIDE_HEARTBEAT("SCADA Override Heartbeat", AttributeGroup.CAPCONTROL, false),
+    SCADA_OVERRIDE_TYPE("SCADA Override Type", AttributeGroup.CAPCONTROL, false),
+    SOURCE_VOLTAGE("Source Voltage", AttributeGroup.CAPCONTROL, false),
+    TAP_DOWN("Tap Down", AttributeGroup.CAPCONTROL, false),
+    TAP_POSITION("Tap Position", AttributeGroup.CAPCONTROL, false),
+    TAP_UP("Tap Up", AttributeGroup.CAPCONTROL, false),
+    TEMPERATURE_ALARM("Temperature Alarm", AttributeGroup.CAPCONTROL, false),
+    TERMINATE("Terminate", AttributeGroup.CAPCONTROL, false),
+    TIME_TEMP_CONTROL_SEASON_ONE("TimeTemp Control - Season 1", AttributeGroup.CAPCONTROL, false),
+    TIME_TEMP_CONTROL_SEASON_TWO("TimeTemp Control - Season 2", AttributeGroup.CAPCONTROL, false),
+    TOTAL_OPERATION_COUNT("Total Operation Count", AttributeGroup.CAPCONTROL, false),
+    UNDER_VOLTAGE_COUNT("Under Voltage Count", AttributeGroup.CAPCONTROL, false),
+    VAR_CONTROL("VAr Control", AttributeGroup.CAPCONTROL, false),
+    VOLTAGE_CONTROL("Volatge Control", AttributeGroup.CAPCONTROL, false),
+    VOLTAGE_DELTA_ABNORMAL("Voltage Delta Abnormal", AttributeGroup.CAPCONTROL, false),
     ;
 
     private final String keyPrefix = "yukon.common.attribute.builtInAttribute.";
@@ -632,6 +684,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
         allGroupedBuilder.put(AttributeGroup.RFN_SOFTWARE_EVENT, lookupByGroup.get(AttributeGroup.RFN_SOFTWARE_EVENT));
         
         allGroupedBuilder.put(AttributeGroup.GATEWAY_STATISTICS, lookupByGroup.get(AttributeGroup.GATEWAY_STATISTICS));
+
+        allGroupedBuilder.put(AttributeGroup.CAPCONTROL, lookupByGroup.get(AttributeGroup.CAPCONTROL));
 
         // The attribute group map that is created can be used in conjunction with
         // the selectNameValue tag and groupItems="true".

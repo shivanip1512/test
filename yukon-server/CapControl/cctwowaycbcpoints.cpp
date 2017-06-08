@@ -509,7 +509,7 @@ CtiCCTwoWayPointsCbcDnp::CtiCCTwoWayPointsCbcDnp( const long paoid, const std::s
 {
     _statusOffsetAttribute = OffsetAttributeMappings
     {
-        {     1, PointAttribute::CapacitorBankState             }
+        {     1, PointAttribute::CapacitorBankState             }   // Attribute::ControlPoint
     };
 }
 
@@ -524,59 +524,59 @@ CtiCCTwoWayPointsCbc702x::CtiCCTwoWayPointsCbc702x( const long paoid, const std:
 {
     _analogOffsetAttribute = OffsetAttributeMappings
     {
-        {     5, PointAttribute::CbcVoltage                     },
-        {     6, PointAttribute::HighVoltage                    },
-        {     7, PointAttribute::LowVoltage                     },
-        {     8, PointAttribute::DeltaVoltage                   },
-        {     9, PointAttribute::AnalogInput1                   },
-        {    10, PointAttribute::Temperature                    },
-        {    13, PointAttribute::RSSI                           },
-        {    14, PointAttribute::IgnoredReason                  },
-        { 10001, PointAttribute::VoltageControl                 },
-        { 10002, PointAttribute::UvThreshold                    },
-        { 10003, PointAttribute::OvThreshold                    },
-        { 10004, PointAttribute::OVUVTrackTime                  },
-        { 10010, PointAttribute::NeutralCurrentSensor           },
-        { 10011, PointAttribute::NeutralCurrentAlarmThreshold   },
-        { 10026, PointAttribute::TimeTempSeasonOne              },
-        { 10042, PointAttribute::TimeTempSeasonTwo              },
-        { 10068, PointAttribute::VarControl                     },
-        { 20001, PointAttribute::UDPIpAddress                   },
-        { 20002, PointAttribute::UDPPortNumber                  }
+        {     5, PointAttribute::CbcVoltage                     },  // Attribute::Voltage
+        {     6, PointAttribute::HighVoltage                    },  // Attribute::HighVoltage
+        {     7, PointAttribute::LowVoltage                     },  // Attribute::LowVoltage
+        {     8, PointAttribute::DeltaVoltage                   },  // Attribute::DeltaVoltage
+        {     9, PointAttribute::AnalogInput1                   },  // Attribute::AnalogInputOne
+        {    10, PointAttribute::Temperature                    },  // Attribute::TemperatureofDevice
+        {    13, PointAttribute::RSSI                           },  // Attribute::RadioSignalStrengthIndicator
+        {    14, PointAttribute::IgnoredReason                  },  // Attribute::IgnoredControlReason
+        { 10001, PointAttribute::VoltageControl                 },  // Attribute::VoltageControl
+        { 10002, PointAttribute::UvThreshold                    },  // Attribute::UnderVoltageThreshold
+        { 10003, PointAttribute::OvThreshold                    },  // Attribute::OverVoltageThreshold
+        { 10004, PointAttribute::OVUVTrackTime                  },  // Attribute::OverUnderVoltageTrackTime
+        { 10010, PointAttribute::NeutralCurrentSensor           },  // Attribute::NeutralCurrentSensor
+        { 10011, PointAttribute::NeutralCurrentAlarmThreshold   },  // Attribute::NeutralCurrentAlarmThreshold
+        { 10026, PointAttribute::TimeTempSeasonOne              },  // Attribute::TimeTempControlSeasonOne
+        { 10042, PointAttribute::TimeTempSeasonTwo              },  // Attribute::TimeTempControlSeasonTwo
+        { 10068, PointAttribute::VarControl                     },  // Attribute::VarControl
+        { 20001, PointAttribute::UDPIpAddress                   },  // Attribute::IpAddress
+        { 20002, PointAttribute::UDPPortNumber                  }   // Attribute::UdpPort
     };
 
     _statusOffsetAttribute = OffsetAttributeMappings
     {
-        {     1, PointAttribute::CapacitorBankState             },
-        {     2, PointAttribute::ReCloseBlocked                 },
-        {     3, PointAttribute::ControlMode                    },
-        {     4, PointAttribute::AutoVoltControl                },
-        {     5, PointAttribute::LastControlLocal               },
-        {     6, PointAttribute::LastControlRemote              },
-        {     7, PointAttribute::LastControlOvUv                },
-        {     8, PointAttribute::LastControlNeutralFault        },
-        {     9, PointAttribute::LastControlScheduled           },
-        {    10, PointAttribute::LastControlDigital             },
-        {    11, PointAttribute::LastControlAnalog              },
-        {    12, PointAttribute::LastControlTemperature         },
-        {    13, PointAttribute::OvCondition                    },
-        {    14, PointAttribute::UvCondition                    },
-        {    15, PointAttribute::OpFailedNeutralCurrent         },
-        {    16, PointAttribute::NeutralCurrentFault            },
-        {    24, PointAttribute::BadRelay                       },
-        {    25, PointAttribute::DailyMaxOps                    },
-        {    26, PointAttribute::VoltageDeltaAbnormal           },
-        {    27, PointAttribute::TempAlarm                      },
-        {    28, PointAttribute::DSTActive                      },
-        {    29, PointAttribute::NeutralLockout                 },
-        {    34, PointAttribute::IgnoredIndicator               }
+        {     1, PointAttribute::CapacitorBankState             },  // Attribute::ControlPoint
+        {     2, PointAttribute::ReCloseBlocked                 },  // Attribute::RecloseBlocked
+        {     3, PointAttribute::ControlMode                    },  // Attribute::ControlMode
+        {     4, PointAttribute::AutoVoltControl                },  // Attribute::AutoVoltageControl
+        {     5, PointAttribute::LastControlLocal               },  // Attribute::LastControlReasonLocal
+        {     6, PointAttribute::LastControlRemote              },  // Attribute::LastControlReasonRemote
+        {     7, PointAttribute::LastControlOvUv                },  // Attribute::LastControlReasonOvUv
+        {     8, PointAttribute::LastControlNeutralFault        },  // Attribute::LastControlReasonNeutralFault
+        {     9, PointAttribute::LastControlScheduled           },  // Attribute::LastControlReasonScheduled
+        {    10, PointAttribute::LastControlDigital             },  // Attribute::LastControlReasonDigital
+        {    11, PointAttribute::LastControlAnalog              },  // Attribute::LastControlReasonAnalog
+        {    12, PointAttribute::LastControlTemperature         },  // Attribute::LastControlReasonTemperature
+        {    13, PointAttribute::OvCondition                    },  // Attribute::OverVoltage
+        {    14, PointAttribute::UvCondition                    },  // Attribute::UnderVoltage
+        {    15, PointAttribute::OpFailedNeutralCurrent         },  // Attribute::OperationFailedNeutralCurrent
+        {    16, PointAttribute::NeutralCurrentFault            },  // Attribute::NeutralCurrentFault
+        {    24, PointAttribute::BadRelay                       },  // Attribute::BadRelay
+        {    25, PointAttribute::DailyMaxOps                    },  // Attribute::DailyMaxOperations
+        {    26, PointAttribute::VoltageDeltaAbnormal           },  // Attribute::VoltageDeltaAbnormal
+        {    27, PointAttribute::TempAlarm                      },  // Attribute::TemperatureAlarm
+        {    28, PointAttribute::DSTActive                      },  // Attribute::DSTActive
+        {    29, PointAttribute::NeutralLockout                 },  // Attribute::NeutralLockout
+        {    34, PointAttribute::IgnoredIndicator               }   // Attribute::IgnoredIndicator
     };
 
     _accumulatorOffsetAttribute = OffsetAttributeMappings
     {
-        {     1, PointAttribute::TotalOpCount                   },
-        {     2, PointAttribute::UvCount                        },
-        {     3, PointAttribute::OvCount                        }
+        {     1, PointAttribute::TotalOpCount                   },  // Attribute::TotalOperationCount
+        {     2, PointAttribute::UvCount                        },  // Attribute::UnderVoltageCount
+        {     3, PointAttribute::OvCount                        }   // Attribute::OverVoltageCount
     };
 }
 
@@ -591,32 +591,39 @@ CtiCCTwoWayPointsCbc802x::CtiCCTwoWayPointsCbc802x( const long paoid, const std:
 {
     _analogOffsetAttribute = OffsetAttributeMappings
     {
-        {     2, PointAttribute::LastControlReason              },
-        {    12, PointAttribute::CbcVoltage                     },
-        {   114, PointAttribute::IgnoredReason                  },
-        { 10001, PointAttribute::OvThreshold                    },
-        { 10002, PointAttribute::UvThreshold                    },
-        { 10318, PointAttribute::VoltageControl                 }
+        {     2, PointAttribute::LastControlReason              },  // Attribute::LastControlReason
+        {    12, PointAttribute::CbcVoltage                     },  // Attribute::Voltage
+        {   114, PointAttribute::IgnoredReason                  },  // Attribute::IgnoredControlReason
+        { 10001, PointAttribute::OvThreshold                    },  // Attribute::OverVoltageThreshold
+        { 10002, PointAttribute::UvThreshold                    },  // Attribute::UnderVoltageThreshold
+        { 10318, PointAttribute::VoltageControl                 }   // Attribute::VoltageControl
     };
 
     _statusOffsetAttribute = OffsetAttributeMappings
     {
-        {     1, PointAttribute::CapacitorBankState             },
-        {     3, PointAttribute::NeutralLockout                 },
-        {    72, PointAttribute::VoltageDeltaAbnormal           },
-        {    84, PointAttribute::ReCloseBlocked                 },
-        {    86, PointAttribute::ControlMode                    },
-        {    89, PointAttribute::AutoVoltControl                }
+        {     1, PointAttribute::CapacitorBankState             },  // Attribute::ControlPoint
+        {     3, PointAttribute::NeutralLockout                 },  // Attribute::NeutralLockout
+        {    72, PointAttribute::VoltageDeltaAbnormal           },  // Attribute::VoltageDeltaAbnormal
+        {    84, PointAttribute::ReCloseBlocked                 },  // Attribute::RecloseBlocked
+        {    86, PointAttribute::ControlMode                    },  // Attribute::ControlMode
+        {    89, PointAttribute::AutoVoltControl                }   // Attribute::AutoVoltageControl
     };
 
     _accumulatorOffsetAttribute = OffsetAttributeMappings
     {
-        {     1, PointAttribute::TotalOpCount                   },
-        {     2, PointAttribute::OvCount                        },
-        {     3, PointAttribute::UvCount                        },
-        {     4, PointAttribute::CloseOpCount                   },
-        {     5, PointAttribute::OpenOpCount                    }
+        {     1, PointAttribute::TotalOpCount                   },  // Attribute::TotalOperationCount
+        {     2, PointAttribute::OvCount                        },  // Attribute::OverVoltageCount
+        {     3, PointAttribute::UvCount                        },  // Attribute::UnderVoltageCount
+        {     4, PointAttribute::CloseOpCount                   },  // Attribute::CloseOperationCount
+        {     5, PointAttribute::OpenOpCount                    }   // Attribute::OpenOperationCount
     };
+
+    // add the following here too (and also in CBC-DNP?)
+
+    // Attribute::ScadaOverrideCountdownTimer
+    // Attribute::ScadaOverrideEnable
+    // Attribute::ScadaOverrideHeartbeat
+    // Attribute::ScadaOverrideType
 }
 
 

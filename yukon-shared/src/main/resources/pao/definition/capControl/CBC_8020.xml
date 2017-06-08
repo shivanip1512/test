@@ -13,7 +13,7 @@
         <category type="cbcHeartbeat" />
     </configuration>
     <pointInfos>
-        <pointInfo name="Abnormal Delta Voltage" init="true"/>
+        <pointInfo name="Abnormal Delta Voltage" init="true" attributes="VOLTAGE_DELTA_ABNORMAL"/>
         <pointInfo name="Adaptive kVAr Percent Bank Size"/>
         <pointInfo name="Auto Close Delay Time" init="true"/>
         <pointInfo name="Auto Control Mode" init="true"/>
@@ -24,7 +24,7 @@
         <pointInfo name="Bank Control Time" init="true"/>
         <pointInfo name="Capacitor Bank State" init="true" attributes="CONTROL_POINT"/>
         <pointInfo name="CBC-8000 Hardware Type ID" init="true"/>
-        <pointInfo name="Close Op Count" init="true"/>
+        <pointInfo name="Close Op Count" init="true" attributes="CLOSE_OPERATION_COUNT"/>
         <pointInfo name="Comms Loss OV Threshold" init="true"/>
         <pointInfo name="Comms Loss Time" init="true"/>
         <pointInfo name="Comms Loss UV Threshold" init="true"/>
@@ -50,16 +50,16 @@
         <pointInfo name="Line Voltage THD" init="true"/>
         <pointInfo name="Low Voltage" init="true"/>
         <pointInfo name="Manual Close Delay Time" init="true"/>
-        <pointInfo name="Manual Control Mode" init="true"/>
+        <pointInfo name="Manual Control Mode" init="true" attributes="CONTROL_MODE"/>
         <pointInfo name="Max Operation Count" init="true"/>
-        <pointInfo name="Neutral Lockout" init="true"/>
+        <pointInfo name="Neutral Lockout" init="true" attributes="NEUTRAL_LOCKOUT"/>
         <pointInfo name="Nominal Secondary Voltage"/>
         <pointInfo name="Open Delay Time" init="true"/>
-        <pointInfo name="Open Op Count" init="true"/>
+        <pointInfo name="Open Op Count" init="true" attributes="OPEN_OPERATION_COUNT"/>
         <pointInfo name="Operation Failed" init="true"/>
-        <pointInfo name="OV Op Count" init="true"/>
-        <pointInfo name="OV Threshold" init="true"/>
-        <pointInfo name="OVUV Control" init="true"/>
+        <pointInfo name="OV Op Count" init="true" attributes="OVER_VOLTAGE_COUNT"/>
+        <pointInfo name="OV Threshold" init="true" attributes="OVER_VOLTAGE_THRESHOLD"/>
+        <pointInfo name="OVUV Control" init="true" attributes="AUTO_VOLTAGE_CONTROL"/>
         <pointInfo name="Phase A Fundamental Current Average"/>
         <pointInfo name="Phase A Fundamental Voltage Average"/>
         <pointInfo name="Phase A Reverse Power Flow"/>
@@ -77,7 +77,7 @@
         <pointInfo name="Phase C Total Voltage Average"/>
         <pointInfo name="Re-Close Delay Time" init="true"/>
         <pointInfo name="Real Time Clock Battery Failure" init="true"/>
-        <pointInfo name="Reclose Block" init="true"/>
+        <pointInfo name="Reclose Block" init="true" attributes="RECLOSE_BLOCKED"/>
         <pointInfo name="Relay Sense Failed" init="true"/>
         <pointInfo name="Remote Control Mode" init="true"/>
         <pointInfo name="SCADA Override" init="true"/>
@@ -92,13 +92,13 @@
         <pointInfo name="Temperature Low" init="true"/>
         <pointInfo name="Three-Phase Current Average Interval"/>
         <pointInfo name="Three-Phase Voltage Average Interval"/>
-        <pointInfo name="Total Op Count" init="true"/>
+        <pointInfo name="Total Op Count" init="true" attributes="TOTAL_OPERATION_COUNT"/>
         <pointInfo name="UDP Port" init="true" attributes="UDP_PORT"/>
-        <pointInfo name="UV Op Count" init="true"/>
-        <pointInfo name="UV Threshold" init="true"/>
+        <pointInfo name="UV Op Count" init="true" attributes="UNDER_VOLTAGE_COUNT"/>
+        <pointInfo name="UV Threshold" init="true" attributes="UNDER_VOLTAGE_THRESHOLD"/>
         <pointInfo name="VAR Control Total Voltage"/>
         <pointInfo name="VAr Reverse Power Flow"/>
-        <pointInfo name="Voltage Control Flags" init="true"/>
+        <pointInfo name="Voltage Control Flags" init="true" attributes="VOLTAGE_CONTROL"/>
     </pointInfos>
     <commands>
         <command name="Integrity Scan">

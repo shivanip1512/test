@@ -569,6 +569,59 @@ const Attribute Attribute::LoadManagementMemoryUtilization                  = At
 
 const Attribute Attribute::ThermostatRelayState                             = Attribute( "THERMOSTAT_RELAY_STATE" );
 
+const Attribute Attribute::AnalogInputOne                                   = Attribute( "ANALOG_INPUT_ONE" );
+const Attribute Attribute::AutoBlockEnable                                  = Attribute( "AUTO_BLOCK_ENABLE" );
+const Attribute Attribute::AutoRemoteControl                                = Attribute( "AUTO_REMOTE_CONTROL" );
+const Attribute Attribute::AutoVoltageControl                               = Attribute( "AUTO_VOLTAGE_CONTROL" );
+const Attribute Attribute::BadRelay                                         = Attribute( "BAD_RELAY" );
+const Attribute Attribute::CloseOperationCount                              = Attribute( "CLOSE_OPERATION_COUNT" );
+const Attribute Attribute::ControlMode                                      = Attribute( "CONTROL_MODE" );
+const Attribute Attribute::DailyMaxOperations                               = Attribute( "DAILY_MAX_OPERATION" );
+const Attribute Attribute::DeltaVoltage                                     = Attribute( "DELTA_VOLTAGE" );
+const Attribute Attribute::DSTActive                                        = Attribute( "DST_ACTIVE" );
+const Attribute Attribute::ForwardBandwidth                                 = Attribute( "FORWARD_BANDWIDTH" );
+const Attribute Attribute::ForwardSetPoint                                  = Attribute( "FORWARD_SET_POINT" );
+const Attribute Attribute::HeartbeatTimerConfig                             = Attribute( "HEARTBEAT_TIMER_CONFIG" );
+const Attribute Attribute::HighVoltage                                      = Attribute( "HIGH_VOLTAGE" );
+const Attribute Attribute::IgnoredIndicator                                 = Attribute( "IGNORED_INDICATOR" );
+const Attribute Attribute::KeepAlive                                        = Attribute( "KEEP_ALIVE" );
+const Attribute Attribute::LastControlReasonAnalog                          = Attribute( "LAST_CONTROL_REASON_ANALOG" );
+const Attribute Attribute::LastControlReasonDigital                         = Attribute( "LAST_CONTROL_REASON_DIGITAL" );
+const Attribute Attribute::LastControlReasonLocal                           = Attribute( "LAST_CONTROL_REASON_LOCAL" );
+const Attribute Attribute::LastControlReasonNeutralFault                    = Attribute( "LAST_CONTROL_REASON_NEUTRAL_FAULT" );
+const Attribute Attribute::LastControlReasonOvUv                            = Attribute( "LAST_CONTROL_REASON_OVUV" );
+const Attribute Attribute::LastControlReasonRemote                          = Attribute( "LAST_CONTROL_REASON_REMOTE" );
+const Attribute Attribute::LastControlReasonScheduled                       = Attribute( "LAST_CONTROL_REASON_SCHEDULED" );
+const Attribute Attribute::LastControlReasonTemperature                     = Attribute( "LAST_CONTROL_REASON_TEMPERATURE" );
+const Attribute Attribute::LowVoltage                                       = Attribute( "LOW_VOLTAGE" );
+const Attribute Attribute::NeutralCurrentAlarmThreshold                     = Attribute( "NEUTRAL_CURRENT_ALARM_THRESHOLD" );
+const Attribute Attribute::NeutralCurrentFault                              = Attribute( "NEUTRAL_CURRENT_FAULT" );
+const Attribute Attribute::NeutralLockout                                   = Attribute( "NEUTRAL_LOCKOUT" );
+const Attribute Attribute::OpenOperationCount                               = Attribute( "OPEN_OPERATION_COUNT" );
+const Attribute Attribute::OperationFailedNeutralCurrent                    = Attribute( "OPERATION_FAILED_NEUTRAL_CURRENT" );
+const Attribute Attribute::OverUnderVoltageTrackTime                        = Attribute( "OVER_UNDER_VOLTAGE_TRACKING_TIME" );
+const Attribute Attribute::OverVoltageCount                                 = Attribute( "OVER_VOLTAGE_COUNT" );
+const Attribute Attribute::RadioSignalStrengthIndicator                     = Attribute( "RADIO_SIGNAL_STRENGTH_INDICATOR" );
+const Attribute Attribute::RecloseBlocked                                   = Attribute( "RECLOSE_BLOCKED" );
+const Attribute Attribute::ScadaOverrideCountdownTimer                      = Attribute( "SCADA_OVERRIDE_COUNTDOWN_TIMER" );
+const Attribute Attribute::ScadaOverrideEnable                              = Attribute( "SCADA_OVERRIDE_ENABLE" );
+const Attribute Attribute::ScadaOverrideHeartbeat                           = Attribute( "SCADA_OVERRIDE_HEARTBEAT" );
+const Attribute Attribute::ScadaOverrideType                                = Attribute( "SCADA_OVERRIDE_TYPE" );
+const Attribute Attribute::SourceVoltage                                    = Attribute( "SOURCE_VOLTAGE" );
+const Attribute Attribute::TapDown                                          = Attribute( "TAP_DOWN" );
+const Attribute Attribute::TapPosition                                      = Attribute( "TAP_POSITION" );
+const Attribute Attribute::TapUp                                            = Attribute( "TAP_UP" );
+const Attribute Attribute::TemperatureAlarm                                 = Attribute( "TEMPERATURE_ALARM" );
+const Attribute Attribute::Terminate                                        = Attribute( "TERMINATE" );
+const Attribute Attribute::TimeTempControlSeasonOne                         = Attribute( "TIME_TEMP_CONTROL_SEASON_ONE" );
+const Attribute Attribute::TimeTempControlSeasonTwo                         = Attribute( "TIME_TEMP_CONTROL_SEASON_TWO" );
+const Attribute Attribute::TotalOperationCount                              = Attribute( "TOTAL_OPERATION_COUNT" );
+const Attribute Attribute::UnderVoltageCount                                = Attribute( "UNDER_VOLTAGE_COUNT" );
+const Attribute Attribute::VarControl                                       = Attribute( "VAR_CONTROL" );
+const Attribute Attribute::VoltageControl                                   = Attribute( "VOLTAGE_CONTROL" );
+const Attribute Attribute::VoltageDeltaAbnormal                             = Attribute( "VOLTAGE_DELTA_ABNORMAL" );
+
+
 AttributeNotFound::AttributeNotFound(const std::string &name)
 {
     desc = "Attribute not found: " + name;

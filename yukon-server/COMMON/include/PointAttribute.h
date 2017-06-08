@@ -617,6 +617,58 @@ public:
     static const Attribute  LoadManagementMemoryUtilization;
 
     static const Attribute  ThermostatRelayState;
+
+    static const Attribute  AnalogInputOne;
+    static const Attribute  AutoBlockEnable;
+    static const Attribute  AutoRemoteControl;
+    static const Attribute  AutoVoltageControl;
+    static const Attribute  BadRelay;
+    static const Attribute  CloseOperationCount;
+    static const Attribute  ControlMode;
+    static const Attribute  DailyMaxOperations;
+    static const Attribute  DeltaVoltage;
+    static const Attribute  DSTActive;
+    static const Attribute  ForwardBandwidth;
+    static const Attribute  ForwardSetPoint;
+    static const Attribute  HeartbeatTimerConfig;
+    static const Attribute  HighVoltage;
+    static const Attribute  IgnoredIndicator;
+    static const Attribute  KeepAlive;
+    static const Attribute  LastControlReasonAnalog;
+    static const Attribute  LastControlReasonDigital;
+    static const Attribute  LastControlReasonLocal;
+    static const Attribute  LastControlReasonNeutralFault;
+    static const Attribute  LastControlReasonOvUv;
+    static const Attribute  LastControlReasonRemote;
+    static const Attribute  LastControlReasonScheduled;
+    static const Attribute  LastControlReasonTemperature;
+    static const Attribute  LowVoltage;
+    static const Attribute  NeutralCurrentAlarmThreshold;
+    static const Attribute  NeutralCurrentFault;
+    static const Attribute  NeutralLockout;
+    static const Attribute  OpenOperationCount;
+    static const Attribute  OperationFailedNeutralCurrent;
+    static const Attribute  OverUnderVoltageTrackTime;
+    static const Attribute  OverVoltageCount;
+    static const Attribute  RadioSignalStrengthIndicator;
+    static const Attribute  RecloseBlocked;
+    static const Attribute  ScadaOverrideCountdownTimer;
+    static const Attribute  ScadaOverrideEnable;
+    static const Attribute  ScadaOverrideHeartbeat;
+    static const Attribute  ScadaOverrideType;
+    static const Attribute  SourceVoltage;
+    static const Attribute  TapDown;
+    static const Attribute  TapPosition;
+    static const Attribute  TapUp;
+    static const Attribute  TemperatureAlarm;
+    static const Attribute  Terminate;
+    static const Attribute  TimeTempControlSeasonOne;
+    static const Attribute  TimeTempControlSeasonTwo;
+    static const Attribute  TotalOperationCount;
+    static const Attribute  UnderVoltageCount;
+    static const Attribute  VarControl;
+    static const Attribute  VoltageControl;
+    static const Attribute  VoltageDeltaAbnormal;
 };
 
 

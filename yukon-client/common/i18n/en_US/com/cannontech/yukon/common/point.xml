@@ -487,5 +487,57 @@
     <entry key="yukon.common.attribute.builtInAttribute.LOW_BATTERY_VOLTAGE">Low Battery Voltage</entry>
     
     <entry key="yukon.common.attribute.builtInAttribute.THERMOSTAT_RELAY_STATE">Thermostat Relay State</entry>
+    
+    <entry key="yukon.common.attribute.builtInAttribute.ANALOG_INPUT_ONE">Analog Input 1</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.AUTO_BLOCK_ENABLE">Auto Block Enable</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.AUTO_REMOTE_CONTROL">Auto Remote Control</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.AUTO_VOLTAGE_CONTROL">Auto Voltage Control</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.BAD_RELAY">Bad Relay</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CLOSE_OPERATION_COUNT">Close Operation Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.CONTROL_MODE">Control Mode</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DAILY_MAX_OPERATION">Daily Max Operation</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DELTA_VOLTAGE">Delta Voltage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DST_ACTIVE">DST Active</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FORWARD_BANDWIDTH">Forward Bandwidth</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.FORWARD_SET_POINT">Forward Set Point</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.HEARTBEAT_TIMER_CONFIG">Heartbeat Timer Config</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.HIGH_VOLTAGE">High Voltage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.IGNORED_INDICATOR">Ignored Indicator</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.KEEP_ALIVE">Keep Alive</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LAST_CONTROL_REASON_ANALOG">Last Control Reason - Analog</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LAST_CONTROL_REASON_DIGITAL">Last Control Reason - Digital</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LAST_CONTROL_REASON_LOCAL">Last Control Reason - Local</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LAST_CONTROL_REASON_NEUTRAL_FAULT">Last Control Reason - Neutral Fault</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LAST_CONTROL_REASON_OVUV">Last Control Reason - OvUv</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LAST_CONTROL_REASON_REMOTE">Last Control Reason - Remote</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LAST_CONTROL_REASON_SCHEDULED">Last Control Reason - Scheduled</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LAST_CONTROL_REASON_TEMPERATURE">Last Control Reason - Temperature</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.LOW_VOLTAGE">Low Voltage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NEUTRAL_CURRENT_ALARM_THRESHOLD">Neutral Current Alarm Threshold</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NEUTRAL_CURRENT_FAULT">Neutral Current Fault</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.NEUTRAL_LOCKOUT">Neutral Lockout</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.OPEN_OPERATION_COUNT">Open Operation Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.OPERATION_FAILED_NEUTRAL_CURRENT">Operation Failed Neutral Current</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.OVER_UNDER_VOLTAGE_TRACKING_TIME">OvUv Tracking Time</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.OVER_VOLTAGE_COUNT">Over Voltage Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR">RSSI</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.RECLOSE_BLOCKED">Reclose Blocked</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_COUNTDOWN_TIMER">SCADA Override Countdown Timer</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_ENABLE">SCADA Override Enable</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_HEARTBEAT">SCADA Override Heartbeat</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_TYPE">SCADA Override Type</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SOURCE_VOLTAGE">Source Voltage</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TAP_DOWN">Tap Down</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TAP_POSITION">Tap Position</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TAP_UP">Tap Up</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TEMPERATURE_ALARM">Temperature Alarm</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TERMINATE">Terminate</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TIME_TEMP_CONTROL_SEASON_ONE">TimeTemp Control - Season 1</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TIME_TEMP_CONTROL_SEASON_TWO">TimeTemp Control - Season 2</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.TOTAL_OPERATION_COUNT">Total Operation Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE_COUNT">Under Voltage Count</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.VAR_CONTROL">VAr Control</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_CONTROL">Volatge Control</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.VOLTAGE_DELTA_ABNORMAL">Voltage Delta Abnormal</entry>
     <!-- BuiltInAttribute see note above about changing values -->
 </properties>
