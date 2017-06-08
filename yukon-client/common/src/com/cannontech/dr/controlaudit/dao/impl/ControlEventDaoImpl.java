@@ -266,17 +266,17 @@ public class ControlEventDaoImpl implements ControlEventDao {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(getControlAuditBaseQuery());
-        if (range.isIncludesMaxValue()) {
+        if (range.isIncludesMinValue()) {
             sql.append("AND ce.StartTime").gte(range.getMin());
         } else {
             sql.append("AND ce.StartTime").gt(range.getMin());
         }
-        if (range.isIncludesMinValue()) {
+        if (range.isIncludesMaxValue()) {
             sql.append("AND ce.StartTime").lte(range.getMax());
         } else {
             sql.append("AND ce.StartTime").lt(range.getMax());
         }
-        sql.append("ORDER BY ce.ControlEventId");
+        sql.append("ORDER BY ce.ControlEventId DESC");
         List<ControlAuditDetail> controlAuditDetails = jdbcTemplate.query(sql, controlAuditDetailRowMapper);
 
         return controlAuditDetails;
@@ -332,7 +332,9 @@ public class ControlEventDaoImpl implements ControlEventDao {
             public ControlDeviceDetail mapRow(YukonResultSet rs) throws SQLException {
                 String deviceName = rs.getString("DeviceName");
                 String serialNumber = rs.getString("SerialNumber");
-                String eventPhase = rs.getString("EventPhase");
+                String result = rs.getString("Result");
+                String eventPhase = ControlEventDeviceStatus.valueOf(result).getEventPhase() == null ? "Unknown"
+                        : ControlEventDeviceStatus.valueOf(result).getEventPhase().getJsonString();
                 String participationState =
                     eventPhase == ControlEventDeviceStatus.UNKNOWN.name() ? "Unreported" : "Confirmed";
                 ControlOptOutStatus optOutStatus = ControlOptOutStatus.valueOf(rs.getString("OptoutStatus"));
@@ -345,7 +347,7 @@ public class ControlEventDaoImpl implements ControlEventDao {
     @Override
     public List<ControlDeviceDetail> getControlEventDeviceData(int eventId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT dypo.PAOName AS DeviceName, ced.Result AS EventPhase, lmbh.ManufacturerSerialNumber AS SerialNumber,");
+        sql.append("SELECT dypo.PAOName AS DeviceName, ced.Result, lmbh.ManufacturerSerialNumber AS SerialNumber,");
         sql.append("  CASE WHEN ced.OptOutEventId IS NULL THEN").appendArgument_k(ControlOptOutStatus.NONE);
         sql.append("       WHEN ced.OptOutEventId IS NOT NULL THEN ");
         sql.append("         CASE WHEN (SELECT StopDate FROM OptOutEvent WHERE OptOutEventId = ced.OptOutEventId) ");

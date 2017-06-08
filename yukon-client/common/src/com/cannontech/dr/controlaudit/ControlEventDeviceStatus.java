@@ -43,6 +43,10 @@ public enum ControlEventDeviceStatus {
         return messageOrder;
     }
 
+    public EventPhase getEventPhase(){
+        return eventPhase;
+    }
+
     public static ImmutableSet<ControlEventDeviceStatus> getAllDeviceStatus() {
         return allDeviceStatus;
     }
