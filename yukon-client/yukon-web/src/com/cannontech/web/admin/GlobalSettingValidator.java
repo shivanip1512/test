@@ -1,7 +1,5 @@
 package com.cannontech.web.admin;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -31,10 +29,11 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
         @Override
         public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
             String url = (String) value;
-
-            UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
-            if (!urlValidator.isValid(url)) {
-                errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidURL");
+            if (StringUtils.isNotBlank(url)) {
+                UrlValidator urlValidator = new UrlValidator(schemes, UrlValidator.ALLOW_LOCAL_URLS);
+                if (!urlValidator.isValid(url)) {
+                    errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidURL");
+                }
             }
         }
     };
@@ -42,21 +41,27 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
     private static TypeValidator emailValidator = new TypeValidator() {
         @Override
         public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
-            boolean emailValid = EmailValidator.getInstance().isValid(value.toString());
-            if (!emailValid) {
-                errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidEmail");
+            String email = (String) value;
+            if (StringUtils.isNotBlank(email)) {
+                boolean emailValid = EmailValidator.getInstance().isValid(email);
+                if (!emailValid) {
+                    errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidEmail");
+                }
             }
-
         }
     };
 
     private static TypeValidator ipHostNameValidator = new TypeValidator() {
+        Pattern ipHostNameMatcher =
+            Pattern.compile("^([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9])(\\.([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]{0,61}[a-zA-Z0-9]))*$");
+
         @Override
         public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
-            try {
-                InetAddress.getByName(value.toString());
-            } catch (UnknownHostException e) {
-                errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidIPHostName");
+            String ipHost = (String) value;
+            if (StringUtils.isNotBlank(ipHost)) {
+                if (!ipHostNameMatcher.matcher(ipHost).matches()) {
+                    errors.rejectValue("values[" + globalSettingType + "]", baseKey + "invalidIPHostName");
+                }
             }
         }
     };    
@@ -68,7 +73,7 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
             @Override
             public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
                 String httpProxy = (String) value;
-                YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "values[HTTP_PROXY]", httpProxy, false, 1000);
+                YukonValidationUtils.checkIsBlankOrExceedsMaxLength(errors, "values[" + globalSettingType + "]", httpProxy, false, 1000);
 
                 if (!StringUtils.isBlank(httpProxy)
                         && !httpProxy.equals("none")
@@ -81,7 +86,7 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
             @Override
             public void validate(Object value, Errors errors, GlobalSettingType globalSettingType) {
                 String timeZoneId = (String) value;
-                YukonValidationUtils.checkExceedsMaxLength(errors, "values[SYSTEM_TIMEZONE]", timeZoneId, 1000);
+                YukonValidationUtils.checkExceedsMaxLength(errors, "values["+globalSettingType+"]", timeZoneId, 1000);
                 if (StringUtils.isNotBlank(timeZoneId)) {
                     try {
                         TimeZone timeZone=CtiUtilities.getValidTimeZone(timeZoneId);
@@ -104,6 +109,7 @@ public class GlobalSettingValidator extends SimpleValidator<GlobalSettingsEditor
         validators.put(GlobalSettingType.SERVER_ADDRESS, ipHostNameValidator);
         validators.put(GlobalSettingType.LDAP_SERVER_ADDRESS, ipHostNameValidator);
         validators.put(GlobalSettingType.AD_SERVER_ADDRESS, ipHostNameValidator);
+        validators.put(GlobalSettingType.SMTP_HOST, ipHostNameValidator);
 
         validators.put(GlobalSettingType.CONTACT_EMAIL, emailValidator);
         validators.put(GlobalSettingType.MAIL_FROM_ADDRESS, emailValidator);
