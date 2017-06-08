@@ -17,53 +17,40 @@ public class ThresholdReportFilter {
     private List<DataAvailability> availability;
     private boolean includeDisabled;
     
-    public ThresholdReportFilter() {
-        
-    }
-
-    public ThresholdReportFilter(List<DeviceGroup> groups, double threshold, ThresholdDescriptor thresholdDescriptor,
-            List<DataAvailability> availability, boolean includeDisabled) {
-        this.groups = groups;
-        this.threshold = threshold;
-        this.thresholdDescriptor = thresholdDescriptor;
-        this.availability = availability;
-        this.includeDisabled = includeDisabled;
-    }
-
     public List<DeviceGroup> getGroups() {
         return groups;
-    }
-
-    public double getThreshold() {
-        return threshold;
-    }
-
-    public ThresholdDescriptor getThresholdDescriptor() {
-        return thresholdDescriptor;
-    }
-
-    public List<DataAvailability> getAvailability() {
-        return availability;
-    }
-
-    public boolean isIncludeDisabled() {
-        return includeDisabled;
     }
 
     public void setGroups(List<DeviceGroup> groups) {
         this.groups = groups;
     }
 
+    public double getThreshold() {
+        return threshold;
+    }
+
     public void setThreshold(double threshold) {
         this.threshold = threshold;
+    }
+
+    public ThresholdDescriptor getThresholdDescriptor() {
+        return thresholdDescriptor;
     }
 
     public void setThresholdDescriptor(ThresholdDescriptor thresholdDescriptor) {
         this.thresholdDescriptor = thresholdDescriptor;
     }
 
+    public List<DataAvailability> getAvailability() {
+        return availability;
+    }
+
     public void setAvailability(List<DataAvailability> availability) {
         this.availability = availability;
+    }
+
+    public boolean isIncludeDisabled() {
+        return includeDisabled;
     }
 
     public void setIncludeDisabled(boolean includeDisabled) {

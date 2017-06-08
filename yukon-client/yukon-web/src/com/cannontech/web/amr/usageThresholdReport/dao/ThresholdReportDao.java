@@ -6,8 +6,8 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
+import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReport;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportCriteria;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFilter;
@@ -19,7 +19,9 @@ public interface ThresholdReportDao {
         METER_NUMBER("dmg.MeterNumber"),
         DEVICE_TYPE("ypo.Type"),
         SERIAL_NUMBER_ADDRESS("SerialNumberAddress"),
-        DELTA("Delta");
+        DELTA("Delta"),
+        EARLIEST_READING("FirstTimestamp"),
+        LATEST_READING("LastTimestamp");
         
         private SortBy(String dbString) {
             this.dbString = dbString;
@@ -40,10 +42,6 @@ public interface ThresholdReportDao {
 
     void createReportDetail(int reportId, List<ThresholdReportDetail> details);
 
-    SearchResults<ThresholdReportDetail> getReportDetail(int reportId, Range<Instant> criteriaRange,
+    ThresholdReport getReportDetail(int reportId, Range<Instant> criteriaRange,
             ThresholdReportFilter filter, PagingParameters paging, SortBy sortBy, Direction direction);
-
-    int getDeviceCount(int reportId, Range<Instant> criteriaRange, ThresholdReportFilter filter,
-            PagingParameters paging, SortBy sortBy, Direction direction);
-
 }

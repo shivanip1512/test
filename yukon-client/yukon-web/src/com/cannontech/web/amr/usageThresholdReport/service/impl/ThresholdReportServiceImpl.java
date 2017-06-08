@@ -15,13 +15,13 @@ import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.point.PointQuality;
-import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.web.amr.usageThresholdReport.dao.ThresholdReportDao;
 import com.cannontech.web.amr.usageThresholdReport.dao.ThresholdReportDao.SortBy;
+import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReport;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportCriteria;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFilter;
@@ -43,7 +43,7 @@ public class ThresholdReportServiceImpl implements ThresholdReportService{
     }
     
     @Override
-    public SearchResults<ThresholdReportDetail> getReportDetail(int reportId, ThresholdReportFilter filter,
+    public ThresholdReport getReportDetail(int reportId, ThresholdReportFilter filter,
             PagingParameters paging, SortBy sortBy, Direction direction) {
         ThresholdReportCriteria criteria = thresholdReportDao.getReport(reportId);
         return thresholdReportDao.getReportDetail(reportId, criteria.getRange(), filter, paging, sortBy, direction);

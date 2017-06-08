@@ -38,6 +38,7 @@ import com.cannontech.database.vendor.DatabaseVendorResolver;
 import com.cannontech.web.amr.usageThresholdReport.dao.ThresholdReportDao;
 import com.cannontech.web.amr.usageThresholdReport.model.DataAvailability;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdDescriptor;
+import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReport;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportCriteria;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFilter;
@@ -66,14 +67,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
     }
     
     @Override
-    public int getDeviceCount(int reportId, Range<Instant> criteriaRange, ThresholdReportFilter filter,
-            PagingParameters paging, SortBy sortBy, Direction direction) {
-        SqlStatementBuilder countSql = buildDetailSelect(reportId, criteriaRange, filter, null, null);
-        return jdbcTemplate.queryForInt(countSql);
-    }
-
-    @Override
-    public SearchResults<ThresholdReportDetail> getReportDetail(int reportId, Range<Instant> criteriaRange,
+    public ThresholdReport getReportDetail(int reportId, Range<Instant> criteriaRange,
             ThresholdReportFilter filter, PagingParameters paging, SortBy sortBy, Direction direction) {
         SqlStatementBuilder allRowsSql = buildDetailSelect(reportId, criteriaRange, filter, sortBy, direction);
         SqlStatementBuilder countSql = buildDetailSelect(reportId, criteriaRange, filter, null, null);
@@ -89,7 +83,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         searchResult.setBounds(paging.getStartIndex(), paging.getItemsPerPage(), totalCount);
         searchResult.setResultList(rse.getResultList());
         
-        return searchResult;
+        return new ThresholdReport(searchResult, totalCount);
     }
     
     private class DetailRowMapper implements YukonRowMapper<ThresholdReportDetail> {   
@@ -112,7 +106,9 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
             } else if(isPartial(detail)){
                 detail.setAvailability(DataAvailability.PARTIAL);
             }
-            detail.setDelta(rs.getDouble("Delta"));
+
+            detail.setAvailability(DataAvailability.COMPLETE);
+            detail.setDelta(rs.getNullableDouble("Delta"));
             detail.setPaoIdentifier(rs.getPaoIdentifier("PaoId", "Type"));
             detail.setDeviceName(rs.getString("PAOName"));
             detail.setMeterNumber(Objects.toString(rs.getString("MeterNumber"), ""));
@@ -157,12 +153,12 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         sql.append("LEFT JOIN DeviceCarrierSettings dcs ON utrr.PaoId = dcs.deviceId");
         sql.append("LEFT JOIN RFNAddress rfna ON utrr.PaoId = rfna.DeviceId");
 
-        sql.append("AND UsageThresholdReportId").eq(reportId);
+        sql.append("WHERE UsageThresholdReportId").eq(reportId);
         filter.getAvailability().forEach(availability -> {
             if (availability == DataAvailability.UNSUPPORTED) {
-                sql.append("AND p.PointId IS NULL");
+                //sql.append("AND p.PointId IS NULL");
             } else if (availability == DataAvailability.NONE) {
-                sql.append("AND FirstValue IS NULL");
+                //sql.append("AND FirstValue IS NULL");
             } else if (availability == DataAvailability.COMPLETE) {
 
             } else if (availability == DataAvailability.PARTIAL) {

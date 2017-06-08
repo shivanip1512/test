@@ -49,6 +49,7 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.usageThresholdReport.dao.ThresholdReportDao.SortBy;
 import com.cannontech.web.amr.usageThresholdReport.model.DataAvailability;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdDescriptor;
+import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReport;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportCriteria;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFilter;
@@ -146,8 +147,8 @@ public class UsageThresholdReportController {
             model.addAttribute(column.name(), col);
         }
         filter.setAvailability(Lists.newArrayList(DataAvailability.values()));
-        SearchResults<ThresholdReportDetail> reportDetail =
-            reportService.getReportDetail(reportId, filter, paging, sortBy.getValue(), dir);
+        ThresholdReport report = reportService.getReportDetail(reportId, filter, paging, sortBy.getValue(), dir);
+        SearchResults<ThresholdReportDetail> reportDetail = report.getDetail();
         System.out.println(reportDetail.getCount());
         model.addAttribute("detail", reportDetail);
         List<SimpleDevice> devices = new ArrayList<>();
@@ -174,8 +175,8 @@ public class UsageThresholdReportController {
         deviceType(SortBy.DEVICE_TYPE),
         serialNumberAddress(SortBy.SERIAL_NUMBER_ADDRESS),
         delta(SortBy.DELTA),
-        earliestReading(null),
-        latestReading(null);
+        earliestReading(SortBy.EARLIEST_READING),
+        latestReading(SortBy.LATEST_READING);
         
         private DetailSortBy(SortBy value) {
             this.value = value;

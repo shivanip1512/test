@@ -82,9 +82,7 @@ public class ThresholdReportDetail {
     }
 
     public void calculateDelta() {
-        if (earliestReading != null && latestReading != null) {
-            this.setDelta(latestReading.getValue() - earliestReading.getValue());
-        }
+        delta = earliestReading == null ? null: latestReading.getValue() - earliestReading.getValue();
     }
     
     public DataAvailability getAvailability() {
