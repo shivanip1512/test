@@ -2,6 +2,7 @@ package com.cannontech.database;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -174,8 +175,12 @@ public class YukonJdbcTemplate extends JdbcTemplate {
                          List<Object> values = batchList.get(rowIndex);
                          for (int valueIndex = 0; valueIndex < values.size(); valueIndex++) {
                              Object value = values.get(valueIndex);
-                             Object jdbcFriendlyValue = SqlStatementBuilder.convertArgumentToJdbcObject(value);
-                             ps.setObject(valueIndex + 1, jdbcFriendlyValue);
+                             if (value == null) {
+                                 ps.setNull(valueIndex + 1, Types.NULL);
+                             } else {
+                                 Object jdbcFriendlyValue = SqlStatementBuilder.convertArgumentToJdbcObject(value);
+                                 ps.setObject(valueIndex + 1, jdbcFriendlyValue);
+                             }
                          }
                      }
 
