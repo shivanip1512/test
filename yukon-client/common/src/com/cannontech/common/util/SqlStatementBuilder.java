@@ -52,6 +52,8 @@ import com.google.common.collect.Lists;
 public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
     private final DeferedSqlFragmentHelper base = new DeferedSqlFragmentHelper();
     
+    private SqlBatchUpdater batchUpdater;
+    
     private static class SpaceAppendingSqlFragmentSource implements SqlFragmentSource {
         private final SqlFragmentSource delegate;
         public SpaceAppendingSqlFragmentSource(SqlFragmentSource delegate) {
@@ -139,14 +141,14 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
             // convert to corresponding Object type and rebuild list before calling appendList()
             if (object instanceof int[]) {
                 int[] primitiveIDs = (int[])object;
-                List<Integer> objIDs = new ArrayList<Integer>();
+                List<Integer> objIDs = new ArrayList<>();
                 for (int idIdx = 0; idIdx < primitiveIDs.length; idIdx++) {
                     objIDs.add(primitiveIDs[idIdx]);
                 }
                 appendList(objIDs);
             } else if (object instanceof long[]) {
                 long[] primitiveIDs = (long[])object;
-                List<Long> objIDs = new ArrayList<Long>();
+                List<Long> objIDs = new ArrayList<>();
                 for (int idIdx = 0; idIdx < primitiveIDs.length; idIdx++) {
                     objIDs.add(primitiveIDs[idIdx]);
                 }
@@ -626,5 +628,117 @@ public class SqlStatementBuilder implements SqlFragmentSource, SqlBuilder {
         builder.append(" Arguments: ");
         builder.append(Arrays.toString(getArguments()));
         return builder.toString();
+    }
+    
+    /**
+     * Appends question marks (?) separated by commas.
+     * @param numberOfPlaceholders The number of question marks to append.
+     */
+    public void appendPlaceholders(int numberOfPlaceholders) {
+        append(String.join(",", Collections.nCopies(numberOfPlaceholders, "?")));
+    }
+    
+    /**
+     * @return True if this builder is configured for a batched update.
+     */
+    public boolean isBatchUpdate() {
+        return batchUpdater != null;
+    }
+    
+    /**
+     * @return The SqlBatchUpdater, as configured via the batchInsertInto method.
+     */
+    public SqlBatchUpdater getBatchUpdater() {
+        return batchUpdater;
+    }
+    
+    /**
+     * Prepares the builder for a batched update using YukonJdbcTemplate.yukonBatchUpdate.
+     * @param tableName The name of the table to insert into.
+     * @return An SqlBatchUpdater, used to refine the details of the query.
+     */
+    public SqlBatchUpdater batchInsertInto(String tableName) {
+        SqlStatementBuilder.this.assertSqlIdentifier(tableName);
+        batchUpdater =  new SqlBatchUpdater(tableName);
+        return batchUpdater;
+    }
+    
+    /**
+     * Class used to build batched updates for execution with YukonJdbcTemplate.yukonBatchUpdate.
+     */
+    public static final class SqlBatchUpdater {
+        private final String tableName;
+        private List<String> columnNames;
+        private List<List<Object>> columnValues;
+        private String deleteBeforeInsertColumn = "";
+        private SqlStatementBuilder deleteBeforeInsertClauses;
+        
+        /**
+         * Create a new batch updater, specifying the table to be updated.
+         */
+        public SqlBatchUpdater(String tableName) {
+            this.tableName = tableName;
+        }
+        
+        /**
+         * Specify the column names for the update.
+         */
+        public SqlBatchUpdater columns(String... columns) {
+            columnNames = Arrays.asList(columns);
+            return this;
+        }
+        
+        /**
+         * Specify the row values (each inner list must contain one row's worth of values).
+         */
+        public SqlBatchUpdater values(List<List<Object>> values) {
+            if (!values.stream().allMatch(row -> row.size() == columnNames.size())) {
+                throw new IllegalArgumentException("Invalid values: all rows must contain a value for each column.");
+            }
+            columnValues = values;
+            return this;
+        }
+        
+        /**
+         * Delete the entries for each batch prior to the batch update. This will utilize a query like:
+         * 
+         * DELETE FROM tableName 
+         * WHERE columnName IN (<list of columnName's values in current batch>);
+         * 
+         * @return An SqlStatementBuilder, which can be used to append additional clauses on the deletion statement.
+         */
+        public SqlStatementBuilder deleteBeforeInsertByColumn(String columnName) {
+            if (!columnNames.contains(columnName)) {
+                throw new IllegalArgumentException("Invalid column name specified for deletion: " + columnName + 
+                                                   " is not a specified column for this insert.");
+            }
+            deleteBeforeInsertColumn = columnName;
+            deleteBeforeInsertClauses = new SqlStatementBuilder();
+            return deleteBeforeInsertClauses;
+        }
+
+        public String getTableName() {
+            return tableName;
+        }
+
+        public List<String> getColumnNames() {
+            return columnNames;
+        }
+
+        public List<List<Object>> getColumnValues() {
+            return columnValues;
+        }
+        
+        public boolean isDeleteBeforeInsert() {
+            return StringUtils.isNotEmpty(deleteBeforeInsertColumn);
+        }
+        
+        public String getDeleteBeforeInsertColumn() {
+            return deleteBeforeInsertColumn;
+        }
+
+        public SqlStatementBuilder getDeleteBeforeInsertClauses() {
+            return deleteBeforeInsertClauses;
+        }
     }
 }

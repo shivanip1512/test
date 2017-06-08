@@ -1,21 +1,32 @@
 package com.cannontech.database;
 
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
+import org.apache.log4j.Logger;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlFragmentSource;
+import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.SqlStatementBuilder.SqlBatchUpdater;
 import com.cannontech.spring.LoggingJdbcTemplate;
+import com.google.common.collect.Lists;
 
 public class YukonJdbcTemplate extends JdbcTemplate {
-
+    private static final Logger log = YukonLogManager.getLogger(YukonJdbcTemplate.class);
+    
     public YukonJdbcTemplate(DataSource dataSource) {
         super(dataSource);
     }
@@ -25,7 +36,7 @@ public class YukonJdbcTemplate extends JdbcTemplate {
     }
     
     public <R> void queryInto(SqlFragmentSource sql, final YukonRowMapper<R> rowMapper, Collection<? super R> resultSink) {
-         CollectionRowCallbackHandler<R> rch = new CollectionRowCallbackHandler<R>(rowMapper, resultSink);
+         CollectionRowCallbackHandler<R> rch = new CollectionRowCallbackHandler<>(rowMapper, resultSink);
          query(sql, rch);
      }
     
@@ -49,12 +60,12 @@ public class YukonJdbcTemplate extends JdbcTemplate {
     
     public <T> List<T> query(SqlFragmentSource sql, YukonRowMapper<T> rm)
             throws DataAccessException {
-        return query(sql, new YukonRowMapperAdapter<T>(rm));
+        return query(sql, new YukonRowMapperAdapter<>(rm));
     }
     
     public <T> List<T> queryForLimitedResults(SqlFragmentSource sql, RowMapper<T> rm, int maxResults){
         
-        MaxListResultSetExtractor<T> rse = new MaxListResultSetExtractor<T>(rm, maxResults);
+        MaxListResultSetExtractor<T> rse = new MaxListResultSetExtractor<>(rm, maxResults);
         query(sql.getSql(), sql.getArguments(), rse);
         return rse.getResult();
     }
@@ -64,13 +75,13 @@ public class YukonJdbcTemplate extends JdbcTemplate {
                                                int maxResults) throws DataAccessException {
         
         MaxListResultSetExtractor<T> rse = 
-            new MaxListResultSetExtractor<T>(new YukonRowMapperAdapter<T>(rm), maxResults);
+            new MaxListResultSetExtractor<>(new YukonRowMapperAdapter<>(rm), maxResults);
         query(sql.getSql(), sql.getArguments(), rse);
         return rse.getResult();
     }
     
     public <T> void query(SqlFragmentSource sql, RowMapper<T> rm, Collection<? super T> result){
-        query(sql.getSql(), sql.getArguments(), new CollectionRowCallbackHandler<T>(rm, result));
+        query(sql.getSql(), sql.getArguments(), new CollectionRowCallbackHandler<>(rm, result));
     }
     
     public int queryForInt(SqlFragmentSource sql) throws DataAccessException {
@@ -90,7 +101,7 @@ public class YukonJdbcTemplate extends JdbcTemplate {
 
     public <T> T queryForObject(SqlFragmentSource sql,
             YukonRowMapper<T> rm) throws DataAccessException {
-        return queryForObject(sql, new YukonRowMapperAdapter<T>(rm));
+        return queryForObject(sql, new YukonRowMapperAdapter<>(rm));
     }
     
     public String queryForString(SqlFragmentSource sql)
@@ -100,5 +111,80 @@ public class YukonJdbcTemplate extends JdbcTemplate {
 
     public int update(SqlFragmentSource sql) throws DataAccessException {
         return update(sql.getSql(), sql.getArguments());
+    }
+    
+    /**
+     * Performs a batched update utilizing prepared statements, with the default batch size.
+     * @param sql An SqlStatementBuilder configured for batch update via the batchInsertInto method.
+     */
+    public void yukonBatchUpdate(SqlStatementBuilder sql) {
+        yukonBatchUpdate(sql, ChunkingSqlTemplate.DEFAULT_SIZE);
+    }
+    
+    /**
+     * Performs a batched update utilizing prepared statements.
+     * @param sql An SqlStatementBuilder configured for batch update via the batchInsertInto method.
+     * @param batchSize The number of updates to combine into each batch.
+     */
+    public void yukonBatchUpdate(SqlStatementBuilder sql, int batchSize) {
+        if (!sql.isBatchUpdate()) {
+            throw new IllegalArgumentException("SqlStatementBuilder is not configured for batch update. " 
+                                               + "Use batchInsertInto first.");
+        }
+        SqlBatchUpdater batchUpdater = sql.getBatchUpdater();
+        
+        log.debug("Inserting " + batchUpdater.getColumnValues().size() + " rows as batched update");
+        
+        String deleteByColumn = batchUpdater.getDeleteBeforeInsertColumn();
+        int deleteColumnIndex = batchUpdater.getColumnNames().indexOf(deleteByColumn);
+        
+        SqlStatementBuilder insertSql = new SqlStatementBuilder();
+        insertSql.append("INSERT INTO").append(batchUpdater.getTableName());
+        insertSql.append("(");
+        insertSql.appendList(batchUpdater.getColumnNames());
+        insertSql.append(")");
+        insertSql.append("VALUES");
+        insertSql.append("(");
+        insertSql.appendPlaceholders(batchUpdater.getColumnNames().size());
+        insertSql.append(")");
+        log.trace("Insert sql: " + insertSql.toString());
+        
+        Lists.partition(batchUpdater.getColumnValues(), batchSize)
+             .forEach(batchList -> {
+                 log.trace("Inserting " + batchList.size() + " rows");
+                 
+                 // If deleting before insert, delete the batch of rows first
+                 if (batchUpdater.isDeleteBeforeInsert()) {
+                     List<Object> deleteValues = batchList.stream()
+                                                          .map(values -> values.get(deleteColumnIndex))
+                                                          .collect(Collectors.toList());
+                     
+                     SqlStatementBuilder deleteSql = new SqlStatementBuilder();
+                     deleteSql.append("DELETE FROM").append(batchUpdater.getTableName());
+                     deleteSql.append("WHERE").append(deleteByColumn).in(deleteValues);
+                     deleteSql.appendFragment(batchUpdater.getDeleteBeforeInsertClauses());
+                     log.trace("Delete sql: " + deleteSql.getDebugSql());
+                     update(deleteSql);
+                 }
+                 
+                 // Insert the batch of rows
+                 batchUpdate(insertSql.toString(), new BatchPreparedStatementSetter() {
+                     @Override
+                     public void setValues(PreparedStatement ps, int rowIndex) throws SQLException {
+                         List<Object> values = batchList.get(rowIndex);
+                         for (int valueIndex = 0; valueIndex < values.size(); valueIndex++) {
+                             Object value = values.get(valueIndex);
+                             Object jdbcFriendlyValue = SqlStatementBuilder.convertArgumentToJdbcObject(value);
+                             ps.setObject(valueIndex + 1, jdbcFriendlyValue);
+                         }
+                     }
+
+                     @Override
+                     public int getBatchSize() {
+                         return batchList.size();
+                     }
+                 });
+        });
+        log.debug("Batched update complete");
     }
 }
