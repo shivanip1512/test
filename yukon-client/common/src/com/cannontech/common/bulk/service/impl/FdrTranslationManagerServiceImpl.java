@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -176,12 +177,14 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                             boolean insertSucceeded = dataRow.setInterfaceColumn(column, columnValue);
                             if(!insertSucceeded) {
                                 //Throw exception - option doesn't match fdr interface
-                                String error = messageSourceAccessor.getMessage("yukon.exception.processingException.invalidColumnForInterface", header, dataRow.getInterface().toString());
+                                String error = StringEscapeUtils.escapeXml11(messageSourceAccessor
+                                    .getMessage("yukon.exception.processingException.invalidColumnForInterface", header, dataRow.getInterface().toString()));
                                 throw new ProcessingException(error, "invalidColumnForInterface", header, dataRow.getInterface().toString());
                             }
                         } catch(IllegalArgumentException e) {
                             //Throw exception - not a valid interface column
-                            String error = messageSourceAccessor.getMessage("yukon.exception.processingException.noValidInterface", columnValue);
+                            String error = StringEscapeUtils.escapeXml11(messageSourceAccessor.
+                                getMessage("yukon.exception.processingException.noValidInterface", columnValue));
                             throw new ProcessingException(error, "noValidInterface", e, columnValue);
                         }  
                     }
@@ -204,22 +207,26 @@ public class FdrTranslationManagerServiceImpl implements FdrTranslationManagerSe
                 try {
                     paoType = PaoType.getForDbString(dataRow.getDeviceType());
                 } catch(IllegalArgumentException e) {
-                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.invalidDeviceTypeFdr", dataRow.getDeviceType());
+                    String error = StringEscapeUtils.escapeXml11(messageSourceAccessor
+                        .getMessage("yukon.exception.processingException.invalidDeviceTypeFdr", dataRow.getDeviceType()));
                     throw new ProcessingException(error, "invalidDeviceType", e, dataRow.getDeviceType());
                 }
                 YukonPao pao = paoDao.findYukonPao(dataRow.getDeviceName(), paoType);
                 if(pao == null) {
-                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.deviceNotFound", dataRow.getDeviceName(), paoType);
+                    String error = StringEscapeUtils.escapeXml11(messageSourceAccessor
+                        .getMessage("yukon.exception.processingException.deviceNotFound", dataRow.getDeviceName(), paoType));
                     throw new ProcessingException(error, "deviceNotFound", dataRow.getDeviceName(), paoType);
                 }
                 LitePoint point = pointDao.findPointByName(pao, dataRow.getPointName());
                 if(point == null) {
-                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.pointNotFound", dataRow.getPointName(), dataRow.getDeviceName());
-                    throw new ProcessingException(error, "pointNotFound", dataRow.getPointName(), dataRow.getDeviceName() );
+                    String error = StringEscapeUtils.escapeXml11(messageSourceAccessor
+                        .getMessage("yukon.exception.processingException.pointNotFound", dataRow.getPointName(), dataRow.getDeviceName()));
+                    throw new ProcessingException(error, "pointNotFound", dataRow.getPointName(), dataRow.getDeviceName());
                 }
                 FdrDirection fdrDirection = FdrDirection.getEnum(dataRow.getDirection());
                 if(fdrDirection == null) {
-                    String error = messageSourceAccessor.getMessage("yukon.exception.processingException.invalidDirection", dataRow.getDirection());
+                    String error = StringEscapeUtils.escapeXml11(messageSourceAccessor
+                        .getMessage("yukon.exception.processingException.invalidDirection", dataRow.getDirection()));
                     throw new ProcessingException(error, "invalidDirection", dataRow.getDirection());
                 }
                 List<FdrDirection> supportedDirections = dataRow.getInterface().getSupportedDirectionsList();

@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpHeaders;
@@ -281,7 +282,7 @@ public class FdrTranslationManagerController {
     
     private ResponseEntity<Map<String, ? extends Object>> prepareErrorReturn(YukonUserContext userContext, MessageSourceResolvable resolvable) {
         MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        String errorMessage = messageSourceAccessor.getMessage(resolvable);
+        String errorMessage = StringEscapeUtils.escapeXml11(messageSourceAccessor.getMessage(resolvable));
         Map<String, String> responseMap = Collections.singletonMap("error", errorMessage);
         
         HttpHeaders responseHeaders = new HttpHeaders();
