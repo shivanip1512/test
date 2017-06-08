@@ -35,8 +35,7 @@
                 <c:forEach var="result" items="${results}">
                     <c:set var="clazz" value="${result.success ? 'success' : 'error'}"/>
                     <li>
-                         <cti:msg2 var="errorMessage" key="${result.importResultMessage}"/>
-                         <span class="${clazz}">${fn:escapeXml(errorMessage)}</span>
+                         <span class="${clazz}"><cti:msg2 key="${result.importResultMessage}" htmlEscape="true"/></span>
                     </li>
                 </c:forEach>
             </ol>

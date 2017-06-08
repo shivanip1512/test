@@ -17,10 +17,7 @@
         <c:forEach var="e" items="${exceptionRowNumberMap}">
             <tr>
                 <td><i:inline key=".line" arguments="${e.key + 2}"/></td>
-                <td>
-                    <cti:msg2 var="errorMessage" key="${e.value}"/>
-                    <span>${fn:escapeXml(errorMessage)}</span>
-                </td>
+                <td><cti:msg2 key="${e.value}" htmlEscape="true"/></td>
             </tr>
         </c:forEach>
     </tbody>

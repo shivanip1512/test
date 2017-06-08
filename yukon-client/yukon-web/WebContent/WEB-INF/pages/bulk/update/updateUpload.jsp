@@ -34,8 +34,7 @@
                 <c:if test="${not empty headersErrorResolverList}">
                     <div class="stacked lite-container scroll-md">
                         <c:forEach var="headersErrorResolver" items="${headersErrorResolverList}">
-                            <cti:msg var="errorMessage" key="${headersErrorResolver}"/>
-                            <div class="error">${fn:escapeXml(errorMessage)}</div>
+                            <div class="error"><cti:msg key="${headersErrorResolver}" htmlEscape="true"/></div>
                         </c:forEach>
                     </div>
                 </c:if>
