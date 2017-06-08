@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.data.collection.dao.RecentPointValueDao.SortBy;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
@@ -22,6 +21,7 @@ import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.web.amr.usageThresholdReport.dao.ThresholdReportDao;
+import com.cannontech.web.amr.usageThresholdReport.dao.ThresholdReportDao.SortBy;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportCriteria;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFilter;

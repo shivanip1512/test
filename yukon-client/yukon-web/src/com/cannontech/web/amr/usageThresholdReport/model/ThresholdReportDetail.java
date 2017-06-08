@@ -13,6 +13,7 @@ public class ThresholdReportDetail {
     private Double delta;
     private PointValueQualityHolder earliestReading;
     private PointValueQualityHolder latestReading;
+    private DataAvailability availability;
 
     public PaoIdentifier getPaoIdentifier() {
         return paoIdentifier;
@@ -82,11 +83,23 @@ public class ThresholdReportDetail {
 
     public void calculateDelta() {
         if (earliestReading != null && latestReading != null) {
-            this.delta = latestReading.getValue() - earliestReading.getValue();
+            this.setDelta(latestReading.getValue() - earliestReading.getValue());
         }
+    }
+    
+    public DataAvailability getAvailability() {
+        return availability;
+    }
+
+    public void setAvailability(DataAvailability availability) {
+        this.availability = availability;
     }
 
     public Double getDelta() {
         return delta;
+    }
+
+    public void setDelta(Double delta) {
+        this.delta = delta;
     }
 }

@@ -37,6 +37,7 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.amr.usageThresholdReport.dao.ThresholdReportDao.SortBy;
 import com.cannontech.web.amr.usageThresholdReport.model.DataAvailability;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdDescriptor;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
@@ -44,6 +45,7 @@ import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFilter;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFormCriteria;
 import com.cannontech.web.amr.usageThresholdReport.service.ThresholdReportService;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/usageThresholdReport/*")
@@ -122,9 +124,10 @@ public class UsageThresholdReportController {
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
+        filter.setAvailability(Lists.newArrayList(DataAvailability.values()));
         SearchResults<ThresholdReportDetail> reportDetail =
-                reportService.getReportDetail(reportId, filter, paging, null, dir);
-        System.out.println(reportDetail);
+            reportService.getReportDetail(reportId, filter, paging, sortBy.getValue(), dir);
+        System.out.println(reportDetail.getCount());
         model.addAttribute("detail", reportDetail);
         return "usageThresholdReport/deviceTable.jsp";
 
@@ -132,11 +135,21 @@ public class UsageThresholdReportController {
     
     public enum DetailSortBy implements DisplayableEnum {
 
-        deviceName,
-        meterNumber,
-        deviceType,
-        serialNumberAddress,
-        delta;
+        deviceName(SortBy.DEVICE_NAME),
+        meterNumber(SortBy.METER_NUMBER),
+        deviceType(SortBy.DEVICE_TYPE),
+        serialNumberAddress(SortBy.SERIAL_NUMBER_ADDRESS),
+        delta(SortBy.DELTA);
+        
+        private DetailSortBy(SortBy value) {
+            this.value = value;
+        }
+
+        private final SortBy value;
+
+        public SortBy getValue() {
+            return value;
+        }
 
         @Override
         public String getFormatKey() {
