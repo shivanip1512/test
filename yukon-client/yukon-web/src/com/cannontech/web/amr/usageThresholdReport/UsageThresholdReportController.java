@@ -170,7 +170,9 @@ public class UsageThresholdReportController {
         meterNumber(SortBy.METER_NUMBER),
         deviceType(SortBy.DEVICE_TYPE),
         serialNumberAddress(SortBy.SERIAL_NUMBER_ADDRESS),
-        delta(SortBy.DELTA);
+        delta(SortBy.DELTA),
+        earliestReading(null),
+        latestReading(null);
         
         private DetailSortBy(SortBy value) {
             this.value = value;

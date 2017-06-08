@@ -9,6 +9,22 @@
 
     <div class="column-12-12 clearfix">
         <div class="column one" style="border:1px solid #ccc;padding:5px;">
+            <tags:nameValueContainer2>
+                <tags:nameValue2 nameKey=".attribute">
+                     <cti:msg2 key="${criteria.attribute.formatKey}"/>
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".startDate">
+                    <cti:formatDate type="DATE" value="${criteria.startDate}"/>
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".endDate">
+                    <cti:formatDate type="DATE" value="${criteria.endDate}"/>
+                </tags:nameValue2>
+                <tags:nameValue2 nameKey=".reportRunDate">
+                    <cti:formatDate type="DATEHM_12" value="${criteria.runTime}"/>
+                </tags:nameValue2>
+            </tags:nameValueContainer2>
+        </div>
+        <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;">
             <form:form id="filter-results-form" action="results" method="get" commandName="filter">
                 <cti:csrfToken/>
                 <input type="hidden" name="reportId" value="${criteria.reportId}"/>
@@ -35,22 +51,6 @@
                     <cti:button classes="primary action js-filter" nameKey="filter" />
                 </div>
             </form:form>
-        </div>
-        <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;">
-            <tags:nameValueContainer2>
-                <tags:nameValue2 nameKey=".attribute">
-                     <cti:msg2 key="${criteria.attribute.formatKey}"/>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".startDate">
-                    <cti:formatDate type="DATE" value="${criteria.startDate}"/>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".endDate">
-                    <cti:formatDate type="DATE" value="${criteria.endDate}"/>
-                </tags:nameValue2>
-                <tags:nameValue2 nameKey=".reportRunDate">
-                    <cti:formatDate type="DATEHM_12" value="${criteria.runTime}"/>
-                </tags:nameValue2>
-            </tags:nameValueContainer2>
         </div>
     </div>
     

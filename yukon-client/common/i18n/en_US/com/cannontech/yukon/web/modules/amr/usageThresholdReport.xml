@@ -33,6 +33,10 @@
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.deviceType">Device Type</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.serialNumberAddress">Serial Number/Address</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.delta">Delta</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.earliestReading">Earliest Reading</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.latestReading">Latest Reading</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.noRecentReadingFound">No recent reading found</entry>
+    
     
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.attribute">Attribute</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.startDate">Start Date</entry>

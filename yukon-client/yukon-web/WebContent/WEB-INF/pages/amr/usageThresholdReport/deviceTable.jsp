@@ -61,7 +61,9 @@
             <tags:sort column="${meterNumber}" />                
             <tags:sort column="${deviceType}" />                
             <tags:sort column="${serialNumberAddress}" />
-            <tags:sort column="${delta}" />                
+            <tags:sort column="${delta}" />    
+            <tags:sort column="${earliestReading}" />                
+            <tags:sort column="${latestReading}" />                            
             <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
             <c:forEach var="device" items="${detail.resultList}">
                 <c:set var="deviceId" value="${device.paoIdentifier.paoId}"/>
@@ -72,6 +74,44 @@
                     <td>${device.paoIdentifier.paoType.paoTypeName}</td>
                     <td>${device.addressSerialNumber}</td>
                     <td>${device.delta}</td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${device.earliestReading != null}">
+                                <cti:uniqueIdentifier var="popupId" prefix="historical-readings-"/>
+                                <cti:url var="historyUrl" value="/meter/historicalReadings/view">
+                                    <cti:param name="pointId" value="${device.earliestReading.id}"/>
+                                    <cti:param name="deviceId" value="${deviceId}"/>
+                                </cti:url>
+                                <a href="javascript:void(0);" data-popup="#${popupId}" class="${pageScope.classes}">
+                                    <cti:pointValueFormatter format="VALUE_UNIT" value="${device.earliestReading}" />
+                                    &nbsp;<cti:formatDate type="BOTH" value="${device.earliestReading.pointDataTimeStamp}"/>
+                                </a>
+                                <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
+                            </c:when>
+                            <c:otherwise>
+                                <cti:msg2 key=".noRecentReadingFound"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
+                    <td>
+                        <c:choose>
+                            <c:when test="${device.latestReading != null}">
+                                <cti:uniqueIdentifier var="popupId" prefix="historical-readings-"/>
+                                <cti:url var="historyUrl" value="/meter/historicalReadings/view">
+                                    <cti:param name="pointId" value="${device.latestReading.id}"/>
+                                    <cti:param name="deviceId" value="${deviceId}"/>
+                                </cti:url>
+                                <a href="javascript:void(0);" data-popup="#${popupId}" class="${pageScope.classes}">
+                                    <cti:pointValueFormatter format="VALUE_UNIT" value="${device.latestReading}" />
+                                    &nbsp;<cti:formatDate type="BOTH" value="${device.latestReading.pointDataTimeStamp}"/>
+                                </a>
+                                <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
+                            </c:when>
+                            <c:otherwise>
+                                <cti:msg2 key=".noRecentReadingFound"/>
+                            </c:otherwise>
+                        </c:choose>
+                    </td>
                     <td>
                         <cm:dropdown icon="icon-cog">
                             <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
@@ -95,14 +135,7 @@
                                 <cti:param name="collectionType" value="idList"/>
                                 <cti:param name="idList.ids" value="${deviceId}"/>           
                             </cti:url>
-                            <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>      
-                            <cti:url var="historyUrl" value="/meter/historicalReadings/view">
-                                <cti:param name="pointId" value="${device.earliestReading.id}"/>
-                                <cti:param name="deviceId" value="${deviceId}"/>
-                            </cti:url> 
-                            <cti:uniqueIdentifier var="popupId" prefix="historical-readings-"/>
-                            <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
-                            <cm:dropdownOption label="Reading History" data-popup="#${popupId}"/>           
+                            <cm:dropdownOption icon="icon-read" key=".readAttribute" href="${readUrl}" newTab="true"/>              
                             <cti:url var="commandUrl" value="/group/commander/collectionProcessing">
                                 <cti:param name="collectionType" value="idList"/>
                                 <cti:param name="idList.ids" value="${deviceId}"/>               
