@@ -11,6 +11,17 @@ yukon.ami.usageThresholdReport = (function () {
     var 
     
     _initialized = false,
+    
+    _filterResults = function () {
+        $('#filter-results-form').ajaxSubmit({
+            success: function(data, status, xhr, $form) {
+                $('#usage-device-table').html(data);
+            },
+            error: function(xhr, status, error, $form) {
+                $('#usage-device-table').html(xhr.responseText);
+            }
+        });
+    },
 
     mod = {
             
@@ -18,16 +29,11 @@ yukon.ami.usageThresholdReport = (function () {
             
             if (_initialized) return;
             
+            _filterResults();
+            
             /** Filter the results */
             $(document).on('click', '.js-filter', function (ev) {
-                $('#filter-results-form').ajaxSubmit({
-                    success: function(data, status, xhr, $form) {
-                        $('#usage-device-table').html(data);
-                    },
-                    error: function(xhr, status, error, $form) {
-                        $('#usage-device-table').html(xhr.responseText);
-                    }
-                });
+                _filterResults();
             });
             
             _initialized = true;

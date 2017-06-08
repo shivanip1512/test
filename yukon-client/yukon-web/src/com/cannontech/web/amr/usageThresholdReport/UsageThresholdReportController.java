@@ -33,6 +33,7 @@ import com.cannontech.common.device.groups.service.TemporaryDeviceGroupService;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.i18n.DisplayableEnum;
 import com.cannontech.common.i18n.MessageSourceAccessor;
+import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
@@ -118,10 +119,10 @@ public class UsageThresholdReportController {
     }
     
     @RequestMapping(value="results", method = RequestMethod.GET)
-    public String filterResults(int reportId, String[] deviceSubGroups, Boolean includeDisabled, 
+    public String filterResults(int reportId, String[] deviceSubGroups, boolean includeDisabled, 
                                 ThresholdDescriptor thresholdDescriptor, double threshold, DataAvailability[] availability,
                                 @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
-                                PagingParameters paging, ModelMap model, YukonUserContext userContext) {
+                                @DefaultItemsPerPage(value=250) PagingParameters paging, ModelMap model, YukonUserContext userContext) {
         ThresholdReportFilter filter = new ThresholdReportFilter();
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         List<DeviceGroup> subGroups = new ArrayList<>();
@@ -129,7 +130,9 @@ public class UsageThresholdReportController {
             for (String subGroup : deviceSubGroups) {
                 subGroups.add(deviceGroupService.resolveGroupName(subGroup));
             }
-            filter.setGroups(subGroups);
+            if (!subGroups.isEmpty()) {
+                filter.setGroups(subGroups);
+            }
         }
         filter.setIncludeDisabled(includeDisabled);
         filter.setThresholdDescriptor(thresholdDescriptor);

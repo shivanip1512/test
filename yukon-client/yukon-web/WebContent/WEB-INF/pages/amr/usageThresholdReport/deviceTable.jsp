@@ -146,7 +146,7 @@
                 </tr>
             </c:forEach>
         </table>
-        <tags:pagingResultsControls result="${detail}" adjustPageCount="true"/>
+        <tags:pagingResultsControls result="${detail}" adjustPageCount="true" thousands="true"/>
 
     </div>
 
