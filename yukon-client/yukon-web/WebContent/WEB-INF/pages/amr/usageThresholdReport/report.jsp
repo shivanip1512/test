@@ -32,7 +32,7 @@
             </tags:nameValueContainer2>
             
             <div class="page-action-area">
-                <cti:button type="submit" nameKey="run" classes="primary button"/>
+                <cti:button type="submit" nameKey="run" classes="primary button" busy="true"/>
             </div>
         </form:form>
         

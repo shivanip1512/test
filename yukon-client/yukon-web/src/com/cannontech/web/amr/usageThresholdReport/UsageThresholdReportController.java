@@ -112,8 +112,12 @@ public class UsageThresholdReportController {
         } else {
             criteria.setDescription(collection.getDeviceCount() + " devices");
         }
+        ThresholdReportFilter filter = new ThresholdReportFilter();
+        filter.setAvailability(Lists.newArrayList(DataAvailability.values()));
         model.addAttribute("filter", new ThresholdReportFilter());
         int reportId = reportService.createThresholdReport(criteria, collection.getDeviceList());
+        ThresholdReport report = reportService.getReportDetail(reportId, filter, PagingParameters.of(250, 1), DetailSortBy.deviceName.value, Direction.asc);
+        model.addAttribute("report", report);
         criteria.setReportId(reportId);
         model.addAttribute("criteria", criteria);
         return "usageThresholdReport/results.jsp";
@@ -148,6 +152,7 @@ public class UsageThresholdReportController {
         }
         filter.setAvailability(Lists.newArrayList(DataAvailability.values()));
         ThresholdReport report = reportService.getReportDetail(reportId, filter, paging, sortBy.getValue(), dir);
+        model.addAttribute("report", report);
         SearchResults<ThresholdReportDetail> reportDetail = report.getDetail();
         System.out.println(reportDetail.getCount());
         model.addAttribute("detail", reportDetail);
@@ -165,7 +170,6 @@ public class UsageThresholdReportController {
         model.addAttribute("threshold", threshold);
         model.addAttribute("availability", availability);
         return "usageThresholdReport/deviceTable.jsp";
-
     }
     
     public enum DetailSortBy implements DisplayableEnum {

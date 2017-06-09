@@ -5,6 +5,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="cm" tagdir="/WEB-INF/tags/contextualMenu" %>
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <cti:msgScope paths="modules.amr.usageThresholdReport.results">
 
@@ -68,12 +69,15 @@
             <c:forEach var="device" items="${detail.resultList}">
                 <c:set var="deviceId" value="${device.paoIdentifier.paoId}"/>
                 <tr>
-                    <td></td>
+                    <td>
+                        <cti:msg2 var="availabilityText" key=".dataAvailability.${device.availability}"/>
+                        <div class="small-circle" title="${availabilityText}" style="background-color:${device.availability.color}"></div>
+                    </td>
                     <td><cti:paoDetailUrl yukonPao="${device.paoIdentifier}" newTab="true">${device.deviceName}</cti:paoDetailUrl></td>
                     <td>${device.meterNumber}</td>
                     <td>${device.paoIdentifier.paoType.paoTypeName}</td>
                     <td>${device.addressSerialNumber}</td>
-                    <td>${device.delta}</td>
+                    <td><fmt:formatNumber pattern="###.#" value="${device.delta}"/></td>
                     <td>
                         <c:choose>
                             <c:when test="${device.earliestReading != null}">

@@ -8,7 +8,7 @@
 <cti:standardPage module="amr" page="usageThresholdReport.results">
 
     <div class="column-12-12 clearfix">
-        <div class="column one" style="border:1px solid #ccc;padding:5px;">
+        <div class="column one" style="border:1px solid #ccc;padding:5px;height:180px;">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".attribute">
                      <cti:msg2 key="${criteria.attribute.formatKey}"/>
@@ -22,9 +22,14 @@
                 <tags:nameValue2 nameKey=".reportRunDate">
                     <cti:formatDate type="DATEHM_12" value="${criteria.runTime}"/>
                 </tags:nameValue2>
+                <tags:nameValue2 nameKey=".availabilityCounts">
+                    <c:forEach var="availability" items="${dataAvailabilityOptions}">
+                        <span class="badge" style="width:60px;background-color:${availability.color}">${report.getAvailabilityCount(availability)}</span>
+                    </c:forEach>
+                </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>
-        <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;">
+        <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;height:180px;">
             <form:form id="filter-results-form" action="results" method="get" commandName="filter">
                 <cti:csrfToken/>
                 <input type="hidden" name="reportId" value="${criteria.reportId}"/>
@@ -42,7 +47,7 @@
                     <tags:nameValue2 nameKey=".filter.dataAvailability">
                         <div class="button-group stacked">
                             <c:forEach var="availability" items="${dataAvailabilityOptions}">
-                                <tags:check name="availability" key=".dataAvailability.${availability}" classes="M0" value="${availability}" checked="true"></tags:check>
+                                <tags:check name="availability" key=".dataAvailability.${availability}" classes="M0" value="${availability}" checked="true" buttonTextStyle="color:${availability.color}"></tags:check>
                             </c:forEach>
                         </div>
                     </tags:nameValue2>
