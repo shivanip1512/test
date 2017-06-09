@@ -139,28 +139,37 @@ public class OperatorThermostatManualController {
     }
 	
 	// SAVE
-	@RequestMapping("save")
-    public String save(String thermostatIds, String mode, String fan, String temperatureUnit, Double heatTemperature, Double coolTemperature,
-                       YukonUserContext userContext, HttpServletRequest request, ModelMap modelMap,
-                       FlashScope flashScope, AccountInfoFragment accountInfoFragment) {
+    @RequestMapping("save")
+    public String save(String thermostatIds, String mode, String fan, String temperatureUnit, Double heatTemperature,
+            Double coolTemperature, YukonUserContext userContext, HttpServletRequest request, ModelMap modelMap,
+            FlashScope flashScope, AccountInfoFragment accountInfoFragment) {
 
-	    boolean autoModeEnabledCommand = ServletRequestUtils.getBooleanParameter(request, "autoModeEnabled", false);
-	    
-	    Temperature heatTemp = null;
-	    if (heatTemperature != null) 
-	        heatTemp = thermostatService.getTempOrDefault(heatTemperature, temperatureUnit);
+        boolean autoModeEnabledCommand = ServletRequestUtils.getBooleanParameter(request, "autoModeEnabled", false);
+        List<Integer> thermostatIdsList =
+            operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
 
-	    Temperature coolTemp = null;
-	    if (coolTemperature != null) 
-	        coolTemp = thermostatService.getTempOrDefault(coolTemperature, temperatureUnit);
-	    
-	    executeManualEvent(thermostatIds, mode, fan, temperatureUnit, heatTemp, coolTemp, autoModeEnabledCommand, userContext, request, modelMap, flashScope, accountInfoFragment);
-		
-	    if (autoModeEnabledCommand) {
-	        return "redirect:autoEnabledView";
-	    }
-	    
-	    return "redirect:view";
+        if ((heatTemperature != null && Double.isNaN(heatTemperature))
+            || (coolTemperature != null && Double.isNaN(coolTemperature))) {
+            flashScope.setError(new YukonMessageSourceResolvable(
+                "yukon.dr.consumer.manualevent.result.OPERATOR_MANUAL_INVALID_TEMP_VALUE", String.valueOf(Double.NaN)));
+        } else {
+            Temperature heatTemp = null;
+            if (heatTemperature != null)
+                heatTemp = thermostatService.getTempOrDefault(heatTemperature, temperatureUnit);
+
+            Temperature coolTemp = null;
+            if (coolTemperature != null)
+                coolTemp = thermostatService.getTempOrDefault(coolTemperature, temperatureUnit);
+
+            executeManualEvent(thermostatIdsList, mode, fan, temperatureUnit, heatTemp, coolTemp,
+                autoModeEnabledCommand, userContext, request, modelMap, flashScope, accountInfoFragment);
+        }
+
+        if (autoModeEnabledCommand) {
+            return "redirect:autoEnabledView";
+        }
+
+        return "redirect:view";
     }
 	
 	@RequestMapping("runProgram")
@@ -190,11 +199,10 @@ public class OperatorThermostatManualController {
 	    return "redirect:/stars/operator/thermostatSchedule/savedSchedules";
     }
 	
-    private void executeManualEvent(String thermostatIds, String mode, String fan, String temperatureUnit, Temperature heatTemp, 
+    private void executeManualEvent(List<Integer> thermostatIdsList, String mode, String fan, String temperatureUnit, Temperature heatTemp, 
                                     Temperature coolTemp, boolean autoModeEnabledCommand, YukonUserContext userContext, 
                                     HttpServletRequest request, ModelMap modelMap, FlashScope flashScope, AccountInfoFragment accountInfoFragment) {
-
-        List<Integer> thermostatIdsList = operatorThermostatHelper.setupModelMapForThermostats(thermostatIds, accountInfoFragment, modelMap);
+        
 		CustomerAccount customerAccount = customerAccountDao.getById(accountInfoFragment.getAccountId());
 
         thermostatService.logThermostatManualSaveAttempt(thermostatIdsList, userContext, customerAccount,
