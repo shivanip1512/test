@@ -225,6 +225,7 @@ public class InventoryController {
 
         if (type.isZigbee()) {
             model.addAttribute("showMacAddress", true);
+            model.addAttribute("macAddressEditable", true);
             if (!type.isGateway()) {
                 model.addAttribute("showInstallCode", true);
             } else {

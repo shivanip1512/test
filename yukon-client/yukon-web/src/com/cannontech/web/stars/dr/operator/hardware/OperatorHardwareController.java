@@ -733,6 +733,9 @@ public class OperatorHardwareController {
             model.addAttribute("macAddressEditable", true);
             model.addAttribute("deviceVendorUserIdEditable", true);
         }
+        if (type.isZigbee()) {
+            model.addAttribute("macAddressEditable", true);
+        }
     }
 
     private void setupHardwareViewEditModel(AccountInfoFragment accountInfoFragment, Hardware hardware, ModelMap model,
