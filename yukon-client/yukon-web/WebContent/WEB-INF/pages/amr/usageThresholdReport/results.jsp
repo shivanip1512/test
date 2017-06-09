@@ -24,7 +24,8 @@
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".availabilityCounts">
                     <c:forEach var="availability" items="${dataAvailabilityOptions}">
-                        <span class="badge" style="width:60px;background-color:${availability.color}">${report.getAvailabilityCount(availability)}</span>
+                        <cti:msg2 var="availabilityText" key=".dataAvailability.${availability}"/>
+                        <span class="badge" style="width:60px;background-color:${availability.color}" title="${availabilityText}">${report.getAvailabilityCount(availability)}</span>
                     </c:forEach>
                 </tags:nameValue2>
             </tags:nameValueContainer2>

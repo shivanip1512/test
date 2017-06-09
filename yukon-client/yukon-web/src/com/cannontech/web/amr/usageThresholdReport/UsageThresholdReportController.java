@@ -158,7 +158,8 @@ public class UsageThresholdReportController {
         model.addAttribute("detail", reportDetail);
         List<SimpleDevice> devices = new ArrayList<>();
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
-        reportDetail.getResultList().forEach(item -> devices.add(deviceDao.getYukonDevice(item.getPaoIdentifier().getPaoId())));
+        ThresholdReport allDevicesReport = reportService.getReportDetail(reportId, filter, PagingParameters.EVERYTHING, sortBy.getValue(), dir);
+        allDevicesReport.getDetail().getResultList().forEach(item -> devices.add(deviceDao.getYukonDevice(item.getPaoIdentifier().getPaoId())));
         deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
         
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
