@@ -134,7 +134,8 @@ public class DataCollectionController {
         SearchResults<DeviceCollectionDetail> detail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled, Lists.newArrayList(ranges), paging, sortBy.getValue(), dir);
         List<SimpleDevice> devices = new ArrayList<>();
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
-        detail.getResultList().forEach(item -> devices.add(deviceDao.getYukonDevice(item.getPaoIdentifier().getPaoId())));
+        SearchResults<DeviceCollectionDetail> allDetail = dataCollectionWidgetService.getDeviceCollectionResult(group, subGroups, includeDisabled, Lists.newArrayList(ranges), PagingParameters.EVERYTHING, sortBy.getValue(), dir);
+        allDetail.getResultList().forEach(item -> devices.add(deviceDao.getYukonDevice(item.getPaoIdentifier().getPaoId())));
         deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
         
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);
