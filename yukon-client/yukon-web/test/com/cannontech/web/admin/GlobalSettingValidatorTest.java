@@ -1,6 +1,7 @@
 package com.cannontech.web.admin;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +43,19 @@ public class GlobalSettingValidatorTest {
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
         assertFalse(errors.hasErrors());
+        
+        command = new GlobalSettingsEditorBean();
+        command.setCategory(GlobalSettingSubCategory.YUKON_SERVICES);
+        globalSettings.put(GlobalSettingType.NETWORK_MANAGER_ADDRESS, "htt://127.0.0.1");
+        globalSettings.put(GlobalSettingType.RFN_FIRMWARE_UPDATE_SERVER, "http://127.0.0");
+        globalSettings.put(GlobalSettingType.JMS_BROKER_HOST, "127.0.0/1");
+        globalSettings.put(GlobalSettingType.SMTP_HOST, "SMTP))SMTP");
+        globalSettings.put(GlobalSettingType.MAIL_FROM_ADDRESS, "testeaton.com");
+        command.setValues(globalSettings);
+
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+        service.doValidation(command, errors);
+        assertTrue(errors.hasErrors());
 
         // Validation for DR category
         command = new GlobalSettingsEditorBean();
@@ -54,6 +68,17 @@ public class GlobalSettingValidatorTest {
 
         service.doValidation(command, errors);
         assertFalse(errors.hasErrors());
+        
+        command = new GlobalSettingsEditorBean();
+        command.setCategory(GlobalSettingSubCategory.DR);
+        globalSettings.put(GlobalSettingType.ECOBEE_SERVER_URL, "http//127.0.0.1");
+        globalSettings.put(GlobalSettingType.HONEYWELL_SERVER_URL, "htt://127.0.0.1");
+        command.setValues(globalSettings);
+
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+
+        service.doValidation(command, errors);
+        assertTrue(errors.hasErrors());
 
         // Validation for AUTHENTICATION category
         command.setCategory(GlobalSettingSubCategory.AUTHENTICATION);
@@ -66,6 +91,16 @@ public class GlobalSettingValidatorTest {
         service.doValidation(command, errors);
         assertFalse(errors.hasErrors());
 
+        command.setCategory(GlobalSettingSubCategory.AUTHENTICATION);
+        globalSettings.put(GlobalSettingType.SERVER_ADDRESS, "/127.0.0.1");
+        globalSettings.put(GlobalSettingType.LDAP_SERVER_ADDRESS, "127.0.0.1?");
+        globalSettings.put(GlobalSettingType.AD_SERVER_ADDRESS, "12*.0.0.1");
+        command.setValues(globalSettings);
+
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+        service.doValidation(command, errors);
+        assertTrue(errors.hasErrors());
+        
         // Validation for MISC
         command.setCategory(GlobalSettingSubCategory.MISC);
         globalSettings.put(GlobalSettingType.CONTACT_EMAIL, "test@eaton.com");
@@ -76,5 +111,16 @@ public class GlobalSettingValidatorTest {
         errors = new BeanPropertyBindingResult(command, "ValidationResult");
         service.doValidation(command, errors);
         assertFalse(errors.hasErrors());
+        
+        command.setCategory(GlobalSettingSubCategory.MISC);
+        globalSettings.put(GlobalSettingType.CONTACT_EMAIL, "test@eatoncom");
+        globalSettings.put(GlobalSettingType.SYSTEM_TIMEZONE, "AmericaChicago");
+        globalSettings.put(GlobalSettingType.HTTP_PROXY, "12.12.141.228080");
+        command.setValues(globalSettings);
+
+        errors = new BeanPropertyBindingResult(command, "ValidationResult");
+        service.doValidation(command, errors);
+        assertTrue(errors.hasErrors());
+
     }
 }
