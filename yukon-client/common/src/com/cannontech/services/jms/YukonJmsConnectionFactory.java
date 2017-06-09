@@ -5,6 +5,9 @@ import static com.cannontech.common.config.MasterConfigString.JMS_CLIENT_CONNECT
 import static com.cannontech.common.config.MasterConfigString.JMS_INTERNAL_MESSAGING_CONNECTION;
 import static com.cannontech.common.config.MasterConfigString.JMS_SERVER_BROKER_LISTEN_CONNECTION;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 import javax.jms.ConnectionFactory;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -85,10 +88,17 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
                 }
                 
                 if (!CtiUtilities.isRunningAsClient()) {
+                    String appName = applicationName;
+                    try {
+                        appName = applicationName + InetAddress.getLocalHost().getHostName();
+                    } catch (UnknownHostException e) {
+                        log.info("Could not resolve host name.");
+                    }
+                    
                     String clientBrokerConnection = 
                             configurationSource.getString(JMS_CLIENT_BROKER_CONNECTION, serverListenConnection);
                     ClientEmbeddedBroker clientEmbeddedBroker =
-                            new ClientEmbeddedBroker(applicationName, clientBrokerConnection);
+                            new ClientEmbeddedBroker(appName, clientBrokerConnection);
                     clientEmbeddedBroker.start();
                     log.info("created Server ConnectionFactory at " + clientBrokerConnection);
                     return clientEmbeddedBroker.getConnectionFactory();
