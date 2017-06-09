@@ -613,7 +613,7 @@ The devices in this category have reported all other data accumulated during the
 The devices in this category have not reported data accumulated during the expected RF Broadcast Performance time interval for the selected day.
 ]]></entry>
 
-<!-- honeywell audit report -->
+<!-- Recent Event Participation -->
 <entry key="yukon.web.modules.dr.home.controlAuditRecentEvents.title">Recent Event Participation</entry>
 <entry key="yukon.web.modules.dr.home.controlAuditRecentEvents.infoText"><![CDATA[<span style="background-color:green; color:white ;font-weight:bold">Confirmed Success</span>
 <br>
@@ -641,6 +641,7 @@ The devices in this category have not reported DR message for the event.
 <entry key="yukon.web.modules.dr.controlaudit.details.download">Download</entry>
 <entry key="yukon.web.modules.dr.controlaudit.details.confirmed">Confirmed</entry>
 <entry key="yukon.web.modules.dr.controlaudit.details.unreported">Unreported</entry>
+<entry key="yukon.web.modules.dr.controlaudit.details.noRecentEvents">No Recent Events</entry>
 
 <!-- Demand Response Quick Search -->
 <entry key="yukon.web.modules.dr.searchResults.pageTitle">Demand Response Quick Search</entry>

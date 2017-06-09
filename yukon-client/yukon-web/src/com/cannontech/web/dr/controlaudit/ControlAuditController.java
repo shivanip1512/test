@@ -61,11 +61,11 @@ public class ControlAuditController {
         }
         Range<Instant> range = (from != null && to != null) ? Range.inclusiveExclusive(from, toFullDay) : null;
         List<ControlAuditStats> result = controlEventService.getControlAuditStats(range, paging);
-        int totalCount = result != null ? result.size() : 0;
+        int totalCount = result.size();
         SearchResults<ControlAuditStats> auditEventMessageStats =
             SearchResults.pageBasedForSublist(result, paging, totalCount);
         model.addAttribute("auditEventMessageStats", auditEventMessageStats);
-        if (from == null) {
+        if (from == null && result.size() > 0) {
             ControlAuditStats controlAuditStats = result.get(0);
             from = controlAuditStats.getStartTime();
         }

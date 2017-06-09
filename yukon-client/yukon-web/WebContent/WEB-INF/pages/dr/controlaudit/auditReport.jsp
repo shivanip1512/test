@@ -9,6 +9,10 @@
 
 <cti:msgScope paths="modules.dr.home, modules.dr, modules.dr.controlaudit.details">
     <tags:sectionContainer2 nameKey="controlAuditRecentEvents">
+    <c:if test="${empty controlAuditSummary}">
+        <span class="empty-list"><i:inline key=".noRecentEvents"/></span>
+    </c:if>
+    <c:if test="${!empty controlAuditSummary}">
         <div class="scroll-lg">
             <table class="compact-results-table row-highlighting has-actions dashed">
                 <thead>
@@ -47,5 +51,6 @@
         <div class="action-area">
             <a href="<cti:url value="/dr/controlaudit/details"/>"><i:inline key=".details" /></a>
         </div>
+    </c:if>
     </tags:sectionContainer2>
 </cti:msgScope>
