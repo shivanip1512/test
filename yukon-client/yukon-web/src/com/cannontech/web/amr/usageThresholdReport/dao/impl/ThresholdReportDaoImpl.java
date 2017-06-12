@@ -203,7 +203,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
                     sql.append(OR);
                     sql.append("(");
                     sql.append("FirstTimestamp").gte(partialRange.getMin());
-                    sql.append("AND LastTimestamp").lt(partialRange.getMax());
+                    sql.append("OR LastTimestamp").lt(partialRange.getMax());
                     sql.append(")");
                     log.debug(
                         availability + ":FirstTimestamp >= " + InstantRangeLogHelper.getLogString(partialRange.getMin())
