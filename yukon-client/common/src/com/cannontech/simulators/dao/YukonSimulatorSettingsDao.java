@@ -9,8 +9,8 @@ public interface YukonSimulatorSettingsDao {
      *
      * @return true iff initialization and population of YukonSimulatorSettings table is successful.
      */
-    public boolean initYukonSimulatorSettings();
-    
+    public void initYukonSimulatorSettings();
+
     /**
      * Sets the system value as specified.
      * 

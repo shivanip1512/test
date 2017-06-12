@@ -14,12 +14,11 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
-import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
 import com.cannontech.dr.rfn.service.impl.RfnMeterDataSimulatorServiceImpl;
 import com.cannontech.simulators.SimulatorType;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
-import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.simulators.handler.SimulatorMessageHandler;
+import com.cannontech.simulators.startup.service.SimulatorStartupSettingsService;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -32,6 +31,7 @@ public class SimulatorsService {
     
     @Autowired private ConfigurationSource configSource;
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
+    @Autowired private SimulatorStartupSettingsService simulatorStartupSettingsService;
     @Autowired private RfnMeterDataSimulatorServiceImpl rfnMeterDataSimulatorServiceImpl;
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private Set<SimulatorMessageHandler> messageHandlers;
@@ -70,17 +70,12 @@ public class SimulatorsService {
     
     private void autoStartSimulators() {
         if (configSource.getBoolean(MasterConfigBoolean.DEVELOPMENT_MODE)) {
-            if (yukonSimulatorSettingsDao.initYukonSimulatorSettings()) {
-                for (SimulatorType simType : SimulatorType.values()) {
-                    if (simType == SimulatorType.RFN_METER) {
-                        SimulatorSettings settings = new SimulatorSettings();
-                        settings.setPaoType(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_METER_TYPE));
-                        settings.setPercentOfDuplicates(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE));
-                        settings.setReportingInterval(ReportingInterval.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_REPORTING_INTERVAL)));
-                        settings.setRunOnStartup(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_RUN_ON_STARTUP));
-                        if (settings.getRunOnStartup()) {
-                            rfnMeterDataSimulatorServiceImpl.startSimulator(settings);
-                        }
+            yukonSimulatorSettingsDao.initYukonSimulatorSettings();
+            for (SimulatorType simType : SimulatorType.values()) {
+                if (simType == SimulatorType.RFN_METER) {
+                    SimulatorSettings settings = rfnMeterDataSimulatorServiceImpl.getCurrentSettings();
+                    if (simulatorStartupSettingsService.getRunOnStartup(simType)) {
+                        rfnMeterDataSimulatorServiceImpl.startSimulator(settings);
                     }
                 }
             }

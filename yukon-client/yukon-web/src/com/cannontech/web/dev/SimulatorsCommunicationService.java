@@ -18,7 +18,7 @@ import com.cannontech.simulators.message.request.SimulatorRequest;
 import com.cannontech.simulators.message.response.SimulatorResponse;
 
 /**
- * Sends requests to and receives responess from the Yukon simulator service.
+ * Sends requests to and receives responses from the Yukon simulator service.
  */
 public class SimulatorsCommunicationService {
     private static final Logger log = YukonLogManager.getLogger(SimulatorsCommunicationService.class);

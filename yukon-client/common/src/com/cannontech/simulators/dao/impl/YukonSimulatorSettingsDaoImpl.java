@@ -24,59 +24,32 @@ public class YukonSimulatorSettingsDaoImpl implements YukonSimulatorSettingsDao 
     private final Logger log = YukonLogManager.getLogger(YukonSimulatorSettingsDaoImpl.class);
 
     @Override
-    public boolean initYukonSimulatorSettings() {
+    public void initYukonSimulatorSettings() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
-        if (databaseVendor.isOracle()) {
-            sql.append("SELECT COUNT(*)");
-            sql.append("FROM user_tables");
-            sql.append("WHERE table_name = 'YUKONSIMULATORSETTINGS'");
-        } else {
-            sql.append("SELECT COUNT(*)");
-            sql.append("FROM information_schema.tables");
-            sql.append("WHERE table_name = 'YUKONSIMULATORSETTINGS'");
-        }
-        int result = yukonJdbcTemplate.queryForInt(sql);
-        if (result == 1) {
-            log.debug("YukonSimulatorSettings table exists in the database.");
-            return populateYukonSimulatorSettingsTable();
-        } else {
-            log.debug("YukonSimulatorSettings table doesn't exist in the database, attempting to create it...");
-            return createYukonSimulatorSettingsTable(databaseVendor);
-        }
-    }
-
-    private boolean createYukonSimulatorSettingsTable(DatabaseVendor databaseVendor) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        if (databaseVendor.isOracle()) {
-            sql.append("CREATE TABLE YukonSimulatorSettings");
-            sql.append("(Name VARCHAR2(50) NOT NULL,");
-            sql.append("Value CLOB NOT NULL,");
-            sql.append("CONSTRAINT PK_YukSimSet PRIMARY KEY(Name))");
-        } else {
-            sql.append("CREATE TABLE YukonSimulatorSettings");
-            sql.append("(Name VARCHAR(50) NOT NULL,");
-            sql.append("Value TEXT NOT NULL,");
-            sql.append("CONSTRAINT PK_YukSimSet PRIMARY KEY (Name))");
-        }
-        yukonJdbcTemplate.update(sql);
-        log.debug("YukonSimulatorSettings table successfully created. Setting default values...");
-        return populateYukonSimulatorSettingsTable();
-    }
-
-    private boolean populateYukonSimulatorSettingsTable() {
-        for (YukonSimulatorSettingsKey property : YukonSimulatorSettingsKey.values()) {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("SELECT COUNT(*)");
-            sql.append("FROM YukonSimulatorSettings");
-            sql.append("WHERE Name").eq_k(property);
-            int recordExists = yukonJdbcTemplate.queryForInt(sql);
-            if (recordExists == 0) {
-                setValue(property, property.getDefaultValue());
+        sql.append("SELECT COUNT(*)");
+        sql.append("FROM YukonSimulatorSettings");
+        try {
+            yukonJdbcTemplate.queryForInt(sql);
+            log.debug("YukonSimualatorSettings table exists in the database.");
+            return;
+        } catch (Exception e) {
+            log.debug("YukonSimulatorSettings table doesn't exist in the database, attempting to create it... " + e);
+            SqlStatementBuilder sqlCreate = new SqlStatementBuilder();
+            DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
+            if (databaseVendor.isOracle()) {
+                sqlCreate.append("CREATE TABLE YukonSimulatorSettings");
+                sqlCreate.append("(Name VARCHAR2(50) NOT NULL,");
+                sqlCreate.append("Value CLOB NOT NULL,");
+                sqlCreate.append("CONSTRAINT PK_YukSimSet PRIMARY KEY(Name))");
+            } else {
+                sqlCreate.append("CREATE TABLE YukonSimulatorSettings");
+                sqlCreate.append("(Name VARCHAR(50) NOT NULL,");
+                sqlCreate.append("Value TEXT NOT NULL,");
+                sqlCreate.append("CONSTRAINT PK_YukSimSet PRIMARY KEY (Name))");
             }
+            yukonJdbcTemplate.update(sqlCreate);
+            return;
         }
-        log.debug("Successfully set default values of previously unpopulated rows in the YukonSimulatorSettings table.");
-        return true;
     }
 
     @Override

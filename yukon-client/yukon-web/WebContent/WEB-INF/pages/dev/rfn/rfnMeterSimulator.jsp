@@ -13,42 +13,42 @@
         _checkStatusTime = 2500,
 
         _sendMessageButtonClick = function(event) {
-        	var formData = $('#formData').serialize();
+            var formData = $('#formData').serialize();
             if($(this).attr('id') === 'send-message') {
                 $.ajax({
                     url: yukon.url('/dev/rfn/startMetersArchiveRequest'),
                     type: 'post',
                     data: formData 
-                    }).done(function(data) {
-                        $('#stop-send-message').show();
-                        $('#send-message').hide();
-                        $('#send-message').removeAttr("disabled");
-                        _checkExistingDeviceStatus(true);
-                    }).fail(function(data) {
-                        $('#send-message').removeAttr("disabled");
-                        if (data.hasError) {
-                            $('#taskStatusMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
-                        } else {
-                            $('#taskStatusMessage').hide();
-                        }
-                    });
+                }).done(function(data) {
+                    $('#stop-send-message').show();
+                    $('#send-message').hide();
+                    $('#send-message').removeAttr("disabled");
+                    _checkExistingDeviceStatus(true);
+                }).fail(function(data) {
+                    $('#send-message').removeAttr("disabled");
+                    if (data.hasError) {
+                        $('#taskStatusMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
+                    } else {
+                        $('#taskStatusMessage').hide();
+                    }
+                });
             };
               
             if($(this).attr('id') === 'stop-send-message') {
                 $.ajax({
                     url: yukon.url('/dev/rfn/stopMetersArchieveRequest'),
-                    type: 'GET'
+                    type: 'get'
                     });
                 _checkExistingDeviceStatus(true);
             };
             
             if($(this).attr('id') === 'send-test') {
-            	var formData = $('#formData').serialize();
+                var formData = $('#formData').serialize();
                 $.ajax({
                     url: yukon.url('/dev/rfn/testMeterArchiveRequest'),
-                    type: 'POST',
+                    type: 'post',
                     data: formData 
-               });
+                });
             };
             
             if ($(this).attr('id') !== 'send-test') {
@@ -97,12 +97,73 @@
                     }
                 });
             }
-          },
-
+        },
+          
+        _updateStartup = function(event) {
+            if ($(this).attr('id') === 'enable-startup') {
+                $.ajax({
+                    url: yukon.url('/dev/rfn/enableRfnAutoStart'),
+                    type: 'get',
+                }).done(function(data) {
+                    if (data.hasError) {
+                        _checkStartupStatus(data.errorMessage);
+                    } else {
+                        yukon.ui.removeAlerts();
+                    }
+                }).fail(function() {
+                    _checkStartupStatus("The simulator startup settings update request to the controller failed.");
+                });
+            } else if ($(this).attr('id') === 'disable-startup') {
+                $.ajax({
+                    url: yukon.url('/dev/rfn/disableRfnAutoStart'),
+                    type: 'get',
+                }).done(function(data) {
+                    if (data.hasError) {
+                        _checkStartupStatus(data.errorMessage);
+                    } else {
+                        yukon.ui.removeAlerts();
+                    }
+                }).fail(function() {
+                    _checkStartupStatus("The simulator startup settings update request to the controller failed.");
+                });
+            }
+        },
+         
+         _checkStartupStatus = function(prevErrorMessage) {
+             $.ajax({
+                 url: yukon.url('/dev/rfn/existingRfnStartupStatus'),
+                 type: 'get',
+             }).done(function(data) {
+                 if (data.hasError) {
+                     yukon.ui.alertError(prevErrorMessage + " " + data.errorMessage + " Refresh the page to try again.");
+                     $('#enable-startup').attr("disabled", "true");
+                     $('#disable-startup').attr("disabled", "true");
+                     $('#enable-startup').removeClass('on');
+                     $('#disable-startup').removeClass('on');
+                 } else {
+                     if (data.runOnStartup) {
+                         $('#enable-startup').addClass('on');
+                         $('#disable-startup').removeClass('on');
+                     }
+                     else {
+                         $('#enable-startup').removeClass('on');
+                         $('#disable-startup').addClass('on');
+                     }
+                 }
+             }).fail(function() {
+                 yukon.ui.alertError(prevErrorMessage + " Error communicating with NmIntegrationController. Refresh the page to try again.");
+                 $('#enable-startup').attr("disabled", "true");
+                 $('#disable-startup').attr("disabled", "true");
+                 $('#enable-startup').removeClass('on');
+                 $('#disable-startup').removeClass('on');
+             });
+         },
+          
         mod = {
             init : function() {
                 if (_initialized) return;
                 $('#send-test, #send-message, #stop-send-message').click(_sendMessageButtonClick);
+                $('#enable-startup, #disable-startup').click(_updateStartup);
                 _checkExistingDeviceStatus();
                 _initialized = true;
             },
@@ -145,7 +206,6 @@
                                 </c:forEach>
                             </select>
                             </tags:nameValue2>
-                            <tags:checkboxNameValue nameKey=".rfnMeterSimulator.runOnStartup" path="currentSettings.runOnStartup"/>
                         </tags:nameValueContainer2>
                     </div>
                     <div>
@@ -153,6 +213,16 @@
                         <cti:button id="send-message" nameKey="sendRfnMeterMessages" />
                         <cti:button id="stop-send-message" nameKey="stopSendingRfnMeterMessages"
                             classes="dn" />
+                    </div>
+                    <div class="button-group button-group-toggle">
+                        <c:if test="${rfnMeterRunOnStartup}">
+                            <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes on"/>
+                            <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+                        </c:if>
+                        <c:if test="${not rfnMeterRunOnStartup}">
+                            <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
+                            <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no on"/>  
+                        </c:if>
                     </div>
                 </tags:sectionContainer2>
                 <tags:sectionContainer2 nameKey="rfnMeterSimulatorTest">
