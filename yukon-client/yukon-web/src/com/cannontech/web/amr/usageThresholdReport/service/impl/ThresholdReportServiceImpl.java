@@ -14,11 +14,13 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.web.amr.usageThresholdReport.dao.ThresholdReportDao;
 import com.cannontech.web.amr.usageThresholdReport.dao.ThresholdReportDao.SortBy;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReport;
@@ -26,6 +28,7 @@ import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportCriteria
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFilter;
 import com.cannontech.web.amr.usageThresholdReport.service.ThresholdReportService;
+import com.google.common.collect.BiMap;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
 
@@ -35,6 +38,7 @@ public class ThresholdReportServiceImpl implements ThresholdReportService{
     
     @Autowired private ThresholdReportDao thresholdReportDao;
     @Autowired private RawPointHistoryDao rphDao;
+    @Autowired private AttributeService attributeService;
        
     //exclude all qualities other then normal
     private final static Set<PointQuality> excludedQualities = Sets.newHashSet(PointQuality.values());
@@ -46,6 +50,7 @@ public class ThresholdReportServiceImpl implements ThresholdReportService{
     public ThresholdReport getReportDetail(int reportId, ThresholdReportFilter filter,
             PagingParameters paging, SortBy sortBy, Direction direction) {
         ThresholdReportCriteria criteria = thresholdReportDao.getReport(reportId);
+        log.debug("Report Detail for report id="+reportId +" filter="+filter+" criteria="+criteria);
         return thresholdReportDao.getReportDetail(reportId, criteria.getRange(), filter, paging, sortBy, direction);
     }
     
@@ -58,9 +63,12 @@ public class ThresholdReportServiceImpl implements ThresholdReportService{
         ListMultimap<PaoIdentifier, PointValueQualityHolder> latest = getReading(criteria, devices, Order.REVERSE);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> earliest = getReading(criteria, devices, Order.FORWARD);
         
+        BiMap<PaoIdentifier, LitePoint> points = attributeService.getPoints(devices, criteria.getAttribute());
         List<ThresholdReportDetail> details = new ArrayList<>();
         devices.forEach(device -> {
             ThresholdReportDetail detail = new ThresholdReportDetail();
+            detail.setPointId(points.get(device.getPaoIdentifier()) == null ? null
+                : points.get(device.getPaoIdentifier()).getLiteID());
             detail.setPaoIdentifier(device.getPaoIdentifier());
             List<PointValueQualityHolder> latestReading = latest.get(device.getPaoIdentifier());
             if (!CollectionUtils.isEmpty(latestReading)) {

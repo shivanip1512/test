@@ -44,11 +44,10 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.search.result.SearchResults;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
@@ -78,7 +77,6 @@ public class UsageThresholdReportController {
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired @Qualifier("idList") private DeviceIdListCollectionProducer dcProducer;
     @Autowired private TemporaryDeviceGroupService tempDeviceGroupService;
-    @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private PointFormattingService pointFormattingService;
@@ -158,16 +156,12 @@ public class UsageThresholdReportController {
             SortableColumn col = SortableColumn.of(dir, column == sortBy, text, column.name());
             model.addAttribute(column.name(), col);
         }
-        filter.setAvailability(Lists.newArrayList(DataAvailability.values()));
         ThresholdReport report = reportService.getReportDetail(reportId, filter, paging, sortBy.getValue(), dir);
         model.addAttribute("report", report);
         SearchResults<ThresholdReportDetail> reportDetail = report.getDetail();
-        System.out.println(reportDetail.getCount());
         model.addAttribute("detail", reportDetail);
-        List<SimpleDevice> devices = new ArrayList<>();
+        List<SimpleDevice> devices = report.getAllDevices();
         StoredDeviceGroup tempGroup = tempDeviceGroupService.createTempGroup();
-        ThresholdReport allDevicesReport = reportService.getReportDetail(reportId, filter, PagingParameters.EVERYTHING, sortBy.getValue(), dir);
-        allDevicesReport.getDetail().getResultList().forEach(item -> devices.add(deviceDao.getYukonDevice(item.getPaoIdentifier().getPaoId())));
         deviceGroupMemberEditorDao.addDevices(tempGroup,  devices);
         
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(tempGroup);

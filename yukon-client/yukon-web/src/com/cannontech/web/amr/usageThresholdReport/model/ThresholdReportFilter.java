@@ -60,8 +60,10 @@ public class ThresholdReportFilter {
     @Override
     public String toString() {
         ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
-        tsb.append("groups", Joiner.on(",").join(groups.stream().map(g -> g.getFullName()).collect(Collectors.toList())));
-        tsb.append("threshold", thresholdDescriptor.getValue() + " " + threshold);
+        if (groups != null) {
+            tsb.append("groups", Joiner.on(",").join(groups.stream().map(g -> g.getFullName()).collect(Collectors.toList())));
+        }
+        tsb.append("threshold", threshold);
         tsb.append("availability", Joiner.on(",").join(availability));
         tsb.append("includeDisabled", includeDisabled);
         return tsb.toString();
