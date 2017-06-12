@@ -80,6 +80,8 @@
                 { "metricId" : 164, "attributeMagnitude" : 3, "attribute" : "POWER_FACTOR_PHASE_C" },
 
                 { "metricId" : 202, "attributeMagnitude" : 3, "attribute" : "KVA" },
+                
+                { "metricId" : 240, "attributeMagnitude" : 3, "attribute" : "DAILY_PEAK_DEMAND" },
 
                 { "metricId" : 257, "attribute" : "TEMPERATURE_DEVICE" },
 

@@ -110,6 +110,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     OVER_VOLTAGE_MEASURED("Over Voltage Measured", AttributeGroup.RFN_HARDWARE_EVENT, false),
     OVER_VOLTAGE_THRESHOLD("Over Voltage Threshold", AttributeGroup.RFN_HARDWARE_EVENT, false),
     PEAK_DEMAND("Peak Demand", AttributeGroup.DEMAND),
+    DAILY_PEAK_DEMAND("Daily Peak Demand", AttributeGroup.DEMAND),
     NET_PEAK_DEMAND("Net Peak Demand", AttributeGroup.DEMAND),
     SUM_PEAK_DEMAND("Sum Peak Demand", AttributeGroup.DEMAND),
     PEAK_DEMAND_FROZEN("Peak Demand Frozen", AttributeGroup.DEMAND),

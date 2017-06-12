@@ -1732,6 +1732,12 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="AMPS"/>
         <decimalplaces value="3"/>
     </point>
+    <point offset="358" type="Analog">
+        <name>Daily Peak Demand</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KW"/>
+        <decimalplaces value="3"/>
+    </point>
     <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -CalcAnalog- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
     <point offset="0" type="CalcAnalog">
         <name>Total Outage Count</name>

@@ -148,6 +148,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.OUTAGE_LOG">Outage Log</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OUTAGE_STATUS">Outage Status</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND">Peak Demand</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.DAILY_PEAK_DEMAND">Daily Peak Demand</entry>
     <entry key="yukon.common.attribute.builtInAttribute.NET_PEAK_DEMAND">Net Peak Demand</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SUM_PEAK_DEMAND">Sum Peak Demand</entry>
     <entry key="yukon.common.attribute.builtInAttribute.PEAK_DEMAND_RATE_A">Peak Demand Rate A</entry>

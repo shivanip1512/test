@@ -98,6 +98,7 @@ public class RfnEventTestingServiceImpl implements RfnEventTestingService {
                 .put("harmonic",   "Harmonic")
                 .put("cumulative", "Cumulative")
                 .put("neutralToGround", "Phase Neutral->Ground")
+                .put("dailyMax", "Daily Max")
                 .build();
     }
     

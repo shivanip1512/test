@@ -343,6 +343,16 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
+        <point name="Daily Peak Demand">
+            <uom>W</uom>
+            <multiplier value=".001"/>
+            <parseSiPrefix/>
+            <modifiers match="equal">
+                <modifier>Quadrant 1</modifier>
+                <modifier>Quadrant 4</modifier>
+                <modifier>Daily Max</modifier>
+            </modifiers>
+        </point>
         <point name="Net kWh">
             <uom>Wh</uom>
             <multiplier value=".001"/>

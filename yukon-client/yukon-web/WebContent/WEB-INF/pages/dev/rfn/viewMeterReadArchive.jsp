@@ -118,6 +118,7 @@ function useRandom() {
                         <tr>   
                             <td><form:checkbox path="modifiers[tenths]" label="tenths"/></td>
                             <td><form:checkbox path="modifiers[neutralToGround]" label="Phase Neutral->Ground"/></td>
+                            <td><form:checkbox path="modifiers[dailyMax]" label="Daily Max"/></td>
                         </tr>
                     </table>
                 </tags:nameValue>

@@ -225,6 +225,7 @@ const Attribute Attribute::OverVoltage                                      = At
 const Attribute Attribute::OverVoltageMeasured                              = Attribute( "OVER_VOLTAGE_MEASURED" );
 const Attribute Attribute::OverVoltageThreshold                             = Attribute( "OVER_VOLTAGE_THRESHOLD" );
 const Attribute Attribute::PeakDemand                                       = Attribute( "PEAK_DEMAND" );
+const Attribute Attribute::DailyPeakDemand                                  = Attribute( "DAILY_PEAK_DEMAND" );
 const Attribute Attribute::NetPeakDemand                                    = Attribute( "NET_PEAK_DEMAND" );
 const Attribute Attribute::SumPeakDemand                                    = Attribute( "SUM_PEAK_DEMAND" );
 const Attribute Attribute::PeakDemandFrozen                                 = Attribute( "PEAK_DEMAND_FROZEN" );
