@@ -31,34 +31,56 @@ function useRandom() {
                 
                 <tags:nameValue name="Manufacturer">
                     <select name="manufacturer">
-                        <option value="LGYR">LGYR</option>
                         <option value="Eka">Eka</option>
-                        <option value="EE">EE</option>
-                        <option value="GE">GE</option>
+                        <option value="EE">EE (Elster)</option>
                         <option value="ELO">ELO</option>
-                        <option value="ITRN">ITRN</option>
-                        <option value="WTR2">WTR2</option>
+                        <option value="GE">GE (General Electric)</option>
+                        <option value="ITRN">ITRN (Itron)</option>
+                        <option value="LGYR">LGYR (Landis & Gyr)</option>
+                        <option value="SCH">SCH (Schlumberger)</option>
+                        <option value="WTR2">WTR2 (Eaton Water 2)</option>
                     </select>
                 </tags:nameValue>
                 
                 <tags:nameValue name="Model">
                     <select name="model">
-                        <option value="FocuskWh">FocuskWh</option>
-                        <option value="water_sensor">water_sensor</option>
-                        <option value="water_sensor">water_node</option>
-                        <option value="A3R">A3R</option>
-                        <option value="Centron">Centron</option>
-                        <option value="kV2">kV2</option>
-                        <option value="FocusAXD">FocusAXD</option>
-                        <option value="FocusAXR">FocusAXR</option>
-                        <option value="2131T">2131T</option>
-                        <option value="2131xT">2131xT</option>
-                        <option value="C2SX">C2SX</option>
-                        <option value="E650">S4x</option>
-                        <option value="Pulse-201">Pulse-201</option>
-                        <option value="Encoder-201">Encoder-201</option>
-                        <option value="Pulse-205">Pulse-205</option>
-                        <option value="Encoder-205">Encoder-205</option>
+                        <optgroup label="Eaton Water 2">
+	                        <option value="Pulse-201">Pulse-201</option>
+	                        <option value="Encoder-201">Encoder-201</option>
+	                        <option value="Pulse-205">Pulse-205</option>
+	                        <option value="Encoder-205">Encoder-205</option>
+                        </optgroup>
+	                    <optgroup label="Eka">
+	                        <option value="water_sensor">water_sensor</option>
+	                        <option value="water_node">water_node</option>
+	                    </optgroup>
+                        <optgroup label="ELO">
+	                        <option value="2131T">2131T</option>
+	                        <option value="2131xT">2131xT</option>
+                        </optgroup>
+                        <optgroup label="Elster">
+	                        <option value="A3K">A3K</option>
+	                        <option value="A3R">A3R</option>
+                        </optgroup>
+                        <optgroup label="General Electric">
+	                        <option value="kV2">kV2</option>
+                        </optgroup>
+                        <optgroup label="Itron">
+	                        <option value="Centron">Centron</option>
+                        	<option value="C2SX">C2SX</option>
+                        </optgroup>
+                        <optgroup label="Landis & Gyr">
+	                        <option value="FocuskWh">FocuskWh</option>
+	                        <option value="FocusAXD">FocusAXD</option>
+	                        <option value="FocusAXR">FocusAXR</option>
+                        	<option value="E650">S4x</option>
+                        </optgroup>
+                        <optgroup label="Schlumberger">
+	                        <option value="SENTINEL-L1">SENTINEL-L1</option>
+	                        <option value="SENTINEL-L2">SENTINEL-L2</option>
+	                        <option value="SENTINEL-L3">SENTINEL-L3</option>
+                        	<option value="SENTINEL-L4">SENTINEL-L4</option>
+                        </optgroup>
                     </select>
                 </tags:nameValue>
                 
