@@ -1327,4 +1327,6 @@
      
      <bean class="com.cannontech.web.amr.usageThresholdReport.service.impl.ThresholdReportServiceImpl"/>
      <bean class="com.cannontech.web.amr.usageThresholdReport.dao.impl.ThresholdReportDaoImpl"/>
+     
+     <bean class="com.cannontech.infrastructure.dao.impl.InfrastructureWarningsDaoImpl"/>
 </beans>

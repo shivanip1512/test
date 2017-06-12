@@ -658,9 +658,9 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     }
     
     @Override
-    public Multimap<Short, String> getDuplicateColorGateways(Collection<RfnGateway> gateways) {
-        Multimap<Short, String> duplicateColorGateways = HashMultimap.create();
-        Map<Short, String> collisionCheckMap = new HashMap<>();
+    public Multimap<Short, RfnGateway> getDuplicateColorGateways(Collection<RfnGateway> gateways) {
+        Multimap<Short, RfnGateway> duplicateColorGateways = HashMultimap.create();
+        Map<Short, RfnGateway> collisionCheckMap = new HashMap<>();
         
         for (RfnGateway gateway : gateways) {
             RfnGatewayData data = gateway.getData();
@@ -668,12 +668,12 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             // Insert all gateways by color into the collision check map and check for insert conflicts, which are
             // duplicates.
             if (data != null) {
-                String duplicateGateway = collisionCheckMap.put(data.getRouteColor(), gateway.getName());
+                RfnGateway duplicateGateway = collisionCheckMap.put(data.getRouteColor(), gateway);
                 
                 // When a duplicate is found, add it to the duplicate gateways map
                 if (duplicateGateway != null) {
                     duplicateColorGateways.put(data.getRouteColor(), duplicateGateway);
-                    duplicateColorGateways.put(data.getRouteColor(), gateway.getName());
+                    duplicateColorGateways.put(data.getRouteColor(), gateway);
                 }
             }
         }

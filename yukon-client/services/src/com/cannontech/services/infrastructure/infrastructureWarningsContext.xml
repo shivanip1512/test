@@ -1,0 +1,25 @@
+<beans
+  xmlns="http://www.springframework.org/schema/beans"
+  xmlns:jms="http://www.springframework.org/schema/jms"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+  http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms.xsd">
+    
+    <!-- Listener for requests to perform a recalculation of infrastructure warnings -->
+    <bean id="infrastructureWarningsRequestListener" class="com.cannontech.services.infrastructure.listener.InfrastructureWarningsRequestListener"/>
+    <jms:listener-container 
+        connection-factory="connectionFactory" 
+        destination-type="queue"
+        concurrency="1" 
+        container-type="simple"
+        container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
+        <jms:listener destination="yukon.infrastructure.InfrastructureWarningsRequest" ref="infrastructureWarningsRequestListener" method="handleRequest"/>
+    </jms:listener-container>
+    
+    <bean class="com.cannontech.services.infrastructure.service.impl.InfrastructureWarningsServiceImpl"/>
+    <bean class="com.cannontech.infrastructure.dao.impl.InfrastructureWarningsDaoImpl"/>
+    
+    <!-- Infrastructure Warning Evaluators - These do the work of checking for warning conditions. -->
+    <bean class="com.cannontech.services.infrastructure.service.impl.GatewayColorWarningEvaluator"/>
+    
+</beans>

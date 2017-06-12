@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -93,13 +94,17 @@ public class GatewayListController {
         
         // Check for gateways with duplicate colors
         // If any are found, output a flash scope warning to notify the user
-        Multimap<Short, String> duplicateColorGateways = rfnGatewayService.getDuplicateColorGateways(gateways);
+        Multimap<Short, RfnGateway> duplicateColorGateways = rfnGatewayService.getDuplicateColorGateways(gateways);
         if (!duplicateColorGateways.isEmpty()) {
             StringBuilder gatewaysString = new StringBuilder(); 
             for (Short color : duplicateColorGateways.keySet()) {
+                Set<String> gatewayNames = duplicateColorGateways.get(color)
+                                                                 .stream()
+                                                                 .map(RfnGateway::getName)
+                                                                 .collect(Collectors.toSet());
                 gatewaysString.append(color)
                               .append(" (")
-                              .append(StringUtils.join(duplicateColorGateways.get(color), ", "))
+                              .append(StringUtils.join(gatewayNames, ", "))
                               .append(") ");
             }
             YukonMessageSourceResolvable message = new YukonMessageSourceResolvable("yukon.web.modules.operator.gateways.list.duplicateColors", 

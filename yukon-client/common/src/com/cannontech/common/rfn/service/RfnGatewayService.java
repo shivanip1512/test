@@ -233,10 +233,10 @@ public interface RfnGatewayService {
     
     /**
      * Checks the specified gateways to determine if any colors are used by more than one. If any duplications are found,
-     * the returned multimap will include the duplicated colors and names of all gateways using each duplicated color.
+     * the returned multimap will include the duplicated colors and all gateways using each duplicated color.
      * @param gateways A collection of gateways with gateway data. Gateways without data will be ignored.
-     * @return A multimap of color -> gateway name for colors that are duplicated. 
+     * @return A multimap of color -> gateway for colors that are duplicated. 
      */
-    Multimap<Short, String> getDuplicateColorGateways(Collection<RfnGateway> gateways);
+    Multimap<Short, RfnGateway> getDuplicateColorGateways(Collection<RfnGateway> gateways);
 
 }
