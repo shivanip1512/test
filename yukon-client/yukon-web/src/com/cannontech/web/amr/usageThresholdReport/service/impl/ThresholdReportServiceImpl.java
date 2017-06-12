@@ -57,12 +57,12 @@ public class ThresholdReportServiceImpl implements ThresholdReportService{
     @Transactional
     @Override
     public int createThresholdReport(ThresholdReportCriteria criteria, List<SimpleDevice> devices) {
-               
+
         log.debug("Creating threshold for " + devices.size() + " for criteria=" + criteria);
-       
+
         ListMultimap<PaoIdentifier, PointValueQualityHolder> latest = getReading(criteria, devices, Order.REVERSE);
         ListMultimap<PaoIdentifier, PointValueQualityHolder> earliest = getReading(criteria, devices, Order.FORWARD);
-        
+
         BiMap<PaoIdentifier, LitePoint> points = attributeService.getPoints(devices, criteria.getAttribute());
         List<ThresholdReportDetail> details = new ArrayList<>();
         devices.forEach(device -> {
@@ -83,12 +83,12 @@ public class ThresholdReportServiceImpl implements ThresholdReportService{
         });
 
         int reportId = thresholdReportDao.createReport(criteria);
-        log.debug("Created report id="+reportId);
+        log.debug("Created report id=" + reportId);
         thresholdReportDao.createReportDetail(reportId, details);
-        log.debug("Created inserted details="+details.size());
+        log.debug("Created inserted details=" + details.size());
         return reportId;
     }
-    
+
     private ListMultimap<PaoIdentifier, PointValueQualityHolder> getReading(ThresholdReportCriteria criteria,
             List<SimpleDevice> devices, Order order) {
         return rphDao.getLimitedAttributeData(devices, criteria.getAttribute(), criteria.getRange(), null, 1, false,

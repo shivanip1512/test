@@ -12,8 +12,14 @@ import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFilter;
 
 public interface ThresholdReportService {
 
+    /**
+     * Returns filtered report.
+     */
     ThresholdReport getReportDetail(int reportId, ThresholdReportFilter filter,
             PagingParameters paging, SortBy sortBy, Direction direction);
 
+    /**
+     * Creates report.
+     */
     int createThresholdReport(ThresholdReportCriteria criteria, List<SimpleDevice> devices);
 }

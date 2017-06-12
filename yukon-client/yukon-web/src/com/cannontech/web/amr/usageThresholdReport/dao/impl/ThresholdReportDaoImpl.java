@@ -89,7 +89,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
     }
     
     private class DetailRowMapper implements YukonRowMapper<ThresholdReportDetail> { 
-        Range<Instant> partialRange;
+        private Range<Instant> partialRange;
 
         public DetailRowMapper(Range<Instant> criteriaRange) {
             partialRange = getPartialRange(criteriaRange);
@@ -117,6 +117,9 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         }
     }
     
+    /**
+     * Adds availability information to detail
+     */
     private void setAvailability(ThresholdReportDetail detail, Range<Instant> partialRange){
         Date min =new Date(partialRange.getMin().getMillis());
         Date max =new Date(partialRange.getMax().getMillis());
@@ -164,7 +167,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
 
         sql.append("WHERE UsageThresholdReportId").eq(reportId);
 
-        if (filter.getAvailability().size() > 0) {
+        if (filter.getAvailability() != null  && filter.getAvailability().size() > 0) {
             log.debug("Criteria Range=" + InstantRangeLogHelper.getPartialString(criteriaRange));
             Range<Instant> partialRange = getPartialRange(criteriaRange);
             log.debug("Partial Range=" + InstantRangeLogHelper.getPartialString(partialRange) + " ["
@@ -339,6 +342,9 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         log.debug("Done inserting into UsageThresholdReportRow");      
     }
     
+    /**
+     * Creates a PointValueQualityHolder for the parameters provided
+     */
     private PointValueQualityHolder getPointValueQualityHolder(int pointId, int pointTypeId, PointType type, Date timeStamp, Double value){
         if(value == null){
            return null; 

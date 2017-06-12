@@ -34,14 +34,29 @@ public interface ThresholdReportDao {
         }
     }
 
+    /**
+     * Deletes report
+     */
     void deleteReport(int reportId);
 
+    /**
+     * Returns report criteria.
+     */
     ThresholdReportCriteria getReport(int reportId);
 
+    /**
+     * Creates report based on criteria.
+     */
     int createReport(ThresholdReportCriteria criteria);
 
+    /**
+     * Creates report details.
+     */
     void createReportDetail(int reportId, List<ThresholdReportDetail> details);
 
+    /**
+     * Returns report.
+     */
     ThresholdReport getReportDetail(int reportId, Range<Instant> criteriaRange,
             ThresholdReportFilter filter, PagingParameters paging, SortBy sortBy, Direction direction);
 }
