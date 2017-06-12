@@ -36,14 +36,14 @@ public interface RfnGatewayService {
     Set<RfnGateway> getAllGateways();
     
     /**
-     * Retrieves all "legacy" gateways (aka gateway 1.5s) that have paos in the Yukon database. If the gateway is not
-     * cached, it will be set as null in the RfnGateway, and the cache will be updated in a separate thread.
+     * Retrieves all "legacy" gateways (aka gateway 1.5s) that have paos in the Yukon database. If the gateway data is 
+     * not cached, it will be set as null in the RfnGateway, and the cache will be updated in a separate thread.
      */
     Set<RfnGateway> getAllLegacyGateways();
     
     /**
      * Retrieves all non-"legacy" gateways (newer than gateway 1.5s) that have paos in the Yukon database. If the 
-     * gateway is not cached, it will be set as null in the RfnGateway, and the cache will be updated in a separate 
+     * gateway data is not cached, it will be set as null in the RfnGateway, and the cache will be updated in a separate 
      * thread.
      */
     Set<RfnGateway> getAllNonLegacyGateways();

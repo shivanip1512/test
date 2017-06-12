@@ -22,14 +22,14 @@ public class InfrastructureWarning implements Displayable {
      */
     public InfrastructureWarning(PaoIdentifier paoIdentifier, 
                                  InfrastructureWarningType warningType, 
-                                 Object[] arguments) {
-        this(paoIdentifier, warningType, arguments, InfrastructureWarningSeverity.LOW);
+                                 Object... arguments) {
+        this(paoIdentifier, warningType, InfrastructureWarningSeverity.LOW, arguments);
     }
     
     public InfrastructureWarning(PaoIdentifier paoIdentifier, 
                                  InfrastructureWarningType warningType, 
-                                 Object[] arguments,
-                                 InfrastructureWarningSeverity severity) {
+                                 InfrastructureWarningSeverity severity,
+                                 Object... arguments) {
         this.paoIdentifier = paoIdentifier;
         this.warningType = warningType;
         this.arguments = arguments;

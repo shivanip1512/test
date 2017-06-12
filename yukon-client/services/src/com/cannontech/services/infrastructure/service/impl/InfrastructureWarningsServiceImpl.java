@@ -30,7 +30,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     private static final int initialDelayMinutes = 1;
     private static final int minimumMinutesBetweenRuns = 15;
     private static final int runFrequencyMinutes = 60;
-    private static AtomicBoolean isRunning;
+    private static AtomicBoolean isRunning = new AtomicBoolean();
     private List<PaoType> warnableTypes = new ImmutableList.Builder<PaoType>()
             .addAll(PaoType.getRfGatewayTypes())
             .addAll(PaoType.getRfRelayTypes())
@@ -66,12 +66,13 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     @Override
     public void calculateWarnings() {
         try {
-            if (minimumTimeBetweenRunsExceeded()) {
+            if (!minimumTimeBetweenRunsExceeded()) {
                 log.debug("Prevented start of calculation thread - insufficient time between runs.");
                 return;
             }
             
-            if (isRunning.compareAndSet(false, true)) {
+            // if the calculation is running, exit, otherwise set isRunning to "true" and continue
+            if (!isRunning.compareAndSet(false, true)) {
                 log.debug("Prevented start of calculation thread - task is already running.");
                 return;
             }
@@ -88,10 +89,9 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
             
             infrastructureWarningsDao.insert(warnings);
             
-            log.info("Infrastructure warnings calculation complete");
-            
             persistedSystemValueDao.setValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME, Instant.now());
             isRunning.set(false);
+            log.info("Infrastructure warnings calculation complete");
         } catch (Exception e) {
             log.error("Unexpected exception: ", e);
             isRunning.set(false);

@@ -38,7 +38,7 @@ public class GatewayColorWarningEvaluator implements InfrastructureWarningEvalua
                                      .stream()
                                      .map(entry -> new InfrastructureWarning(entry.getValue().getPaoIdentifier(), 
                                                                              InfrastructureWarningType.GATEWAY_COLOR, 
-                                                                             new Object[] {entry.getKey()}))
+                                                                             entry.getKey()))
                                      .collect(Collectors.toList());
     }
 
