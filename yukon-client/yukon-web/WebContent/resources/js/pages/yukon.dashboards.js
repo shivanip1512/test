@@ -57,16 +57,13 @@ yukon.dashboards = (function () {
             /** Assign Users  */
             $(document).on('yukon:dashboard:assignUsers', function (ev) {
                 var selectedUsers = yukon.pickers['dashboardUsersPicker'].selectedItems,
-                    selectedGroups = yukon.pickers['dashboardGroupsPicker'].selectedItems,
                     dashboardId = $('#dashboardId').val(),
                     dashboardType = $('#dashboardType').val(),
-                    users = selectedUsers.map(function (item) { return item.userId; }),
-                    groups = selectedGroups.map(function (item) { return item.userGroupId; });
+                    users = selectedUsers.map(function (item) { return item.userId; });
                 
                 var data = {
                     pageType: dashboardType,
-                    users: users,
-                    groups: groups                    
+                    users: users
                 };
                 
                 $.ajax({

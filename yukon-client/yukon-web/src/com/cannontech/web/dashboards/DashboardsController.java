@@ -31,7 +31,6 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.JsonUtils;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -64,7 +63,6 @@ public class DashboardsController {
     @Autowired private DashboardDao dashboardDao;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private DashboardValidator validator;
-    @Autowired private YukonUserDao yukonUserDao;
     @Autowired private RolePropertyDao rolePropertyDao;
 
     private final static String baseKey = "yukon.web.modules.dashboard.";
@@ -181,17 +179,11 @@ public class DashboardsController {
     @RequestMapping(value="{id}/assignUsers", method=RequestMethod.POST)
     @CheckRoleProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS)
     public void assignUsers(@PathVariable int id, @RequestParam(value="users[]", required=false) Integer[] users, 
-                              @RequestParam(value="groups[]", required=false) Integer[] groups, @RequestParam("pageType") String pageType, 
+                              @RequestParam("pageType") String pageType, 
                               FlashScope flash, HttpServletResponse resp) {
         DashboardPageType dashboardType = DashboardPageType.valueOf(pageType);
         if (users != null) {
             dashboardService.setDefault(Arrays.asList(users), dashboardType, id);
-        }
-        if (groups != null) {
-            for (int groupId : groups) {
-                List<Integer> userIds = yukonUserDao.getUserIdsForUserGroup(groupId);
-                dashboardService.setDefault(userIds, dashboardType, id);
-            }
         }
         flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "assignUsers.success"));
         resp.setStatus(HttpStatus.NO_CONTENT.value());

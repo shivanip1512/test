@@ -27,29 +27,15 @@
             </tags:nameValue2>
         </tags:nameValueContainer2>
         <br/>
+        
+         <div id="users-tab">  
+             <tags:pickerDialog type="userPicker" id="dashboardUsersPicker" container="users-tab" multiSelectMode="true"/>
+         </div>
 
-        <cti:tabs>
-        
-            <cti:msg2 key=".users" var="usersTab"/>
-            <cti:tab title="${usersTab}">
-             <div id="users-tab">  
-                    <tags:pickerDialog type="userPicker" id="dashboardUsersPicker" container="users-tab" multiSelectMode="true"/>
-                </div>
-            </cti:tab>
-            
-            <cti:msg2 key=".userGroups" var="groupsTab"/>
-            <cti:tab title="${groupsTab}">
-                <div id="users-groups-tab">
-                    <tags:pickerDialog type="userGroupPicker" id="dashboardGroupsPicker" container="users-groups-tab" multiSelectMode="true"/>
-                </div>
-            </cti:tab>
-        
-        </cti:tabs>
     </form>
 <script>
 $(function() {             
     yukon.pickers['dashboardUsersPicker'].show(); 
-    yukon.pickers['dashboardGroupsPicker'].show(); 
 });
 </script>
             
