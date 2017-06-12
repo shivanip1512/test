@@ -10,6 +10,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -213,7 +214,7 @@ public class PointImportController {
         
         for(String line : logLines) {
             String quality = failedLines.contains(index) ? "error" : "success";
-            json.put(line, quality);
+            json.put(StringEscapeUtils.escapeXml10(line), quality);
             index++;
             if(index >= CtiUtilities.MAX_LOGGED_LINES){
                 break;
