@@ -354,15 +354,25 @@ input[type=radio] {
     float: none;
     vertical-align: top;
     margin: 0;
+    border: solid 1px #ccc;
 }
+
+.stepper button.stepper-prev,
+.stepper button.stepper-next {
+ 	width: 34px; 
+}
+
 .stepper select.stepper-select {
     background-image: none;
     padding-right: 5px;
+    letter-spacing: 0;
+    width: 70px; 
 }
 
 .stepper select.stepper-select::-ms-expand {
     display: none;
 }
+
 /* VERTICAL MENUS */
 #LeftColumn .info-fragment, #LeftColumn .bumper {border-right: 1px solid #ccc;}
 #LeftColumn .bumper {min-height: 120px;}
