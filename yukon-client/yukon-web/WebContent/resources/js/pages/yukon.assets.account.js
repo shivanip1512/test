@@ -16,25 +16,23 @@ yukon.assets.account = (function () {
     _mode,
     
     _showPassword = function () {
-        
         var checkbox = $('.js-show-password-checkbox'),
             type = checkbox.prop('checked') ? 'text' : 'password';
         
-        $('.js-password-editor-field:password').each(function() {
+        var field;
+        if (type == 'text') {
+        	field = '.js-password-editor-field:password';
+        } else {
+        	field = '.js-password-editor-field:text';
+        }
+        $(field).each(function() {
             var input = $(this);
-            if (type === 'text') {
-                input.hide();
-                input.siblings('input:text').show().val(input.val());
-            } else {
-                input.siblings('input:text').hide();
-                //ugly, but works because we have a 1:1 mapping on the fields
-                input.show().val(input.siblings('input:text').val());
-            }
+            input[0].type = type;
         });
     },
-    
-    _generatePassword = function () {
         
+    _generatePassword = function () {
+        debugger;
         var data = { userGroupName : $('#change-password-form .js-user-group').val() },
             userId = $('#change-password-form .js-user-id').val();
         

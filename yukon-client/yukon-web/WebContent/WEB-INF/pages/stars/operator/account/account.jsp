@@ -242,16 +242,10 @@
                                                  hence, what you see below in regards to the duplicate password fields -->
                                             <div class="password_editor">
                                             <tags:nameValue2 nameKey=".newPassword">
-                                                <input type="text" class="js-password-editor-field" 
-                                                    autocomplete="off" maxlength="64" style="display:none;">
-                                                <tags:password path="loginBackingBean.password1" 
-                                                    cssClass="js-password-editor-field" autocomplete="off"/>
+                                                <tags:password path="loginBackingBean.password1" showPassword="true" includeShowHideButton="false" cssClass="js-password-editor-field"/>
                                             </tags:nameValue2>
                                             <tags:nameValue2 nameKey=".confirmPassword">
-                                                <input type="text" class="js-password-editor-field" 
-                                                    autocomplete="off" maxlength="64" style="display:none;">
-                                                <tags:password path="loginBackingBean.password2" 
-                                                    cssClass="js-password-editor-field" autocomplete="off"/>
+                                                <tags:password path="loginBackingBean.password2" showPassword="true" includeShowHideButton="false" cssClass="js-password-editor-field"/>
                                             </tags:nameValue2>
                                         </c:if>
                                     </cti:checkRolesAndProperties>
