@@ -2,6 +2,7 @@ package com.cannontech.services.infrastructure.service.impl;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
@@ -29,7 +30,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     private static final int initialDelayMinutes = 1;
     private static final int minimumMinutesBetweenRuns = 15;
     private static final int runFrequencyMinutes = 60;
-    private static volatile boolean isRunning;
+    private static AtomicBoolean isRunning;
     private List<PaoType> warnableTypes = new ImmutableList.Builder<PaoType>()
             .addAll(PaoType.getRfGatewayTypes())
             .addAll(PaoType.getRfRelayTypes())
@@ -70,12 +71,9 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                 return;
             }
             
-            synchronized(this) {
-                if (isRunning) {
-                    log.debug("Prevented start of calculation thread - task is already running.");
-                    return;
-                }
-                isRunning = true;
+            if (isRunning.compareAndSet(false, true)) {
+                log.debug("Prevented start of calculation thread - task is already running.");
+                return;
             }
             
             log.info("Calculating infrastructure warnings");
@@ -92,13 +90,11 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
             
             log.info("Infrastructure warnings calculation complete");
             
-            synchronized(this) {
-                isRunning = false;
-                persistedSystemValueDao.setValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME, Instant.now());
-            }
+            persistedSystemValueDao.setValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME, Instant.now());
+            isRunning.set(false);
         } catch (Exception e) {
             log.error("Unexpected exception: ", e);
-            isRunning = false;
+            isRunning.set(false);
         }
     }
     
