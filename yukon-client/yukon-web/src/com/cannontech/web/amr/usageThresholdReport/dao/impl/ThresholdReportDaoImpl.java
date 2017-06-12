@@ -11,17 +11,13 @@ import java.util.Objects;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
-import org.joda.time.Interval;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
-import com.cannontech.common.pao.PaoIdentifier;
-import com.cannontech.common.pao.YukonPao;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.search.result.SearchResults;
@@ -56,24 +52,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
     @Autowired private DeviceGroupService deviceGroupService;
-    
-    
-    private static class SimpleDeviceMapper implements YukonRowMapper<SimpleDevice> {
-        @Override
-        public SimpleDevice mapRow(YukonResultSet rs) throws SQLException {
-            return new SimpleDevice(new YukonPao() {
-                @Override
-                public PaoIdentifier getPaoIdentifier() {
-                    try {
-                        return rs.getPaoIdentifier("PaoId", "Type");
-                    } catch (SQLException e) {
-                        return null;
-                    }
-                }
-            });
-        }
-    }
-        
+            
     private static class CriteriaRowMapper implements YukonRowMapper<ThresholdReportCriteria> {
         @Override
         public ThresholdReportCriteria mapRow(YukonResultSet rs) throws SQLException {
@@ -92,7 +71,8 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
     public ThresholdReport getReportDetail(int reportId, Range<Instant> criteriaRange,
             ThresholdReportFilter filter, PagingParameters paging, SortBy sortBy, Direction direction) {
         SqlStatementBuilder allRowsSql = buildDetailSelect(reportId, criteriaRange, filter, sortBy, direction);
-        SqlStatementBuilder deviceSql = buildDetailSelect(reportId, criteriaRange, filter, null, null);
+        SqlStatementBuilder countSql = buildDetailSelect(reportId, criteriaRange, filter, null, null);
+        int totalCount = jdbcTemplate.queryForInt(countSql);
         
         int start = paging.getStartIndex();
         int count = paging.getItemsPerPage();
@@ -101,20 +81,18 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         jdbcTemplate.query(allRowsSql, rse);
 
         SearchResults<ThresholdReportDetail> searchResult = new SearchResults<>();
-        List<SimpleDevice> devices = jdbcTemplate.query(deviceSql, new SimpleDeviceMapper());
-        searchResult.setBounds(paging.getStartIndex(), paging.getItemsPerPage(), devices.size());
+        searchResult.setBounds(paging.getStartIndex(), paging.getItemsPerPage(), totalCount);
         searchResult.setResultList(rse.getResultList());
         
-        return new ThresholdReport(searchResult, devices);
+        List<ThresholdReportDetail> allDetails = jdbcTemplate.query(allRowsSql, new DetailRowMapper(criteriaRange));
+        return new ThresholdReport(searchResult, allDetails);
     }
     
     private class DetailRowMapper implements YukonRowMapper<ThresholdReportDetail> { 
-        private Interval outOfRangeInterval;
+        Range<Instant> partialRange;
 
         public DetailRowMapper(Range<Instant> criteriaRange) {
-            Range<Instant> partialRange = getPartialRange(criteriaRange);
-            outOfRangeInterval =
-                new Interval(partialRange.getMin(), partialRange.getMax().toDateTime().minusSeconds(1));
+            partialRange = getPartialRange(criteriaRange);
         }
         
         @Override
@@ -128,17 +106,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
                 detail.setEarliestReading(getPointValueQualityHolder(pointId, pointTypeId, type, rs.getDate("FirstTimestamp"), rs.getNullableDouble("FirstValue")));
                 detail.setLatestReading(getPointValueQualityHolder(pointId, pointTypeId, type, rs.getDate("LastTimestamp"), rs.getNullableDouble("LastValue")));
             }
-            if (detail.getPointId() == null) {
-                detail.setAvailability(DataAvailability.UNSUPPORTED);
-            } else if (detail.getEarliestReading() == null) {
-                detail.setAvailability(DataAvailability.NONE);
-            } else if (outOfRangeInterval.contains(detail.getEarliestReading().getPointDataTimeStamp().getTime())
-                || outOfRangeInterval.contains(detail.getLatestReading().getPointDataTimeStamp().getTime())) {
-                detail.setAvailability(DataAvailability.PARTIAL);
-            } else {
-                detail.setAvailability(DataAvailability.COMPLETE);
-            }
-
+            setAvailability(detail, partialRange);
             detail.setDelta(rs.getNullableDouble("Delta"));
             detail.setPaoIdentifier(rs.getPaoIdentifier("PaoId", "Type"));
             detail.setDeviceName(rs.getString("PAOName"));
@@ -148,9 +116,29 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
             return detail;
         }
     }
+    
+    private void setAvailability(ThresholdReportDetail detail, Range<Instant> partialRange){
+        Date min =new Date(partialRange.getMin().getMillis());
+        Date max =new Date(partialRange.getMax().getMillis());
+        if (detail.getPointId() == null) {
+            detail.setAvailability(DataAvailability.UNSUPPORTED);
+        } else if (detail.getEarliestReading() == null) {
+            detail.setAvailability(DataAvailability.NONE);
+        } else if (detail.getEarliestReading().getPointDataTimeStamp().before(min)
+            && (detail.getLatestReading().getPointDataTimeStamp().after(max)
+                || detail.getLatestReading().getPointDataTimeStamp().equals(max))) {
+            /*
+             * sql.append("FirstTimestamp").lt(partialRange.getMin());
+             * sql.append("AND LastTimestamp").gte(partialRange.getMax())
+             */
+            detail.setAvailability(DataAvailability.COMPLETE);
+        } else {
+            detail.setAvailability(DataAvailability.PARTIAL);
+        } 
+    }
 
     /**
-     * If sortBy is not returns count sql, otherwise returns all the fields
+     * If sortBy is null returns count sql, otherwise returns search sql.
      */
     private SqlStatementBuilder buildDetailSelect(int reportId, Range<Instant> criteriaRange,
             ThresholdReportFilter filter, SortBy sortBy, Direction direction) {
@@ -162,7 +150,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         }
         
         if (sortBy == null) {
-            sql.append( "SELECT utrr.PaoId, ypo.Type");
+            sql.append( "SELECT count(utrr.PaoId)");
         } else {
             sql.append( "SELECT utrr.PaoId, utrr.PointId, utrr.FirstTimestamp, utrr.FirstValue, utrr.LastTimestamp, utrr.LastValue, utrr.Delta, ypo.Type, p.PointType, dmg.MeterNumber, "+combineSerialNumberAndAddress+" as SerialNumberAddress, ypo.PAOName, ypo.DisableFlag");
         }
@@ -207,7 +195,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
                     sql.append(")");
                     log.debug(
                         availability + ":FirstTimestamp >= " + InstantRangeLogHelper.getLogString(partialRange.getMin())
-                            + " AND LastTimestamp < " + InstantRangeLogHelper.getLogString(partialRange.getMax()));
+                            + " OR LastTimestamp < " + InstantRangeLogHelper.getLogString(partialRange.getMax()));
                 }
                 OR = "OR";
             }
@@ -218,17 +206,19 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
             sql.append("AND").appendFragment(deviceGroupService.getDeviceGroupSqlWhereClause(filter.getGroups(), "utrr.PaoId"));
         }
    
-        if (filter.getThresholdDescriptor() == ThresholdDescriptor.GREATOR_OR_EQUAL) {
-            if (filter.getAvailability().contains(DataAvailability.UNSUPPORTED)) {
-                sql.append("AND (utrr.Delta").gte(filter.getThreshold()).append("OR utrr.Delta IS NULL)");
-            } else {
-                sql.append("AND utrr.Delta").gte(filter.getThreshold());
-            }
-        } else if (filter.getThresholdDescriptor() == ThresholdDescriptor.LESS_OR_EQUAL) {
-            if (filter.getAvailability().contains(DataAvailability.UNSUPPORTED)) {
-                sql.append("AND (utrr.Delta").lte(filter.getThreshold()).append("OR utrr.Delta IS NULL)");
-            } else {
-                sql.append("AND utrr.Delta").lte(filter.getThreshold());
+        if (filter.getThresholdDescriptor() != null) {
+            if (filter.getThresholdDescriptor() == ThresholdDescriptor.GREATOR_OR_EQUAL) {
+                if (filter.getAvailability().contains(DataAvailability.UNSUPPORTED)) {
+                    sql.append("AND (utrr.Delta").gte(filter.getThreshold()).append("OR utrr.Delta IS NULL)");
+                } else {
+                    sql.append("AND utrr.Delta").gte(filter.getThreshold());
+                }
+            } else if (filter.getThresholdDescriptor() == ThresholdDescriptor.LESS_OR_EQUAL) {
+                if (filter.getAvailability().contains(DataAvailability.UNSUPPORTED)) {
+                    sql.append("AND (utrr.Delta").lte(filter.getThreshold()).append("OR utrr.Delta IS NULL)");
+                } else {
+                    sql.append("AND utrr.Delta").lte(filter.getThreshold());
+                }
             }
         }
 
@@ -245,6 +235,16 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         return sql;
     }
 
+    /**
+     * Returns partial range
+     * 
+     * CR 1 day                    1 day CR
+     * |-------|------------------|-------|
+     *         --------PR----------
+     *         
+     * CR - criteria range
+     * PR - partial range
+     */
     private Range<Instant> getPartialRange(Range<Instant> criteriaRange){
         Instant min = new Instant(criteriaRange.getMin().toDateTime().withTimeAtStartOfDay().plusDays(1));
         Instant max = new Instant(criteriaRange.getMax().toDateTime().withTimeAtStartOfDay().minusDays(1));

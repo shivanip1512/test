@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.search.result.SearchResults;
@@ -14,13 +15,13 @@ public class ThresholdReport {
     private Map<DataAvailability, Integer> counts = new HashMap<>();
     private List<SimpleDevice> devices;
 
-    public ThresholdReport(SearchResults<ThresholdReportDetail> detail, List<SimpleDevice> devices) {
+    public ThresholdReport(SearchResults<ThresholdReportDetail> detail, List<ThresholdReportDetail> allDetails) {
         this.detail = detail;
-        this.devices = devices;
         Arrays.asList(DataAvailability.values()).forEach(value -> {
-            int count = (int)detail.getResultList().stream().filter(r -> r.getAvailability() == value ).count();
+            int count = (int) allDetails.stream().filter(r -> r.getAvailability() == value).count();
             counts.put(value, count);
         });
+        devices = allDetails.stream().map(result -> new SimpleDevice(result.getPaoIdentifier())).collect(Collectors.toList());
     }
 
     public int getAvailabilityCount(DataAvailability availability) {
