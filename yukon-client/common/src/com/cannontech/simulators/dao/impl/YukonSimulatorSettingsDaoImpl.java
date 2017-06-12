@@ -116,7 +116,7 @@ public class YukonSimulatorSettingsDaoImpl implements YukonSimulatorSettingsDao 
         return convertedValue;
     }
 
-    public <T> T getConvertedValue(YukonSimulatorSettingsKey property, Class<T> returnType) throws BadSimulatorSettingTypeException {
+    private <T> T getConvertedValue(YukonSimulatorSettingsKey property, Class<T> returnType) throws BadSimulatorSettingTypeException {
         if (log.isDebugEnabled()) {
             log.debug("getting converted value of " + property + " as " + returnType.getSimpleName());
         }
@@ -134,7 +134,7 @@ public class YukonSimulatorSettingsDaoImpl implements YukonSimulatorSettingsDao 
         return result;
     }
 
-    public String getPropertyValue(YukonSimulatorSettingsKey property) {
+    private String getPropertyValue(YukonSimulatorSettingsKey property) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT Value");
         sql.append("FROM YukonSimulatorSettings");
@@ -150,7 +150,7 @@ public class YukonSimulatorSettingsDaoImpl implements YukonSimulatorSettingsDao 
         return result;
     }
 
-    public Object convertPropertyValue(YukonSimulatorSettingsKey property, String value) throws BadSimulatorSettingTypeException {
+    private Object convertPropertyValue(YukonSimulatorSettingsKey property, String value) throws BadSimulatorSettingTypeException {
         try {
             return InputTypeFactory.convertPropertyValue(property.getInputType(), value);
         } catch (Exception e) {
