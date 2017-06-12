@@ -36,7 +36,15 @@
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.earliestReading">Earliest Reading</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.latestReading">Latest Reading</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.noRecentReadingFound">No recent reading found</entry>
-    
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.earliest.timestamp">Earliest Timestamp</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.earliest.value">Earliest Value</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.earliest.units">Earliest Units</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.earliest.quality">Earliest Quality</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.latest.timestamp">Latest Timestamp</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.latest.value">Latest Value</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.latest.units">Latest Units</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.latest.quality">Latest Quality</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.dataAvailability">Data Availability</entry>
     
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.attribute">Attribute</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.startDate">Start Date</entry>

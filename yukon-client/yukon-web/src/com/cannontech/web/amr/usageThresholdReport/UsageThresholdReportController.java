@@ -1,10 +1,13 @@
 package com.cannontech.web.amr.usageThresholdReport;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -42,8 +45,11 @@ import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
+import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.usageThresholdReport.dao.ThresholdReportDao.SortBy;
@@ -55,13 +61,14 @@ import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFilter;
 import com.cannontech.web.amr.usageThresholdReport.service.ThresholdReportService;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/usageThresholdReport/*")
 public class UsageThresholdReportController {
     
-    private final static String baseKey = "yukon.web.modules.amr.usageThresholdReport.";
+    private final static String baseKey = "yukon.web.modules.amr.usageThresholdReport.results.";
     
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DeviceCollectionFactory deviceCollectionFactory;
@@ -74,6 +81,7 @@ public class UsageThresholdReportController {
     @Autowired private DeviceDao deviceDao;
     @Autowired private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
+    @Autowired private PointFormattingService pointFormattingService;
 
     @RequestMapping(value="report", method = RequestMethod.GET)
     public String report(ModelMap model, YukonUserContext userContext) {
@@ -173,6 +181,85 @@ public class UsageThresholdReportController {
         return "usageThresholdReport/deviceTable.jsp";
     }
     
+    @RequestMapping("download")
+    public String download(YukonUserContext userContext, int reportId, String[] deviceSubGroups, boolean includeDisabled, 
+                           ThresholdDescriptor thresholdDescriptor, double threshold, DataAvailability[] availability,
+                          @DefaultSort(dir=Direction.asc, sort="deviceName") SortingParameters sorting, 
+                          @DefaultItemsPerPage(value=250) PagingParameters paging,
+                          HttpServletResponse response) throws IOException {
+        paging = PagingParameters.EVERYTHING;
+        ThresholdReportFilter filter = new ThresholdReportFilter();
+        List<DeviceGroup> subGroups = new ArrayList<>();
+        if (deviceSubGroups != null) {
+            for (String subGroup : deviceSubGroups) {
+                subGroups.add(deviceGroupService.resolveGroupName(subGroup));
+            }
+            if (!subGroups.isEmpty()) {
+                filter.setGroups(subGroups);
+            }
+        }
+        filter.setIncludeDisabled(includeDisabled);
+        filter.setThresholdDescriptor(thresholdDescriptor);
+        filter.setThreshold(threshold);
+        filter.setAvailability(Lists.newArrayList(availability));
+        DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
+        Direction dir = sorting.getDirection();
+        ThresholdReport allDevicesReport = reportService.getReportDetail(reportId, filter, paging, sortBy.getValue(), dir);
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        String[] headerRow = new String[14];
+
+        headerRow[0] = accessor.getMessage(DetailSortBy.deviceName);
+        headerRow[1] = accessor.getMessage(DetailSortBy.meterNumber);
+        headerRow[2] = accessor.getMessage(DetailSortBy.deviceType);
+        headerRow[3] = accessor.getMessage(DetailSortBy.serialNumberAddress);
+        headerRow[4] = accessor.getMessage(DetailSortBy.delta);
+        headerRow[5] = accessor.getMessage(baseKey + "dataAvailability");
+        headerRow[6] = accessor.getMessage(baseKey + "earliest.timestamp");
+        headerRow[7] = accessor.getMessage(baseKey + "earliest.value");
+        headerRow[8] = accessor.getMessage(baseKey + "earliest.units");
+        headerRow[9] = accessor.getMessage(baseKey + "earliest.quality");
+        headerRow[10] = accessor.getMessage(baseKey + "latest.timestamp");
+        headerRow[11] = accessor.getMessage(baseKey + "latest.value");
+        headerRow[12] = accessor.getMessage(baseKey + "latest.units");
+        headerRow[13] = accessor.getMessage(baseKey + "latest.quality");
+
+        List<String[]> dataRows = Lists.newArrayList();
+        for (ThresholdReportDetail detail: allDevicesReport.getDetail().getResultList()) {
+            String[] dataRow = new String[14];
+            dataRow[0] = detail.getDeviceName();
+            dataRow[1] = detail.getMeterNumber();
+            dataRow[2] = detail.getPaoIdentifier().getPaoType().getPaoTypeName();
+            dataRow[3] = detail.getAddressSerialNumber();
+            dataRow[4] = detail.getDelta().toString();
+            if (detail.getAvailability() != null) {
+                dataRow[5] = accessor.getMessage(baseKey + "dataAvailability." + detail.getAvailability().name());
+            }
+            PointValueQualityHolder earlyRead = detail.getEarliestReading();
+            if (earlyRead != null) {
+                dataRow[6] = pointFormattingService.getValueString(earlyRead, Format.DATE, userContext);
+                dataRow[7] = pointFormattingService.getValueString(earlyRead, Format.VALUE, userContext);
+                dataRow[8] = pointFormattingService.getValueString(earlyRead, Format.UNIT, userContext);
+                dataRow[9] = pointFormattingService.getValueString(earlyRead, Format.QUALITY, userContext);
+            } else {
+                dataRow[6] = accessor.getMessage(baseKey + "noRecentReadingFound");
+            }
+            PointValueQualityHolder lateRead = detail.getLatestReading();
+            if (lateRead != null) {
+                dataRow[10] = pointFormattingService.getValueString(lateRead, Format.DATE, userContext);
+                dataRow[11] = pointFormattingService.getValueString(lateRead, Format.VALUE, userContext);
+                dataRow[12] = pointFormattingService.getValueString(lateRead, Format.UNIT, userContext);
+                dataRow[13] = pointFormattingService.getValueString(lateRead, Format.QUALITY, userContext);
+            } else {
+                dataRow[10] = accessor.getMessage(baseKey + "noRecentReadingFound");
+            }
+            dataRows.add(dataRow);
+        }
+        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "usageThresholdReport_" + now + ".csv");
+        return null;
+      }
+    
     public enum DetailSortBy implements DisplayableEnum {
 
         deviceName(SortBy.DEVICE_NAME),
@@ -195,7 +282,7 @@ public class UsageThresholdReportController {
 
         @Override
         public String getFormatKey() {
-            return baseKey + "results." + name();
+            return baseKey + name();
         }
     }
 }

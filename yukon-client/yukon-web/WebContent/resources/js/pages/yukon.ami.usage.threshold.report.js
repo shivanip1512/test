@@ -36,6 +36,13 @@ yukon.ami.usageThresholdReport = (function () {
                 _filterResults();
             });
             
+            $(document).on('click', '.js-download', function () {
+                var form = $('#filter-results-form');
+                form.attr('action', yukon.url('/amr/usageThresholdReport/download'));
+                form.submit();
+                form.attr('action', yukon.url('/amr/usageThresholdReport/results'));
+            });
+            
             _initialized = true;
         },
         
