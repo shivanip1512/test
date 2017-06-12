@@ -8,7 +8,7 @@
 <cti:standardPage module="amr" page="usageThresholdReport.results">
 
     <div class="column-12-12 clearfix">
-        <div class="column one" style="border:1px solid #ccc;padding:5px;height:180px;">
+        <div class="column one" style="border:1px solid #ccc;padding:5px;height:160px;">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".attribute">
                      <cti:msg2 key="${criteria.attribute.formatKey}"/>
@@ -22,15 +22,9 @@
                 <tags:nameValue2 nameKey=".reportRunDate">
                     <cti:formatDate type="DATEHM_12" value="${criteria.runTime}"/>
                 </tags:nameValue2>
-                <tags:nameValue2 nameKey=".availabilityCounts">
-                    <c:forEach var="availability" items="${dataAvailabilityOptions}">
-                        <cti:msg2 var="availabilityText" key=".dataAvailability.${availability}"/>
-                        <span class="badge" style="width:60px;background-color:${availability.color}" title="${availabilityText}">${report.getAvailabilityCount(availability)}</span>
-                    </c:forEach>
-                </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>
-        <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;height:180px;">
+        <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;height:160px;">
             <form:form id="filter-results-form" action="results" method="get" commandName="filter">
                 <cti:csrfToken/>
                 <input type="hidden" name="reportId" value="${criteria.reportId}"/>
@@ -53,7 +47,7 @@
                         </div>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
-                <div class="action-area">
+                <div class="fr">
                     <cti:button classes="primary action js-filter" nameKey="filter" />
                 </div>
             </form:form>

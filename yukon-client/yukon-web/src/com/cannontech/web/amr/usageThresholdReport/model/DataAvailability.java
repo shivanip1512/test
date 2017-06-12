@@ -4,8 +4,8 @@ public enum DataAvailability {
     
     COMPLETE("#009933"), 
     PARTIAL("#4d90fe"),
-    UNSUPPORTED("#ec971f"),
-    NONE("#888");
+    NONE("#ec971f"),
+    UNSUPPORTED("#888");
     
     private DataAvailability(String color) {
         this.color = color;

@@ -122,8 +122,6 @@ public class UsageThresholdReportController {
         filter.setAvailability(Lists.newArrayList(DataAvailability.values()));
         model.addAttribute("filter", new ThresholdReportFilter());
         int reportId = reportService.createThresholdReport(criteria, collection.getDeviceList());
-        ThresholdReport report = reportService.getReportDetail(reportId, filter, PagingParameters.of(250, 1), DetailSortBy.deviceName.value, Direction.asc);
-        model.addAttribute("report", report);
         criteria.setReportId(reportId);
         model.addAttribute("criteria", criteria);
         return "usageThresholdReport/results.jsp";
@@ -141,14 +139,16 @@ public class UsageThresholdReportController {
             for (String subGroup : deviceSubGroups) {
                 subGroups.add(deviceGroupService.resolveGroupName(subGroup));
             }
-            if (!subGroups.isEmpty()) {
-                filter.setGroups(subGroups);
-            }
         }
+        filter.setGroups(subGroups);
         filter.setIncludeDisabled(includeDisabled);
         filter.setThresholdDescriptor(thresholdDescriptor);
         filter.setThreshold(threshold);
-        filter.setAvailability(Lists.newArrayList(availability));
+        List<DataAvailability> selectedAvail = new ArrayList<>();
+        if (availability != null) {
+            selectedAvail = Lists.newArrayList(availability);
+        }
+        filter.setAvailability(selectedAvail);
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         for (DetailSortBy column : DetailSortBy.values()) {
@@ -172,6 +172,7 @@ public class UsageThresholdReportController {
         model.addAttribute("thresholdDescriptor", thresholdDescriptor);
         model.addAttribute("threshold", threshold);
         model.addAttribute("availability", availability);
+        model.addAttribute("dataAvailabilityOptions", DataAvailability.values());
         return "usageThresholdReport/deviceTable.jsp";
     }
     
@@ -188,14 +189,16 @@ public class UsageThresholdReportController {
             for (String subGroup : deviceSubGroups) {
                 subGroups.add(deviceGroupService.resolveGroupName(subGroup));
             }
-            if (!subGroups.isEmpty()) {
-                filter.setGroups(subGroups);
-            }
         }
+        filter.setGroups(subGroups);
         filter.setIncludeDisabled(includeDisabled);
         filter.setThresholdDescriptor(thresholdDescriptor);
         filter.setThreshold(threshold);
-        filter.setAvailability(Lists.newArrayList(availability));
+        List<DataAvailability> selectedAvail = new ArrayList<>();
+        if (availability != null) {
+            selectedAvail = Lists.newArrayList(availability);
+        }
+        filter.setAvailability(selectedAvail);
         DetailSortBy sortBy = DetailSortBy.valueOf(sorting.getSort());
         Direction dir = sorting.getDirection();
         ThresholdReport allDevicesReport = reportService.getReportDetail(reportId, filter, paging, sortBy.getValue(), dir);

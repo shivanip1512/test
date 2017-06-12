@@ -25,6 +25,12 @@
     <div data-url="${dataUrl}">
         <span class="fwn"><i:inline key=".devices"/>:</span>
         <span class="badge">${detail.hitCount}</span>
+        <span class="fr">
+            <c:forEach var="availability" items="${dataAvailabilityOptions}">
+                <cti:msg2 var="availabilityText" key=".dataAvailability.${availability}"/>
+                <span class="badge" style="width:60px;background-color:${availability.color}" title="${availabilityText}">${report.getAvailabilityCount(availability)}</span>
+            </c:forEach>
+        </span>
         
         <c:if test="${detail.hitCount > 0}">
             <span class="js-cog-menu">
