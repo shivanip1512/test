@@ -30,7 +30,6 @@ public class SimulatorStartupSettingsServiceImpl implements SimulatorStartupSett
     public void uploadSimulatorStartupSettingsToDb(boolean runOnStartup, SimulatorType uploadType) {
         for (YukonSimulatorSettingsKey key : YukonSimulatorSettingsKey.values()) {
             if (key.name().contains(uploadType.name()) && key.name().contains("RUN_ON_STARTUP")) {
-                System.out.println(uploadType);
                 yukonSimulatorSettingsDao.setValue(key, runOnStartup);
                 return;
             }
