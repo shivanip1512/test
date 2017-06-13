@@ -33,7 +33,7 @@
                     </cti:url>
                     <tr>
                         <td>${resultWrapper.value}</td>
-                        <td><cti:msg key="${resultWrapper.key.result.deviceCollection.description}"/></td>
+                        <td><cti:msg key="${resultWrapper.key.result.deviceCollection.description}" htmlEscape="true"/></td>
                         <td class="tar"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/SUCCESS_COUNT"/></td>
                         <td class="tar"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/FAILURE_COUNT"/></td>
                         <td class="tar"><cti:dataUpdaterValue type="GROUP_METER_READ" identifier="${resultKey}/UNSUPPORTED_COUNT"/></td>

@@ -56,7 +56,7 @@
                                     <span class="empty-list fl"><i:inline key="yukon.common.noDevices"/></span>
                                 </c:if>
                                 <c:if test="${not empty archivedValuesExporter.deviceCollection.deviceCount}">
-                                    <span class="b-label fl"><i:inline key="${archivedValuesExporter.deviceCollection.description}"/></span>
+                                    <span class="b-label fl"><i:inline key="${archivedValuesExporter.deviceCollection.description}" htmlEscape="true"/></span>
                                 </c:if>
                                 <i class="icon icon-folder-edit"></i>
                             </a>

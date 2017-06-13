@@ -62,7 +62,7 @@ $(function() {
     
     <h2 class="page-title">${pageTitle}</h2>
 
-    <c:set var="sectionTitle">Reading '${attributesDescription}' on <cti:msg2 key="${resultWrapper.result.deviceCollection.description}"/></c:set>
+    <c:set var="sectionTitle">Reading '${attributesDescription}' on <cti:msg2 key="${resultWrapper.result.deviceCollection.description}" htmlEscape="true"/></c:set>
     <tags:sectionContainer id="readLogsDetailContainer" title="${sectionTitle}">
     
         <%-- NOTE --%>
