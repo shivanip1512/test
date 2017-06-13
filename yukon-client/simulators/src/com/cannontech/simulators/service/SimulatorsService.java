@@ -74,7 +74,7 @@ public class SimulatorsService {
             for (SimulatorType simType : SimulatorType.values()) {
                 if (simType == SimulatorType.RFN_METER) {
                     SimulatorSettings settings = rfnMeterDataSimulatorServiceImpl.getCurrentSettings();
-                    if (simulatorStartupSettingsService.getRunOnStartup(simType)) {
+                    if (simulatorStartupSettingsService.isRunOnStartup(simType)) {
                         rfnMeterDataSimulatorServiceImpl.startSimulator(settings);
                     }
                 }

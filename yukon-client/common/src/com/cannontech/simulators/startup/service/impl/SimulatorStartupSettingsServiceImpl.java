@@ -17,7 +17,7 @@ public class SimulatorStartupSettingsServiceImpl implements SimulatorStartupSett
     private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
 
     @Override
-    public boolean getRunOnStartup(SimulatorType downloadType) {
+    public boolean isRunOnStartup(SimulatorType downloadType) {
         for (YukonSimulatorSettingsKey key : YukonSimulatorSettingsKey.values()) {
             if (key.name().contains(downloadType.name()) && key.name().contains("RUN_ON_STARTUP")) {
                 return yukonSimulatorSettingsDao.getBooleanValue(key);

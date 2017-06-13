@@ -13,7 +13,7 @@ public class SimulatorStartupSettingsResponse extends SimulatorResponseBase {
         this.runOnStartup = runOnStartup;
     }
 
-    public boolean getRunOnStartup() {
+    public boolean isRunOnStartup() {
         return runOnStartup;
     }
 }

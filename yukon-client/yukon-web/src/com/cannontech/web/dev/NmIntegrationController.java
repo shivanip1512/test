@@ -598,7 +598,7 @@ public class NmIntegrationController {
         }
         return null;
     }
-    //SIMULATOR_STARTUP
+
     @RequestMapping("disableRfnAutoStart")
     @ResponseBody
     public Map<String, Object> disableRfnAutoStart(FlashScope flash) {
@@ -618,7 +618,7 @@ public class NmIntegrationController {
         }
         Map<String, Object> json = new HashMap<>();
         json.put("hasError", false);
-        json.put("runOnStartup", startupResponse.response.getRunOnStartup());
+        json.put("runOnStartup", startupResponse.response.isRunOnStartup());
         return json;
     }
 
@@ -654,7 +654,7 @@ public class NmIntegrationController {
         if (startupResponse == null) {
             return "rfn/rfnMeterSimulator.jsp";
         }
-        model.addAttribute("rfnMeterRunOnStartup", startupResponse.getRunOnStartup());
+        model.addAttribute("rfnMeterRunOnStartup", startupResponse.isRunOnStartup());
         
         return "rfn/rfnMeterSimulator.jsp";
     }

@@ -24,9 +24,6 @@ public class SimulatorSettings implements Serializable {
     // used for testing simulator
     private int deviceId;
 
-    // used for automatically starting simulators on simulator service startup
-    private boolean runOnStartup;
-
     private ReportingInterval reportingInterval = ReportingInterval.REPORTING_INTERVAL_24_HOURS;
 
     public static enum ReportingInterval implements DisplayableEnum {
@@ -77,7 +74,6 @@ public class SimulatorSettings implements Serializable {
         this.paoType = paoType;
         this.percentOfDuplicates = percentOfDuplicates;
         this.reportingInterval = reportingInterval;
-        this.runOnStartup = runOnStartup;
     }
 
     public SimulatorSettings(int deviceId) {
@@ -149,13 +145,5 @@ public class SimulatorSettings implements Serializable {
 
     public void setReportingInterval(ReportingInterval reportingInterval) {
         this.reportingInterval = reportingInterval;
-    }
-
-    public boolean getRunOnStartup() {
-        return runOnStartup;
-    }
-
-    public void setRunOnStartup(boolean runOnStartup) {
-        this.runOnStartup = runOnStartup;
     }
 }

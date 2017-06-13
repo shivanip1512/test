@@ -188,7 +188,6 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         settings.setPaoType(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_METER_TYPE));
         settings.setPercentOfDuplicates(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE));
         settings.setReportingInterval(ReportingInterval.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_REPORTING_INTERVAL)));
-        settings.setRunOnStartup(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_RUN_ON_STARTUP));
         return settings;
     }
 

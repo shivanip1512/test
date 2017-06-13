@@ -28,11 +28,11 @@ public class SimulatorStartupSettingsMessageHandler extends SimulatorMessageHand
         try {
             if (simulatorRequest instanceof SimulatorStartupSettingsRequest) {
                 SimulatorStartupSettingsRequest request = (SimulatorStartupSettingsRequest) simulatorRequest;
-                simulatorStartupSettingsService.uploadSimulatorStartupSettingsToDb(request.getRunOnStartup(), request.getUploadType());
+                simulatorStartupSettingsService.uploadSimulatorStartupSettingsToDb(request.isRunOnStartup(), request.getUploadType());
                 return new SimulatorStartupSettingsResponse(true);
             } else if (simulatorRequest instanceof SimulatorStartupSettingsStatusRequest) {
                 SimulatorStartupSettingsStatusRequest request = (SimulatorStartupSettingsStatusRequest) simulatorRequest;
-                boolean runOnStartup = simulatorStartupSettingsService.getRunOnStartup(request.getDownloadType());
+                boolean runOnStartup = simulatorStartupSettingsService.isRunOnStartup(request.getDownloadType());
                 return new SimulatorStartupSettingsResponse(true, runOnStartup);
             } else {
                 SimulatorStartupSettingsResponse response = new SimulatorStartupSettingsResponse(false);

@@ -11,14 +11,11 @@ public interface SimulatorStartupSettingsService {
 
     /**
      * Get the startup settings boolean from the database for the given SimulatorType.
-     * @param SimulatorType
-     * @return True or false
      */
-    public boolean getRunOnStartup(SimulatorType downloadType);
+    public boolean isRunOnStartup(SimulatorType downloadType);
 
     /**
      * Upload the given boolean value to the database for the given SimulatorType.
-     * @param a boolean and SimulatorType
      */
     public void uploadSimulatorStartupSettingsToDb(boolean runOnStartup, SimulatorType uploadType);
 }

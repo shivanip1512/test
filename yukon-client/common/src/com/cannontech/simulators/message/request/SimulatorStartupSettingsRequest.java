@@ -28,7 +28,7 @@ public class SimulatorStartupSettingsRequest implements SimulatorRequest {
         return uploadType;
     }
 
-    public boolean getRunOnStartup() {
+    public boolean isRunOnStartup() {
         return runOnStartup;
     }
 }
