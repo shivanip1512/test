@@ -16,7 +16,7 @@
 <div <c:if test="${not empty pageScope.id}">id="${id}"</c:if>>
     <strong><cti:msg2 key="yukon.common.device.bulk.selectedDevicesPopup.linkLabel"/>:</strong>&nbsp;
     <span class="badge js-count">${count}</span>&nbsp;
-    <cti:msg2 key="${deviceCollection.description}"/>
+    <cti:msg2 key="${deviceCollection.description}" htmlEscape="true"/>
     <c:if test="${count > 0}"><tags:selectedDevicesPopup deviceCollection="${deviceCollection}"/></c:if>
     <c:if test="${deviceErrorCount > 0}">
     	<span class="badge badge-error">${deviceErrorCount}</span>

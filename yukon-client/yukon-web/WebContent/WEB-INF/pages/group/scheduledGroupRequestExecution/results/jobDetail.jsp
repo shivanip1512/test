@@ -108,7 +108,7 @@
             </tags:nameValue>
         </c:if>
         <c:if test="${not empty jobWrapper.command}">
-            <tags:nameValue name="${commandText}">${jobWrapper.command}</tags:nameValue>
+            <tags:nameValue name="${commandText}">${fn:escapeXml(jobWrapper.command)}</tags:nameValue>
         </c:if>
 
         <%-- device group --%>
