@@ -241,7 +241,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     }
 
     @RequestMapping("disconnect")
-    public String disconnect(ModelMap model, YukonUserContext userContext, int deviceId, FlashScope flash) {
+    public String disconnect(ModelMap model, YukonUserContext userContext, int deviceId) {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, userContext.getYukonUser());
         
