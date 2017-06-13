@@ -102,8 +102,7 @@ public class HoneywellBuilder implements HardwareTypeExtensionProvider {
 
     @Override
     public void updateDevice(Hardware hardware) {
-        updateDevice(hardware.getInventoryId(), hardware.getMacAddress(), hardware.getDeviceId(), hardware.getDeviceVendorUserId(),
-            hardware.getYukonPao());
+        // Nothing extra to do
     }
 
     public void updateDevice(int inventoryId, String macAddress, int deviceId, Integer deviceVendorUserId, YukonPao pao) {
