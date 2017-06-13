@@ -89,10 +89,12 @@ public class YukonJmsConnectionFactory implements FactoryBean<ConnectionFactory>
                 
                 if (!CtiUtilities.isRunningAsClient()) {
                     String appName = applicationName;
-                    try {
-                        appName = applicationName + InetAddress.getLocalHost().getHostName();
-                    } catch (UnknownHostException e) {
-                        log.info("Could not resolve host name.");
+                    if (applicationName.equals("Webserver")) {
+                        try {
+                            appName = applicationName + InetAddress.getLocalHost().getHostName();
+                        } catch (UnknownHostException e) {
+                            log.info("Could not resolve host name.");
+                        }
                     }
                     
                     String clientBrokerConnection = 
