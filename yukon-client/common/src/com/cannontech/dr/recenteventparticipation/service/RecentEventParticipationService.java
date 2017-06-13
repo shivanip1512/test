@@ -6,11 +6,11 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.util.Range;
-import com.cannontech.dr.controlaudit.ControlEventDeviceStatus;
-import com.cannontech.dr.controlaudit.model.RecentEventParticipationDetail;
-import com.cannontech.dr.controlaudit.model.RecentEventParticipationStats;
-import com.cannontech.dr.controlaudit.model.RecentEventParticipationSummary;
 import com.cannontech.dr.honeywellWifi.azure.event.EventPhase;
+import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
+import com.cannontech.dr.recenteventparticipation.model.RecentEventParticipationDetail;
+import com.cannontech.dr.recenteventparticipation.model.RecentEventParticipationStats;
+import com.cannontech.dr.recenteventparticipation.model.RecentEventParticipationSummary;
 
 public interface RecentEventParticipationService {
     /**

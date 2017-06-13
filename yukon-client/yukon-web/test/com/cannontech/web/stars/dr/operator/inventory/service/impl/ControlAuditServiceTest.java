@@ -301,7 +301,7 @@ public class ControlAuditServiceTest {
         ReflectionTestUtils.setField(service, "inventoryDao", inventoryDao);
         ReflectionTestUtils.setField(service, "paoDao", paoDao);
         ReflectionTestUtils.setField(service, "rphDao", rphDao);
-        ReflectionTestUtils.setField(service, "controlEventDao", recentEventParticipationDao);
+        ReflectionTestUtils.setField(service, "recentEventParticipationDao", recentEventParticipationDao);
         ReflectionTestUtils.setField(service, "resolver", resolver);
         ReflectionTestUtils.setField(service, "collectionProducer", collectionProducer);
         ReflectionTestUtils.setField(service, "paoDefinitionDao", paoDefinitionDao);

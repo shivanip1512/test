@@ -1,6 +1,6 @@
 package com.cannontech.dr.recenteventparticipation.dao.impl;
 
-import static com.cannontech.dr.controlaudit.ControlEventDeviceStatus.UNKNOWN;
+import static com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus.UNKNOWN;
 
 import java.sql.SQLException;
 import java.util.Date;
@@ -23,13 +23,13 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
-import com.cannontech.dr.controlaudit.ControlEventDeviceStatus;
-import com.cannontech.dr.controlaudit.ControlOptOutStatus;
-import com.cannontech.dr.controlaudit.model.RecentEventParticipationDetail;
-import com.cannontech.dr.controlaudit.model.RecentEventParticipationStats;
-import com.cannontech.dr.controlaudit.model.RecentEventParticipationSummary;
-import com.cannontech.dr.controlaudit.model.ControlDeviceDetail;
+import com.cannontech.dr.recenteventparticipation.ControlEventDeviceStatus;
+import com.cannontech.dr.recenteventparticipation.ControlOptOutStatus;
 import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
+import com.cannontech.dr.recenteventparticipation.model.ControlDeviceDetail;
+import com.cannontech.dr.recenteventparticipation.model.RecentEventParticipationDetail;
+import com.cannontech.dr.recenteventparticipation.model.RecentEventParticipationStats;
+import com.cannontech.dr.recenteventparticipation.model.RecentEventParticipationSummary;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
