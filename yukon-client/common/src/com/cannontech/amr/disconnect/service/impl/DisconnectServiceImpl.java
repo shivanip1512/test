@@ -44,8 +44,6 @@ import com.cannontech.common.events.loggers.DisconnectEventLogService;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.incrementer.NextValueHelper;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.google.common.collect.Sets;
 
@@ -59,10 +57,8 @@ public class DisconnectServiceImpl implements DisconnectService {
     @Autowired private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
     @Autowired private CommandRequestExecutionDao commandRequestExecutionDao;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
-    @Autowired private NextValueHelper nextValueHelper;
     @Autowired private DisconnectEventLogService disconnectEventLogService;
     @Autowired private MeterDao meterDao;
-    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     
     private final RecentResultsCache<DisconnectResult> resultsCache = new RecentResultsCache<>();
 
@@ -397,7 +393,7 @@ public class DisconnectServiceImpl implements DisconnectService {
         public void cancel() {
             // not implemented
         }
-
+        
         public void waitForCompletion() throws InterruptedException {
             log.debug("Starting await completion");
             completeLatch.await();

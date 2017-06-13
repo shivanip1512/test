@@ -1184,7 +1184,11 @@
         <description>Request timed out</description>
         <troubleshooting>Check Yukon Logs for errors</troubleshooting>
     </error>
-
+    <error code="1028">
+        <category>Network Manager</category>
+        <porter>Load side voltage detected while disconnected.</porter>
+        <description>Load side voltage detected while disconnected.</description>
+    </error>
     <error code="2000">
         <category>Yukon System</category>
         <porter>Invalid Action for Device Type.</porter>

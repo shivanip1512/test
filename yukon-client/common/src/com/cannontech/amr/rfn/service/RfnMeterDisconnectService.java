@@ -10,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReply;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReply;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectRequest;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.clientutils.YukonLogManager;
@@ -118,7 +120,12 @@ public class RfnMeterDisconnectService {
                     /* Request failed */
                     MessageSourceResolvable message = 
                         YukonMessageSourceResolvable.createSingleCodeWithArguments(confirmError, confirmationReplyMessage);
-                    callback.receivedError(message, confirmationReplyMessage.getState());
+                    if (confirmationReplyMessage.getReplyType() == RfnMeterDisconnectConfirmationReplyType.LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT) {
+                        callback.receivedError(message, RfnMeterDisconnectState.LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED);
+                    }
+                    else {
+                        callback.receivedError(message, confirmationReplyMessage.getState());
+                    }
                 } else {
                     PointValueQualityHolder pointData = publishPointData(confirmationReplyMessage.getState().getRawState(), meter);
                     /* Confirmation response successful, process point data */

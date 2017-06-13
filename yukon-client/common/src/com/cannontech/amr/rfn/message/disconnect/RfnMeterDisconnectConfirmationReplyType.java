@@ -7,4 +7,5 @@ public enum RfnMeterDisconnectConfirmationReplyType {
     NOT_SUPPORTED,
     NETWORK_TIMEOUT,
     TIMEOUT, // Yukon specific timeout
+    LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT,
 }

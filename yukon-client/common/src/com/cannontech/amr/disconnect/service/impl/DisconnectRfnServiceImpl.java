@@ -31,14 +31,12 @@ import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 
 public class DisconnectRfnServiceImpl implements DisconnectRfnService {
     
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired private MeterDao meterDao;
-    @Autowired private YukonUserContextMessageSourceResolver resolver;
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired @Qualifier("longRunning") private Executor executor;
@@ -176,6 +174,11 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
                     callback.failed(meter, error);
                     errorCode = error.getErrorCode();
                     break;
+                case LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED:
+                    if (callback instanceof DisconnectServiceImpl.SingleMeterDisconnectCallback) {
+                        callback.failed(meter, new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED), message));
+                    }
+                    break;
                 case DISCONNECTED:
                 case DISCONNECTED_DEMAND_THRESHOLD_ACTIVE:
                 case CONNECTED_DEMAND_THRESHOLD_ACTIVE:
@@ -188,7 +191,7 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
                     break;
                 case CONNECTED:
                     callback.connected(meter, timestamp);
-                    break;
+                    break;                    
                 default:
                     throw new UnsupportedOperationException(state + " is not supported");
                 }

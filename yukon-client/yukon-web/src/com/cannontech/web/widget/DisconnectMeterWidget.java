@@ -63,7 +63,6 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -82,7 +81,6 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     @Autowired private AttributeService attributeService;
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired private DisconnectService disconnectService;
-    @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired private StateGroupDao stateGroupDao;
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
@@ -243,7 +241,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     }
 
     @RequestMapping("disconnect")
-    public String disconnect(ModelMap model, YukonUserContext userContext, int deviceId) {
+    public String disconnect(ModelMap model, YukonUserContext userContext, int deviceId, FlashScope flash) {
         
         rolePropertyDao.verifyProperty(YukonRoleProperty.ALLOW_DISCONNECT_CONTROL, userContext.getYukonUser());
         
@@ -254,7 +252,6 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
                 DeviceRequestType.METER_CONNECT_DISCONNECT_WIDGET, meter,
                 userContext);
         addDisconnectResultToModel(model, result);
-        
         return "disconnectMeterWidget/render.jsp";
     }
 

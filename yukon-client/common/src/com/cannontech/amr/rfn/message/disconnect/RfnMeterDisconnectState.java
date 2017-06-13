@@ -17,7 +17,11 @@ public enum RfnMeterDisconnectState {
      * Meter is in disconnected "state" based on Mode, but is technically connected until
      * configuration requirements for disconnect mode are met
      */
-    CONNECTED_CYCLING_ACTIVE(7, RfnMeterDisconnectStatusType.TERMINATE)
+    CONNECTED_CYCLING_ACTIVE(7, RfnMeterDisconnectStatusType.TERMINATE),
+    /**
+     * Disconnected load side voltage is detected
+     */
+    LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED(8, RfnMeterDisconnectStatusType.TERMINATE),
     ;
     
     
