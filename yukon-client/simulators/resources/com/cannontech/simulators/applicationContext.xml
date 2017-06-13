@@ -9,6 +9,12 @@
     
     <bean class="com.cannontech.simulators.service.SimulatorsService"/>
     
+    <bean id="cbcCache" class="com.cannontech.cbc.cache.impl.CapControlCacheImpl"/>
+    <alias alias="capControlCache" name="cbcCache"/>
+    
+    <bean id="zoneService" class="com.cannontech.capcontrol.service.impl.ZoneServiceImpl"/>
+    <bean id="voltageRegulatorService" class="com.cannontech.capcontrol.service.VoltageRegulatorService"/>
+    
     <!-- Message handlers for simulator messaging -->
     <bean class="com.cannontech.simulators.handler.GatewaySimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.AmrCreationSimulatorMessageHandler"/>
@@ -19,4 +25,5 @@
     <bean class="com.cannontech.simulators.handler.SimulatorStartupSettingsMessageHandler"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrDataSimulatorServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnMeterDataSimulatorServiceImpl"/>
+    <bean class="com.cannontech.simulators.ivvc.impl.IvvcSimulatorServiceImpl"/>
 </beans>
