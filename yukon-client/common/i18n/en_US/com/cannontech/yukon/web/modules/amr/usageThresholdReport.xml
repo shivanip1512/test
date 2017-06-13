@@ -51,11 +51,12 @@
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.endDate">End Date</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.reportRunDate">Report Run at</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.availabilityCounts">Availability Counts</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.downloadAll.hoverText">Download All</entry>
     
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.devices">Devices</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.collectionActions">Collection Actions</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.mapDevices">Map Devices</entry>
-    <entry key="yukon.web.modules.amr.usageThresholdReport.results.download">Download</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.download">Download</entry>    
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.readAttribute">Read Attribute</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.sendCommand">Send Command</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.locateRoute">Locate Route</entry>

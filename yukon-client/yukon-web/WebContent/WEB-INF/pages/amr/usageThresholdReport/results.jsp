@@ -8,7 +8,7 @@
 <cti:standardPage module="amr" page="usageThresholdReport.results">
 
     <div class="column-12-12 clearfix">
-        <div class="column one" style="border:1px solid #ccc;padding:5px;height:160px;">
+        <div class="column one pr" style="border:1px solid #ccc;padding:5px;height:160px;">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".attribute">
                      <cti:msg2 key="${criteria.attribute.formatKey}"/>
@@ -21,10 +21,14 @@
                 </tags:nameValue2>
                 <tags:nameValue2 nameKey=".reportRunDate">
                     <cti:formatDate type="DATEHM_12" value="${criteria.runTime}"/>
+                    <cti:url var="downloadAllUrl" value="downloadAll">
+                        <cti:param name="reportId" value="${criteria.reportId}"/>
+                    </cti:url>
+                    <cti:icon icon="icon-csv" href="${downloadAllUrl}" classes="fr" nameKey="downloadAll"/>
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>
-        <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;height:160px;">
+        <div class="column two nogutter pr" style="border:1px solid #ccc;padding:5px;height:160px;">
             <form:form id="filter-results-form" action="results" method="get" commandName="filter">
                 <cti:csrfToken/>
                 <input type="hidden" name="reportId" value="${criteria.reportId}"/>
@@ -47,9 +51,7 @@
                         </div>
                     </tags:nameValue2>
                 </tags:nameValueContainer2>
-                <div class="fr">
-                    <cti:button classes="primary action js-filter" nameKey="filter" />
-                </div>
+                <cti:button classes="primary action js-filter fr" nameKey="filter"/>
             </form:form>
         </div>
     </div>

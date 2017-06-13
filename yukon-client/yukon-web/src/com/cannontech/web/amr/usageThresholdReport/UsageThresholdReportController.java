@@ -204,6 +204,34 @@ public class UsageThresholdReportController {
         ThresholdReport allDevicesReport = reportService.getReportDetail(reportId, filter, paging, sortBy.getValue(), dir);
 
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        
+        String[] headerRow = getHeaderRows(accessor);
+        List<String[]> dataRows = getDataRows(allDevicesReport, userContext);
+
+        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "usageThresholdReport_" + now + ".csv");
+        return null;
+      }
+    
+    @RequestMapping("downloadAll")
+    public String downloadAll(YukonUserContext userContext, int reportId, 
+                          HttpServletResponse response) throws IOException {
+        ThresholdReportFilter filter = new ThresholdReportFilter();
+        filter.setThresholdDescriptor(null);
+        filter.setAvailability(Lists.newArrayList(DataAvailability.values()));
+        ThresholdReport allDevicesReport = reportService.getReportDetail(reportId, filter, PagingParameters.EVERYTHING, DetailSortBy.deviceName.value, Direction.asc);
+
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        
+        String[] headerRow = getHeaderRows(accessor);
+        List<String[]> dataRows = getDataRows(allDevicesReport, userContext);
+
+        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
+        WebFileUtils.writeToCSV(response, headerRow, dataRows, "usageThresholdReport_" + now + ".csv");
+        return null;
+      }
+    
+    private String[] getHeaderRows(MessageSourceAccessor accessor) {
         String[] headerRow = new String[14];
 
         headerRow[0] = accessor.getMessage(DetailSortBy.deviceName);
@@ -220,7 +248,12 @@ public class UsageThresholdReportController {
         headerRow[11] = accessor.getMessage(baseKey + "latest.value");
         headerRow[12] = accessor.getMessage(baseKey + "latest.units");
         headerRow[13] = accessor.getMessage(baseKey + "latest.quality");
-
+        
+        return headerRow;
+    }
+    
+    private List<String[]> getDataRows(ThresholdReport allDevicesReport, YukonUserContext userContext) {
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         List<String[]> dataRows = Lists.newArrayList();
         for (ThresholdReportDetail detail: allDevicesReport.getDetail().getResultList()) {
             String[] dataRow = new String[14];
@@ -228,7 +261,9 @@ public class UsageThresholdReportController {
             dataRow[1] = detail.getMeterNumber();
             dataRow[2] = detail.getPaoIdentifier().getPaoType().getPaoTypeName();
             dataRow[3] = detail.getAddressSerialNumber();
-            dataRow[4] = detail.getDelta().toString();
+            if (detail.getDelta() != null) {
+                dataRow[4] = detail.getDelta().toString();
+            }
             if (detail.getAvailability() != null) {
                 dataRow[5] = accessor.getMessage(baseKey + "dataAvailability." + detail.getAvailability().name());
             }
@@ -252,10 +287,8 @@ public class UsageThresholdReportController {
             }
             dataRows.add(dataRow);
         }
-        String now = dateFormattingService.format(new Date(), DateFormatEnum.FILE_TIMESTAMP, userContext);
-        WebFileUtils.writeToCSV(response, headerRow, dataRows, "usageThresholdReport_" + now + ".csv");
-        return null;
-      }
+        return dataRows;
+    }
     
     public enum DetailSortBy implements DisplayableEnum {
 
