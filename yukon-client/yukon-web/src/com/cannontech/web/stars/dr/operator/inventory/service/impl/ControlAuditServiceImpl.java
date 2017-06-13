@@ -32,7 +32,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.dr.controlaudit.dao.ControlEventDao;
+import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.model.LiteLmHardware;
@@ -60,7 +60,7 @@ public class ControlAuditServiceImpl implements ControlAuditService {
     @Autowired private PaoDefinitionDao paoDefinitionDao;
     @Autowired @Qualifier("inventoryTasks") private RecentResultsCache<AbstractInventoryTask> resultsCache;
     @Autowired @Qualifier("longRunning") private Executor executor;
-    @Autowired private ControlEventDao controlEventDao;
+    @Autowired private RecentEventParticipationDao recentEventParticipationDao;
     
     private static final Logger log = YukonLogManager.getLogger(ControlAuditServiceImpl.class);
     
@@ -247,7 +247,7 @@ public class ControlAuditServiceImpl implements ControlAuditService {
                         List<Integer> deviceList = new ArrayList<>(honeywellDevices.keySet());
 
                         Map<Integer, Integer> deviceControlStatus =
-                            controlEventDao.getControlEventDeviceStatus(deviceList, from, to);
+                            recentEventParticipationDao.getControlEventDeviceStatus(deviceList, from, to);
 
                         honeywellDevices.forEach((key, value) -> {
                             AuditRow row = new AuditRow();

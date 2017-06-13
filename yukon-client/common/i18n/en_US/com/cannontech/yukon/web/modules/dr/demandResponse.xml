@@ -614,8 +614,8 @@ The devices in this category have not reported data accumulated during the expec
 ]]></entry>
 
 <!-- Recent Event Participation -->
-<entry key="yukon.web.modules.dr.home.controlAuditRecentEvents.title">Recent Event Participation</entry>
-<entry key="yukon.web.modules.dr.home.controlAuditRecentEvents.infoText"><![CDATA[<span style="background-color:green; color:white ;font-weight:bold">Confirmed Success</span>
+<entry key="yukon.web.modules.dr.home.recentEventParticipation.title">Recent Event Participation</entry>
+<entry key="yukon.web.modules.dr.home.recentEventParticipation.infoText"><![CDATA[<span style="background-color:green; color:white ;font-weight:bold">Confirmed Success</span>
 <br>
 The devices in this category have reported DR message for the event.
 <br><br>
@@ -623,25 +623,25 @@ The devices in this category have reported DR message for the event.
 <br>
 The devices in this category have not reported DR message for the event.
 ]]></entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.eventID">Event Id</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.program">Program</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.group">Group</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.startTime">Start Time</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.stopTime">Stop Time</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.accountNumber">Account Number</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.deviceName">Device Name</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.eventPhase">Event Phase</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.participationState">Participation State</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.serialNumber">Serial Number</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.optOutStatus">OptOut Status</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.progress">Device Status</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.pageName">Event Participation Summary</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.dateRange">Date Range</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.numTests">Events Found</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.download">Download</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.confirmed">Confirmed</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.unreported">Unreported</entry>
-<entry key="yukon.web.modules.dr.controlaudit.details.noRecentEvents">No Recent Events</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.eventID">Event Id</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.program">Program</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.group">Group</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.startTime">Start Time</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.stopTime">Stop Time</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.accountNumber">Account Number</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.deviceName">Device Name</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.eventPhase">Event Phase</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.participationState">Participation State</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.serialNumber">Serial Number</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.optOutStatus">OptOut Status</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.progress">Device Status</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.pageName">Event Participation Summary</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.dateRange">Date Range</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.numTests">Events Found</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.download">Download</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.confirmed">Confirmed</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.unreported">Unreported</entry>
+<entry key="yukon.web.modules.dr.recentEventParticipation.details.noRecentEvents">No Recent Events</entry>
 
 <!-- Demand Response Quick Search -->
 <entry key="yukon.web.modules.dr.searchResults.pageTitle">Demand Response Quick Search</entry>

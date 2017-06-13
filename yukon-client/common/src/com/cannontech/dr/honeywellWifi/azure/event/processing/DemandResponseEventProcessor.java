@@ -9,15 +9,15 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.dr.controlaudit.service.ControlEventService;
 import com.cannontech.dr.honeywellWifi.HoneywellWifiDataType;
 import com.cannontech.dr.honeywellWifi.azure.event.DemandResponseEvent;
 import com.cannontech.dr.honeywellWifi.azure.event.EventPhase;
 import com.cannontech.dr.honeywellWifi.azure.event.HoneywellWifiData;
+import com.cannontech.dr.recenteventparticipation.service.RecentEventParticipationService;
 
 public class DemandResponseEventProcessor extends AbstractHoneywellWifiDataProcessor {
     private static final Logger log = YukonLogManager.getLogger(DemandResponseEventProcessor.class);
-    @Autowired ControlEventService controlEventService;
+    @Autowired RecentEventParticipationService recentEventParticipationService;
 
     @Override
     public HoneywellWifiDataType getSupportedType() {
@@ -47,7 +47,7 @@ public class DemandResponseEventProcessor extends AbstractHoneywellWifiDataProce
             
             //Send point data to dispatch
             inputPointValue(thermostat, BuiltInAttribute.CONTROL_STATUS, eventTime, stateValue);
-            controlEventService.updateDeviceControlEvent(event.getDemandResponseId(), thermostat.getPaoId(),
+            recentEventParticipationService.updateDeviceControlEvent(event.getDemandResponseId(), thermostat.getPaoId(),
                 event.getPhase(), eventTime);
         } catch (NotFoundException e) {
             log.info("Honeywell demand response message received for unknown device with MAC ID " + event.getMacId());

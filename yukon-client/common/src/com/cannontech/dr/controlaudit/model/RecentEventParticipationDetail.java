@@ -4,13 +4,13 @@ import java.util.List;
 
 import org.joda.time.Instant;
 
-public class ControlAuditDetail extends ControlAuditBase {
+public class RecentEventParticipationDetail extends ControlAuditBase {
 
     private Instant stopTime;
     private String accountNumber;
     private List<ControlDeviceDetail> deviceDetails;
 
-    public ControlAuditDetail(int eventId, String programName, String groupName, Instant startTime, Instant stopTime,
+    public RecentEventParticipationDetail(int eventId, String programName, String groupName, Instant startTime, Instant stopTime,
             String accountNumber, List<ControlDeviceDetail> deviceDetails) {
         super(eventId, programName, groupName, startTime);
         this.stopTime = stopTime;

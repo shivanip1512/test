@@ -173,7 +173,7 @@
             <jsp:include page="/dr/ecobee/statistics"/>
         </cti:checkRolesAndProperties>
         <cti:checkRolesAndProperties value="HONEYWELL_SUPPORT_ENABLED">
-            <jsp:include page="/dr/controlaudit/auditReport"/>
+            <jsp:include page="/dr/recenteventparticipation/auditReport"/>
         </cti:checkRolesAndProperties>
     </div>
     <div class="column two nogutter">

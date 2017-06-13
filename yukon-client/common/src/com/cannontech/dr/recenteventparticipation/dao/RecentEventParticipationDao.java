@@ -1,4 +1,4 @@
-package com.cannontech.dr.controlaudit.dao;
+package com.cannontech.dr.recenteventparticipation.dao;
 
 import java.util.Date;
 import java.util.List;
@@ -9,12 +9,12 @@ import org.joda.time.Instant;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.util.Range;
 import com.cannontech.dr.controlaudit.ControlEventDeviceStatus;
-import com.cannontech.dr.controlaudit.model.ControlAuditDetail;
-import com.cannontech.dr.controlaudit.model.ControlAuditStats;
-import com.cannontech.dr.controlaudit.model.ControlAuditSummary;
+import com.cannontech.dr.controlaudit.model.RecentEventParticipationDetail;
+import com.cannontech.dr.controlaudit.model.RecentEventParticipationStats;
+import com.cannontech.dr.controlaudit.model.RecentEventParticipationSummary;
 import com.cannontech.dr.controlaudit.model.ControlDeviceDetail;
 
-public interface ControlEventDao {
+public interface RecentEventParticipationDao {
     /**
      * Creates new control event associated with the specified load group
      */
@@ -36,23 +36,23 @@ public interface ControlEventDao {
      * Retrieves as a list of ControlAuditSummary associated with the specified event IDs.
      */
 
-    List<ControlAuditSummary> getControlAuditSummary(int numberOfEvents);
+    List<RecentEventParticipationSummary> getRecentEventParticipationSummary(int numberOfEvents);
 
     /**
      * Returned as a list of ControlAuditStats associated with the specified range and based on paging parameters
      */
 
-    List<ControlAuditStats> getControlAuditStats(Range<Instant> range, PagingParameters pagingParameters);
+    List<RecentEventParticipationStats> getRecentEventParticipationStats(Range<Instant> range, PagingParameters pagingParameters);
 
     /**
      * Returns ControlAuditDetail for specified event
      */
-    ControlAuditDetail getControlAuditDetail(int eventId);
+    RecentEventParticipationDetail getRecentEventParticipationDetail(int eventId);
 
     /**
-     * Returns list of ControlAuditDetail for specified date range
+     * Returns list of RecentEventParticipationDetail for specified date range
      */
-    List<ControlAuditDetail> getControlAuditDetails(Range<Instant> range);
+    List<RecentEventParticipationDetail> getRecentEventParticipationDetails(Range<Instant> range);
 
     /**
      * Returns list of ControlDeviceDetail for specified event

@@ -1,10 +1,10 @@
 package com.cannontech.dr.controlaudit.model;
 
-public class ControlAuditEventStats {
+public class RecentEventParticipationEventStats {
     private final int numConfirmed;
     private final int numUnknowns;
 
-    public ControlAuditEventStats(int numConfirmed, int numUnknowns) {
+    public RecentEventParticipationEventStats(int numConfirmed, int numUnknowns) {
         this.numConfirmed = numConfirmed;
         this.numUnknowns = numUnknowns;
     }

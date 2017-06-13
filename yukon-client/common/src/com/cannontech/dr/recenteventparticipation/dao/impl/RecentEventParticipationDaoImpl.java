@@ -1,4 +1,4 @@
-package com.cannontech.dr.controlaudit.dao.impl;
+package com.cannontech.dr.recenteventparticipation.dao.impl;
 
 import static com.cannontech.dr.controlaudit.ControlEventDeviceStatus.UNKNOWN;
 
@@ -25,11 +25,11 @@ import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.dr.controlaudit.ControlEventDeviceStatus;
 import com.cannontech.dr.controlaudit.ControlOptOutStatus;
-import com.cannontech.dr.controlaudit.dao.ControlEventDao;
-import com.cannontech.dr.controlaudit.model.ControlAuditDetail;
-import com.cannontech.dr.controlaudit.model.ControlAuditStats;
-import com.cannontech.dr.controlaudit.model.ControlAuditSummary;
+import com.cannontech.dr.controlaudit.model.RecentEventParticipationDetail;
+import com.cannontech.dr.controlaudit.model.RecentEventParticipationStats;
+import com.cannontech.dr.controlaudit.model.RecentEventParticipationSummary;
 import com.cannontech.dr.controlaudit.model.ControlDeviceDetail;
+import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.message.dispatch.message.DatabaseChangeEvent;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.stars.core.dao.InventoryBaseDao;
@@ -39,7 +39,7 @@ import com.cannontech.stars.dr.optout.model.OptOutEvent;
 import com.cannontech.stars.dr.optout.model.OptOutEventState;
 import com.google.common.collect.Maps;
 
-public class ControlEventDaoImpl implements ControlEventDao {
+public class RecentEventParticipationDaoImpl implements RecentEventParticipationDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private OptOutEventDao optOutEventDao;
@@ -149,22 +149,22 @@ public class ControlEventDaoImpl implements ControlEventDao {
 
     }
 
-    private final static YukonRowMapper<ControlAuditSummary> auditSummaryRowMapper =
-        new YukonRowMapper<ControlAuditSummary>() {
+    private final static YukonRowMapper<RecentEventParticipationSummary> auditSummaryRowMapper =
+        new YukonRowMapper<RecentEventParticipationSummary>() {
             @Override
-            public ControlAuditSummary mapRow(YukonResultSet rs) throws SQLException {
+            public RecentEventParticipationSummary mapRow(YukonResultSet rs) throws SQLException {
                 String programName = rs.getString("ProgramName");
                 Instant startTime = rs.getInstant("StartTime");
                 int numConfirmed = rs.getInt("Confirmed");
                 int numUnknowns = rs.getInt("Unknown");
-                ControlAuditSummary auditSummary =
-                    new ControlAuditSummary(programName, startTime, numConfirmed, numUnknowns);
+                RecentEventParticipationSummary auditSummary =
+                    new RecentEventParticipationSummary(programName, startTime, numConfirmed, numUnknowns);
                 return auditSummary;
             }
         };
 
     @Override
-    public List<ControlAuditSummary> getControlAuditSummary(int numberOfEvents) {
+    public List<RecentEventParticipationSummary> getRecentEventParticipationSummary(int numberOfEvents) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * FROM (");
         sql.append("    SELECT ROW_NUMBER() OVER (ORDER BY ce.StartTime DESC) AS RowNumber, pgypo.PAOName AS ProgramName, ce.StartTime AS StartTime,");
@@ -180,14 +180,14 @@ public class ControlEventDaoImpl implements ControlEventDao {
         sql.append("      AND lmhcg.GroupEnrollStop IS NULL");
         sql.append("      GROUP BY pgypo.PAOName, ce.StartTime) AS tbl");
         sql.append("WHERE tbl.RowNumber").lte(numberOfEvents);
-        List<ControlAuditSummary> auditSummaries = jdbcTemplate.query(sql, auditSummaryRowMapper);
+        List<RecentEventParticipationSummary> auditSummaries = jdbcTemplate.query(sql, auditSummaryRowMapper);
         return auditSummaries;
     }
 
-    private final static YukonRowMapper<ControlAuditStats> controlAuditStatsRowMapper =
-        new YukonRowMapper<ControlAuditStats>() {
+    private final static YukonRowMapper<RecentEventParticipationStats> controlAuditStatsRowMapper =
+        new YukonRowMapper<RecentEventParticipationStats>() {
             @Override
-            public ControlAuditStats mapRow(YukonResultSet rs) throws SQLException {
+            public RecentEventParticipationStats mapRow(YukonResultSet rs) throws SQLException {
 
                 int controlEventId = rs.getInt("EventId");
                 String programName = rs.getString("Program");
@@ -195,15 +195,15 @@ public class ControlEventDaoImpl implements ControlEventDao {
                 Instant startTime = rs.getInstant("StartTime");
                 int numConfirmed = rs.getInt("Confirmed");
                 int numUnknowns = rs.getInt("Unknown");
-                ControlAuditStats auditStats =
-                    new ControlAuditStats(controlEventId, programName, loadGroupName, startTime, numConfirmed,
+                RecentEventParticipationStats auditStats =
+                    new RecentEventParticipationStats(controlEventId, programName, loadGroupName, startTime, numConfirmed,
                         numUnknowns);
                 return auditStats;
             }
         };
 
     @Override
-    public List<ControlAuditStats> getControlAuditStats(Range<Instant> range, PagingParameters pagingParameters) {
+    public List<RecentEventParticipationStats> getRecentEventParticipationStats(Range<Instant> range, PagingParameters pagingParameters) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
 
         sql.append("SELECT * FROM (");
@@ -231,14 +231,14 @@ public class ControlEventDaoImpl implements ControlEventDao {
         sql.append("    ) outertable ");
         sql.append("WHERE RowNumber BETWEEN").append(pagingParameters.getOneBasedStartIndex());
         sql.append("  AND").append(pagingParameters.getOneBasedEndIndex());
-        List<ControlAuditStats> auditStats = jdbcTemplate.query(sql, controlAuditStatsRowMapper);
+        List<RecentEventParticipationStats> auditStats = jdbcTemplate.query(sql, controlAuditStatsRowMapper);
         return auditStats;
     }
 
-    private final static YukonRowMapper<ControlAuditDetail> controlAuditDetailRowMapper =
-        new YukonRowMapper<ControlAuditDetail>() {
+    private final static YukonRowMapper<RecentEventParticipationDetail> controlAuditDetailRowMapper =
+        new YukonRowMapper<RecentEventParticipationDetail>() {
             @Override
-            public ControlAuditDetail mapRow(YukonResultSet rs) throws SQLException {
+            public RecentEventParticipationDetail mapRow(YukonResultSet rs) throws SQLException {
 
                 int eventId = rs.getInt("EventId");
                 String programName = rs.getString("ProgramName");
@@ -246,23 +246,23 @@ public class ControlEventDaoImpl implements ControlEventDao {
                 Instant startTime = rs.getInstant("StartTime");
                 Instant stopTime = rs.getInstant("StopTime");
                 String accountNumber = rs.getString("AccountNumber");
-                ControlAuditDetail controlAuditDetail =
-                    new ControlAuditDetail(eventId, programName, groupName, startTime, stopTime, accountNumber, null);
+                RecentEventParticipationDetail controlAuditDetail =
+                    new RecentEventParticipationDetail(eventId, programName, groupName, startTime, stopTime, accountNumber, null);
                 return controlAuditDetail;
             }
         };
 
     @Override
-    public ControlAuditDetail getControlAuditDetail(int eventId) {
+    public RecentEventParticipationDetail getRecentEventParticipationDetail(int eventId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(getControlAuditBaseQuery());
         sql.append("AND ce.ControlEventId").eq_k(eventId);
-        ControlAuditDetail controlAuditDetail = jdbcTemplate.queryForObject(sql, controlAuditDetailRowMapper);
+        RecentEventParticipationDetail controlAuditDetail = jdbcTemplate.queryForObject(sql, controlAuditDetailRowMapper);
         return controlAuditDetail;
     }
 
     @Override
-    public List<ControlAuditDetail> getControlAuditDetails(Range<Instant> range) {
+    public List<RecentEventParticipationDetail> getRecentEventParticipationDetails(Range<Instant> range) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(getControlAuditBaseQuery());
@@ -277,7 +277,7 @@ public class ControlEventDaoImpl implements ControlEventDao {
             sql.append("AND ce.StartTime").lt(range.getMax());
         }
         sql.append("ORDER BY ce.ControlEventId DESC");
-        List<ControlAuditDetail> controlAuditDetails = jdbcTemplate.query(sql, controlAuditDetailRowMapper);
+        List<RecentEventParticipationDetail> controlAuditDetails = jdbcTemplate.query(sql, controlAuditDetailRowMapper);
 
         return controlAuditDetails;
     }

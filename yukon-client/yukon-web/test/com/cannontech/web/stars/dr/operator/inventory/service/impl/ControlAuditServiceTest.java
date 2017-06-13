@@ -48,7 +48,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
-import com.cannontech.dr.controlaudit.dao.ControlEventDao;
+import com.cannontech.dr.recenteventparticipation.dao.RecentEventParticipationDao;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.message.dispatch.message.PointData;
@@ -74,7 +74,7 @@ public class ControlAuditServiceTest {
     private InventoryDao inventoryDao;
     private PaoDao paoDao;
     private RawPointHistoryDao rphDao;
-    private ControlEventDao controlEventDao;
+    private RecentEventParticipationDao recentEventParticipationDao;
     private YukonUserContextMessageSourceResolver resolver;
     private MemoryCollectionProducer collectionProducer;
     private PaoDefinitionDao paoDefinitionDao;
@@ -272,8 +272,8 @@ public class ControlAuditServiceTest {
             }
         }).anyTimes();
         
-        controlEventDao = createNiceMock(ControlEventDao.class);
-        controlEventDao.getControlEventDeviceStatus(anyObject(), anyObject(), anyObject());
+        recentEventParticipationDao = createNiceMock(RecentEventParticipationDao.class);
+        recentEventParticipationDao.getControlEventDeviceStatus(anyObject(), anyObject(), anyObject());
         expectLastCall().andAnswer(new IAnswer<Map<Integer, Integer>>() {
             @Override
             public Map<Integer, Integer> answer() throws Throwable {
@@ -301,14 +301,14 @@ public class ControlAuditServiceTest {
         ReflectionTestUtils.setField(service, "inventoryDao", inventoryDao);
         ReflectionTestUtils.setField(service, "paoDao", paoDao);
         ReflectionTestUtils.setField(service, "rphDao", rphDao);
-        ReflectionTestUtils.setField(service, "controlEventDao", controlEventDao);
+        ReflectionTestUtils.setField(service, "controlEventDao", recentEventParticipationDao);
         ReflectionTestUtils.setField(service, "resolver", resolver);
         ReflectionTestUtils.setField(service, "collectionProducer", collectionProducer);
         ReflectionTestUtils.setField(service, "paoDefinitionDao", paoDefinitionDao);
         ReflectionTestUtils.setField(service, "resultsCache", resultsCache);
         ReflectionTestUtils.setField(service, "executor", executor);
         
-        replay(inventoryDao, paoDao, rphDao, controlEventDao, collectionProducer, resolver, paoDefinitionDao, executor);
+        replay(inventoryDao, paoDao, rphDao, recentEventParticipationDao, collectionProducer, resolver, paoDefinitionDao, executor);
     }
 
     @Test

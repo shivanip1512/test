@@ -16,9 +16,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.dr.honeywell.service.HoneywellCommunicationService;
 import com.cannontech.dr.honeywellWifi.model.HoneywellWifiDutyCycleDrParameters;
+import com.cannontech.dr.recenteventparticipation.service.RecentEventParticipationService;
 import com.cannontech.dr.service.ControlHistoryService;
 import com.cannontech.dr.service.ControlType;
-import com.cannontech.dr.controlaudit.service.ControlEventService;
 
 /**
  * Listens for ActiveMQ messages from Load Management, parses them, and passes DR messages to the
@@ -30,7 +30,7 @@ public class HoneywellWifiMessageListener {
     @Autowired private ControlHistoryService controlHistoryService;
     @Autowired private HoneywellCommunicationService honeywellCommunicationService;
     @Autowired private NextValueHelper nextValueHelper;
-    @Autowired private ControlEventService controlEventService;
+    @Autowired private RecentEventParticipationService recentEventParticipationService;
     private static final Map<Integer, Integer> groupToEventIdMap = new HashMap<>();
 
     /**
@@ -50,7 +50,7 @@ public class HoneywellWifiMessageListener {
 
             // Send DR message to HoneywellWifi server
             honeywellCommunicationService.sendDREventForGroup(parameters);
-            controlEventService.createDeviceControlEvent(parameters.getEventId(), parameters.getGroupId(),
+            recentEventParticipationService.createDeviceControlEvent(parameters.getEventId(), parameters.getGroupId(),
                 parameters.getStartTime(), parameters.getEndTime());
             // Store the most recent dr handle for each group, so we can cancel
             groupToEventIdMap.put(parameters.getGroupId(), parameters.getEventId());

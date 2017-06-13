@@ -2,23 +2,23 @@ package com.cannontech.dr.controlaudit.model;
 
 import org.joda.time.Instant;
 
-public class ControlAuditSummary {
+public class RecentEventParticipationSummary {
 
     private final String programName;
     private final Instant startTime;
     private final int numConfirmed;
     private final int numUnknowns;
-    private final ControlAuditEventStats eventStats;
+    private final RecentEventParticipationEventStats eventStats;
 
-    public ControlAuditSummary(String programName, Instant startTime, int numConfirmed, int numUnknowns) {
+    public RecentEventParticipationSummary(String programName, Instant startTime, int numConfirmed, int numUnknowns) {
         this.programName = programName;
         this.startTime = startTime;
         this.numConfirmed = numConfirmed;
         this.numUnknowns = numUnknowns;
-        this.eventStats = new ControlAuditEventStats(numConfirmed, numUnknowns);
+        this.eventStats = new RecentEventParticipationEventStats(numConfirmed, numUnknowns);
     }
 
-    public ControlAuditEventStats getEventStats() {
+    public RecentEventParticipationEventStats getEventStats() {
         return eventStats;
     }
 
