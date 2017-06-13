@@ -26,4 +26,5 @@
     <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrDataSimulatorServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnMeterDataSimulatorServiceImpl"/>
     <bean class="com.cannontech.simulators.ivvc.impl.IvvcSimulatorServiceImpl"/>
+    <bean class="com.cannontech.simulators.dao.impl.RegulatorEventsSimulatorDaoImpl"/>
 </beans>

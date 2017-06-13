@@ -1,19 +1,26 @@
 package com.cannontech.simulators.ivvc.impl;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.capcontrol.CapBankToZoneMapping;
 import com.cannontech.capcontrol.RegulatorPointMapping;
 import com.cannontech.capcontrol.model.Regulator;
+import com.cannontech.capcontrol.model.RegulatorEvent.EventType;
 import com.cannontech.capcontrol.model.Zone;
 import com.cannontech.capcontrol.service.VoltageRegulatorService;
 import com.cannontech.capcontrol.service.ZoneService;
@@ -22,7 +29,9 @@ import com.cannontech.cbc.util.CapControlUtils;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.Phase;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.capcontrol.streamable.Area;
@@ -30,7 +39,10 @@ import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
 import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.dispatch.message.PointData;
+import com.cannontech.simulators.dao.RegulatorEventsSimulatorDao;
+import com.cannontech.simulators.dao.RegulatorEventsSimulatorDao.RegulatorOperations;
 import com.cannontech.simulators.ivvc.IvvcSimulatorService;
+import com.google.common.base.Optional;
 
 /**
  * 
@@ -42,30 +54,39 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     @Autowired private ZoneService zoneService;
     @Autowired private VoltageRegulatorService regulatorService;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
+    @Autowired private RegulatorEventsSimulatorDao regulatorEventsSimulatorDao;
+    @Autowired @Qualifier("main") private ScheduledExecutor executor;
 
-    private volatile boolean isRunning;
-    private volatile boolean isStopping;
+    private volatile boolean isRunning; // This refers to the simulator itself
+    private volatile boolean isCurrentlyExecuting = false; // This is used to ensure only one timed execution happens at a time
+    private boolean tapPositionsPreloaded = false;
     
     private Map<Integer, Integer> regulatorTapPositions = new HashMap<>();
     private int keepAliveIncrementingValue = 0;
+    Instant lastRegulatorEvaluationTime;
+    ScheduledFuture<?> future;
     
     private final int END_OF_LINE = 40000;
+    private final int INITIAL_TAP_POSITION = 3;
     
     @Override
     public boolean start() {
-
         if (isRunning) {
             return false;
         } else {
-            Thread simulatorThread = getSimulatorThread();
-            simulatorThread.start();
+            lastRegulatorEvaluationTime = Instant.now();
+            future = executor.scheduleAtFixedRate(this::getSimulatorThread, 0, 30, TimeUnit.SECONDS);
+            log.info("IVVC simulator thread starting up.");
+            isRunning = true;
             return true;
         }
     }
     
     @Override
     public void stop() {
-        isStopping = true;
+        future.cancel(true);
+        isRunning = false;
+        log.info("Cap Control simulator thread shutting down.");
     }
     
     @Override
@@ -73,31 +94,42 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         return isRunning;
     }
     
-    private Thread getSimulatorThread() {
-        Thread simulatorThread = new Thread() {
-            @Override
-            public void run() {
-                log.info("Cap Control simulator thread starting up.");
-                isRunning = true;
-                
+    private void getSimulatorThread() {
+        if (!isCurrentlyExecuting) {
+            isCurrentlyExecuting = true;
+            try {
                 loadRegulatorTapPositionsFromDatabase();
-                
-                while (!isStopping) {
-                    try {
-                        calculateAndSendCapControlPoints();
+                processNewRegulatorActions(lastRegulatorEvaluationTime);
+                lastRegulatorEvaluationTime = Instant.now();
+                calculateAndSendCapControlPoints();
 
-                        sleep(30000);
-                    } catch (Exception e) {
-                        log.error("Error occurred in Cap Control simulator.", e);
-                    }
-                }
-                
-                log.info("Cap Control simulator thread shutting down.");
-                isStopping = false;
-                isRunning = false;
+            } catch (Exception e) {
+                log.error("Error occurred in IVVC simulator.", e);
             }
-        };
-        return simulatorThread;
+        } else {
+            log.error("Unable to run IVVC Simulator, the thread is probably taking more than 30 seconds to run");
+        }
+        isCurrentlyExecuting = false;
+    }
+    
+    // Load all of the tap up and down operations, add or subtract from tap position depending on operation performed.
+    // TBD: Limits position?
+    private void processNewRegulatorActions(Instant lastRegulatorEvaluationTime) {
+        List<RegulatorOperations> regulatorTapOperations = regulatorEventsSimulatorDao.getRegulatorTapOperationsAfter(lastRegulatorEvaluationTime);
+        
+        if (!regulatorTapOperations.isEmpty()) {
+            log.debug("Found " + regulatorTapOperations.size() + " tap operations, acting on them.");
+        }
+        
+        for (RegulatorOperations regulatorOperations : regulatorTapOperations) {
+            Integer tapPosition = Optional.fromNullable(regulatorTapPositions.get(regulatorOperations.regulatorId)).or(INITIAL_TAP_POSITION);
+            
+            if (regulatorOperations.eventType.equals(EventType.TAP_UP)) {
+                regulatorTapPositions.put(regulatorOperations.regulatorId, tapPosition + 1);
+            } else if (regulatorOperations.eventType.equals(EventType.TAP_DOWN)) {
+                regulatorTapPositions.put(regulatorOperations.regulatorId, tapPosition - 1);
+            }
+        }
     }
     
     private void calculateAndSendCapControlPoints() {
@@ -121,8 +153,6 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         final double currentSubBusBaseKw = MIN_KW + (Math.sin(secondsOfDayForCalculation*2*Math.PI/DateTimeConstants.SECONDS_PER_DAY)*((MAX_KW-MIN_KW)/2) + ((MAX_KW-MIN_KW)/2));
         final double currentSubBusBaseKVar = (currentSubBusBaseKw - MIN_KW)*KW_TO_KVAR_MULTIPLIER + MIN_KVAR; //When we are at minimum kw, we are at MIN_KVAR
         keepAliveIncrementingValue = (keepAliveIncrementingValue + 1) & 0xFFFF; // Rolls over after 16 bits.
-        
-        //TODO load recent taps to track current tap position.
         
         for (Area area : simulatedAreas) {
             List<SubBus> subBusesByArea = capControlCache.getSubBusesByArea(area.getCcId());
@@ -177,11 +207,13 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                     Integer regulatorForZone = regulatorsForZone.get(0);
                     if (regulatorForZone != 0) {
                         
-                        if ( getFeederForRegulatorFromCapbank(capBankToFeeder, capBankToZoneMappings.get(0)) != null) {
+                        if (getFeederForRegulatorFromCapbank(capBankToFeeder, capBankToZoneMappings.get(0)) != null) {
                             
                             Integer feederId = getFeederForRegulatorFromCapbank(capBankToFeeder, capBankToZoneMappings.get(0));
                             Double feederVoltage = feederVoltageRises.get( feederId );
                             feederVoltageRises.put(feederId, feederVoltage + 0.75*getRegulatorTapPosition(regulatorForZone));
+                            //TODO instead of adding this to feederVoltageRises, create a Regulator to Phase and Feeder map and do the lookup whereever feederVoltageRises is used.
+                            // This would allow for multi phase taps which appears to be necessary unfortunately.
                         }
                     }
                     
@@ -257,7 +289,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                         // find the Feeder from that CapBank. We will use this Feeder as the presumed Feeder for the Regulators on that same zone.
                                         // Add in Feeder voltage shift
                                         Integer feederId = getFeederForRegulatorFromCapbank(capBankToFeeder, capBankToZoneMappings.get(0));
-                                        if ( feederId != null) {
+                                        if (feederId != null) {
                                             voltage += feederVoltageRises.get(getFeederForRegulatorFromCapbank(capBankToFeeder, capBankToZoneMappings.get(0)));
                                             
                                             // The feeder voltage matches the regulator phase voltage. We finally have that so lets send it!
@@ -297,15 +329,64 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
 
     // Initialize the list of regulator tap positions from the database or Dispatch
     private void loadRegulatorTapPositionsFromDatabase() {
-        //TODO Load the point values here on startup.
+        if (!tapPositionsPreloaded) {
+            DateTime start = DateTime.now();
+            Set<Integer> regulatorTapPositionPointIds = new HashSet<>();
+            Map<Integer, Integer> pointIdToRegulator = new HashMap<>();
+            
+            List<Area> simulatedAreas = capControlCache.getAreas().stream()
+                                                                  .filter(area->area.getCcName().startsWith("Sim Area"))
+                                                                  .collect(Collectors.toList());
+            for (Area area : simulatedAreas) {
+                List<SubBus> subBusesByArea = capControlCache.getSubBusesByArea(area.getCcId());
+                for (SubBus subBus : subBusesByArea) {
+                    List<Zone> zonesBySubBusId = zoneService.getZonesBySubBusId(subBus.getCcId());
+                    for (Zone zone : zonesBySubBusId) {
+                        List<Integer> regulatorsForZone = zoneService.getRegulatorsForZone(zone.getId());
+                        for (Integer regulatorId : regulatorsForZone) {
+                            
+                            Regulator regulator = regulatorService.getRegulatorById(regulatorId);
+                            Map<RegulatorPointMapping, Integer> mappings = regulator.getMappings();
+                            for (Entry<RegulatorPointMapping, Integer> mapping : mappings.entrySet()) {
+                                if (mapping.getValue() != 0 && mapping.getKey().equals(RegulatorPointMapping.TAP_POSITION)) {
+                                    //sendPoint(mapping.getValue(), getRegulatorTapPosition(regulatorId), PointType.Analog);
+                                    regulatorTapPositionPointIds.add(mapping.getValue());
+                                    pointIdToRegulator.put(mapping.getValue(), regulatorId);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            int successCount = 0;
+            
+            if (regulatorTapPositionPointIds.size() > 0) {
+                Set<? extends PointValueQualityHolder> tapPointValues = asyncDynamicDataSource.getPointValues(regulatorTapPositionPointIds);
+                for (PointValueQualityHolder pointValueQualityHolder : tapPointValues) {
+                    if (pointValueQualityHolder.getValue() < 30 && pointValueQualityHolder.getValue() > -20 && pointValueQualityHolder.getPointQuality().equals(PointQuality.Normal)) {
+                        Integer regulatorId = pointIdToRegulator.get(pointValueQualityHolder.getId());
+                        if (regulatorId != null) {
+                            successCount++;
+                            regulatorTapPositions.put(regulatorId, (int) pointValueQualityHolder.getValue());
+                            
+                        }
+                    }
+                }
+                
+                if (successCount > 0) {
+                    tapPositionsPreloaded = true; // In theory we will keep trying until both capcontrol cache is loaded and Dispatch results come back.
+                }
+            }
+            DateTime stop = DateTime.now();
+            log.debug("Retrieved and loaded " + successCount + " tap point values from Dispatch in " + (stop.getMillis() - start.getMillis())/1000 + " seconds");
+        }
     }
     
     // Returns the current regulator tap position, defaults to 3
-    private Integer getRegulatorTapPosition(Integer regulatorId) {
-        final int startupTapPosition = 3;
-        
+    private Integer getRegulatorTapPosition(Integer regulatorId) { 
         if (!regulatorTapPositions.containsKey(regulatorId))
-            regulatorTapPositions.put(regulatorId, startupTapPosition);
+            regulatorTapPositions.put(regulatorId, INITIAL_TAP_POSITION);
         
         return regulatorTapPositions.get(regulatorId);
     }
