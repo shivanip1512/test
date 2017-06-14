@@ -289,7 +289,7 @@ public class Point extends DBPersistent {
         return archiveStatusData;
     }
 
-    public void setArchiveStatusData(boolean archiveStatusData) {
+    private void setArchiveStatusData(boolean archiveStatusData) {
         this.archiveStatusData = archiveStatusData;
     }
 

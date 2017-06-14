@@ -9,6 +9,7 @@ import com.cannontech.common.bulk.model.PointPeriodicRate;
 import com.cannontech.common.bulk.model.StatusPointUpdateType;
 import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.database.data.point.CalcStatusPoint;
+import com.cannontech.database.data.point.PointArchiveType;
 import com.cannontech.database.data.point.PointFactory;
 import com.cannontech.database.db.state.State;
 import com.cannontech.database.db.state.StateGroup;
@@ -84,9 +85,13 @@ public class CalcStatusPointBuilder extends PointBuilder {
             log.warn("Build() called on builder with Stale Data settings. Stale data settings" +
                      " will be lost unless Insert() is used.");
         }
-        
-        point.getPoint().setArchiveStatusData(archiveData);
-        
+
+        if (archiveData) { // true = 'On Change'
+            point.getPoint().setArchiveType(PointArchiveType.ON_CHANGE);
+        } else {
+            point.getPoint().setArchiveType(PointArchiveType.NONE);
+        }
+
         return point;
     }
     
