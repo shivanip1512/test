@@ -192,6 +192,7 @@
     <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.tabularUsageData">Tabular Usage Data</entry>
     <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.normalizedUsageData">Normalized Usage Data:</entry>
     <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.noTrendsAvailable">No trends available for device</entry>
+    <entry key="yukon.web.widgetClasses.WaterCsrTrendWidget.meter"></entry>
 
    <!-- meterOutagesWidget/render.jsp -->
     <entry key="yukon.web.widgets.meterOutagesWidget.blinkCountNotConfigured">Blink Count Accumulator Point is not configured.</entry>
