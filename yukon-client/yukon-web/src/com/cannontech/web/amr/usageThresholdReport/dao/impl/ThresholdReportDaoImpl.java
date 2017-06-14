@@ -1,12 +1,15 @@
 package com.cannontech.web.amr.usageThresholdReport.dao.impl;
 
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +22,6 @@ import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.InstantRangeLogHelper;
-import com.cannontech.common.util.Range;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.PagingResultSetExtractor;
@@ -48,6 +50,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
     @Autowired private YukonJdbcTemplate jdbcTemplate;
     @Autowired private DatabaseVendorResolver databaseConnectionVendorResolver;
     @Autowired private DeviceGroupService deviceGroupService;
+    private CriteriaRowMapper criteriaRowMapper = new CriteriaRowMapper();
             
     private static class CriteriaRowMapper implements YukonRowMapper<ThresholdReportCriteria> {
         @Override
@@ -64,31 +67,33 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
     }
     
     @Override
-    public ThresholdReport getReportDetail(int reportId, Range<Instant> criteriaRange,
+    public ThresholdReport getReportDetail(int reportId,
             ThresholdReportFilter filter, PagingParameters paging, SortBy sortBy, Direction direction) {
-        SqlStatementBuilder allRowsSql = buildDetailSelect(reportId, criteriaRange, filter, sortBy, direction);
-        SqlStatementBuilder countSql = buildDetailSelect(reportId, criteriaRange, filter, null, null);
+        ThresholdReportCriteria criteria = getReport(reportId);
+        log.debug("Report Detail for report id="+reportId +" filter="+filter+" criteria="+criteria);
+        SqlStatementBuilder allRowsSql = buildDetailSelect(reportId, criteria, filter, sortBy, direction);
+        SqlStatementBuilder countSql = buildDetailSelect(reportId, criteria, filter, null, null);
         int totalCount = jdbcTemplate.queryForInt(countSql);
         
         int start = paging.getStartIndex();
         int count = paging.getItemsPerPage();
         
-        PagingResultSetExtractor<ThresholdReportDetail> rse = new PagingResultSetExtractor<>(start, count, new DetailRowMapper(criteriaRange));
+        PagingResultSetExtractor<ThresholdReportDetail> rse = new PagingResultSetExtractor<>(start, count, new DetailRowMapper(criteria));
         jdbcTemplate.query(allRowsSql, rse);
 
         SearchResults<ThresholdReportDetail> searchResult = new SearchResults<>();
         searchResult.setBounds(paging.getStartIndex(), paging.getItemsPerPage(), totalCount);
         searchResult.setResultList(rse.getResultList());
         
-        List<ThresholdReportDetail> allDetails = jdbcTemplate.query(allRowsSql, new DetailRowMapper(criteriaRange));
+        List<ThresholdReportDetail> allDetails = jdbcTemplate.query(allRowsSql, new DetailRowMapper(criteria));
         return new ThresholdReport(searchResult, allDetails);
     }
     
     private class DetailRowMapper implements YukonRowMapper<ThresholdReportDetail> { 
-        private Range<Instant> partialRange;
+        private ThresholdReportCriteria criteria;
 
-        public DetailRowMapper(Range<Instant> criteriaRange) {
-            partialRange = getPartialRange(criteriaRange);
+        public DetailRowMapper(ThresholdReportCriteria criteria) {
+            this.criteria = criteria;
         }
         
         @Override
@@ -102,7 +107,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
                 detail.setEarliestReading(getPointValueQualityHolder(pointId, pointTypeId, type, rs.getDate("FirstTimestamp"), rs.getNullableDouble("FirstValue")));
                 detail.setLatestReading(getPointValueQualityHolder(pointId, pointTypeId, type, rs.getDate("LastTimestamp"), rs.getNullableDouble("LastValue")));
             }
-            setAvailability(detail, partialRange);
+            setAvailability(detail, criteria);
             detail.setDelta(rs.getNullableDouble("Delta"));
             detail.setPaoIdentifier(rs.getPaoIdentifier("PaoId", "Type"));
             detail.setDeviceName(rs.getString("PAOName"));
@@ -116,30 +121,23 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
     /**
      * Adds availability information to detail
      */
-    private void setAvailability(ThresholdReportDetail detail, Range<Instant> partialRange){
-        Date min =new Date(partialRange.getMin().getMillis());
-        Date max =new Date(partialRange.getMax().getMillis());
+    private void setAvailability(ThresholdReportDetail detail, ThresholdReportCriteria criteria) {
         if (detail.getPointId() == null) {
             detail.setAvailability(DataAvailability.UNSUPPORTED);
         } else if (detail.getEarliestReading() == null) {
             detail.setAvailability(DataAvailability.NONE);
-        } else if (detail.getEarliestReading().getPointDataTimeStamp().before(min)
-            && (detail.getLatestReading().getPointDataTimeStamp().after(max)
-                || detail.getLatestReading().getPointDataTimeStamp().equals(max))) {
-            /*
-             * sql.append("FirstTimestamp").lt(partialRange.getMin());
-             * sql.append("AND LastTimestamp").gte(partialRange.getMax())
-             */
+        } else if (detail.getEarliestReading().getPointDataTimeStamp().getTime() == criteria.getStartDate().getMillis()
+            && detail.getLatestReading().getPointDataTimeStamp().getTime() == criteria.getEndDate().getMillis()) {
             detail.setAvailability(DataAvailability.COMPLETE);
         } else {
             detail.setAvailability(DataAvailability.PARTIAL);
-        } 
+        }
     }
 
     /**
      * If sortBy is null returns count sql, otherwise returns search sql.
      */
-    private SqlStatementBuilder buildDetailSelect(int reportId, Range<Instant> criteriaRange,
+    private SqlStatementBuilder buildDetailSelect(int reportId, ThresholdReportCriteria criteria,
             ThresholdReportFilter filter, SortBy sortBy, Direction direction) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
@@ -164,10 +162,11 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         sql.append("WHERE UsageThresholdReportId").eq(reportId);
 
         if (filter.getAvailability() != null  && filter.getAvailability().size() > 0) {
-            log.debug("Criteria Range=" + InstantRangeLogHelper.getPartialString(criteriaRange));
-            Range<Instant> partialRange = getPartialRange(criteriaRange);
-            log.debug("Partial Range=" + InstantRangeLogHelper.getPartialString(partialRange) + " ["
-                + partialRange.getMin() + "," + partialRange.getMax() + "]");
+            if (sortBy != null) {
+                log.debug("Criteria=" + criteria);
+                log.debug("--Report Criteria Range=" + InstantRangeLogHelper.getLogString(criteria.getStartDate()) + "-"
+                    + InstantRangeLogHelper.getLogString(criteria.getEndDate()));
+            }
             String OR = "";
             sql.append("AND (");
             for (DataAvailability availability : filter.getAvailability()) {
@@ -180,21 +179,15 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
                 } else if (availability == DataAvailability.COMPLETE) {
                     sql.append(OR);
                     sql.append("(");
-                    sql.append("FirstTimestamp").lt(partialRange.getMin());
-                    sql.append("AND LastTimestamp").gte(partialRange.getMax());
+                    sql.append("FirstTimestamp").eq(criteria.getStartDate());
+                    sql.append("AND LastTimestamp").eq(criteria.getEndDate());
                     sql.append(")");
-                    log.debug(
-                        availability + ":FirstTimestamp < " + InstantRangeLogHelper.getLogString(partialRange.getMin())
-                            + " AND LastTimestamp >= " + InstantRangeLogHelper.getLogString(partialRange.getMax()));
                 } else if (availability == DataAvailability.PARTIAL) {
                     sql.append(OR);
                     sql.append("(");
-                    sql.append("FirstTimestamp").gte(partialRange.getMin());
-                    sql.append("OR LastTimestamp").lt(partialRange.getMax());
+                    sql.append("FirstTimestamp").neq(criteria.getStartDate());
+                    sql.append("OR LastTimestamp").neq(criteria.getEndDate());
                     sql.append(")");
-                    log.debug(
-                        availability + ":FirstTimestamp >= " + InstantRangeLogHelper.getLogString(partialRange.getMin())
-                            + " OR LastTimestamp < " + InstantRangeLogHelper.getLogString(partialRange.getMax()));
                 }
                 OR = "OR";
             }
@@ -233,32 +226,20 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         log.debug(sql.getDebugSql());
         return sql;
     }
-
-    /**
-     * Returns partial range
-     * 
-     * CR 1 day                    1 day CR
-     * |-------|------------------|-------|
-     *         --------PR----------
-     *         
-     * CR - criteria range
-     * PR - partial range
-     */
-    private Range<Instant> getPartialRange(Range<Instant> criteriaRange){
-        Instant min = new Instant(criteriaRange.getMin().toDateTime().withTimeAtStartOfDay().plusDays(1));
-        Instant max = new Instant(criteriaRange.getMax().toDateTime().withTimeAtStartOfDay().minusDays(1));
-        return new Range<>(min, true, max, false);
-    }
    
     @Override
     public int createReport(ThresholdReportCriteria criteria) {
+
+        Instant startDate = criteria.getStartDate().toDateTime().withTimeAtStartOfDay().toInstant();
+        Instant endDate = criteria.getEndDate().toDateTime().withTimeAtStartOfDay().toInstant();
+
         int reportId = nextValueHelper.getNextValue("UsageThresholdReport");
         SqlStatementBuilder sql = new SqlStatementBuilder();
         SqlParameterSink sink = sql.insertInto("UsageThresholdReport");
         sink.addValue("UsageThresholdReportId", reportId);
         sink.addValue("Attribute", criteria.getAttribute());
-        sink.addValue("StartDate", criteria.getRange().getMin());
-        sink.addValue("EndDate", criteria.getRange().getMax());
+        sink.addValue("StartDate", startDate);
+        sink.addValue("EndDate", endDate);
         sink.addValue("RunTime", new Instant());
         sink.addValue("DevicesDescription", criteria.getDescription());
         jdbcTemplate.update(sql);
@@ -272,7 +253,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         sql.append("SELECT UsageThresholdReportId, Attribute, StartDate, EndDate, RunTime, DevicesDescription");
         sql.append("FROM UsageThresholdReport");
         sql.append("WHERE UsageThresholdReportId").eq(reportId);
-        return jdbcTemplate.queryForObject(sql, new CriteriaRowMapper());
+        return jdbcTemplate.queryForObject(sql, criteriaRowMapper);
     }
     
     @Override
@@ -289,14 +270,14 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         
         List<List<Object>> values = details.stream()
                 .map(detail -> {
-                    Date firstDate = null;
+                    Timestamp firstDate = null;
                     Double firstValue = null;
-                    Date lastDate = null;
+                    Timestamp lastDate = null;
                     Double lastValue = null;
                     if(detail.getEarliestReading() != null){
-                        firstDate = detail.getEarliestReading().getPointDataTimeStamp();
+                        firstDate = new Timestamp(DateUtils.truncate(detail.getEarliestReading().getPointDataTimeStamp(), Calendar.DAY_OF_MONTH).getTime());
                         firstValue = detail.getEarliestReading().getValue();
-                        lastDate = detail.getLatestReading().getPointDataTimeStamp();
+                        lastDate =  new Timestamp(DateUtils.truncate(detail.getLatestReading().getPointDataTimeStamp(), Calendar.DAY_OF_MONTH).getTime());
                         lastValue = detail.getLatestReading().getValue();
                     }
 

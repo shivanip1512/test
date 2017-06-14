@@ -2,9 +2,11 @@ package com.cannontech.web.amr.usageThresholdReport.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -14,8 +16,11 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.point.PointQuality;
+import com.cannontech.common.util.InstantRangeLogHelper;
+import com.cannontech.common.util.Range;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.RawPointHistoryDao.Order;
 import com.cannontech.core.dao.RawPointHistoryDao.OrderBy;
@@ -47,28 +52,32 @@ public class ThresholdReportServiceImpl implements ThresholdReportService{
     }
     
     @Override
-    public ThresholdReport getReportDetail(int reportId, ThresholdReportFilter filter,
-            PagingParameters paging, SortBy sortBy, Direction direction) {
-        ThresholdReportCriteria criteria = thresholdReportDao.getReport(reportId);
-        log.debug("Report Detail for report id="+reportId +" filter="+filter+" criteria="+criteria);
-        return thresholdReportDao.getReportDetail(reportId, criteria.getRange(), filter, paging, sortBy, direction);
+    public ThresholdReport getReportDetail(int reportId, ThresholdReportFilter filter, PagingParameters paging,
+            SortBy sortBy, Direction direction) {
+        return thresholdReportDao.getReportDetail(reportId, filter, paging, sortBy, direction);
     }
     
     @Transactional
     @Override
     public int createThresholdReport(ThresholdReportCriteria criteria, List<SimpleDevice> devices) {
 
-        log.debug("Creating threshold for " + devices.size() + " for criteria=" + criteria);
+        log.debug("Creating threshold for " + devices.size() + " devices for criteria=" + criteria);
 
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> latest = getReading(criteria, devices, Order.REVERSE);
-        ListMultimap<PaoIdentifier, PointValueQualityHolder> earliest = getReading(criteria, devices, Order.FORWARD);
+        Range<Instant> range = getReportRange(criteria);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> latest =
+            getReading(criteria.getAttribute(), range, devices, Order.REVERSE);
+        ListMultimap<PaoIdentifier, PointValueQualityHolder> earliest =
+            getReading(criteria.getAttribute(), range, devices, Order.FORWARD);
 
         BiMap<PaoIdentifier, LitePoint> points = attributeService.getPoints(devices, criteria.getAttribute());
         List<ThresholdReportDetail> details = new ArrayList<>();
         devices.forEach(device -> {
             ThresholdReportDetail detail = new ThresholdReportDetail();
-            detail.setPointId(points.get(device.getPaoIdentifier()) == null ? null
-                : points.get(device.getPaoIdentifier()).getLiteID());
+            detail.setPointId(
+                Optional.ofNullable(points.get(device.getPaoIdentifier()))
+                        .map(LitePoint::getLiteID)
+                        .orElse(null)
+            );
             detail.setPaoIdentifier(device.getPaoIdentifier());
             List<PointValueQualityHolder> latestReading = latest.get(device.getPaoIdentifier());
             if (!CollectionUtils.isEmpty(latestReading)) {
@@ -89,9 +98,21 @@ public class ThresholdReportServiceImpl implements ThresholdReportService{
         return reportId;
     }
 
-    private ListMultimap<PaoIdentifier, PointValueQualityHolder> getReading(ThresholdReportCriteria criteria,
-            List<SimpleDevice> devices, Order order) {
-        return rphDao.getLimitedAttributeData(devices, criteria.getAttribute(), criteria.getRange(), null, 1, false,
-            order, OrderBy.TIMESTAMP, excludedQualities);
+    private ListMultimap<PaoIdentifier, PointValueQualityHolder> getReading(BuiltInAttribute attribute,
+            Range<Instant> range, List<SimpleDevice> devices, Order order) {
+        return rphDao.getLimitedAttributeData(devices, attribute, range, null, 1, false, order, OrderBy.TIMESTAMP,
+            excludedQualities);
+    }
+    
+    /**
+     * Report range: start date [inclusive] - end date + 1 [inclusive] 
+     */
+    private Range<Instant> getReportRange(ThresholdReportCriteria criteria){
+        Instant startDate = criteria.getStartDate().toDateTime().withTimeAtStartOfDay().toInstant();
+        Instant endDatePlus1Day =
+            criteria.getEndDate().toDateTime().withTimeAtStartOfDay().plusDays(1).toInstant();
+        Range<Instant> range = new Range<>(startDate, true, endDatePlus1Day, true);
+        log.debug("Creating " + InstantRangeLogHelper.getLogString(range) + " for criteria=" + criteria);
+        return new Range<>(startDate, true, endDatePlus1Day, true); 
     }
 }

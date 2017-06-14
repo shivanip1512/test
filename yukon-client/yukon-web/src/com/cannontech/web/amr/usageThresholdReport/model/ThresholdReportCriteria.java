@@ -6,7 +6,6 @@ import org.joda.time.Instant;
 
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.util.InstantRangeLogHelper;
-import com.cannontech.common.util.Range;
 
 public class ThresholdReportCriteria {
     
@@ -65,10 +64,6 @@ public class ThresholdReportCriteria {
     public void setReportId(int reportId) {
         this.reportId = reportId;
     }
-    
-    public Range<Instant> getRange(){
-        return new Range<>(startDate, false, endDate, true);
-    }
 
     @Override
     public String toString() {
@@ -78,7 +73,7 @@ public class ThresholdReportCriteria {
         if (runTime != null) {
             tsb.append("Run time", runTime.toString(InstantRangeLogHelper.df));
         }
-        tsb.append(InstantRangeLogHelper.getLogString(getRange()));
+        tsb.append(InstantRangeLogHelper.getLogString(startDate)+"-"+InstantRangeLogHelper.getLogString(endDate));
         return tsb.toString();
     }
 }
