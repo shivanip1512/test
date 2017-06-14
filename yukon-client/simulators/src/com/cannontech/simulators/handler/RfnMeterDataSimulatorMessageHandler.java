@@ -44,7 +44,7 @@ public class RfnMeterDataSimulatorMessageHandler extends SimulatorMessageHandler
                 rfnMeterDataSimulatorService.stopSimulator();
                 return new SimulatorResponseBase(true);
             } else if (simulatorRequest instanceof RfnMeterDataSimulatorStatusRequest) {
-                SimulatorSettings settings = rfnMeterDataSimulatorService.getCurrentSettings();
+                SimulatorSettings settings = (SimulatorSettings) rfnMeterDataSimulatorService.getCurrentSettings();
                 RfnDataSimulatorStatus status = rfnMeterDataSimulatorService.getStatus();
                 return new RfnMeterDataSimulatorStatusResponse(status, settings);
             } else {

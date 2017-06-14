@@ -2,6 +2,7 @@ package com.cannontech.dr.rfn.service;
 
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
+import com.cannontech.simulators.AutoStartableSimulator;
 
 /**
  * This is a service that simulates a network of RFN Meters for use in
@@ -11,25 +12,12 @@ import com.cannontech.dr.rfn.model.SimulatorSettings;
  * places them on the same queue as network manager, simulating the connection
  * between Yukon and NM.
  */
-public interface RfnMeterDataSimulatorService {
+public interface RfnMeterDataSimulatorService extends AutoStartableSimulator {
 
     /**
      * Stops the RFN Meter data simulator.
      */
     void stopSimulator();
-
-    /**
-     * Starts the RFN Meter data simulator.
-     */
-    void startSimulator(SimulatorSettings settings);
-
-    /**
-     * Get the current settings if the simulator has been running. Otherwise, null is returned. If the
-     * simulator was previously run (since web server startup) but is not running, this will return the
-     * settings previously used.
-     */
-    SimulatorSettings getCurrentSettings();
-    
     
     /**
      * Get data simulator status for existing devices if the simulator has been running.

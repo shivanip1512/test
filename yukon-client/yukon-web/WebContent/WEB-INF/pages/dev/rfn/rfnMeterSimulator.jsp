@@ -100,39 +100,47 @@
         },
           
         _updateStartup = function(event) {
+            var startupData = {
+                    simulatorType: "RFN_METER"
+                };
             if ($(this).attr('id') === 'enable-startup') {
+                startupData.runOnStartup = true;
                 $.ajax({
-                    url: yukon.url('/dev/rfn/enableRfnAutoStart'),
-                    type: 'get',
+                    url: yukon.url('/dev/rfn/updateStartup'),
+                    type: 'post',
+                    data: startupData
                 }).done(function(data) {
                     if (data.hasError) {
-                        _checkStartupStatus(data.errorMessage);
+                        _checkStartupStatus(data.errorMessage, startupData);
                     } else {
                         yukon.ui.removeAlerts();
                     }
                 }).fail(function() {
-                    _checkStartupStatus("The simulator startup settings update request to the controller failed.");
+                    _checkStartupStatus("The simulator startup settings update request to the controller failed.", startupData);
                 });
             } else if ($(this).attr('id') === 'disable-startup') {
+                startupData.runOnStartup = false;
                 $.ajax({
-                    url: yukon.url('/dev/rfn/disableRfnAutoStart'),
-                    type: 'get',
+                    url: yukon.url('/dev/rfn/updateStartup'),
+                    type: 'post',
+                    data: startupData
                 }).done(function(data) {
                     if (data.hasError) {
-                        _checkStartupStatus(data.errorMessage);
+                        _checkStartupStatus(data.errorMessage, startupData);
                     } else {
                         yukon.ui.removeAlerts();
                     }
                 }).fail(function() {
-                    _checkStartupStatus("The simulator startup settings update request to the controller failed.");
+                    _checkStartupStatus("The simulator startup settings update request to the controller failed.", startupData);
                 });
             }
         },
          
-         _checkStartupStatus = function(prevErrorMessage) {
+         _checkStartupStatus = function(prevErrorMessage, startupData) {
              $.ajax({
-                 url: yukon.url('/dev/rfn/existingRfnStartupStatus'),
-                 type: 'get',
+                 url: yukon.url('/dev/rfn/existingStartupStatus'),
+                 type: 'post',
+                 data: startupData
              }).done(function(data) {
                  if (data.hasError) {
                      yukon.ui.alertError(prevErrorMessage + " " + data.errorMessage + " Refresh the page to try again.");
@@ -141,11 +149,13 @@
                      $('#enable-startup').removeClass('on');
                      $('#disable-startup').removeClass('on');
                  } else {
+                     if (prevErrorMessage) {
+                         yukon.ui.alertError(prevErrorMessage);
+                     }
                      if (data.runOnStartup) {
                          $('#enable-startup').addClass('on');
                          $('#disable-startup').removeClass('on');
-                     }
-                     else {
+                     } else {
                          $('#enable-startup').removeClass('on');
                          $('#disable-startup').addClass('on');
                      }
@@ -163,8 +173,9 @@
             init : function() {
                 if (_initialized) return;
                 $('#send-test, #send-message, #stop-send-message').click(_sendMessageButtonClick);
-                $('#enable-startup, #disable-startup').click(_updateStartup);
                 _checkExistingDeviceStatus();
+                $('#enable-startup, #disable-startup').click(_updateStartup);
+                _checkStartupStatus(null, {simulatorType: "RFN_METER"});
                 _initialized = true;
             },
 
@@ -215,14 +226,8 @@
                             classes="dn" />
                     </div>
                     <div class="button-group button-group-toggle">
-                        <c:if test="${rfnMeterRunOnStartup}">
-                            <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes on"/>
-                            <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
-                        </c:if>
-                        <c:if test="${not rfnMeterRunOnStartup}">
-                            <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
-                            <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no on"/>  
-                        </c:if>
+                        <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
+                        <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
                     </div>
                 </tags:sectionContainer2>
                 <tags:sectionContainer2 nameKey="rfnMeterSimulatorTest">

@@ -4,25 +4,27 @@ import com.cannontech.simulators.SimulatorType;
 
 public class SimulatorStartupSettingsStatusRequest implements SimulatorRequest {
 
-    private final SimulatorType simType;
-    private final SimulatorType downloadType;
+    private final SimulatorType affectedSimulator;
 
     /**
-     * SimulatorStrtupSettingsRequests have an updateType because their SimType is SIMULATOR_STARTUP
-     * and they also need to know which type of simulator they are retrieving the value of
-     * (eg. RFN_METER).
+     * Request to get a simulators startup setting from the database.
+     * This message is sent with a request type of SIMULATOR_STARTUP so that it will be processed
+     * by its own handler.
+     * @param affectedSimulator The simulator to get configure.
      */
-    public SimulatorStartupSettingsStatusRequest(SimulatorType simType, SimulatorType downloadType) {
-        this.simType = simType;
-        this.downloadType = downloadType;
+    public SimulatorStartupSettingsStatusRequest(SimulatorType affectedSimulator) {
+        this.affectedSimulator = affectedSimulator;
     }
-
+    
+    /**
+     * This is SIMULATOR_STARTUP, because these requests have their own handler.
+     */
     @Override
     public SimulatorType getRequestType() {
-        return simType;
+        return SimulatorType.SIMULATOR_STARTUP;
     }
 
-    public SimulatorType getDownloadType() {
-        return downloadType;
+    public SimulatorType getAffectedSimulator() {
+        return affectedSimulator;
     }
 }

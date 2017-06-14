@@ -8,7 +8,8 @@ import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.simulators.startup.service.SimulatorStartupSettingsService;
 
 /**
- * Attempts to update and access boolean values from the database for the given SimulatorTypes.
+ * Attempts to save boolean values to the database and access boolean values from the database for 
+ * the given SimulatorTypes.
  * @throws IllegalArgumentException if the SimulatorType is not found in any of the YukonSimulatorSettingsKeys.
  */
 public class SimulatorStartupSettingsServiceImpl implements SimulatorStartupSettingsService {
@@ -17,23 +18,23 @@ public class SimulatorStartupSettingsServiceImpl implements SimulatorStartupSett
     private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
 
     @Override
-    public boolean isRunOnStartup(SimulatorType downloadType) {
+    public boolean isRunOnStartup(SimulatorType simulatorType) {
         for (YukonSimulatorSettingsKey key : YukonSimulatorSettingsKey.values()) {
-            if (key.name().contains(downloadType.name()) && key.name().contains("RUN_ON_STARTUP")) {
+            if (key.name().equals(simulatorType.name() + "_SIMULATOR_RUN_ON_STARTUP")) {
                 return yukonSimulatorSettingsDao.getBooleanValue(key);
             }
         }
-        throw new IllegalArgumentException("Invalid SimulatorType passed to SimulatorStartupSettingsService, unable to get SimulatorStartupSettings for: " + downloadType.name());
+        throw new IllegalArgumentException("Invalid SimulatorType passed to SimulatorStartupSettingsService, unable to get SimulatorStartupSettings for: " + simulatorType.name());
     }
 
     @Override
-    public void uploadSimulatorStartupSettingsToDb(boolean runOnStartup, SimulatorType uploadType) {
+    public void saveStartupSettings(boolean runOnStartup, SimulatorType simulatorType) {
         for (YukonSimulatorSettingsKey key : YukonSimulatorSettingsKey.values()) {
-            if (key.name().contains(uploadType.name()) && key.name().contains("RUN_ON_STARTUP")) {
+            if (key.name().equals(simulatorType.name() + "_SIMULATOR_RUN_ON_STARTUP")) {
                 yukonSimulatorSettingsDao.setValue(key, runOnStartup);
                 return;
             }
         }
-        throw new IllegalArgumentException("Invalid SimulatorType passed to SimulatorStartupSettingsService, unable to update SimulatorStartupSettings for: " + uploadType);
+        throw new IllegalArgumentException("Invalid SimulatorType passed to SimulatorStartupSettingsService, unable to update SimulatorStartupSettings for: " + simulatorType);
     }
 }

@@ -14,5 +14,6 @@ public enum SimulatorType {
     RFN_LCR,
     RFN_METER,
     RFN_NETWORK,
-    SIMULATOR_STARTUP;
+    SIMULATOR_STARTUP
+    ;
 }

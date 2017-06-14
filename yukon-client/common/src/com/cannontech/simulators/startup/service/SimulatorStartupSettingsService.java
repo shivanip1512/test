@@ -10,12 +10,15 @@ import com.cannontech.simulators.SimulatorType;
 public interface SimulatorStartupSettingsService {
 
     /**
-     * Get the startup settings boolean from the database for the given SimulatorType.
+     * Get the startup settings for the given simulator type.
+     * @param simulatorType The particular simulator for which we are retrieving startup settings.
+     * @return True if the specified simulator is configured to start automatically when Yukon starts, false if the simulator must be started manually.
      */
-    public boolean isRunOnStartup(SimulatorType downloadType);
+    public boolean isRunOnStartup(SimulatorType simulatorType);
 
     /**
      * Upload the given boolean value to the database for the given SimulatorType.
+     * @param simulatorType The particular simulator for which we are uploading the startup settings.
      */
-    public void uploadSimulatorStartupSettingsToDb(boolean runOnStartup, SimulatorType uploadType);
+    public void saveStartupSettings(boolean runOnStartup, SimulatorType simulatorType);
 }

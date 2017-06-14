@@ -13,7 +13,8 @@ import com.cannontech.simulators.message.response.SimulatorStartupSettingsRespon
 import com.cannontech.simulators.startup.service.SimulatorStartupSettingsService;
 
 /**
- * Handles SimulatorStartupSettings messages for each of the meter simulators.
+ * Handles SimulatorStartupSettings messages for retrieving and saving startup settings for
+ * each of the meter simulators.
  */
 public class SimulatorStartupSettingsMessageHandler extends SimulatorMessageHandler {
     private static final Logger log = YukonLogManager.getLogger(SimulatorStartupSettingsMessageHandler.class);
@@ -28,19 +29,16 @@ public class SimulatorStartupSettingsMessageHandler extends SimulatorMessageHand
         try {
             if (simulatorRequest instanceof SimulatorStartupSettingsRequest) {
                 SimulatorStartupSettingsRequest request = (SimulatorStartupSettingsRequest) simulatorRequest;
-                simulatorStartupSettingsService.uploadSimulatorStartupSettingsToDb(request.isRunOnStartup(), request.getUploadType());
+                simulatorStartupSettingsService.saveStartupSettings(request.isRunOnStartup(), request.getAffectedSimulator());
                 return new SimulatorStartupSettingsResponse(true);
             } else if (simulatorRequest instanceof SimulatorStartupSettingsStatusRequest) {
                 SimulatorStartupSettingsStatusRequest request = (SimulatorStartupSettingsStatusRequest) simulatorRequest;
-                boolean runOnStartup = simulatorStartupSettingsService.isRunOnStartup(request.getDownloadType());
+                boolean runOnStartup = simulatorStartupSettingsService.isRunOnStartup(request.getAffectedSimulator());
                 return new SimulatorStartupSettingsResponse(true, runOnStartup);
             } else {
-                SimulatorStartupSettingsResponse response = new SimulatorStartupSettingsResponse(false);
-                response.setException(new IllegalArgumentException("Bad simualtor request sent to SimulatorStartupSettingsMessageHandler."));
-                return response;
+                throw new IllegalArgumentException("Bad simualtor request sent to SimulatorStartupSettingsMessageHandler.");
             }
         } catch (Exception e) {
-            log.error("Exception handling request: " + simulatorRequest + " with request type: " + simulatorRequest.getRequestType());
             if (e instanceof IllegalArgumentException) {
                 SimulatorStartupSettingsResponse response = new SimulatorStartupSettingsResponse(false);
                 response.setException(e);

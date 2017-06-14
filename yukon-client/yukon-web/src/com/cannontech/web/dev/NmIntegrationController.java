@@ -134,8 +134,6 @@ public class NmIntegrationController {
     SimulatorSettings rfnCurrentSettings = new SimulatorSettings("ALL RFN Type", 10,
         ReportingInterval.REPORTING_INTERVAL_24_HOURS);
     
-    private final boolean rfnMeterRunOnStartup = false;
-
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
     private static final String meterReadServiceBean = "com.cannontech.yukon.ServiceManager:name=meterReadingArchiveRequestListener,type=MeterReadingArchiveRequestListener";
@@ -589,30 +587,20 @@ public class NmIntegrationController {
         }
     }
     
-    @RequestMapping("enableRfnAutoStart")
+    @RequestMapping("updateStartup")
     @ResponseBody
-    public Map<String, Object> enableRfnAutoStart(FlashScope flash) {
-        SimulatorStartupSettingsResponseOrError startupResponse = getSimulatorStartupSettingsResponse(true, SimulatorType.RFN_METER);
+    public Map<String, Object> enableRfnAutoStart(SimulatorType simulatorType, boolean runOnStartup, FlashScope flash) {
+        SimulatorStartupSettingsResponseOrError startupResponse = getSimulatorStartupSettingsResponse(runOnStartup, simulatorType);
         if (startupResponse.response == null) {
             return startupResponse.errorJson;
         }
-        return null;
-    }
-
-    @RequestMapping("disableRfnAutoStart")
-    @ResponseBody
-    public Map<String, Object> disableRfnAutoStart(FlashScope flash) {
-        SimulatorStartupSettingsResponseOrError startupResponse = getSimulatorStartupSettingsResponse(false, SimulatorType.RFN_METER);
-        if (startupResponse.response == null) {
-            return startupResponse.errorJson;
-        }
-        return null;
+        return null; 
     }
     
-    @RequestMapping("existingRfnStartupStatus")
+    @RequestMapping("existingStartupStatus")
     @ResponseBody
-    public Map<String, Object> existingStartupStatus(FlashScope flash) {
-        SimulatorStartupSettingsResponseOrError startupResponse = getSimulatorStartupSettingsResponse(SimulatorType.RFN_METER);
+    public Map<String, Object> existingStartupStatus(SimulatorType simulatorType, FlashScope flash) {
+        SimulatorStartupSettingsResponseOrError startupResponse = getSimulatorStartupSettingsResponse(simulatorType);
         if (startupResponse.response == null) {
             return startupResponse.errorJson;
         }
@@ -635,7 +623,6 @@ public class NmIntegrationController {
     @RequestMapping("viewRfnMeterSimulator")
     public String viewRfnMeterSimulator(ModelMap model) {
         model.addAttribute("currentSettings", rfnCurrentSettings);
-        model.addAttribute("rfnMeterRunOnStartup", rfnMeterRunOnStartup);
 
         ImmutableSet<PaoType> paoTypes = PaoType.getRfMeterTypes();
         model.addAttribute("paoTypes", paoTypes);
@@ -649,12 +636,6 @@ public class NmIntegrationController {
         model.addAttribute("selectedReportingInterval", response.getSettings().getReportingInterval());
 
         model.addAttribute("rfnMeterSimulatorStatus", buildSimulatorStatusJson(response.getStatus()));
-        
-        SimulatorStartupSettingsResponse startupResponse = getSimulatorStartupSettingsResponse(SimulatorType.RFN_METER).response;
-        if (startupResponse == null) {
-            return "rfn/rfnMeterSimulator.jsp";
-        }
-        model.addAttribute("rfnMeterRunOnStartup", startupResponse.isRunOnStartup());
         
         return "rfn/rfnMeterSimulator.jsp";
     }
@@ -700,15 +681,15 @@ public class NmIntegrationController {
             log.error(e);
             Map<String, Object> json = new HashMap<>();
             json.put("hasError", true);
-            json.put("errorMessage", "Unable to send message to Simulator Service: " + e.getMessage());
+            json.put("errorMessage", "Unable to send message to Simulator Service: " + e.getMessage() + ".");
             return new MeterSimStatusResponseOrError(json);
         }
     }
     
-    private SimulatorStartupSettingsResponseOrError getSimulatorStartupSettingsResponse(boolean runOnStartup, SimulatorType uploadType) {
+    private SimulatorStartupSettingsResponseOrError getSimulatorStartupSettingsResponse(boolean runOnStartup, SimulatorType affectedSimulator) {
         try {
             SimulatorStartupSettingsResponse response = simulatorsCommunicationService.sendRequest(
-                new SimulatorStartupSettingsRequest(runOnStartup, SimulatorType.SIMULATOR_STARTUP, uploadType), SimulatorStartupSettingsResponse.class);
+                new SimulatorStartupSettingsRequest(runOnStartup, affectedSimulator), SimulatorStartupSettingsResponse.class);
             if (response.isSuccessful()) {
                 return new SimulatorStartupSettingsResponseOrError(response);
             }
@@ -716,9 +697,9 @@ public class NmIntegrationController {
                 Map<String, Object> json = new HashMap<>();
                 json.put("hasError", true);
                 if (runOnStartup) {
-                    json.put("errorMessage", "Unable to enable automatic startup for the simulator of type: " + uploadType.name() + "."); 
+                    json.put("errorMessage", "Unable to enable automatic startup for the simulator of type: " + affectedSimulator.name() + "."); 
                 } else {
-                    json.put("errorMessage", "Unable to disable automatic startup for the simulator of type: " + uploadType.name() + "."); 
+                    json.put("errorMessage", "Unable to disable automatic startup for the simulator of type: " + affectedSimulator.name() + "."); 
                 }
                 return new SimulatorStartupSettingsResponseOrError(json);
             }
@@ -731,17 +712,17 @@ public class NmIntegrationController {
         }
     }
     
-    private SimulatorStartupSettingsResponseOrError getSimulatorStartupSettingsResponse(SimulatorType downloadType) {
+    private SimulatorStartupSettingsResponseOrError getSimulatorStartupSettingsResponse(SimulatorType affectedSimulator) {
         try {
             SimulatorStartupSettingsResponse response = simulatorsCommunicationService.sendRequest(
-                new SimulatorStartupSettingsStatusRequest(SimulatorType.SIMULATOR_STARTUP, downloadType), SimulatorStartupSettingsResponse.class);
+                new SimulatorStartupSettingsStatusRequest(affectedSimulator), SimulatorStartupSettingsResponse.class);
             if (response.isSuccessful()) {
                 return new SimulatorStartupSettingsResponseOrError(response);
             }
             else {
                 Map<String, Object> json = new HashMap<>();
                 json.put("hasError", true);
-                json.put("errorMessage", "Unable to retrieve simulator startup settings for the simulator of type: " + downloadType.name() + ".");
+                json.put("errorMessage", "Unable to retrieve simulator startup settings for the simulator of type: " + affectedSimulator.name() + ".");
                 return new SimulatorStartupSettingsResponseOrError(json);
             }
         } catch (Exception e) {

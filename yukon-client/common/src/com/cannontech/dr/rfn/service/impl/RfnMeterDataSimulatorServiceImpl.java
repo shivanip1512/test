@@ -41,6 +41,7 @@ import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
 import com.cannontech.dr.rfn.service.RfnMeterDataSimulatorService;
+import com.cannontech.simulators.SimulatorSettingsInterface;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.google.common.collect.HashMultimap;
@@ -82,20 +83,20 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     }
 
     @Override
-    public synchronized void startSimulator(SimulatorSettings settings) {
+    public synchronized void startSimulator(SimulatorSettingsInterface settings) {
         if (!status.isRunning().get()) {
-            uploadSettingsToDb(settings);
+            saveSettings((SimulatorSettings) settings);
             
             log.debug("Start simulator");
             status = new RfnDataSimulatorStatus();
             status.setRunning(new AtomicBoolean(true));
             status.setStartTime(new Instant());
             if (this.settings == null) {
-                this.settings = settings;
+                this.settings = (SimulatorSettings) settings;
             }
             List<RfnDevice> devices = new ArrayList<RfnDevice>();
             try {
-                PaoType paoType = PaoType.valueOf(settings.getPaoType());
+                PaoType paoType = PaoType.valueOf(((SimulatorSettings) settings).getPaoType());
                 devices.addAll(rfnDeviceDao.getDevicesByPaoType(paoType));
             } catch (Exception e) {
                 // user selected all rfn types;
@@ -105,7 +106,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
             for (RfnDevice device : devices) {
                 try {
                     int minuteOffset = getMinuteOfTheDay(device.getRfnIdentifier().getSensorSerialNumber());
-                    ReportingInterval reportingInterval = settings.getReportingInterval();
+                    ReportingInterval reportingInterval = ((SimulatorSettings) settings).getReportingInterval();
 
                     minuteOffset = minuteOffset / reportingInterval.getDailyIntervals();
 
@@ -125,6 +126,11 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
                 devices.clear();
             }
         }
+    }
+
+    @Override
+    public void startSimulatorWithCurrentSettings() {
+        startSimulator(getCurrentSettings());
     }
 
     @Override
@@ -174,7 +180,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
         }
     }
 
-    public void uploadSettingsToDb(SimulatorSettings settings) {
+    public void saveSettings(SimulatorSettings settings) {
         log.debug("Saving RfnMeterDataSimulatorSettings to YukonSimulatorSettings table.");
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_METER_TYPE, settings.getPaoType());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE, settings.getPercentOfDuplicates());
