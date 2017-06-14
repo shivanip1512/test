@@ -37,9 +37,6 @@
         <pointInfo name="Current Phase A" attributes="CURRENT_PHASE_A"/>
         <pointInfo name="Current Phase B" attributes="CURRENT_PHASE_B"/>
         <pointInfo name="Current Phase C" attributes="CURRENT_PHASE_C"/>
-        <pointInfo name="Delivered kW" init="true" attributes="DEMAND"/>
-        <pointInfo name="Delivered kW Load Profile" attributes="LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
-        <pointInfo name="Delivered kWh per Interval" init="true" attributes="DELIVERED_KWH_PER_INTERVAL"/>
         <pointInfo name="Demand Overload" attributes="DEMAND_OVERLOAD"/>
         <pointInfo name="Demand Reads And Reset" attributes="DEMAND_READS_AND_RESET"/>
         <pointInfo name="Demand Threshold Exceeded Warning" attributes="DEMAND_THRESHOLD_EXCEEDED_WARNING"/>
@@ -87,16 +84,11 @@
         <pointInfo name="Over Voltage Measured" attributes="OVER_VOLTAGE_MEASURED"/>
         <pointInfo name="Over Voltage Threshold" attributes="OVER_VOLTAGE_THRESHOLD"/>
         <pointInfo name="Password Table Crc Error" attributes="PASSWORD_TABLE_CRC_ERROR"/>
-        <pointInfo name="Peak kW" init="true"/>
         <pointInfo name="Potential Indicator Warning" attributes="POTENTIAL_INDICATOR_WARNING"/>
         <pointInfo name="Power Fail Data Save Error" attributes="POWER_FAIL_DATA_SAVE_ERROR"/>
         <pointInfo name="Power Failure" attributes="POWER_FAIL_FLAG"/>
         <pointInfo name="Pqm Test Failure Warning" attributes="PQM_TEST_FAILURE_WARNING"/>
         <pointInfo name="Ram Error" attributes="RAM_ERROR"/>
-        <pointInfo name="Rate A kWh" attributes="USAGE_RATE_A"/>
-        <pointInfo name="Rate B kWh" attributes="USAGE_RATE_B"/>
-        <pointInfo name="Rate C kWh" attributes="USAGE_RATE_C"/>
-        <pointInfo name="Rate D kWh" attributes="USAGE_RATE_D"/>
         <pointInfo name="Received kW Load Profile" attributes="RECEIVED_KW_LOAD_PROFILE"/>
         <pointInfo name="Received kWh" attributes="RECEIVED_KWH"/>
         <pointInfo name="Received kWh per Interval" attributes="RECEIVED_KWH_PER_INTERVAL"/>
@@ -124,19 +116,19 @@
         <pointInfo name="Sum kVArh (Rate B kVArh)" attributes="SUM_KVARH_RATE_B"/>
         <pointInfo name="Sum kVArh (Rate C kVArh)" attributes="SUM_KVARH_RATE_C"/>
         <pointInfo name="Sum kVArh (Rate D kVArh)" attributes="SUM_KVARH_RATE_D"/>
-        <pointInfo name="Sum kW Load Profile" attributes="SUM_KW_LOAD_PROFILE"/>
+        <pointInfo name="Sum kW Load Profile" attributes="SUM_KW_LOAD_PROFILE,DELIVERED_KW_LOAD_PROFILE"/>
         <pointInfo name="Sum kWh" init="true" attributes="USAGE,SUM_KWH"/>
-        <pointInfo name="Sum kWh (Rate A kWh)" attributes="SUM_KWH_RATE_A"/>
-        <pointInfo name="Sum kWh (Rate B kWh)" attributes="SUM_KWH_RATE_B"/>
-        <pointInfo name="Sum kWh (Rate C kWh)" attributes="SUM_KWH_RATE_C"/>
-        <pointInfo name="Sum kWh (Rate D kWh)" attributes="SUM_KWH_RATE_D"/>
-        <pointInfo name="Sum kWh per Interval" attributes="SUM_KWH_PER_INTERVAL"/>
+        <pointInfo name="Sum kWh (Rate A kWh)" attributes="USAGE_RATE_A,SUM_KWH_RATE_A"/>
+        <pointInfo name="Sum kWh (Rate B kWh)" attributes="USAGE_RATE_B,SUM_KWH_RATE_B"/>
+        <pointInfo name="Sum kWh (Rate C kWh)" attributes="USAGE_RATE_C,SUM_KWH_RATE_C"/>
+        <pointInfo name="Sum kWh (Rate D kWh)" attributes="USAGE_RATE_D,SUM_KWH_RATE_D"/>
+        <pointInfo name="Sum kWh per Interval" attributes="SUM_KWH_PER_INTERVAL,DELIVERED_KWH_PER_INTERVAL"/>
         <pointInfo name="Sum Peak kVA" attributes="SUM_PEAK_KVA"/>
         <pointInfo name="Sum Peak kVA (Rate A kVA)" attributes="SUM_PEAK_KVA_RATE_A"/>
         <pointInfo name="Sum Peak kVAr" attributes="SUM_PEAK_KVAR"/>
         <pointInfo name="Sum Peak kVAr (Rate A kVAr)" attributes="SUM_PEAK_KVAR_RATE_A"/>
         <pointInfo name="Sum Peak kW" init="true" attributes="SUM_PEAK_DEMAND,PEAK_DEMAND"/>
-        <pointInfo name="Sum Peak kW (Rate A kW)" attributes="SUM_PEAK_DEMAND_RATE_A"/>
+        <pointInfo name="Sum Peak kW (Rate A kW)" attributes="SUM_PEAK_DEMAND_RATE_A,PEAK_DEMAND_RATE_A"/>
         <pointInfo name="Table Crc Error" attributes="TABLE_CRC_ERROR"/>
         <pointInfo name="Tamper Detect" attributes="TAMPER_FLAG"/>
         <pointInfo name="Time Adjustment" attributes="TIME_ADJUSTMENT"/>
