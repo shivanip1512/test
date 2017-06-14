@@ -11,20 +11,20 @@
 
     <cti:url var="dataUrl" value="/amr/usageThresholdReport/results">
         <cti:param name="reportId" value="${reportId}"/>
-        <c:forEach var="subGroup" items="${deviceSubGroups}">
-            <cti:param name="deviceSubGroups" value="${subGroup}"/>
+        <c:forEach var="subGroup" items="${filter.groups}">
+            <cti:param name="deviceSubGroups" value="${subGroup.fullName}"/>
         </c:forEach>
-        <cti:param name="includeDisabled" value="${includeDisabled}"/>
-        <cti:param name="thresholdDescriptor" value="${thresholdDescriptor}"/>
-        <cti:param name="threshold" value="${threshold}"/>
-        <c:forEach var="avail" items="${availability}">
+        <cti:param name="includeDisabled" value="${filter.includeDisabled}"/>
+        <cti:param name="thresholdDescriptor" value="${filter.thresholdDescriptor}"/>
+        <cti:param name="threshold" value="${filter.threshold}"/>
+        <c:forEach var="avail" items="${filter.availability}">
             <cti:param name="availability" value="${avail}"/>
         </c:forEach>
     </cti:url>
     
     <div data-url="${dataUrl}">
         <span class="fwn"><i:inline key=".devices"/>:</span>
-        <span class="badge">${detail.hitCount}</span>
+        <span class="badge">${report.detail.hitCount}</span>
         <span class="fr">
             <c:forEach var="availability" items="${dataAvailabilityOptions}">
                 <cti:msg2 var="availabilityText" key=".dataAvailability.${availability}"/>
@@ -32,7 +32,7 @@
             </c:forEach>
         </span>
         
-        <c:if test="${detail.hitCount > 0}">
+        <c:if test="${report.detail.hitCount > 0}">
             <span class="js-cog-menu">
                 <cm:dropdown icon="icon-cog">
                     <cti:url var="collectionActionsUrl" value="/bulk/collectionActions">
@@ -72,7 +72,7 @@
             <tags:sort column="${earliestReading}" />                
             <tags:sort column="${latestReading}" />                            
             <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
-            <c:forEach var="device" items="${detail.resultList}">
+            <c:forEach var="device" items="${report.detail.resultList}">
                 <c:set var="deviceId" value="${device.paoIdentifier.paoId}"/>
                 <tr>
                     <td>
@@ -99,7 +99,7 @@
                                 <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
                             </c:when>
                             <c:otherwise>
-                                <cti:msg2 key=".noRecentReadingFound"/>
+                                <cti:msg2 key=".noReadingFound"/>
                             </c:otherwise>
                         </c:choose>
                     </td>
@@ -118,7 +118,7 @@
                                 <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
                             </c:when>
                             <c:otherwise>
-                                <cti:msg2 key=".noRecentReadingFound"/>
+                                <cti:msg2 key=".noReadingFound"/>
                             </c:otherwise>
                         </c:choose>
                     </td>

@@ -8,7 +8,7 @@
 <cti:standardPage module="amr" page="usageThresholdReport.results">
 
     <div class="column-12-12 clearfix">
-        <div class="column one pr" style="border:1px solid #ccc;padding:5px;height:160px;">
+        <div class="column one" style="border:1px solid #ccc;padding:5px;min-height:160px;">
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".attribute">
                      <cti:msg2 key="${criteria.attribute.formatKey}"/>
@@ -28,7 +28,7 @@
                 </tags:nameValue2>
             </tags:nameValueContainer2>
         </div>
-        <div class="column two nogutter pr" style="border:1px solid #ccc;padding:5px;height:160px;">
+        <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;min-height:160px;">
             <form:form id="filter-results-form" action="results" method="get" commandName="filter">
                 <cti:csrfToken/>
                 <input type="hidden" name="reportId" value="${criteria.reportId}"/>
