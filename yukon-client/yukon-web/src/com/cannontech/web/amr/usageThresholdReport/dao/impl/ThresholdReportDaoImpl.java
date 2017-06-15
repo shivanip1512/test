@@ -121,7 +121,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
      */
     private void setAvailability(ThresholdReportDetail detail, ThresholdReportCriteria criteria) {
         Instant startDate = criteria.getStartDate();
-        Instant endDatePlus1Day = criteria.getEndDate().toDateTime().plusDays(1).toInstant();
+        Instant endDatePlus1Day = criteria.getEndDateAdjusted();
         if (detail.getPointId() == null) {
             detail.setAvailability(DataAvailability.UNSUPPORTED);
         } else if (detail.getEarliestReading() == null) {
@@ -163,7 +163,7 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
 
         if (filter.getAvailability() != null  && filter.getAvailability().size() > 0) {
             Instant startDate = criteria.getStartDate();
-            Instant endDatePlus1Day = criteria.getEndDate().toDateTime().plusDays(1).toInstant();
+            Instant endDatePlus1Day = criteria.getEndDateAdjusted();
             if (sortBy != null) {
                 log.debug("Criteria=" + criteria);
                 log.debug("--Report Criteria Range=" + InstantRangeLogHelper.getLogString(criteria.getStartDate()) + "-"

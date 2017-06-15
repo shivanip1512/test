@@ -64,6 +64,13 @@ public class ThresholdReportCriteria {
     public void setReportId(int reportId) {
         this.reportId = reportId;
     }
+    
+    /**
+     * Returns end date +1 day
+     */
+    public Instant getEndDateAdjusted(){
+        return getEndDate().toDateTime().plusDays(1).toInstant();
+    }
 
     @Override
     public String toString() {

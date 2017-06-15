@@ -109,8 +109,7 @@ public class ThresholdReportServiceImpl implements ThresholdReportService{
      */
     private Range<Instant> getReportRange(ThresholdReportCriteria criteria){
         Instant startDate = criteria.getStartDate().toDateTime().withTimeAtStartOfDay().toInstant();
-        Instant endDatePlus1Day =
-            criteria.getEndDate().toDateTime().withTimeAtStartOfDay().plusDays(1).toInstant();
+        Instant endDatePlus1Day = criteria.getEndDateAdjusted().toDateTime().withTimeAtStartOfDay().toInstant();
         Range<Instant> range = new Range<>(startDate, true, endDatePlus1Day, true);
         log.debug("Creating " + InstantRangeLogHelper.getLogString(range) + " for criteria=" + criteria);
         return new Range<>(startDate, true, endDatePlus1Day, true); 
