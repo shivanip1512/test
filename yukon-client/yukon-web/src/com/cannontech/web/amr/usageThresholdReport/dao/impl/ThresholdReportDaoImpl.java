@@ -2,14 +2,12 @@ package com.cannontech.web.amr.usageThresholdReport.dao.impl;
 
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,12 +120,14 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
      * Adds availability information to detail
      */
     private void setAvailability(ThresholdReportDetail detail, ThresholdReportCriteria criteria) {
+        Instant startDate = criteria.getStartDate();
+        Instant endDatePlus1Day = criteria.getEndDate().toDateTime().plusDays(1).toInstant();
         if (detail.getPointId() == null) {
             detail.setAvailability(DataAvailability.UNSUPPORTED);
         } else if (detail.getEarliestReading() == null) {
             detail.setAvailability(DataAvailability.NONE);
-        } else if (detail.getEarliestReading().getPointDataTimeStamp().getTime() == criteria.getStartDate().getMillis()
-            && detail.getLatestReading().getPointDataTimeStamp().getTime() == criteria.getEndDate().getMillis()) {
+        } else if (detail.getEarliestReading().getPointDataTimeStamp().getTime() == startDate.getMillis()
+            && detail.getLatestReading().getPointDataTimeStamp().getTime() == endDatePlus1Day.getMillis()) {
             detail.setAvailability(DataAvailability.COMPLETE);
         } else {
             detail.setAvailability(DataAvailability.PARTIAL);
@@ -162,6 +162,8 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
         sql.append("WHERE UsageThresholdReportId").eq(reportId);
 
         if (filter.getAvailability() != null  && filter.getAvailability().size() > 0) {
+            Instant startDate = criteria.getStartDate();
+            Instant endDatePlus1Day = criteria.getEndDate().toDateTime().plusDays(1).toInstant();
             if (sortBy != null) {
                 log.debug("Criteria=" + criteria);
                 log.debug("--Report Criteria Range=" + InstantRangeLogHelper.getLogString(criteria.getStartDate()) + "-"
@@ -177,16 +179,20 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
                     sql.append(OR);
                     sql.append("(FirstValue IS NULL AND p.PointId IS NOT NULL)");
                 } else if (availability == DataAvailability.COMPLETE) {
+                    log.debug("--Complete:FirstTimestamp = " + InstantRangeLogHelper.getLogString(startDate)
+                        + " LastTimestamp = " + InstantRangeLogHelper.getLogString(endDatePlus1Day));
                     sql.append(OR);
                     sql.append("(");
-                    sql.append("FirstTimestamp").eq(criteria.getStartDate());
-                    sql.append("AND LastTimestamp").eq(criteria.getEndDate());
+                    sql.append("FirstTimestamp").eq(startDate);
+                    sql.append("AND LastTimestamp").eq(endDatePlus1Day);
                     sql.append(")");
                 } else if (availability == DataAvailability.PARTIAL) {
+                    log.debug("--Partial:FirstTimestamp !=" + InstantRangeLogHelper.getLogString(startDate)
+                        + " LastTimestamp != " + InstantRangeLogHelper.getLogString(endDatePlus1Day));
                     sql.append(OR);
                     sql.append("(");
-                    sql.append("FirstTimestamp").neq(criteria.getStartDate());
-                    sql.append("OR LastTimestamp").neq(criteria.getEndDate());
+                    sql.append("FirstTimestamp").neq(startDate);
+                    sql.append("OR LastTimestamp").neq(endDatePlus1Day);
                     sql.append(")");
                 }
                 OR = "OR";
@@ -275,9 +281,9 @@ public class ThresholdReportDaoImpl implements ThresholdReportDao {
                     Timestamp lastDate = null;
                     Double lastValue = null;
                     if(detail.getEarliestReading() != null){
-                        firstDate = new Timestamp(DateUtils.truncate(detail.getEarliestReading().getPointDataTimeStamp(), Calendar.DAY_OF_MONTH).getTime());
+                        firstDate = new Timestamp(detail.getEarliestReading().getPointDataTimeStamp().getTime());
                         firstValue = detail.getEarliestReading().getValue();
-                        lastDate =  new Timestamp(DateUtils.truncate(detail.getLatestReading().getPointDataTimeStamp(), Calendar.DAY_OF_MONTH).getTime());
+                        lastDate =  new Timestamp(detail.getLatestReading().getPointDataTimeStamp().getTime());
                         lastValue = detail.getLatestReading().getValue();
                     }
 
