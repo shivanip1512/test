@@ -20,6 +20,16 @@ public interface RfnMeterDataSimulatorService extends AutoStartableSimulator {
     void stopSimulator();
     
     /**
+     * Starts the RFN Meter data simulator.
+     */
+    void startSimulator(SimulatorSettings settings);
+    
+    /**
+     * Gets the RFN_METER simulator settings from the database.
+     */
+    SimulatorSettings getCurrentSettings();
+    
+    /**
      * Get data simulator status for existing devices if the simulator has been running.
      */
     RfnDataSimulatorStatus getStatus();

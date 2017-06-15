@@ -41,7 +41,6 @@ import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
 import com.cannontech.dr.rfn.service.RfnMeterDataSimulatorService;
-import com.cannontech.simulators.SimulatorSettingsInterface;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.google.common.collect.HashMultimap;
@@ -83,20 +82,20 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     }
 
     @Override
-    public synchronized void startSimulator(SimulatorSettingsInterface settings) {
+    public synchronized void startSimulator(SimulatorSettings settings) {
         if (!status.isRunning().get()) {
-            saveSettings((SimulatorSettings) settings);
+            saveSettings(settings);
             
             log.debug("Start simulator");
             status = new RfnDataSimulatorStatus();
             status.setRunning(new AtomicBoolean(true));
             status.setStartTime(new Instant());
             if (this.settings == null) {
-                this.settings = (SimulatorSettings) settings;
+                this.settings = settings;
             }
             List<RfnDevice> devices = new ArrayList<RfnDevice>();
             try {
-                PaoType paoType = PaoType.valueOf(((SimulatorSettings) settings).getPaoType());
+                PaoType paoType = PaoType.valueOf((settings).getPaoType());
                 devices.addAll(rfnDeviceDao.getDevicesByPaoType(paoType));
             } catch (Exception e) {
                 // user selected all rfn types;
@@ -106,7 +105,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
             for (RfnDevice device : devices) {
                 try {
                     int minuteOffset = getMinuteOfTheDay(device.getRfnIdentifier().getSensorSerialNumber());
-                    ReportingInterval reportingInterval = ((SimulatorSettings) settings).getReportingInterval();
+                    ReportingInterval reportingInterval = (settings).getReportingInterval();
 
                     minuteOffset = minuteOffset / reportingInterval.getDailyIntervals();
 

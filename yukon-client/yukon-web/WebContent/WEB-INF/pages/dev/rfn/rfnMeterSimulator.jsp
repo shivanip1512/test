@@ -178,7 +178,6 @@
                 _checkStartupStatus(null, {simulatorType: "RFN_METER"});
                 _initialized = true;
             },
-
         };
         return mod;
     }());

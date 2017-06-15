@@ -1,12 +1,13 @@
 package com.cannontech.dr.rfn.model;
 
+import java.io.Serializable;
+
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Duration;
 
 import com.cannontech.common.i18n.DisplayableEnum;
-import com.cannontech.simulators.SimulatorSettingsInterface;
 
-public class SimulatorSettings implements SimulatorSettingsInterface {
+public class SimulatorSettings implements Serializable {
 
     // lcr data simulator
     private int lcr6200serialFrom;
