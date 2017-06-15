@@ -149,8 +149,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         // The minimum output of our system will be around 3 kW and -750 kVar
         // We use kVar to drive the kW to make future changes to banks and desired KVar easier
         final double KW_TO_KVAR_MULTIPLIER = .75;
-        final int MAX_KVAR = 9750; // TODO calculate this from the database
-        final int MIN_KVAR = -750;
+        final int MAX_KVAR = 10500; // TODO calculate this from the database
+        final int MIN_KVAR = -1500;
         final int MIN_KW = 3000;
         final int MAX_KW = (int) (MIN_KW + (MAX_KVAR - MIN_KVAR)/KW_TO_KVAR_MULTIPLIER);
         
@@ -205,50 +205,10 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                 
                 for (Zone zone : zonesBySubBusId) {
                     List<CapBankToZoneMapping> capBankToZoneMappings = zoneService.getCapBankToZoneMapping(zone.getId());
-                    
-                    // We need to finish finding the zone feeder voltage offset, so we are going to do the Feeder->Regulator lookup here and add to feederVoltage based on the regulator.
-                    // Note this only works here if we have a 1-1 zone to feeder mapping. Also note we are assuming the 3 phases of regulators are identical!
+                    Map<Phase, Integer> phaseToRegulator = new HashMap<>();
+
                     List<Integer> regulatorsForZone = zoneService.getRegulatorsForZone(zone.getId());
-                    Integer regulatorForZone = regulatorsForZone.get(0);
-                    if (regulatorForZone != 0) {
-                        
-                        if (getFeederForRegulatorFromCapbank(capBankToFeeder, capBankToZoneMappings.get(0)) != null) {
-                            
-                            Integer feederId = getFeederForRegulatorFromCapbank(capBankToFeeder, capBankToZoneMappings.get(0));
-                            Double feederVoltage = feederVoltageRises.get( feederId );
-                            feederVoltageRises.put(feederId, feederVoltage + 0.75*getRegulatorTapPosition(regulatorForZone));
-                            //TODO instead of adding this to feederVoltageRises, create a Regulator to Phase and Feeder map and do the lookup whereever feederVoltageRises is used.
-                            // This would allow for multi phase taps which appears to be necessary unfortunately.
-                        }
-                    }
-                    
-                    for (CapBankToZoneMapping capBankToZoneMapping : capBankToZoneMappings) {
-                        Map<Integer, Phase> pointsForBankAndPhase = zoneService.getMonitorPointsForBankAndPhase(capBankToZoneMapping.getDeviceId());
-                        
-                        for (Entry<Integer, Phase> points : pointsForBankAndPhase.entrySet()) {
-                            double voltage = getVoltageFromKwAndDistance(currentSubBusBaseKw, capBankToZoneMapping.getDistance() + zone.getGraphStartPosition() * 1000, MAX_KW);
-                            voltage = shiftVoltageForPhase(voltage, points.getValue(), (capBankToZoneMapping.getDistance() + zone.getGraphStartPosition() * 1000));
-                            
-                            // Check if the bank itself is closed
-                            CapBankDevice capBankDevice = capControlCache.getCapBankDevice(capBankToZoneMapping.getDeviceId());
-                            LiteState capBankState = CapControlUtils.getCapBankState(capBankDevice.getControlStatus());
-                            if(capBankState.getStateText().contains("Close")) {
-                                voltage += (capBankDevice.getBankSize()/1200); // A bank gives a bonus extra voltage to itself.
-                            }
-                            
-                            // Add in Feeder voltage shift
-                            if (capBankToFeeder.get(capBankDevice.getCcId()) != null) {
-                                voltage += feederVoltageRises.get(capBankToFeeder.get(capBankDevice.getCcId()));
-                            }
-                            
-                            sendPoint(points.getKey(), voltage, PointType.Analog);
-                        }
-                        
-                        //TODO Generate capbank points.
-                    }
-                    
                     for (Integer regulatorId : regulatorsForZone) {
-                        
                         Regulator regulator = regulatorService.getRegulatorById(regulatorId);
                         Map<RegulatorPointMapping, Integer> mappings = regulator.getMappings();
                         for (Entry<RegulatorPointMapping, Integer> mapping : mappings.entrySet()) {
@@ -282,7 +242,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                             
                                     double voltage = getVoltageFromKwAndDistance(currentSubBusBaseKw, zone.getGraphStartPosition() * 1000, MAX_KW);
                                     for (Entry<Integer, Phase> points : pointsForRegulatorAndPhase.entrySet()) {
-                                        
+                                        phaseToRegulator.put(points.getValue(), regulatorId); // We assign this regulator to phases based on the zone point assignment
                                         voltage = shiftVoltageForPhase(voltage, points.getValue(), zone.getGraphStartPosition() * 1000);
                                         
                                         // We need to map a Regulator to a Feeder, which is not a thing in CapControl. To simulate it, we will get a capbank from the zone, then 
@@ -291,7 +251,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                         Integer feederId = getFeederForRegulatorFromCapbank(capBankToFeeder, capBankToZoneMappings.get(0));
                                         if (feederId != null) {
                                             voltage += feederVoltageRises.get(getFeederForRegulatorFromCapbank(capBankToFeeder, capBankToZoneMappings.get(0)));
-                                            
+                                            voltage += 0.75*getRegulatorTapPosition(phaseToRegulator.get(points.getValue()));
+
                                             // The feeder voltage matches the regulator phase voltage. We finally have that so lets send it!
                                             if (points.getValue() == Phase.A) {
                                                 Feeder feeder = capControlCache.getFeeder(feederId);
@@ -312,6 +273,37 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                             }
                         }
                     }
+                    
+                    for (CapBankToZoneMapping capBankToZoneMapping : capBankToZoneMappings) {
+                        Map<Integer, Phase> pointsForBankAndPhase = zoneService.getMonitorPointsForBankAndPhase(capBankToZoneMapping.getDeviceId());
+                        
+                        for (Entry<Integer, Phase> points : pointsForBankAndPhase.entrySet()) {
+                            double voltage = getVoltageFromKwAndDistance(currentSubBusBaseKw, capBankToZoneMapping.getDistance() + zone.getGraphStartPosition() * 1000, MAX_KW);
+                            voltage = shiftVoltageForPhase(voltage, points.getValue(), (capBankToZoneMapping.getDistance() + zone.getGraphStartPosition() * 1000));
+                            
+                            // Check if the bank itself is closed
+                            CapBankDevice capBankDevice = capControlCache.getCapBankDevice(capBankToZoneMapping.getDeviceId());
+                            LiteState capBankState = CapControlUtils.getCapBankState(capBankDevice.getControlStatus());
+                            if(capBankState.getStateText().contains("Close")) {
+                                voltage += (capBankDevice.getBankSize()/1200); // A bank gives a bonus extra voltage to itself.
+                            }
+                            
+                            // Add in Feeder voltage shift
+                            if (capBankToFeeder.get(capBankDevice.getCcId()) != null) {
+                                voltage += feederVoltageRises.get(capBankToFeeder.get(capBankDevice.getCcId()));
+                            }
+                            
+                            // Add in regulator voltage shift
+                            if (phaseToRegulator.get(points.getValue()) != null) {
+                                voltage += 0.75*getRegulatorTapPosition(phaseToRegulator.get(points.getValue()));
+                            }
+                            
+                            sendPoint(points.getKey(), voltage, PointType.Analog);
+                        }
+                        
+                        //TODO Generate capbank points.
+                    }
+                    
                 }
                 
                 //Send out all of the sub bus points
@@ -404,6 +396,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     // Sends this point to Dispatch. Does not force archive, follows point archival settings.
     private void sendPoint(int pointId, double value, PointType type) {
         if(pointId != 0) {
+            
+            //TODO group up points and send as multi messages
             PointData pointData = new PointData();
             pointData.setTagsPointMustArchive(false);    
             pointData.setPointQuality(PointQuality.Normal);
