@@ -311,7 +311,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     
     private SqlFragmentSource getControlAuditBaseQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT ce.ControlEventId AS EventId, ce.StartTime, ce.ScheduledStopTime AS StopTime, ");
+        sql.append("SELECT DISTINCT ce.ControlEventId AS EventId, ce.StartTime, ce.ScheduledStopTime AS StopTime, ");
         sql.append("lgypo.PAOName AS LoadGroup, pgypo.PAOName AS ProgramName, ca.AccountNumber");
         sql.append("FROM ControlEvent ce");
         sql.append("  JOIN ControlEventDevice ced ON ced.ControlEventId = ce.ControlEventId");
@@ -338,7 +338,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
                 String eventPhase = ControlEventDeviceStatus.valueOf(result).getEventPhase() == null ? "Unknown"
                         : ControlEventDeviceStatus.valueOf(result).getEventPhase().getJsonString();
                 String participationState =
-                    eventPhase == ControlEventDeviceStatus.UNKNOWN.name() ? "Unreported" : "Confirmed";
+                        ControlEventDeviceStatus.valueOf(result).getEventPhase() == null ? "Unreported" : "Confirmed";
                 ControlOptOutStatus optOutStatus = ControlOptOutStatus.valueOf(rs.getString("OptoutStatus"));
                 ControlDeviceDetail controlDeviceDetail =
                     new ControlDeviceDetail(deviceName, serialNumber, participationState, eventPhase, optOutStatus);
@@ -351,12 +351,13 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT dypo.PAOName AS DeviceName, ced.Result, lmbh.ManufacturerSerialNumber AS SerialNumber,");
         sql.append("  CASE WHEN ced.OptOutEventId IS NULL THEN").appendArgument_k(ControlOptOutStatus.NONE);
-        sql.append("       WHEN ced.OptOutEventId IS NOT NULL THEN ");
-        sql.append("         CASE WHEN (SELECT StopDate FROM OptOutEvent WHERE OptOutEventId = ced.OptOutEventId) ");
-        sql.append("         BETWEEN ce.StartTime AND ce.ScheduledStopTime THEN ").appendArgument_k(
-            ControlOptOutStatus.PRE_OPTOUT);
+        sql.append("       WHEN ced.OptOutEventId IS NOT NULL THEN");
+        sql.append("         CASE WHEN (SELECT StartDate");
+        sql.append("                    FROM OptOutEvent");
+        sql.append("                    WHERE OptOutEventId = ced.OptOutEventId) >= ce.StartTime");
+        sql.append("                      THEN").appendArgument_k(ControlOptOutStatus.POST_OPTOUT);
+        sql.append("                    ELSE ").appendArgument_k(ControlOptOutStatus.PRE_OPTOUT);
         sql.append("         END");
-        sql.append("       ELSE ").appendArgument_k(ControlOptOutStatus.POST_OPTOUT);
         sql.append("  END AS OptoutStatus");
         sql.append("FROM ControlEvent ce");
         sql.append("  JOIN ControlEventDevice ced ON ced.ControlEventId = ce.ControlEventId");
