@@ -23,6 +23,7 @@
     <bean class="com.cannontech.simulators.handler.DataStreamingSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.NmNetworkSimulatorMessageHandler"/>
     <bean class="com.cannontech.simulators.handler.SimulatorStartupSettingsMessageHandler"/>
+    
     <bean class="com.cannontech.dr.rfn.service.impl.RfnLcrDataSimulatorServiceImpl"/>
     <bean class="com.cannontech.dr.rfn.service.impl.RfnMeterDataSimulatorServiceImpl"/>
     <bean class="com.cannontech.simulators.ivvc.impl.IvvcSimulatorServiceImpl"/>

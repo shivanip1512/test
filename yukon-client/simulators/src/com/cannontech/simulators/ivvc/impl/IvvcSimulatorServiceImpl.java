@@ -1,19 +1,24 @@
 package com.cannontech.simulators.ivvc.impl;
 
+import java.io.Console;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Instant;
+import org.joda.time.ReadableDuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -42,7 +47,7 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.simulators.dao.RegulatorEventsSimulatorDao;
 import com.cannontech.simulators.dao.RegulatorEventsSimulatorDao.RegulatorOperations;
 import com.cannontech.simulators.ivvc.IvvcSimulatorService;
-import com.google.common.base.Optional;
+import com.sun.org.apache.xpath.internal.operations.Plus;
 
 /**
  * 
@@ -63,8 +68,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     
     private Map<Integer, Integer> regulatorTapPositions = new HashMap<>();
     private int keepAliveIncrementingValue = 0;
-    Instant lastRegulatorEvaluationTime;
-    ScheduledFuture<?> future;
+    private Instant lastRegulatorEvaluationTime;
+    private ScheduledFuture<?> ivvcSimulationFuture;
     
     private final int END_OF_LINE = 40000;
     private final int INITIAL_TAP_POSITION = 3;
@@ -75,7 +80,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
             return false;
         } else {
             lastRegulatorEvaluationTime = Instant.now();
-            future = executor.scheduleAtFixedRate(this::getSimulatorThread, 0, 30, TimeUnit.SECONDS);
+            ivvcSimulationFuture = executor.scheduleAtFixedRate(this::getSimulatorThread, 0, 30, TimeUnit.SECONDS);
             log.info("IVVC simulator thread starting up.");
             isRunning = true;
             return true;
@@ -84,7 +89,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     
     @Override
     public void stop() {
-        future.cancel(true);
+        ivvcSimulationFuture.cancel(true);
         isRunning = false;
         log.info("Cap Control simulator thread shutting down.");
     }
@@ -99,8 +104,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
             isCurrentlyExecuting = true;
             try {
                 loadRegulatorTapPositionsFromDatabase();
-                processNewRegulatorActions(lastRegulatorEvaluationTime);
-                lastRegulatorEvaluationTime = Instant.now();
+                processNewRegulatorActions();
                 calculateAndSendCapControlPoints();
 
             } catch (Exception e) {
@@ -114,19 +118,20 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     
     // Load all of the tap up and down operations, add or subtract from tap position depending on operation performed.
     // TBD: Limits position?
-    private void processNewRegulatorActions(Instant lastRegulatorEvaluationTime) {
+    private void processNewRegulatorActions() {
         List<RegulatorOperations> regulatorTapOperations = regulatorEventsSimulatorDao.getRegulatorTapOperationsAfter(lastRegulatorEvaluationTime);
+        lastRegulatorEvaluationTime = Instant.now();
         
         if (!regulatorTapOperations.isEmpty()) {
             log.debug("Found " + regulatorTapOperations.size() + " tap operations, acting on them.");
         }
         
         for (RegulatorOperations regulatorOperations : regulatorTapOperations) {
-            Integer tapPosition = Optional.fromNullable(regulatorTapPositions.get(regulatorOperations.regulatorId)).or(INITIAL_TAP_POSITION);
+            Integer tapPosition = Optional.ofNullable(regulatorTapPositions.get(regulatorOperations.regulatorId)).orElse(INITIAL_TAP_POSITION);
             
-            if (regulatorOperations.eventType.equals(EventType.TAP_UP)) {
+            if (regulatorOperations.eventType == EventType.TAP_UP) {
                 regulatorTapPositions.put(regulatorOperations.regulatorId, tapPosition + 1);
-            } else if (regulatorOperations.eventType.equals(EventType.TAP_DOWN)) {
+            } else if (regulatorOperations.eventType == EventType.TAP_DOWN) {
                 regulatorTapPositions.put(regulatorOperations.regulatorId, tapPosition - 1);
             }
         }
@@ -149,14 +154,14 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         final int MIN_KW = 3000;
         final int MAX_KW = (int) (MIN_KW + (MAX_KVAR - MIN_KVAR)/KW_TO_KVAR_MULTIPLIER);
         
-        int secondsOfDayForCalculation = DateTime.now().getSecondOfDay()+12*60*60; // This shifts the sine so the peak is at 18:00
+        int secondsOfDayForCalculation = DateTime.now().plusHours(12).getSecondOfDay()*24; // This shifts the sine so the peak is at 18:00
         final double currentSubBusBaseKw = MIN_KW + (Math.sin(secondsOfDayForCalculation*2*Math.PI/DateTimeConstants.SECONDS_PER_DAY)*((MAX_KW-MIN_KW)/2) + ((MAX_KW-MIN_KW)/2));
         final double currentSubBusBaseKVar = (currentSubBusBaseKw - MIN_KW)*KW_TO_KVAR_MULTIPLIER + MIN_KVAR; //When we are at minimum kw, we are at MIN_KVAR
         keepAliveIncrementingValue = (keepAliveIncrementingValue + 1) & 0xFFFF; // Rolls over after 16 bits.
         
         for (Area area : simulatedAreas) {
             List<SubBus> subBusesByArea = capControlCache.getSubBusesByArea(area.getCcId());
-            for (SubBus subBus : subBusesByArea) {
+            subBusesByArea.parallelStream().forEach(subBus -> {
                 int subBusKVarClosed = 0;
                 Map<Integer, Integer> capBankToFeeder = new HashMap<>();
                 List<Feeder> feedersBySubBus = capControlCache.getFeedersBySubBus(subBus.getCcId());
@@ -270,11 +275,6 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                 case FORWARD_BANDWIDTH:
                                     sendPoint(mapping.getValue(), 60, PointType.Analog); // Really not used, here to generate point data
                                     break;
-                                // These are output points, no incoming value.
-                                case TAP_UP:
-                                case TAP_DOWN:
-                                case TERMINATE:
-                                    
                                 case VOLTAGE_Y:
                                     // Voltage Y is special, and needs phase information. We are looking it up via zoneService and not using the mapping
                                     Map<Integer, Phase> pointsForRegulatorAndPhase =
@@ -302,6 +302,10 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                         sendPoint(points.getKey(), voltage, PointType.Analog);
                                     }
                                     break; 
+                                // These are output points, no incoming value.
+                                case TAP_UP:
+                                case TAP_DOWN:
+                                case TERMINATE:
                                 default:
                                     break;
                                 }
@@ -314,8 +318,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                 sendPoint(subBus.getCurrentVarLoadPointID(), currentSubBusBaseKVar - subBusKVarClosed, PointType.Analog);
                 sendPoint(subBus.getCurrentVoltLoadPointID(), 120, PointType.Analog); // The sub bus Voltage is always 120
                 sendPoint(subBus.getCurrentWattLoadPointID(), currentSubBusBaseKw, PointType.Analog);
-                //sendPoint(subBus.getDailyOperationsAnalogPointId(), 1); Sent by C++ code.
-            }
+                //The daily operations point on the subBus is not sent by us, but sent by the C++ code. (subBus.getDailyOperationsAnalogPointId())
+            });
             
         }
     }
@@ -334,46 +338,38 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
             Set<Integer> regulatorTapPositionPointIds = new HashSet<>();
             Map<Integer, Integer> pointIdToRegulator = new HashMap<>();
             
-            List<Area> simulatedAreas = capControlCache.getAreas().stream()
-                                                                  .filter(area->area.getCcName().startsWith("Sim Area"))
-                                                                  .collect(Collectors.toList());
-            for (Area area : simulatedAreas) {
-                List<SubBus> subBusesByArea = capControlCache.getSubBusesByArea(area.getCcId());
-                for (SubBus subBus : subBusesByArea) {
-                    List<Zone> zonesBySubBusId = zoneService.getZonesBySubBusId(subBus.getCcId());
-                    for (Zone zone : zonesBySubBusId) {
-                        List<Integer> regulatorsForZone = zoneService.getRegulatorsForZone(zone.getId());
-                        for (Integer regulatorId : regulatorsForZone) {
-                            
-                            Regulator regulator = regulatorService.getRegulatorById(regulatorId);
-                            Map<RegulatorPointMapping, Integer> mappings = regulator.getMappings();
-                            for (Entry<RegulatorPointMapping, Integer> mapping : mappings.entrySet()) {
-                                if (mapping.getValue() != 0 && mapping.getKey().equals(RegulatorPointMapping.TAP_POSITION)) {
-                                    //sendPoint(mapping.getValue(), getRegulatorTapPosition(regulatorId), PointType.Analog);
-                                    regulatorTapPositionPointIds.add(mapping.getValue());
-                                    pointIdToRegulator.put(mapping.getValue(), regulatorId);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
+            capControlCache.getAreas().stream()
+                                      .filter(area->area.getCcName().startsWith("Sim Area"))
+                                      .flatMap(area -> capControlCache.getSubBusesByArea(area.getCcId()).stream())
+                                      .flatMap(subBus -> zoneService.getZonesBySubBusId(subBus.getCcId()).stream())
+                                      .flatMap(zone -> zoneService.getRegulatorsForZone(zone.getId()).stream())
+                                      .map(regulatorId -> regulatorService.getRegulatorById(regulatorId))
+                                      .forEach((regulator -> { regulator.getMappings().entrySet().stream()
+                                          .filter(mapping -> mapping.getValue() != 0 && mapping.getKey() == RegulatorPointMapping.TAP_POSITION)
+                                          .forEach(tapPositionMapping -> {
+                                              regulatorTapPositionPointIds.add(tapPositionMapping.getValue());
+                                              pointIdToRegulator.put(tapPositionMapping.getValue(), regulator.getId());
+                                              });
+                                      }));
+            
             int successCount = 0;
             
             if (regulatorTapPositionPointIds.size() > 0) {
-                Set<? extends PointValueQualityHolder> tapPointValues = asyncDynamicDataSource.getPointValues(regulatorTapPositionPointIds);
-                for (PointValueQualityHolder pointValueQualityHolder : tapPointValues) {
-                    if (pointValueQualityHolder.getValue() < 30 && pointValueQualityHolder.getValue() > -20 && pointValueQualityHolder.getPointQuality().equals(PointQuality.Normal)) {
-                        Integer regulatorId = pointIdToRegulator.get(pointValueQualityHolder.getId());
-                        if (regulatorId != null) {
-                            successCount++;
-                            regulatorTapPositions.put(regulatorId, (int) pointValueQualityHolder.getValue());
-                            
-                        }
-                    }
-                }
-                
+                successCount = (int) asyncDynamicDataSource.getPointValues(regulatorTapPositionPointIds)
+                                      .stream()
+                                      .filter(pvqh -> pvqh.getValue() < 30 && pvqh.getValue() > -20)
+                                      .filter(pvqh -> pvqh.getPointQuality() == PointQuality.Normal)
+                                      .map(pvqh -> {
+                                          Integer regulatorId = pointIdToRegulator.get(pvqh.getId());
+                                          if (regulatorId != null) {
+                                              regulatorTapPositions.put(regulatorId, (int) pvqh.getValue());
+                                              return 1;
+                                          }
+                                          return 0;
+                                      })
+                                      .filter(i -> i == 1)
+                                      .count();
+                                     
                 if (successCount > 0) {
                     tapPositionsPreloaded = true; // In theory we will keep trying until both capcontrol cache is loaded and Dispatch results come back.
                 }
