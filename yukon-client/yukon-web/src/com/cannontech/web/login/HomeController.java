@@ -6,12 +6,14 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -137,7 +139,7 @@ public class HomeController {
         return Collections.singletonMap("isFavorite", userPageDao.isFavorite(userPageKey));
     }
 
-    @RequestMapping("/addToHistory")
+    @RequestMapping(value = "/addToHistory", method = RequestMethod.POST)
     public @ResponseBody Map<String, Object> addToHistory(String module, String name, String labelArgs, String path,
             YukonUserContext userContext) throws BadRequestException {
         List<String> arguments = StringUtils.restoreJsSafeList(labelArgs);

@@ -107,7 +107,7 @@ yukon.favorites = (function () {
 
         if (button.length === 1) {
             data = _dataFavoriteButton(button);
-            $.getJSON(yukon.url('/addToHistory'), data);
+            $.post(yukon.url('/addToHistory'), data);
         }
     },
     

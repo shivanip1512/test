@@ -7,6 +7,6 @@ $(function() {
         var monitorType = checkbox.data('monitorType');
         var monitorId = checkbox.data('monitorId');
 
-        $.ajax(yukon.url('/amr/' + monitorType + '/' + monitorId + '/toggle'));
+        $.post(yukon.url('/amr/' + monitorType + '/' + monitorId + '/toggle'));
     });
 });

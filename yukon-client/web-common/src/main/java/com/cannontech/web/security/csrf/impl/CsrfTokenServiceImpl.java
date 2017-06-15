@@ -1,6 +1,8 @@
 package com.cannontech.web.security.csrf.impl;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.UUID;
@@ -43,8 +45,25 @@ public class CsrfTokenServiceImpl implements CsrfTokenService {
         if (request.getMethod().equalsIgnoreCase("GET")) {
             return;
         }
-        String payload = null;
+        String refHeader = request.getHeader("Referer");
+        if (refHeader == null) {
+            log.error("Missing referer header field for" + request.getRequestURL());
+            throw new SecurityException("Missing referer header field for" + request.getRequestURL());
+        }
+        String host = null;
+        try {
+            host = new URI(refHeader).getHost();
+        } catch (URISyntaxException e) {
+            log.error("Unable to fetch the host from referer header");
+        }
+
+        boolean ok = host != null && (host.equals(request.getServerName()));
+        if (!ok) {
+            log.error("Request blocked due to referer header field being: " + refHeader);
+            throw new SecurityException("Request blocked due to referer header field being: " + refHeader);
+        }
         String requestToken = null;
+        String payload = null;
         try (Scanner scanner = new Scanner(request.getInputStream(), "ISO-8859-1").useDelimiter("\\A")) {
             payload = scanner.hasNext() ? scanner.next() : "";
         } catch (IOException e) {
