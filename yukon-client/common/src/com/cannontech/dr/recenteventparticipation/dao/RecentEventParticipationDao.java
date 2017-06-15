@@ -30,7 +30,7 @@ public interface RecentEventParticipationDao {
     /**
      * Insert event information for the device (in the specified load group) for which event as sent.
      */
-    void insertDeviceControlEvent(int eventId, int loadGroupId);
+    void insertDeviceControlEvent(int eventId, int loadGroupId, Instant eventTime);
 
     /**
      * Retrieves as a list of ControlAuditSummary associated with the specified event IDs.

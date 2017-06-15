@@ -99,16 +99,15 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     }
 
     @Override
-    public void insertDeviceControlEvent(int eventId, int loadGroupId) {
+    public void insertDeviceControlEvent(int eventId, int loadGroupId, Instant eventTime) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        Instant currentTime =  Instant.now();
         sql.append("INSERT INTO ControlEventDevice (DeviceId, ControlEventId, OptOutEventId, Result)");
         sql.append("   (SELECT ypo.PaobjectId, ").appendArgument(eventId).append(",").append("ooe.OptOutEventId").append(",").appendArgument_k(UNKNOWN);
         sql.append("    FROM LMHardwareControlGroup lmhcg");
         sql.append("      JOIN InventoryBase inv ON inv.InventoryId = lmhcg.InventoryId");
         sql.append("      LEFT JOIN OptOutEvent ooe ON ooe.InventoryId = lmhcg.InventoryId");
-        sql.append("      AND ooe.StartDate").lt(currentTime);
-        sql.append("      AND ooe.StopDate").gt(currentTime);
+        sql.append("      AND ooe.StartDate").lt(eventTime);
+        sql.append("      AND ooe.StopDate").gt(eventTime);
         sql.append("      AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
         sql.append("      JOIN YukonPAObject ypo on ypo.PaobjectId = inv.DeviceId");
         sql.append("    WHERE lmhcg.LMGroupId").eq(loadGroupId);
