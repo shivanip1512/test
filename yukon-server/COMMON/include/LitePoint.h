@@ -1,14 +1,18 @@
 #pragma once
 
-#include <string>
 #include "dlldefs.h"
-
 #include "pointtypes.h"
+
+namespace Cti
+{
+    class RowReader;
+}
 
 class IM_EX_CTIBASE LitePoint
 {
 public:
     LitePoint();
+    LitePoint( Cti::RowReader & rdr );
     LitePoint( const int Id, const CtiPointType_t Type, const std::string & Name,
                const int PaoId, const int Offset,
                const std::string & stateZeroControl,

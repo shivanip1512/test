@@ -114,57 +114,7 @@ std::vector<LitePoint> AttributeService::getLitePointsById(const std::vector<int
 
         while(rdr.isValid() && rdr() )
         {
-            LitePoint point;
-            int tempInt;
-            string tempStr;
-            double  multiplier;
-
-            rdr["PointId"] >> tempInt;
-            point.setPointId(tempInt);
-
-            rdr["PointType"] >> tempStr;
-            point.setPointType(resolvePointType(tempStr));
-
-            rdr["PointName"] >> tempStr;
-            point.setPointName(tempStr);
-
-            rdr["PAOBjectId"] >> tempInt;
-            point.setPaoId(tempInt);
-
-            rdr["PointOffset"] >> tempInt;
-            point.setPointOffset(tempInt);
-
-            rdr["StateGroupId"] >> tempInt;
-            point.setStateGroupId(tempInt);
-
-            if ( ! rdr["ControlOffset"].isNull() )
-            {
-                rdr["ControlOffset"] >> tempInt;
-                point.setControlOffset(tempInt);
-            }
-
-            if ( ! rdr["MULTIPLIER"].isNull() )
-            {
-                rdr["MULTIPLIER"] >> multiplier;
-                point.setMultiplier(multiplier);
-            }
-            else if ( ! rdr["ControlType"].isNull() )
-            {
-                rdr["ControlType"] >> tempStr;
-                point.setControlType(resolveControlType(tempStr));
-
-                rdr["CloseTime1"] >> tempInt;
-                point.setCloseTime1(tempInt);
-
-                rdr["CloseTime2"] >> tempInt;
-                point.setCloseTime2(tempInt);
-
-                rdr["StateZeroControl"] >> tempStr;
-                point.setStateZeroControl(tempStr);
-
-                rdr["StateOneControl"] >> tempStr;
-                point.setStateOneControl(tempStr);
-            }
+            LitePoint point( rdr );
 
             points.push_back(point);
         }

@@ -154,7 +154,6 @@ MissingPointAttribute::MissingPointAttribute(const long ID, const PointAttribute
     _description += attribute.name() + "' on "+ paoType +" with ID: " + CtiNumStr(ID);
 }
 
-
 const char * MissingPointAttribute::what( ) const
 {
     return _description.c_str();
@@ -164,6 +163,21 @@ const bool MissingPointAttribute::complain( ) const
     return _complain;
 }
 
+MissingAttribute::MissingAttribute( const long ID, const Attribute & attribute, const std::string & paoType, bool complainFlag )
+    : _description("Missing Attribute: '")
+{
+    _complain = complainFlag;
+    _description += attribute.getName() + "' on "+ paoType +" with ID: " + CtiNumStr(ID);
+}
+
+const char * MissingAttribute::what( ) const
+{
+    return _description.c_str();
+}
+const bool MissingAttribute::complain( ) const
+{
+    return _complain;
+}
 
 NoPointAttributeValue::NoPointAttributeValue(const long ID, const PointAttribute & attribute, string paoType)
     : _description("No Point Attribute Value for: '")

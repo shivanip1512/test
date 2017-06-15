@@ -56,28 +56,28 @@ long LastControlReasonCbc702x::serialize( const CtiCCTwoWayPoints & points )
 {
     int lastControlReason = 0;
 
-    lastControlReason |= Local        * !!points.getPointValueByAttribute( PointAttribute::LastControlLocal );
-    lastControlReason |= Remote       * !!points.getPointValueByAttribute( PointAttribute::LastControlRemote );
-    lastControlReason |= OvUv         * !!points.getPointValueByAttribute( PointAttribute::LastControlOvUv );
-    lastControlReason |= NeutralFault * !!points.getPointValueByAttribute( PointAttribute::LastControlNeutralFault );
-    lastControlReason |= Scheduled    * !!points.getPointValueByAttribute( PointAttribute::LastControlScheduled );
-    lastControlReason |= Digital      * !!points.getPointValueByAttribute( PointAttribute::LastControlDigital );
-    lastControlReason |= Analog       * !!points.getPointValueByAttribute( PointAttribute::LastControlAnalog );
-    lastControlReason |= Temperature  * !!points.getPointValueByAttribute( PointAttribute::LastControlTemperature );
+    lastControlReason |= Local        * !!points.getPointValueByAttribute( Attribute::LastControlReasonLocal );
+    lastControlReason |= Remote       * !!points.getPointValueByAttribute( Attribute::LastControlReasonRemote );
+    lastControlReason |= OvUv         * !!points.getPointValueByAttribute( Attribute::LastControlReasonOvUv );
+    lastControlReason |= NeutralFault * !!points.getPointValueByAttribute( Attribute::LastControlReasonNeutralFault );
+    lastControlReason |= Scheduled    * !!points.getPointValueByAttribute( Attribute::LastControlReasonScheduled );
+    lastControlReason |= Digital      * !!points.getPointValueByAttribute( Attribute::LastControlReasonDigital );
+    lastControlReason |= Analog       * !!points.getPointValueByAttribute( Attribute::LastControlReasonAnalog );
+    lastControlReason |= Temperature  * !!points.getPointValueByAttribute( Attribute::LastControlReasonTemperature );
 
     return lastControlReason;
 }
 
 void LastControlReasonCbc702x::deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp )
 {
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( PointAttribute::LastControlLocal),        !!( dbValue & Local ),        timestamp );
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( PointAttribute::LastControlRemote),       !!( dbValue & Remote ),       timestamp );
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( PointAttribute::LastControlOvUv),         !!( dbValue & OvUv ),         timestamp );
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( PointAttribute::LastControlNeutralFault), !!( dbValue & NeutralFault ), timestamp );
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( PointAttribute::LastControlScheduled),    !!( dbValue & Scheduled ),    timestamp );
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( PointAttribute::LastControlDigital),      !!( dbValue & Digital ),      timestamp );
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( PointAttribute::LastControlAnalog),       !!( dbValue & Analog ),       timestamp );
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( PointAttribute::LastControlTemperature),  !!( dbValue & Temperature ),  timestamp );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonLocal ),        !!( dbValue & Local ),        timestamp );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonRemote ),       !!( dbValue & Remote ),       timestamp );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonOvUv ),         !!( dbValue & OvUv ),         timestamp );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonNeutralFault ), !!( dbValue & NeutralFault ), timestamp );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonScheduled ),    !!( dbValue & Scheduled ),    timestamp );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonDigital ),      !!( dbValue & Digital ),      timestamp );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonAnalog ),       !!( dbValue & Analog ),       timestamp );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::LastControlReasonTemperature ),  !!( dbValue & Temperature ),  timestamp );
 }
 
 
@@ -90,7 +90,7 @@ std::string LastControlReasonCbc802x::getText( const CtiCCTwoWayPoints & points 
 
     long stateGroupID = DefaultStateGroup;
 
-    LitePoint point = points.getPointByAttribute( PointAttribute::LastControlReason );
+    LitePoint point = points.getPointByAttribute( Attribute::LastControlReason );
 
     if ( point.getPointId() > 0 )
     {
@@ -109,9 +109,9 @@ std::string LastControlReasonCbc802x::getText( const CtiCCTwoWayPoints & points 
 
 long LastControlReasonCbc802x::serialize( const CtiCCTwoWayPoints & points )
 {
-    if ( points.getPointIdByAttribute( PointAttribute::LastControlReason ) > 0 )
+    if ( points.getPointIdByAttribute( Attribute::LastControlReason ) > 0 )
     {
-        return points.getPointValueByAttribute( PointAttribute::LastControlReason, UninitializedRawSate );
+        return points.getPointValueByAttribute( Attribute::LastControlReason, UninitializedRawSate );
     }
 
     return UninitializedRawSate;
@@ -119,7 +119,7 @@ long LastControlReasonCbc802x::serialize( const CtiCCTwoWayPoints & points )
 
 void LastControlReasonCbc802x::deserialize( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp )
 {
-    const long pointID = points.getPointIdByAttribute( PointAttribute::LastControlReason );
+    const long pointID = points.getPointIdByAttribute( Attribute::LastControlReason );
 
     if ( pointID > 0 && dbValue != UninitializedRawSate )
     {

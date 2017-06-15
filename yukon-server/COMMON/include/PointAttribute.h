@@ -25,59 +25,6 @@ class IM_EX_CTIBASE PointAttribute
             AutoBlockEnableAttribute,
             HeartbeatTimerConfigAttribute,
 
-            CbcVoltageAttribute,
-            HighVoltageAttribute,
-            LowVoltageAttribute,
-            DeltaVoltageAttribute,
-            AnalogInput1Attribute,
-            TemperatureAttribute,
-            RSSIAttribute,
-            IgnoredReasonAttribute,
-
-            VoltageControlAttribute,
-            UvThresholdAttribute,
-            OvThresholdAttribute,
-            OVUVTrackTimeAttribute,
-            NeutralCurrentSensorAttribute,
-            NeutralCurrentAlarmThresholdAttribute,
-            TimeTempSeasonOneAttribute,
-            TimeTempSeasonTwoAttribute,
-            VarControlAttribute,
-            UDPIpAddressAttribute,
-            UDPPortNumberAttribute,
-
-            CapacitorBankStateAttribute,
-            ReCloseBlockedAttribute,
-            ControlModeAttribute,
-            AutoVoltControlAttribute,
-            LastControlLocalAttribute,
-            LastControlRemoteAttribute,
-            LastControlOvUvAttribute,
-            LastControlNeutralFaultAttribute,
-            LastControlScheduledAttribute,
-            LastControlDigitalAttribute,
-            LastControlAnalogAttribute,
-            LastControlTemperatureAttribute,
-            OvConditionAttribute,
-            UvConditionAttribute,
-            OpFailedNeutralCurrentAttribute,
-            NeutralCurrentFaultAttribute,
-            BadRelayAttribute,
-            DailyMaxOpsAttribute,
-            VoltageDeltaAbnormalAttribute,
-            TempAlarmAttribute,
-            DSTActiveAttribute,
-            NeutralLockoutAttribute,
-            IgnoredIndicatorAttribute,
-
-            TotalOpCountAttribute,
-            UvCountAttribute,
-            OvCountAttribute,
-            CloseOpCountAttribute,
-            OpenOpCountAttribute,
-
-            LastControlReasonAttribute,
-
             ForwardSetPointAttribute,
             ForwardBandwidthAttribute,
 
@@ -100,59 +47,6 @@ class IM_EX_CTIBASE PointAttribute
         static const PointAttribute Terminate;
         static const PointAttribute AutoBlockEnable;
         static const PointAttribute HeartbeatTimerConfig;
-
-        static const PointAttribute CbcVoltage;
-        static const PointAttribute HighVoltage;
-        static const PointAttribute LowVoltage;
-        static const PointAttribute DeltaVoltage;
-        static const PointAttribute AnalogInput1;
-        static const PointAttribute Temperature;
-        static const PointAttribute RSSI;
-        static const PointAttribute IgnoredReason;
-
-        static const PointAttribute VoltageControl;
-        static const PointAttribute UvThreshold;
-        static const PointAttribute OvThreshold;
-        static const PointAttribute OVUVTrackTime;
-        static const PointAttribute NeutralCurrentSensor;
-        static const PointAttribute NeutralCurrentAlarmThreshold;
-        static const PointAttribute TimeTempSeasonOne;
-        static const PointAttribute TimeTempSeasonTwo;
-        static const PointAttribute VarControl;
-        static const PointAttribute UDPIpAddress;
-        static const PointAttribute UDPPortNumber;
-
-        static const PointAttribute CapacitorBankState;
-        static const PointAttribute ReCloseBlocked;
-        static const PointAttribute ControlMode;
-        static const PointAttribute AutoVoltControl;
-        static const PointAttribute LastControlLocal;
-        static const PointAttribute LastControlRemote;
-        static const PointAttribute LastControlOvUv;
-        static const PointAttribute LastControlNeutralFault;
-        static const PointAttribute LastControlScheduled;
-        static const PointAttribute LastControlDigital;
-        static const PointAttribute LastControlAnalog;
-        static const PointAttribute LastControlTemperature;
-        static const PointAttribute OvCondition;
-        static const PointAttribute UvCondition;
-        static const PointAttribute OpFailedNeutralCurrent;
-        static const PointAttribute NeutralCurrentFault;
-        static const PointAttribute BadRelay;
-        static const PointAttribute DailyMaxOps;
-        static const PointAttribute VoltageDeltaAbnormal;
-        static const PointAttribute TempAlarm;
-        static const PointAttribute DSTActive;
-        static const PointAttribute NeutralLockout;
-        static const PointAttribute IgnoredIndicator;
-
-        static const PointAttribute TotalOpCount;
-        static const PointAttribute UvCount;
-        static const PointAttribute OvCount;
-        static const PointAttribute CloseOpCount;
-        static const PointAttribute OpenOpCount;
-
-        static const PointAttribute LastControlReason;
 
         static const PointAttribute ForwardSetPoint;
         static const PointAttribute ForwardBandwidth;

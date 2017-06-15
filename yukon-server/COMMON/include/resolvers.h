@@ -5,8 +5,8 @@
 #include "dlldefs.h"
 #include "db_entry_defines.h"
 #include "devicetypes.h"
+#include "yukon.h"
 
-#include <string>
 
 namespace Cti {
 

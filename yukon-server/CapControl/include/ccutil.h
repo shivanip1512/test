@@ -109,6 +109,21 @@ private:
     bool    _complain;
 };
 
+class MissingAttribute : public std::exception
+{
+public:
+
+    MissingAttribute( const long ID, const Attribute & attribute, const std::string & paoType, bool complainFlag = true );
+
+    const char * what() const override;
+    const bool complain() const;
+
+private:
+
+    std::string _description;
+    bool    _complain;
+};
+
 class NoPointAttributeValue : public std::exception
 {
 

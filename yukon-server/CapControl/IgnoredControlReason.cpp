@@ -93,9 +93,9 @@ bool IgnoredControlReasonCbc702x::controlRejectedByVoltageLimits( const CtiCCTwo
 bool IgnoredControlReasonCbc702x::checkDeltaVoltageRejection( const CtiCCTwoWayPoints & points )
 {
     const double
-        cbcVoltage  = points.getPointValueByAttribute( PointAttribute::CbcVoltage ),
-        ovThreshold = points.getPointValueByAttribute( PointAttribute::OvThreshold ),
-        uvThreshold = points.getPointValueByAttribute( PointAttribute::UvThreshold );
+        cbcVoltage  = points.getPointValueByAttribute( Attribute::Voltage ),
+        ovThreshold = points.getPointValueByAttribute( Attribute::OverVoltageThreshold ),
+        uvThreshold = points.getPointValueByAttribute( Attribute::UnderVoltageThreshold );
 
     /*
         If the actual voltage is within the OvUv limits it must have been rejected due to delta voltage
@@ -110,9 +110,9 @@ bool IgnoredControlReasonCbc702x::checkControlAccepted( const CtiCCTwoWayPoints 
 
 bool IgnoredControlReasonCbc702x::serializeIndicator( const CtiCCTwoWayPoints & points )
 {
-    if ( points.getPointIdByAttribute( PointAttribute::IgnoredIndicator ) > 0 )
+    if ( points.getPointIdByAttribute( Attribute::IgnoredIndicator ) > 0 )
     {
-        return points.getPointValueByAttribute( PointAttribute::IgnoredIndicator, UninitializedIndicator );
+        return points.getPointValueByAttribute( Attribute::IgnoredIndicator, UninitializedIndicator );
     }
 
     return UninitializedIndicator;
@@ -120,9 +120,9 @@ bool IgnoredControlReasonCbc702x::serializeIndicator( const CtiCCTwoWayPoints & 
 
 long IgnoredControlReasonCbc702x::serializeReason( const CtiCCTwoWayPoints & points )
 {
-    if ( points.getPointIdByAttribute( PointAttribute::IgnoredReason ) > 0 )
+    if ( points.getPointIdByAttribute( Attribute::IgnoredControlReason ) > 0 )
     {
-        return points.getPointValueByAttribute( PointAttribute::IgnoredReason, UninitializedReason );
+        return points.getPointValueByAttribute( Attribute::IgnoredControlReason, UninitializedReason );
     }
 
     return UninitializedReason;
@@ -130,12 +130,12 @@ long IgnoredControlReasonCbc702x::serializeReason( const CtiCCTwoWayPoints & poi
 
 void IgnoredControlReasonCbc702x::deserializeIndicator( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp )
 {
-    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( PointAttribute::IgnoredIndicator), dbValue, timestamp );
+    points.setTwoWayStatusPointValue( points.getPointIdByAttribute( Attribute::IgnoredIndicator ), dbValue, timestamp );
 }
 
 void IgnoredControlReasonCbc702x::deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp )
 {
-    points.setTwoWayAnalogPointValue( points.getPointIdByAttribute( PointAttribute::IgnoredReason), dbValue, timestamp );
+    points.setTwoWayAnalogPointValue( points.getPointIdByAttribute( Attribute::IgnoredControlReason ), dbValue, timestamp );
 }
 
 
@@ -148,7 +148,7 @@ std::string IgnoredControlReasonCbc802x::getText( const CtiCCTwoWayPoints & poin
 
     long stateGroupID = DefaultStateGroup;
 
-    LitePoint point = points.getPointByAttribute( PointAttribute::IgnoredReason );
+    LitePoint point = points.getPointByAttribute( Attribute::IgnoredControlReason );
 
     if ( point.getPointId() > 0 )
     {
@@ -173,9 +173,9 @@ bool IgnoredControlReasonCbc802x::controlRejectedByVoltageLimits( const CtiCCTwo
 bool IgnoredControlReasonCbc802x::checkDeltaVoltageRejection( const CtiCCTwoWayPoints & points )
 {
     const double
-        cbcVoltage  = points.getPointValueByAttribute( PointAttribute::CbcVoltage ),
-        ovThreshold = points.getPointValueByAttribute( PointAttribute::OvThreshold ),
-        uvThreshold = points.getPointValueByAttribute( PointAttribute::UvThreshold );
+        cbcVoltage  = points.getPointValueByAttribute( Attribute::Voltage ),
+        ovThreshold = points.getPointValueByAttribute( Attribute::OverVoltageThreshold ),
+        uvThreshold = points.getPointValueByAttribute( Attribute::UnderVoltageThreshold );
 
     /*
         If the actual voltage is within the OvUv limits it must have been rejected due to delta voltage
@@ -195,9 +195,9 @@ bool IgnoredControlReasonCbc802x::serializeIndicator( const CtiCCTwoWayPoints & 
 
 long IgnoredControlReasonCbc802x::serializeReason( const CtiCCTwoWayPoints & points )
 {
-    if ( points.getPointIdByAttribute( PointAttribute::IgnoredReason ) > 0 )
+    if ( points.getPointIdByAttribute( Attribute::IgnoredControlReason ) > 0 )
     {
-        return points.getPointValueByAttribute( PointAttribute::IgnoredReason, UninitializedReason );
+        return points.getPointValueByAttribute( Attribute::IgnoredControlReason, UninitializedReason );
     }
 
     return UninitializedReason;
@@ -210,7 +210,7 @@ void IgnoredControlReasonCbc802x::deserializeIndicator( CtiCCTwoWayPoints & poin
 
 void IgnoredControlReasonCbc802x::deserializeReason( CtiCCTwoWayPoints & points, const int dbValue, const CtiTime & timestamp )
 {
-    points.setTwoWayAnalogPointValue( points.getPointIdByAttribute( PointAttribute::IgnoredReason), dbValue, timestamp );
+    points.setTwoWayAnalogPointValue( points.getPointIdByAttribute( Attribute::IgnoredControlReason ), dbValue, timestamp );
 }
 
 std::string IgnoredControlReasonCbc802x::lookupStateName( const long reason, const long stateGroup ) const

@@ -6,8 +6,8 @@
 namespace Cti
 {
 
-DeviceAttributeLookup::DeviceAttributeToPointTypeOffsetMap  DeviceAttributeLookup::_lookup;
 DeviceAttributeLookup::DeviceAttributeNameMap DeviceAttributeLookup::_unknownAttributes;
+DeviceAttributeLookup::AttributeMappingInfoCollection DeviceAttributeLookup::_lookup;
 
 
 void DeviceAttributeLookup::AddRelation( const DeviceTypes      deviceType,
@@ -15,9 +15,8 @@ void DeviceAttributeLookup::AddRelation( const DeviceTypes      deviceType,
                                          const CtiPointType_t   pointType,
                                          const unsigned         pointOffset )
 {
-    _lookup[ DeviceAttribute( deviceType, attribute ) ] = PointTypeOffset( pointType, pointOffset );
+    _lookup.insert( AttributeMappingInfo{ deviceType, attribute, pointType, pointOffset } );
 }
-
 
 void DeviceAttributeLookup::AddUnknownAttribute( const DeviceTypes      deviceType,
                                                  const std::string &    attributeName )
@@ -25,15 +24,16 @@ void DeviceAttributeLookup::AddUnknownAttribute( const DeviceTypes      deviceTy
     _unknownAttributes.emplace( deviceType, attributeName );
 }
 
-
 boost::optional<DeviceAttributeLookup::PointTypeOffset> DeviceAttributeLookup::Lookup( const DeviceTypes     deviceType,
                                                                                        const Attribute &     attribute )
 {
-    DeviceAttributeToPointTypeOffsetMap::const_iterator searchResult = _lookup.find( DeviceAttribute( deviceType, attribute ) );
+    auto & index = _lookup.get<by_attribute>();
 
-    if ( searchResult != _lookup.end() )
+    auto result = index.find( std::make_tuple( deviceType, attribute ) );
+
+    if ( result != index.end() )
     {
-        return searchResult->second;
+        return PointTypeOffset{ result->type, result->offset };
     }
 
     return boost::none;
@@ -44,6 +44,23 @@ auto DeviceAttributeLookup::GetUnknownDeviceAttributes() -> DeviceAttributeNameM
     return _unknownAttributes;
 }
 
+std::vector<Attribute> DeviceAttributeLookup::AttributeLookup( const DeviceTypes    deviceType,
+                                                               const CtiPointType_t pointType,
+                                                               const unsigned       pointOffset )
+{
+    std::vector<Attribute>  attributes; 
+
+    auto & index = _lookup.get<by_typeOffset>();
+
+    for ( auto range = index.equal_range( std::make_tuple( deviceType, pointType, pointOffset ) );
+          range.first != range.second;
+          ++range.first )
+    {
+        attributes.push_back( range.first->attribute );
+    }
+
+    return attributes;
+}
 
 }
 

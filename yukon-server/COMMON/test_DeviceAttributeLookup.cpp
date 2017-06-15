@@ -3,6 +3,13 @@
 #include "DeviceAttributeLookup.h"
 #include "desolvers.h"
 
+// pretty print Attribute error messages
+std::ostream& operator<<( std::ostream & os, const Attribute & a )
+{
+    return os << a.getName();
+}
+
+
 BOOST_AUTO_TEST_SUITE( test_DeviceAttributeLookup )
 
 BOOST_AUTO_TEST_CASE(test_unknownAttributes)
@@ -89,6 +96,34 @@ BOOST_AUTO_TEST_CASE(test_Lookup_failure)
     auto point = Cti::DeviceAttributeLookup::Lookup(DeviceTypes::TYPE_RFN420CL, Attribute::CalcCpuUtilization);
 
     BOOST_CHECK_EQUAL( point.is_initialized(), false );
+}
+
+BOOST_AUTO_TEST_CASE(test_AttributeLookup)
+{
+    {
+        auto attributes = Cti::DeviceAttributeLookup::AttributeLookup( DeviceTypes::TYPE_RFN420CL, AnalogPointType, 1 );
+
+        BOOST_CHECK_EQUAL( attributes.size(),   2 );
+
+        BOOST_CHECK( std::find( attributes.begin(), attributes.end(), Attribute::UsageReading )
+                        != attributes.end() );
+
+        BOOST_CHECK( std::find( attributes.begin(), attributes.end(), Attribute::DeliveredkWh )
+                        != attributes.end() );
+    }
+    {
+        auto attributes = Cti::DeviceAttributeLookup::AttributeLookup( DeviceTypes::TYPE_RFN420CL, AnalogPointType, 2 );
+
+        BOOST_CHECK_EQUAL( attributes.size(),   1 );
+
+        BOOST_CHECK( std::find( attributes.begin(), attributes.end(), Attribute::ReceivedkWh )
+                        != attributes.end() );
+    }
+    {
+        auto attributes = Cti::DeviceAttributeLookup::AttributeLookup( DeviceTypes::TYPECBC8020, AnalogPointType, 1234 );
+
+        BOOST_CHECK_EQUAL( attributes.size(),   0 );
+    }
 }
 
 BOOST_AUTO_TEST_SUITE_END()

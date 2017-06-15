@@ -1580,7 +1580,7 @@ bool IVVCAlgorithm::busAnalysisState(IVVCStatePtr state, CtiCCSubstationBusPtr s
                  !currentBank->getDisableFlag() &&
                  !currentBank->getIgnoreFlag() &&
                  (isCapBankOpen || isCapBankClosed) &&
-                 (deltas.find(currentBank->getPointIdByAttribute(PointAttribute::CbcVoltage)) != deltas.end()))
+                 (deltas.find(currentBank->getPointIdByAttribute( Attribute::Voltage)) != deltas.end()))
             {
                 std::vector<PointResponse> responses = subbus->getPointResponsesForDevice( currentBank->getPaoId() );
 

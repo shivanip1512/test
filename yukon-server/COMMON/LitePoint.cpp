@@ -1,6 +1,9 @@
 #include "precompiled.h"
 
 #include "LitePoint.h"
+#include "row_reader.h"
+#include "resolvers.h"
+
 
 LitePoint::LitePoint() :
     _pointId(0),
@@ -8,10 +11,59 @@ LitePoint::LitePoint() :
     _paoId(0),
     _pointOffset(0),
     _controlOffset(0),
+    _controlType(ControlType_Invalid),
+    _closeTime1(0),
+    _closeTime2(0),
     _multiplier(0),
     _stateGroupId(0)
 {
 
+}
+
+LitePoint::LitePoint( Cti::RowReader & rdr )
+    :   _pointId( 0 ),
+        _pointType( InvalidPointType ),
+        _paoId( 0 ),
+        _pointOffset( 0 ),
+        _controlOffset( 0 ),
+        _controlType( ControlType_Invalid ),
+        _closeTime1( 0 ),
+        _closeTime2( 0 ),
+        _multiplier( 0 ),
+        _stateGroupId( 0 )
+{
+    std::string input;
+
+    rdr["PointId"]      >> _pointId;
+
+    rdr["PointType"]    >> input;
+    _pointType = resolvePointType( input );
+
+    rdr["PointName"]    >> _pointName;
+    rdr["PAOBjectId"]   >> _paoId;
+    rdr["PointOffset"]  >> _pointOffset;
+    rdr["StateGroupId"] >> _stateGroupId;
+
+    if ( ! rdr["ControlOffset"].isNull() )
+    {
+        rdr["ControlOffset"] >> _controlOffset;
+    }
+
+    if ( ! rdr["MULTIPLIER"].isNull() )
+    {
+        rdr["MULTIPLIER"] >> _multiplier;
+    }
+
+    if ( ! rdr["ControlType"].isNull() )
+    {
+        rdr["ControlType"] >> input;
+        _controlType = resolveControlType( input );
+
+        rdr["StateZeroControl"] >> _stateZeroControl;
+        rdr["StateOneControl"]  >> _stateOneControl;
+        rdr["CloseTime1"]       >> _closeTime1;
+        rdr["CloseTime2"]       >> _closeTime2;
+    }
 }
 
 LitePoint::LitePoint( const int Id, const CtiPointType_t Type, const std::string & Name,
@@ -26,6 +78,9 @@ LitePoint::LitePoint( const int Id, const CtiPointType_t Type, const std::string
     _paoId(PaoId),
     _pointOffset(Offset),
     _controlOffset(0),
+    _controlType(ControlType_Invalid),
+    _closeTime1(0),
+    _closeTime2(0),
     _stateZeroControl(stateZeroControl),
     _stateOneControl(stateOneControl),
     _multiplier(Multiplier),

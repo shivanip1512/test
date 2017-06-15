@@ -33,12 +33,10 @@ public:
 
     void setPAOId(long paoId);
 
-    LitePoint getPointByAttribute(const PointAttribute & attribute) const;
-    int getPointIdByAttribute(const PointAttribute & attribute) const;
-    double getPointValueByAttribute(PointAttribute pointAttribute, const double sentinel = 0) const;
+    LitePoint getPointByAttribute( const Attribute & attribute ) const;
+    long getPointIdByAttribute( const Attribute & attribute ) const;
+    double getPointValueByAttribute( const Attribute & attribute, const double sentinel = 0 ) const;
 
-
-    bool setTwoWayPointId(CtiPointType_t pointtype, int offset, long pointId, int stateGroupId);
     bool setTwoWayStatusPointValue(long pointID, long value, CtiTime timestamp);
     bool setTwoWayAnalogPointValue(long pointID, double value, CtiTime timestamp);
     bool setTwoWayPulseAccumulatorPointValue(long pointID, double value, CtiTime timestamp);
@@ -49,32 +47,28 @@ public:
     void restore(Cti::RowReader& rdr);
     void setDynamicData(Cti::RowReader& rdr, LONG cbcState, const CtiTime timestamp);
 
+    void assignPoint_fancy( const LitePoint & point );
+
 protected:
-
-    typedef std::map<int, PointAttribute>   OffsetAttributeMappings;
-
-    OffsetAttributeMappings _statusOffsetAttribute,
-                            _analogOffsetAttribute,
-                            _accumulatorOffsetAttribute;
 
     std::unique_ptr<LastControlReason>      _lastControlReason;
     std::unique_ptr<IgnoredControlReason>   _ignoredControlReason;
 
 private:
 
-    typedef std::map<PointAttribute, LitePoint> AttributePoint;
-    AttributePoint    _attributes;
-    PointValueHolder  _pointValues;
-
-    std::map <int, CtiPointType_t> _pointidPointtypeMap;
-
-    PointAttribute getAttribute(int pointtype, int offset);
-
     bool isTimestampNew(long pointID, CtiTime timestamp);
     bool setTwoWayPointValue(long pointID, double value, CtiPointType_t type, CtiTime timestamp);
 
     long _paoid;
     std::string _paotype;
+
+    PointValueHolder  _pointValues;
+
+    std::map <int, CtiPointType_t> _pointidPointtypeMap;
+
+    using AttributeToPointInfo = std::map<Attribute, LitePoint>;
+
+    AttributeToPointInfo    _attributes;
 
     CtiTime _ovuvCountResetDate;
     CtiTime _lastOvUvDateTime;

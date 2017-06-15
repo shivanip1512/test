@@ -6184,74 +6184,94 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                 }
             }
         }
-        //load points off of cbc 70xx devices (two way device points)
+        //load points for 2 way CBCs
         {
-            static const string sql = "SELECT PT.paobjectid, PT.pointid, PT.pointoffset, PT.pointtype, PT.stategroupid "
-                                      "FROM point PT, capbank CB "
-                                      "WHERE CB.controldeviceid = PT.paobjectid";
+            static const std::string sql =
+                "SELECT "
+                    "P.POINTID, "
+                    "P.POINTTYPE, "
+                    "P.POINTNAME, "
+                    "P.PAObjectID, "
+                    "P.POINTOFFSET, "
+                    "P.STATEGROUPID, "
+                    "PC.ControlOffset, "
+                    "PSC.ControlType, "
+                    "PSC.StateZeroControl, "
+                    "PSC.StateOneControl, "
+                    "PSC.CloseTime1, "
+                    "PSC.CloseTime2, "
+                    "X.MULTIPLIER "
+                "FROM "
+                    "POINT P "
+                        "JOIN CAPBANK C "
+                            "ON P.PAObjectID = C.CONTROLDEVICEID "
+                        "LEFT OUTER JOIN PointControl PC "
+                            "ON P.POINTID = PC.PointId "
+                        "LEFT OUTER JOIN PointStatusControl PSC "
+                            "ON PC.PointId = PSC.PointId "
+                        "LEFT OUTER JOIN "
+                        "("
+                            "SELECT "
+                                "PACC.POINTID, "
+                                "PACC.MULTIPLIER "
+                            "FROM "
+                                "POINTACCUMULATOR PACC "
+                                    "JOIN POINT P "
+                                        "ON PACC.POINTID = P.POINTID "
+                            "UNION "
+                            "SELECT "
+                                "PA.POINTID, "
+                                "PA.MULTIPLIER "
+                            "FROM "
+                                "POINTANALOG PA "
+                                    "JOIN POINT P "
+                                        "ON PA.POINTID = P.POINTID "
+                        ") X "
+                            "ON X.POINTID = P.POINTID "
+                "WHERE "
+                    "C.CONTROLDEVICEID != 0";
 
-            Cti::Database::DatabaseConnection connection;
-            Cti::Database::DatabaseReader rdr(connection);
+            static const std::string sqlID = sql +
+                " AND C.DEVICEID = ?";
 
-            if(capBankId > 0)
+            Cti::Database::DatabaseConnection   connection;
+            Cti::Database::DatabaseReader       rdr( connection );
+
+            if ( capBankId > 0 )
             {
-                static const string sqlID = string(sql + " AND CB.deviceid = ?");
-                rdr.setCommandText(sqlID);
+                rdr.setCommandText( sqlID );
                 rdr << capBankId;
             }
             else
             {
-                static const string sqlNoID = string(sql + " AND CB.controldeviceid != 0");
-                rdr.setCommandText(sqlNoID);
+                rdr.setCommandText( sql );
             }
 
             rdr.execute();
 
             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
-                CTILOG_INFO(dout, rdr.asString());
+                CTILOG_INFO( dout, rdr.asString() );
             }
 
             while ( rdr() )
             {
                 long currentCbcId;
-                long currentCapBankId = 0;
-                rdr["paobjectid"] >> currentCbcId;
+                rdr["PAObjectID"] >> currentCbcId;
 
-                if (cbc_capbank_map->find(currentCbcId) != cbc_capbank_map->end())
-                    currentCapBankId = cbc_capbank_map->find(currentCbcId)->second;
+                long currentCapBankId = Cti::mapFindOrDefault( *cbc_capbank_map, currentCbcId, 0 );
 
-                if (CtiCCCapBankPtr currentCCCapBank = findInMap(currentCapBankId, paobject_capbank_map))
+                if ( currentCapBankId > 0 )
                 {
-                    if (currentCCCapBank->isControlDeviceTwoWay())
+                    if ( CtiCCCapBankPtr bank = findInMap( currentCapBankId, paobject_capbank_map ) )
                     {
-                        if ( !rdr["pointid"].isNull() )
+                        if ( bank->isControlDeviceTwoWay() )
                         {
-                            long tempPointId = -1000;
-                            long tempPointOffset = -1000;
-                            string tempPointType = "(none)";
-                            int tempStateGroupID = 0;
+                            LitePoint point( rdr );
 
-                            rdr["pointid"] >> tempPointId;
-                            rdr["pointoffset"] >> tempPointOffset;
-                            rdr["pointtype"] >> tempPointType;
-                            rdr["stategroupid"] >> tempStateGroupID;
+                            bank->getTwoWayPoints().assignPoint_fancy( point );
 
-                            CtiPointType_t pointType = resolvePointType(tempPointType);
-                            if (pointType == StatusPointType ||
-                                pointType == AnalogPointType ||
-                                pointType == PulseAccumulatorPointType)
-                            {
-                                if (currentCCCapBank->getTwoWayPoints().setTwoWayPointId(pointType, tempPointOffset, tempPointId, tempStateGroupID) )
-                                {
-                                    currentCCCapBank->addPointId(tempPointId);
-                                    pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                                }
-                            }
-                            else
-                            {
-                                CTILOG_INFO(dout, "Undefined Cap Bank point offset: " << tempPointOffset);
-                            }
+                            pointid_capbank_map->insert( std::make_pair( point.getPointId(), bank ) );
                         }
                     }
                 }

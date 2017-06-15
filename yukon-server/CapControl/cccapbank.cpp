@@ -2116,11 +2116,10 @@ bool CtiCCCapBank::isControlDeviceTwoWay()
              stringContainsIgnoreCase( getControlDeviceType(),"CBC 802") );
 }
 
-int CtiCCCapBank::getPointIdByAttribute(const PointAttribute & attribute)
+long CtiCCCapBank::getPointIdByAttribute( const Attribute & attribute )
 {
-    return getTwoWayPoints().getPointIdByAttribute(attribute);
+    return getTwoWayPoints().getPointIdByAttribute( attribute );
 }
-
 
 void CtiCCCapBank::setDirty(const bool flag)
 {
