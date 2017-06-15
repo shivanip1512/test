@@ -2,14 +2,19 @@ package com.cannontech.database;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
 import org.apache.log4j.Logger;
+import org.joda.time.ReadableInstant;
+import org.joda.time.ReadablePeriod;
+import org.joda.time.format.ISOPeriodFormat;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -19,6 +24,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.DatabaseRepresentationSource;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.common.util.SqlStatementBuilder.SqlBatchUpdater;
@@ -178,7 +184,24 @@ public class YukonJdbcTemplate extends JdbcTemplate {
                              if (value == null) {
                                  ps.setNull(valueIndex + 1, Types.NULL);
                              } else {
-                                 Object jdbcFriendlyValue = SqlStatementBuilder.convertArgumentToJdbcObject(value);
+                                 Object jdbcFriendlyValue;
+                                 if (value instanceof DatabaseRepresentationSource) {
+                                     jdbcFriendlyValue = ((DatabaseRepresentationSource) value).getDatabaseRepresentation();
+                                 } else if (value instanceof Enum<?>) {
+                                     Enum<?> e = (Enum<?>) value;
+                                     jdbcFriendlyValue = e.name();
+                                 } else if (value instanceof ReadableInstant) {
+                                     jdbcFriendlyValue = new Timestamp(((ReadableInstant) value).getMillis());
+                                 } else if (value instanceof ReadablePeriod) {
+                                     jdbcFriendlyValue = ISOPeriodFormat.standard().print((ReadablePeriod) value);
+                                 } else if (value instanceof Date) {
+                                     // Unlike the normal jdbcTemplate, the prepared statement doesn't seem to
+                                     // automatically convert java.util.date into a java.sql.* type, so we do it here.
+                                     jdbcFriendlyValue = new Timestamp(((Date) value).getTime());
+                                 } else {
+                                     jdbcFriendlyValue = value;
+                                 }
+                                 
                                  ps.setObject(valueIndex + 1, jdbcFriendlyValue);
                              }
                          }
