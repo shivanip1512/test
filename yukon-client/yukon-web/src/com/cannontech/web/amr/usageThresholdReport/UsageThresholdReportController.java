@@ -9,6 +9,8 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
 import org.joda.time.format.DateTimeFormatter;
@@ -16,14 +18,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
-import com.cannontech.common.bulk.collection.device.DeviceCollectionCreationException;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
 import com.cannontech.common.bulk.collection.device.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.collection.device.model.DeviceCollection;
@@ -87,11 +87,11 @@ public class UsageThresholdReportController {
         List<BuiltInAttribute> sortedAttributes = new ArrayList<>(usageAttributes);
         BuiltInAttribute.sort(sortedAttributes, accessor);
         model.addAttribute("usageAttributes", sortedAttributes);
-        Instant max = new Instant();
-        Instant min = max.minus(Duration.standardDays(7));
+        Instant yesterday = Instant.now().minus(Duration.standardDays(1));
         ThresholdReportCriteria criteria = new ThresholdReportCriteria();
-        criteria.setStartDate(min);
-        criteria.setEndDate(max);
+        criteria.setStartDate(yesterday);
+        criteria.setEndDate(yesterday);
+        criteria.setAttribute(BuiltInAttribute.USAGE);
         model.addAttribute("criteria", criteria);
         return "usageThresholdReport/report.jsp";
     }
@@ -99,16 +99,16 @@ public class UsageThresholdReportController {
 
     @RequestMapping(value="report", method = RequestMethod.POST)
     public String runReport(@ModelAttribute ThresholdReportCriteria criteria, ModelMap model, HttpServletRequest request, 
-                            @RequestParam String minDate, @RequestParam String maxDate, YukonUserContext userContext) 
-            throws ServletRequestBindingException, DeviceCollectionCreationException {
+                            @RequestParam String minDate, @RequestParam String maxDate, YukonUserContext userContext) throws Exception {
         model.addAttribute("dataAvailabilityOptions", DataAvailability.values());
         model.addAttribute("thresholdOptions", ThresholdDescriptor.values());
         DeviceCollection collection = deviceCollectionFactory.createDeviceCollection(request);
         DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
-        Instant start = Instant.parse(minDate, formatter);
-        Instant end = Instant.parse(maxDate, formatter);
-        criteria.setStartDate(start);
-        criteria.setEndDate(end);
+        DateTimeZone timeZone = userContext.getJodaTimeZone();
+        DateTime startDateTime = formatter.parseDateTime(minDate).withTimeAtStartOfDay().withZone(timeZone);
+        DateTime endDateTime = formatter.parseDateTime(maxDate).withTimeAtStartOfDay().withZone(timeZone);
+        criteria.setStartDate(startDateTime.toInstant());
+        criteria.setEndDate(endDateTime.toInstant());
         criteria.setRunTime(new Instant());
         if (collection.getCollectionType() == DeviceCollectionType.group) {
             String groupName = collection.getCollectionParameters().get("group.name");

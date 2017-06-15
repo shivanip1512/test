@@ -16,7 +16,7 @@
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".criteria.devices">
                     <tags:selectDevicesTabbed deviceCollection="${filter.deviceCollection}" 
-                        pickerType="meterPicker" 
+                        pickerType="meterPicker" defaultGroupTab="true"
                         groupCallback="yukon.ami.usageThresholdReport.criteria_group_selected_callback" 
                         deviceCallback="yukon.ami.usageThresholdReport.criteria_individual_selected_callback"/>
                 </tags:nameValue2>

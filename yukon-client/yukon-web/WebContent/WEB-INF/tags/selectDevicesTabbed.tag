@@ -13,9 +13,11 @@
 <%@ attribute name="deviceCallback" description="The callback fired when an individual device is selected." %>
 <%@ attribute name="uniqueId" description="Used as part of an html id attribute and part of a javascript function name. 
                                            Should not contain invalid characters like '.' or '-'." %>
+<%@ attribute name="defaultGroupTab" type="java.lang.Boolean" description="Default to the Group tab." %>
+                                           
 
 <c:set var="type" value="${deviceCollection.collectionParameters['collectionType']}"/>
-<c:set var="isGroup" value="${type == 'group'}"/>
+<c:set var="isGroup" value="${type == 'group' || defaultGroupTab}"/>
     
 <c:choose>
     <c:when test="${not empty nameKey}">

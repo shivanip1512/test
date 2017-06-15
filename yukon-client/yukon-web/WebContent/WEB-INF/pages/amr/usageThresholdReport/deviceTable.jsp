@@ -28,7 +28,7 @@
         <span class="fr">
             <c:forEach var="availability" items="${dataAvailabilityOptions}">
                 <cti:msg2 var="availabilityText" key=".dataAvailability.${availability}"/>
-                <span class="badge" style="width:60px;background-color:${availability.color}" title="${availabilityText}">${report.getAvailabilityCount(availability)}</span>
+                <span class="label" style="background-color:${availability.color}" title="${availabilityText}">${report.getAvailabilityCount(availability)}</span>
             </c:forEach>
         </span>
         
@@ -83,7 +83,12 @@
                     <td>${device.meterNumber}</td>
                     <td>${device.paoIdentifier.paoType.paoTypeName}</td>
                     <td>${device.addressSerialNumber}</td>
-                    <td><fmt:formatNumber pattern="###.#" value="${device.delta}"/></td>
+                    <td class="wsnw">
+                        <fmt:formatNumber pattern="###.#" value="${device.delta}"/>
+                         <c:if test="${device.earliestReading != null}">
+                            &nbsp;<cti:pointValueFormatter format="UNIT" value="${device.earliestReading}" />
+                         </c:if>
+                    </td>
                     <td>
                         <c:choose>
                             <c:when test="${device.earliestReading != null}">
