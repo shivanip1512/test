@@ -67,7 +67,7 @@
         <dependent-module archiveName="jopcbridge.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jopcbridge.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
-        <dependent-module archiveName="jsch-0.1.44.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jsch-0.1.44.jar">
+        <dependent-module archiveName="jsch-0.1.54.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/jsch-0.1.54.jar">
             <dependency-type>uses</dependency-type>
         </dependent-module>
         <dependent-module archiveName="bcpkix-jdk15on-149.jar" deploy-path="/WEB-INF/lib" handle="module:/classpath/lib/third-party/bcpkix-jdk15on-149.jar">

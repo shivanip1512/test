@@ -62,7 +62,7 @@ public enum JwsJnlp {
                 "commons-configuration2-2.1.1.jar",
                 "commons-dbcp2-2.0.jar",
                 "commons-discovery-0.5.jar",
-                "commons-fileupload-1.3.1.jar",               
+                "commons-fileupload-1.3.2.jar",               
                 "commons-io-2.4.jar",
                 "commons-lang3-3.4.jar",
                 "commons-logging-1.1.3.jar",
