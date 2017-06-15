@@ -822,6 +822,13 @@ DELETE FROM DeviceTypeCommand WHERE DeviceType = 'CBC 6510';
 UPDATE YukonRoleProperty SET KeyName = 'Use Pao Permissions', 
     Description='Allow access to all load management objects. Set to true to force the use of per pao permissions.' 
         WHERE RolePropertyID = -90009 AND RoleID = -900;
+
+UPDATE YukonGroupRole SET Value = 'changeToTrue' WHERE Value = 'false' AND RolePropertyID = -90009 AND RoleID = -900;
+
+UPDATE YukonGroupRole SET Value = 'false' WHERE Value = 'true' AND RolePropertyID = -90009 AND RoleID = -900;
+
+UPDATE YukonGroupRole SET Value = 'true' WHERE Value = 'changeToTrue' AND RolePropertyID = -90009 AND RoleID = -900;
+
 /* End YUK-16604 */
 
 /* Start YUK-16740 */
