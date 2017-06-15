@@ -47,7 +47,7 @@ public:
     void restore(Cti::RowReader& rdr);
     void setDynamicData(Cti::RowReader& rdr, LONG cbcState, const CtiTime timestamp);
 
-    void assignPoint_fancy( const LitePoint & point );
+    void assignTwoWayPoint( const LitePoint & point );
 
 protected:
 

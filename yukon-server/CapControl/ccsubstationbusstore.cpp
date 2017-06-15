@@ -6269,7 +6269,8 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, PaoIdToC
                         {
                             LitePoint point( rdr );
 
-                            bank->getTwoWayPoints().assignPoint_fancy( point );
+                            bank->getTwoWayPoints().assignTwoWayPoint( point );
+                            bank->addPointId( point.getPointId() );
 
                             pointid_capbank_map->insert( std::make_pair( point.getPointId(), bank ) );
                         }

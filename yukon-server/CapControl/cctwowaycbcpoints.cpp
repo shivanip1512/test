@@ -37,7 +37,7 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints( const long paoid, const std::string & paot
     // empty...
 }
 
-void CtiCCTwoWayPoints::assignPoint_fancy( const LitePoint & point )
+void CtiCCTwoWayPoints::assignTwoWayPoint( const LitePoint & point )
 {
     std::vector<Attribute> attributes
         = Cti::DeviceAttributeLookup::AttributeLookup( resolveDeviceType( _paotype ),

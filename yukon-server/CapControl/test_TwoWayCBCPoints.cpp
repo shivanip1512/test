@@ -100,7 +100,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_DNP )
 
     for ( const auto & item : databaseInput )
     {
-        points->assignPoint_fancy( item );
+        points->assignTwoWayPoint( item );
     }
 
     std::set<long>
@@ -204,7 +204,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_702X )
 
     for ( const auto & item : databaseInput )
     {
-        points->assignPoint_fancy( item );
+        points->assignTwoWayPoint( item );
     }
 
     std::set<long>
@@ -628,7 +628,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
 
     for ( const auto & item : databaseInput )
     {
-        points.assignPoint_fancy( item );
+        points.assignTwoWayPoint( item );
     }
 
     std::set<long>

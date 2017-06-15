@@ -2,6 +2,8 @@
 
 #include "DeviceAttributeLookup.h"
 
+#include <boost/range/iterator_range.hpp>
+#include <boost/range/adaptor/transformed.hpp>
 
 namespace Cti
 {
@@ -48,18 +50,15 @@ std::vector<Attribute> DeviceAttributeLookup::AttributeLookup( const DeviceTypes
                                                                const CtiPointType_t pointType,
                                                                const unsigned       pointOffset )
 {
-    std::vector<Attribute>  attributes; 
-
     auto & index = _lookup.get<by_typeOffset>();
 
-    for ( auto range = index.equal_range( std::make_tuple( deviceType, pointType, pointOffset ) );
-          range.first != range.second;
-          ++range.first )
-    {
-        attributes.push_back( range.first->attribute );
-    }
-
-    return attributes;
+    return 
+        boost::copy_range< std::vector<Attribute> >(
+            index.equal_range( std::make_tuple( deviceType, pointType, pointOffset ) )
+                | boost::adaptors::transformed( []( const AttributeMappingInfo & entry )
+                                                {
+                                                    return entry.attribute;
+                                                } ) );
 }
 
 }
