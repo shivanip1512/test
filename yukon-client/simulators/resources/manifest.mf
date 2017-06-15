@@ -2,6 +2,7 @@ Manifest-Version: 1.0
 Main-Class: com.cannontech.simulators.service.SimulatorsService
 Class-Path: ./ 
  common.jar 
+ cbc.jar 
  yukonappserver.jar 
  mx4j.jar 
  mx4j-jmx.jar 
