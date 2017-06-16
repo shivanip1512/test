@@ -66,4 +66,9 @@ public interface RecentEventParticipationDao {
      * Gets status count for devices for specified date range
      */
     Map<Integer, Integer> getControlEventDeviceStatus(List<Integer> deviceId, Date startDate, Date endDate);
+
+    /**
+     * Gets count of ControlEvents for specified date range
+     */
+    int getNumberOfEvents(Range<Instant> range);
 }

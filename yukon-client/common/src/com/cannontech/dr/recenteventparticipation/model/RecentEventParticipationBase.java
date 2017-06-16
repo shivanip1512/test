@@ -2,13 +2,13 @@ package com.cannontech.dr.recenteventparticipation.model;
 
 import org.joda.time.Instant;
 
-public abstract class ControlAuditBase {
+public abstract class RecentEventParticipationBase {
     private final int controlEventId;
     private final String programName;
     private final String groupName;
     private final Instant startTime;
 
-    public ControlAuditBase(int controlEventId, String programName, String groupName, Instant startTime) {
+    public RecentEventParticipationBase(int controlEventId, String programName, String groupName, Instant startTime) {
         this.controlEventId = controlEventId;
         this.programName = programName;
         this.groupName = groupName;

@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.joda.time.Instant;
 
-public class RecentEventParticipationDetail extends ControlAuditBase {
+public class RecentEventParticipationDetail extends RecentEventParticipationBase {
 
     private Instant stopTime;
     private String accountNumber;

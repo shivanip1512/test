@@ -45,4 +45,9 @@ public interface RecentEventParticipationService {
      * Returns list of ControlAuditDetail for specified date range
      */
     List<RecentEventParticipationDetail> getRecentEventParticipationDetails(Range<Instant> range);
+
+    /**
+     * Returns number of ControlEvents for specified date range
+     */
+    int getNumberOfEvents(Range<Instant> range);
 }

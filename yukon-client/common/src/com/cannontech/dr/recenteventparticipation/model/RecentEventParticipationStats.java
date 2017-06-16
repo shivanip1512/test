@@ -2,7 +2,7 @@ package com.cannontech.dr.recenteventparticipation.model;
 
 import org.joda.time.Instant;
 
-public class RecentEventParticipationStats extends ControlAuditBase {
+public class RecentEventParticipationStats extends RecentEventParticipationBase {
 
     private final int numConfirmed;
     private final int numUnknowns;

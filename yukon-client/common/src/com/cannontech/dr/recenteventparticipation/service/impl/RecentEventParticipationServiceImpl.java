@@ -67,4 +67,9 @@ public class RecentEventParticipationServiceImpl implements RecentEventParticipa
         }
         return recentEventParticipationDetails;
     }
+
+    @Override
+    public int getNumberOfEvents(Range<Instant> range) {
+        return recentEventParticipationDao.getNumberOfEvents(range);
+    }
 }

@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.common.model.DefaultItemsPerPage;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
@@ -46,7 +45,8 @@ public class RecentEventParticipationController {
 
     @RequestMapping(value = "/recenteventparticipation/auditReport", method = RequestMethod.GET)
     public String statistics(ModelMap model, LiteYukonUser user) {
-        List<RecentEventParticipationSummary> recentEventParticipationSummary = recentEventParticipationService.getRecentEventParticipationSummary(7);
+        List<RecentEventParticipationSummary> recentEventParticipationSummary =
+            recentEventParticipationService.getRecentEventParticipationSummary(7);
         model.addAttribute("recentEventParticipationSummary", recentEventParticipationSummary);
 
         return "dr/recenteventparticipation/auditReport.jsp";
@@ -54,19 +54,36 @@ public class RecentEventParticipationController {
 
     @RequestMapping(value = "/recenteventparticipation/details", method = RequestMethod.GET)
     public String details(ModelMap model, @RequestParam(required = false) Instant from,
-            @RequestParam(required = false) Instant to, @DefaultItemsPerPage(15) PagingParameters paging) {
+            @RequestParam(required = false) Instant to, PagingParameters paging) {
+        setUpModel(model, from, to, paging);
+        return "dr/recenteventparticipation/details.jsp";
+    }
+
+    @RequestMapping("/recenteventparticipation/recentEventsTable")
+    public String recentEventsTable(ModelMap model, @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to, PagingParameters paging) {
+        Instant fromDate = Instant.parse(from);
+        Instant toDate = Instant.parse(to);
+        setUpModel(model, fromDate.minus(Duration.standardHours(12)), toDate, paging);
+        return "dr/recenteventparticipation/recentEventsTable.jsp";
+    }
+
+    private void setUpModel(ModelMap model, Instant from, @RequestParam(required = false) Instant to,
+            PagingParameters paging) {
         Instant toFullDay = null;
         if (to != null) {
             toFullDay = to.plus(Duration.standardDays(1)).toDateTime().withTimeAtStartOfDay().toInstant();
         }
         Range<Instant> range = (from != null && to != null) ? Range.inclusiveExclusive(from, toFullDay) : null;
-        List<RecentEventParticipationStats> result = recentEventParticipationService.getRecentEventParticipationStats(range, paging);
-        int totalCount = result.size();
+        List<RecentEventParticipationStats> result =
+            recentEventParticipationService.getRecentEventParticipationStats(range, paging);
+        int totalRecentEvents = recentEventParticipationService.getNumberOfEvents(range);
         SearchResults<RecentEventParticipationStats> auditEventMessageStats =
-            SearchResults.pageBasedForSublist(result, paging, totalCount);
+            SearchResults.pageBasedForSublist(result, paging, totalRecentEvents);
         model.addAttribute("auditEventMessageStats", auditEventMessageStats);
+        model.addAttribute("totalEvents", totalRecentEvents);
         if (from == null && result.size() > 0) {
-            RecentEventParticipationStats recentEventParticipationStats = result.get(0);
+            RecentEventParticipationStats recentEventParticipationStats = result.get(result.size() - 1);
             from = recentEventParticipationStats.getStartTime();
         }
         if (to == null) {
@@ -74,7 +91,6 @@ public class RecentEventParticipationController {
         }
         model.addAttribute("from", from);
         model.addAttribute("to", to);
-        return "dr/recenteventparticipation/details.jsp";
     }
 
     @RequestMapping(value = "/recenteventparticipation/details/export", method = RequestMethod.GET)
@@ -116,8 +132,14 @@ public class RecentEventParticipationController {
     private void downloadAuditReportForEvent(@RequestParam("eventId") int eventId, YukonUserContext userContext,
             HttpServletResponse response) throws IOException {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        RecentEventParticipationDetail recentEventParticipationDetail = recentEventParticipationService.getRecentEventParticipationDetail(eventId);
+        RecentEventParticipationDetail recentEventParticipationDetail =
+            recentEventParticipationService.getRecentEventParticipationDetail(eventId);
+        List<String> columnNames = getColumnNames(accessor);
+        List<List<String>> dataGrid = getGrid(recentEventParticipationDetail, accessor);
+        WebFileUtils.writeToCSV(response, columnNames, dataGrid, "RecentEventParticipationReport_" + eventId + ".csv");
+    }
 
+    private List<String> getColumnNames(MessageSourceAccessor accessor) {
         List<String> columnNames = Lists.newArrayList();
 
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.eventID"));
@@ -131,13 +153,11 @@ public class RecentEventParticipationController {
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.participationState"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.serialNumber"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.optOutStatus"));
-
-        List<List<String>> dataGrid = getGrid(recentEventParticipationDetail, accessor);
-
-        WebFileUtils.writeToCSV(response, columnNames, dataGrid, "RecentEventParticipationReport_" + eventId + ".csv");
+        return columnNames;
     }
 
-    private List<List<String>> getGrid(RecentEventParticipationDetail recentEventParticipationDetail, MessageSourceAccessor accessor) {
+    private List<List<String>> getGrid(RecentEventParticipationDetail recentEventParticipationDetail,
+            MessageSourceAccessor accessor) {
         List<List<String>> lists = new ArrayList<>();
 
         for (ControlDeviceDetail controlDeviceDetail : recentEventParticipationDetail.getDeviceDetails()) {
@@ -159,15 +179,16 @@ public class RecentEventParticipationController {
         return lists;
     }
 
-    private List<List<String>> getGrid(List<RecentEventParticipationDetail> recentEventParticipationDetails, MessageSourceAccessor accessor) {
+    private List<List<String>> getGrid(List<RecentEventParticipationDetail> recentEventParticipationDetails,
+            MessageSourceAccessor accessor) {
         List<List<String>> lists = new ArrayList<>();
         for (RecentEventParticipationDetail recentEventParticipationDetail : recentEventParticipationDetails) {
-            List<String> row = new ArrayList<>();
-            row.add(new Integer(recentEventParticipationDetail.getControlEventId()).toString());
-            row.add(recentEventParticipationDetail.getProgramName());
-            row.add(recentEventParticipationDetail.getGroupName());
-            row.add(recentEventParticipationDetail.getStartTime().toString());
             for (ControlDeviceDetail controlDeviceDetail : recentEventParticipationDetail.getDeviceDetails()) {
+                List<String> row = new ArrayList<>();
+                row.add(new Integer(recentEventParticipationDetail.getControlEventId()).toString());
+                row.add(recentEventParticipationDetail.getProgramName());
+                row.add(recentEventParticipationDetail.getGroupName());
+                row.add(recentEventParticipationDetail.getStartTime().toString());
                 row.add(recentEventParticipationDetail.getStopTime().toString());
                 row.add(recentEventParticipationDetail.getAccountNumber());
                 row.add(controlDeviceDetail.getDeviceName());
@@ -175,8 +196,8 @@ public class RecentEventParticipationController {
                 row.add(controlDeviceDetail.getParticipationState());
                 row.add(controlDeviceDetail.getSerialNumber());
                 row.add(controlDeviceDetail.getOptOutStatus().name());
+                lists.add(row);
             }
-            lists.add(row);
         }
         return lists;
     }

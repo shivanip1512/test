@@ -151,7 +151,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
 
     }
 
-    private final static YukonRowMapper<RecentEventParticipationSummary> auditSummaryRowMapper =
+    private final static YukonRowMapper<RecentEventParticipationSummary> recentEventParticipationSummaryRowMapper =
         new YukonRowMapper<RecentEventParticipationSummary>() {
             @Override
             public RecentEventParticipationSummary mapRow(YukonResultSet rs) throws SQLException {
@@ -159,9 +159,9 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
                 Instant startTime = rs.getInstant("StartTime");
                 int numConfirmed = rs.getInt("Confirmed");
                 int numUnknowns = rs.getInt("Unknown");
-                RecentEventParticipationSummary auditSummary =
+                RecentEventParticipationSummary recentEventParticipationSummary =
                     new RecentEventParticipationSummary(programName, startTime, numConfirmed, numUnknowns);
-                return auditSummary;
+                return recentEventParticipationSummary;
             }
         };
 
@@ -182,11 +182,11 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("      AND lmhcg.GroupEnrollStop IS NULL");
         sql.append("      GROUP BY pgypo.PAOName, ce.StartTime) AS tbl");
         sql.append("WHERE tbl.RowNumber").lte(numberOfEvents);
-        List<RecentEventParticipationSummary> auditSummaries = jdbcTemplate.query(sql, auditSummaryRowMapper);
-        return auditSummaries;
+        List<RecentEventParticipationSummary> recentEventParticipationSummaries = jdbcTemplate.query(sql, recentEventParticipationSummaryRowMapper);
+        return recentEventParticipationSummaries;
     }
 
-    private final static YukonRowMapper<RecentEventParticipationStats> controlAuditStatsRowMapper =
+    private final static YukonRowMapper<RecentEventParticipationStats> recentEventParticipationStatsRowMapper =
         new YukonRowMapper<RecentEventParticipationStats>() {
             @Override
             public RecentEventParticipationStats mapRow(YukonResultSet rs) throws SQLException {
@@ -197,10 +197,10 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
                 Instant startTime = rs.getInstant("StartTime");
                 int numConfirmed = rs.getInt("Confirmed");
                 int numUnknowns = rs.getInt("Unknown");
-                RecentEventParticipationStats auditStats =
+                RecentEventParticipationStats recentEventParticipationStats =
                     new RecentEventParticipationStats(controlEventId, programName, loadGroupName, startTime, numConfirmed,
                         numUnknowns);
-                return auditStats;
+                return recentEventParticipationStats;
             }
         };
 
@@ -233,11 +233,11 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("    ) outertable ");
         sql.append("WHERE RowNumber BETWEEN").append(pagingParameters.getOneBasedStartIndex());
         sql.append("  AND").append(pagingParameters.getOneBasedEndIndex());
-        List<RecentEventParticipationStats> auditStats = jdbcTemplate.query(sql, controlAuditStatsRowMapper);
-        return auditStats;
+        List<RecentEventParticipationStats> recentEventParticipationStats = jdbcTemplate.query(sql, recentEventParticipationStatsRowMapper);
+        return recentEventParticipationStats;
     }
 
-    private final static YukonRowMapper<RecentEventParticipationDetail> controlAuditDetailRowMapper =
+    private final static YukonRowMapper<RecentEventParticipationDetail> recentEventParticipationDetailRowMapper =
         new YukonRowMapper<RecentEventParticipationDetail>() {
             @Override
             public RecentEventParticipationDetail mapRow(YukonResultSet rs) throws SQLException {
@@ -248,9 +248,9 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
                 Instant startTime = rs.getInstant("StartTime");
                 Instant stopTime = rs.getInstant("StopTime");
                 String accountNumber = rs.getString("AccountNumber");
-                RecentEventParticipationDetail controlAuditDetail =
+                RecentEventParticipationDetail recentEventParticipationDetail =
                     new RecentEventParticipationDetail(eventId, programName, groupName, startTime, stopTime, accountNumber, null);
-                return controlAuditDetail;
+                return recentEventParticipationDetail;
             }
         };
 
@@ -259,8 +259,8 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(getControlAuditBaseQuery());
         sql.append("AND ce.ControlEventId").eq_k(eventId);
-        RecentEventParticipationDetail controlAuditDetail = jdbcTemplate.queryForObject(sql, controlAuditDetailRowMapper);
-        return controlAuditDetail;
+        RecentEventParticipationDetail recentEventParticipationDetail = jdbcTemplate.queryForObject(sql, recentEventParticipationDetailRowMapper);
+        return recentEventParticipationDetail;
     }
 
     @Override
@@ -279,9 +279,9 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
             sql.append("AND ce.StartTime").lt(range.getMax());
         }
         sql.append("ORDER BY ce.ControlEventId DESC");
-        List<RecentEventParticipationDetail> controlAuditDetails = jdbcTemplate.query(sql, controlAuditDetailRowMapper);
+        List<RecentEventParticipationDetail> recentEventParticipationDetails = jdbcTemplate.query(sql, recentEventParticipationDetailRowMapper);
 
-        return controlAuditDetails;
+        return recentEventParticipationDetails;
     }
 
     @Override
@@ -367,5 +367,16 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("WHERE ce.ControlEventId").eq_k(eventId);
         List<ControlDeviceDetail> controlDeviceDetails = jdbcTemplate.query(sql, controlDeviceDetailMapper);
         return controlDeviceDetails;
+    }
+
+    @Override
+    public int getNumberOfEvents(Range<Instant> range) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("  SELECT count(*) FROM ControlEvent ");
+        if (range != null) {
+            sql.append("      WHERE StartTime").gt(range.getMin());
+            sql.append("      AND StartTime").lt(range.getMax());
+        }
+        return jdbcTemplate.queryForInt(sql);
     }
 }
