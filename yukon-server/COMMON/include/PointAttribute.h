@@ -168,7 +168,7 @@ public:
     static const Attribute  OverVoltageMeasured;
     static const Attribute  OverVoltageThreshold;
     static const Attribute  PeakDemand;
-    static const Attribute  DailyPeakDemand;
+    static const Attribute  PeakDemandDaily;
     static const Attribute  NetPeakDemand;
     static const Attribute  SumPeakDemand;
     static const Attribute  PeakDemandFrozen;

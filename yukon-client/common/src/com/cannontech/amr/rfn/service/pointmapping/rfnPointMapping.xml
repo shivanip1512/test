@@ -343,7 +343,7 @@
                 <modifier>Quadrant 4</modifier>
             </modifiers>
         </point>
-        <point name="Daily Peak Demand">
+        <point name="Peak Demand Daily">
             <uom>W</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

@@ -1733,7 +1733,7 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <decimalplaces value="3"/>
     </point>
     <point offset="358" type="Analog">
-        <name>Daily Peak Demand</name>
+        <name>Peak Demand Daily</name>
         <multiplier value="1"/>
         <unitofmeasure value="KW"/>
         <decimalplaces value="3"/>

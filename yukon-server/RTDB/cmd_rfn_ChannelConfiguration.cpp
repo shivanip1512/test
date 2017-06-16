@@ -143,7 +143,7 @@ const MetricInfo metricInfos[] = {
         { 201,  TouRates,  "Var"                                   },
         { 202,  TouRates,  "VA"                                    },
 
-        { 240,  TouRates,  "Daily Peak Demand"                     },
+        { 240,  TouRates,  "Peak Demand Daily"                     },
 
         { 256,  TouRates,  "Time in Seconds"                       },
         { 257,  None,      "Temperature in Centigrade"             }};
