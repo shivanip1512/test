@@ -29,6 +29,9 @@ public interface RecentEventParticipationDao {
 
     /**
      * Insert event information for the device (in the specified load group) for which event as sent.
+     * 
+     * @param eventTime -- start time of event (eventTime is used to load OptOutEventId where this parameter is
+     *        within the start/stop of OptOut Event ).
      */
     void insertDeviceControlEvent(int eventId, int loadGroupId, Instant eventTime);
 
