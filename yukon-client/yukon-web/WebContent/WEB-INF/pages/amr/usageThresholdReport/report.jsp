@@ -9,10 +9,9 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage module="amr" page="usageThresholdReport.report">
-        
+     <tags:sectionContainer2 nameKey="criteria">
         <form:form id="filter-form" action="report" method="post" commandName="criteria">
             <cti:csrfToken/>
-            
             <tags:nameValueContainer2>
                 <tags:nameValue2 nameKey=".criteria.devices">
                     <tags:selectDevicesTabbed deviceCollection="${filter.deviceCollection}" 
@@ -36,6 +35,8 @@
             </div>
         </form:form>
         
-        <cti:includeScript link="/resources/js/pages/yukon.ami.usage.threshold.report.js"/>
+    </tags:sectionContainer2>
+        
+    <cti:includeScript link="/resources/js/pages/yukon.ami.usage.threshold.report.js"/>
     
 </cti:standardPage>

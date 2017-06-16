@@ -10,6 +10,12 @@
     <entry key="yukon.web.modules.amr.usageThresholdReport.report.criteria.attribute">Attribute</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.report.criteria.dateRange">Date Range</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.report.run.label">Run</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.report.criteria.title">Criteria</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.report.helpText"><![CDATA[
+        Select a device group or click on Selected to select individual devices to run the report on.<br/>
+        Select a usage attribute and select a date range for the report.<br/>
+        The start date will look for readings at the beginning of date entered and the end date will look for readings at the ending of the date entered.
+    ]]></entry>
     
     <!-- USAGE THRESHOLD RESULTS results.jsp -->
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.pageTitle">Usage Threshold Results</entry>
@@ -20,6 +26,27 @@
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.filter.threshold">Threshold</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.filter.dataAvailability">Data Availability</entry>
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.filter.label">Filter</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.helpTitle">Usage Threshold Results Help</entry>
+    <entry key="yukon.web.modules.amr.usageThresholdReport.results.helpText"><![CDATA[
+        You can apply the following filters to the report:
+        <ul>
+            <li><b>Device Group(s)</b> - select one to many device groups to filter the results with</li>
+            <li><b>Include Disabled</b> - check the include disabled checkbox to include any disabled devices in the results</li>
+            <li><b>Threshold</b> - select <= or >= and enter the threshold (delta) between the readings to run the report on</li>
+            <li><b>Data Availability</b> - select any data availability options to filter</li>
+                <ul>
+                    <li><b>Complete</b> - readings have been found for the device at the beginning of the start date and the ending of the end date</li>
+                    <li><b>Partial</b> - readings have been found for the device within the date range, but not at the beginning of the start date and/or ending of the end date</li>
+                    <li><b>None</b> - no readings have been found for the device within the date range</li>
+                    <li><b>Unsupported</b> - point is missing for the device or the attribute is not supported for the device</li>
+                </ul>
+         </ul>
+         Click on the Filter button to filter the results.<br/>
+         The resulting devices will be display in a table with the total count of filtered devices.<br/>
+         Click on the Gear Icon next to the device count to view options you can do for the filtered device collection (Collection Actions, Map Devices, Download data, etc.).<br/>
+         Click on the Gear Icon next to each device to view options youo can do for the individual device (Collection Actions, Map Device, etc.). <br/>
+         The count of devices that correspond with each of the Data Availability categories will be color coded on the right.<br/>
+    ]]></entry>
     
     <!-- DATA AVAILABILITY OPTIONS -->
     <entry key="yukon.web.modules.amr.usageThresholdReport.results.dataAvailability.COMPLETE">Complete</entry>

@@ -29,6 +29,9 @@
             </tags:nameValueContainer2>
         </div>
         <div class="column two nogutter" style="border:1px solid #ccc;padding:5px;min-height:160px;">
+            <span class="fr cp"><cti:icon icon="icon-help" data-popup="#results-help"/></span>
+            <cti:msg2 var="helpTitle" key=".helpTitle"/>
+            <div id="results-help" class="dn" data-dialog data-title="${helpTitle}"><cti:msg2 key=".helpText"/></div>
             <form:form id="filter-results-form" action="results" method="get" commandName="filter">
                 <cti:csrfToken/>
                 <input type="hidden" name="reportId" value="${criteria.reportId}"/>
