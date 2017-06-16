@@ -1,7 +1,6 @@
 package com.cannontech.simulators.ivvc.impl;
 
-import java.io.Console;
-import java.time.Duration;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -12,13 +11,11 @@ import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeConstants;
 import org.joda.time.Instant;
-import org.joda.time.ReadableDuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -35,9 +32,10 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.model.Phase;
 import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.ScheduledExecutor;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.lite.LiteState;
+import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
@@ -47,7 +45,6 @@ import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.simulators.dao.RegulatorEventsSimulatorDao;
 import com.cannontech.simulators.dao.RegulatorEventsSimulatorDao.RegulatorOperations;
 import com.cannontech.simulators.ivvc.IvvcSimulatorService;
-import com.sun.org.apache.xpath.internal.operations.Plus;
 
 /**
  * 
@@ -61,6 +58,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private RegulatorEventsSimulatorDao regulatorEventsSimulatorDao;
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
+    @Autowired private PointDao pointDao;
 
     private volatile boolean isRunning; // This refers to the simulator itself
     private volatile boolean isCurrentlyExecuting = false; // This is used to ensure only one timed execution happens at a time
@@ -70,9 +68,24 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private int keepAliveIncrementingValue = 0;
     private Instant lastRegulatorEvaluationTime;
     private ScheduledFuture<?> ivvcSimulationFuture;
+    private List<PointData> messagesToSend = new ArrayList<>();
     
     private final int END_OF_LINE = 40000;
     private final int INITIAL_TAP_POSITION = 3;
+    
+    private class PointTypeValue {
+        private int pointId;
+        private PointType type;
+        private double value;
+        
+        PointTypeValue(int id, PointType pointType, double pointValue) {
+            pointId = id;
+            type = pointType;
+            value = pointValue;
+        };
+    }
+    private List<Integer> cbcPointsLoaded = new ArrayList<>();
+    private List<PointTypeValue> cbcPointCache = new ArrayList<>();
     
     @Override
     public boolean start() {
@@ -106,12 +119,11 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                 loadRegulatorTapPositionsFromDatabase();
                 processNewRegulatorActions();
                 calculateAndSendCapControlPoints();
-
             } catch (Exception e) {
                 log.error("Error occurred in IVVC simulator.", e);
             }
         } else {
-            log.error("Unable to run IVVC Simulator, the thread is probably taking more than 30 seconds to run");
+            log.error("Unable to execute IVVC Simulator this time, the thread is probably taking more than 30 seconds to run");
         }
         isCurrentlyExecuting = false;
     }
@@ -120,7 +132,6 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     // TBD: Limits position?
     private void processNewRegulatorActions() {
         List<RegulatorOperations> regulatorTapOperations = regulatorEventsSimulatorDao.getRegulatorTapOperationsAfter(lastRegulatorEvaluationTime);
-        lastRegulatorEvaluationTime = Instant.now();
         
         if (!regulatorTapOperations.isEmpty()) {
             log.debug("Found " + regulatorTapOperations.size() + " tap operations, acting on them.");
@@ -133,6 +144,10 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                 regulatorTapPositions.put(regulatorOperations.regulatorId, tapPosition + 1);
             } else if (regulatorOperations.eventType == EventType.TAP_DOWN) {
                 regulatorTapPositions.put(regulatorOperations.regulatorId, tapPosition - 1);
+            }
+            
+            if (regulatorOperations.timeStamp.isAfter(lastRegulatorEvaluationTime)) {
+                lastRegulatorEvaluationTime = regulatorOperations.timeStamp; 
             }
         }
     }
@@ -154,7 +169,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         final int MIN_KW = 3000;
         final int MAX_KW = (int) (MIN_KW + (MAX_KVAR - MIN_KVAR)/KW_TO_KVAR_MULTIPLIER);
         
-        int secondsOfDayForCalculation = DateTime.now().plusHours(12).getSecondOfDay()*24; // This shifts the sine so the peak is at 18:00
+        int secondsOfDayForCalculation = DateTime.now().plusHours(12).getSecondOfDay(); // This shifts the sine so the peak is at 18:00
         final double currentSubBusBaseKw = MIN_KW + (Math.sin(secondsOfDayForCalculation*2*Math.PI/DateTimeConstants.SECONDS_PER_DAY)*((MAX_KW-MIN_KW)/2) + ((MAX_KW-MIN_KW)/2));
         final double currentSubBusBaseKVar = (currentSubBusBaseKw - MIN_KW)*KW_TO_KVAR_MULTIPLIER + MIN_KVAR; //When we are at minimum kw, we are at MIN_KVAR
         keepAliveIncrementingValue = (keepAliveIncrementingValue + 1) & 0xFFFF; // Rolls over after 16 bits.
@@ -195,8 +210,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                     }
                     
                     // We can't generate a correct feeder Voltage yet, it is below (feeder.getCurrentVoltLoadPointID());
-                    sendPoint(feeder.getCurrentVarLoadPointID(), currentSubBusBaseKVar/feedersBySubBus.size()-feederActiveBankKVar, PointType.Analog);
-                    sendPoint(feeder.getCurrentWattLoadPointID(), currentSubBusBaseKw/feedersBySubBus.size(), PointType.Analog);
+                    generatePoint(feeder.getCurrentVarLoadPointID(), currentSubBusBaseKVar/feedersBySubBus.size()-feederActiveBankKVar, PointType.Analog);
+                    generatePoint(feeder.getCurrentWattLoadPointID(), currentSubBusBaseKw/feedersBySubBus.size(), PointType.Analog);
 
                     subBusKVarClosed += feederActiveBankKVar;
                 }
@@ -215,25 +230,25 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                             if (mapping.getValue() != 0) {
                                 switch (mapping.getKey()) {
                                 case AUTO_REMOTE_CONTROL:
-                                    sendPoint(mapping.getValue(), 1, PointType.Status); // 1 is "remote"
+                                    generatePoint(mapping.getValue(), 1, PointType.Status); // 1 is "remote"
                                     break;
                                 case AUTO_BLOCK_ENABLE:
-                                    sendPoint(mapping.getValue(), 0, PointType.Status); // No clue what 0 is here.
+                                    generatePoint(mapping.getValue(), 0, PointType.Status); // No clue what 0 is here.
                                     break;
                                 case TAP_POSITION:
-                                    sendPoint(mapping.getValue(), getRegulatorTapPosition(regulatorId), PointType.Analog);
+                                    generatePoint(mapping.getValue(), getRegulatorTapPosition(regulatorId), PointType.Analog);
                                     break;
                                 case VOLTAGE_X:
-                                    sendPoint(mapping.getValue(), 120, PointType.Analog); // Yes, hardcoded 120V.
+                                    generatePoint(mapping.getValue(), 120, PointType.Analog); // Yes, hardcoded 120V.
                                     break;
                                 case KEEP_ALIVE:
-                                    sendPoint(mapping.getValue(), keepAliveIncrementingValue, PointType.Analog);
+                                    generatePoint(mapping.getValue(), keepAliveIncrementingValue, PointType.Analog);
                                     break;
                                 case FORWARD_SET_POINT:
-                                    sendPoint(mapping.getValue(), 120, PointType.Analog); // Really not used, here to generate point data
+                                    generatePoint(mapping.getValue(), 120, PointType.Analog); // Really not used, here to generate point data
                                     break;
                                 case FORWARD_BANDWIDTH:
-                                    sendPoint(mapping.getValue(), 60, PointType.Analog); // Really not used, here to generate point data
+                                    generatePoint(mapping.getValue(), 60, PointType.Analog); // Really not used, here to generate point data
                                     break;
                                 case VOLTAGE_Y:
                                     // Voltage Y is special, and needs phase information. We are looking it up via zoneService and not using the mapping
@@ -256,11 +271,11 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                             // The feeder voltage matches the regulator phase voltage. We finally have that so lets send it!
                                             if (points.getValue() == Phase.A) {
                                                 Feeder feeder = capControlCache.getFeeder(feederId);
-                                                sendPoint(feeder.getCurrentVoltLoadPointID(), voltage, PointType.Analog);
+                                                generatePoint(feeder.getCurrentVoltLoadPointID(), voltage, PointType.Analog);
                                             }
                                         }
                                         
-                                        sendPoint(points.getKey(), voltage, PointType.Analog);
+                                        generatePoint(points.getKey(), voltage, PointType.Analog);
                                     }
                                     break; 
                                 // These are output points, no incoming value.
@@ -277,12 +292,13 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                     for (CapBankToZoneMapping capBankToZoneMapping : capBankToZoneMappings) {
                         Map<Integer, Phase> pointsForBankAndPhase = zoneService.getMonitorPointsForBankAndPhase(capBankToZoneMapping.getDeviceId());
                         
+                        CapBankDevice capBankDevice = capControlCache.getCapBankDevice(capBankToZoneMapping.getDeviceId());
+                        
                         for (Entry<Integer, Phase> points : pointsForBankAndPhase.entrySet()) {
                             double voltage = getVoltageFromKwAndDistance(currentSubBusBaseKw, capBankToZoneMapping.getDistance() + zone.getGraphStartPosition() * 1000, MAX_KW);
                             voltage = shiftVoltageForPhase(voltage, points.getValue(), (capBankToZoneMapping.getDistance() + zone.getGraphStartPosition() * 1000));
                             
                             // Check if the bank itself is closed
-                            CapBankDevice capBankDevice = capControlCache.getCapBankDevice(capBankToZoneMapping.getDeviceId());
                             LiteState capBankState = CapControlUtils.getCapBankState(capBankDevice.getControlStatus());
                             if(capBankState.getStateText().contains("Close")) {
                                 voltage += (capBankDevice.getBankSize()/1200); // A bank gives a bonus extra voltage to itself.
@@ -298,22 +314,25 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
                                 voltage += 0.75*getRegulatorTapPosition(phaseToRegulator.get(points.getValue()));
                             }
                             
-                            sendPoint(points.getKey(), voltage, PointType.Analog);
+                            generatePoint(points.getKey(), voltage, PointType.Analog);
                         }
                         
-                        //TODO Generate capbank points.
+                        addCbcPointsToCbcCache(capBankDevice.getControlDeviceID());
                     }
                     
                 }
                 
                 //Send out all of the sub bus points
-                sendPoint(subBus.getCurrentVarLoadPointID(), currentSubBusBaseKVar - subBusKVarClosed, PointType.Analog);
-                sendPoint(subBus.getCurrentVoltLoadPointID(), 120, PointType.Analog); // The sub bus Voltage is always 120
-                sendPoint(subBus.getCurrentWattLoadPointID(), currentSubBusBaseKw, PointType.Analog);
+                generatePoint(subBus.getCurrentVarLoadPointID(), currentSubBusBaseKVar - subBusKVarClosed, PointType.Analog);
+                generatePoint(subBus.getCurrentVoltLoadPointID(), 120, PointType.Analog); // The sub bus Voltage is always 120
+                generatePoint(subBus.getCurrentWattLoadPointID(), currentSubBusBaseKw, PointType.Analog);
                 //The daily operations point on the subBus is not sent by us, but sent by the C++ code. (subBus.getDailyOperationsAnalogPointId())
             });
             
         }
+        
+        generateCbcPoints();
+        sendAllPointData();
     }
 
     // 1 volt shift down from A-C, .5 v shift from A-B. No shift for Phase A.
@@ -394,10 +413,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     }
     
     // Sends this point to Dispatch. Does not force archive, follows point archival settings.
-    private void sendPoint(int pointId, double value, PointType type) {
+    private void generatePoint(int pointId, double value, PointType type) {
         if(pointId != 0) {
-            
-            //TODO group up points and send as multi messages
             PointData pointData = new PointData();
             pointData.setTagsPointMustArchive(false);    
             pointData.setPointQuality(PointQuality.Normal);
@@ -405,7 +422,132 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
             pointData.setType(type.getPointTypeId());
             pointData.setValue(value);
             
-            asyncDynamicDataSource.putValue(pointData);
+            if (pointData != null) {
+                messagesToSend.add(pointData);
+            }
         }
+    }
+    
+    private void generateCbcPoints() {
+        for (PointTypeValue pointTypeValue : cbcPointCache) {
+            if (pointTypeValue != null) {
+                generatePoint(pointTypeValue.pointId, pointTypeValue.value, pointTypeValue.type);    
+            }
+        }
+    }
+    
+    // Send all point data. Note this is not thread safe.
+    private void sendAllPointData() {
+        final int chunkSize = 1000;
+        if (!messagesToSend.isEmpty()) {
+            int size = messagesToSend.size();
+            int sent = 0;
+            while(sent < size) {
+                asyncDynamicDataSource.putValues(messagesToSend.subList(sent, Math.min(sent+chunkSize, size)));
+                sent = sent+chunkSize;
+            }
+
+            messagesToSend.clear();
+            log.info("Sending " + size + " messages to Dispatch");
+        }
+    }
+    
+    private void addCbcPointsToCbcCache(int cbcId) {
+        if (!cbcPointsLoaded.contains(cbcId)) {
+            // We are going to try hard to only do this once per cbc simulator run as this is a pretty big lookup.
+            cbcPointsLoaded.add(cbcId);
+            Map<PointType, List<PointInfo>> cbcPointMap = pointDao.getAllPointNamesAndTypesForPAObject(cbcId);
+            
+            cbcPointMap.entrySet().parallelStream()
+                        .forEach(entry -> { cbcPointCache.addAll(entry.getValue().stream()
+                                                          .map(pointInfo -> getPointTypeAndValue(entry.getKey(), pointInfo))
+                                                          .filter(pointTypeValue -> pointTypeValue != null)
+                                                          .collect(Collectors.toList()));
+                        });
+        }
+    }
+    
+    private PointTypeValue getPointTypeAndValue(PointType pointType, PointInfo pointInfo) {
+        Double pointValue = null;
+        
+        switch (pointInfo.getName()) {
+        case "Auto Close Delay Time":
+        case "Bank Control Time":
+        case "CBC-8000 Hardware Type ID":
+        case "Daily Control Limit":
+        case "Line Voltage THD":
+        case "Voltage Control Flags":
+            pointValue = 0.0;
+            break;
+        case "Average Line Voltage Time":
+        case "Comms Loss Time":
+        case "Manual Close Delay Time":
+        case "Open Delay Time":
+        case "Re-Close Delay Time":
+            pointValue = 30.0;
+            break;
+        case "Comms Loss OV Threshold":
+        case "CVR OV Threshold":
+        case "Emergency OV Threshold":
+        case "High Voltage":
+        case "OV Threshold":
+            pointValue = 128.0;
+            break;
+        case "Comms Loss UV Threshold":
+        case "CVR UV Threshold":
+        case "Emergency UV Threshold":
+        case "Low Voltage":
+        case "UV Threshold":
+            pointValue = 118.0;
+            break;
+        case "Close Op Count":
+        case "Open Op Count":
+        case "OV Op Count":
+        case "Total Op Count":
+        case "UV Op Count":
+        case "Delta Voltage":
+            pointValue = 5.0;
+            break;
+        case "Temperature":
+            pointValue = 88.0;
+            break;
+        // The below are all status points
+        case "Abnormal Delta Voltage":
+        case "Auto Control Mode":
+        case "Bad Active Close Relay":
+        case "Bad Active Trip Relay":
+        case "Capacitor Bank State ":
+        case "CVR Mode":
+        case "Device Reset Indicator":
+        case "Door Sensor Damage/Tamper":
+        case "Door Status":
+        case "Line Voltage High":
+        case "Line Voltage Low":
+        case "Manual Control Mode":
+        case "Max Operation Count":
+        case "Neutral Lockout":
+        case "Operation Failed":
+        case "Real Time Clock Battery":
+        case "Reclose Block":
+        case "Relay Sense Failed":
+        case "Remote Control Mode":
+        case "SCADA Override":
+        case "Temperature High":
+        case "Temperature Low":
+            pointValue = 0.0;
+            break;
+        case "OVUV Control":
+            pointValue = 1.0;
+            break;
+
+        default:
+            break;
+        }
+        
+        if (pointValue != null) {
+            return new PointTypeValue(pointInfo.getPointId(), pointType, pointValue);
+        }
+        
+        return null;
     }
 }

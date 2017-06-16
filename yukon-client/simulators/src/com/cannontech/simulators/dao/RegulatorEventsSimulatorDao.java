@@ -11,7 +11,8 @@ public interface RegulatorEventsSimulatorDao {
     public class RegulatorOperations {
         public Integer regulatorId;
         public RegulatorEvent.EventType eventType;
+        public Instant timeStamp;
     }
     
-    List<RegulatorOperations> getRegulatorTapOperationsAfter(Instant start);
+    List<RegulatorOperations> getRegulatorTapOperationsAfter(Instant lastRegulatorEvaluationTime);
 }
