@@ -40,7 +40,7 @@ $(function () {
         </div>
         <div class="column two nogutter">
         <div class="action-area">
-        <c:if test="${not empty auditEventMessageStats}">
+        <c:if test="${not empty recentEventParticipationStatsResults}">
         </c:if>
                 <c:choose>
                     <c:when test="${maxCsvRows > searchResult.hitCount}">

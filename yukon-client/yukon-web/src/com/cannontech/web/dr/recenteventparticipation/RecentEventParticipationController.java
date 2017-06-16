@@ -78,9 +78,9 @@ public class RecentEventParticipationController {
         List<RecentEventParticipationStats> result =
             recentEventParticipationService.getRecentEventParticipationStats(range, paging);
         int totalRecentEvents = recentEventParticipationService.getNumberOfEvents(range);
-        SearchResults<RecentEventParticipationStats> auditEventMessageStats =
+        SearchResults<RecentEventParticipationStats> recentEventParticipationStatsResults =
             SearchResults.pageBasedForSublist(result, paging, totalRecentEvents);
-        model.addAttribute("auditEventMessageStats", auditEventMessageStats);
+        model.addAttribute("recentEventParticipationStatsResults", recentEventParticipationStatsResults);
         model.addAttribute("totalEvents", totalRecentEvents);
         if (from == null && result.size() > 0) {
             RecentEventParticipationStats recentEventParticipationStats = result.get(result.size() - 1);

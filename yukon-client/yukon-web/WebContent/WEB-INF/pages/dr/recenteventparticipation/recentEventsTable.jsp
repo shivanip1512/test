@@ -20,29 +20,29 @@
             </tr>
         </thead>
         <tbody>
-            <c:forEach items="${auditEventMessageStats.resultList}" var="auditEventMessageStat">
-                <c:set var="successWidth" value="${auditEventMessageStat.eventStats.percentConfirmed * 100}" />
-                <c:set var="failedWidth" value="${auditEventMessageStat.eventStats.percentUnknown * 100}" />
+            <c:forEach items="${recentEventParticipationStatsResults.resultList}" var="recentEventParticipationStats">
+                <c:set var="successWidth" value="${recentEventParticipationStats.eventStats.percentConfirmed * 100}" />
+                <c:set var="failedWidth" value="${recentEventParticipationStats.eventStats.percentUnknown * 100}" />
                 <tr>
-                    <td><span>${auditEventMessageStat.controlEventId}</span></td>
-                    <td><span>${auditEventMessageStat.programName}</span></td>
-                    <td><span>${auditEventMessageStat.groupName}</span></td>
-                    <td><cti:formatDate type="FULL" value="${auditEventMessageStat.startTime}" /></td>
+                    <td><span>${recentEventParticipationStats.controlEventId}</span></td>
+                    <td><span>${recentEventParticipationStats.programName}</span></td>
+                    <td><span>${recentEventParticipationStats.groupName}</span></td>
+                    <td><cti:formatDate type="FULL" value="${recentEventParticipationStats.startTime}" /></td>
                     <td>
                         <div class="progress" style="width: 80px; float: left;">
                             <div class="progress-bar progress-bar-success" role="progressbar"
-                                aria-valuenow="${auditEventMessageStat.eventStats.percentConfirmed}%" aria-valuemin="0" 
-                                title="${auditEventMessageStat.numConfirmed} <i:inline key=".confirmed" />"
+                                aria-valuenow="${recentEventParticipationStats.eventStats.percentConfirmed}%" aria-valuemin="0" 
+                                title="${recentEventParticipationStats.numConfirmed} <i:inline key=".confirmed" />"
                                 aria-valuemax="100" style="width: ${successWidth}%"></div>
                             <div class="progress-bar progress-bar-warning" role="progressbar"
-                                aria-valuenow="${auditEventMessageStat.eventStats.percentUnknown}%" aria-valuemin="0" 
-                                title="${auditEventMessageStat.numUnknowns} <i:inline key=".unreported" />"
+                                aria-valuenow="${recentEventParticipationStats.eventStats.percentUnknown}%" aria-valuemin="0" 
+                                title="${recentEventParticipationStats.numUnknowns} <i:inline key=".unreported" />"
                                 aria-valuemax="100" style="width: ${failedWidth}%"></div>
                         </div> 
                     </td>
                     <td>
                     <cm:dropdown triggerClasses="fr" menuClasses="no-icons">
-                            <cti:url var="mapNetworkUrl" value="/dr/recenteventparticipation/download?eventId=${auditEventMessageStat.controlEventId}"/>
+                            <cti:url var="mapNetworkUrl" value="/dr/recenteventparticipation/download?eventId=${recentEventParticipationStats.controlEventId}"/>
                             <cm:dropdownOption icon="icon-download" key=".download" href="${mapNetworkUrl}"/>
                     </cm:dropdown>
                     </td>
@@ -51,6 +51,6 @@
         </tbody>
         <tfoot></tfoot>
     </table>
-    <tags:pagingResultsControls result="${auditEventMessageStats}" adjustPageCount="true" />
+    <tags:pagingResultsControls result="${recentEventParticipationStatsResults}" adjustPageCount="true" />
 
 </cti:msgScope>
