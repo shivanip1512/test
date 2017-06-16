@@ -15,6 +15,10 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
+<div id="validationMessage" class="user-message error dn">
+    <i:inline key="yukon.web.modules.operator.thermostatManual.temperature.blank"/>
+</div>
+
 <div class="titled-container box-container manualThermostat box fl">
     <div class="title-bar clearfix">
         <h3 class="title">
@@ -132,6 +136,7 @@
         
         <div class="action-area">
             <cti:msg2 var="saveText" key="yukon.web.modules.operator.thermostatManual.submit" />
+            <input type="hidden" id="confirmPopup_id" value = "confirmPopup_${event.eventId}" />
             <button id="sendSettingsSubmit" popup_id="confirmPopup_${event.eventId}" class="primary action">
                 <span class="b-label">${saveText}</span>
             </button>
@@ -140,7 +145,7 @@
 </div>
 
 <%-- Confirm Dialog for send settings --%>
-<i:simplePopup titleKey=".sendConfirm.title" on="#sendSettingsSubmit" id="confirmPopup_${event.eventId}">
+<i:simplePopup titleKey=".sendConfirm.title" id="confirmPopup_${event.eventId}">
     <cti:url var="postUrl" value="${actionPath}"/>
     <form action="${postUrl}" method="post">
         <cti:csrfToken/>

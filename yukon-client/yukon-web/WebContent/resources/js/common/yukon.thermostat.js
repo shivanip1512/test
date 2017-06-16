@@ -688,6 +688,10 @@ yukon.ThermostatManualEditor = {
     },
     
     onBlurTemperatureDisplay: function(event) {
+        if(isNaN(parseFloat(this.value))) {
+            this.value = "";
+            return false;
+        }
         if(yukon.ThermostatManualEditor.thermostat.assignDegreesOrSnapToLimit(parseFloat(this.value), this.getAttribute("data-temperatureMode"))){
             yukon.ThermostatManualEditor.render();
         }else{
@@ -1230,3 +1234,47 @@ yukon.Thermostat = function(args){
     // Calling init class to create an object.
     this._init();
 };
+
+/* Validate if the temperature value is blank*/
+$(document).on("click", "#sendSettingsSubmit", function () {
+    if ($("div.coolDiv").is(":visible") && ($("div.coolDiv input[name='temperature_display']").val() == "")) {
+        $("div.coolDiv input[name='temperature_display']").addClass("error");
+    } else {
+        $("div.coolDiv input[name='temperature_display']").removeClass("error");
+    }
+
+    if ($("div.heatDiv").is(":visible") && ($("div.heatDiv input[name='temperature_display']").val()) == "") {
+        $("div.heatDiv input[name='temperature_display']").addClass("error");
+    } else {
+        $("div.heatDiv input[name='temperature_display']").removeClass("error");
+    }
+
+    if ($("div.heatDiv input[name='temperature_display']").hasClass("error") || 
+            $("div.coolDiv input[name='temperature_display']").hasClass("error")) {
+        $("#validationMessage").removeClass("dn");
+    } else {
+        $("#validationMessage").addClass("dn");
+        var confirmationPopId = "#" + $("#confirmPopup_id").val();
+        $(confirmationPopId).dialog("open");
+    }
+});
+
+$(document).on("click", "div.thermostatModes li", function () {
+    $("div.coolDiv input[name='temperature_display']").removeClass("error");
+    $("div.heatDiv input[name='temperature_display']").removeClass("error");
+    $("#validationMessage").addClass("dn");
+});
+
+$(document).on("click", "div.coolDiv div.temperatureAdjust", function () {
+    $("div.coolDiv input[name='temperature_display']").removeClass("error");
+    if (!$("div.heatDiv input[name='temperature_display']").hasClass("error")) {
+        $("#validationMessage").addClass("dn");
+    }
+});
+
+$(document).on("click", "div.heatDiv div.temperatureAdjust", function () {
+    $("div.heatDiv input[name='temperature_display']").removeClass("error");
+    if (!$("div.coolDiv input[name='temperature_display']").hasClass("error")) {
+        $("#validationMessage").addClass("dn");
+    }
+});
