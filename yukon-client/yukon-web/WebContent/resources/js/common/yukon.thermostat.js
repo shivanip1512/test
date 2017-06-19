@@ -688,7 +688,7 @@ yukon.ThermostatManualEditor = {
     },
     
     onBlurTemperatureDisplay: function(event) {
-        if(isNaN(parseFloat(this.value))) {
+        if (isNaN(parseFloat(this.value))) {
             this.value = "";
             return false;
         }
@@ -1260,9 +1260,15 @@ $(document).on("click", "#sendSettingsSubmit", function () {
 });
 
 $(document).on("click", "div.thermostatModes li", function () {
-    $("div.coolDiv input[name='temperature_display']").removeClass("error");
-    $("div.heatDiv input[name='temperature_display']").removeClass("error");
-    $("#validationMessage").addClass("dn");
+    hideErrors();
+});
+
+$(document).on("click", "div.temperatureDisplay div.temperatureUnit li.unit", function () {
+    hideErrors();
+});
+
+$(document).on("click", "div.fanStates li", function () {
+    hideErrors();
 });
 
 $(document).on("click", "div.coolDiv div.temperatureAdjust", function () {
@@ -1278,3 +1284,9 @@ $(document).on("click", "div.heatDiv div.temperatureAdjust", function () {
         $("#validationMessage").addClass("dn");
     }
 });
+
+function hideErrors () {
+    $("div.coolDiv input[name='temperature_display']").removeClass("error");
+    $("div.heatDiv input[name='temperature_display']").removeClass("error");
+    $("#validationMessage").addClass("dn");
+}

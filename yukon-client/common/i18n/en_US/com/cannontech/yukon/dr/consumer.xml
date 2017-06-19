@@ -271,6 +271,7 @@
     <entry key="yukon.dr.consumer.manualevent.result.OPERATOR_MULTIPLE_ERROR">There was a problem sending the manual option to one or more of the thermostats you selected.</entry>
     <entry key="yukon.dr.consumer.manualevent.result.OPERATOR_MANUAL_INVALID_TEMP_HIGH">This temperature is too high for the selected device(s) and mode.</entry>
     <entry key="yukon.dr.consumer.manualevent.result.OPERATOR_MANUAL_INVALID_TEMP_LOW">This temperature is too low for the selected device(s) and mode.</entry>
+    <entry key="yukon.dr.consumer.manualevent.result.OPERATOR_MANUAL_INVALID_TEMP_VALUE">{0} is not a valid temperature value.</entry>
     
     <!--  manual events: consumer page -->
     <entry key="yukon.dr.consumer.manualevent.result.CONSUMER_UNAVAILABLE_ERROR">Thermostat {0} is currently out of service. Manual option is not sent.</entry>
