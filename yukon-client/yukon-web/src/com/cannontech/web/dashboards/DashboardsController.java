@@ -74,7 +74,7 @@ public class DashboardsController {
         model.addAttribute("pageTypes", DashboardPageType.values());
         List<LiteDashboard> visibleDashboards = dashboardService.getVisible(userContext.getYukonUser().getUserID());
         List<LiteDashboard> dashboards = visibleDashboards;
-        if (filter != null && filter.equals(DashboardFilter.CREATEDBYME.name())) {
+        if (filter != null && filter.equals(DashboardFilter.OWNEDBYME.name())) {
             dashboards = dashboardService.getOwnedDashboards(userContext.getYukonUser().getUserID());
         }
 
@@ -114,7 +114,7 @@ public class DashboardsController {
         List<LiteDashboard>itemList = Lists.newArrayList(dashboards);
         
         Comparator<LiteDashboard> comparator = (o1, o2) -> o1.getName().compareTo(o2.getName());
-        if (sortBy == DashboardSortBy.createdBy) {
+        if (sortBy == DashboardSortBy.owner) {
             comparator = (o1, o2) -> o1.getOwner().getUsername().compareTo(o2.getOwner().getUsername());
         } else if (sortBy == DashboardSortBy.visibility) {
             comparator = (o1, o2) -> o1.getVisibility().compareTo(o2.getVisibility());
@@ -411,7 +411,7 @@ public class DashboardsController {
     public enum DashboardSortBy implements DisplayableEnum {
 
         name,
-        createdBy,
+        owner,
         visibility,
         numberOfUsers;
 
@@ -423,7 +423,7 @@ public class DashboardsController {
     
     public enum DashboardFilter {
         ALL,
-        CREATEDBYME;
+        OWNEDBYME;
     }
 
 }

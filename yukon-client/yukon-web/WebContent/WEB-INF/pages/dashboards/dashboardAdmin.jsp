@@ -32,7 +32,7 @@
     <div data-url="${dataUrl}" data-static>
       <table class="compact-results-table row-highlighting has-actions">
         <tags:sort column="${name}" />                
-        <tags:sort column="${createdBy}" />                
+        <tags:sort column="${owner}" />                
         <tags:sort column="${visibility}" />                
         <tags:sort column="${numberOfUsers}" />    
         <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>

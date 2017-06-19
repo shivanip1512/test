@@ -26,7 +26,7 @@
             <cti:url var="manageUrl" value="/dashboards/manage"/>
             <select onchange="window.location.href=this.value">
                 <option value="${manageUrl}"/><i:inline key=".showAll"/></option>
-                <option value="${manageUrl}?filter=CREATEDBYME" <c:if test="${filter == 'CREATEDBYME'}">selected="selected"</c:if>><i:inline key=".createdByMe"/></option>
+                <option value="${manageUrl}?filter=OWNEDBYME" <c:if test="${filter == 'OWNEDBYME'}">selected="selected"</c:if>><i:inline key=".ownedByMe"/></option>
             </select>
         <hr/>
         
@@ -36,7 +36,7 @@
         <div data-url="${dataUrl}" data-static>
             <table class="compact-results-table row-highlighting has-actions">
                 <tags:sort column="${name}" />                
-                <tags:sort column="${createdBy}" />                
+                <tags:sort column="${owner}" />                
                 <tags:sort column="${visibility}" />                
                 <tags:sort column="${numberOfUsers}" />                
                 <th class="action-column"><cti:icon icon="icon-cog" classes="M0"/></th>
