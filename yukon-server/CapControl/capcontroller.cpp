@@ -1328,8 +1328,9 @@ void CtiCapController::writeEventLogsToDatabase()
 
     int entries = 0;
 
-    while( ++entries < 100 && ! _eventLogs.empty() )
+    while( entries < 100 && ! _eventLogs.empty() )
     {
+        ++entries;
         CtiCCSubstationBusStore::InsertCCEventLogInDB(_eventLogs.getQueue());
     }
 
