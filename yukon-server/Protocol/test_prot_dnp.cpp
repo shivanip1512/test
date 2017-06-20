@@ -35,7 +35,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit)
 
         const byte_str expected(
                 "05 64 08 C4 04 00 03 00 B4 B8 "
-                "C0 C1 01 23 0B");
+                "C0 C1 17 8C 0C");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
@@ -241,7 +241,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_restart_bit_with_unsolicited_enable)
 
         const byte_str expected(
                 "05 64 08 C4 04 00 03 00 B4 B8 "
-                "C0 C1 01 23 0B");
+                "C0 C1 17 8C 0C");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());
@@ -2750,7 +2750,7 @@ BOOST_AUTO_TEST_CASE(test_prot_dnp_needtime)
 
         const byte_str expected(
                 "05 64 08 C4 04 00 03 00 B4 B8 "
-                "C0 C1 01 23 0B");
+                "C0 C1 17 8C 0C");
 
         //  copy them into int vectors so they display nicely
         const std::vector<int> output(xfer.getOutBuffer(), xfer.getOutBuffer() + xfer.getOutCount());

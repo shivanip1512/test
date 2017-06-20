@@ -121,7 +121,7 @@ YukonError_t DnpProtocol::generate( CtiXfer &xfer )
             }
             case Command_Loopback:
             {
-                _app_layer.setCommand(ApplicationLayer::RequestRead);
+                _app_layer.setCommand(ApplicationLayer::RequestDelayMeasurement);
 
                 break;
             }
