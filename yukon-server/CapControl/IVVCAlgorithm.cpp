@@ -114,7 +114,7 @@ bool IVVCAlgorithm::checkConfigAllZonesHaveRegulator(IVVCStatePtr state, CtiCCSu
                     CTILOG_ERROR(dout, "IVVC Configuration Error. No Voltage Regulator attached to zone: " << zone->getName());
                 }
             }
-            catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
                 {
@@ -692,7 +692,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                         errorCount++;
                         CTILOG_EXCEPTION_ERROR(dout, noRegulator);
                     }
-                    catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+                    catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
                     {
                         errorCount++;
                         if (missingAttribute.complain())
@@ -751,7 +751,7 @@ void IVVCAlgorithm::execute(IVVCStatePtr state, CtiCCSubstationBusPtr subbus, IV
                     {
                         CTILOG_EXCEPTION_ERROR(dout, noRegulator);
                     }
-                    catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+                    catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
                     {
                         if (missingAttribute.complain())
                         {
@@ -805,7 +805,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
                 VoltageRegulatorManager::SharedPtr  regulator
                     = store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                long voltagePointId = regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId();
+                long voltagePointId = regulator->getPointByAttribute( Attribute::Voltage ).getPointId();
 
                 pointRequests.insert( PointRequest(voltagePointId, RegulatorRequestType, ! sendScan) );
 
@@ -823,7 +823,7 @@ bool IVVCAlgorithm::determineWatchPoints(CtiCCSubstationBusPtr subbus, DispatchC
                     CTILOG_EXCEPTION_ERROR(dout, noRegulator);
                 }
             }
-            catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
             {
                 configurationError = true;
 
@@ -1084,7 +1084,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
             {
                 CTILOG_EXCEPTION_ERROR(dout, noRegulator);
             }
-            catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
                 {
@@ -1123,7 +1123,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
             {
                 CTILOG_EXCEPTION_ERROR(dout, noRegulator);
             }
-            catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
                 {
@@ -1162,7 +1162,7 @@ void IVVCAlgorithm::sendKeepAlive(CtiCCSubstationBusPtr subbus)
             {
                 CTILOG_EXCEPTION_ERROR(dout, noRegulator);
             }
-            catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
                 {
@@ -1943,7 +1943,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
                 VoltageRegulatorManager::SharedPtr regulator =
                         store->getVoltageRegulatorManager()->getVoltageRegulator( mapping.second );
 
-                long voltagePointId = regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId();
+                long voltagePointId = regulator->getPointByAttribute( Attribute::Voltage ).getPointId();
 
                 PointValueMap::const_iterator found = pointValues.find( voltagePointId );   // lookup
                 if ( found != pointValues.end() )
@@ -2000,7 +2000,7 @@ void IVVCAlgorithm::tapOperation(IVVCStatePtr state, CtiCCSubstationBusPtr subbu
         {
             CTILOG_EXCEPTION_ERROR(dout, noRegulator);
         }
-        catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+        catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
         {
             if (missingAttribute.complain())
             {
@@ -2140,7 +2140,7 @@ bool IVVCAlgorithm::allRegulatorsInRemoteMode(const long subbusId) const
             {
                 CTILOG_EXCEPTION_ERROR(dout, noRegulator);
             }
-            catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
                 {
@@ -2381,7 +2381,7 @@ void IVVCAlgorithm::sendDisableRemoteControl( CtiCCSubstationBusPtr subbus )
             {
                 CTILOG_EXCEPTION_ERROR(dout, noRegulator);
             }
-            catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+            catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
             {
                 if (missingAttribute.complain())
                 {
@@ -2662,7 +2662,7 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
             VoltageRegulatorManager::SharedPtr regulator =
                 store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
 
-            const long  pointID = regulator->getPointByAttribute( PointAttribute::VoltageY ).getPointId();
+            const long  pointID = regulator->getPointByAttribute( Attribute::Voltage ).getPointId();
 
             updateMaxOvervoltages( pointID,
                                    phase,
@@ -2767,7 +2767,7 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
             VoltageRegulatorManager::SharedPtr regulator =
                 store->getVoltageRegulatorManager()->getVoltageRegulator( regulatorID );
 
-            const long  pointID = regulator->getPointByAttribute( PointAttribute::VoltageY ).getPointId();
+            const long  pointID = regulator->getPointByAttribute( Attribute::Voltage ).getPointId();
 
             if ( boost::optional<PointValue> pv = Cti::mapFind( voltages, pointID ) )
             {
@@ -2799,7 +2799,7 @@ void IVVCAlgorithm::calculateMultiTapOperationHelper( const long zoneID,
     {
         CTILOG_EXCEPTION_ERROR(dout, noRegulator);
     }
-    catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+    catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
     {
         if (missingAttribute.complain())
         {
@@ -2868,7 +2868,7 @@ bool IVVCAlgorithm::hasValidData( PointDataRequestPtr& request, CtiTime timeNow,
                     VoltageRegulatorManager::SharedPtr  regulator
                         = store->getVoltageRegulatorManager()->getVoltageRegulator( phase_ID_iterator->second );
 
-                    const long voltagePointId = regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId();
+                    const long voltagePointId = regulator->getPointByAttribute( Attribute::Voltage ).getPointId();
 
                     if ( voltagePointId > 0 )
                     {
@@ -2882,7 +2882,7 @@ bool IVVCAlgorithm::hasValidData( PointDataRequestPtr& request, CtiTime timeNow,
                         CTILOG_EXCEPTION_ERROR(dout, noRegulator);
                     }
                 }
-                catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+                catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
                 {
                     if ( missingAttribute.complain() )
                     {

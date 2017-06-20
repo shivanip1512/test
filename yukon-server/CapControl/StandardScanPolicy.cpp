@@ -10,8 +10,8 @@ Policy::AttributeList StandardScanPolicy::getSupportedAttributes()
 {
     return
     {
-        PointAttribute::VoltageX,
-        PointAttribute::VoltageY
+        Attribute::SourceVoltage,
+        Attribute::Voltage
     };
 }
 

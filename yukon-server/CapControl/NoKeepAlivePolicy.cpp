@@ -10,7 +10,7 @@ Policy::AttributeList NoKeepAlivePolicy::getSupportedAttributes()
 {
     return
     {
-        PointAttribute::AutoRemoteControl
+        Attribute::AutoRemoteControl
     };
 }
 

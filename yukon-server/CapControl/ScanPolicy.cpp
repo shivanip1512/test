@@ -18,7 +18,7 @@ Policy::Actions ScanPolicy::IntegrityScan()
     return actions;
 }
 
-Policy::Action ScanPolicy::makeIntegrityScanCommand( const PointAttribute & attribute )
+Policy::Action ScanPolicy::makeIntegrityScanCommand( const Attribute & attribute )
 {
     LitePoint point = getPointByAttribute( attribute );
 

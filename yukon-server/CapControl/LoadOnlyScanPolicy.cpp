@@ -10,7 +10,7 @@ Policy::AttributeList LoadOnlyScanPolicy::getSupportedAttributes()
 {
     return
     {
-        PointAttribute::VoltageY
+        Attribute::Voltage
     };
 }
 

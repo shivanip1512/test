@@ -187,7 +187,7 @@ VoltageRegulator::IDSet VoltageRegulator::getRegistrationPoints()
 }
 
 
-LitePoint VoltageRegulator::getPointByAttribute(const PointAttribute & attribute)
+LitePoint VoltageRegulator::getPointByAttribute(const Attribute & attribute)
 {
     try
     {
@@ -218,7 +218,7 @@ LitePoint VoltageRegulator::getPointByAttribute(const PointAttribute & attribute
 
     // didn't find anywhere...
 
-    throw MissingPointAttribute( getPaoId(), attribute, getPaoType(), isTimeForMissingAttributeComplain()  );
+    throw MissingAttribute( getPaoId(), attribute, getPaoType(), isTimeForMissingAttributeComplain() );
 }
 
 
@@ -332,10 +332,10 @@ try
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute.attribute(),
-                                 getPaoType(),
-                                 isTimeForMissingAttributeComplain()  );
+    throw MissingAttribute( getPaoId(),
+                            missingAttribute.attribute(),
+                            getPaoType(),
+                            isTimeForMissingAttributeComplain()  );
 }
 catch ( UninitializedPointValue & )
 {
@@ -512,14 +512,14 @@ double VoltageRegulator::requestVoltageChange( const double changeAmount,
 double VoltageRegulator::getVoltage()
 try
 {
-    return _scanPolicy->getValueByAttribute( PointAttribute::VoltageY );
+    return _scanPolicy->getValueByAttribute( Attribute::Voltage );
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute.attribute(),
-                                 getPaoType(),
-                                 isTimeForMissingAttributeComplain()  );
+    throw MissingAttribute( getPaoId(),
+                            missingAttribute.attribute(),
+                            getPaoType(),
+                            isTimeForMissingAttributeComplain()  );
 }
 catch ( UninitializedPointValue & )
 {
@@ -547,22 +547,22 @@ try
         {
             _controlPolicy->getPointByAttribute(
                                 changeAmount > 0.0
-                                    ? PointAttribute::TapUp
-                                    : PointAttribute::TapDown );
+                                    ? Attribute::TapUp
+                                    : Attribute::TapDown );
         }
         else
         {
-            _controlPolicy->getPointByAttribute( PointAttribute::ForwardSetPoint ); 
-            _controlPolicy->getPointByAttribute( PointAttribute::ForwardBandwidth ); 
+            _controlPolicy->getPointByAttribute( Attribute::ForwardSetPoint ); 
+            _controlPolicy->getPointByAttribute( Attribute::ForwardBandwidth ); 
         }
     }
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute.attribute(),
-                                 getPaoType(),
-                                 isTimeForMissingAttributeComplain()  );
+    throw MissingAttribute( getPaoId(),
+                            missingAttribute.attribute(),
+                            getPaoType(),
+                            isTimeForMissingAttributeComplain()  );
 }
 
 
@@ -617,10 +617,10 @@ try
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute.attribute(),
-                                 getPaoType(),
-                                 isTimeForMissingAttributeComplain() );
+    throw MissingAttribute( getPaoId(),
+                            missingAttribute.attribute(),
+                            getPaoType(),
+                            isTimeForMissingAttributeComplain() );
 }
 
 
@@ -639,10 +639,10 @@ try
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute.attribute(),
-                                 getPaoType(),
-                                 isTimeForMissingAttributeComplain() );
+    throw MissingAttribute( getPaoId(),
+                            missingAttribute.attribute(),
+                            getPaoType(),
+                            isTimeForMissingAttributeComplain() );
 }
 
 
@@ -670,16 +670,16 @@ try
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute.attribute(),
-                                 getPaoType(),
-                                 isTimeForMissingAttributeComplain()  );
+    throw MissingAttribute( getPaoId(),
+                            missingAttribute.attribute(),
+                            getPaoType(),
+                            isTimeForMissingAttributeComplain()  );
 }
 catch ( UninitializedPointValue & noValue )
 {
-    throw NoPointAttributeValue( getPaoId(),
-                                 noValue.attribute(),
-                                 getPaoType() );
+    throw NoAttributeValue( getPaoId(),
+                            noValue.attribute(),
+                            getPaoType() );
 }
 
 
@@ -771,10 +771,10 @@ try
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute.attribute(),
-                                 getPaoType(),
-                                 isTimeForMissingAttributeComplain()  );
+    throw MissingAttribute( getPaoId(),
+                            missingAttribute.attribute(),
+                            getPaoType(),
+                            isTimeForMissingAttributeComplain()  );
 }
 
 
@@ -793,10 +793,10 @@ void VoltageRegulator::executeEnableRemoteControl( const std::string & user )
     }
     catch ( FailedAttributeLookup & missingAttribute )
     {
-        throw MissingPointAttribute( getPaoId(),
-                                     missingAttribute.attribute(),
-                                     getPaoType(),
-                                     isTimeForMissingAttributeComplain()  );
+        throw MissingAttribute( getPaoId(),
+                                missingAttribute.attribute(),
+                                getPaoType(),
+                                isTimeForMissingAttributeComplain()  );
     }
 
     executeEnableKeepAlive( user );
@@ -815,10 +815,10 @@ void VoltageRegulator::executeDisableRemoteControl( const std::string & user )
     }
     catch ( FailedAttributeLookup & missingAttribute )
     {
-        throw MissingPointAttribute( getPaoId(),
-                                     missingAttribute.attribute(),
-                                     getPaoType(),
-                                     isTimeForMissingAttributeComplain()  );
+        throw MissingAttribute( getPaoId(),
+                                missingAttribute.attribute(),
+                                getPaoType(),
+                                isTimeForMissingAttributeComplain()  );
     }
 
     executeDisableKeepAlive( user );
@@ -853,10 +853,10 @@ try
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute.attribute(),
-                                 getPaoType(),
-                                 isTimeForMissingAttributeComplain()  );
+    throw MissingAttribute( getPaoId(),
+                            missingAttribute.attribute(),
+                            getPaoType(),
+                            isTimeForMissingAttributeComplain()  );
 }
 
 
@@ -867,10 +867,10 @@ try
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    throw MissingPointAttribute( getPaoId(),
-                                 missingAttribute.attribute(),
-                                 getPaoType(),
-                                 isTimeForMissingAttributeComplain()  );
+    throw MissingAttribute( getPaoId(),
+                            missingAttribute.attribute(),
+                            getPaoType(),
+                            isTimeForMissingAttributeComplain()  );
 }
 
 

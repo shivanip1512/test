@@ -6089,7 +6089,7 @@ void CtiCCCommandExecutor::sendVoltageRegulatorCommands( const long command, con
     {
         CTILOG_EXCEPTION_ERROR(dout, noRegulator, commandName << " command failed");
     }
-    catch ( const Cti::CapControl::MissingPointAttribute & missingAttribute )
+    catch ( const Cti::CapControl::MissingAttribute & missingAttribute )
     {
         CTILOG_EXCEPTION_ERROR(dout, missingAttribute, commandName << " command failed");
     }

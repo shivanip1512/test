@@ -8,7 +8,7 @@
 #include "boost_test_helpers.h"
 
 // Exceptions
-using Cti::CapControl::MissingPointAttribute;
+using Cti::CapControl::MissingAttribute;
 
 struct cbc_heartbeat_fixture_core
 {
@@ -52,9 +52,9 @@ struct cbc_heartbeat_fixture_core
 
     struct TestAttributeService : public AttributeService
     {
-        virtual LitePoint getPointByPaoAndAttribute(int paoId, const PointAttribute& attribute)
+        virtual LitePoint getPointByPaoAndAttribute(int paoId, const Attribute& attribute)
         {
-            if ( boost::optional<LitePoint> point = Cti::mapFind( _attr, attribute.value() ) )
+            if ( boost::optional<LitePoint> point = Cti::mapFind( _attr, attribute ) )
             {
                 return *point;
             }
@@ -62,20 +62,20 @@ struct cbc_heartbeat_fixture_core
             return LitePoint();
         }
 
-        std::map<PointAttribute::Attribute, LitePoint>  _attr;
+        std::map<Attribute, LitePoint>  _attr;
 
         TestAttributeService()
         {
             _attr = decltype( _attr )
             {
-                { PointAttribute::ScadaOverrideEnableAttribute,
+                { Attribute::ScadaOverrideEnable,
                     { 1234,  StatusPointType, "CBC Heartbeat Enable", 1000, 1, "control pulse", "control pulse", 1.0, 0 } },
 
-                { PointAttribute::ScadaOverrideCountdownTimerAttribute,
+                { Attribute::ScadaOverrideCountdownTimer,
                     { 2345,  AnalogPointType, "CBC Heartbeat Countdown Timer", 1000, 3, "", "", 1.0, 0 } },
-                { PointAttribute::ScadaOverrideHeartbeatAttribute,
+                { Attribute::ScadaOverrideHeartbeat,
                     { 3456,  AnalogPointType, "CBC Heartbeat", 1000, 10007, "", "", 1.0, 0 } },
-                { PointAttribute::ScadaOverrideTypeAttribute,
+                { Attribute::ScadaOverrideType,
                     { 4567,  AnalogPointType, "CBC Heartbeat Type", 1000, 8, "", "", 1.0, 0 } }
             };
         }

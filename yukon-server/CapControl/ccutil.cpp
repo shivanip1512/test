@@ -147,22 +147,6 @@ bool isQualityOk(unsigned quality)
             quality == ManualQuality);
 }
 
-MissingPointAttribute::MissingPointAttribute(const long ID, const PointAttribute & attribute, string paoType, bool complainFlag)
-    : _description("Missing Point Attribute: '")
-{
-    _complain = complainFlag;
-    _description += attribute.name() + "' on "+ paoType +" with ID: " + CtiNumStr(ID);
-}
-
-const char * MissingPointAttribute::what( ) const
-{
-    return _description.c_str();
-}
-const bool MissingPointAttribute::complain( ) const
-{
-    return _complain;
-}
-
 MissingAttribute::MissingAttribute( const long ID, const Attribute & attribute, const std::string & paoType, bool complainFlag )
     : _description("Missing Attribute: '")
 {
@@ -179,14 +163,14 @@ const bool MissingAttribute::complain( ) const
     return _complain;
 }
 
-NoPointAttributeValue::NoPointAttributeValue(const long ID, const PointAttribute & attribute, string paoType)
-    : _description("No Point Attribute Value for: '")
+NoAttributeValue::NoAttributeValue(const long ID, const Attribute & attribute, string paoType)
+    : _description("No Attribute Value for: '")
 {
-    _description += attribute.name() + "' on "+ paoType +" with ID: " + CtiNumStr(ID);
+    _description += attribute.getName() + "' on "+ paoType +" with ID: " + CtiNumStr(ID);
 }
 
 
-const char * NoPointAttributeValue::what( ) const
+const char * NoAttributeValue::what( ) const
 {
     return _description.c_str();
 }

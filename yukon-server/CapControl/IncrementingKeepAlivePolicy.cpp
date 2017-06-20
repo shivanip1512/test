@@ -12,10 +12,10 @@ Policy::AttributeList IncrementingKeepAlivePolicy::getSupportedAttributes()
 {
     return
     {
-        PointAttribute::AutoBlockEnable,
-        PointAttribute::AutoRemoteControl,
-        PointAttribute::KeepAlive,
-        PointAttribute::Terminate
+        Attribute::AutoBlockEnable,
+        Attribute::AutoRemoteControl,
+        Attribute::KeepAlive,
+        Attribute::Terminate
     };
 }
 
@@ -39,7 +39,7 @@ Policy::Actions IncrementingKeepAlivePolicy::SendKeepAlive( const long keepAlive
 
             if ( sendAutoBlock )
             {
-                actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( PointAttribute::AutoBlockEnable ),
+                actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( Attribute::AutoBlockEnable ),
                                                                   "Auto Block Enable" ) );
             }
             else
@@ -62,7 +62,7 @@ Policy::Actions IncrementingKeepAlivePolicy::StopKeepAlive()
 {
     Actions actions;
 
-    actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( PointAttribute::Terminate ),
+    actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( Attribute::Terminate ),
                                                       KeepAliveText ) );
 
     return actions;
@@ -72,7 +72,7 @@ Policy::Actions IncrementingKeepAlivePolicy::EnableRemoteControl( const long kee
 {
     Actions actions;
 
-    LitePoint point = getPointByAttribute( PointAttribute::KeepAlive );
+    LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     actions.emplace_back( makeSignalTemplate( point.getPointId(), readKeepAliveValue(), EnableRemoteControlText ),
                           nullptr );
@@ -84,7 +84,7 @@ Policy::Actions IncrementingKeepAlivePolicy::DisableRemoteControl()
 {
     Actions actions;
 
-    LitePoint point = getPointByAttribute( PointAttribute::KeepAlive );
+    LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     actions.emplace_back( makeSignalTemplate( point.getPointId(), 0, DisableRemoteControlText ),
                           nullptr );
@@ -95,7 +95,7 @@ Policy::Actions IncrementingKeepAlivePolicy::DisableRemoteControl()
 long IncrementingKeepAlivePolicy::readKeepAliveValue()
 try
 {
-    return getValueByAttribute( PointAttribute::KeepAlive );
+    return getValueByAttribute( Attribute::KeepAlive );
 }
 catch ( UninitializedPointValue & )
 {
@@ -105,7 +105,7 @@ catch ( UninitializedPointValue & )
 long IncrementingKeepAlivePolicy::getNextKeepAliveValue()
 try
 {
-    long keepalive = getValueByAttribute( PointAttribute::KeepAlive );
+    long keepalive = getValueByAttribute( Attribute::KeepAlive );
 
     if ( 0 <= keepalive && keepalive <= 32767 )
     {
@@ -122,7 +122,7 @@ catch ( UninitializedPointValue & )
 bool IncrementingKeepAlivePolicy::needsAutoBlockEnable()
 try
 {
-    return getValueByAttribute( PointAttribute::AutoBlockEnable ) == 0.0; 
+    return getValueByAttribute( Attribute::AutoBlockEnable ) == 0.0; 
 }
 catch ( UninitializedPointValue & )
 {

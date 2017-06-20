@@ -26,7 +26,7 @@ void Policy::loadAttributes( AttributeService & service, const long paoID )
     }
 }
 
-LitePoint Policy::getPointByAttribute( const PointAttribute & attribute ) const
+LitePoint Policy::getPointByAttribute( const Attribute & attribute ) const
 {
     boost::optional<LitePoint>  point = mapFind( _pointMapping, attribute );
 
@@ -38,7 +38,7 @@ LitePoint Policy::getPointByAttribute( const PointAttribute & attribute ) const
     return *point;
 }
 
-double Policy::getValueByAttribute( const PointAttribute & attribute ) const
+double Policy::getValueByAttribute( const Attribute & attribute ) const
 {
     double currentValue;
 
@@ -99,9 +99,9 @@ Policy::Action Policy::makeStandardDigitalControl( const LitePoint & point, cons
 }
 
 
-FailedAttributeLookup::FailedAttributeLookup( const PointAttribute & attribute )
+FailedAttributeLookup::FailedAttributeLookup( const Attribute & attribute )
     :   _attribute( attribute ),
-        _description( "Failed Point Attribute Lookup: '" + _attribute.name() + "'" )
+        _description( "Failed Point Attribute Lookup: '" + _attribute.getName() + "'" )
 {
     // empty
 }
@@ -111,15 +111,15 @@ const char * FailedAttributeLookup::what() const
     return _description.c_str();
 }
 
-const PointAttribute & FailedAttributeLookup::attribute() const
+const Attribute & FailedAttributeLookup::attribute() const
 {
     return _attribute;
 }
 
 
-UninitializedPointValue::UninitializedPointValue( const PointAttribute & attribute )
+UninitializedPointValue::UninitializedPointValue( const Attribute & attribute )
     :   _attribute( attribute ),
-        _description( "Uninitialized Point Value for Attribute: '" + _attribute.name() + "'" )
+        _description( "Uninitialized Point Value for Attribute: '" + _attribute.getName() + "'" )
 {
     // empty
 }
@@ -129,7 +129,7 @@ const char * UninitializedPointValue::what() const
     return _description.c_str();
 }
 
-const PointAttribute & UninitializedPointValue::attribute() const
+const Attribute & UninitializedPointValue::attribute() const
 {
     return _attribute;
 }

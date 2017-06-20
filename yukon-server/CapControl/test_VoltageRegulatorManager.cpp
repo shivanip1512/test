@@ -11,7 +11,7 @@ using Cti::CapControl::GangOperatedVoltageRegulator;
 
 // Exceptions
 using Cti::CapControl::NoVoltageRegulator;
-using Cti::CapControl::MissingPointAttribute;
+using Cti::CapControl::MissingAttribute;
 
 BOOST_AUTO_TEST_SUITE( test_VoltageRegulatorManager )
 
@@ -40,7 +40,7 @@ class TestAttributeService : public AttributeService
 {
 public:
 
-    virtual LitePoint getPointByPaoAndAttribute(int paoId, const PointAttribute& attribute)
+    virtual LitePoint getPointByPaoAndAttribute(int paoId, const Attribute& attribute)
     {
         AttributeStore::const_iterator iter = _store.find( std::make_pair(paoId, attribute) );
 
@@ -51,42 +51,25 @@ public:
 
 private:
 
-    typedef std::map<std::pair<int, PointAttribute>, LitePoint>     AttributeStore;
+    typedef std::map<std::pair<int, Attribute>, LitePoint>     AttributeStore;
 
     static const AttributeStore _store;
 
     static AttributeStore initStore()
     {
-        AttributeStore  store;
+        return
+        {
+            { { 25, Attribute::TapUp },             LitePoint( 242, StatusPointType, "Tap Up", 0, 100, "", "", 1.0, 0 )         },
+            { { 25, Attribute::TapDown },           LitePoint( 342, StatusPointType, "Tap Down", 0, 101, "", "", 1.0, 0 )       },
+            { { 25, Attribute::Voltage },           LitePoint( 442, AnalogPointType, "Voltage", 0, 102, "", "", 1.0, 0 )        },
+            { { 25, Attribute::AutoRemoteControl }, LitePoint( 542, StatusPointType, "Auto Remote", 0, 103, "", "", 1.0, 0 )    },
+            { { 25, Attribute::TapPosition },       LitePoint( 642, AnalogPointType, "Tap Position", 0, 104, "", "", 1.0, 0 )   },
 
-        store.insert( std::make_pair( std::make_pair( 25, PointAttribute::TapUp ),
-                                      LitePoint(242, StatusPointType, "Tap Up", 0, 100, "", "", 1.0, 0 ) ) );
-
-        store.insert( std::make_pair( std::make_pair( 25, PointAttribute::TapDown ),
-                                      LitePoint(342, StatusPointType, "Tap Down", 0, 101, "", "", 1.0, 0 ) ) );
-
-        store.insert( std::make_pair( std::make_pair( 25, PointAttribute::VoltageY ),
-                                      LitePoint(442, AnalogPointType, "Voltage", 0, 102, "", "", 1.0, 0 ) ) );
-
-        store.insert( std::make_pair( std::make_pair( 25, PointAttribute::AutoRemoteControl ),
-                                      LitePoint(542, StatusPointType, "Auto Remote", 0, 103, "", "", 1.0, 0 ) ) );
-
-        store.insert( std::make_pair( std::make_pair( 25, PointAttribute::TapPosition ),
-                                      LitePoint(642, AnalogPointType, "Tap Position", 0, 104, "", "", 1.0, 0 ) ) );
-
-        store.insert( std::make_pair( std::make_pair( 30, PointAttribute::TapUp ),
-                                      LitePoint(245, StatusPointType, "Tap Up", 0, 100, "", "", 1.0, 0 ) ) );
-
-        store.insert( std::make_pair( std::make_pair( 30, PointAttribute::TapDown ),
-                                      LitePoint(345, StatusPointType, "Tap Down", 0, 101, "", "", 1.0, 0 ) ) );
-
-        store.insert( std::make_pair( std::make_pair( 30, PointAttribute::VoltageY ),
-                                      LitePoint(445, AnalogPointType, "Voltage", 0, 102, "", "", 1.0, 0 ) ) );
-
-        store.insert( std::make_pair( std::make_pair( 30, PointAttribute::AutoRemoteControl ),
-                                      LitePoint(545, StatusPointType, "Auto Remote", 0, 103, "", "", 1.0, 0 ) ) );
-
-        return store;
+            { { 30, Attribute::TapUp },             LitePoint( 245, StatusPointType, "Tap Up", 0, 100, "", "", 1.0, 0 )         },
+            { { 30, Attribute::TapDown },           LitePoint( 345, StatusPointType, "Tap Down", 0, 101, "", "", 1.0, 0 )       },
+            { { 30, Attribute::Voltage },           LitePoint( 445, AnalogPointType, "Voltage", 0, 102, "", "", 1.0, 0 )        },
+            { { 30, Attribute::AutoRemoteControl }, LitePoint( 545, StatusPointType, "Auto Remote", 0, 103, "", "", 1.0, 0 )    }
+        };
     }
 };
 
@@ -144,14 +127,14 @@ BOOST_AUTO_TEST_CASE(test_VoltageRegulatorManager_LoadTapChanger_Loads_OK)
     BOOST_CHECK_EQUAL(   5, registeredPoints.size() );
 
     // unavailable attribute
-    BOOST_CHECK_THROW( regulator->getPointByAttribute(PointAttribute::KeepAlive) , MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->getPointByAttribute( Attribute::KeepAlive), MissingAttribute );
 
     // available attributes
-    BOOST_CHECK_EQUAL( 242, regulator->getPointByAttribute(PointAttribute::TapUp).getPointId() );
-    BOOST_CHECK_EQUAL( 342, regulator->getPointByAttribute(PointAttribute::TapDown).getPointId() );
-    BOOST_CHECK_EQUAL( 442, regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId() );
-    BOOST_CHECK_EQUAL( 542, regulator->getPointByAttribute(PointAttribute::AutoRemoteControl).getPointId() );
-    BOOST_CHECK_EQUAL( 642, regulator->getPointByAttribute(PointAttribute::TapPosition).getPointId() );
+    BOOST_CHECK_EQUAL( 242, regulator->getPointByAttribute( Attribute::TapUp ).getPointId() );
+    BOOST_CHECK_EQUAL( 342, regulator->getPointByAttribute( Attribute::TapDown ).getPointId() );
+    BOOST_CHECK_EQUAL( 442, regulator->getPointByAttribute( Attribute::Voltage ).getPointId() );
+    BOOST_CHECK_EQUAL( 542, regulator->getPointByAttribute( Attribute::AutoRemoteControl ).getPointId() );
+    BOOST_CHECK_EQUAL( 642, regulator->getPointByAttribute( Attribute::TapPosition ).getPointId() );
 
     // test updated flag
     BOOST_CHECK_EQUAL(  true, regulator->isUpdated() );
@@ -180,16 +163,16 @@ BOOST_AUTO_TEST_CASE(test_VoltageRegulatorManager_LoadTapChanger_Loads_with_miss
     BOOST_CHECK_EQUAL(   4, registeredPoints.size() );
 
     // unavailable attribute
-    BOOST_CHECK_THROW( regulator->getPointByAttribute(PointAttribute::KeepAlive) , MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->getPointByAttribute( Attribute::KeepAlive ), MissingAttribute );
 
     // missing attribute
-    BOOST_CHECK_THROW( regulator->getPointByAttribute(PointAttribute::TapPosition) , MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->getPointByAttribute( Attribute::TapPosition ), MissingAttribute );
 
     // available attributes
-    BOOST_CHECK_EQUAL( 245, regulator->getPointByAttribute(PointAttribute::TapUp).getPointId() );
-    BOOST_CHECK_EQUAL( 345, regulator->getPointByAttribute(PointAttribute::TapDown).getPointId() );
-    BOOST_CHECK_EQUAL( 445, regulator->getPointByAttribute(PointAttribute::VoltageY).getPointId() );
-    BOOST_CHECK_EQUAL( 545, regulator->getPointByAttribute(PointAttribute::AutoRemoteControl).getPointId() );
+    BOOST_CHECK_EQUAL( 245, regulator->getPointByAttribute( Attribute::TapUp ).getPointId() );
+    BOOST_CHECK_EQUAL( 345, regulator->getPointByAttribute( Attribute::TapDown ).getPointId() );
+    BOOST_CHECK_EQUAL( 445, regulator->getPointByAttribute( Attribute::Voltage ).getPointId() );
+    BOOST_CHECK_EQUAL( 545, regulator->getPointByAttribute( Attribute::AutoRemoteControl ).getPointId() );
 
     BOOST_CHECK_EQUAL( VoltageRegulator::LoadTapChangerType, regulator->getType() );
 

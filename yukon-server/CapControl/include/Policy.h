@@ -22,8 +22,8 @@ struct Policy
 
     void loadAttributes( AttributeService & service, const long paoID );
 
-    LitePoint getPointByAttribute( const PointAttribute & attribute ) const;
-    double    getValueByAttribute( const PointAttribute & attribute ) const;
+    LitePoint getPointByAttribute( const Attribute & attribute ) const;
+    double    getValueByAttribute( const Attribute & attribute ) const;
 
     void updatePointData( const CtiPointDataMsg & message );
 
@@ -31,8 +31,8 @@ struct Policy
 
 protected:
 
-    using AttributeList = std::vector<PointAttribute>;
-    using AttributeMap  = std::map<PointAttribute, LitePoint>;
+    using AttributeList = std::vector<Attribute>;
+    using AttributeMap  = std::map<Attribute, LitePoint>;
 
     virtual AttributeList getSupportedAttributes() = 0;
 
@@ -55,31 +55,31 @@ protected:
 
 struct FailedAttributeLookup : public std::exception
 {
-    FailedAttributeLookup( const PointAttribute & attribute );
+    FailedAttributeLookup( const Attribute & attribute );
 
     const char * what() const override;
 
-    const PointAttribute & attribute() const;
+    const Attribute & attribute() const;
 
 protected:
 
-    const PointAttribute    _attribute;
-    std::string             _description;
+    const Attribute     _attribute;
+    std::string         _description;
 };
 
 
 struct UninitializedPointValue : public std::exception
 {
-    UninitializedPointValue( const PointAttribute & attribute );
+    UninitializedPointValue( const Attribute & attribute );
 
     const char * what() const override;
 
-    const PointAttribute & attribute() const;
+    const Attribute & attribute() const;
 
 protected:
 
-    const PointAttribute    _attribute;
-    std::string             _description;
+    const Attribute     _attribute;
+    std::string         _description;
 };
 
 }

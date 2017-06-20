@@ -16,7 +16,7 @@ using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::PhaseOperatedVoltageRegulator;
 
 // Exceptions
-using Cti::CapControl::MissingPointAttribute;
+using Cti::CapControl::MissingAttribute;
 
 
 struct phase_operated_voltage_regulator_fixture_core
@@ -61,9 +61,9 @@ struct phase_operated_voltage_regulator_fixture_core
 
     struct TestAttributeService : public AttributeService
     {
-        virtual LitePoint getPointByPaoAndAttribute(int paoId, const PointAttribute& attribute)
+        virtual LitePoint getPointByPaoAndAttribute(int paoId, const Attribute& attribute)
         {
-            if ( boost::optional<LitePoint> point = Cti::mapFind( _attr, attribute.value() ) )
+            if ( boost::optional<LitePoint> point = Cti::mapFind( _attr, attribute ) )
             {
                 return *point;
             }
@@ -71,33 +71,33 @@ struct phase_operated_voltage_regulator_fixture_core
             return LitePoint();
         }
 
-        std::map<PointAttribute::Attribute, LitePoint>  _attr;
+        std::map<Attribute, LitePoint>  _attr;
 
         TestAttributeService()
         {
             _attr = decltype( _attr )
             {
-                { PointAttribute::VoltageXAttribute,
-                    { 2202,  AnalogPointType, "VoltageX", 1000, 1, "", "", 1.0, 0 } },
-                { PointAttribute::VoltageYAttribute,
-                    { 2203,  AnalogPointType, "VoltageY", 1001, 2, "", "", 1.0, 0 } },
-                { PointAttribute::TapUpAttribute,
+                { Attribute::SourceVoltage,
+                    { 2202,  AnalogPointType, "Source Voltage", 1000, 1, "", "", 1.0, 0 } },
+                { Attribute::Voltage,
+                    { 2203,  AnalogPointType, "Load Voltage", 1001, 2, "", "", 1.0, 0 } },
+                { Attribute::TapUp,
                     { 3100,  StatusPointType, "TapUp", 1003, 4, "", "control close", 1.0, 0 } },
-                { PointAttribute::TapDownAttribute,
+                { Attribute::TapDown,
                     { 3101,  StatusPointType, "TapDown", 1004, 5, "", "control close", 1.0, 0 } },
-                { PointAttribute::KeepAliveAttribute,
+                { Attribute::KeepAlive,
                     { 4200,  AnalogPointType, "KeepAlive", 1007, 10001, "", "", 1.0, 0 } },
-                { PointAttribute::AutoRemoteControlAttribute,
+                { Attribute::AutoRemoteControl,
                     { 5600,  StatusPointType, "AutoRemoteControl", 1009, 6, "", "", 1.0, 0 } },
-                { PointAttribute::TapPositionAttribute,
+                { Attribute::TapPosition,
                     { 3500,  AnalogPointType, "TapPosition", 1013, 3, "", "", 1.0, 0 } },
-                { PointAttribute::TerminateAttribute,
+                { Attribute::Terminate,
                     { 7500,  StatusPointType, "Terminate", 1022, 9, "", "control close", 1.0, 0 } },
-                { PointAttribute::AutoBlockEnableAttribute,
+                { Attribute::AutoBlockEnable,
                     { 8100,  StatusPointType, "AutoBlock", 1026, 12, "", "control close", 1.0, 0 } },
-                { PointAttribute::ForwardSetPointAttribute,
+                { Attribute::ForwardSetPoint,
                     { 7000,  AnalogPointType, "SetPoint", 1020, 10007, "", "", 0.1, 0 } },
-                { PointAttribute::ForwardBandwidthAttribute,
+                { Attribute::ForwardBandwidth,
                     { 7100,  AnalogPointType, "Bandwidth", 1021, 8, "", "", 1.0, 0 } }
             };
         }
@@ -156,7 +156,7 @@ BOOST_AUTO_TEST_SUITE( test_PhaseOperatedVoltageRegulator )
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->executeIntegrityScan( "cap control" ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeIntegrityScan( "cap control" ), MissingAttribute );
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -184,7 +184,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Success
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 2202, signalMsg->getId() );     // ID of the 'VoltageX' LitePoint
+    BOOST_CHECK_EQUAL( 2202, signalMsg->getId() );     // ID of the 'SourceVoltage' LitePoint
     BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
@@ -193,7 +193,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Success
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'VoltageY' LitePoint
+    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'Voltage' LitePoint
     BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
@@ -205,14 +205,14 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Success
 
     BOOST_REQUIRE( requestMsg );
 
-    BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'VoltageX' LitePoint
+    BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'SourceVoltage' LitePoint
     BOOST_CHECK_EQUAL( "scan integrity", requestMsg->CommandString() );
 
     requestMsg = capController.requestMessages.back();
 
     BOOST_REQUIRE( requestMsg );
 
-    BOOST_CHECK_EQUAL( 1001, requestMsg->DeviceId() );  // PaoID of the 'VoltageY' LitePoint
+    BOOST_CHECK_EQUAL( 1001, requestMsg->DeviceId() );  // PaoID of the 'Voltage' LitePoint
     BOOST_CHECK_EQUAL( "scan integrity", requestMsg->CommandString() );
 
 
@@ -228,7 +228,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_IntegrityScan_Success
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->adjustVoltage( 0.75 ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->adjustVoltage( 0.75 ), MissingAttribute );
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -295,7 +295,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success, phase_
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->adjustVoltage( -0.75 ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->adjustVoltage( -0.75 ), MissingAttribute );
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -362,7 +362,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapDown_Success, phas
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAlive_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->executeEnableKeepAlive( "cap control" ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeEnableKeepAlive( "cap control" ), MissingAttribute );
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -771,7 +771,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableKeepAliveFromAu
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->executeDisableKeepAlive( "cap control" ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeDisableKeepAlive( "cap control" ), MissingAttribute );
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -828,7 +828,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableKeepAlive_Succ
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControl_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->executeEnableRemoteControl( "unit test" ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeEnableRemoteControl( "unit test" ), MissingAttribute );
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -1032,7 +1032,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_EnableRemoteControlFr
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->executeDisableRemoteControl( "unit test" ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeDisableRemoteControl( "unit test" ), MissingAttribute );
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
     BOOST_CHECK_EQUAL( 0, capController.requestMessages.size() );
@@ -1108,7 +1108,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_DisableRemoteControl_
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_QueryAutoRemoteStatus_Fail, phase_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->getOperatingMode(), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->getOperatingMode(), MissingAttribute );
 }
 
 
@@ -1193,7 +1193,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_TapUp_Success_with_Ph
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Fail, phase_operated_voltage_regulator_fixture_setpoint)
 {
-    BOOST_CHECK_THROW( regulator->adjustVoltage( 0.75 ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->adjustVoltage( 0.75 ), MissingAttribute );
 
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
@@ -1265,7 +1265,7 @@ BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_RaiseSetPoint_Success
 
 BOOST_FIXTURE_TEST_CASE(test_PhaseOperatedVolatgeRegulator_LowerSetPoint_Fail, phase_operated_voltage_regulator_fixture_setpoint)
 {
-    BOOST_CHECK_THROW( regulator->adjustVoltage( -0.75 ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->adjustVoltage( -0.75 ), MissingAttribute );
 
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );

@@ -79,7 +79,7 @@ public:
 
     IDSet getRegistrationPoints();
 
-    LitePoint getPointByAttribute(const PointAttribute & attribute);
+    LitePoint getPointByAttribute(const Attribute & attribute);
 
     OperatingMode getOperatingMode();
 

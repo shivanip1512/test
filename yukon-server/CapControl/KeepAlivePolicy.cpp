@@ -12,7 +12,7 @@ const std::string KeepAlivePolicy::DisableRemoteControlText = "Disable Remote Co
 
 KeepAlivePolicy::OperatingMode KeepAlivePolicy::getOperatingMode()
 {
-    double value = getValueByAttribute( PointAttribute::AutoRemoteControl );
+    double value = getValueByAttribute( Attribute::AutoRemoteControl );
 
     return ( value == 1.0 )
                 ? RemoteMode
@@ -21,7 +21,7 @@ KeepAlivePolicy::OperatingMode KeepAlivePolicy::getOperatingMode()
 
 Policy::Action KeepAlivePolicy::WriteKeepAliveValue( const long keepAliveValue )
 {
-    LitePoint point = getPointByAttribute( PointAttribute::KeepAlive );
+    LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     const long pointOffset =
         point.getControlOffset() ?

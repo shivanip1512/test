@@ -12,7 +12,7 @@ struct ScanPolicy : Policy
 
 protected:
 
-    Action makeIntegrityScanCommand( const PointAttribute & attribute );
+    Action makeIntegrityScanCommand( const Attribute & attribute );
 };
 
 }

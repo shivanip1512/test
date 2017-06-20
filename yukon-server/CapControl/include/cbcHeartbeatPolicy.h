@@ -14,7 +14,7 @@ struct CbcHeartbeatPolicy : Policy
 
     virtual Actions StopHeartbeat( const long keepAliveValue ) = 0;
 
-    Action WriteAnalogValue( const PointAttribute & attribute, const long keepAliveValue );
+    Action WriteAnalogValue( const Attribute & attribute, const long keepAliveValue );
 };
 
 

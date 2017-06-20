@@ -93,22 +93,6 @@ bool setVariableIfDifferent(T &original, const T &updated)
 
 CtiPAOScheduleManager::VerificationStrategy ConvertIntToVerificationStrategy(int verifyId);
 
-class MissingPointAttribute : public std::exception
-{
-
-public:
-
-    MissingPointAttribute(const long ID, const PointAttribute & attribute, std::string paoType, bool complainFlag = true);
-
-    const char * what() const override;
-    const bool complain() const;
-
-private:
-
-    std::string _description;
-    bool    _complain;
-};
-
 class MissingAttribute : public std::exception
 {
 public:
@@ -124,12 +108,12 @@ private:
     bool    _complain;
 };
 
-class NoPointAttributeValue : public std::exception
+class NoAttributeValue : public std::exception
 {
 
 public:
 
-    NoPointAttributeValue(const long ID, const PointAttribute & attribute, std::string paoType);
+    NoAttributeValue(const long ID, const Attribute & attribute, std::string paoType);
 
     const char * what() const override;
 

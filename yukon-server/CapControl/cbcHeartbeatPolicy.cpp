@@ -6,7 +6,7 @@
 namespace Cti           {
 namespace CapControl    {
 
-Policy::Action CbcHeartbeatPolicy::WriteAnalogValue( const PointAttribute & attribute, const long keepAliveValue )
+Policy::Action CbcHeartbeatPolicy::WriteAnalogValue( const Attribute & attribute, const long keepAliveValue )
 {
     LitePoint point = getPointByAttribute( attribute );
 
@@ -51,7 +51,7 @@ Policy::AttributeList AnalogCbcHeartbeatPolicy::getSupportedAttributes()
 {
     return
     {
-        PointAttribute::ScadaOverrideHeartbeat
+        Attribute::ScadaOverrideHeartbeat
     };
 }
 
@@ -61,7 +61,7 @@ Policy::Actions AnalogCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveVal
 
     Actions    actions;
 
-    actions.emplace_back( WriteAnalogValue( PointAttribute::ScadaOverrideHeartbeat, keepAliveValue ) );
+    actions.emplace_back( WriteAnalogValue( Attribute::ScadaOverrideHeartbeat, keepAliveValue ) );
 
     return actions;
 }
@@ -75,7 +75,7 @@ Policy::Actions AnalogCbcHeartbeatPolicy::StopHeartbeat( const long keepAliveVal
 
     if ( readCurrentValue() )   // != 0
     {
-        actions.emplace_back( WriteAnalogValue( PointAttribute::ScadaOverrideHeartbeat, 0L ) );
+        actions.emplace_back( WriteAnalogValue( Attribute::ScadaOverrideHeartbeat, 0L ) );
     }
 
     return actions;
@@ -84,7 +84,7 @@ Policy::Actions AnalogCbcHeartbeatPolicy::StopHeartbeat( const long keepAliveVal
 long AnalogCbcHeartbeatPolicy::readCurrentValue()
 try
 {
-    return getValueByAttribute( PointAttribute::ScadaOverrideHeartbeat );
+    return getValueByAttribute( Attribute::ScadaOverrideHeartbeat );
 }
 catch ( UninitializedPointValue & )
 {
@@ -97,9 +97,9 @@ Policy::AttributeList PulsedCbcHeartbeatPolicy::getSupportedAttributes()
 {
     return
     {
-        PointAttribute::ScadaOverrideCountdownTimer,
-        PointAttribute::ScadaOverrideType,
-        PointAttribute::ScadaOverrideEnable
+        Attribute::ScadaOverrideCountdownTimer,
+        Attribute::ScadaOverrideType,
+        Attribute::ScadaOverrideEnable
     };
 }
 
@@ -112,12 +112,12 @@ Policy::Actions PulsedCbcHeartbeatPolicy::SendHeartbeat( const long keepAliveVal
 
     if ( readCurrentValue() != keepAliveValue )
     {
-        actions.emplace_back( WriteAnalogValue( PointAttribute::ScadaOverrideCountdownTimer, keepAliveValue ) );
+        actions.emplace_back( WriteAnalogValue( Attribute::ScadaOverrideCountdownTimer, keepAliveValue ) );
     }
     
     if ( keepAliveValue > 0 )
     {
-        actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( PointAttribute::ScadaOverrideEnable ),
+        actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( Attribute::ScadaOverrideEnable ),
                                                           "CBC Heartbeat Pulse" ) );
     }
 
@@ -133,10 +133,10 @@ Policy::Actions PulsedCbcHeartbeatPolicy::StopHeartbeat( const long keepAliveVal
 
     if ( readCurrentValue() )   // != 0
     {
-        actions.emplace_back( WriteAnalogValue( PointAttribute::ScadaOverrideCountdownTimer, 0L ) );
+        actions.emplace_back( WriteAnalogValue( Attribute::ScadaOverrideCountdownTimer, 0L ) );
     }
 
-    actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( PointAttribute::ScadaOverrideEnable ),
+    actions.emplace_back( makeStandardDigitalControl( getPointByAttribute( Attribute::ScadaOverrideEnable ),
                                                           "CBC Heartbeat Pulse" ) );
     return actions;
 }
@@ -144,7 +144,7 @@ Policy::Actions PulsedCbcHeartbeatPolicy::StopHeartbeat( const long keepAliveVal
 long PulsedCbcHeartbeatPolicy::readCurrentValue()
 try
 {
-    return getValueByAttribute( PointAttribute::ScadaOverrideCountdownTimer );
+    return getValueByAttribute( Attribute::ScadaOverrideCountdownTimer );
 }
 catch ( UninitializedPointValue & )
 {

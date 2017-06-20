@@ -10,8 +10,8 @@ Policy::AttributeList CountdownKeepAlivePolicy::getSupportedAttributes()
 {
     return
     {
-        PointAttribute::AutoRemoteControl,
-        PointAttribute::KeepAlive
+        Attribute::AutoRemoteControl,
+        Attribute::KeepAlive
     };
 }
 
@@ -37,7 +37,7 @@ Policy::Actions CountdownKeepAlivePolicy::EnableRemoteControl( const long keepAl
 {
     Actions    actions;
 
-    LitePoint point = getPointByAttribute( PointAttribute::KeepAlive );
+    LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     actions.emplace_back( makeSignalTemplate( point.getPointId(), keepAliveValue, EnableRemoteControlText ),
                           nullptr );
@@ -49,7 +49,7 @@ Policy::Actions CountdownKeepAlivePolicy::DisableRemoteControl()
 {
     Actions    actions;
 
-    LitePoint point = getPointByAttribute( PointAttribute::KeepAlive );
+    LitePoint point = getPointByAttribute( Attribute::KeepAlive );
 
     actions.emplace_back( makeSignalTemplate( point.getPointId(), 0, DisableRemoteControlText ),
                           nullptr );

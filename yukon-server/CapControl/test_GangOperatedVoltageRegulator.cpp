@@ -16,7 +16,7 @@ using Cti::CapControl::VoltageRegulatorManager;
 using Cti::CapControl::GangOperatedVoltageRegulator;
 
 // Exceptions
-using Cti::CapControl::MissingPointAttribute;
+using Cti::CapControl::MissingAttribute;
 
 
 struct gang_operated_voltage_regulator_fixture_core
@@ -61,9 +61,9 @@ struct gang_operated_voltage_regulator_fixture_core
 
     struct TestAttributeService : public AttributeService
     {
-        virtual LitePoint getPointByPaoAndAttribute(int paoId, const PointAttribute& attribute)
+        virtual LitePoint getPointByPaoAndAttribute(int paoId, const Attribute& attribute)
         {
-            if ( boost::optional<LitePoint> point = Cti::mapFind( _attr, attribute.value() ) )
+            if ( boost::optional<LitePoint> point = Cti::mapFind( _attr, attribute ) )
             {
                 return *point;
             }
@@ -71,27 +71,27 @@ struct gang_operated_voltage_regulator_fixture_core
             return LitePoint();
         }
 
-        std::map<PointAttribute::Attribute, LitePoint>  _attr;
+        std::map<Attribute, LitePoint>  _attr;
 
         TestAttributeService()
         {
             _attr = decltype( _attr )
             {
-                { PointAttribute::VoltageYAttribute,
-                    { 2203,  AnalogPointType, "VoltageY", 1001, 2, "", "", 1.0, 0 } },
-                { PointAttribute::TapUpAttribute,
+                { Attribute::Voltage,
+                    { 2203,  AnalogPointType, "Load Voltage", 1001, 2, "", "", 1.0, 0 } },
+                { Attribute::TapUp,
                     { 3100,  StatusPointType, "TapUp", 1003, 4, "", "control close", 1.0, 0 } },
-                { PointAttribute::TapDownAttribute,
+                { Attribute::TapDown,
                     { 3101,  StatusPointType, "TapDown", 1004, 5, "", "control close", 1.0, 0 } },
-                { PointAttribute::KeepAliveAttribute,
+                { Attribute::KeepAlive,
                     { 4200,  AnalogPointType, "KeepAlive", 1007, 1, "", "", 1.0, 0 } },
-                { PointAttribute::AutoRemoteControlAttribute,
+                { Attribute::AutoRemoteControl,
                     { 5600,  StatusPointType, "AutoRemoteControl", 1009, 6, "", "", 1.0, 0 } },
-                { PointAttribute::TapPositionAttribute,
+                { Attribute::TapPosition,
                     { 3500,  AnalogPointType, "TapPosition", 1013, 3, "", "", 1.0, 0 } },
-                { PointAttribute::ForwardSetPointAttribute,
+                { Attribute::ForwardSetPoint,
                     { 7000,  AnalogPointType, "SetPoint", 1020, 10007, "", "", 1.0, 0 } },
-                { PointAttribute::ForwardBandwidthAttribute,
+                { Attribute::ForwardBandwidth,
                     { 7100,  AnalogPointType, "Bandwidth", 1021, 8, "", "", 1.0, 0 } }
             };
         }
@@ -150,7 +150,7 @@ BOOST_AUTO_TEST_SUITE( test_GangOperatedVoltageRegulator )
 
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Fail, gang_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->executeIntegrityScan( "cap control" ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeIntegrityScan( "cap control" ), MissingAttribute );
 
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
@@ -180,7 +180,7 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Success,
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'VoltageY' LitePoint
+    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'Voltage' LitePoint
     BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
@@ -192,7 +192,7 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Success,
 
     BOOST_REQUIRE( requestMsg );
 
-    BOOST_CHECK_EQUAL( 1001, requestMsg->DeviceId() );  // PaoID of the 'VoltageY' LitePoint
+    BOOST_CHECK_EQUAL( 1001, requestMsg->DeviceId() );  // PaoID of the 'Voltage' LitePoint
     BOOST_CHECK_EQUAL( "scan integrity", requestMsg->CommandString() );
 
 
@@ -220,7 +220,7 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Success_
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'VoltageY' LitePoint
+    BOOST_CHECK_EQUAL( 2203, signalMsg->getId() );     // ID of the 'Voltage' LitePoint
     BOOST_CHECK_EQUAL( "Integrity Scan", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Voltage Regulator Name: Test Regulator #1",
                        signalMsg->getAdditionalInfo() );
@@ -232,7 +232,7 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Success_
 
     BOOST_REQUIRE( requestMsg );
 
-    BOOST_CHECK_EQUAL( 1001, requestMsg->DeviceId() );  // PaoID of the 'VoltageY' LitePoint
+    BOOST_CHECK_EQUAL( 1001, requestMsg->DeviceId() );  // PaoID of the 'Voltage' LitePoint
     BOOST_CHECK_EQUAL( "scan integrity", requestMsg->CommandString() );
 
 
@@ -258,7 +258,7 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_IntegrityScan_Success_
 
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_TapUp_Fail, gang_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->adjustVoltage( 0.75 ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->adjustVoltage( 0.75 ), MissingAttribute );
 
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
@@ -326,7 +326,7 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_TapUp_Success, gang_op
 
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_TapDown_Fail, gang_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->adjustVoltage( -0.75 ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->adjustVoltage( -0.75 ), MissingAttribute );
 
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
@@ -394,7 +394,7 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_TapDown_Success, gang_
 
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableKeepAlive_Fail, gang_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->executeEnableKeepAlive( "cap control" ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeEnableKeepAlive( "cap control" ), MissingAttribute );
 
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
@@ -453,7 +453,7 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableKeepAlive_Succes
 
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableKeepAlive_Fail, gang_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->executeDisableKeepAlive( "cap control" ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeDisableKeepAlive( "cap control" ), MissingAttribute );
 
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
@@ -512,7 +512,7 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableKeepAlive_Succe
 
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Fail, gang_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->executeEnableRemoteControl( "unit test" ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeEnableRemoteControl( "unit test" ), MissingAttribute );
 
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
@@ -591,7 +591,7 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_EnableRemoteControl_Su
 
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableRemoteControl_Fail, gang_operated_voltage_regulator_fixture_direct_tap)
 {
-    BOOST_CHECK_THROW( regulator->executeDisableRemoteControl( "unit test" ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->executeDisableRemoteControl( "unit test" ), MissingAttribute );
 
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
@@ -670,7 +670,7 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_DisableRemoteControl_S
 
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_RaiseSetPoint_Fail, gang_operated_voltage_regulator_fixture_setpoint)
 {
-    BOOST_CHECK_THROW( regulator->adjustVoltage( 0.75 ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->adjustVoltage( 0.75 ), MissingAttribute );
 
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );
@@ -743,7 +743,7 @@ BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_RaiseSetPoint_Success,
 
 BOOST_FIXTURE_TEST_CASE(test_GangOperatedVolatgeRegulator_LowerSetPoint_Fail, gang_operated_voltage_regulator_fixture_setpoint)
 {
-    BOOST_CHECK_THROW( regulator->adjustVoltage( -0.75 ), MissingPointAttribute );
+    BOOST_CHECK_THROW( regulator->adjustVoltage( -0.75 ), MissingAttribute );
 
 
     BOOST_CHECK_EQUAL( 0, capController.signalMessages.size() );

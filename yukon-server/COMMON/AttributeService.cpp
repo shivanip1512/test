@@ -6,11 +6,10 @@
 #include "dbaccess.h"
 #include "database_reader.h"
 #include "database_connection.h"
-
+#include "std_helper.h"
 
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
-using std::string;
 
 /**
  * Returns the point associated with the ExtraPao and Attribute.
@@ -20,24 +19,44 @@ using std::string;
  *
  * @return LitePoint
  */
-LitePoint AttributeService::getPointByPaoAndAttribute(int paoId, const PointAttribute& attribute)
+LitePoint AttributeService::getPointByPaoAndAttribute(int paoId, const Attribute& attribute)
 {
-    int pointId = 0;
-    string attributeName = attribute.name();
+    // new style Attribute to old style PointAttribute mappings
+    //  for things that use CapControl Policy based classes -- regulators and cbc heartbeat stuff
 
+    static const std::map< std::string, std::string >  _translation
     {
-        string sql("SELECT pointId FROM ExtraPaoPointAssignment WHERE paobjectid = ");
-        sql += CtiNumStr(paoId);
-        sql += " AND Attribute = '" + attributeName + "'";
+        { "SOURCE_VOLTAGE",         "VOLTAGE_X"         },
+        { "VOLTAGE",                "VOLTAGE_Y"         },
+        { "HEARTBEAT_TIMER_CONFIG", "KEEP_ALIVE_TIMER"  }
+    };
 
-        DatabaseConnection conn;
-        DatabaseReader rdr(conn, sql);
-        rdr.execute();
+    static const std::string sql = 
+        "SELECT "
+            "PointId "
+        "FROM "
+            "ExtraPaoPointAssignment "
+        "WHERE "
+            "PAObjectId = ? "
+                "AND Attribute = ?";
 
-        if(rdr.isValid() && rdr() )
-        {
-            rdr["pointId"] >> pointId;
-        }
+	std::string name = Cti::mapFindOrDefault( _translation, attribute.getName(), attribute.getName() );
+
+    DatabaseConnection  conn;
+    DatabaseReader      rdr( conn, sql );
+
+    rdr
+        << paoId
+        << name
+            ;
+
+    rdr.execute();
+
+    int pointId = 0;
+
+    if ( rdr() )
+    {
+        rdr["PointId"] >> pointId;
     }
 
     return pointId == 0 ? LitePoint() : getLitePointById(pointId);

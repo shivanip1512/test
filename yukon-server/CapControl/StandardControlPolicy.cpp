@@ -11,29 +11,29 @@ Policy::AttributeList StandardControlPolicy::getSupportedAttributes()
 {
     return
     {
-        PointAttribute::TapDown,
-        PointAttribute::TapUp,
-        PointAttribute::TapPosition,
-        PointAttribute::ForwardSetPoint,
-        PointAttribute::ForwardBandwidth
+        Attribute::TapDown,
+        Attribute::TapUp,
+        Attribute::TapPosition,
+        Attribute::ForwardSetPoint,
+        Attribute::ForwardBandwidth
     };
 }
 
 Policy::Action StandardControlPolicy::TapUp()
 {
-    return makeStandardDigitalControl( getPointByAttribute( PointAttribute::TapUp ),
+    return makeStandardDigitalControl( getPointByAttribute( Attribute::TapUp ),
                                        "Raise Tap Position" );
 }
 
 Policy::Action StandardControlPolicy::TapDown()
 {
-    return makeStandardDigitalControl( getPointByAttribute( PointAttribute::TapDown ),
+    return makeStandardDigitalControl( getPointByAttribute( Attribute::TapDown ),
                                        "Lower Tap Position" );
 }
 
 Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount )
 {
-    LitePoint point = getPointByAttribute( PointAttribute::ForwardSetPoint );
+    LitePoint point = getPointByAttribute( Attribute::ForwardSetPoint );
 
     const long pointOffset = point.getControlOffset()
                                 ? point.getControlOffset()
@@ -72,17 +72,17 @@ Policy::Action StandardControlPolicy::AdjustSetPoint( const double changeAmount 
 
 double StandardControlPolicy::getSetPointValue()
 {
-    return getValueByAttribute( PointAttribute::ForwardSetPoint );
+    return getValueByAttribute( Attribute::ForwardSetPoint );
 }
 
 double StandardControlPolicy::getSetPointBandwidth()
 {
-    return getValueByAttribute( PointAttribute::ForwardBandwidth );
+    return getValueByAttribute( Attribute::ForwardBandwidth );
 }
 
 long StandardControlPolicy::getTapPosition()
 {
-    return getValueByAttribute( PointAttribute::TapPosition );
+    return getValueByAttribute( Attribute::TapPosition );
 }
 
 }
