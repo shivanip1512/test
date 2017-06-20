@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ScheduledFuture;
@@ -46,9 +47,6 @@ import com.cannontech.simulators.dao.RegulatorEventsSimulatorDao;
 import com.cannontech.simulators.dao.RegulatorEventsSimulatorDao.RegulatorOperations;
 import com.cannontech.simulators.ivvc.IvvcSimulatorService;
 
-/**
- * 
- */
 public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private static final Logger log = YukonLogManager.getLogger(IvvcSimulatorServiceImpl.class);
     
@@ -441,10 +439,8 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         final int chunkSize = 1000;
         if (!messagesToSend.isEmpty()) {
             int size = messagesToSend.size();
-            int sent = 0;
-            while(sent < size) {
+            for (int sent = 0; sent < size; sent += chunkSize) {
                 asyncDynamicDataSource.putValues(messagesToSend.subList(sent, Math.min(sent+chunkSize, size)));
-                sent = sent+chunkSize;
             }
 
             messagesToSend.clear();
@@ -458,12 +454,13 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
             cbcPointsLoaded.add(cbcId);
             Map<PointType, List<PointInfo>> cbcPointMap = pointDao.getAllPointNamesAndTypesForPAObject(cbcId);
             
-            cbcPointMap.entrySet().parallelStream()
-                        .forEach(entry -> { cbcPointCache.addAll(entry.getValue().stream()
-                                                          .map(pointInfo -> getPointTypeAndValue(entry.getKey(), pointInfo))
-                                                          .filter(pointTypeValue -> pointTypeValue != null)
-                                                          .collect(Collectors.toList()));
-                        });
+            cbcPointCache.addAll(cbcPointMap.entrySet()
+                                            .parallelStream()
+                                            .flatMap(entry -> entry.getValue()
+                                                                   .stream()
+                                                                   .map(pointInfo -> getPointTypeAndValue(entry.getKey(), pointInfo)))
+                                            .filter(Objects::nonNull)
+                                            .collect(Collectors.toList()));
         }
     }
     

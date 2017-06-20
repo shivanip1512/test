@@ -6,7 +6,7 @@ public interface IvvcSimulatorService {
      * Starts the simulator.
      * @return true if the simulator started successfully, or false if it was already running.
      */
-    public boolean start();
+    boolean start();
 
     /**
      * Stops the simulator. Although this method will return immediately, the simulator may continue
@@ -15,11 +15,11 @@ public interface IvvcSimulatorService {
      * <code>isRunning()</code> method
      * can be used to determine if the simulator has stopped.
      */
-    public void stop();
+    void stop();
 
     /**
      * @return true if the simulator is running, false if it is stopped.
      */
-    public boolean isRunning();
+    boolean isRunning();
 
 }
