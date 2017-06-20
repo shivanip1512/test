@@ -69,7 +69,7 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
                 InfrastructureWarningSeverity severity = rs.getEnum("Severity", InfrastructureWarningSeverity.class);
                 Object[] arguments = getWarningArguments(rs);
                 
-                return new InfrastructureWarning(paoIdentifier, warningType, arguments, severity);
+                return new InfrastructureWarning(paoIdentifier, warningType, severity, arguments);
         });
     }
     

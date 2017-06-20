@@ -20,6 +20,7 @@ public enum WidgetType implements DisplayableEnum {
     FAVORITES(DashboardScope.GENERAL, WidgetCategory.OTHER, "favoritesWidget", "image-favorites"),
     MONITOR_SUBSCRIPTIONS(DashboardScope.GENERAL, WidgetCategory.OTHER, "subscribedMonitorsWidget", "image-monitor-subscriptions"),
     SYSTEM_MESSAGING(DashboardScope.GENERAL, WidgetCategory.OTHER, "systemMessagingWidget", "image-system-messaging"),
+    INFRASTRUCTURE_WARNINGS(DashboardScope.GENERAL, WidgetCategory.OTHER, "infrastructureWarningsWidget", "image-coming-soon"),
 
     TREND(DashboardScope.GENERAL, WidgetCategory.AMI, "csrTrendWidget", "image-trends"), 
 
@@ -48,15 +49,17 @@ public enum WidgetType implements DisplayableEnum {
     ;
     
     private static final String formatKeyBase = "yukon.web.modules.dashboard.widgetType.";
+    private static final String baseJSPath = "/resources/js/widgets/";
     private static final Multimap<WidgetType, String> widgetSpecificJavascript;
     private static final Multimap<WidgetType, String> widgetSpecificCss;
     private static final Multimap<WidgetType, WidgetParameter> widgetParameters;
     
     static {
         widgetSpecificJavascript = ImmutableListMultimap.of(
-            SYSTEM_MESSAGING, "/resources/js/widgets/yukon.support.systemHealth.js",
-            DATA_COLLECTION, "/resources/js/widgets/yukon.widget.dataCollection.js",
-            DATA_COLLECTION, "HIGH_STOCK"
+            SYSTEM_MESSAGING, baseJSPath + "yukon.support.systemHealth.js",
+            DATA_COLLECTION, baseJSPath + "yukon.widget.dataCollection.js",
+            DATA_COLLECTION, "HIGH_STOCK",
+            INFRASTRUCTURE_WARNINGS, baseJSPath + "yukon.widget.infrastructureWarnings.js"
         );
         
         widgetSpecificCss = ImmutableListMultimap.of(
