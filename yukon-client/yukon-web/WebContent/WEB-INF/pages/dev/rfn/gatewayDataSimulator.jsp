@@ -15,6 +15,17 @@
                 When Yukon receives a response for a gateway 1.5, but the response model is set to GWY-800, Yukon
                 automatically changes the old gateway to a GWY-800.
             </tags:nameValue>
+            <tags:nameValue name="Data Streaming Loading">
+                This represents the percentage of total data streaming capacity that is being used by the gateway.
+            </tags:nameValue>
+            <tags:nameValue name="# of NOT ready nodes">
+                This represents the number of nodes that the gateway is aware of, but are not in the "ready" state. The
+                ready and not-ready node counts are combined for the gateway total node count.
+            </tags:nameValue>
+            <tags:nameValue name="# of ready nodes">
+                This represents the number of nodes that the gateway is aware of that are in the "ready" state. The
+                ready and not-ready node counts are combined for the gateway total node count.
+            </tags:nameValue>
         </tags:nameValueContainer>
     </div>
     
@@ -112,6 +123,16 @@
                                             ${dataSettings.returnGwy800Model}
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
+                                    <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="# of NOT ready nodes">
+                                            ${dataSettings.numberOfNotReadyNodes}
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
+                                    <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="# of ready nodes">
+                                            ${dataSettings.numberOfReadyNodes}
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
                                 </c:if>
                                 <c:if test="${not autoDataReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
@@ -122,6 +143,16 @@
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Always Return GWY-800 Model">
                                             <input name="alwaysGateway2" type="checkbox">
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
+                                    <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="# of NOT ready nodes">
+                                            <input name="notReadyNodes" type="text" style="width: 45px;" value="500">
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
+                                    <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="# of ready nodes">
+                                            <input name="readyNodes" type="text" style="width: 45px;" value="1000">
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>

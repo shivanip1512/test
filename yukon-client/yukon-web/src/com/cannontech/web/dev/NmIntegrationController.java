@@ -262,7 +262,7 @@ public class NmIntegrationController {
                 new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
             SimulatedGatewayDataSettings settings = response.getDataSettings();
             if(settings == null){
-                settings = enableGatewayDataSimulator(false, "50", flash);
+                settings = enableGatewayDataSimulator(false, 50, 1000, 500, flash);
             }
             gatewaySimService.sendGatewayDataResponse(serial, isGateway2, settings);
             flash.setConfirm(new YukonMessageSourceResolvable(
@@ -289,6 +289,8 @@ public class NmIntegrationController {
                 SimulatedGatewayDataSettings dataSettings = new SimulatedGatewayDataSettings();
                 dataSettings.setReturnGwy800Model(false);
                 dataSettings.setCurrentDataStreamingLoading(50);
+                dataSettings.setNumberOfReadyNodes(1000);
+                dataSettings.setNumberOfNotReadyNodes(500);
                 request.setDataSettings(dataSettings);
             }
             
@@ -345,16 +347,31 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("enableGatewayDataReply")
-    public String enableGatewayDataReply(@RequestParam(defaultValue="false") boolean alwaysGateway2, @RequestParam(defaultValue="50") String currentDataStreamingLoading, FlashScope flash) {
-        enableGatewayDataSimulator(alwaysGateway2, currentDataStreamingLoading, flash);
+    public String enableGatewayDataReply(@RequestParam(defaultValue="false") boolean alwaysGateway2, 
+                                         @RequestParam(defaultValue="50") String currentDataStreamingLoading, 
+                                         @RequestParam(defaultValue="1000") String readyNodes,
+                                         @RequestParam(defaultValue="500") String notReadyNodes,
+                                         FlashScope flash) {
+        
+        enableGatewayDataSimulator(alwaysGateway2, 
+                                   Double.valueOf(currentDataStreamingLoading), 
+                                   Integer.valueOf(readyNodes), 
+                                   Integer.valueOf(notReadyNodes), 
+                                   flash);
         return "redirect:gatewaySimulator";
     }
     
-    private SimulatedGatewayDataSettings enableGatewayDataSimulator(boolean alwaysGateway2, String currentDataStreamingLoading, FlashScope flash){
+    private SimulatedGatewayDataSettings enableGatewayDataSimulator(boolean alwaysGateway2, 
+                                                                    double currentDataStreamingLoading,
+                                                                    int readyNodes,
+                                                                    int notReadyNodes,
+                                                                    FlashScope flash){
         clearGatewayCache();
         SimulatedGatewayDataSettings dataSettings = new SimulatedGatewayDataSettings();
         dataSettings.setReturnGwy800Model(alwaysGateway2);
-        dataSettings.setCurrentDataStreamingLoading(Double.valueOf(currentDataStreamingLoading));
+        dataSettings.setCurrentDataStreamingLoading(currentDataStreamingLoading);
+        dataSettings.setNumberOfReadyNodes(readyNodes);
+        dataSettings.setNumberOfNotReadyNodes(notReadyNodes);
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
         request.setDataSettings(dataSettings);
         sendStartStopRequest(request, flash, true);
@@ -966,7 +983,7 @@ public class NmIntegrationController {
                 new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
             SimulatedGatewayDataSettings gatewaySettings = gatewayResponse.getDataSettings();
             if(gatewaySettings == null){
-                enableGatewayDataSimulator(false, "50", flash);
+                enableGatewayDataSimulator(false, 50, 1000, 500, flash);
                 startedGatewaySimualtor = true;
             }
             

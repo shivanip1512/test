@@ -22,5 +22,6 @@
     <!-- Infrastructure Warning Evaluators - These do the work of checking for warning conditions. -->
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayColorWarningEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayDataStreamingLoadEvaluator"/>
+    <bean class="com.cannontech.services.infrastructure.service.impl.GatewayConnectedNodesEvaluator"/>
     
 </beans>

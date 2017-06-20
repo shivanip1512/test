@@ -209,7 +209,13 @@ public class RfnGatewayDataCacheTest {
                .upperStackVersion("1.0.0.5")
                .versionConflicts(versionConflicts)
                .currentDataStreamingLoading(25.0)
-               .maxDataStreamingLoading(100.0);
+               .maxDataStreamingLoading(100.0)
+               .gwTotalNodes(100)
+               .gwTotalNodesNoInfo(100)
+               .gwTotalNodesWithInfo(100)
+               .gwTotalNodesWithSN(100)
+               .gwTotalNotReadyNodes(100)
+               .gwTotalReadyNodes(100);
         return builder.build();
     }
     

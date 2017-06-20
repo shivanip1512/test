@@ -6,6 +6,8 @@ public class SimulatedGatewayDataSettings implements Serializable {
     private static final long serialVersionUID = 1L;
     private boolean returnGwy800Model;
     private double currentDataStreamingLoading;
+    private Integer numberOfReadyNodes;
+    private Integer numberOfNotReadyNodes;
 
     public boolean isReturnGwy800Model() {
         return returnGwy800Model;
@@ -21,5 +23,21 @@ public class SimulatedGatewayDataSettings implements Serializable {
 
     public void setCurrentDataStreamingLoading(double currentDataStreamingLoading) {
         this.currentDataStreamingLoading = currentDataStreamingLoading;
+    }
+
+    public Integer getNumberOfReadyNodes() {
+        return numberOfReadyNodes;
+    }
+
+    public void setNumberOfReadyNodes(Integer numberOfReadyNodes) {
+        this.numberOfReadyNodes = numberOfReadyNodes;
+    }
+
+    public Integer getNumberOfNotReadyNodes() {
+        return numberOfNotReadyNodes;
+    }
+
+    public void setNumberOfNotReadyNodes(Integer numberOfNotReadyNodes) {
+        this.numberOfNotReadyNodes = numberOfNotReadyNodes;
     }
 }

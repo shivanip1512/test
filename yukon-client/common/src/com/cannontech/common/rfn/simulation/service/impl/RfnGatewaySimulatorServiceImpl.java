@@ -570,7 +570,11 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         // Check the cache - if any edits have been made to the data for this gateway, return the edited data instead
         // of the default values.
         GatewaySaveData cachedData = gatewayDataCache.get(rfnId);
-        GatewayDataResponse response = DefaultGatewaySimulatorData.buildDataResponse(rfnId, cachedData, settings.getCurrentDataStreamingLoading());
+        GatewayDataResponse response = 
+                DefaultGatewaySimulatorData.buildDataResponse(rfnId, cachedData, 
+                                                              settings.getCurrentDataStreamingLoading(),
+                                                              settings.getNumberOfReadyNodes(),
+                                                              settings.getNumberOfNotReadyNodes());
         
         return response;
     }

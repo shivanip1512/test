@@ -41,6 +41,12 @@ public final class RfnGatewayData {
     private final Authentication updateServerLogin;
     private final double currentDataStreamingLoading;
     private final double maxDataStreamingLoading;
+    private final int gwTotalNodes;
+    private final int gwTotalReadyNodes;
+    private final int gwTotalNotReadyNodes;
+    private final int gwTotalNodesWithSN;
+    private final int gwTotalNodesWithInfo;
+    private final int gwTotalNodesNoInfo;
     
     public RfnGatewayData(GatewayDataResponse dataResponse) {
         
@@ -69,6 +75,12 @@ public final class RfnGatewayData {
         updateServerLogin = dataResponse.getUpdateServerLogin();
         currentDataStreamingLoading = dataResponse.getCurrentDataStreamingLoading();
         maxDataStreamingLoading = dataResponse.getMaxDataStreamingCapacity();
+        gwTotalNodes = dataResponse.getGwTotalNodes();
+        gwTotalReadyNodes = dataResponse.getGwTotalReadyNodes();
+        gwTotalNotReadyNodes = dataResponse.getGwTotalNotReadyNodes();
+        gwTotalNodesWithSN = dataResponse.getGwTotalNodesWithSN();
+        gwTotalNodesWithInfo = dataResponse.getGwTotalNodesWithInfo();
+        gwTotalNodesNoInfo = dataResponse.getGwTotalNodesNoInfo();
     }
     
     /** Private constructor for builder */
@@ -79,7 +91,9 @@ public final class RfnGatewayData {
                            long lastCommStatusTimestamp, Set<Radio> radios, Authentication admin,
                            Authentication superAdmin, String collectionSchedule, Set<DataSequence> sequences, 
                            short routeColor, String updateServerUrl, Authentication updateServerLogin,
-                           double currentDataStreamingLoading, double maxDataStreamingLoading) {
+                           double currentDataStreamingLoading, double maxDataStreamingLoading, int gwTotalNodes,
+                           int gwTotalReadyNodes, int gwTotalNotReadyNodes, int gwTotalNodesWithSN, 
+                           int gwTotalNodesWithInfo, int gwTotalNodesNoInfo) {
         this.name = name;
         this.hardwareVersion = hardwareVersion;
         this.softwareVersion = softwareVersion;
@@ -104,6 +118,12 @@ public final class RfnGatewayData {
         this.updateServerLogin = updateServerLogin;
         this.currentDataStreamingLoading = currentDataStreamingLoading;
         this.maxDataStreamingLoading = maxDataStreamingLoading;
+        this.gwTotalNodes = gwTotalNodes;
+        this.gwTotalReadyNodes = gwTotalReadyNodes;
+        this.gwTotalNotReadyNodes = gwTotalNotReadyNodes;
+        this.gwTotalNodesWithSN = gwTotalNodesWithSN;
+        this.gwTotalNodesWithInfo = gwTotalNodesWithInfo;
+        this.gwTotalNodesNoInfo = gwTotalNodesNoInfo;
     }
     
     public String getName() {
@@ -206,6 +226,30 @@ public final class RfnGatewayData {
         return (currentDataStreamingLoading / maxDataStreamingLoading) * 100;
     }
     
+    public int getGwTotalNodes() {
+        return gwTotalNodes;
+    }
+    
+    public int getGwTotalReadyNodes() {
+        return gwTotalReadyNodes;
+    }
+
+    public int getGwTotalNotReadyNodes() {
+        return gwTotalNotReadyNodes;
+    }
+ 
+    public int getGwTotalNodesWithSN() {
+        return gwTotalNodesWithSN;
+    }
+    
+    public int getGwTotalNodesWithInfo() {
+        return gwTotalNodesWithInfo;
+    }
+
+    public int getGwTotalNodesNoInfo() {
+        return gwTotalNodesNoInfo;
+    }
+
     @Override
     public String toString() {
         return "RfnGatewayData [name=" + name + ", hardwareVersion=" + hardwareVersion + ", softwareVersion="
@@ -217,7 +261,10 @@ public final class RfnGatewayData {
                + ", superAdmin=" + superAdmin + ", collectionSchedule=" + collectionSchedule + ", sequences="
                + sequences + ", routeColor=" + routeColor + ", updateServerUrl=" + updateServerUrl
                + ", updateServerLogin=" + updateServerLogin + ", currentDataStreamingLoading="
-               + currentDataStreamingLoading + ", maxDataStreamingLoading=" + maxDataStreamingLoading + "]";
+               + currentDataStreamingLoading + ", maxDataStreamingLoading=" + maxDataStreamingLoading
+               + ", gwTotalNodes=" + gwTotalNodes + ", gwTotalReadyNodes=" + gwTotalReadyNodes
+               + ", gwTotalNotReadyNodes=" + gwTotalNotReadyNodes + ", gwTotalNodesWithSN=" + gwTotalNodesWithSN
+               + ", gwTotalNodesWithInfo=" + gwTotalNodesWithInfo + ", gwTotalNodesNoInfo=" + gwTotalNodesNoInfo + "]";
     }
 
     @Override
@@ -231,6 +278,12 @@ public final class RfnGatewayData {
         long temp;
         temp = Double.doubleToLongBits(currentDataStreamingLoading);
         result = prime * result + (int) (temp ^ (temp >>> 32));
+        result = prime * result + gwTotalNodes;
+        result = prime * result + gwTotalNodesNoInfo;
+        result = prime * result + gwTotalNodesWithInfo;
+        result = prime * result + gwTotalNodesWithSN;
+        result = prime * result + gwTotalNotReadyNodes;
+        result = prime * result + gwTotalReadyNodes;
         result = prime * result + ((hardwareVersion == null) ? 0 : hardwareVersion.hashCode());
         result = prime * result + ((ipAddress == null) ? 0 : ipAddress.hashCode());
         result = prime * result + ((lastCommStatus == null) ? 0 : lastCommStatus.hashCode());
@@ -288,6 +341,24 @@ public final class RfnGatewayData {
         }
         if (Double.doubleToLongBits(currentDataStreamingLoading) != Double
             .doubleToLongBits(other.currentDataStreamingLoading)) {
+            return false;
+        }
+        if (gwTotalNodes != other.gwTotalNodes) {
+            return false;
+        }
+        if (gwTotalNodesNoInfo != other.gwTotalNodesNoInfo) {
+            return false;
+        }
+        if (gwTotalNodesWithInfo != other.gwTotalNodesWithInfo) {
+            return false;
+        }
+        if (gwTotalNodesWithSN != other.gwTotalNodesWithSN) {
+            return false;
+        }
+        if (gwTotalNotReadyNodes != other.gwTotalNotReadyNodes) {
+            return false;
+        }
+        if (gwTotalReadyNodes != other.gwTotalReadyNodes) {
             return false;
         }
         if (hardwareVersion == null) {
@@ -432,6 +503,12 @@ public final class RfnGatewayData {
         private Authentication updateServerLogin;
         private double currentDataStreamingLoading;
         private double maxDataStreamingLoading;
+        private int gwTotalNodes;
+        private int gwTotalReadyNodes;
+        private int gwTotalNotReadyNodes;
+        private int gwTotalNodesWithSN;
+        private int gwTotalNodesWithInfo;
+        private int gwTotalNodesNoInfo;
         
         public RfnGatewayData build() {
             
@@ -439,7 +516,9 @@ public final class RfnGatewayData {
                                       releaseVersion, versionConflicts, mode, connectionType, ipAddress, port, 
                                       connectionStatus, lastCommStatus, lastCommStatusTimestamp, radios, admin,
                                       superAdmin, collectionSchedule, sequences, routeColor,updateServerUrl,
-                                      updateServerLogin, currentDataStreamingLoading, maxDataStreamingLoading);
+                                      updateServerLogin, currentDataStreamingLoading, maxDataStreamingLoading,
+                                      gwTotalNodes, gwTotalReadyNodes, gwTotalNotReadyNodes, gwTotalNodesWithSN,
+                                      gwTotalNodesWithInfo, gwTotalNodesNoInfo);
             
         }
         
@@ -469,6 +548,12 @@ public final class RfnGatewayData {
             updateServerLogin = oldData.getUpdateServerLogin();
             currentDataStreamingLoading = oldData.currentDataStreamingLoading;
             maxDataStreamingLoading = oldData.maxDataStreamingLoading;
+            gwTotalNodes = oldData.gwTotalNodes;
+            gwTotalReadyNodes = oldData.gwTotalNodes;
+            gwTotalNotReadyNodes = oldData.gwTotalNodes;
+            gwTotalNodesWithSN = oldData.gwTotalNodes;
+            gwTotalNodesWithInfo = oldData.gwTotalNodes;
+            gwTotalNodesNoInfo = oldData.gwTotalNodes;
             return this;
         }
         
@@ -591,6 +676,35 @@ public final class RfnGatewayData {
             this.maxDataStreamingLoading = maxDataStreamingLoading;
             return this;
         }
+        
+        public Builder gwTotalNodes(int gwTotalNodes) {
+            this.gwTotalNodes = gwTotalNodes;
+            return this;
+        }
+        
+        public Builder gwTotalReadyNodes(int gwTotalReadyNodes) {
+            this.gwTotalReadyNodes = gwTotalReadyNodes;
+            return this;
+        }
+
+        public Builder gwTotalNotReadyNodes(int gwTotalNotReadyNodes) {
+            this.gwTotalNotReadyNodes = gwTotalNotReadyNodes;
+            return this;
+        }
+     
+        public Builder gwTotalNodesWithSN(int gwTotalNodesWithSN) {
+            this.gwTotalNodesWithSN = gwTotalNodesWithSN;
+            return this;
+        }
+        
+        public Builder gwTotalNodesWithInfo(int gwTotalNodesWithInfo) {
+            this.gwTotalNodesWithInfo = gwTotalNodesWithInfo;
+            return this;
+        }
+
+        public Builder gwTotalNodesNoInfo(int gwTotalNodesNoInfo) {
+            this.gwTotalNodesNoInfo = gwTotalNodesNoInfo;
+            return this;
+        }
     }
-    
 }

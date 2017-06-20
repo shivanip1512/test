@@ -21,7 +21,12 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.RfnIdentifyingMessage;
+import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
 import com.cannontech.common.rfn.model.RfnDevice;
+import com.cannontech.common.rfn.model.RfnGatewayData;
+import com.cannontech.common.rfn.service.RfnDeviceLookupService;
+import com.cannontech.common.rfn.service.RfnGatewayDataCache;
+import com.cannontech.core.dao.NotFoundException;
 import com.google.common.collect.ImmutableList;
 
 public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnIdentifyingMessage> {
@@ -30,6 +35,8 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
     
     @Autowired private GatewayEventLogService gatewayEventLogService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
+    @Autowired private RfnGatewayDataCache gatewayCache;
     @Resource(name = "missingGatewayFirstDataTimes") private Map<RfnIdentifier, Instant> missingGatewayFirstDataTimes;
     private JmsTemplate outgoingJmsTemplate;
     private final String outgoingTopicName = "yukon.qr.obj.common.rfn.GatewayDataTopic";
@@ -100,11 +107,30 @@ public class GatewayDataResponseListener extends ArchiveRequestListenerBase<RfnI
                 //This publishes the data to a topic, where the web server will receive and cache it
                 log.debug("Publishing gateway data on internal topic: " + message);
                 outgoingJmsTemplate.convertAndSend(outgoingTopicName, message);
+                
+                //Update service manager cache
+                log.debug("Updating gateway data in service manager cache.");
+                if (message instanceof GatewayDataResponse) {
+                    GatewayDataResponse gatewayDataMessage = (GatewayDataResponse) message;
+                    handleDataMessage(gatewayDataMessage);
+                }
             } catch (Exception e) {
                 log.warn("Data processing failed for " + rfnDevice, e);
                 log.debug("Gateway data: " + message);
                 throw new RuntimeException("Data processing failed for " + rfnDevice, e);
             }
+        }
+    }
+    
+    private void handleDataMessage(GatewayDataResponse message) {
+        RfnIdentifier rfnIdentifier = message.getRfnIdentifier();
+        try {
+            RfnDevice rfnDevice = rfnDeviceLookupService.getDevice(rfnIdentifier);
+            log.debug("Handling gateway data message: " + message);
+            RfnGatewayData data = new RfnGatewayData(message);
+            gatewayCache.put(rfnDevice.getPaoIdentifier(), data);
+        } catch (NotFoundException e) {
+            log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
         }
     }
     

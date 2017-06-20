@@ -28,8 +28,8 @@ import com.google.common.collect.ImmutableList;
 public class InfrastructureWarningsServiceImpl implements InfrastructureWarningsService {
     private static final Logger log = YukonLogManager.getLogger(InfrastructureWarningsServiceImpl.class);
     private static final int initialDelayMinutes = 1;
-    private static final int minimumMinutesBetweenRuns = 15;
-    private static final int runFrequencyMinutes = 60;
+    private static final int minimumMinutesBetweenRuns = 5;
+    private static final int runFrequencyMinutes = 15;
     private static AtomicBoolean isRunning = new AtomicBoolean();
     private List<PaoType> warnableTypes = new ImmutableList.Builder<PaoType>()
             .addAll(PaoType.getRfGatewayTypes())

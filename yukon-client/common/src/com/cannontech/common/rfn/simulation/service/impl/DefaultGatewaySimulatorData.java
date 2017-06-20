@@ -56,6 +56,9 @@ public class DefaultGatewaySimulatorData {
     private static final int dataSequenceCompletionPercentage = 100;
     public static final double maxDataStreamingLoading = 100;
     
+    private static final int gwTotalNotReadyNodes = 500;
+    private static final int gwTotalReadyNodes = 1000;
+    
     static {
         admin.setUsername(adminUser);
         admin.setPassword(adminPass);
@@ -69,7 +72,10 @@ public class DefaultGatewaySimulatorData {
      * Build the data response using any provided custom data for the device, and filling in the remainder with default
      * values.
      */
-    public static GatewayDataResponse buildDataResponse(RfnIdentifier rfnId, GatewaySaveData customData, double currentDataStreamingLoading) {
+    public static GatewayDataResponse buildDataResponse(RfnIdentifier rfnId, GatewaySaveData customData, 
+                                                        double currentDataStreamingLoading, Integer numberOfReadyNodes, 
+                                                        Integer numberOfNotReadyNodes) {
+        
         GatewayDataResponse response = new GatewayDataResponse();
         response.setRfnIdentifier(rfnId);
         
@@ -135,6 +141,29 @@ public class DefaultGatewaySimulatorData {
         
         response.setCurrentDataStreamingLoading(currentDataStreamingLoading);
         response.setMaxDataStreamingCapacity(maxDataStreamingLoading);
+        
+        //"Ready nodes" and "not ready nodes" are configurable.
+        //Currently, all other values are derived from these two.
+        int totalNodes = 0;
+        if (numberOfReadyNodes == null) {
+            response.setGwTotalNotReadyNodes(gwTotalNotReadyNodes);
+            totalNodes += gwTotalNotReadyNodes;
+        } else {
+            response.setGwTotalNotReadyNodes(numberOfNotReadyNodes);
+            totalNodes += numberOfNotReadyNodes;
+        }
+        if (numberOfReadyNodes == null) {
+            response.setGwTotalReadyNodes(gwTotalReadyNodes);
+            totalNodes += gwTotalReadyNodes;
+        } else {
+            response.setGwTotalReadyNodes(numberOfReadyNodes);
+            totalNodes += numberOfReadyNodes;
+        }
+        
+        response.setGwTotalNodes(totalNodes);
+        response.setGwTotalNodesWithInfo(totalNodes);
+        response.setGwTotalNodesWithSN(totalNodes);
+        response.setGwTotalNodesNoInfo(0);
         
         return response;
     }

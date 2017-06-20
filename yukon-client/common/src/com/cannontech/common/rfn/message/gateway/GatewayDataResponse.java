@@ -44,14 +44,14 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     
     //Data Streaming Information
     private double maxDataStreamingCapacity;
-    private double currentDataStreamingLoading;  
+    private double currentDataStreamingLoading;
+    
     private int gwTotalNodes;
     private int gwTotalReadyNodes;
     private int gwTotalNotReadyNodes;
     private int gwTotalNodesWithSN;
     private int gwTotalNodesWithInfo;
     private int gwTotalNodesNoInfo;
-
 
     @Override
     public RfnIdentifier getRfnIdentifier() {
@@ -109,7 +109,6 @@ public class GatewayDataResponse implements RfnIdentifyingMessage, Serializable 
     public void setGwTotalNodesNoInfo(int gwTotalNodesNoInfo) {
         this.gwTotalNodesNoInfo = gwTotalNodesNoInfo;
     }
-
     
     public String getHardwareVersion() {
         return hardwareVersion;
