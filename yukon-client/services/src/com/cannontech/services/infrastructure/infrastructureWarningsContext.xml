@@ -23,5 +23,6 @@
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayColorWarningEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayDataStreamingLoadEvaluator"/>
     <bean class="com.cannontech.services.infrastructure.service.impl.GatewayConnectedNodesEvaluator"/>
+    <bean class="com.cannontech.services.infrastructure.service.impl.GatewayFailsafeEvaluator"/>
     
 </beans>

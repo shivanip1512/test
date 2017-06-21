@@ -21,11 +21,22 @@ public class InfrastructureWarning implements Displayable {
      * Create a new InfrastructureWarning with the default severity.
      */
     public InfrastructureWarning(PaoIdentifier paoIdentifier, 
+                                 InfrastructureWarningType warningType) {
+        this(paoIdentifier, warningType, InfrastructureWarningSeverity.LOW, new Object[0]);
+    }
+    
+    /**
+     * Create a new InfrastructureWarning with the default severity.
+     */
+    public InfrastructureWarning(PaoIdentifier paoIdentifier, 
                                  InfrastructureWarningType warningType, 
                                  Object... arguments) {
         this(paoIdentifier, warningType, InfrastructureWarningSeverity.LOW, arguments);
     }
     
+    /**
+     * Create a new InfrastructureWarning with the specified severity.
+     */
     public InfrastructureWarning(PaoIdentifier paoIdentifier, 
                                  InfrastructureWarningType warningType, 
                                  InfrastructureWarningSeverity severity,

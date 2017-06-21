@@ -262,7 +262,7 @@ public class NmIntegrationController {
                 new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
             SimulatedGatewayDataSettings settings = response.getDataSettings();
             if(settings == null){
-                settings = enableGatewayDataSimulator(false, 50, 1000, 500, flash);
+                settings = enableGatewayDataSimulator(false, 50, 1000, 500, false, flash);
             }
             gatewaySimService.sendGatewayDataResponse(serial, isGateway2, settings);
             flash.setConfirm(new YukonMessageSourceResolvable(
@@ -291,6 +291,7 @@ public class NmIntegrationController {
                 dataSettings.setCurrentDataStreamingLoading(50);
                 dataSettings.setNumberOfReadyNodes(1000);
                 dataSettings.setNumberOfNotReadyNodes(500);
+                dataSettings.setFailsafeMode(false);
                 request.setDataSettings(dataSettings);
             }
             
@@ -351,12 +352,14 @@ public class NmIntegrationController {
                                          @RequestParam(defaultValue="50") String currentDataStreamingLoading, 
                                          @RequestParam(defaultValue="1000") String readyNodes,
                                          @RequestParam(defaultValue="500") String notReadyNodes,
+                                         @RequestParam(defaultValue="false") boolean failsafeMode,
                                          FlashScope flash) {
         
         enableGatewayDataSimulator(alwaysGateway2, 
                                    Double.valueOf(currentDataStreamingLoading), 
                                    Integer.valueOf(readyNodes), 
-                                   Integer.valueOf(notReadyNodes), 
+                                   Integer.valueOf(notReadyNodes),
+                                   failsafeMode,
                                    flash);
         return "redirect:gatewaySimulator";
     }
@@ -365,6 +368,7 @@ public class NmIntegrationController {
                                                                     double currentDataStreamingLoading,
                                                                     int readyNodes,
                                                                     int notReadyNodes,
+                                                                    boolean failsafeMode,
                                                                     FlashScope flash){
         clearGatewayCache();
         SimulatedGatewayDataSettings dataSettings = new SimulatedGatewayDataSettings();
@@ -372,6 +376,7 @@ public class NmIntegrationController {
         dataSettings.setCurrentDataStreamingLoading(currentDataStreamingLoading);
         dataSettings.setNumberOfReadyNodes(readyNodes);
         dataSettings.setNumberOfNotReadyNodes(notReadyNodes);
+        dataSettings.setFailsafeMode(failsafeMode);
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
         request.setDataSettings(dataSettings);
         sendStartStopRequest(request, flash, true);
@@ -983,7 +988,7 @@ public class NmIntegrationController {
                 new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
             SimulatedGatewayDataSettings gatewaySettings = gatewayResponse.getDataSettings();
             if(gatewaySettings == null){
-                enableGatewayDataSimulator(false, 50, 1000, 500, flash);
+                enableGatewayDataSimulator(false, 50, 1000, 500, false, flash);
                 startedGatewaySimualtor = true;
             }
             

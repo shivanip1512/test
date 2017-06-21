@@ -74,7 +74,7 @@ public class DefaultGatewaySimulatorData {
      */
     public static GatewayDataResponse buildDataResponse(RfnIdentifier rfnId, GatewaySaveData customData, 
                                                         double currentDataStreamingLoading, Integer numberOfReadyNodes, 
-                                                        Integer numberOfNotReadyNodes) {
+                                                        Integer numberOfNotReadyNodes, boolean failsafeMode) {
         
         GatewayDataResponse response = new GatewayDataResponse();
         response.setRfnIdentifier(rfnId);
@@ -123,7 +123,6 @@ public class DefaultGatewaySimulatorData {
         
         response.setCollectionSchedule(collectionSchedule);
         response.setRouteColor(routeColor);
-        response.setMode(mode);
         
         Set<Radio> radios = new HashSet<>();
         Radio radio = new Radio();
@@ -164,6 +163,12 @@ public class DefaultGatewaySimulatorData {
         response.setGwTotalNodesWithInfo(totalNodes);
         response.setGwTotalNodesWithSN(totalNodes);
         response.setGwTotalNodesNoInfo(0);
+        
+        if (failsafeMode) {
+            response.setMode(AppMode.FAIL_SAFE);
+        } else {
+            response.setMode(mode);
+        }
         
         return response;
     }

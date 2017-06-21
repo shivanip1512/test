@@ -8,6 +8,7 @@ public class SimulatedGatewayDataSettings implements Serializable {
     private double currentDataStreamingLoading;
     private Integer numberOfReadyNodes;
     private Integer numberOfNotReadyNodes;
+    private boolean isFailsafeMode;
 
     public boolean isReturnGwy800Model() {
         return returnGwy800Model;
@@ -39,5 +40,13 @@ public class SimulatedGatewayDataSettings implements Serializable {
 
     public void setNumberOfNotReadyNodes(Integer numberOfNotReadyNodes) {
         this.numberOfNotReadyNodes = numberOfNotReadyNodes;
+    }
+
+    public boolean isFailsafeMode() {
+        return isFailsafeMode;
+    }
+
+    public void setFailsafeMode(boolean isFailsafeMode) {
+        this.isFailsafeMode = isFailsafeMode;
     }
 }

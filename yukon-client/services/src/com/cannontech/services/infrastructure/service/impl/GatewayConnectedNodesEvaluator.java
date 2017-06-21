@@ -18,6 +18,11 @@ import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningEvaluator;
 
+/**
+ * Evaluates all RF Gateways. Warns for each gateway whose total connected node count exceeds the warning limit.
+ * A high-severity warning is generated if the gateway exceeds the hard cap on connected nodes (which means the
+ * gateway can no longer accept new node connections).
+ */
 public class GatewayConnectedNodesEvaluator implements InfrastructureWarningEvaluator {
     private static final Logger log = YukonLogManager.getLogger(GatewayConnectedNodesEvaluator.class);
     private static final int connectedNodesWarningLimit = 3500;

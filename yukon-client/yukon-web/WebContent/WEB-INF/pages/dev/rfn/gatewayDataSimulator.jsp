@@ -26,6 +26,9 @@
                 This represents the number of nodes that the gateway is aware of that are in the "ready" state. The
                 ready and not-ready node counts are combined for the gateway total node count.
             </tags:nameValue>
+            <tags:nameValue name="Failsafe Mode">
+                Report all gateways as being in "failsafe" mode.
+            </tags:nameValue>
         </tags:nameValueContainer>
     </div>
     
@@ -133,6 +136,11 @@
                                             ${dataSettings.numberOfReadyNodes}
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
+                                    <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="Failsafe Mode">
+                                            ${dataSettings.failsafeMode}
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
                                 </c:if>
                                 <c:if test="${not autoDataReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
@@ -153,6 +161,11 @@
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="# of ready nodes">
                                             <input name="readyNodes" type="text" style="width: 45px;" value="1000">
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
+                                    <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="Failsafe Mode">
+                                            <input name="failsafeMode" type="checkbox">
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>

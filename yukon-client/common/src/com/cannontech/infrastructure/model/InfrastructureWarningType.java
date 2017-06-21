@@ -8,6 +8,7 @@ import com.cannontech.common.i18n.DisplayableEnum;
 public enum InfrastructureWarningType implements DisplayableEnum {
     GATEWAY_CONNECTION_STATUS,
     GATEWAY_COLOR,
+    GATEWAY_FAILSAFE,
     GATEWAY_CONNECTED_NODES,
     GATEWAY_DATA_STREAMING_LOAD,
     GATEWAY_READY_NODES,
