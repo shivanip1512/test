@@ -19,4 +19,15 @@
         <unitofmeasure value="PERCENT"/>
         <decimalplaces value="2"/>
     </point>
+    <point offset="4" type="Analog">
+        <name>Ready Nodes</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="COUNTS"/>
+        <decimalplaces value="0"/>
+    </point>
+    <!--- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -Status- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -->
+    <point offset="2000" type="Status">
+        <name>Comm Status</name>
+        <stategroup value="Comm Status State"/>
+    </point>
 </points>

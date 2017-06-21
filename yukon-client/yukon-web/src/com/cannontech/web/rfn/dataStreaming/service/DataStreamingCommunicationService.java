@@ -4,14 +4,12 @@ import java.util.Collection;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
-import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfig;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequest;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigRequestType;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigResponse;
 import com.cannontech.common.rfn.message.datastreaming.gateway.GatewayDataStreamingInfo;
-import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
@@ -71,12 +69,4 @@ public interface DataStreamingCommunicationService {
      */
     Collection<GatewayDataStreamingInfo> getGatewayInfo(Collection<RfnGateway> gateways, boolean shouldArchive)
             throws DataStreamingConfigException;
-
-    /**
-     * Generates point data for an attribute and sends it to dispatch.
-     * If point doesn't exits, creates a point.
-     * 
-     * @param tagsPointMustArchive - sets Pointdata.setTagsPointMustArchive to true or false.
-     */
-    void generatePointDataForDataStreaming(RfnDevice gateway, BuiltInAttribute attribute, double value, boolean tagsPointMustArchive);
 }

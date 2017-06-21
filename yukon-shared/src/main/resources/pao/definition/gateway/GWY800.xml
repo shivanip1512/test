@@ -5,11 +5,13 @@
         <pointFile>GATEWAY.xml</pointFile>
     </pointFiles>
     <tags>
-        <tag name="DB_EDITOR_INCOMPATIBLE"/>
+        <tag name="DB_EDITOR_INCOMPATIBLE" />
     </tags>
     <pointInfos>
-        <pointInfo name="Connected Device Count" init="true" attributes="STREAMING_CAPABLE_DEVICE_COUNT"/>
-        <pointInfo name="Data Streaming Load" init="true" attributes="DATA_STREAMING_LOAD"/>
-        <pointInfo name="Streaming Device Count" init="true" attributes="STREAMING_ACTIVE_DEVICE_COUNT"/>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
+        <pointInfo name="Connected Device Count" init="true" attributes="STREAMING_CAPABLE_DEVICE_COUNT" />
+        <pointInfo name="Data Streaming Load" init="true" attributes="DATA_STREAMING_LOAD" />
+        <pointInfo name="Ready Nodes" init="true" attributes="READY_NODES" />
+        <pointInfo name="Streaming Device Count" init="true" attributes="STREAMING_ACTIVE_DEVICE_COUNT" />
     </pointInfos>
 </pao>

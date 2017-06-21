@@ -438,6 +438,7 @@
     <entry key="yukon.common.attribute.builtInAttribute.STREAMING_CAPABLE_DEVICE_COUNT">Streaming Capable Device Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.STREAMING_ACTIVE_DEVICE_COUNT">Streaming Active Device Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.DATA_STREAMING_LOAD">Data Streaming Load</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.READY_NODES">Ready Nodes</entry>
 
     <entry key="yukon.common.attribute.builtInAttribute.INDOOR_TEMPERATURE">Indoor Temperature</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OUTDOOR_TEMPERATURE">Outdoor Temperature</entry>

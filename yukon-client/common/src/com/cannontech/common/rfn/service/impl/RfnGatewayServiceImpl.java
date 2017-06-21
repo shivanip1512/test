@@ -22,8 +22,12 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.events.loggers.EndpointEventLogService;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
+import com.cannontech.common.pao.attribute.service.AttributeService;
+import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
@@ -58,7 +62,12 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.message.DbChangeManager;
+import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.google.common.collect.HashMultimap;
@@ -87,6 +96,9 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private RfnDeviceDao rfnDeviceDao;
     private RfnGatewayDataCache dataCache;
     @Autowired private RfnGatewayFirmwareUpgradeService rfnFirmwareUpgradeService;
+    @Autowired private AsyncDynamicDataSource dataSource;
+    @Autowired private DbChangeManager dbChangeManager;
+    @Autowired private AttributeService attributeService;
 
        
     // Created in post-construct
@@ -678,5 +690,41 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
             }
         }
         return duplicateColorGateways;
+    }
+
+    /**
+     * Attempts to lookup a point if the point doesn't exists creates a point.
+     */
+    private LitePoint findPoint(RfnDevice gateway, BuiltInAttribute attribute) {
+        LitePoint point = null;
+        try {
+            point = attributeService.getPointForAttribute(gateway, attribute);
+        } catch (IllegalUseOfAttribute e) {
+            attributeService.createPointForAttribute(gateway, attribute);
+            point = attributeService.getPointForAttribute(gateway, attribute);
+            log.info("Created point " + point + " for " + attribute + " device:" + gateway.getRfnIdentifier());
+            dbChangeManager.processPaoDbChange(gateway, DbChangeType.UPDATE);
+        }
+        return point;
+    }
+
+    @Override
+    public void generatePointData(RfnDevice gateway, BuiltInAttribute attribute, double value,
+            boolean tagsPointMustArchive) {
+
+        LitePoint point = findPoint(gateway, attribute);
+
+        PointData pointData = new PointData();
+        pointData = new PointData();
+        pointData.setId(point.getLiteID());
+        pointData.setPointQuality(PointQuality.Normal);
+        pointData.setValue(value);
+        pointData.setType(point.getPointType());
+        pointData.setTagsPointMustArchive(tagsPointMustArchive);
+
+        log.debug("Creating point data for " + pointData + " device:" + gateway.getRfnIdentifier() + " archive tags="
+            + tagsPointMustArchive);
+
+        dataSource.putValue(pointData);
     }
 }

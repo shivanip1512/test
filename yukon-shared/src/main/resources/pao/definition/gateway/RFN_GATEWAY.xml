@@ -1,7 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- RF Gateway -->
 <pao xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" paoType="RFN_GATEWAY" creatable="false" displayGroup="RFMESH" displayName="RFN Gateway" xsi:noNamespaceSchemaLocation="../pao.xsd">
+    <pointFiles>
+        <pointFile>GATEWAY.xml</pointFile>
+    </pointFiles>
     <tags>
         <tag name="DB_EDITOR_INCOMPATIBLE"/>
     </tags>
+    <pointInfos>
+        <pointInfo name="Comm Status" attributes="COMM_STATUS"/>
+        <pointInfo name="Ready Nodes" init="true" attributes="READY_NODES" />
+    </pointInfos>
 </pao>

@@ -153,9 +153,9 @@
             <%-- </div> --%>
         </div>
         <div class="column two nogutter">
-            <c:set var="attributes" value="STREAMING_CAPABLE_DEVICE_COUNT"/>
+            <c:set var="attributes" value="COMM_STATUS,READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT"/>
             <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
-                <c:set var="attributes" value="STREAMING_CAPABLE_DEVICE_COUNT,STREAMING_ACTIVE_DEVICE_COUNT"/>
+                <c:set var="attributes" value="COMM_STATUS,READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT,STREAMING_ACTIVE_DEVICE_COUNT"/>
             </cti:checkRolesAndProperties>
             <cti:msg2 var="widgetTitle" key=".metrics.title"/>
             <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" container="section" attributes="${attributes}" deviceId="${gateway.paoIdentifier.paoId}"/>

@@ -27,9 +27,6 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
-import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingMetricStatus;
 import com.cannontech.common.rfn.dataStreaming.ReportedDataStreamingConfig;
@@ -49,11 +46,6 @@ import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.jms.RequestReplyTemplate;
 import com.cannontech.common.util.jms.RequestReplyTemplateImpl;
-import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DbChangeType;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingAttribute;
 import com.cannontech.web.rfn.dataStreaming.model.DataStreamingConfig;
@@ -73,23 +65,19 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
     @Autowired private RfnDeviceAttributeDao rfnDeviceAttributeDao;
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
-    @Autowired private ConfigurationSource configurationSource;
-    @Autowired private AttributeService attributeService;
     @Autowired private RfnGatewayService rfnGatewayService;
     @Autowired @Qualifier("main") private ScheduledExecutor scheduledExecutor;
-    @Autowired private AsyncDynamicDataSource dataSource;
-    @Autowired private DbChangeManager dbChangeManager;
     private RequestReplyTemplate<DeviceDataStreamingConfigResponse> configRequestTemplate;
     private RequestReplyTemplate<GatewayDataStreamingInfoResponse> gatewayInfoRequestTemplate;
     private boolean isDataStreamingEnabled;
     
     @PostConstruct
     public void init() {
-        configRequestTemplate = new RequestReplyTemplateImpl<>(configRequestCparm, configSource, connectionFactory, 
-                requestQueue, false);
+        configRequestTemplate =
+            new RequestReplyTemplateImpl<>(configRequestCparm, configSource, connectionFactory, requestQueue, false);
         gatewayInfoRequestTemplate = new RequestReplyTemplateImpl<>(gatewayInfoRequestCparm, configSource,
-                connectionFactory, requestQueue, false);
-        isDataStreamingEnabled = configurationSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
+            connectionFactory, requestQueue, false);
+        isDataStreamingEnabled = configSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
         collectGatewayStatistics();
     }
    
@@ -201,10 +189,14 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
                 Collection<Double> streamingRfnDevices = Optional.ofNullable(info.getDeviceRfnIdentifiers()).map(Map::values).orElse(Collections.emptyList());
                 double streamingCount = streamingRfnDevices.stream().filter(load -> load > 0).count();
                 double connectedCount = streamingRfnDevices.size();
-                generatePointDataForDataStreaming(gateway, BuiltInAttribute.DATA_STREAMING_LOAD, info.getDataStreamingLoadingPercent(),
-                    shouldArchive);
-                generatePointDataForDataStreaming(gateway, BuiltInAttribute.STREAMING_ACTIVE_DEVICE_COUNT, streamingCount, shouldArchive);
-                generatePointDataForDataStreaming(gateway, BuiltInAttribute.STREAMING_CAPABLE_DEVICE_COUNT, connectedCount, shouldArchive);
+                if (isDataStreamingEnabled) {
+                    rfnGatewayService.generatePointData(gateway, BuiltInAttribute.DATA_STREAMING_LOAD,
+                        info.getDataStreamingLoadingPercent(), shouldArchive);
+                    rfnGatewayService.generatePointData(gateway, BuiltInAttribute.STREAMING_ACTIVE_DEVICE_COUNT,
+                        streamingCount, shouldArchive);
+                    rfnGatewayService.generatePointData(gateway, BuiltInAttribute.STREAMING_CAPABLE_DEVICE_COUNT,
+                        connectedCount, shouldArchive);
+                }
             }
         } catch (ExecutionException e) {
             String errorMessage =
@@ -324,44 +316,6 @@ public class DataStreamingCommunicationServiceImpl implements DataStreamingCommu
             };
             log.info("Scheduling gateway statistics collecton to run every hour.");
             scheduledExecutor.scheduleAtFixedRate(gatewayStatistics, 0, 1, TimeUnit.HOURS);
-        }
-    }
-    
-    /**
-     * Attempts to lookup a point if the point doesn't exists creates a point.
-     */
-    private LitePoint findPoint(RfnDevice gateway, BuiltInAttribute attribute){
-        LitePoint point = null;
-        try{
-            point = attributeService.getPointForAttribute(gateway, attribute);
-        }catch(IllegalUseOfAttribute e){
-            attributeService.createPointForAttribute(gateway, attribute);
-            point = attributeService.getPointForAttribute(gateway, attribute);
-            log.info("Created point "+point+" for "+attribute+" device:"+gateway.getRfnIdentifier());
-            dbChangeManager.processPaoDbChange(gateway, DbChangeType.UPDATE);
-        }
-        return point;
-    }
-    
-    @Override
-    public void generatePointDataForDataStreaming(RfnDevice gateway, BuiltInAttribute attribute, double value,
-            boolean tagsPointMustArchive) {
-        if (isDataStreamingEnabled) {
-
-            LitePoint point = findPoint(gateway, attribute);
-
-            PointData pointData = new PointData();
-            pointData = new PointData();
-            pointData.setId(point.getLiteID());
-            pointData.setPointQuality(PointQuality.Normal);
-            pointData.setValue(value);
-            pointData.setType(point.getPointType());
-            pointData.setTagsPointMustArchive(tagsPointMustArchive);
-            
-            log.debug("Creating point data for " + pointData + " device:" + gateway.getRfnIdentifier()
-                + " archive tags=" + tagsPointMustArchive);
-            
-            dataSource.putValue(pointData);
         }
     }
 }

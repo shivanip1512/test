@@ -6,6 +6,7 @@ import java.util.Set;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.message.gateway.DataType;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.model.GatewaySettings;
@@ -238,5 +239,13 @@ public interface RfnGatewayService {
      * @return A multimap of color -> gateway for colors that are duplicated. 
      */
     Multimap<Short, RfnGateway> getDuplicateColorGateways(Collection<RfnGateway> gateways);
+    
+    /**
+     * Generates point data for an attribute and sends it to dispatch.
+     * If point doesn't exits, creates a point.
+     * 
+     * @param tagsPointMustArchive - sets Pointdata.setTagsPointMustArchive to true or false.
+     */
+    void generatePointData(RfnDevice gateway, BuiltInAttribute attribute, double value, boolean tagsPointMustArchive);
 
 }

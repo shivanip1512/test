@@ -2,6 +2,7 @@ package com.cannontech.web.stars.gateway.listener;
 
 import java.io.Serializable;
 
+import javax.annotation.PostConstruct;
 import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageListener;
@@ -11,10 +12,13 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.rfn.dao.GatewayCertificateUpdateDao;
 import com.cannontech.common.rfn.message.RfnIdentifier;
+import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.gateway.GatewayDataResponse;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponse;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeResponseType;
@@ -23,8 +27,8 @@ import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.model.RfnGatewayData;
 import com.cannontech.common.rfn.service.RfnDeviceLookupService;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
+import com.cannontech.common.rfn.service.RfnGatewayService;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.web.rfn.dataStreaming.service.DataStreamingCommunicationService;
 
 /**
  * This listener receives gateway data messages and gateway certificate update responses from service manager.
@@ -37,8 +41,15 @@ public class GatewayDataTopicListener implements MessageListener {
     
     @Autowired private RfnGatewayDataCache cache;
     @Autowired private RfnDeviceLookupService rfnDeviceLookupService;
-    @Autowired private DataStreamingCommunicationService dataStreamingCommunicationService;
     @Autowired private GatewayCertificateUpdateDao certificateUpdateDao;
+    @Autowired private ConfigurationSource configSource;
+    @Autowired private RfnGatewayService rfnGatewayService;
+    private boolean isDataStreamingEnabled;
+    
+    @PostConstruct
+    public void init() {
+        isDataStreamingEnabled = configSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
+    }
     
     @Override
     public void onMessage(Message message) {
@@ -66,15 +77,19 @@ public class GatewayDataTopicListener implements MessageListener {
             log.debug("Handling gateway data message: " + message);
             RfnGatewayData data = new RfnGatewayData(message);
             cache.put(rfnDevice.getPaoIdentifier(), data);
-            if (rfnDevice.getPaoIdentifier().getPaoType() == PaoType.GWY800) {
-                dataStreamingCommunicationService.generatePointDataForDataStreaming(rfnDevice,
-                    BuiltInAttribute.DATA_STREAMING_LOAD, data.getDataStreamingLoadingPercent(), false);
+            if (isDataStreamingEnabled && rfnDevice.getPaoIdentifier().getPaoType() == PaoType.GWY800) {
+                rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.DATA_STREAMING_LOAD,
+                    data.getDataStreamingLoadingPercent(), false);
             }
+            rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.READY_NODES, message.getGwTotalReadyNodes(),
+                true);
+            int commStatus = message.getConnectionStatus() == ConnectionStatus.CONNECTED ? 0 : 1;
+            rfnGatewayService.generatePointData(rfnDevice, BuiltInAttribute.COMM_STATUS, commStatus, true);
         } catch (NotFoundException e) {
             log.error("Unable to add gateway data to cache. Device lookup failed for " + rfnIdentifier);
         }
     }
-    
+
     private void handleGatewayUpgradeMessage(RfnGatewayUpgradeResponse gatewayUpgradeMessage) {
         
         String certificateId = gatewayUpgradeMessage.getUpgradeId();

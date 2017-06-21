@@ -406,6 +406,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     STREAMING_CAPABLE_DEVICE_COUNT("Connected Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
     STREAMING_ACTIVE_DEVICE_COUNT("Streaming Device Count", AttributeGroup.GATEWAY_STATISTICS, false),
     DATA_STREAMING_LOAD("Data Streaming Load", AttributeGroup.GATEWAY_STATISTICS, false),
+    READY_NODES("Ready Nodes", AttributeGroup.GATEWAY_STATISTICS, false),
 
     FIRMWARE_VERSION("Firmware Version", AttributeGroup.OTHER),
     IGNORED_CONTROL_REASON("Ignored Control Reason", AttributeGroup.OTHER),
