@@ -24,7 +24,9 @@ public class InfrastructureWarningsWidget extends AdvancedWidgetControllerBase {
     
     @RequestMapping("render")
     public String render(ModelMap model, HttpServletRequest request) throws Exception {
+        //TODO: get counts based on type
         
+        //TODO: only get partial list
         List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings();
         model.addAttribute("warnings", warnings);
 

@@ -24,5 +24,11 @@
     <entry key="yukon.web.widgets.infrastructureWarnings.type">Type</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.status">Status</entry>
     
+    <!-- Detail Page -->
+    <entry key="yukon.web.modules.operator.infrastructureWarnings.pageName">Infrastructure Warnings</entry>
+    
+    <entry key="yukon.web.widgets.infrastructureWarnings.filters.title">Filters</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.deviceTypes">Device Types</entry>
+    
 
 </properties>

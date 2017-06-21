@@ -17,7 +17,7 @@
             <td style="padding-top:0"><span class="label label-success" style="margin-right:5px;">8</span><span class="label label-warning">1</span></td>
         </tr>
     </table>  
-    <span class="fr"><a href="${allWarningsUrl}"><cti:msg2 key=".seeAll"/></a></span>
+    <span class="fr"><a href="${allWarningsUrl}" target="_blank"><cti:msg2 key=".seeAll"/></a></span>
     <br/>  
     
     <tags:sectionContainer2 nameKey="recentIssues">

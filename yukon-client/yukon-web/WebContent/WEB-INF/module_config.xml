@@ -1316,6 +1316,9 @@
                     </page>
                 </pages>
             </page>
+            <page name="infrastructureWarnings" type="BASIC" hideSearch="true">
+                <link>/stars/infrastructureWarnings/detail</link>
+            </page>
             <page name="home" type="LANDING" hideSearch="true">
                 <link>/stars/operator/home</link>
             </page>
