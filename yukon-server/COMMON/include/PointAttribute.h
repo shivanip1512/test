@@ -394,6 +394,7 @@ public:
     static const Attribute  StreamingCapableDeviceCount;
     static const Attribute  StreamingActiveDeviceCount;
     static const Attribute  DataStreamingLoad;
+    static const Attribute  ReadyNodes;
 
     static const Attribute  FirmwareVersion;
     static const Attribute  IgnoredControlReason;

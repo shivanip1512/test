@@ -405,6 +405,7 @@ const Attribute Attribute::DebugEvent                                       = At
 const Attribute Attribute::StreamingCapableDeviceCount                      = Attribute( "STREAMING_CAPABLE_DEVICE_COUNT" );
 const Attribute Attribute::StreamingActiveDeviceCount                       = Attribute( "STREAMING_ACTIVE_DEVICE_COUNT" );
 const Attribute Attribute::DataStreamingLoad                                = Attribute( "DATA_STREAMING_LOAD" );
+const Attribute Attribute::ReadyNodes                                       = Attribute( "READY_NODES" );
 
 const Attribute Attribute::FirmwareVersion                                  = Attribute( "FIRMWARE_VERSION" );
 const Attribute Attribute::IgnoredControlReason                             = Attribute( "IGNORED_CONTROL_REASON" );
