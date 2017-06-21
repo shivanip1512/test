@@ -15,7 +15,7 @@
     <%-- OPERATIONS BOX --%>
     <cti:msg2 key=".title" var="operationsTitle"/>
     <cti:msg2 key=".topLevelLabel" var="topLevelLabel"/>
-    <tags:boxContainer hideEnabled="false" title="${group.name}">
+    <tags:boxContainer hideEnabled="false" title="${fn:escapeXml(group.name)}">
         
         ${operationsTitle}:&nbsp;
         <c:choose>
@@ -267,7 +267,7 @@
     </tags:boxContainer>
     
    <%-- MEMBERS BOX --%>
-    <tags:boxContainer hideEnabled="false" title="${group.name}">
+    <tags:boxContainer hideEnabled="false" title="${fn:escapeXml(group.name)}">
         <cti:msg2 key=".membersLabel"/>
         &nbsp;${fn:escapeXml((empty group.name)? '[ Top Level ]' : groupFullName)}
         <span class="fr">${deviceCount} <cti:msg2 key=".devices"/></span>

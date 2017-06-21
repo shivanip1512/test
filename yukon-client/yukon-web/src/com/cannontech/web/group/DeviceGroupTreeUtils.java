@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -45,7 +46,7 @@ public class DeviceGroupTreeUtils {
             node.setAttribute("text", rootName);
         }
         else {
-            node.setAttribute("text",deviceGroup.getName());
+            node.setAttribute("text", StringEscapeUtils.escapeXml10(deviceGroup.getName()));
         }
         
         // set href
