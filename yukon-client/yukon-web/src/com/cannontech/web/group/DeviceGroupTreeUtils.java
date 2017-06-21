@@ -46,7 +46,7 @@ public class DeviceGroupTreeUtils {
             node.setAttribute("text", rootName);
         }
         else {
-            node.setAttribute("text", StringEscapeUtils.escapeXml10(deviceGroup.getName()));
+            node.setAttribute("text", StringEscapeUtils.escapeXml11(deviceGroup.getName()));
         }
         
         // set href
