@@ -23,15 +23,14 @@ import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningEvaluator;
 
-public class GatewayConnectedStatusEvaluator implements InfrastructureWarningEvaluator {
-    private static final Logger log = YukonLogManager.getLogger(GatewayConnectedStatusEvaluator.class);
+public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEvaluator {
+    private static final Logger log = YukonLogManager.getLogger(GatewayConnectionStatusEvaluator.class);
     private static final DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
     private static final int CONNECTED = 0;
     private static final int WARNABLE_TIME_IN_MINUTES = 60;
     private static final Duration warnableDuration = Duration.standardMinutes(WARNABLE_TIME_IN_MINUTES);
     @Autowired RfnGatewayService rfnGatewayService;
     @Autowired private RawPointHistoryDao rphDao;
-    
     
     @Override
     public Set<PaoType> getSupportedTypes() {
