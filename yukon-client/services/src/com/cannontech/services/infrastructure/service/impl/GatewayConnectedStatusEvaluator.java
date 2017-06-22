@@ -16,9 +16,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
-import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.rfn.service.RfnGatewayService;
-import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
@@ -32,8 +30,6 @@ public class GatewayConnectedStatusEvaluator implements InfrastructureWarningEva
     private static final int WARNABLE_TIME_IN_MINUTES = 60;
     private static final Duration warnableDuration = Duration.standardMinutes(WARNABLE_TIME_IN_MINUTES);
     @Autowired RfnGatewayService rfnGatewayService;
-    @Autowired AttributeService attributeService;
-    @Autowired PointDao pointDao;
     @Autowired private RawPointHistoryDao rphDao;
     
     
@@ -44,7 +40,7 @@ public class GatewayConnectedStatusEvaluator implements InfrastructureWarningEva
     
     @Override
     public List<InfrastructureWarning> evaluate() {
-        log.debug("Running RF Gateway Connction status evaluation");
+        log.debug("Running RF Gateway Connection status evaluator");
         Map<PaoIdentifier, PointValueQualityHolder> pao = rphDao.getSingleAttributeData(
             rfnGatewayService.getAllGateways(), BuiltInAttribute.COMM_STATUS, false, null, null);
 
