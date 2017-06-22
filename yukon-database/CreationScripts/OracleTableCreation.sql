@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/7/2017 11:08:34 AM                         */
+/* Created on:     6/22/2017 2:27:06 PM                         */
 /*==============================================================*/
 
 
@@ -5658,6 +5658,19 @@ create table ImportPendingComm  (
 );
 
 /*==============================================================*/
+/* Table: InfrastructureWarnings                                */
+/*==============================================================*/
+create table InfrastructureWarnings  (
+   PaoId                NUMBER                          not null,
+   WarningType          VARCHAR2(50)                    not null,
+   Severity             VARCHAR2(10)                    not null,
+   Argument1            VARCHAR2(50),
+   Argument2            VARCHAR2(50),
+   Argument3            VARCHAR2(50),
+   constraint PK_InfrastructureWarnings primary key (PaoId, WarningType)
+);
+
+/*==============================================================*/
 /* Table: InventoryBase                                         */
 /*==============================================================*/
 create table InventoryBase  (
@@ -10133,6 +10146,7 @@ INSERT INTO YukonServices VALUES (20, 'OpcService','classpath:com/cannontech/ser
 INSERT INTO YukonServices VALUES (21, 'EcobeeMessageListener', 'classpath:com/cannontech/services/ecobeeMessageListener/ecobeeMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 INSERT INTO YukonServices VALUES (22, 'HoneywellWifiDataListener', 'classpath:com/cannontech/services/honeywellWifiListener/honeywellWifiMessageListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 INSERT INTO YukonServices VALUES (23, 'BrokerSystemMetricsListener','classpath:com/cannontech/services/BrokerSystemMetricsListener/brokerSystemMetricsListenerContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
+INSERT INTO YukonServices VALUES (24, 'InfrastructureWarnings', 'classpath:com/cannontech/services/infrastructure/infrastructureWarningsContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 
 /*==============================================================*/
 /* Table: YukonUser                                             */
@@ -12116,6 +12130,11 @@ alter table HoneywellWifiThermostat
 alter table ImportPendingComm
    add constraint FK_ImpPC_PAO foreign key (DeviceID)
       references YukonPAObject (PAObjectID);
+
+alter table InfrastructureWarnings
+   add constraint FK_InfWarnings_YukonPAO foreign key (PaoId)
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table InventoryBase
    add constraint FK_CUS_CSTA_CUS3 foreign key (AccountID)

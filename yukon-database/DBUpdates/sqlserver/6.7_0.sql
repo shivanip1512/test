@@ -1157,6 +1157,27 @@ WHERE
     AND DCCI.ItemValue='DELIVERED_KVA';
 /* End YUK-16782 */
 
+/* Start YUK-16802 */
+CREATE TABLE InfrastructureWarnings (
+   PaoId                NUMERIC              NOT NULL,
+   WarningType          VARCHAR(50)          NOT NULL,
+   Severity             VARCHAR(10)          NOT NULL,
+   Argument1            VARCHAR(50)          NULL,
+   Argument2            VARCHAR(50)          NULL,
+   Argument3            VARCHAR(50)          NULL,
+   CONSTRAINT PK_InfrastructureWarnings PRIMARY KEY (PaoId, WarningType)
+);
+GO
+
+ALTER TABLE InfrastructureWarnings
+   ADD CONSTRAINT FK_InfWarnings_YukonPAO FOREIGN KEY (PaoId)
+      REFERENCES YukonPAObject (PAObjectID)
+         ON DELETE CASCADE;
+GO
+
+INSERT INTO YukonServices VALUES (24, 'InfrastructureWarnings', 'classpath:com/cannontech/services/infrastructure/infrastructureWarningsContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
+/* End YUK-16802 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1212,6 +1212,25 @@ TRUNCATE TABLE t_DeviceConfigCategoryIDs;
 DROP TABLE t_DeviceConfigCategoryIDs;
 /* End YUK-16782 */
 
+/* Start YUK-16802 */
+CREATE TABLE InfrastructureWarnings  (
+   PaoId                NUMBER                          NOT NULL,
+   WarningType          VARCHAR2(50)                    NOT NULL,
+   Severity             VARCHAR2(10)                    NOT NULL,
+   Argument1            VARCHAR2(50),
+   Argument2            VARCHAR2(50),
+   Argument3            VARCHAR2(50),
+   CONSTRAINT PK_InfrastructureWarnings PRIMARY KEY (PaoId, WarningType)
+);
+
+ALTER TABLE InfrastructureWarnings
+   ADD CONSTRAINT FK_InfWarnings_YukonPAO FOREIGN KEY (PaoId)
+      REFERENCES YukonPAObject (PAObjectID)
+      ON DELETE CASCADE;
+
+INSERT INTO YukonServices VALUES (24, 'InfrastructureWarnings', 'classpath:com/cannontech/services/infrastructure/infrastructureWarningsContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
+/* End YUK-16802 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
