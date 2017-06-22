@@ -2,7 +2,7 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include "PointAttribute.h"
+#include "Attribute.h"
 #include <chrono>
 
 #include "test_main.hpp"

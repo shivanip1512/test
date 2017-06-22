@@ -1,7 +1,7 @@
 #include "precompiled.h"
 
 #include "MetricIdLookup.h"
-#include "PointAttribute.h"
+#include "Attribute.h"
 #include "std_helper.h"
 
 #include <boost/bimap.hpp>

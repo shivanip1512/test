@@ -1,6 +1,6 @@
 #include "precompiled.h"
 
-#include "PointAttribute.h"
+#include "Attribute.h"
 
 #include "std_helper.h"
 

@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE(test_unknownAttributes)
     for( const auto& deviceAttributes : unknowns )
     {
         BOOST_ERROR( "Device type " + desolveDeviceType(deviceAttributes.first) + " has unknown attribute " + deviceAttributes.second + 
-                     " - attributes may have been added to BuiltInAttributes.java without being added to PointAttribute.cpp and PointAttribute.h" );
+                     " - attributes may have been added to BuiltInAttributes.java without being added to Attribute.cpp and Attribute.h" );
     }
 }
 

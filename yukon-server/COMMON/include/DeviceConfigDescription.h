@@ -2,7 +2,7 @@
 
 #include "devicetypes.h"
 #include "pointtypes.h"
-#include "PointAttribute.h"
+#include "Attribute.h"
 
 #include <boost/optional.hpp>
 

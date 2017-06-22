@@ -343,6 +343,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Attribute.cpp" />
     <ClCompile Include="AttributeService.cpp">
     </ClCompile>
     <ClCompile Include="BeatThePeakAlertLevel.cpp">
@@ -443,8 +444,6 @@
     </ClCompile>
     <ClCompile Include="observe.cpp">
     </ClCompile>
-    <ClCompile Include="PointAttribute.cpp">
-    </ClCompile>
     <ClCompile Include="queue.cpp">
     </ClCompile>
     <ClCompile Include="queues.cpp">
@@ -510,6 +509,7 @@
     <ClCompile Include="xml_parsers.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\Attribute.h" />
     <ClInclude Include="include\AttributeService.h" />
     <ClInclude Include="include\BeatThePeakAlertLevel.h" />
     <ClInclude Include="include\boost_test_helpers.h" />
@@ -583,7 +583,6 @@
     <ClInclude Include="include\optional.h" />
     <ClInclude Include="include\OS2_2W32.H" />
     <ClInclude Include="include\parsevalue.h" />
-    <ClInclude Include="include\PointAttribute.h" />
     <ClInclude Include="include\pointdefs.h" />
     <ClInclude Include="include\pointtypes.h" />
     <ClInclude Include="include\PORTER.H" />

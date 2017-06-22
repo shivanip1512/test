@@ -11,7 +11,7 @@
 #include "cmd_rfn_ChannelConfiguration.h"
 #include "cmd_rfn_DataStreamingConfiguration.h"
 
-#include "PointAttribute.h"
+#include "Attribute.h"
 #include "MetricIdLookup.h"
 
 #include "std_helper.h"

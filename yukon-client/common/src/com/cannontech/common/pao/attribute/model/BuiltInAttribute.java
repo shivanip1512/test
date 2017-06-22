@@ -24,8 +24,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     // This ordering is shared by our C++ code. 
     // Any changes/additions here need to be reflected there as well.
     
-    // yukon-server/COMMON/PointAttribute.cpp
-    // yukon-server/COMMON/include/PointAttribute.h
+    // yukon-server/COMMON/Attribute.cpp
+    // yukon-server/COMMON/include/Attribute.h
 
      /** 
        * Point Name naming convention: 

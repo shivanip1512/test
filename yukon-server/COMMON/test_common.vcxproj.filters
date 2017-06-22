@@ -59,9 +59,6 @@
     <ClCompile Include="test_old_queues.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test_PointAttribute.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="test_queue.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

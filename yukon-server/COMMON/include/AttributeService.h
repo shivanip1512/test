@@ -4,7 +4,7 @@
 #include <string>
 
 #include "LitePoint.h"
-#include "PointAttribute.h"
+#include "Attribute.h"
 
 /**
  * This Class is to hold the accessors for Attribute

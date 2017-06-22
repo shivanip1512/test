@@ -372,8 +372,6 @@
     </ClCompile>
     <ClCompile Include="test_old_queues.cpp">
     </ClCompile>
-    <ClCompile Include="test_PointAttribute.cpp">
-    </ClCompile>
     <ClCompile Include="test_queue.cpp">
     </ClCompile>
     <ClCompile Include="test_readers_writer_lock.cpp">

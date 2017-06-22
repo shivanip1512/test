@@ -1,6 +1,6 @@
 #pragma once
 
-#include "pointattribute.h"
+#include "Attribute.h"
 #include "devicetypes.h"
 #include "msg_pcrequest.h"
 #include "mgr_paosched.h"

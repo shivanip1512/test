@@ -1,6 +1,6 @@
 #pragma once
 
-#include "PointAttribute.h"
+#include "Attribute.h"
 #include "devicetypes.h"
 
 #include <set>

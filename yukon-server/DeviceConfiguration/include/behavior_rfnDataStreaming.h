@@ -3,7 +3,7 @@
 #include "yukon.h"
 
 #include "behavior_device.h"
-#include "PointAttribute.h"
+#include "Attribute.h"
 
 #include <map>
 #include <chrono>

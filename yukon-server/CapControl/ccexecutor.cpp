@@ -2,7 +2,7 @@
 
 #include "AttributeService.h"
 #include "LitePoint.h"
-#include "PointAttribute.h"
+#include "Attribute.h"
 #include "ccclientlistener.h"
 #include "ccexecutor.h"
 #include "ccsubstationbusstore.h"

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "types.h"
-#include "PointAttribute.h"
+#include "Attribute.h"
 #include "PointValueHolder.h"
 #include "LitePoint.h"
 #include "LastControlReason.h"

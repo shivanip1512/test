@@ -2,7 +2,7 @@
 
 #include "dlldefs.h"
 #include "rfn_e2e_messenger.h"
-#include "PointAttribute.h"
+#include "Attribute.h"
 #include "pointdefs.h"
 #include "msg_pdata.h"
 

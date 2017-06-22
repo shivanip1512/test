@@ -11,7 +11,7 @@ BOOST_AUTO_TEST_CASE(test_unknownAttributes)
     if( ! unknowns.empty() )
     {
         BOOST_ERROR( "Metric ID to Attribute mapping has unknown attributes; "
-                     "attributes may have been added to BuiltInAttributes.java without being added to PointAttribute.cpp and PointAttribute.h" );
+                     "attributes may have been added to BuiltInAttributes.java without being added to Attribute.cpp and Attribute.h" );
 
         for( const auto& attributeNotFound : unknowns )
         {
