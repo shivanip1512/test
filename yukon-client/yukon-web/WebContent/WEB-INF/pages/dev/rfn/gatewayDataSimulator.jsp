@@ -29,6 +29,9 @@
             <tags:nameValue name="Failsafe Mode">
                 Report all gateways as being in "failsafe" mode.
             </tags:nameValue>
+            <tags:nameValue name="Connection Status">
+                Report all gateways as either being Connected, Disconnected.
+            </tags:nameValue>
         </tags:nameValueContainer>
     </div>
     
@@ -141,6 +144,11 @@
                                             ${dataSettings.failsafeMode}
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
+                                    <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="Connection Status">
+                                            ${dataSettings.connectionStatus}
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
                                 </c:if>
                                 <c:if test="${not autoDataReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
@@ -166,6 +174,15 @@
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Failsafe Mode">
                                             <input name="failsafeMode" type="checkbox">
+                                        </tags:nameValue>
+                                    </tags:nameValueContainer>
+                                    <tags:nameValueContainer tableClass="natural-width">
+                                        <tags:nameValue name="Connection Status">
+                                            <select name="connectionStatus">
+                                                <c:forEach var="connectionType" items="${connectionTypes}">
+                                                    <option value="${connectionType}">${connectionType}</option>
+                                                </c:forEach>
+                                            </select>                                        
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>

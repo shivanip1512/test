@@ -46,6 +46,7 @@ import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.rfn.message.RfnArchiveStartupNotification;
 import com.cannontech.common.rfn.message.datastreaming.device.DeviceDataStreamingConfigError;
+import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestResult;
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType;
@@ -217,6 +218,7 @@ public class NmIntegrationController {
         model.addAttribute("firmwareVersionReplyTypes", RfnUpdateServerAvailableVersionResult.values());
         model.addAttribute("firmwareUpdateResultTypes", GatewayFirmwareUpdateRequestResult.values());
         model.addAttribute("gatewayUpdateResultTypes", GatewayUpdateResult.values());
+        model.addAttribute("connectionTypes", ConnectionStatus.values());
         
         try {
             GatewaySimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
@@ -262,7 +264,7 @@ public class NmIntegrationController {
                 new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
             SimulatedGatewayDataSettings settings = response.getDataSettings();
             if(settings == null){
-                settings = enableGatewayDataSimulator(false, 50, 1000, 500, false, flash);
+                settings = enableGatewayDataSimulator(false, 50, 1000, 500, false, ConnectionStatus.CONNECTED, flash);
             }
             gatewaySimService.sendGatewayDataResponse(serial, isGateway2, settings);
             flash.setConfirm(new YukonMessageSourceResolvable(
@@ -292,6 +294,7 @@ public class NmIntegrationController {
                 dataSettings.setNumberOfReadyNodes(1000);
                 dataSettings.setNumberOfNotReadyNodes(500);
                 dataSettings.setFailsafeMode(false);
+                dataSettings.setConnectionStatus(ConnectionStatus.CONNECTED);
                 request.setDataSettings(dataSettings);
             }
             
@@ -353,6 +356,7 @@ public class NmIntegrationController {
                                          @RequestParam(defaultValue="1000") String readyNodes,
                                          @RequestParam(defaultValue="500") String notReadyNodes,
                                          @RequestParam(defaultValue="false") boolean failsafeMode,
+                                         @RequestParam(defaultValue="CONNECTED") ConnectionStatus connectionStatus,
                                          FlashScope flash) {
         
         enableGatewayDataSimulator(alwaysGateway2, 
@@ -360,6 +364,7 @@ public class NmIntegrationController {
                                    Integer.valueOf(readyNodes), 
                                    Integer.valueOf(notReadyNodes),
                                    failsafeMode,
+                                   connectionStatus,
                                    flash);
         return "redirect:gatewaySimulator";
     }
@@ -369,6 +374,7 @@ public class NmIntegrationController {
                                                                     int readyNodes,
                                                                     int notReadyNodes,
                                                                     boolean failsafeMode,
+                                                                    ConnectionStatus ConnectionStatus,
                                                                     FlashScope flash){
         clearGatewayCache();
         SimulatedGatewayDataSettings dataSettings = new SimulatedGatewayDataSettings();
@@ -377,6 +383,7 @@ public class NmIntegrationController {
         dataSettings.setNumberOfReadyNodes(readyNodes);
         dataSettings.setNumberOfNotReadyNodes(notReadyNodes);
         dataSettings.setFailsafeMode(failsafeMode);
+        dataSettings.setConnectionStatus(ConnectionStatus);
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
         request.setDataSettings(dataSettings);
         sendStartStopRequest(request, flash, true);
@@ -988,7 +995,7 @@ public class NmIntegrationController {
                 new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
             SimulatedGatewayDataSettings gatewaySettings = gatewayResponse.getDataSettings();
             if(gatewaySettings == null){
-                enableGatewayDataSimulator(false, 50, 1000, 500, false, flash);
+                enableGatewayDataSimulator(false, 50, 1000, 500, false, ConnectionStatus.CONNECTED, flash);
                 startedGatewaySimualtor = true;
             }
             
