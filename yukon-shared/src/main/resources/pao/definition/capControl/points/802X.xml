@@ -292,6 +292,12 @@
         <unitofmeasure value="MINUTES"/>
         <decimalplaces value="0"/>
     </point>
+    <point offset="10467" type="Analog">
+        <name>SCADA Override Heartbeat</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="MINUTES"/>
+        <decimalplaces value="0"/>
+    </point>
     <point offset="10468" type="Analog">
         <name>SCADA Override Type</name>
         <multiplier value="1"/>

@@ -525,10 +525,11 @@
     <entry key="yukon.common.attribute.builtInAttribute.OVER_VOLTAGE_COUNT">Over Voltage Count</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RADIO_SIGNAL_STRENGTH_INDICATOR">RSSI</entry>
     <entry key="yukon.common.attribute.builtInAttribute.RECLOSE_BLOCKED">Reclose Blocked</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_CLEAR">SCADA Override Clear</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_COUNTDOWN_TIMER">SCADA Override Countdown Timer</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_ENABLE">SCADA Override Enable</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_HEARTBEAT">SCADA Override Heartbeat</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_TYPE">SCADA Override Type</entry>
+    <entry key="yukon.common.attribute.builtInAttribute.SCADA_OVERRIDE_MODE">SCADA Override Mode</entry>
     <entry key="yukon.common.attribute.builtInAttribute.SOURCE_VOLTAGE">Source Voltage</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TAP_DOWN">Tap Down</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TAP_POSITION">Tap Position</entry>

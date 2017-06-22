@@ -10,9 +10,17 @@ namespace CapControl    {
 
 struct CbcHeartbeatPolicy : Policy
 {
+    enum OperatingMode
+    {
+        Normal,
+        ScadaOverride
+    };
+
+    OperatingMode getOperatingMode();
+
     virtual Actions SendHeartbeat( const long keepAliveValue ) = 0;
 
-    virtual Actions StopHeartbeat( const long keepAliveValue ) = 0;
+    virtual Actions StopHeartbeat();
 
     Action WriteAnalogValue( const Attribute & attribute, const long keepAliveValue );
 };
@@ -22,7 +30,7 @@ struct NoCbcHeartbeatPolicy : CbcHeartbeatPolicy
 {
     Actions SendHeartbeat( const long keepAliveValue ) override;
 
-    Actions StopHeartbeat( const long keepAliveValue ) override;
+    Actions StopHeartbeat() override;
 
 protected:
 
@@ -34,21 +42,15 @@ struct AnalogCbcHeartbeatPolicy : CbcHeartbeatPolicy
 {
     Actions SendHeartbeat( const long keepAliveValue ) override;
 
-    Actions StopHeartbeat( const long keepAliveValue ) override;
-
 protected:
 
     AttributeList getSupportedAttributes() override;
-
-    long readCurrentValue();
 };
 
 
 struct PulsedCbcHeartbeatPolicy : CbcHeartbeatPolicy
 {
     Actions SendHeartbeat( const long keepAliveValue ) override;
-
-    Actions StopHeartbeat( const long keepAliveValue ) override;
 
 protected:
 

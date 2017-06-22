@@ -38,7 +38,7 @@
         <pointInfo name="Door Status" init="true"/>
         <pointInfo name="Emergency OV Threshold" init="true"/>
         <pointInfo name="Emergency UV Threshold" init="true"/>
-        <pointInfo name="Enable SCADA Override"/>
+        <pointInfo name="Enable SCADA Override" attributes="SCADA_OVERRIDE_ENABLE"/>
         <pointInfo name="Firmware Version" init="true" attributes="FIRMWARE_VERSION"/>
         <pointInfo name="High Voltage" init="true"/>
         <pointInfo name="Ignore SCADA Override Time of Day"/>
@@ -80,9 +80,10 @@
         <pointInfo name="Reclose Block" init="true" attributes="RECLOSE_BLOCKED"/>
         <pointInfo name="Relay Sense Failed" init="true"/>
         <pointInfo name="Remote Control Mode" init="true"/>
-        <pointInfo name="SCADA Override" init="true"/>
-        <pointInfo name="SCADA Override Clear"/>
-        <pointInfo name="SCADA Override Countdown Timer"/>
+        <pointInfo name="SCADA Override" init="true" attributes="SCADA_OVERRIDE_MODE"/>
+        <pointInfo name="SCADA Override Clear" attributes="SCADA_OVERRIDE_CLEAR"/>
+        <pointInfo name="SCADA Override Countdown Timer" attributes="SCADA_OVERRIDE_COUNTDOWN_TIMER"/>
+        <pointInfo name="SCADA Override Heartbeat" attributes="SCADA_OVERRIDE_HEARTBEAT"/>
         <pointInfo name="SCADA Override Release Time"/>
         <pointInfo name="SCADA Override Time Remaining"/>
         <pointInfo name="SCADA Override Type"/>

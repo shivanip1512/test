@@ -2172,12 +2172,7 @@ catch ( FailedAttributeLookup & missingAttribute )
 void CtiCCCapBank::executeStopHeartbeat( const std::string & user )
 try
 {
-    const CtiTime Now;
-
-    if ( heartbeat.isTimeToSend( Now ) )
-    {
-        submitHeartbeatCommands( heartbeat._policy->StopHeartbeat( heartbeat._value ) );
-    }
+    submitHeartbeatCommands( heartbeat._policy->StopHeartbeat() );
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {

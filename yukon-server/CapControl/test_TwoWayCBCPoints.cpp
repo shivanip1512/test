@@ -584,6 +584,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
         LitePoint( 330, PulseAccumulatorPointType,  "", 0,     4, "", "", 1.0, -17 ),
         LitePoint( 350, PulseAccumulatorPointType,  "", 0,     5, "", "", 1.0, -17 ),
         LitePoint( 318, StatusPointType,            "", 0,     1, "", "", 1.0, -17 ),
+        LitePoint( 345, StatusPointType,            "", 0,     2, "", "", 1.0, -17 ),
         LitePoint( 334, StatusPointType,            "", 0,     3, "", "", 1.0, -17 ),
         LitePoint( 311, StatusPointType,            "", 0,    72, "", "", 1.0, -17 ),
         LitePoint( 354, StatusPointType,            "", 0,    84, "", "", 1.0, -17 ),
@@ -609,7 +610,6 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
         LitePoint( 343, AnalogPointType,            "", 0, 10018, "", "", 1.0, -17 ),
         LitePoint( 315, AnalogPointType,            "", 0, 10019, "", "", 1.0, -17 ),
         LitePoint( 333, AnalogPointType,            "", 0, 10020, "", "", 1.0, -17 ),
-        LitePoint( 345, StatusPointType,            "", 0,     2, "", "", 1.0, -17 ),
         LitePoint( 347, StatusPointType,            "", 0,     4, "", "", 1.0, -17 ),
         LitePoint( 344, StatusPointType,            "", 0,     5, "", "", 1.0, -17 ),
         LitePoint( 349, StatusPointType,            "", 0,     6, "", "", 1.0, -17 ),
@@ -635,7 +635,7 @@ BOOST_AUTO_TEST_CASE( test_TwoWayCBCPoints_CBC_802X )
         registrationPoints,
         expected
         {
-            325, 342,
+            325, 342, 345,
             340, 331, 359, 313, 323, 338, 362, 330, 350,
             318, 334, 311, 352, 354, 321, 336, 335
         };

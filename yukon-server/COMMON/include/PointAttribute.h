@@ -473,10 +473,11 @@ public:
     static const Attribute  OverVoltageCount;
     static const Attribute  RadioSignalStrengthIndicator;
     static const Attribute  RecloseBlocked;
+    static const Attribute  ScadaOverrideClear;
     static const Attribute  ScadaOverrideCountdownTimer;
     static const Attribute  ScadaOverrideEnable;
     static const Attribute  ScadaOverrideHeartbeat;
-    static const Attribute  ScadaOverrideType;
+    static const Attribute  ScadaOverrideMode;
     static const Attribute  SourceVoltage;
     static const Attribute  TapDown;
     static const Attribute  TapPosition;
