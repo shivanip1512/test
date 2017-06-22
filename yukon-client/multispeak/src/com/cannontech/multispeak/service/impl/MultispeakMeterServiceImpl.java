@@ -37,6 +37,7 @@ import com.cannontech.amr.meter.search.model.FilterBy;
 import com.cannontech.amr.meter.search.model.MeterSearchField;
 import com.cannontech.amr.meter.search.model.MeterSearchOrderBy;
 import com.cannontech.amr.meter.search.model.StandardFilterBy;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
@@ -1178,6 +1179,10 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             @Override
             public void complete() {
                 log.debug("rfn complete for cdEvent");
+            }
+
+            @Override
+            public void addError(MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType) {
             }
         };
 

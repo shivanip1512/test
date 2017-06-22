@@ -33,6 +33,7 @@ import com.cannontech.amr.deviceread.dao.WaitableDeviceAttributeReadCallback;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
@@ -1878,6 +1879,11 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             @Override
             public void complete() {
                 log.debug("rfn complete for cdEvent");
+            }
+
+            @Override
+            public void addError(MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType) {
+            
             }
         };
 

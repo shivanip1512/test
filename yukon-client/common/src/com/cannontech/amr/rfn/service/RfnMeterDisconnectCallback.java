@@ -2,6 +2,7 @@ package com.cannontech.amr.rfn.service;
 
 import org.springframework.context.MessageSourceResolvable;
 
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.common.rfn.service.Callback;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
@@ -20,5 +21,8 @@ public interface RfnMeterDisconnectCallback extends Callback {
      */
     public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state);
     
-
+    /**
+     *Exist to handle Load Side Voltage Detected After Disconnect replyType 
+     */
+    public void addError(MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType);
 }

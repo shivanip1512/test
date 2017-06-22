@@ -20,6 +20,7 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.model.RfnMeter;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
@@ -90,7 +91,7 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
         }
     }
 
-    private class Callback implements RfnMeterDisconnectCallback {
+    public class Callback implements RfnMeterDisconnectCallback {
         private final DisconnectCallback callback;
         private final SimpleDevice meter;
         private final PendingRequests pendingRequests;
@@ -124,6 +125,13 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
             proccessResult(state, null, message);
         }
 
+        public void addError(MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType) {
+            log.debug("RFN addError");
+            if (callback instanceof DisconnectServiceImpl.SingleMeterDisconnectCallback && replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT) {
+                callback.failed(meter, new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED), message));
+            }
+        }
+        
         @Override
         public void processingExceptionOccured(MessageSourceResolvable message) {
             log.debug("RFN exception (RfnMeterDisconnectCallback)");
@@ -173,11 +181,6 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
                     // devices with "UNKNOWN" state should be counted as failed
                     callback.failed(meter, error);
                     errorCode = error.getErrorCode();
-                    break;
-                case LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED:
-                    if (callback instanceof DisconnectServiceImpl.SingleMeterDisconnectCallback) {
-                        callback.failed(meter, new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED), message));
-                    }
                     break;
                 case DISCONNECTED:
                 case DISCONNECTED_DEMAND_THRESHOLD_ACTIVE:

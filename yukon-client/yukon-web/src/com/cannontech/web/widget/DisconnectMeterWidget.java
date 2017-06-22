@@ -35,6 +35,7 @@ import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.service.MeterService;
+import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectState;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
 import com.cannontech.amr.rfn.model.RfnMeter;
@@ -181,6 +182,11 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
 			public Set<SpecificDeviceErrorDescription> getErrors() {
 				return errors;
 			}
+
+            @Override
+            public void addError(MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType) {
+                errors.add(new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED), message));
+            }
         };
         
         WaitableCallback callback = new WaitableCallback();
