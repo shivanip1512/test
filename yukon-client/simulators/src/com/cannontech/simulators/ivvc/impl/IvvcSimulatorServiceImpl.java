@@ -38,6 +38,7 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.point.PointInfo;
 import com.cannontech.database.data.point.PointType;
+import com.cannontech.ivvc.model.IvvcSimulatorSettings;
 import com.cannontech.message.capcontrol.streamable.Area;
 import com.cannontech.message.capcontrol.streamable.CapBankDevice;
 import com.cannontech.message.capcontrol.streamable.Feeder;
@@ -45,6 +46,8 @@ import com.cannontech.message.capcontrol.streamable.SubBus;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.simulators.dao.RegulatorEventsSimulatorDao;
 import com.cannontech.simulators.dao.RegulatorEventsSimulatorDao.RegulatorOperations;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.simulators.ivvc.IvvcSimulatorService;
 
 public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
@@ -57,6 +60,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     @Autowired private RegulatorEventsSimulatorDao regulatorEventsSimulatorDao;
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
     @Autowired private PointDao pointDao;
+    @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
 
     private volatile boolean isRunning; // This refers to the simulator itself
     private volatile boolean isCurrentlyExecuting = false; // This is used to ensure only one timed execution happens at a time
@@ -86,10 +90,11 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private List<PointTypeValue> cbcPointCache = new ArrayList<>();
     
     @Override
-    public boolean start() {
+    public boolean start(IvvcSimulatorSettings settings) {
         if (isRunning) {
             return false;
         } else {
+            saveSettings(settings);
             lastRegulatorEvaluationTime = Instant.now();
             ivvcSimulationFuture = executor.scheduleAtFixedRate(this::getSimulatorThread, 0, 30, TimeUnit.SECONDS);
             log.info("IVVC simulator thread starting up.");
@@ -102,7 +107,7 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     public void stop() {
         ivvcSimulationFuture.cancel(true);
         isRunning = false;
-        log.info("Cap Control simulator thread shutting down.");
+        log.info("IVVC simulator thread shutting down.");
     }
     
     @Override
@@ -546,5 +551,22 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
         }
         
         return null;
+    }
+    
+    private void saveSettings(IvvcSimulatorSettings settings) {
+        log.debug("Saving IvvcSimulatorSettings to YukonSimulatorSettings table.");
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_INCREASED_SPEED_MODE, settings.isIncreasedSpeedMode());
+    }
+    
+    @Override
+    public IvvcSimulatorSettings getCurrentSettings() {
+        log.debug("Getting IvvcSimulatorSettings from db.");
+        IvvcSimulatorSettings settings = new IvvcSimulatorSettings(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_INCREASED_SPEED_MODE));
+        return settings;
+    }
+
+    @Override
+    public void startSimulatorWithCurrentSettings() {
+        start(getCurrentSettings());
     }
 }

@@ -1,12 +1,15 @@
 package com.cannontech.simulators.ivvc;
 
-public interface IvvcSimulatorService {
+import com.cannontech.ivvc.model.IvvcSimulatorSettings;
+import com.cannontech.simulators.AutoStartableSimulator;
+
+public interface IvvcSimulatorService extends AutoStartableSimulator {
 
     /**
      * Starts the simulator.
      * @return true if the simulator started successfully, or false if it was already running.
      */
-    boolean start();
+    boolean start(IvvcSimulatorSettings settings);
 
     /**
      * Stops the simulator. Although this method will return immediately, the simulator may continue
@@ -22,4 +25,8 @@ public interface IvvcSimulatorService {
      */
     boolean isRunning();
 
+    /**
+     * Gets the IVVC simulator settings from the database.
+     */
+    IvvcSimulatorSettings getCurrentSettings();
 }

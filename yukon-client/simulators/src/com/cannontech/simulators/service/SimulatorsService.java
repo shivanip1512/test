@@ -19,6 +19,7 @@ import com.cannontech.simulators.AutoStartableSimulator;
 import com.cannontech.simulators.SimulatorType;
 import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
 import com.cannontech.simulators.handler.SimulatorMessageHandler;
+import com.cannontech.simulators.ivvc.IvvcSimulatorService;
 import com.cannontech.simulators.startup.service.SimulatorStartupSettingsService;
 import com.cannontech.spring.YukonSpringHook;
 import com.google.common.collect.ImmutableMap;
@@ -36,6 +37,7 @@ public class SimulatorsService {
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private SimulatorStartupSettingsService simulatorStartupSettingsService;
     @Autowired private RfnMeterDataSimulatorService rfnMeterDataSimulatorService;
+    @Autowired private IvvcSimulatorService ivvcSimulatorService;
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private Set<SimulatorMessageHandler> messageHandlers;
     private SimulatorMessageListener messageListener;
@@ -92,6 +94,7 @@ public class SimulatorsService {
         jmsTemplate.setReceiveTimeout(incomingMessageWaitMillis); // TODO: does this need to be set?
         simulatorTypeToSimulator = new ImmutableMap.Builder<SimulatorType, AutoStartableSimulator>()
             .put(SimulatorType.RFN_METER, rfnMeterDataSimulatorService)
+            .put(SimulatorType.IVVC, ivvcSimulatorService)
             .build();
     }
 
