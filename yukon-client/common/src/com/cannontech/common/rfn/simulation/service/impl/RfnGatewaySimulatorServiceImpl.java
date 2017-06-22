@@ -571,11 +571,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         // of the default values.
         GatewaySaveData cachedData = gatewayDataCache.get(rfnId);
         GatewayDataResponse response = 
-                DefaultGatewaySimulatorData.buildDataResponse(rfnId, cachedData, 
-                                                              settings.getCurrentDataStreamingLoading(),
-                                                              settings.getNumberOfReadyNodes(),
-                                                              settings.getNumberOfNotReadyNodes(),
-                                                              settings.isFailsafeMode());
+                DefaultGatewaySimulatorData.buildDataResponse(rfnId, cachedData, settings);
         
         return response;
     }

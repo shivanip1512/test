@@ -10,7 +10,6 @@ import com.cannontech.common.rfn.message.RfnIdentifier;
 import com.cannontech.common.rfn.message.gateway.AppMode;
 import com.cannontech.common.rfn.message.gateway.Authentication;
 import com.cannontech.common.rfn.message.gateway.ConflictType;
-import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
 import com.cannontech.common.rfn.message.gateway.ConnectionType;
 import com.cannontech.common.rfn.message.gateway.DataSequence;
 import com.cannontech.common.rfn.message.gateway.DataType;
@@ -20,6 +19,7 @@ import com.cannontech.common.rfn.message.gateway.LastCommStatus;
 import com.cannontech.common.rfn.message.gateway.Radio;
 import com.cannontech.common.rfn.message.gateway.RadioType;
 import com.cannontech.common.rfn.message.gateway.SequenceBlock;
+import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.google.common.collect.Sets;
 
 /**
@@ -40,7 +40,6 @@ public class DefaultGatewaySimulatorData {
     private static final String updateServerPass = "updatePassword";
     private static final String updateServerUrl = "http://127.0.0.1:8081/simulatedUpdateServer/latest/";
     private static final ConnectionType connectionType = ConnectionType.TCP_IP;
-    private static final ConnectionStatus connectionStatus = ConnectionStatus.CONNECTED;
     private static final LastCommStatus lastCommStatus = LastCommStatus.SUCCESSFUL;
     private static final String upperStackVersion = "1.0";
     private static final String softwareVersion = "2.0";
@@ -73,8 +72,7 @@ public class DefaultGatewaySimulatorData {
      * values.
      */
     public static GatewayDataResponse buildDataResponse(RfnIdentifier rfnId, GatewaySaveData customData, 
-                                                        double currentDataStreamingLoading, Integer numberOfReadyNodes, 
-                                                        Integer numberOfNotReadyNodes, boolean failsafeMode) {
+            SimulatedGatewayDataSettings settings) {
         
         GatewayDataResponse response = new GatewayDataResponse();
         response.setRfnIdentifier(rfnId);
@@ -110,7 +108,8 @@ public class DefaultGatewaySimulatorData {
         response.setPort(port);
         response.setConnectionType(connectionType);
         
-        response.setConnectionStatus(connectionStatus);
+        response.setConnectionStatus(settings.getConnectionStatus()); 
+
         response.setLastCommStatus(lastCommStatus);
         response.setLastCommStatusTimestamp(Instant.now().getMillis());
         
@@ -138,25 +137,25 @@ public class DefaultGatewaySimulatorData {
         }
         response.setSequences(sequences);
         
-        response.setCurrentDataStreamingLoading(currentDataStreamingLoading);
+        response.setCurrentDataStreamingLoading(settings.getCurrentDataStreamingLoading());
         response.setMaxDataStreamingCapacity(maxDataStreamingLoading);
         
         //"Ready nodes" and "not ready nodes" are configurable.
         //Currently, all other values are derived from these two.
         int totalNodes = 0;
-        if (numberOfReadyNodes == null) {
+        if (settings.getNumberOfNotReadyNodes() == null) {
             response.setGwTotalNotReadyNodes(gwTotalNotReadyNodes);
             totalNodes += gwTotalNotReadyNodes;
         } else {
-            response.setGwTotalNotReadyNodes(numberOfNotReadyNodes);
-            totalNodes += numberOfNotReadyNodes;
+            response.setGwTotalNotReadyNodes(settings.getNumberOfNotReadyNodes());
+            totalNodes += settings.getNumberOfNotReadyNodes();
         }
-        if (numberOfReadyNodes == null) {
+        if (settings.getNumberOfReadyNodes() == null) {
             response.setGwTotalReadyNodes(gwTotalReadyNodes);
             totalNodes += gwTotalReadyNodes;
         } else {
-            response.setGwTotalReadyNodes(numberOfReadyNodes);
-            totalNodes += numberOfReadyNodes;
+            response.setGwTotalReadyNodes(settings.getNumberOfReadyNodes());
+            totalNodes += settings.getNumberOfReadyNodes();
         }
         
         response.setGwTotalNodes(totalNodes);
@@ -164,7 +163,7 @@ public class DefaultGatewaySimulatorData {
         response.setGwTotalNodesWithSN(totalNodes);
         response.setGwTotalNodesNoInfo(0);
         
-        if (failsafeMode) {
+        if (settings.isFailsafeMode()) {
             response.setMode(AppMode.FAIL_SAFE);
         } else {
             response.setMode(mode);

@@ -2,7 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
 
-    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CONNECTION_STATUS.LOW">Connection has been down for {0} {0, choice, 1#hour|1&lt;hours}</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CONNECTION_STATUS.LOW">Connection has been down since {0}.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_COLOR.LOW">Duplicate color: {0}.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_FAILSAFE.LOW">Gateway is in failsafe mode.</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.warningType.GATEWAY_CONNECTED_NODES.LOW">Total connected node history is larger than recommended: {0}</entry>

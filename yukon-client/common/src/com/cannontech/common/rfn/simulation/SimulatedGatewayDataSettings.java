@@ -2,6 +2,8 @@ package com.cannontech.common.rfn.simulation;
 
 import java.io.Serializable;
 
+import com.cannontech.common.rfn.message.gateway.ConnectionStatus;
+
 public class SimulatedGatewayDataSettings implements Serializable {
     private static final long serialVersionUID = 1L;
     private boolean returnGwy800Model;
@@ -9,6 +11,7 @@ public class SimulatedGatewayDataSettings implements Serializable {
     private Integer numberOfReadyNodes;
     private Integer numberOfNotReadyNodes;
     private boolean isFailsafeMode;
+    private ConnectionStatus connectionStatus;
 
     public boolean isReturnGwy800Model() {
         return returnGwy800Model;
@@ -48,5 +51,13 @@ public class SimulatedGatewayDataSettings implements Serializable {
 
     public void setFailsafeMode(boolean isFailsafeMode) {
         this.isFailsafeMode = isFailsafeMode;
+    }
+    
+    public ConnectionStatus getConnectionStatus() {
+        return connectionStatus;
+    }
+
+    public void setConnectionStatus(ConnectionStatus connectionStatus) {
+        this.connectionStatus = connectionStatus;
     }
 }
