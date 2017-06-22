@@ -140,6 +140,8 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_analog_send_heartbeat, cbc_heartbeat_fi
 {
     bank->loadAttributes( & attributes );
 
+    // In analog mode, we always send the configuration value to the heartbeat point.
+
     BOOST_CHECK_NO_THROW( bank->executeSendHeartbeat( "cap control" ) );
 
 
@@ -149,7 +151,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_analog_send_heartbeat, cbc_heartbeat_fi
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 10467, signalMsg->getId() );     // ID of the 'ScadaOverrideHeartbeat' LitePoint
+    BOOST_CHECK_EQUAL( 10467, signalMsg->getId() );     // Offset of the 'ScadaOverrideHeartbeat' LitePoint
     BOOST_CHECK_EQUAL( "CBC Heartbeat", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
@@ -189,7 +191,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_analog_stop_heartbeat_scada_override_mo
 
     bank->handlePointData( scadaOverride );
 
-    // Since the CBC is still in override mode, the following should create a pulse the SCADA Override Clear point
+    // Since the CBC is still in override mode, the following should create a pulse to the SCADA Override Clear point.
 
     BOOST_CHECK_NO_THROW( bank->executeStopHeartbeat( "cap control" ) );
 
@@ -201,7 +203,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_analog_stop_heartbeat_scada_override_mo
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 5678, signalMsg->getId() );     // PaoID of the 'ScadaOverrideClear' LitePoint
+    BOOST_CHECK_EQUAL( 5678, signalMsg->getId() );      // PointID of the 'ScadaOverrideClear' LitePoint
     BOOST_CHECK_EQUAL( "CBC Heartbeat Clear", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
@@ -209,13 +211,15 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_analog_stop_heartbeat_scada_override_mo
 
     BOOST_REQUIRE( requestMsg );
 
-    BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'ScadaOverrideHeartbeat' LitePoint
+    BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'ScadaOverrideClear' LitePoint
     BOOST_CHECK_EQUAL( "control pulse select pointid 5678", requestMsg->CommandString() );
 }
 
 BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_zero_value, cbc_heartbeat_fixture_pulsed )
 {
     bank->loadAttributes( & attributes );
+
+    // ince the CBC doesn't have a value for the heartbeat, first we initialize it, then pulse the enable point.
 
     BOOST_CHECK_NO_THROW( bank->executeSendHeartbeat( "cap control" ) );
 
@@ -245,7 +249,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_zero_value, cbc_h
 
         BOOST_REQUIRE( signalMsg );
 
-        BOOST_CHECK_EQUAL( 1234, signalMsg->getId() );     // ID of the 'ScadaOverrideEnable' LitePoint
+        BOOST_CHECK_EQUAL( 1234, signalMsg->getId() );      // PointID of the 'ScadaOverrideEnable' LitePoint
         BOOST_CHECK_EQUAL( "CBC Heartbeat Pulse", signalMsg->getText() );
         BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
@@ -266,6 +270,9 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_differing_value, 
 
     bank->handlePointData( scada );
 
+    // Here we have a heartbeat value, but it doesn't match the config - re-initialize it to the proper value
+    //  and pulse the enable point.
+
     BOOST_CHECK_NO_THROW( bank->executeSendHeartbeat( "cap control" ) );
 
 
@@ -294,7 +301,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_differing_value, 
 
         BOOST_REQUIRE( signalMsg );
 
-        BOOST_CHECK_EQUAL( 1234, signalMsg->getId() );     // ID of the 'ScadaOverrideEnable' LitePoint
+        BOOST_CHECK_EQUAL( 1234, signalMsg->getId() );      // PointID of the 'ScadaOverrideEnable' LitePoint
         BOOST_CHECK_EQUAL( "CBC Heartbeat Pulse", signalMsg->getText() );
         BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
@@ -315,6 +322,8 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_correct_value, cb
 
     bank->handlePointData( scada );
 
+    // Here we have the proper value already in the CBC so we just need to pulse the enable point.
+
     BOOST_CHECK_NO_THROW( bank->executeSendHeartbeat( "cap control" ) );
 
 
@@ -326,7 +335,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_correct_value, cb
 
         BOOST_REQUIRE( signalMsg );
 
-        BOOST_CHECK_EQUAL( 1234, signalMsg->getId() );     // ID of the 'ScadaOverrideEnable' LitePoint
+        BOOST_CHECK_EQUAL( 1234, signalMsg->getId() );      // PointID of the 'ScadaOverrideEnable' LitePoint
         BOOST_CHECK_EQUAL( "CBC Heartbeat Pulse", signalMsg->getText() );
         BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
@@ -364,7 +373,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_stop_heartbeat_scada_override_mo
 
     bank->handlePointData( scadaOverride );
 
-    // Since the CBC is still in override mode, the following should create a pulse the SCADA Override Clear point
+    // Since the CBC is still in override mode, the following should create a pulse to the SCADA Override Clear point.
 
     BOOST_CHECK_NO_THROW( bank->executeStopHeartbeat( "cap control" ) );
 
@@ -376,7 +385,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_stop_heartbeat_scada_override_mo
 
     BOOST_REQUIRE( signalMsg );
 
-    BOOST_CHECK_EQUAL( 5678, signalMsg->getId() );     // PaoID of the 'ScadaOverrideClear' LitePoint
+    BOOST_CHECK_EQUAL( 5678, signalMsg->getId() );      // PointID of the 'ScadaOverrideClear' LitePoint
     BOOST_CHECK_EQUAL( "CBC Heartbeat Clear", signalMsg->getText() );
     BOOST_CHECK_EQUAL( "Capbank Name: Test Capbank", signalMsg->getAdditionalInfo() );
 
@@ -384,7 +393,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_stop_heartbeat_scada_override_mo
 
     BOOST_REQUIRE( requestMsg );
 
-    BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'ScadaOverrideHeartbeat' LitePoint
+    BOOST_CHECK_EQUAL( 1000, requestMsg->DeviceId() );  // PaoID of the 'ScadaOverrideClear' LitePoint
     BOOST_CHECK_EQUAL( "control pulse select pointid 5678", requestMsg->CommandString() );
 }
 

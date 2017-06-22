@@ -24,8 +24,8 @@ catch ( UninitializedPointValue & failedRead )
 
 Policy::Actions CbcHeartbeatPolicy::StopHeartbeat()
 {
-    // Read the current heartbeat config value, if it's not zero then write a zero to put the CBC into
-    //  local mode.  If it is zero, the CBC is already released, do nothing.
+    // Check the current reported mode of the CBC, if we are not in ScadaOverride mode, then don't do anything,
+    //  if we are, pulse the ScadaOverrideClear point.
 
     Actions    actions;
 
