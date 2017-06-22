@@ -927,6 +927,291 @@ DELETE FROM POINT WHERE POINTID IN (
     WHERE POINTTYPE = 'ANALOG' AND PointOffset IN (25,27,29,31,101,105,182,188) AND YP.Type IN ('RFN-530S4EAXR', 'RFN-530S4ERXR'));
 /* End YUK-16814 */
 
+/* Start YUK-16782 */
+/* Small update to BehaviorReportValue */
+UPDATE BehaviorReportValue BRV
+SET BRV.Value = 'KVA'
+WHERE BRV.BehaviorReportId IN (
+    SELECT BR.BehaviorReportId 
+    FROM 
+        BehaviorReport BR 
+    JOIN 
+        YukonPAObject Y ON BR.DeviceID = Y.PAObjectID
+    WHERE Y.Type IN ('RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4') )
+AND BRV.Value='DELIVERED_KVA';
+
+
+/* Splitting Behavior/Updating BehaviorValue */
+/* @error ignore-begin */
+/* This will almost definitely error, but it's a necessary safety check */
+TRUNCATE TABLE t_BehaviorsToSplit;
+DROP TABLE t_BehaviorsToSplit;
+/* @error ignore-end */
+
+CREATE GLOBAL TEMPORARY TABLE t_BehaviorsToSplit ON COMMIT PRESERVE ROWS AS
+    SELECT ROW_NUMBER() OVER(ORDER BY B.BehaviorId) AS RowNumber, B.BehaviorId
+    FROM Behavior B
+        JOIN BehaviorValue BV ON B.BehaviorId=BV.BehaviorId
+        JOIN DeviceBehaviorMap DBM1 ON B.BehaviorId=DBM1.BehaviorId
+        JOIN DeviceBehaviorMap DBM2 ON B.BehaviorId=DBM2.BehaviorId
+        JOIN YukonPAObject Y1 ON DBM1.DeviceId=Y1.PAObjectID
+        JOIN YukonPAObject Y2 ON DBM2.DeviceId=Y2.PAObjectID
+    WHERE 
+        B.BehaviorType='DATA_STREAMING'
+        AND BV.Value='DELIVERED_KVA'
+        AND Y1.Type='RFN-430A3K'
+        AND Y2.Type IN ('RFN-430SL1','RFN-430SL2','RFN-430SL3','RFN-430SL4');
+
+/* @start-block */
+DECLARE 
+    v_loopCounter NUMBER;
+    v_BTSRowCount NUMBER;
+    v_maxBehaviorId NUMBER;
+    v_newBehaviorId NUMBER;
+BEGIN
+
+    SELECT COALESCE(MAX(BehaviorId), 0) INTO v_maxBehaviorId FROM Behavior;
+
+    /*  Find any behaviors containing DELIVERED_KVA that are shared by RFN-430SL1+ and RFN-A3K  */
+    INSERT INTO Behavior 
+        SELECT
+            v_maxBehaviorId + RowNumber,
+            'DATA_STREAMING'
+        FROM t_BehaviorsToSplit;
+
+    INSERT INTO BehaviorValue
+        SELECT 
+            v_maxBehaviorId + BTS.RowNumber, 
+            BV.Name,
+            BV.Value
+        FROM BehaviorValue BV
+        JOIN t_BehaviorsToSplit BTS ON BV.BehaviorId = BTS.BehaviorID;
+
+    UPDATE DeviceBehaviorMap DBM
+    SET DBM.BehaviorId = (
+        SELECT v_maxBehaviorId + BTS.RowNumber
+        FROM DeviceBehaviorMap DBM
+            JOIN YukonPAObject Y ON DBM.DeviceId = Y.PAObjectID
+            JOIN t_BehaviorsToSplit BTS ON DBM.BehaviorId = BTS.BehaviorId
+        WHERE 
+            Y.Type IN ('RFN-430SL1','RFN-430SL2','RFN-430SL3','RFN-430SL4')
+            AND DBM.BehaviorId = BTS.BehaviorID )
+    WHERE DBM.DeviceID IN (
+        SELECT DBM.DeviceID
+        FROM DeviceBehaviorMap DBM
+            JOIN YukonPAObject Y ON DBM.DeviceId=Y.PAObjectID
+            JOIN t_BehaviorsToSplit BTS ON DBM.BehaviorId=BTS.BehaviorId
+        WHERE 
+            Y.Type IN ('RFN-430SL1','RFN-430SL2','RFN-430SL3','RFN-430SL4')
+            AND DBM.BehaviorId = BTS.BehaviorID );
+END;
+/
+/* @end-block */
+TRUNCATE TABLE t_BehaviorsToSplit;
+DROP TABLE t_BehaviorsToSplit;
+
+/* Update all RFN Data Streaming Device Behaviors with RFN-430SL1+ to use KVA instead of DELIVERED_KVA */
+UPDATE BehaviorValue BV
+SET 
+    BV.Value='KVA'
+WHERE
+    BV.BehaviorId IN (
+        SELECT DISTINCT
+            BV.BehaviorId
+        FROM BehaviorValue BV
+            JOIN Behavior B ON BV.BehaviorId=B.BehaviorId
+            JOIN DeviceBehaviorMap DBM ON B.BehaviorId=DBM.BehaviorId
+            JOIN YukonPAObject Y ON DBM.DeviceId=Y.PAObjectID
+        WHERE 
+            B.BehaviorType='DATA_STREAMING'
+            AND Y.Type IN ('RFN-430SL1','RFN-430SL2','RFN-430SL3','RFN-430SL4') )
+AND
+    BV.Value='DELIVERED_KVA';
+
+
+/* Splitting/Updating DeviceConfiguration */
+/* Find all rfnChannelConfiguration DeviceConfigCategories that contain 'DELIVERED_KVA' and are assigned to both RFN-430SL1+ and another type supporting DELIVERED_KVA */
+/* @error ignore-begin */
+/* These will almost definitely error, but it's a necessary safety check */
+TRUNCATE TABLE t_DeviceConfigsToSplit;
+DROP TABLE t_DeviceConfigsToSplit;
+TRUNCATE TABLE t_DeviceConfigurationIDs;
+DROP TABLE t_DeviceConfigurationIDs;
+TRUNCATE TABLE t_DeviceConfigCategoryIDs;
+DROP TABLE t_DeviceConfigCategoryIDs;
+/* @error ignore-end */
+
+CREATE GLOBAL TEMPORARY TABLE t_DeviceConfigsToSplit ON COMMIT PRESERVE ROWS AS (
+    SELECT DISTINCT DC.DeviceConfigurationID, DCC.DeviceConfigCategoryId
+    FROM 
+        DeviceConfiguration DC
+        JOIN DeviceConfigCategoryMap DCCM ON DC.DeviceConfigurationID=DCCM.DeviceConfigurationId
+        JOIN DeviceConfigCategory DCC ON DCCM.DeviceConfigCategoryId=DCC.DeviceConfigCategoryId
+        JOIN DeviceConfigCategoryItem DCCI ON DCC.DeviceConfigCategoryId=DCCI.DeviceConfigCategoryId
+        JOIN DeviceConfigDeviceTypes DCDT1 ON DC.DeviceConfigurationID=DCDT1.DeviceConfigurationId
+        JOIN DeviceConfigDeviceTypes DCDT2 ON DC.DeviceConfigurationID=DCDT2.DeviceConfigurationId
+    WHERE 
+        DCC.CategoryType='rfnChannelConfiguration'
+        AND DCCI.ItemName LIKE 'enabledChannels%attribute'
+        AND DCCI.ItemValue='DELIVERED_KVA'
+        AND DCDT1.PaoType IN ('RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4')
+        AND DCDT2.PaoType IN ('RFN-420CD', 'RFN-420CL', 'RFN-430A3K', 'RFN-530S4X') );
+
+CREATE GLOBAL TEMPORARY TABLE t_DeviceConfigurationIDs (DeviceConfigurationID NUMBER NOT NULL, NewDeviceConfigurationID Number) ON COMMIT PRESERVE ROWS;
+CREATE GLOBAL TEMPORARY TABLE t_DeviceConfigCategoryIDs (DeviceConfigCategoryID NUMBER NOT NULL, NewDeviceConfigCategoryID Number) ON COMMIT PRESERVE ROWS;
+
+/* @start-block */
+DECLARE
+    v_maxDeviceConfigurationId NUMBER;
+    v_maxDeviceConfigCatId NUMBER;
+    v_maxDeviceConfigCatItemId  NUMBER;
+    v_maxDeviceConfigDeviceTypeId    NUMBER;
+BEGIN
+    
+    SELECT MAX(DeviceConfigurationId) INTO v_maxDeviceConfigurationId FROM DeviceConfiguration;
+    SELECT MAX(DeviceConfigCategoryId) INTO v_maxDeviceConfigCatId FROM DeviceConfigCategory;
+    SELECT MAX(DeviceConfigCategoryItemId) INTO v_maxDeviceConfigCatItemId FROM DeviceConfigCategoryItem;
+    SELECT MAX(DeviceConfigDeviceTypeId) INTO v_maxDeviceConfigDeviceTypeId FROM DeviceConfigDeviceTypes;
+
+    /* Calculate the new Device Config IDs */
+    INSERT INTO t_DeviceConfigurationIDs
+        SELECT DCID.DeviceConfigurationID, v_maxDeviceConfigurationId + ROW_NUMBER() OVER(ORDER BY DeviceConfigurationID ASC) AS NewDeviceConfigurationID
+        FROM (SELECT DISTINCT DeviceConfigurationID FROM t_DeviceConfigsToSplit) DCID;
+
+    /* Calculate the new Device Config Category IDs */
+    INSERT INTO t_DeviceConfigCategoryIDs
+        SELECT DeviceConfigCategoryID, v_maxDeviceConfigCatId + ROW_NUMBER() OVER(ORDER BY DeviceConfigCategoryID ASC) AS NewDeviceConfigCategoryID
+        FROM (SELECT DISTINCT DeviceConfigCategoryID FROM t_DeviceConfigsToSplit) DCID;
+
+    /*  Create a new RFN-430SL rfnChannelConfiguration DeviceConfigCategory from the existing one */
+    INSERT INTO DeviceConfigCategory 
+        SELECT
+            DCCID.NewDeviceConfigCategoryId,
+            DCC.CategoryType,
+            DCC.Name || ' (RFN-430 kVA)',
+            CASE
+                WHEN DCC.Description IS NULL THEN 'Auto created for RFN-430 Sentinel meters during 6.7 upgrade'
+                ELSE DCC.Description || CHR(13) || CHR(10) || 'Auto created for RFN-430 Sentinel meters during 6.7 upgrade'
+            END
+        FROM DeviceConfigCategory DCC
+            JOIN t_DeviceConfigCategoryIDs DCCID ON DCC.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId;
+
+    INSERT INTO DeviceConfigCategoryItem
+        SELECT
+            v_maxDeviceConfigCatItemId + ROW_NUMBER() OVER(ORDER BY DCCI.DeviceConfigCategoryItemId ASC),
+            DCCID.NewDeviceConfigCategoryId,
+            DCCI.ItemName,
+            DCCI.ItemValue
+        FROM 
+            DeviceConfigCategoryItem DCCI
+            JOIN t_DeviceConfigCategoryIDs DCCID ON DCCI.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId;
+
+    /*  Create new device configs for the RFN-430 Sentinels */
+    INSERT INTO DeviceConfiguration 
+        SELECT
+            DCID.NewDeviceConfigurationID,
+            DC.Name || ' (auto-created for RFN-430 Sentinel)',
+            CASE
+                WHEN DC.Description IS NULL THEN 'Auto created for RFN-430 Sentinel meters during 6.7 upgrade'
+                ELSE DC.Description || CHR(13) || CHR(10) || 'Auto created for RFN-430 Sentinel meters during 6.7 upgrade'
+            END
+        FROM 
+            DeviceConfiguration DC
+            JOIN t_DeviceConfigurationIDs DCID ON DC.DeviceConfigurationID = DCID.DeviceConfigurationId;
+
+    /*  Insert copies of all device config categories into the new device configs */
+    INSERT INTO DeviceConfigCategoryMap
+        SELECT
+            DCID.NewDeviceConfigurationId,
+            DCCM.DeviceConfigCategoryId
+        FROM 
+            DeviceConfigCategoryMap DCCM
+            JOIN t_DeviceConfigurationIDs DCID ON DCCM.DeviceConfigurationId = DCID.DeviceConfigurationId;
+
+    /*  Update the new device configs to use the new categories */
+    UPDATE DeviceConfigCategoryMap DCCMO
+    SET DCCMO.DeviceConfigCategoryId = (
+        SELECT DCCID.NewDeviceConfigCategoryId
+        FROM DeviceConfigCategoryMap DCCM
+        JOIN t_DeviceConfigurationIDs DCID ON DCCM.DeviceConfigurationId = DCID.NewDeviceConfigurationId
+        JOIN t_DeviceConfigCategoryIDs DCCID ON DCCM.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId 
+        WHERE DCCMO.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId 
+        AND DCCMO.DeviceConfigurationId=DCID.NewDeviceConfigurationId)
+    WHERE EXISTS (
+        SELECT *
+        FROM DeviceConfigCategoryMap DCCM
+        JOIN t_DeviceConfigurationIDs DCID ON DCCM.DeviceConfigurationId = DCID.NewDeviceConfigurationId
+        JOIN t_DeviceConfigCategoryIDs DCCID ON DCCM.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId 
+        WHERE DCCMO.DeviceConfigCategoryId = DCCID.DeviceConfigCategoryId 
+        AND DCCMO.DeviceConfigurationId=DCID.NewDeviceConfigurationId);
+                
+    /*  Insert the RFN-430 Sentinels into the new device config typelists */
+    INSERT INTO DeviceConfigDeviceTypes
+        SELECT
+            v_maxDeviceConfigDeviceTypeId + ROW_NUMBER() OVER(ORDER BY DCDT.DeviceConfigDeviceTypeId ASC),
+            DCID.NewDeviceConfigurationId,
+            DCDT.PaoType
+        FROM 
+            DeviceConfigDeviceTypes DCDT
+            JOIN t_DeviceConfigurationIDs DCID ON DCDT.DeviceConfigurationId=DCID.DeviceConfigurationId
+        WHERE
+            DCDT.PaoType IN ('RFN-430SL1', 'RFN-430SL2', 'RFN-430SL3', 'RFN-430SL4');
+
+    /*  Delete the RFN-430 Sentinels from the old device config typelists */
+    DELETE FROM DeviceConfigDeviceTypes DCDT
+    WHERE 
+        DCDT.DeviceConfigurationId IN (
+            SELECT DCTS.DeviceConfigurationID
+            FROM t_DeviceConfigsToSplit DCTS )
+    AND
+        DCDT.PaoType IN ('RFN-430SL1','RFN-430SL2','RFN-430SL3','RFN-430SL4');
+
+    /*  Point the RFN-430 Sentinels to the new configs */
+    UPDATE DeviceConfigurationDeviceMap DCDMO
+    SET DCDMO.DeviceConfigurationId = (
+        SELECT DCID.NewDeviceConfigurationId
+        FROM DeviceConfigurationDeviceMap DCDM
+            JOIN t_DeviceConfigurationIDs DCID ON DCDM.DeviceConfigurationId = DCID.DeviceConfigurationId
+            JOIN YukonPAObject Y ON DCDM.DeviceId = Y.PAObjectID
+        WHERE Y.Type IN ('RFN-430SL1','RFN-430SL2','RFN-430SL3','RFN-430SL4')
+            AND DCDMO.DeviceConfigurationId = DCID.DeviceConfigurationId
+            AND DCDMO.DeviceId = DCDM.DeviceId )
+    WHERE EXISTS (
+        SELECT *
+        FROM DeviceConfigurationDeviceMap DCDM
+            JOIN t_DeviceConfigurationIDs DCID ON DCDM.DeviceConfigurationId = DCID.DeviceConfigurationId
+            JOIN YukonPAObject Y ON DCDM.DeviceId = Y.PAObjectID
+        WHERE Y.Type IN ('RFN-430SL1','RFN-430SL2','RFN-430SL3','RFN-430SL4')
+            AND DCDMO.DeviceConfigurationId = DCID.DeviceConfigurationId
+            AND DCDMO.DeviceId = DCDM.DeviceId );
+END;
+/
+/* @end-block */
+
+/* Update all rfnChannelConfiguration categories assigned to RFN-430SL1+ to use KVA instead of DELIVERED_KVA */
+UPDATE DeviceConfigCategoryItem DCCI
+SET ItemValue='KVA'
+WHERE DCCI.DeviceConfigCategoryId IN (
+        SELECT DISTINCT DCC.DeviceConfigCategoryId 
+        FROM
+            DeviceConfigCategory DCC
+            JOIN DeviceConfigCategoryMap DCCM ON DCC.DeviceConfigCategoryId=DCCM.DeviceConfigCategoryId
+            JOIN DeviceConfiguration DC ON DCCM.DeviceConfigurationId=DC.DeviceConfigurationID
+            JOIN DeviceConfigDeviceTypes DCDT ON DC.DeviceConfigurationID=DCDT.DeviceConfigurationId
+        WHERE
+            DCC.CategoryType='rfnChannelConfiguration'
+            AND DCDT.PaoType IN ('RFN-430SL1','RFN-430SL2','RFN-430SL3','RFN-430SL4') )
+    AND DCCI.ItemName LIKE 'enabledChannels%attribute'
+    AND DCCI.ItemValue='DELIVERED_KVA';
+
+TRUNCATE TABLE t_DeviceConfigsToSplit;
+DROP TABLE t_DeviceConfigsToSplit;
+TRUNCATE TABLE t_DeviceConfigurationIDs;
+DROP TABLE t_DeviceConfigurationIDs;
+TRUNCATE TABLE t_DeviceConfigCategoryIDs;
+DROP TABLE t_DeviceConfigCategoryIDs;
+/* End YUK-16782 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
