@@ -42,7 +42,7 @@
                 </ul>
          </ul>
          Click on the Filter button to filter the results.<br/>
-         The resulting devices will be display in a table with the total count of filtered devices.<br/>
+         The resulting devices will display in a table with the total count of filtered devices.<br/>
          Click on the Gear Icon next to the device count to view options you can do for the filtered device collection (Collection Actions, Map Devices, Download data, etc.).<br/>
          Click on the Gear Icon next to each device to view options you can do for the individual device (Collection Actions, Map Device, etc.). <br/>
          The count of devices that correspond with each of the Data Availability categories are color coded on the right.
