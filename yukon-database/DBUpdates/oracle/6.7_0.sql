@@ -1231,6 +1231,14 @@ ALTER TABLE InfrastructureWarnings
 INSERT INTO YukonServices VALUES (24, 'InfrastructureWarnings', 'classpath:com/cannontech/services/infrastructure/infrastructureWarningsContext.xml', 'ServiceManager', 'CONTEXT_FILE_TYPE');
 /* End YUK-16802 */
 
+/* Start YUK-16722 */
+ALTER TABLE UserDashboard
+DROP CONSTRAINT PK_UserDashboard;
+
+ALTER TABLE UserDashboard
+ADD CONSTRAINT PK_UserDashboard PRIMARY KEY (UserId, DashboardId, PageAssignment);
+/* End YUK-16722 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

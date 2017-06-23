@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/22/2017 2:23:29 PM                         */
+/* Created on:     6/23/2017 3:20:52 PM                         */
 /*==============================================================*/
 
 
@@ -9352,7 +9352,7 @@ create table UserDashboard (
    UserId               numeric              not null,
    DashboardId          numeric              not null,
    PageAssignment       varchar(50)          not null,
-   constraint PK_UserDashboard primary key (UserId, DashboardId)
+   constraint PK_UserDashboard primary key (UserId, DashboardId, PageAssignment)
 )
 go
 

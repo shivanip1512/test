@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/22/2017 2:27:06 PM                         */
+/* Created on:     6/23/2017 3:19:52 PM                         */
 /*==============================================================*/
 
 
@@ -8810,7 +8810,7 @@ create table UserDashboard  (
    UserId               NUMBER                          not null,
    DashboardId          NUMBER                          not null,
    PageAssignment       VARCHAR2(50)                    not null,
-   constraint PK_UserDashboard primary key (UserId, DashboardId)
+   constraint PK_UserDashboard primary key (UserId, DashboardId, PageAssignment)
 );
 
 /*==============================================================*/
