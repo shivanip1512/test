@@ -118,13 +118,17 @@
                         </c:if>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".connectionStatus">
-                        <c:set var="clazz" value="${data.connectionStatus == 'CONNECTED' ? 'green' : 'red'}"/>
-                        <span class="state-box ${clazz} js-gw-conn-state"></span>
-                        <span class="js-gw-conn-state-text">
-                            <c:if test="${not empty data}">
-                                <i:inline key=".connectionStatus.${data.connectionStatus}"/>
-                            </c:if>
-                        </span>
+                        <cti:attributeResolver pao="${gateway}" attribute="${commStatusAttribute}" var="pointId"/>
+                        <cti:pointStatus pointId="${pointId}"/>
+                        <cti:uniqueIdentifier var="popupId" prefix="historical-readings-"/>
+                        <cti:url var="historyUrl" value="/meter/historicalReadings/view">
+                            <cti:param name="pointId" value="${pointId}"/>
+                            <cti:param name="deviceId" value="${gateway.paoIdentifier.paoId}"/>
+                        </cti:url>
+                        <a href="javascript:void(0);" data-popup="#${popupId}" class="${pageScope.classes}">
+                            <cti:pointValue pointId="${pointId}"/>
+                        </a>
+                        <div id="${popupId}" data-width="500" data-height="400" data-url="${historyUrl}" class="dn"></div>
                     </tags:nameValue2>
                     <tags:nameValue2 nameKey=".lastComms">
                         <c:set var="clazz" value="green"/>
@@ -153,9 +157,9 @@
             <%-- </div> --%>
         </div>
         <div class="column two nogutter">
-            <c:set var="attributes" value="COMM_STATUS,READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT"/>
+            <c:set var="attributes" value="READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT"/>
             <cti:checkRolesAndProperties value="RF_DATA_STREAMING_ENABLED">
-                <c:set var="attributes" value="COMM_STATUS,READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT,STREAMING_ACTIVE_DEVICE_COUNT"/>
+                <c:set var="attributes" value="READY_NODES,STREAMING_CAPABLE_DEVICE_COUNT,STREAMING_ACTIVE_DEVICE_COUNT"/>
             </cti:checkRolesAndProperties>
             <cti:msg2 var="widgetTitle" key=".metrics.title"/>
             <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" container="section" attributes="${attributes}" deviceId="${gateway.paoIdentifier.paoId}"/>

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.GatewayEventLogService;
+import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.rfn.message.gateway.DataSequence;
@@ -83,6 +84,7 @@ public class GatewayDetailController {
         Map<PointType, List<PointInfo>> points = pointDao.getAllPointNamesAndTypesForPAObject(gateway.getId());
         model.addAttribute("points", points);
         
+        model.addAttribute("commStatusAttribute", BuiltInAttribute.COMM_STATUS);
         return "gateways/detail.jsp";
     }
     

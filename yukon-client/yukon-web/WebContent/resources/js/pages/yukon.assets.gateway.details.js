@@ -117,8 +117,6 @@ yukon.assets.gateway.details = (function () {
                 div.append('<div>' + radio.mac + '</div>');
                 $('.js-gw-radios').append(div);
             });
-            comm.find('.js-gw-conn-state').toggleClass('green', data.connected).toggleClass('red', !data.connected);
-            comm.find('.js-gw-conn-state-text').text(data.connectionStatusText);
             comm.find('.js-gw-last-comm').text(data.lastCommText)
             .toggleClass('green', data.lastComm == 'SUCCESSFUL')
             .toggleClass('red', data.lastComm == 'FAILED')
