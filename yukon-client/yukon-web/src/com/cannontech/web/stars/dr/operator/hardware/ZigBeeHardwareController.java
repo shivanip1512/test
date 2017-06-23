@@ -10,6 +10,7 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.Duration;
 import org.joda.time.Instant;
@@ -24,7 +25,6 @@ import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.clientutils.YukonLogManager;
@@ -141,7 +141,7 @@ public class ZigBeeHardwareController {
     private void returnJson(HttpServletResponse response, boolean success, String message) throws IOException {
         Map<String, Object> jsonMap = Maps.newHashMapWithExpectedSize(2);
         jsonMap.put("success", success);
-        jsonMap.put("message", message);
+        jsonMap.put("message", StringEscapeUtils.escapeXml11(message));
 
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();

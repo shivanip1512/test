@@ -83,15 +83,4 @@ public class JsonUtils {
         return null;
     }
     
-    /**
-     * This method replaces all occurrences of "</" with "<\\/". This is to prevent the script from getting executed in 
-     * XSS attacks, as the JSON may contain script tag. This method should be called before passing the JSON string to 
-     * the JSPs for rendering.
-     * @param json
-     * @return sanitized JSON
-     */
-    public static String sanitizeJson(String json) {
-        return json.replace("</", "<\\/");
-    }
-    
 }
