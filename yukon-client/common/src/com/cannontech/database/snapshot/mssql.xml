@@ -14613,6 +14613,12 @@
                   <i__columnName>DashboardId</i__columnName>
                   <i__nonNonUnique>false</i__nonNonUnique>
                 </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                <com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
+                  <i__tableName>UserDashboard</i__tableName>
+                  <i__ordinalPosition>3</i__ordinalPosition>
+                  <i__columnName>PageAssignment</i__columnName>
+                  <i__nonNonUnique>false</i__nonNonUnique>
+                </com.cariboulake.db.schemacompare.business.domain.db.IndexSegment>
               </indexSegments>
               <indexName>PK_UserDashboard</indexName>
             </com.cariboulake.db.schemacompare.business.domain.db.Index>
