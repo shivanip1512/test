@@ -21,6 +21,7 @@ import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonDevice;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.SimpleCallback;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -28,6 +29,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
 
     @Autowired private CommandRequestRouteAndDeviceExecutor commandRequestRouteAndDeviceExecutor = null;
     @Autowired private IDatabaseCache databaseCache;
+    @Autowired private PaoDao paoDao;
     @Autowired private ScheduledExecutor scheduledExecutor = null;
     private Map<SimpleCallback<Integer>, List<CommandCompletionCallback<CommandRequestRouteAndDevice>>> simpleCallbacksToCommandCompleteCallbacks = 
         new HashMap<SimpleCallback<Integer>, List<CommandCompletionCallback<CommandRequestRouteAndDevice>>>();
@@ -58,7 +60,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
     
     private void doNextDiscoveryRequest(final YukonDevice device, final RouteDiscoveryState state, final String commandString) {
 
-        final String deviceLogStr = " DEVICE: " + databaseCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName() + "' (" + device.getPaoIdentifier() + ")";
+        final String deviceLogStr = " DEVICE: " + paoDao.getYukonPAOName(device.getPaoIdentifier().getPaoId()) + "' (" + device.getPaoIdentifier() + ")";
         
         // The Callback has been canceled.  Ending the recursive call for that given Callback.
         if(cancelationCallbackList.contains(state.getRouteFoundCallback())) {
@@ -108,7 +110,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                             int currentRouteId = state.getRouteIds().get(state.getRouteIdx());
                             int currentDeviceId = command.getDevice().getPaoIdentifier().getPaoId();
                             String routeLogStr = " ROUTE: " + databaseCache.getAllPaosMap().get(currentRouteId).getPaoName() + "' (" + currentRouteId + ")";
-                            String deviceLogStr = " DEVICE: " + databaseCache.getAllPaosMap().get(currentDeviceId).getPaoName() + "' (" + currentDeviceId + ")";
+                            String deviceLogStr = " DEVICE: " + paoDao.getYukonPAOName(currentDeviceId) + "' (" + currentDeviceId + ")";
 
                             try {
 
@@ -157,7 +159,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                             int foundRouteId = command.getRouteId();
                             int foundDeviceId = command.getDevice().getPaoIdentifier().getPaoId();
                             String routeLogStr = " ROUTE: " + databaseCache.getAllPaosMap().get(foundRouteId).getPaoName() + "' (" + foundRouteId + ")";
-                            String deviceLogStr = " DEVICE: " + databaseCache.getAllPaosMap().get(foundDeviceId).getPaoName() + "' (" + foundDeviceId + ")";
+                            String deviceLogStr = " DEVICE: " + paoDao.getYukonPAOName(foundDeviceId) + "' (" + foundDeviceId + ")";
                             
                             // route found! run routeFoundCallback
 
