@@ -24,7 +24,6 @@ import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
-import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
 import com.cannontech.common.pao.dao.PaoLocationDao;
 import com.cannontech.common.pao.model.PaoLocation;
 import com.cannontech.common.point.PointQuality;
@@ -66,7 +65,6 @@ import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.DbChangeManager;
-import com.cannontech.message.dispatch.message.DbChangeType;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -692,27 +690,15 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
         return duplicateColorGateways;
     }
 
-    /**
-     * Attempts to lookup a point if the point doesn't exists creates a point.
-     */
-    private LitePoint findPoint(RfnDevice gateway, BuiltInAttribute attribute) {
-        LitePoint point = null;
-        try {
-            point = attributeService.getPointForAttribute(gateway, attribute);
-        } catch (IllegalUseOfAttribute e) {
-            attributeService.createPointForAttribute(gateway, attribute);
-            point = attributeService.getPointForAttribute(gateway, attribute);
-            log.info("Created point " + point + " for " + attribute + " device:" + gateway.getRfnIdentifier());
-            dbChangeManager.processPaoDbChange(gateway, DbChangeType.UPDATE);
-        }
-        return point;
-    }
-
     @Override
     public void generatePointData(RfnDevice gateway, BuiltInAttribute attribute, double value,
             boolean tagsPointMustArchive) {
 
-        LitePoint point = findPoint(gateway, attribute);
+        boolean pointCreated = attributeService.createPointForAttribute(gateway, attribute);
+        LitePoint point = attributeService.getPointForAttribute(gateway, attribute);
+        if (pointCreated) {
+            log.info("Created point " + point + " for " + attribute + " device:" + gateway.getRfnIdentifier());
+        }
 
         PointData pointData = new PointData();
         pointData = new PointData();
