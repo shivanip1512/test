@@ -64,7 +64,6 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
@@ -95,7 +94,6 @@ public class RfnGatewayServiceImpl implements RfnGatewayService {
     private RfnGatewayDataCache dataCache;
     @Autowired private RfnGatewayFirmwareUpgradeService rfnFirmwareUpgradeService;
     @Autowired private AsyncDynamicDataSource dataSource;
-    @Autowired private DbChangeManager dbChangeManager;
     @Autowired private AttributeService attributeService;
 
        
