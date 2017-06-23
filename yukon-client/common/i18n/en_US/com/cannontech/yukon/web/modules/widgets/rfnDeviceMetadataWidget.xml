@@ -30,6 +30,7 @@
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.PRIMARY_NEIGHBOR_LINK_COST">Primary Neighbor Link Cost</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.PRODUCT_NUMBER">Product Number</entry>
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.SUB_MODULE_FIRMWARE_VERSION">Sub-Module Firmware Version</entry>
+<entry key="yukon.web.widgets.RfnDeviceMetadataWidget.NUM_ASSOCIATIONS">Battery Node Associations</entry>
 
 <!-- Metadata type values -->
 <entry key="yukon.web.widgets.RfnDeviceMetadataWidget.COMM_STATUS.value.UNKNOWN">Unknown</entry>
