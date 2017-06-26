@@ -1187,6 +1187,10 @@ ALTER TABLE UserDashboard
 ADD CONSTRAINT PK_UserDashboard PRIMARY KEY (UserId, DashboardId, PageAssignment);
 /* End YUK-16722 */
 
+/* Start YUK-16821 */
+INSERT INTO YukonRoleProperty VALUES(-20223,-202,'Usage Threshold Report','true','Controls access to the Usage Threshold Report.');
+/* End YUK-16821 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

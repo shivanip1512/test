@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/23/2017 3:20:52 PM                         */
+/* Created on:     6/26/2017 1:01:49 PM                         */
 /*==============================================================*/
 
 
@@ -10451,6 +10451,7 @@ INSERT INTO YukonRoleProperty VALUES(-20219,-202,'Meter Events','false','Control
 INSERT INTO YukonRoleProperty VALUES(-20220,-202,'Allow Disconnect Control','true','Controls access to Disconnect, Connect, and Arm operations.');
 INSERT INTO YukonRoleProperty VALUES(-20221,-202,'Device Data Monitor','false','Controls access to the Device Data Monitor.');
 INSERT INTO YukonRoleProperty VALUES(-20222,-202,'Water Leak Report','true','Controls access to the Water Leak Report.');
+INSERT INTO YukonRoleProperty VALUES(-20223,-202,'Usage Threshold Report','true','Controls access to the Usage Threshold Report.');
 
 /* Odds For Control Role Properties */
 INSERT INTO YukonRoleProperty VALUES(-20700,-207,'Odds For Control Exists','true','The default odds for control property.');
