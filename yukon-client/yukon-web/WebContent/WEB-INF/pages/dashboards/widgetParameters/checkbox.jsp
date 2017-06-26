@@ -9,8 +9,7 @@
 <script>
 $(document).on('change', '.js-checkbox', function() {
     var checkbox = $(this);
-        parent = checkbox.closest('.js-checkbox-div'),
-        checkboxValue = parent.find('.js-checkbox-value');
+        checkboxValue = checkbox.prev();
     if (checkbox.is(':checked')){
         checkboxValue.val(true);
     } else {
