@@ -25,25 +25,20 @@ public class IvvcSimulatorMessageHandler extends SimulatorMessageHandler {
 
     @Override
     public SimulatorResponse handle(SimulatorRequest simulatorRequest) {
-        try {
-            if (simulatorRequest instanceof IvvcSimulatorStartRequest) {
-                return new SimulatorResponseBase(ivvcSimulatorService
-                    .start(((IvvcSimulatorStartRequest) simulatorRequest).getSettings()));
-            } else if (simulatorRequest instanceof IvvcSimulatorStopRequest) {
-                ivvcSimulatorService.stop();
-                return new SimulatorResponseBase(true);
-            } else if (simulatorRequest instanceof IvvcSimulatorStatusRequest) {
-                IvvcSimulatorStatus status = new IvvcSimulatorStatus();
-                status.setRunning(ivvcSimulatorService.isRunning());
-                IvvcSimulatorSettings ivvcSimulatorSettings =
-                    ivvcSimulatorService.getCurrentSettings();
-                return new IvvcSimulatorResponse(status, ivvcSimulatorSettings);
-            } else {
-                throw new IllegalArgumentException("Unsupported request type received: " + simulatorRequest.getClass().getCanonicalName());
-            }
-        } catch (Exception e) {
-            throw e;
+        if (simulatorRequest instanceof IvvcSimulatorStartRequest) {
+            return new SimulatorResponseBase(ivvcSimulatorService
+                .start(((IvvcSimulatorStartRequest) simulatorRequest).getSettings()));
+        } else if (simulatorRequest instanceof IvvcSimulatorStopRequest) {
+            ivvcSimulatorService.stop();
+            return new SimulatorResponseBase(true);
+        } else if (simulatorRequest instanceof IvvcSimulatorStatusRequest) {
+            IvvcSimulatorStatus status = new IvvcSimulatorStatus();
+            status.setRunning(ivvcSimulatorService.isRunning());
+            IvvcSimulatorSettings ivvcSimulatorSettings =
+                ivvcSimulatorService.getCurrentSettings();
+            return new IvvcSimulatorResponse(status, ivvcSimulatorSettings);
+        } else {
+            throw new IllegalArgumentException("Unsupported request type received: " + simulatorRequest.getClass().getCanonicalName());
         }
     }
-
 }
