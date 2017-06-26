@@ -19,10 +19,6 @@ public interface RfnMeterDisconnectCallback extends Callback {
     /**
      * Handles the errors for the response of a disconnect request.
      */
-    public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state);
+    public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state, RfnMeterDisconnectConfirmationReplyType replyType);
     
-    /**
-     *Exist to handle Load Side Voltage Detected After Disconnect replyType 
-     */
-    public void addError(MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType);
 }

@@ -175,18 +175,20 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
             }
 
             @Override
-            public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state) {
+            public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state, RfnMeterDisconnectConfirmationReplyType replyType) {
                 errors.add(new SpecificDeviceErrorDescription(errorDescription, message));
+                if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT) {
+                    errors.add(new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT), message));
+                }
+                else if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT) {
+                    errors.add(new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT), message));
+                }
             }
 
 			public Set<SpecificDeviceErrorDescription> getErrors() {
 				return errors;
 			}
-
-            @Override
-            public void addError(MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType) {
-                errors.add(new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED), message));
-            }
+			
         };
         
         WaitableCallback callback = new WaitableCallback();

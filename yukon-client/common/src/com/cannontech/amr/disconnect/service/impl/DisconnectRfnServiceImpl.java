@@ -116,20 +116,19 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
         @Override
         public void receivedSuccess(RfnMeterDisconnectState state, PointValueQualityHolder pointData) {
             log.debug("RFN receivedSuccess");
-            proccessResult(state, pointData, null);
+            proccessResult(state, pointData, null, null);
         }
 
         @Override
-        public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state) {
+        public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state, RfnMeterDisconnectConfirmationReplyType replyType) {
             log.debug("RFN receivedError");
-            proccessResult(state, null, message);
+            proccessResult(state, null, message, replyType);
+            
         }
 
         public void addError(MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType) {
             log.debug("RFN addError");
-            if (callback instanceof DisconnectServiceImpl.SingleMeterDisconnectCallback && replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT) {
-                callback.failed(meter, new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.LOAD_SIDE_VOLTAGE_DETECTED_WHILE_DISCONNECTED), message));
-            }
+
         }
         
         @Override
@@ -154,7 +153,7 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
         }
 
        
-        private void proccessResult(RfnMeterDisconnectState state, PointValueQualityHolder pointData, MessageSourceResolvable message) {
+        private void proccessResult(RfnMeterDisconnectState state, PointValueQualityHolder pointData, MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType) {
             if (rfnLogger.isInfoEnabled()) {
                 rfnLogger.info("RFN proccessState:" + meter + " state:" + state);
             }
@@ -162,11 +161,16 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
              * message is null if the state == UNKNOWN
              * state is null if there was an error sending the command
              */
-            
             if (message == null) {
                 message =
                     YukonMessageSourceResolvable.createSingleCodeWithArguments(
                         "yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.confirmError", state);
+            }
+            if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT) {
+                callback.failed(meter, new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT), message));
+            }
+            else if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT) {
+                callback.failed(meter, new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT), message));
             }
             DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE);
             SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, message);

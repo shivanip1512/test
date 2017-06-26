@@ -1189,6 +1189,11 @@
         <porter>Load side voltage detected while disconnected.</porter>
         <description>Load side voltage detected while disconnected.</description>
     </error>
+    <error code="1029">
+        <category>Network Manager</category>
+        <porter>No load side voltage detected while connected.</porter>
+        <description>No oad side voltage detected while connected.</description>
+    </error>
     <error code="2000">
         <category>Yukon System</category>
         <porter>Invalid Action for Device Type.</porter>

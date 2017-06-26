@@ -1866,7 +1866,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             }
 
             @Override
-            public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state) {
+            public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state, RfnMeterDisconnectConfirmationReplyType replyType) {
                 log.warn("rfn receivedError for cdEvent " + message);
                 sendCDEventNotification(meter, LoadActionCodeKind.UNKNOWN, mspVendor, transactionId, responseUrl);
             }
@@ -1881,10 +1881,6 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
                 log.debug("rfn complete for cdEvent");
             }
 
-            @Override
-            public void addError(MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType) {
-            
-            }
         };
 
         rfnMeterDisconnectService.send(meter, action, rfnCallback);

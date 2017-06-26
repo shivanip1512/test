@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReply;
-import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectInitialReply;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectRequest;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectStatusType;
@@ -105,7 +104,7 @@ public class RfnMeterDisconnectService {
                     /* Request failed */
                     MessageSourceResolvable message = 
                         YukonMessageSourceResolvable.createSingleCodeWithArguments(error, initialReply);
-                    callback.receivedError(message, null);
+                    callback.receivedError(message, null, null);
                     return false;
                 } else {
                     /* Request successful, wait for reply 2 */
@@ -117,12 +116,8 @@ public class RfnMeterDisconnectService {
             public void handleReply2(RfnMeterDisconnectConfirmationReply confirmationReplyMessage) {
                 if (!confirmationReplyMessage.isSuccess()) {
                     /* Request failed */
-                    MessageSourceResolvable message = 
-                        YukonMessageSourceResolvable.createSingleCodeWithArguments(confirmError, confirmationReplyMessage);
-                    if (confirmationReplyMessage.getReplyType() == RfnMeterDisconnectConfirmationReplyType.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT) {
-                            callback.addError(message, confirmationReplyMessage.getReplyType());
-                    }
-                    callback.receivedError(message, confirmationReplyMessage.getState());
+                    MessageSourceResolvable message = YukonMessageSourceResolvable.createSingleCodeWithArguments(confirmError, confirmationReplyMessage);
+                    callback.receivedError(message, confirmationReplyMessage.getState(), confirmationReplyMessage.getReplyType());
                     
                 } else {
                     PointValueQualityHolder pointData = publishPointData(confirmationReplyMessage.getState().getRawState(), meter);
@@ -135,14 +130,14 @@ public class RfnMeterDisconnectService {
             public void handleTimeout1() {
                 MessageSourceResolvable createSingleCodeWithArguments = 
                     YukonMessageSourceResolvable.createSingleCodeWithArguments(firstReplyTimeout);
-                callback.receivedError(createSingleCodeWithArguments, null);
+                callback.receivedError(createSingleCodeWithArguments, null, null);
             }
 
             @Override
             public void handleTimeout2() {
                 MessageSourceResolvable createSingleCodeWithArguments = 
                     YukonMessageSourceResolvable.createSingleCodeWithArguments(secondReplyTimeout);
-                callback.receivedError(createSingleCodeWithArguments, null);
+                callback.receivedError(createSingleCodeWithArguments, null, null);
             }
         };
         
