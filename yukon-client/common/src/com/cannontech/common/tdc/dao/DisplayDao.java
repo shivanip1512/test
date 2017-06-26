@@ -10,10 +10,25 @@ public interface DisplayDao {
     /**
      * Returns a display for display type
      */
-    public List<Display> getDisplayByType(DisplayType type);
+    List<Display> getDisplayByType(DisplayType type);
 
     /**
      * Returns a list of displays for display type
      */
-    public Display getDisplayById(int displayId);
+    Display getDisplayById(int displayId);
+    
+    /**
+     * If display id is 0 creates display otherwise updates display, display columns are not updated.
+     */
+    Display updateDisplay(Display display);
+
+    /**
+     * Returns display for display name.
+     */
+    Display getDisplayByName(String name);
+
+    /**
+     * Deletes display.
+     */
+    void deleteCustomDisplay(int displayId);
 }

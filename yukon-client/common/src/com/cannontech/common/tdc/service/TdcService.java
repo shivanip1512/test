@@ -10,93 +10,93 @@ import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public interface TdcService {
+ public interface TdcService {
     
     /**
      * Gets a point state.
      */
-    public String getPointState(int pointId);
+     String getPointState(int pointId);
     /**
      * Acknowledges an active alarm 
      */
-    public void acknowledgeAlarm(int pointId, int condition, LiteYukonUser user);
+     void acknowledgeAlarm(int pointId, int condition, LiteYukonUser user);
 
     /**
      * Acknowledges all active alarms for a point
      */
-    public int acknowledgeAlarmsForPoint(int pointId,  LiteYukonUser user);
+     int acknowledgeAlarmsForPoint(int pointId,  LiteYukonUser user);
 
     /**
      * Acknowledges all active alarms
      */
-    public int acknowledgeAllAlarms(LiteYukonUser user);
+     int acknowledgeAllAlarms(LiteYukonUser user);
 
     /**
      * Acknowledges all active alarms for a display
      */
-    public int acknowledgeAlarmsForDisplay(Display display, LiteYukonUser user);
+     int acknowledgeAlarmsForDisplay(Display display, LiteYukonUser user);
     
     /**
      * Get display data
      */
-    public List<DisplayData> getDisplayData(Display display, DateTimeZone timeZone, PagingParameters paging);
+     List<DisplayData> getDisplayData(Display display, DateTimeZone timeZone, PagingParameters paging);
 
     /**
      * Unacknowledged alarms for a point
      */
-    public List<DisplayData> getUnacknowledgedAlarms(int pointId);
+     List<DisplayData> getUnacknowledgedAlarms(int pointId);
 
     /**
      * Gets all alarms. If showActive is true the list of all unacknowledged or active
      * alarms will be returned otherwise the list of only unacknowledged alarms will be returned.
      */
-    public List<DisplayData> getAlarms(boolean showActive);
+     List<DisplayData> getAlarms(boolean showActive);
     
     /**
      * Sends point data.
      */
-    public void sendPointData(int pointId, double value, LiteYukonUser user);
+     void sendPointData(int pointId, double value, LiteYukonUser user);
     
     /**
      * Returns true if manual control is enabled
      */
-    public boolean isManualControlEnabled(int pointId);
+     boolean isManualControlEnabled(int pointId);
     
     /**
      * Gets an unacknowledged alarm count for a display 
      */
-    public int getUnackAlarmCountForDisplay(int displayId);
+     int getUnackAlarmCountForDisplay(int displayId);
     
     /**
      * Gets unacknowledged alarm count
      */
-    public int getUnackAlarmCount();
+     int getUnackAlarmCount();
     
     /**
      * Gets an unacknowledged alarm count for a point
      */
-    public int getUnackAlarmCountForPoint(int pointId);
+     int getUnackAlarmCountForPoint(int pointId);
     
     /**
      * Gets an unacknowledged alarm count for a point and condition. Possible return values
      * are one or zero.
      */
-    public int getUnackAlarmCountForPoint(int pointId, int condition);
+     int getUnackAlarmCountForPoint(int pointId, int condition);
     
     /**
      * Gets an unacknowledged or active alarm color state box  for a point and condition.
      */
-    public String getUnackOrActiveAlarmColor(int pointId, int condition);
+     String getUnackOrActiveAlarmColor(int pointId, int condition);
     
     /**
      * Gets an unacknowledged or active alarm color state box  for a point.
      */
-    public String getUnackOrActiveAlarmColor(int pointId);
+     String getUnackOrActiveAlarmColor(int pointId);
     
     /**
      * Gets an unacknowledged alarm color state boxes for a  display data. (<point id ,<condition, color state box string>)
      **/
-    public Map<Integer, Map<Integer, String>> getUnackAlarmColorStateBoxes(Display display, List<DisplayData> displayData);
+     Map<Integer, Map<Integer, String>> getUnackAlarmColorStateBoxes(Display display, List<DisplayData> displayData);
     
     /**
      * Returns true if manual entry is enabled
@@ -111,5 +111,27 @@ public interface TdcService {
      **/
     int getDisplayDataCount(int displayId, DateTimeZone timeZone);
     
+    /**
+     * Creates a new display from existing display.
+     * @param displayId
+     * @param name - new display name
+     * @return created display
+     */
+    Display copyCustomDisplay(int displayId, String name);
     
+    /**
+     * Creates custom display if one of the point ids is 0 inserts a blank line.
+     */
+    
+    Display createCustomDisplayForPoints(String name, String title, String description, List<Integer> pointIds);
+    /**
+     * Creates custom display with all the points for the devices. Blank line is inserted as a separator between devices.
+     */
+    
+    Display createCustomDisplayForDevices(String name, String title, String description, List<Integer> deviceIds);
+    
+    /**
+     * Updates custom display.
+     */
+    Display updateCustomDisplay(int displayId, String name, String title, String description, List<Integer> pointIds);
 }

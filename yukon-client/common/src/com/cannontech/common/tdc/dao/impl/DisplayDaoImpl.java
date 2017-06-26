@@ -5,10 +5,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.tdc.dao.DisplayDao;
 import com.cannontech.common.tdc.model.Column;
 import com.cannontech.common.tdc.model.ColumnType;
@@ -20,10 +24,12 @@ import com.cannontech.common.util.SqlFragmentGenerator;
 import com.cannontech.common.util.SqlFragmentSource;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AlarmCatDao;
+import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.message.dispatch.message.Signal;
 import com.google.common.base.Function;
 import com.google.common.collect.Lists;
@@ -33,6 +39,8 @@ public class DisplayDaoImpl implements DisplayDao {
 
     @Autowired private YukonJdbcTemplate yukonJdbcTemplate;
     @Autowired private AlarmCatDao alarmCatDao;
+    @Autowired private NextValueHelper nextValueHelper;
+    private static final Logger log = YukonLogManager.getLogger(DisplayDaoImpl.class);
     private final YukonRowMapper<Display> displayRowMapper = createDisplayRowMapper();
 
     @Override
@@ -63,12 +71,33 @@ public class DisplayDaoImpl implements DisplayDao {
         sql.append("FROM DISPLAY");
         sql.append("WHERE DISPLAYNUM").eq(displayId);
         Display display = yukonJdbcTemplate.queryForObject(sql, displayRowMapper);
-        List<Column> columns = getColumnsByDisplayId(display);
-        display.setColumns(columns);
-        Map<Integer, String> mappedDisplayIdToAlarmCategoryName = mapDisplayIdToAlarmCategoryName();
-        /* Substitute display name with the category name */
-        subDisplayNameWithCatName(mappedDisplayIdToAlarmCategoryName, display);
+        addColumnsToDisplay(display);
         return display;
+    }
+    
+
+    @Override
+    public Display getDisplayByName(String name) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT DISPLAYNUM, NAME, TYPE, TITLE, DESCRIPTION");
+        sql.append("FROM DISPLAY");
+        sql.append("WHERE NAME").eq(name);
+        Display display = yukonJdbcTemplate.queryForObject(sql, displayRowMapper);
+        addColumnsToDisplay(display);
+        return display;
+    }
+    
+    /**
+     * Adds columns information to display, substitutes display name with the category name if needed.
+     */
+    private void addColumnsToDisplay(Display display){
+        if(display != null){
+            List<Column> columns = getColumnsByDisplayId(display);
+            display.setColumns(columns);
+            Map<Integer, String> mappedDisplayIdToAlarmCategoryName = mapDisplayIdToAlarmCategoryName();
+            subDisplayNameWithCatName(mappedDisplayIdToAlarmCategoryName, display);
+        }
     }
 
     /**
@@ -114,6 +143,7 @@ public class DisplayDaoImpl implements DisplayDao {
         sql.append("ORDER BY ORDERING");
         Map<Integer, Display> mappedDisplays =
             Maps.uniqueIndex(Lists.newArrayList(display), new Function<Display, Integer>() {
+                @Override
                 public Integer apply(Display display) {
                     return display.getDisplayId();
                 }
@@ -133,6 +163,7 @@ public class DisplayDaoImpl implements DisplayDao {
         });
 
         SqlFragmentGenerator<Integer> sqlGenerator = new SqlFragmentGenerator<Integer>() {
+            @Override
             public SqlFragmentSource generate(List<Integer> subList) {
 
                 SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -145,18 +176,19 @@ public class DisplayDaoImpl implements DisplayDao {
         };
         Map<Integer, Display> mappedDisplays =
             Maps.uniqueIndex(displays, new Function<Display, Integer>() {
+                @Override
                 public Integer apply(Display display) {
                     return display.getDisplayId();
                 }
             });
 
-        Map<Integer, List<Column>> displayToColumns = new HashMap<Integer, List<Column>>();
+        Map<Integer, List<Column>> displayToColumns = new HashMap<>();
         List<Column> columns =
             template.query(sqlGenerator, ids, createColumnRowMapper(mappedDisplays));
         for (Column column : columns) {
             List<Column> columnForDisplay = displayToColumns.get(column.getDisplayId());
             if (columnForDisplay == null) {
-                columnForDisplay = new ArrayList<Column>();
+                columnForDisplay = new ArrayList<>();
             }
             columnForDisplay.add(column);
             displayToColumns.put(column.getDisplayId(), columnForDisplay);
@@ -211,5 +243,65 @@ public class DisplayDaoImpl implements DisplayDao {
             }
         };
         return mapper;
+    }
+
+    @Override
+    @Transactional
+    public Display updateDisplay(Display display) {
+        
+        SqlStatementBuilder displaySql = new SqlStatementBuilder();
+        SqlParameterSink displaySink = displaySql.insertInto("DISPLAY");
+        displaySink.addValue("NAME", display.getName());
+        displaySink.addValue("DESCRIPTION", display.getDescription());
+        displaySink.addValue("TITLE", display.getTitle());
+        displaySink.addValue("TYPE", display.getType().getDatabaseRepresentation());
+        
+        int displayId = display.getDisplayId();
+        if (displayId == 0) {
+            displayId = nextValueHelper.getNextValue("DISPLAY");
+            display.setDisplayId(displayId);
+            displaySink.addValue("DISPLAYNUM", displayId);
+            log.debug("Creating display=" + display);
+            yukonJdbcTemplate.update(displaySql);
+            createColumns(displayId, display.getColumns());
+        } else {
+            displaySink.addValue("DISPLAYNUM", displayId);
+            yukonJdbcTemplate.update(displaySql);
+            log.debug("Updating display=" + display);
+        }
+
+        return getDisplayById(displayId);
+    }
+    
+    /**
+     * Create columns only if this is a new display. Web TDC can't update columns.
+     */
+    private void createColumns(int displayId, List<Column> columns) {
+        List<List<Object>> values = columns.stream()
+                .map(column -> {
+                    List<Object> row = Lists.newArrayList(
+                        displayId,
+                        column.getTitle(),
+                        column.getType().getTypeId(),
+                        column.getOrder(),
+                        column.getWidth());
+                    return row;
+                }).collect(Collectors.toList());
+        
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.batchInsertInto("DISPLAYCOLUMNS")
+           .columns("DISPLAYNUM", "TITLE", "TYPENUM", "ORDERING", "WIDTH")
+           .values(values);
+        
+        yukonJdbcTemplate.yukonBatchUpdate(sql);
+    }
+    
+    @Override
+    public void deleteCustomDisplay(int displayId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM Display");
+        sql.append("WHERE DISPLAYNUM").eq(displayId);
+        yukonJdbcTemplate.update(sql);
     }
 }

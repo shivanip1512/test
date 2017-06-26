@@ -390,5 +390,8 @@
       <sequence name="UsageThresholdReport">
         <table name="UsageThresholdReport" identitycolumn="UsageThresholdReportId" initsequence="true"/>
       </sequence>
+      <sequence name="Display">
+        <table name="Display" identitycolumn="DISPLAYNUM" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

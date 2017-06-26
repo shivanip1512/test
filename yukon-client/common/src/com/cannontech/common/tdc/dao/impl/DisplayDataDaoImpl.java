@@ -7,11 +7,17 @@ import static com.cannontech.common.tdc.model.IDisplay.TAG_LOG_DISPLAY_NUMBER;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.model.PagingParameters;
@@ -45,6 +51,7 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
     @Autowired private DeviceDao deviceDao;
     @Autowired private AsyncDynamicDataSource asyncDynamicDataSource;
     @Autowired private PointDao pointDao;
+    private static final Logger log = YukonLogManager.getLogger(DisplayDataDaoImpl.class);
     
     private final YukonRowMapper<DisplayData> createCustomRowMapper =
         createCustomDisplayRowMapper();
@@ -274,5 +281,36 @@ public class DisplayDataDaoImpl implements DisplayDataDao{
             }
         };
         return mapper;
+    }
+
+    @Override
+    @Transactional
+    public void updateDisplay2Waydata(Integer displayId, List<Integer> pointIds) {
+        if (CollectionUtils.isEmpty(pointIds)) {
+            return;
+        }
+        
+        log.debug("Inserting in Display2waydata");
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("DELETE FROM Display2waydata");
+        sql.append("WHERE DisplayNum").eq(displayId);
+        yukonJdbcTemplate.update(sql);
+
+        AtomicInteger ordering = new AtomicInteger(0);
+        
+        List<List<Object>> values = pointIds.stream()
+                .map(pointId -> {
+                    List<Object> row = Lists.newArrayList(displayId,
+                                                          pointId,
+                                                          ordering.incrementAndGet());
+                    return row;
+                }).collect(Collectors.toList());
+        
+        sql.batchInsertInto("Display2waydata")
+           .columns("DisplayNum", "PointId", "Ordering")
+           .values(values);
+        
+        yukonJdbcTemplate.yukonBatchUpdate(sql);
+        log.debug("Done inserting in Display2waydata");
     }
 }

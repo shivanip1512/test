@@ -45,4 +45,8 @@ public interface DisplayDataDao {
      */
     int getEventViewerDisplayDataCount(DateTimeZone timeZone);
 
+    /**
+     * Deletes Display2Waydata entries for display id, inserts the entries for points.
+     */
+    void updateDisplay2Waydata(Integer displayId, List<Integer> pointIds);
 }

@@ -7,6 +7,9 @@ import static com.cannontech.common.tdc.model.IDisplay.TAG_LOG_DISPLAY_NUMBER;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 
@@ -79,5 +82,19 @@ public class Display {
     public boolean isPageable() {
         return displayId == SOE_LOG_DISPLAY_NUMBER || displayId == TAG_LOG_DISPLAY_NUMBER
                || displayId == EVENT_VIEWER_DISPLAY_NUMBER;
+    }
+    
+    @Override
+    public String toString() {
+        ToStringBuilder tsb = new ToStringBuilder(this, ToStringStyle.SHORT_PREFIX_STYLE);
+        tsb.appendSuper(super.toString());
+        tsb.append("displayId", displayId);
+        tsb.append("name", name);
+        tsb.append("type", type);
+        tsb.append("title", title);
+        tsb.append("description", description);
+        tsb.append("acknowledgable", acknowledgable);
+        tsb.append(getColumns());
+        return tsb.toString();
     }
 }

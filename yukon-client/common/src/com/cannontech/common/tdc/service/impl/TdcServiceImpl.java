@@ -12,13 +12,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.clientutils.tags.TagUtils;
@@ -30,6 +33,7 @@ import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.tdc.dao.DisplayDao;
 import com.cannontech.common.tdc.dao.DisplayDataDao;
 import com.cannontech.common.tdc.model.Cog;
+import com.cannontech.common.tdc.model.Column;
 import com.cannontech.common.tdc.model.Display;
 import com.cannontech.common.tdc.model.DisplayData;
 import com.cannontech.common.tdc.model.DisplayType;
@@ -60,6 +64,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
 
 
 public class TdcServiceImpl implements TdcService {
@@ -280,11 +285,11 @@ public class TdcServiceImpl implements TdcService {
     @Override
     public Map<Integer, Map<Integer, String>> getUnackAlarmColorStateBoxes(Display display, List<DisplayData> displayData) {
         Map<Integer, Map<Integer, String>> alarmColors =
-            new HashMap<Integer, Map<Integer, String>>();
+            new HashMap<>();
         for (DisplayData data : displayData) {
             Map<Integer, String> mapByCondition = alarmColors.get(data.getPointId());
             if (mapByCondition == null) {
-                mapByCondition = new HashMap<Integer, String>();
+                mapByCondition = new HashMap<>();
             }
             String color = "";
             if (display == null) {
@@ -483,5 +488,75 @@ public class TdcServiceImpl implements TdcService {
             }
             stateColorMap.put(state.getStateRawState(), colorString);
         }
+    }
+    
+    @Override
+    @Transactional
+    public Display copyCustomDisplay(int displayId, String name) {
+        Display display = displayDao.getDisplayById(displayId);
+        List<DisplayData> data = displayDataDao.getCustomDisplayData(display);
+        return updateCustomDisplay(0, name, display.getTitle(), display.getDescription(),
+            data.stream().map(d -> d.getPointId()).collect(Collectors.toList()), display.getColumns());
+    }
+
+    @Override
+    @Transactional
+    public Display createCustomDisplayForPoints(String name, String title, String description, List<Integer> pointIds) {
+        return updateCustomDisplay(0, name, title, description, pointIds, Column.getDefaultColumns());
+    }
+
+    @Override
+    @Transactional
+    public Display createCustomDisplayForDevices(String name, String title, String description,
+            List<Integer> deviceIds) {
+        return updateCustomDisplay(0, name, title, description, getPoints(deviceIds), Column.getDefaultColumns());
+    }
+
+    @Override
+    @Transactional
+    public Display updateCustomDisplay(int displayId, String name, String title, String description,
+            List<Integer> pointIds) {
+        Display display = displayDao.getDisplayById(displayId);
+        return updateCustomDisplay(displayId, name, display.getTitle(), display.getDescription(), pointIds,
+            display.getColumns());
+    }
+    
+    /**
+     * Creates display if the displayId is 0 otherwise updates display.
+     */
+    public Display updateCustomDisplay(int displayId, String name, String title, String description,
+            List<Integer> pointIds, List<Column> columns) {
+        Display display = new Display();
+        display.setDisplayId(displayId);
+        display.setName(name);
+        display.setDescription(description);
+        display.setTitle(title);
+        display.setType(DisplayType.CUSTOM_DISPLAYS);
+        display.setColumns(columns);
+        display = displayDao.updateDisplay(display);
+        displayDataDao.updateDisplay2Waydata(display.getDisplayId(), pointIds);
+        return display;
+    }
+    
+    /**
+     * Adds all points for the selected devices to the list. Adds a
+     * blank line (0) to separate the points for each device.
+     */
+    private List<Integer> getPoints(List<Integer> deviceIds) {
+        List<Integer> pointIds = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(deviceIds)) {
+            Multimap<Integer, Integer> devicePointIds = pointDao.getPaoPointMultimap(deviceIds);
+            // devices with points
+            deviceIds = Lists.newArrayList(devicePointIds.keySet());
+            int lastDeviceId = Iterables.getLast(deviceIds);
+            deviceIds.forEach(deviceId -> {
+                pointIds.addAll(devicePointIds.get(deviceId));
+                if (deviceId != lastDeviceId) {
+                    // add a blank row
+                    pointIds.add(0);
+                }
+            });
+        }
+        return pointIds;
     }
 }
