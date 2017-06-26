@@ -4,4 +4,9 @@ public enum InfrastructureWarningSeverity {
     LOW,
     HIGH,
     ;
+    
+    @Override
+    public String toString() {
+        return name().toLowerCase();
+    }
 }

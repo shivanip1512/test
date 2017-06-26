@@ -13,7 +13,7 @@
         concurrency="1" 
         container-type="simple"
         container-class="com.cannontech.services.jms.ContextLoggingMessageListenerContainer">
-        <jms:listener destination="yukon.infrastructure.InfrastructureWarningsRequest" ref="infrastructureWarningsRequestListener" method="handleRequest"/>
+        <jms:listener destination="yukon.notif.obj.infrastructure.InfrastructureWarningsRequest" ref="infrastructureWarningsRequestListener" method="handleRequest"/>
     </jms:listener-container>
     
     <bean class="com.cannontech.services.infrastructure.service.impl.InfrastructureWarningsServiceImpl"/>

@@ -14,14 +14,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.events.loggers.InfrastructureEventLogService;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.infrastructure.dao.InfrastructureWarningsDao;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningEvaluator;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningsService;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 
@@ -31,6 +35,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     private static final int minimumMinutesBetweenRuns = 5;
     private static final int runFrequencyMinutes = 15;
     private static AtomicBoolean isRunning = new AtomicBoolean();
+    private MessageSourceAccessor systemMessageSourceAccessor;
     private List<PaoType> warnableTypes = new ImmutableList.Builder<PaoType>()
             .addAll(PaoType.getRfGatewayTypes())
             .addAll(PaoType.getRfRelayTypes())
@@ -40,7 +45,9 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     
     @Autowired @Qualifier("main") private ScheduledExecutor executor;
     @Autowired private List<InfrastructureWarningEvaluator> evaluators;
+    @Autowired private InfrastructureEventLogService infrastructureEventLogService;
     @Autowired private InfrastructureWarningsDao infrastructureWarningsDao;
+    @Autowired private YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     @Autowired private IDatabaseCache serverDatabaseCache;
     
@@ -55,6 +62,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     @PostConstruct
     public void init() {
         executor.scheduleAtFixedRate(calculationThread, initialDelayMinutes, runFrequencyMinutes, TimeUnit.MINUTES);
+        systemMessageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(YukonUserContext.system);
     }
     
     /**
@@ -87,7 +95,17 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
                                                              .flatMap(List::stream)
                                                              .collect(Collectors.toList());
             
+            // Insert warnings into DB (overwriting previous warnings)
             infrastructureWarningsDao.insert(warnings);
+            
+            // Add event log events for the warnings
+            warnings.forEach(warning -> {
+                String warningMessage = systemMessageSourceAccessor.getMessage(warning);
+                infrastructureEventLogService.warningGenerated(warning.getPaoIdentifier(), 
+                                                               warning.getWarningType().toString(),
+                                                               warning.getSeverity().toString(),
+                                                               warningMessage);
+            });
             
             persistedSystemValueDao.setValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME, Instant.now());
             isRunning.set(false);

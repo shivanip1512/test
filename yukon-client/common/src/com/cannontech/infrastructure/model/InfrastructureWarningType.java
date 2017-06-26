@@ -23,4 +23,9 @@ public enum InfrastructureWarningType implements DisplayableEnum {
     public String getFormatKey() {
         return keyBase + name();
     }
+    
+    @Override
+    public String toString() {
+        return name().toLowerCase().replaceAll("_", " ");
+    }
 }

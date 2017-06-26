@@ -738,5 +738,8 @@
     <entry key="yukon.common.events.endpoint.location.locationUpdated.2">Coordinates</entry>
     <entry key="yukon.common.events.endpoint.location.locationRemoved">Location for device {1} deleted by {2}.</entry>
     
+    <!-- Infrastructure Warnings -->
+    <entry key="yukon.common.events.infrastructure.warning.warningGenerated">{3}-severity {2} warning generated for device: {1}. Message: {4}</entry>
+    
 </properties>
 

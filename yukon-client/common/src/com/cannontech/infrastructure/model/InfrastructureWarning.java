@@ -65,7 +65,7 @@ public class InfrastructureWarning implements Displayable {
 
     @Override
     public MessageSourceResolvable getMessage() {
-        return new YukonMessageSourceResolvable(warningType.getFormatKey() + "." + severity, arguments);
+        return new YukonMessageSourceResolvable(warningType.getFormatKey() + "." + severity.name(), arguments);
     }
 
     @Override
