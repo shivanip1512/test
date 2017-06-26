@@ -558,7 +558,7 @@
     <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.definition">Heartbeat control parameters for CBCs</entry>
     <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatMode">Heartbeat Mode</entry>
     <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatPeriod">Heartbeat Period</entry>
-    <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatPeriod.description">The frequency (in seconds) to send the heartbeat message</entry>
+    <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatPeriod.description">The frequency (in minutes) to send the heartbeat message</entry>
     <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue">Heartbeat Value</entry>
     <entry key="yukon.web.modules.tools.configs.category.cbcHeartbeat.cbcHeartbeatValue.description">The value to send to the device for its heartbeat countdown</entry>
 

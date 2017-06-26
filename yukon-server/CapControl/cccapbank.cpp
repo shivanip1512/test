@@ -2161,21 +2161,29 @@ try
 
     if ( heartbeat.isTimeToSend( Now ) )
     {
+        CTILOG_DEBUG( dout, "Sending CBC Heartbeat for bank: " << getPaoName() );
+
         submitHeartbeatCommands( heartbeat._policy->SendHeartbeat( heartbeat._value ) );
     }
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
+    CTILOG_INFO( dout, "Failed attribute lookup on bank: " << getPaoName() );
+
     CTILOG_EXCEPTION_ERROR( dout, missingAttribute );
 }
 
 void CtiCCCapBank::executeStopHeartbeat( const std::string & user )
 try
 {
+    CTILOG_DEBUG( dout, "Disabling CBC Heartbeat for bank: " << getPaoName() );
+
     submitHeartbeatCommands( heartbeat._policy->StopHeartbeat() );
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
+    CTILOG_INFO( dout, "Failed attribute lookup on bank: " << getPaoName() );
+
     CTILOG_EXCEPTION_ERROR( dout, missingAttribute );
 }
 
