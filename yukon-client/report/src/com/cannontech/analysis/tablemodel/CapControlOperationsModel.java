@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
@@ -75,13 +76,13 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
     public void doLoadData() {
         DatabaseVendor databaseVendor = databaseConnectionVendorResolver.getDatabaseVendor();
         boolean oracle = databaseVendor.isOracle();
-        
+        int random = RandomUtils.nextInt(0, 1000); 
         SqlStatementBuilder sql = null;
         if(oracle) {
             sql = buildOracleSQLStatement();
         } else {
-            sql = buildMSSQLStatement();
-            executeSQLSetupStatements();
+            sql = buildMSSQLStatement(random);
+            executeSQLSetupStatements(random);
         }
         
         CTILogger.info(sql); 
@@ -111,23 +112,24 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         });
         
         if(! oracle) {
-            executeSQLTeardownStatement();    
+            executeSQLTeardownStatement(random);    
         }
         
         CTILogger.info("Report Records Collected from Database: " + data.size());
     }
 
-    private void executeSQLSetupStatements()
+    private void executeSQLSetupStatements(int random)
     {
+        executeSQLTeardownStatement(random);
         //creating temp tables to use in baseSQLStatement
-        SqlStatementBuilder sql = new SqlStatementBuilder("select * into #tempCcEventOperationLog from ");
+        SqlStatementBuilder sql = new SqlStatementBuilder("select * into #tempCcEventOperationLog" + random + " from ");
         sql.append("cceventlog where datetime > '").append(new java.sql.Timestamp(getStartDate().getTime()));
         sql.append("' and datetime < '").append(new java.sql.Timestamp(getStopDate().getTime()));
         sql.append("'");
         
         jdbcOps.execute(sql.getSql());
         
-        sql = new SqlStatementBuilder("select * into #tempCcEventConfirmationLog from ");
+        sql = new SqlStatementBuilder("select * into #tempCcEventConfirmationLog" + random + " from ");
         sql.append("cceventlog where datetime > '").append(new java.sql.Timestamp(getStartDate().getTime()));
         sql.append("' and datetime < '").append(new java.sql.Timestamp((getStopDate()).getTime() + 86400000)); //add a day, for confirmations of operations that happen over midnight.
         sql.append("'");
@@ -136,28 +138,31 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         
     }
    
-    private void executeSQLTeardownStatement()
+    private void executeSQLTeardownStatement(int random)
     {
         //drop the temp tables used to generate this report.
-        SqlStatementBuilder sql = new SqlStatementBuilder("drop table #tempCcEventOperationLog");
+        SqlStatementBuilder sql = new SqlStatementBuilder("IF (SELECT object_id('TempDB..#tempCcEventOperationLog" + random + "')) IS NOT NULL ");
+        sql.append("DROP TABLE #tempCcEventOperationLog" + random);
         jdbcOps.execute(sql.getSql());
-        
-        sql = new SqlStatementBuilder("drop table #tempCcEventConfirmationLog");
+        sql = new SqlStatementBuilder("IF (SELECT object_id('TempDB..#tempCcEventConfirmationLog" + random + "')) IS NOT NULL ");
+        sql.append("DROP TABLE #tempCcEventConfirmationLog" + random);
         jdbcOps.execute(sql.getSql());
     }
     
-    private SqlStatementBuilder buildMSSQLStatement()
+    private SqlStatementBuilder buildMSSQLStatement(int random)
     {
+        String tempCcEventOperationLog = "#tempCcEventOperationLog" + random;
+        String tempCcEventConfirmationLog = "#tempCcEventConfirmationLog" + random;
         SqlStatementBuilder sql = new SqlStatementBuilder("select yp3.paoName cbcName, yp.paoName bankName, el.datetime opTime, el.text operation, ");
         sql.append("el2.datetime confTime, el2.text confStatus, el2.capbankstateInfo bankStatusQuality, yp1.paoName feederName, yp1.paobjectId feederId,  yp2.paoName subName, ");
         sql.append("yp2.paobjectid subBusId, ca.paoname region, cb.bankSize bankSize, cb.controllertype protocol, p.value ipAddress, ");
         sql.append("cbc.serialnumber serialNum, da.slaveAddress slaveAddress "); 
-        sql.append("from ( select op.logid oid,  min(aaa.confid) cid  from (select logid, pointid from #tempCcEventOperationLog ");
+        sql.append("from ( select op.logid oid,  min(aaa.confid) cid  from (select logid, pointid from " + tempCcEventOperationLog);
 //        sql.append("where (text like '%Close Sent,%' or text like '%Open Sent,%' )) op ");
         sql.append("where (EventType = 1 AND EventSubType in (0, 2, 4) )) op ");
-        sql.append("left join (select el.logid opid, min(el2.logid) confid from #tempCcEventOperationLog el ");
-        sql.append("join #tempCcEventConfirmationLog el2 on el2.pointid = el.pointid left outer join  (select a.logid aid, min(b.logid) next_aid "); 
-        sql.append("from #tempCcEventOperationLog a, #tempCcEventConfirmationLog b where a.pointid = b.pointid ");
+        sql.append("left join (select el.logid opid, min(el2.logid) confid from " + tempCcEventOperationLog + " el ");
+        sql.append("join " + tempCcEventConfirmationLog +" el2 on el2.pointid = el.pointid left outer join  (select a.logid aid, min(b.logid) next_aid "); 
+        sql.append("from " + tempCcEventOperationLog + " a, " + tempCcEventConfirmationLog + " b where a.pointid = b.pointid ");
 //        sql.append("and (a.text like '%Close Sent,%' or a.text like '%Open Sent,%') and (b.text like '%Close Sent,%' or b.text like '%Open Sent,%')  ");
         sql.append("and (a.EventType = 1 AND a.EventSubType in (0, 2, 4)) and (b.EventType = 1 AND b.EventSubType in (0, 2, 4))  ");
         sql.append("and b.logid > a.logid group by a.logid) el3 on el3.aid = el.logid ");
@@ -165,7 +170,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         sql.append("where (el.EventType = 1 AND el.EventSubType in (0, 2, 4)) and el2.text like 'Var: %' ");
         sql.append("and el2.logid > el.logid and (el2.logid < el3.next_aid  or el3.next_aid is null) ");
         sql.append("group by el.logid ) aaa on op.logid = aaa.opid group by op.logid ) OpConf ");
-        sql.append("join #tempCcEventOperationLog el on el.logid = opConf.oid left join #tempCcEventConfirmationLog el2 on el2.logid = opConf.cid ");
+        sql.append("join " + tempCcEventOperationLog + " el on el.logid = opConf.oid left join " + tempCcEventConfirmationLog + " el2 on el2.logid = opConf.cid ");
         sql.append("join point on point.pointid = el.pointid ");
         sql.append("join dynamiccccapbank on dynamiccccapbank.capbankid = point.paobjectid ");
         sql.append("join yukonpaobject yp on yp.paobjectid = dynamiccccapbank.capbankid ");
