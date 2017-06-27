@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/26/2017 1:02:35 PM                         */
+/* Created on:     6/27/2017 11:05:31 AM                        */
 /*==============================================================*/
 
 
@@ -2734,6 +2734,9 @@ create table Dashboard  (
    Visibility           VARCHAR2(20)                    not null,
    constraint PK_Dashboard primary key (DashboardId)
 );
+
+INSERT INTO Dashboard VALUES (-1, 'Default Main Dashboard', 'Default Main Dashboard', -1, 'SYSTEM');
+INSERT INTO Dashboard VALUES (-2, 'Default AMI Dashboard', 'Default AMI Dashboard', -1, 'SYSTEM');
 
 /*==============================================================*/
 /* Table: DateOfHoliday                                         */
@@ -8813,6 +8816,9 @@ create table UserDashboard  (
    constraint PK_UserDashboard primary key (UserId, DashboardId, PageAssignment)
 );
 
+INSERT INTO UserDashboard VALUES (-1, -1, 'MAIN'); 
+INSERT INTO UserDashboard VALUES (-1, -2, 'AMI');
+
 /*==============================================================*/
 /* Table: UserGroup                                             */
 /*==============================================================*/
@@ -8968,6 +8974,17 @@ create table Widget  (
    Ordering             NUMBER                          not null,
    constraint PK_Widget primary key (WidgetId)
 );
+
+/* Default Main Dashboard widgets */
+INSERT INTO Widget VALUES (-1, 'FAVORITES', -1, 100);
+INSERT INTO Widget VALUES (-2, 'MONITOR_SUBSCRIPTIONS', -1, 200);
+
+/* Default AMI Dashboard widgets */
+INSERT INTO Widget VALUES (-3, 'MONITORS', -2, 100);
+INSERT INTO Widget VALUES (-4, 'SCHEDULED_REQUESTS', -2, 101);
+INSERT INTO Widget VALUES (-5, 'METER_SEARCH', -2, 200);
+INSERT INTO Widget VALUES (-6, 'AMI_ACTIONS', -2, 201);
+INSERT INTO Widget VALUES (-7, 'GATEWAY_STREAMING_CAPACITY', -2, 202);
 
 /*==============================================================*/
 /* Table: WidgetSettings                                        */

@@ -1243,6 +1243,25 @@ ADD CONSTRAINT PK_UserDashboard PRIMARY KEY (UserId, DashboardId, PageAssignment
 INSERT INTO YukonRoleProperty VALUES(-20223,-202,'Usage Threshold Report','true','Controls access to the Usage Threshold Report.');
 /* End YUK-16821 */
 
+/* Start YUK-16640 */
+INSERT INTO Dashboard VALUES (-1, 'Default Main Dashboard', 'Default Main Dashboard', -1, 'SYSTEM');
+INSERT INTO Dashboard VALUES (-2, 'Default AMI Dashboard', 'Default AMI Dashboard', -1, 'SYSTEM');
+
+INSERT INTO UserDashboard VALUES (-1, -1, 'MAIN'); 
+INSERT INTO UserDashboard VALUES (-1, -2, 'AMI');
+
+/* MAIN Dashboard widgets */
+INSERT INTO Widget VALUES (-1, 'FAVORITES', -1, 100);
+INSERT INTO Widget VALUES (-2, 'MONITOR_SUBSCRIPTIONS', -1, 200);
+
+/* AMI Dashboard widgets */
+INSERT INTO Widget VALUES (-3, 'MONITORS', -2, 100);
+INSERT INTO Widget VALUES (-4, 'SCHEDULED_REQUESTS', -2, 101);
+INSERT INTO Widget VALUES (-5, 'METER_SEARCH', -2, 200);
+INSERT INTO Widget VALUES (-6, 'AMI_ACTIONS', -2, 201);
+INSERT INTO Widget VALUES (-7, 'GATEWAY_STREAMING_CAPACITY', -2, 202);
+/* End YUK-16640 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
