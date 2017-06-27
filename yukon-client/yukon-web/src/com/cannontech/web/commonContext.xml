@@ -357,4 +357,5 @@
     <bean class="com.cannontech.web.capcontrol.service.impl.FeederServiceImpl"/>
     <bean class="com.cannontech.web.capcontrol.util.service.impl.CapControlWebUtilsServiceImpl"/>
     
+    <bean class="com.cannontech.web.infrastructure.service.impl.InfrastructureWarningsRefreshServiceImpl"/>
 </beans>
