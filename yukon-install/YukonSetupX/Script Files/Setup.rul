@@ -418,7 +418,7 @@ begin
 	if(ExistsDir(TARGETDIR ^ "cache") = EXISTS) then
 		nResult = DeleteDir(TARGETDIR ^ "cache", ALLCONTENTS);
 		if(nResult < 0) then
-		   MessageBox("Unable to clear Lucene indexes. Please manually rebuild indexes.", WARNING);
+		   MessageBox("Unable to clear Lucene indexes. Please manually delete the \Yukon\cache\ folder to fully clear previous indexes prior to starting the Yukon Web Application service.", WARNING);
 		endif;
 	endif;
 	
