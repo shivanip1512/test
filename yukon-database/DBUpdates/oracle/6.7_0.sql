@@ -72,7 +72,9 @@ AND PaobjectId IN (
 );
 
 UPDATE Point 
-SET PointName = 'Outages', PointOffset = 100
+SET 
+    PointName = 'Outages', 
+    PointOffset = 100
 WHERE PointType = 'Analog' 
 AND PointOffset = 24
 AND PointName = 'Outage Log'
@@ -215,7 +217,9 @@ AND PaobjectId IN (
 );
 
 UPDATE Point 
-SET PointOffset = 350, PointName = 'Net Delivered kVArh (Rate A kVArh)'
+SET 
+    PointOffset = 350, 
+    PointName = 'Net Delivered kVArh (Rate A kVArh)'
 WHERE PointType = 'Analog' 
 AND PointOffset = 230
 AND PointName = 'Rate A Net Delivered kVArh'
@@ -226,7 +230,9 @@ AND PaobjectId IN (
 );
 
 UPDATE Point 
-SET PointOffset = 351, PointName = 'Net Delivered kVArh (Rate B kVArh)'
+SET 
+    PointOffset = 351, 
+    PointName = 'Net Delivered kVArh (Rate B kVArh)'
 WHERE PointType = 'Analog' 
 AND PointOffset = 231
 AND PointName = 'Rate B Net Delivered kVArh'
@@ -237,7 +243,9 @@ AND PaobjectId IN (
 );
 
 UPDATE Point 
-SET PointOffset = 352, PointName = 'Net Delivered kVArh (Rate C kVArh)'
+SET 
+    PointOffset = 352, 
+    PointName = 'Net Delivered kVArh (Rate C kVArh)'
 WHERE PointType = 'Analog' 
 AND PointOffset = 232
 AND PointName = 'Rate C Net Delivered kVArh'
@@ -248,7 +256,9 @@ AND PaobjectId IN (
 );
 
 UPDATE Point 
-SET PointOffset = 353, PointName = 'Net Delivered kVArh (Rate D kVArh)'
+SET 
+    PointOffset = 353, 
+    PointName = 'Net Delivered kVArh (Rate D kVArh)'
 WHERE PointType = 'Analog' 
 AND PointOffset = 233
 AND PointName = 'Rate D Net Delivered kVArh'
@@ -808,15 +818,30 @@ DELETE FROM DeviceTypeCommand WHERE DeviceType = 'CBC 6510';
 /* End YUK-16299 */
 
 /* Start YUK-16604 */
-UPDATE YukonRoleProperty SET KeyName = 'Use Pao Permissions', 
+UPDATE YukonRoleProperty 
+SET 
+    KeyName = 'Use Pao Permissions', 
     Description='Allow access to all load management objects. Set to true to force the use of per pao permissions.' 
-        WHERE RolePropertyID = -90009 AND RoleID = -900;
+WHERE RolePropertyID = -90009 
+AND RoleID = -900;
 
-UPDATE YukonGroupRole SET Value = 'changeToTrue' WHERE Value = 'false' AND RolePropertyID = -90009 AND RoleID = -900;
+UPDATE YukonGroupRole 
+SET Value = 'changeToTrue' 
+WHERE Value = 'false' 
+AND RolePropertyID = -90009 
+AND RoleID = -900;
 
-UPDATE YukonGroupRole SET Value = 'false' WHERE Value = 'true' AND RolePropertyID = -90009 AND RoleID = -900;
+UPDATE YukonGroupRole 
+SET Value = 'false' 
+WHERE Value = 'true' 
+AND RolePropertyID = -90009 
+AND RoleID = -900;
 
-UPDATE YukonGroupRole SET Value = 'true' WHERE Value = 'changeToTrue' AND RolePropertyID = -90009 AND RoleID = -900;
+UPDATE YukonGroupRole 
+SET Value = 'true' 
+WHERE Value = 'changeToTrue' 
+AND RolePropertyID = -90009 
+AND RoleID = -900;
 /* End YUK-16604 */
 
 /* Start YUK-16740 */
@@ -949,7 +974,9 @@ DROP TABLE t_BehaviorsToSplit;
 /* @error ignore-end */
 
 CREATE GLOBAL TEMPORARY TABLE t_BehaviorsToSplit ON COMMIT PRESERVE ROWS AS
-    SELECT ROW_NUMBER() OVER(ORDER BY B.BehaviorId) AS RowNumber, B.BehaviorId
+    SELECT 
+        ROW_NUMBER() OVER(ORDER BY B.BehaviorId) AS RowNumber, 
+        B.BehaviorId
     FROM Behavior B
         JOIN BehaviorValue BV ON B.BehaviorId=BV.BehaviorId
         JOIN DeviceBehaviorMap DBM1 ON B.BehaviorId=DBM1.BehaviorId
@@ -1042,7 +1069,9 @@ DROP TABLE t_DeviceConfigCategoryIDs;
 /* @error ignore-end */
 
 CREATE GLOBAL TEMPORARY TABLE t_DeviceConfigsToSplit ON COMMIT PRESERVE ROWS AS (
-    SELECT DISTINCT DC.DeviceConfigurationID, DCC.DeviceConfigCategoryId
+    SELECT 
+        DISTINCT DC.DeviceConfigurationID, 
+        DCC.DeviceConfigCategoryId
     FROM 
         DeviceConfiguration DC
         JOIN DeviceConfigCategoryMap DCCM ON DC.DeviceConfigurationID=DCCM.DeviceConfigurationId
@@ -1075,12 +1104,16 @@ BEGIN
 
     /* Calculate the new Device Config IDs */
     INSERT INTO t_DeviceConfigurationIDs
-        SELECT DCID.DeviceConfigurationID, v_maxDeviceConfigurationId + ROW_NUMBER() OVER(ORDER BY DeviceConfigurationID ASC) AS NewDeviceConfigurationID
+        SELECT 
+            DCID.DeviceConfigurationID, 
+            v_maxDeviceConfigurationId + ROW_NUMBER() OVER(ORDER BY DeviceConfigurationID ASC) AS NewDeviceConfigurationID
         FROM (SELECT DISTINCT DeviceConfigurationID FROM t_DeviceConfigsToSplit) DCID;
 
     /* Calculate the new Device Config Category IDs */
     INSERT INTO t_DeviceConfigCategoryIDs
-        SELECT DeviceConfigCategoryID, v_maxDeviceConfigCatId + ROW_NUMBER() OVER(ORDER BY DeviceConfigCategoryID ASC) AS NewDeviceConfigCategoryID
+        SELECT 
+            DeviceConfigCategoryID, 
+            v_maxDeviceConfigCatId + ROW_NUMBER() OVER(ORDER BY DeviceConfigCategoryID ASC) AS NewDeviceConfigCategoryID
         FROM (SELECT DISTINCT DeviceConfigCategoryID FROM t_DeviceConfigsToSplit) DCID;
 
     /*  Create a new RFN-430SL rfnChannelConfiguration DeviceConfigCategory from the existing one */
@@ -1250,11 +1283,11 @@ INSERT INTO Dashboard VALUES (-2, 'Default AMI Dashboard', 'Default AMI Dashboar
 INSERT INTO UserDashboard VALUES (-1, -1, 'MAIN'); 
 INSERT INTO UserDashboard VALUES (-1, -2, 'AMI');
 
-/* MAIN Dashboard widgets */
+/* Default MAIN Dashboard widgets */
 INSERT INTO Widget VALUES (-1, 'FAVORITES', -1, 100);
 INSERT INTO Widget VALUES (-2, 'MONITOR_SUBSCRIPTIONS', -1, 200);
 
-/* AMI Dashboard widgets */
+/* Default AMI Dashboard widgets */
 INSERT INTO Widget VALUES (-3, 'MONITORS', -2, 100);
 INSERT INTO Widget VALUES (-4, 'SCHEDULED_REQUESTS', -2, 101);
 INSERT INTO Widget VALUES (-5, 'METER_SEARCH', -2, 200);

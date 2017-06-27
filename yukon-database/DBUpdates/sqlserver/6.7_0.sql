@@ -78,7 +78,9 @@ AND PaobjectId IN (
 );
 
 UPDATE Point 
-SET PointName = 'Outages', PointOffset = 100
+SET 
+    PointName = 'Outages', 
+    PointOffset = 100
 WHERE PointType = 'Analog' 
 AND PointOffset = 24
 AND PointName = 'Outage Log'
@@ -221,7 +223,9 @@ AND PaobjectId IN (
 );
 
 UPDATE Point 
-SET PointOffset = 350, PointName = 'Net Delivered kVArh (Rate A kVArh)'
+SET 
+    PointOffset = 350, 
+    PointName = 'Net Delivered kVArh (Rate A kVArh)'
 WHERE PointType = 'Analog' 
 AND PointOffset = 230
 AND PointName = 'Rate A Net Delivered kVArh'
@@ -232,7 +236,9 @@ AND PaobjectId IN (
 );
 
 UPDATE Point 
-SET PointOffset = 351, PointName = 'Net Delivered kVArh (Rate B kVArh)'
+SET 
+    PointOffset = 351, 
+    PointName = 'Net Delivered kVArh (Rate B kVArh)'
 WHERE PointType = 'Analog' 
 AND PointOffset = 231
 AND PointName = 'Rate B Net Delivered kVArh'
@@ -243,7 +249,9 @@ AND PaobjectId IN (
 );
 
 UPDATE Point 
-SET PointOffset = 352, PointName = 'Net Delivered kVArh (Rate C kVArh)'
+SET 
+    PointOffset = 352, 
+    PointName = 'Net Delivered kVArh (Rate C kVArh)'
 WHERE PointType = 'Analog' 
 AND PointOffset = 232
 AND PointName = 'Rate C Net Delivered kVArh'
@@ -254,7 +262,9 @@ AND PaobjectId IN (
 );
 
 UPDATE Point 
-SET PointOffset = 353, PointName = 'Net Delivered kVArh (Rate D kVArh)'
+SET 
+    PointOffset = 353, 
+    PointName = 'Net Delivered kVArh (Rate D kVArh)'
 WHERE PointType = 'Analog' 
 AND PointOffset = 233
 AND PointName = 'Rate D Net Delivered kVArh'
@@ -819,16 +829,30 @@ DELETE FROM DeviceTypeCommand WHERE DeviceType = 'CBC 6510';
 /* End YUK-16299 */
 
 /* Start YUK-16604 */
-UPDATE YukonRoleProperty SET KeyName = 'Use Pao Permissions', 
+UPDATE YukonRoleProperty 
+SET 
+    KeyName = 'Use Pao Permissions', 
     Description='Allow access to all load management objects. Set to true to force the use of per pao permissions.' 
-        WHERE RolePropertyID = -90009 AND RoleID = -900;
+WHERE RolePropertyID = -90009 
+AND RoleID = -900;
 
-UPDATE YukonGroupRole SET Value = 'changeToTrue' WHERE Value = 'false' AND RolePropertyID = -90009 AND RoleID = -900;
+UPDATE YukonGroupRole 
+SET Value = 'changeToTrue' 
+WHERE Value = 'false' 
+AND RolePropertyID = -90009 
+AND RoleID = -900;
 
-UPDATE YukonGroupRole SET Value = 'false' WHERE Value = 'true' AND RolePropertyID = -90009 AND RoleID = -900;
+UPDATE YukonGroupRole 
+SET Value = 'false' 
+WHERE Value = 'true' 
+AND RolePropertyID = -90009 
+AND RoleID = -900;
 
-UPDATE YukonGroupRole SET Value = 'true' WHERE Value = 'changeToTrue' AND RolePropertyID = -90009 AND RoleID = -900;
-
+UPDATE YukonGroupRole 
+SET Value = 'true' 
+WHERE Value = 'changeToTrue' 
+AND RolePropertyID = -90009 
+AND RoleID = -900;
 /* End YUK-16604 */
 
 /* Start YUK-16740 */
@@ -958,7 +982,9 @@ BEGIN
     DECLARE @maxBehaviorId NUMERIC = (SELECT COALESCE(MAX(BehaviorId), 0) FROM Behavior);
 
     /*  Find any behaviors containing DELIVERED_KVA that are shared by RFN-430SL1+ and RFN-A3K  */
-    SELECT ROW_NUMBER() OVER(ORDER BY B.BehaviorId) AS RowNumber, B.BehaviorId
+    SELECT 
+        ROW_NUMBER() OVER(ORDER BY B.BehaviorId) AS RowNumber, 
+        B.BehaviorId
     INTO #BehaviorsToSplit
     FROM Behavior B
         JOIN BehaviorValue BV ON B.BehaviorId=BV.BehaviorId
@@ -1027,7 +1053,9 @@ BEGIN
         @maxDeviceConfigDeviceTypeId    NUMERIC = (SELECT MAX(DeviceConfigDeviceTypeId) FROM DeviceConfigDeviceTypes);
 
     /* Find all rfnChannelConfiguration DeviceConfigCategories that contain 'DELIVERED_KVA' and are assigned to both RFN-430SL1+ and another type supporting DELIVERED_KVA */
-    SELECT DISTINCT DC.DeviceConfigurationID, DCC.DeviceConfigCategoryId
+    SELECT 
+        DISTINCT DC.DeviceConfigurationID, 
+        DCC.DeviceConfigCategoryId
     INTO #DeviceConfigsToSplit
     FROM 
         DeviceConfiguration DC
@@ -1044,12 +1072,16 @@ BEGIN
         AND DCDT2.PaoType IN ('RFN-420CD', 'RFN-420CL', 'RFN-430A3K', 'RFN-530S4X')
 
     /* Calculate the new Device Config IDs */
-    SELECT DCID.DeviceConfigurationID, @maxDeviceConfigurationId + ROW_NUMBER() OVER(ORDER BY DeviceConfigurationID ASC) AS NewDeviceConfigurationID
+    SELECT 
+        DCID.DeviceConfigurationID, 
+        @maxDeviceConfigurationId + ROW_NUMBER() OVER(ORDER BY DeviceConfigurationID ASC) AS NewDeviceConfigurationID
     INTO #DeviceConfigurationIDs
     FROM (SELECT DISTINCT DeviceConfigurationID FROM #DeviceConfigsToSplit) DCID
 
     /* Calculate the new Device Config Category IDs */
-    SELECT DeviceConfigCategoryID, @maxDeviceConfigCategoryId + ROW_NUMBER() OVER(ORDER BY DeviceConfigCategoryID ASC) AS NewDeviceConfigCategoryID
+    SELECT 
+        DeviceConfigCategoryID, 
+        @maxDeviceConfigCategoryId + ROW_NUMBER() OVER(ORDER BY DeviceConfigCategoryID ASC) AS NewDeviceConfigCategoryID
     INTO #DeviceConfigCategoryIDs
     FROM (SELECT DISTINCT DeviceConfigCategoryID FROM #DeviceConfigsToSplit) DCID
 
