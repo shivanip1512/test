@@ -53,6 +53,8 @@
     <entry key="yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.confirmError">The was an error confirming the command, meter may be in an unknown state:({0})</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.success">{0} Successful</entry>
     
+    <entry key="yukon.web.widgets.disconnectMeterWidget.error.loadSideVoltageDetectedWhileDisconnected">Load side voltage detected while disconnected.</entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.error.noLoadSideVoltageDetectedWhileConnected">No load side voltage detected while connected.</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.error.disconnectAddress.required">Disconnect address is required.</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.error.disconnectAddress.unique">The disconnect address is already assigned to meter(s) {0}.</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.update.successful">Disconnect Address configuration successful.</entry>
