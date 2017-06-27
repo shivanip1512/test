@@ -20,6 +20,6 @@ $(document).on('change', '.js-checkbox', function() {
 </script>
 <div class="js-checkbox-div">
     <form:hidden path="${param.path}.parameters['${param.parameterName}']" cssClass="js-checkbox-value"/>
-    <input type="checkbox" name="${id}" class="js-checkbox" value="${param.parameterValue}" <c:if test="${param.parameterValue == 'true'}">checked="checked"</c:if>>
+    <input type="checkbox" name="${id}" class="js-checkbox" style="cursor: default;" value="${param.parameterValue}" <c:if test="${param.parameterValue == 'true'}">checked="checked"</c:if>>
     <cti:msg2 key="${param.parameterKey}"/>
 </div>
