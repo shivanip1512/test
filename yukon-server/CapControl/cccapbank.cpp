@@ -2168,7 +2168,7 @@ try
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    CTILOG_INFO( dout, "Failed attribute lookup on bank: " << getPaoName() );
+    CTILOG_DEBUG( dout, "Failed attribute lookup on bank: " << getPaoName() );
 
     CTILOG_EXCEPTION_ERROR( dout, missingAttribute );
 }
@@ -2182,7 +2182,7 @@ try
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {
-    CTILOG_INFO( dout, "Failed attribute lookup on bank: " << getPaoName() );
+    CTILOG_DEBUG( dout, "Failed attribute lookup on bank: " << getPaoName() );
 
     CTILOG_EXCEPTION_ERROR( dout, missingAttribute );
 }

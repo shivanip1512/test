@@ -219,7 +219,7 @@ BOOST_FIXTURE_TEST_CASE( test_ccCapbanks_pulsed_send_heartbeat_zero_value, cbc_h
 {
     bank->loadAttributes( & attributes );
 
-    // ince the CBC doesn't have a value for the heartbeat, first we initialize it, then pulse the enable point.
+    // Since the CBC doesn't have a value for the heartbeat, first we initialize it, then pulse the enable point.
 
     BOOST_CHECK_NO_THROW( bank->executeSendHeartbeat( "cap control" ) );
 
