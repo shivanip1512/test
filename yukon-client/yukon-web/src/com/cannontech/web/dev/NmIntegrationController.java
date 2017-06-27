@@ -59,7 +59,6 @@ import com.cannontech.common.rfn.message.network.RfnParentReplyType;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
 import com.cannontech.common.rfn.message.network.RouteData;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
-import com.cannontech.common.rfn.model.GatewayCertificateUpdateStatus;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedDataStreamingSettings;
@@ -244,10 +243,10 @@ public class NmIntegrationController {
     @RequestMapping("createNewGateway")
     public String createNewGateway(@RequestParam String name, 
                                    @RequestParam String serial, 
-                                   @RequestParam(defaultValue="false") boolean isGateway2,
+                                   @RequestParam(defaultValue="false") boolean returnGwy800Model,
                                    FlashScope flash) {
         
-        gatewaySimService.sendGatewayArchiveRequest(name, serial, isGateway2);
+        gatewaySimService.sendGatewayArchiveRequest(name, serial, returnGwy800Model);
         flash.setConfirm(new YukonMessageSourceResolvable("yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayCreated", name));
         
         return "redirect:gatewaySimulator";
@@ -255,16 +254,13 @@ public class NmIntegrationController {
 
     @RequestMapping("sendGatewayDataResponse")
     public String sendGatewayDataResponse(@RequestParam String serial,
-            @RequestParam(defaultValue = "false") boolean isGateway2, FlashScope flash) {
+            @RequestParam(defaultValue = "false") boolean returnGwy800Model, FlashScope flash) {
 
         try {
             GatewaySimulatorStatusResponse response = simulatorsCommunicationService.sendRequest(
                 new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
             SimulatedGatewayDataSettings settings = response.getDataSettings();
-            if(settings == null){
-                settings = enableGatewayDataSimulator(false, 50, 1000, 500, false, ConnectionStatus.CONNECTED, flash);
-            }
-            gatewaySimService.sendGatewayDataResponse(serial, isGateway2, settings);
+            gatewaySimService.sendGatewayDataResponse(serial, returnGwy800Model, settings);
             flash.setConfirm(new YukonMessageSourceResolvable(
                 "yukon.web.modules.dev.rfnTest.gatewaySimulator.gatewayDataResponse", serial));
         } catch (ExecutionException e) {
@@ -276,64 +272,23 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("enableAll")
-    public String enableAllSimulators(FlashScope flash) {
-        // Only start the threads that aren't already running. This lets the user specify non-default parameters for
-        // some threads, then just bulk-start the rest.
+    public String enableAllSimulators(SimulatedGatewayDataSettings dataSettings,
+                                      SimulatedUpdateReplySettings updateSettings,
+                                      SimulatedCertificateReplySettings certSettings,
+                                      SimulatedFirmwareReplySettings firmwareSettings,
+                                      SimulatedFirmwareVersionReplySettings settings,
+                                      FlashScope flash) {
         
-        try {
-            GatewaySimulatorStatusResponse status = simulatorsCommunicationService.sendRequest(new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
-            ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
-            
-            // Data Reply
-            if (!status.isDataReplyActive()) {
-                SimulatedGatewayDataSettings dataSettings = new SimulatedGatewayDataSettings();
-                dataSettings.setReturnGwy800Model(false);
-                dataSettings.setCurrentDataStreamingLoading(50);
-                dataSettings.setNumberOfReadyNodes(1000);
-                dataSettings.setNumberOfNotReadyNodes(500);
-                dataSettings.setFailsafeMode(false);
-                dataSettings.setConnectionStatus(ConnectionStatus.CONNECTED);
-                request.setDataSettings(dataSettings);
-            }
-            
-            // Update reply
-            if (!status.isUpdateReplyActive()) {
-                SimulatedUpdateReplySettings updateSettings = new SimulatedUpdateReplySettings();
-                updateSettings.setCreateResult(GatewayUpdateResult.SUCCESSFUL);
-                updateSettings.setEditResult(GatewayUpdateResult.SUCCESSFUL);
-                updateSettings.setDeleteResult(GatewayUpdateResult.SUCCESSFUL);
-                request.setUpdateSettings(updateSettings);
-            }
-            
-            // Certificate upgrade reply
-            if (!status.isCertificateReplyActive()) {
-                SimulatedCertificateReplySettings certSettings = new SimulatedCertificateReplySettings();
-                certSettings.setAckType(RfnGatewayUpgradeRequestAckType.ACCEPTED_FULLY);
-                certSettings.setDeviceUpdateStatus(GatewayCertificateUpdateStatus.REQUEST_ACCEPTED);
-                request.setCertificateSettings(certSettings);
-            }
-            
-            // Firmware upgrade reply
-            if (!status.isFirmwareReplyActive()) {
-                SimulatedFirmwareReplySettings firmwareSettings = new SimulatedFirmwareReplySettings();
-                firmwareSettings.setResultType(GatewayFirmwareUpdateRequestResult.ACCEPTED);
-                request.setFirmwareSettings(firmwareSettings);
-            }
-            
-            // Firmware version reply
-            if (!status.isFirmwareVersionReplyActive()) {
-                SimulatedFirmwareVersionReplySettings settings = new SimulatedFirmwareVersionReplySettings();
-                settings.setVersion("1.2.3");
-                settings.setResult(RfnUpdateServerAvailableVersionResult.SUCCESS);
-                request.setFirmwareVersionSettings(settings);
-            }
-            
-            sendStartStopRequest(request, flash, true);
-            
-        } catch (ExecutionException e) {
-            log.error("Error communicating with Yukon Simulators Service.", e);
-            flash.setError(new YukonMessageSourceResolvable(SimulatorsCommunicationService.COMMUNICATION_ERROR_KEY));
-        }
+        ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
+
+        request.setDataSettings(dataSettings);
+        request.setUpdateSettings(updateSettings);
+        request.setCertificateSettings(certSettings);
+        request.setFirmwareSettings(firmwareSettings);
+        request.setFirmwareVersionSettings(settings);
+        
+        sendStartStopRequest(request, flash, true);
+
         return "redirect:gatewaySimulator";
     }
 
@@ -349,43 +304,13 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("enableGatewayDataReply")
-    public String enableGatewayDataReply(@RequestParam(defaultValue="false") boolean alwaysGateway2, 
-                                         @RequestParam(defaultValue="50") String currentDataStreamingLoading, 
-                                         @RequestParam(defaultValue="1000") String readyNodes,
-                                         @RequestParam(defaultValue="500") String notReadyNodes,
-                                         @RequestParam(defaultValue="false") boolean failsafeMode,
-                                         @RequestParam(defaultValue="CONNECTED") ConnectionStatus connectionStatus,
-                                         FlashScope flash) {
-        
-        enableGatewayDataSimulator(alwaysGateway2, 
-                                   Double.valueOf(currentDataStreamingLoading), 
-                                   Integer.valueOf(readyNodes), 
-                                   Integer.valueOf(notReadyNodes),
-                                   failsafeMode,
-                                   connectionStatus,
-                                   flash);
-        return "redirect:gatewaySimulator";
-    }
-    
-    private SimulatedGatewayDataSettings enableGatewayDataSimulator(boolean alwaysGateway2, 
-                                                                    double currentDataStreamingLoading,
-                                                                    int readyNodes,
-                                                                    int notReadyNodes,
-                                                                    boolean failsafeMode,
-                                                                    ConnectionStatus ConnectionStatus,
-                                                                    FlashScope flash){
+    public String enableGatewayDataReply(SimulatedGatewayDataSettings dataSettings, FlashScope flash) {
         clearGatewayCache();
-        SimulatedGatewayDataSettings dataSettings = new SimulatedGatewayDataSettings();
-        dataSettings.setReturnGwy800Model(alwaysGateway2);
-        dataSettings.setCurrentDataStreamingLoading(currentDataStreamingLoading);
-        dataSettings.setNumberOfReadyNodes(readyNodes);
-        dataSettings.setNumberOfNotReadyNodes(notReadyNodes);
-        dataSettings.setFailsafeMode(failsafeMode);
-        dataSettings.setConnectionStatus(ConnectionStatus);
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
         request.setDataSettings(dataSettings);
         sendStartStopRequest(request, flash, true);
-        return dataSettings;
+        
+        return "redirect:gatewaySimulator";
     }
 
     @RequestMapping("disableGatewayDataReply")
@@ -399,15 +324,8 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("enableGatewayUpdateReply")
-    public String enableGatewayUpdateReply(@RequestParam GatewayUpdateResult createResult,
-                                           @RequestParam GatewayUpdateResult editResult,
-                                           @RequestParam GatewayUpdateResult deleteResult,
-                                           FlashScope flash) {
-        
-        SimulatedUpdateReplySettings updateSettings = new SimulatedUpdateReplySettings();
-        updateSettings.setCreateResult(createResult);
-        updateSettings.setEditResult(editResult);
-        updateSettings.setDeleteResult(deleteResult);
+    public String enableGatewayUpdateReply(SimulatedUpdateReplySettings updateSettings, FlashScope flash) {
+
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
         request.setUpdateSettings(updateSettings);
         
@@ -428,13 +346,8 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("enableGatewayCertificateReply")
-    public String enableGatewayCertificateReply(@RequestParam RfnGatewayUpgradeRequestAckType ackType,
-                                                @RequestParam GatewayCertificateUpdateStatus updateStatus,
-                                                FlashScope flash) {
-        
-        SimulatedCertificateReplySettings certSettings = new SimulatedCertificateReplySettings();
-        certSettings.setAckType(ackType);
-        certSettings.setDeviceUpdateStatus(updateStatus);
+    public String enableGatewayCertificateReply(SimulatedCertificateReplySettings certSettings, FlashScope flash) {
+
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
         request.setCertificateSettings(certSettings);
         
@@ -454,11 +367,8 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("enableGatewayFirmwareReply")
-    public String enableGatewayFirmwareReply(@RequestParam GatewayFirmwareUpdateRequestResult updateResult,
-                                             FlashScope flash) {
-        
-        SimulatedFirmwareReplySettings settings = new SimulatedFirmwareReplySettings();
-        settings.setResultType(updateResult);
+    public String enableGatewayFirmwareReply(SimulatedFirmwareReplySettings settings, FlashScope flash) {
+
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
         request.setFirmwareSettings(settings);
         
@@ -478,13 +388,8 @@ public class NmIntegrationController {
     }
 
     @RequestMapping("enableFirmwareVersionReply")
-    public String enableFirmwareVersionReply(@RequestParam RfnUpdateServerAvailableVersionResult replyType,
-                                             @RequestParam String version,
-                                             FlashScope flash) {
+    public String enableFirmwareVersionReply(SimulatedFirmwareVersionReplySettings settings, FlashScope flash) {
         
-        SimulatedFirmwareVersionReplySettings settings = new SimulatedFirmwareVersionReplySettings();
-        settings.setVersion(version);
-        settings.setResult(replyType);
         ModifyGatewaySimulatorRequest request = new ModifyGatewaySimulatorRequest();
         request.setFirmwareVersionSettings(settings);
         
@@ -933,8 +838,8 @@ public class NmIntegrationController {
             GatewaySimulatorStatusResponse gatewayResponse = simulatorsCommunicationService.sendRequest(
                 new GatewaySimulatorStatusRequest(), GatewaySimulatorStatusResponse.class);
             SimulatedGatewayDataSettings gatewaySettings = gatewayResponse.getDataSettings();
-            if(gatewaySettings == null){
-                enableGatewayDataSimulator(false, 50, 1000, 500, false, ConnectionStatus.CONNECTED, flash);
+            if(!gatewayResponse.isDataReplyActive()){
+                enableGatewayDataReply(gatewaySettings, flash);
                 startedGatewaySimualtor = true;
             }
             

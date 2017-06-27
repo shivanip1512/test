@@ -73,7 +73,7 @@ public class GatewaySimulatorMessageHandler extends SimulatorMessageHandler {
         boolean totalSuccess = true;
         
         SimulatedGatewayDataSettings dataSettings = request.getDataSettings();
-        if (dataSettings != null) {
+        if ((!simulator.isAutoDataReplyActive() || simulator.isAutoDataReplyStopping()) && (dataSettings != null)) {
             boolean success = simulator.startAutoDataReply(dataSettings);
             if (!success) {
                 totalSuccess = false;
@@ -81,7 +81,7 @@ public class GatewaySimulatorMessageHandler extends SimulatorMessageHandler {
         }
         
         SimulatedUpdateReplySettings updateSettings = request.getUpdateSettings();
-        if (updateSettings != null) {
+        if ((!simulator.isAutoUpdateReplyActive() || simulator.isAutoUpdateReplyStopping()) && (updateSettings != null)) {
             boolean success = simulator.startAutoUpdateReply(updateSettings);
             if (!success) {
                 totalSuccess = false;
@@ -89,7 +89,7 @@ public class GatewaySimulatorMessageHandler extends SimulatorMessageHandler {
         }
         
         SimulatedCertificateReplySettings certificateSettings = request.getCertificateSettings();
-        if (certificateSettings != null) {
+        if ((!simulator.isAutoCertificateUpgradeReplyActive() || simulator.isAutoCertificateUpgradeReplyStopping()) && (certificateSettings != null)) {
             boolean success = simulator.startAutoCertificateReply(certificateSettings);
             if (!success) {
                 totalSuccess = false;
@@ -97,7 +97,7 @@ public class GatewaySimulatorMessageHandler extends SimulatorMessageHandler {
         }
         
         SimulatedFirmwareReplySettings firmwareSettings = request.getFirmwareSettings();
-        if (firmwareSettings != null) {
+        if ((!simulator.isAutoFirmwareReplyActive() || simulator.isAutoFirmwareReplyStopping()) && (firmwareSettings != null)) {
             boolean success = simulator.startAutoFirmwareReply(firmwareSettings);
             if (!success) {
                 totalSuccess = false;
@@ -105,7 +105,7 @@ public class GatewaySimulatorMessageHandler extends SimulatorMessageHandler {
         }
         
         SimulatedFirmwareVersionReplySettings firmwareVersionSettings = request.getFirmwareVersionSettings();
-        if (firmwareVersionSettings != null) {
+        if ((!simulator.isAutoFirmwareVersionReplyActive() || simulator.isAutoFirmwareVersionReplyStopping()) && (firmwareVersionSettings != null)) {
             boolean success = simulator.startAutoFirmwareVersionReply(firmwareVersionSettings);
             if (!success) {
                 totalSuccess = false;
@@ -118,26 +118,22 @@ public class GatewaySimulatorMessageHandler extends SimulatorMessageHandler {
     private GatewaySimulatorStatusResponse getStatus() {
         GatewaySimulatorStatusResponse response = new GatewaySimulatorStatusResponse();
         
-        if (simulator.isAutoDataReplyActive()) {
-            response.setDataSettings(simulator.getGatewayDataSettings());
-        }
+        response.setDataSettings(simulator.getGatewayDataSettings());
+        response.setDataReplyActive(simulator.isAutoDataReplyActive() && (!simulator.isAutoDataReplyStopping()));
         
-        if (simulator.isAutoCertificateUpgradeReplyActive()) {
-            response.setCertificateSettings(simulator.getCertificateSettings());
-        }
+        response.setCertificateSettings(simulator.getCertificateSettings());
+        response.setCertificateReplyActive(simulator.isAutoCertificateUpgradeReplyActive() && (!simulator.isAutoCertificateUpgradeReplyStopping()));
         
-        if (simulator.isAutoUpdateReplyActive()) {
-            response.setUpdateSettings(simulator.getGatewayUpdateSettings());
-        }
+        response.setUpdateSettings(simulator.getGatewayUpdateSettings());
+        response.setUpdateReplyActive(simulator.isAutoUpdateReplyActive() && (!simulator.isAutoUpdateReplyStopping()));
         
-        if (simulator.isAutoFirmwareReplyActive()) {
-            response.setFirmwareSettings(simulator.getFirmwareSettings());
-        }
+        response.setFirmwareSettings(simulator.getFirmwareSettings());
+        response.setFirmwareReplyActive(simulator.isAutoFirmwareReplyActive() && (!simulator.isAutoFirmwareReplyStopping()));
         
-        if (simulator.isAutoFirmwareVersionReplyActive()) {
-            response.setFirmwareVersionSettings(simulator.getFirmwareVersionSettings());
-        }
+        response.setFirmwareVersionSettings(simulator.getFirmwareVersionSettings());
+        response.setFirmwareVersionReplyActive(simulator.isAutoFirmwareVersionReplyActive() && (!simulator.isAutoFirmwareVersionReplyStopping()));
         
+        response.setSuccessful(true);
         return response;
     }
 }

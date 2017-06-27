@@ -4,8 +4,97 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="dev" page="rfnTest.viewGatewayDataSimulator">
+    <script>
+        $(function() {
+            //Script for SimulatorStartupSettings functionality
+            var simType = "GATEWAY";
+            $('#enable-startup, #disable-startup').click(_updateStartup);
+            _checkStartupStatus(null, {simulatorType: simType});   
+        
+            function _updateStartup(event) {
+                var startupData = {simulatorType: simType};
+                if ($(this).attr('id') === 'enable-startup') {
+                    startupData.runOnStartup = true;
+                    $.ajax({
+                        url: yukon.url('/dev/rfn/updateStartup'),
+                        type: 'post',
+                        data: startupData
+                    }).done(function(data) {
+                        if (data.hasError) {
+                            _checkStartupStatus(data.errorMessage, startupData);
+                        } else {
+                            yukon.ui.removeAlerts();
+                        }
+                    }).fail(function() {
+                        _checkStartupStatus("The simulator startup settings update request to the controller failed.", startupData);
+                    });
+                } else if ($(this).attr('id') === 'disable-startup') {
+                    startupData.runOnStartup = false;
+                    $.ajax({
+                        url: yukon.url('/dev/rfn/updateStartup'),
+                        type: 'post',
+                        data: startupData
+                    }).done(function(data) {
+                        if (data.hasError) {
+                            _checkStartupStatus(data.errorMessage, startupData);
+                        } else {
+                            yukon.ui.removeAlerts();
+                        }
+                    }).fail(function() {
+                        _checkStartupStatus("The simulator startup settings update request to the controller failed.", startupData);
+                    });
+                }
+            }
+             
+            function _checkStartupStatus(prevErrorMessage, startupData) {
+                $.ajax({
+                    url: yukon.url('/dev/rfn/existingStartupStatus'),
+                    type: 'post',
+                    data: startupData
+                }).done(function(data) {
+                    if (data.hasError) {
+                        yukon.ui.alertError(prevErrorMessage + " " + data.errorMessage + " Refresh the page to try again.");
+                        $('#enable-startup').attr("disabled", "true");
+                        $('#disable-startup').attr("disabled", "true");
+                        $('#enable-startup').removeClass('on');
+                        $('#disable-startup').removeClass('on');
+                    } else {
+                        if (prevErrorMessage) {
+                            yukon.ui.alertError(prevErrorMessage);
+                        }
+                        if (data.runOnStartup) {
+                            $('#enable-startup').addClass('on');
+                            $('#disable-startup').removeClass('on');
+                        } else {
+                            $('#enable-startup').removeClass('on');
+                            $('#disable-startup').addClass('on');
+                        }
+                    }
+                }).fail(function() {
+                    yukon.ui.alertError(prevErrorMessage + " Error communicating with NmIntegrationController. Refresh the page to try again.");
+                    $('#enable-startup').attr("disabled", "true");
+                    $('#disable-startup').attr("disabled", "true");
+                    $('#enable-startup').removeClass('on');
+                    $('#disable-startup').removeClass('on');
+                });
+            }
+        });
+    </script>
     <script type="text/javascript">
-    $(function() {$('#tabs').tabs();});
+        $(function() {
+            $('#tabs').tabs();  
+        });
+        function enableAll() {
+            var formData = $("form").serializeArray();
+            console.log(formData);
+            $.ajax({
+                url: yukon.url('enableAll'),
+                type: 'post',
+                data: formData
+            }).done(function() {
+                window.location.href = yukon.url('/dev/rfn/gatewaySimulator');
+            });
+        };
     </script>
     
     <div id="data-parameters-popup" class="dn" data-title="Gateway Data Simulation Parameters" data-width="800">
@@ -121,59 +210,63 @@
                                 <c:if test="${autoDataReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Data Streaming Loading">
-                                            ${dataSettings.currentDataStreamingLoading}%
+                                            <input type="text" name="currentDataStreamingLoading" style="width: 40px;" value="${dataSettings.currentDataStreamingLoading}" disabled="true"/>%
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Always Return GWY-800 Model">
-                                            ${dataSettings.returnGwy800Model}
+                                            <tags:checkbox path="dataSettings.returnGwy800Model" disabled="true"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="# of NOT ready nodes">
-                                            ${dataSettings.numberOfNotReadyNodes}
+                                            <input name="numberOfNotReadyNodes" type="text" style="width: 45px;" value="${dataSettings.numberOfNotReadyNodes}" disabled="true">
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="# of ready nodes">
-                                            ${dataSettings.numberOfReadyNodes}
+                                            <input name="numberOfReadyNodes" type="text" style="width: 45px;" value="${dataSettings.numberOfReadyNodes}" disabled="true">
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Failsafe Mode">
-                                            ${dataSettings.failsafeMode}
+                                            <tags:checkbox path="dataSettings.failsafeMode" disabled="true"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Connection Status">
-                                            ${dataSettings.connectionStatus}
+                                            <select name="connectionStatus" disabled>
+                                                <c:forEach var="connectionType" items="${connectionTypes}">
+                                                    <option value="${connectionType}">${connectionType}</option>
+                                                </c:forEach>
+                                            </select>                                        
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
                                 <c:if test="${not autoDataReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Data Streaming Loading">
-                                            <input type="text" name="currentDataStreamingLoading" style="width: 40px;" value="50"/>%
+                                            <input type="text" name="currentDataStreamingLoading" style="width: 40px;" value="${dataSettings.currentDataStreamingLoading}"/>%
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Always Return GWY-800 Model">
-                                            <input name="alwaysGateway2" type="checkbox">
+                                            <tags:checkbox path="dataSettings.returnGwy800Model"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="# of NOT ready nodes">
-                                            <input name="notReadyNodes" type="text" style="width: 45px;" value="500">
+                                            <input name="numberOfNotReadyNodes" type="text" style="width: 45px;" value="${dataSettings.numberOfNotReadyNodes}">
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="# of ready nodes">
-                                            <input name="readyNodes" type="text" style="width: 45px;" value="1000">
+                                            <input name="numberOfReadyNodes" type="text" style="width: 45px;" value="${dataSettings.numberOfReadyNodes}">
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Failsafe Mode">
-                                            <input name="failsafeMode" type="checkbox">
+                                            <tags:checkbox path="dataSettings.failsafeMode"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                     <tags:nameValueContainer tableClass="natural-width">
@@ -217,38 +310,32 @@
                                 <c:if test="${autoUpdateReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Update Result for Create">
-                                            ${updateSettings.createResult}
+                                            <tags:selectWithItems path="updateSettings.createResult"
+                                                items="${gatewayUpdateResultTypes}" disabled="true"/>
                                         </tags:nameValue>
                                         <tags:nameValue name="Update Result for Edit">
-                                            ${updateSettings.editResult}
+                                            <tags:selectWithItems path="updateSettings.editResult"
+                                                items="${gatewayUpdateResultTypes}" disabled="true"/>
                                         </tags:nameValue>
                                         <tags:nameValue name="Update Result for Delete">
-                                            ${updateSettings.deleteResult}
+                                            <tags:selectWithItems path="updateSettings.deleteResult"
+                                                items="${gatewayUpdateResultTypes}" disabled="true"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
                                 <c:if test="${not autoUpdateReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Update Result for Create">
-                                            <select name="createResult">
-                                                <c:forEach var="updateResultType" items="${gatewayUpdateResultTypes}">
-                                                    <option value="${updateResultType}">${updateResultType}</option>
-                                                </c:forEach>
-                                            </select>
+                                            <tags:selectWithItems path="updateSettings.createResult"
+                                                items="${gatewayUpdateResultTypes}"/>
                                         </tags:nameValue>
                                         <tags:nameValue name="Update Result for Edit">
-                                            <select name="editResult">
-                                                <c:forEach var="updateResultType" items="${gatewayUpdateResultTypes}">
-                                                    <option value="${updateResultType}">${updateResultType}</option>
-                                                </c:forEach>
-                                            </select>
+                                            <tags:selectWithItems path="updateSettings.editResult"
+                                                items="${gatewayUpdateResultTypes}"/>
                                         </tags:nameValue>
                                         <tags:nameValue name="Update Result for Delete">
-                                            <select name="deleteResult">
-                                                <c:forEach var="updateResultType" items="${gatewayUpdateResultTypes}">
-                                                    <option value="${updateResultType}">${updateResultType}</option>
-                                                </c:forEach>
-                                            </select>
+                                            <tags:selectWithItems path="updateSettings.deleteResult"
+                                                items="${gatewayUpdateResultTypes}"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
@@ -260,7 +347,7 @@
                         </form>
                     </tr>
                     <tr>
-                        <form action="enableGatewayCertificateReply">
+                        <form action="enableGatewayCertificateReply" method="POST">
                             <cti:csrfToken/>
                             <td>Certificate Upgrade</td>
                             <td>
@@ -283,28 +370,24 @@
                                 <c:if test="${autoCertificateReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Update Status Type">
-                                            ${certificateSettings.deviceUpdateStatus}
+                                            <tags:selectWithItems path="certificateSettings.deviceUpdateStatus"
+                                                items="${acceptedUpdateStatusTypes}" disabled="true"/>
                                         </tags:nameValue>
                                         <tags:nameValue name="Ack Type">
-                                            ${certificateSettings.ackType}
+                                            <tags:selectWithItems path="certificateSettings.ackType"
+                                                items="${ackTypes}" disabled="true"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
                                 <c:if test="${not autoCertificateReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Update Status Type">
-                                            <select name="updateStatus">
-                                                <c:forEach var="updateStatus" items="${acceptedUpdateStatusTypes}">
-                                                    <option value="${updateStatus}">${updateStatus}</option>
-                                                </c:forEach>
-                                            </select>
+                                            <tags:selectWithItems path="certificateSettings.deviceUpdateStatus"
+                                                items="${acceptedUpdateStatusTypes}"/>
                                         </tags:nameValue>
                                         <tags:nameValue name="Ack Type">
-                                            <select name="ackType">
-                                                <c:forEach var="ackType" items="${ackTypes}">
-                                                    <option value="${ackType}">${ackType}</option>
-                                                </c:forEach>
-                                            </select>
+                                            <tags:selectWithItems path="certificateSettings.ackType"
+                                                items="${ackTypes}"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
@@ -339,10 +422,11 @@
                                 <c:if test="${autoFirmwareVersionReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Version">
-                                            ${firmwareVersionSettings.version}
+                                            <input type="text" name="version" value="${firmwareVersionSettings.version}" disabled="true"/>
                                         </tags:nameValue>
                                         <tags:nameValue name="ReplyType">
-                                            ${firmwareVersionSettings.result}
+                                            <tags:selectWithItems path="firmwareVersionSettings.result"
+                                                items="${firmwareVersionReplyTypes}" disabled="true"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
@@ -350,14 +434,11 @@
                                 <c:if test="${not autoFirmwareVersionReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Version">
-                                            <input type="text" name="version" value="6.1.0"/>
+                                            <input type="text" name="version" value="${firmwareVersionSettings.version}"/>
                                         </tags:nameValue>
                                         <tags:nameValue name="ReplyType">
-                                            <select name="replyType">
-                                                <c:forEach var="replyType" items="${firmwareVersionReplyTypes}">
-                                                    <option value="${replyType}">${replyType}</option>
-                                                </c:forEach>
-                                            </select>
+                                            <tags:selectWithItems path="firmwareVersionSettings.result"
+                                                items="${firmwareVersionReplyTypes}"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
@@ -392,18 +473,16 @@
                                 <c:if test="${autoFirmwareReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Update Result Type">
-                                            ${firmwareSettings.resultType}
+                                            <tags:selectWithItems path="firmwareSettings.resultType"
+                                                items="${firmwareUpdateResultTypes}" disabled="true"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
                                 <c:if test="${not autoFirmwareReplyActive}">
                                     <tags:nameValueContainer tableClass="natural-width">
                                         <tags:nameValue name="Update Result Type">
-                                            <select name="updateResult">
-                                                <c:forEach var="updateResult" items="${firmwareUpdateResultTypes}">
-                                                    <option value="${updateResult}">${updateResult}</option>
-                                                </c:forEach>
-                                            </select>
+                                            <tags:selectWithItems path="firmwareSettings.resultType"
+                                                items="${firmwareUpdateResultTypes}"/>
                                         </tags:nameValue>
                                     </tags:nameValueContainer>
                                 </c:if>
@@ -423,13 +502,17 @@
                         </td>
                         <td colspan="2">
                             <c:if test="${numberOfSimulatorsRunning lt maxSimulators}">
-                                <cti:button label="Enable All" type="button" href="enableAll"/>
+                                <cti:button label="Enable All" type="button" onclick="enableAll()"/>
                             </c:if>
                             <c:if test="${numberOfSimulatorsRunning gt 0}">
                                 <cti:button label="Disable All" type="button" href="disableAll"/>
                             </c:if>
+                            <div class="button-group button-group-toggle">
+                                <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
+                                <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+                            </div>
                         </td>
-                        <td>Activates all gateway simulator functions with default parameter values.</td>
+                        <td>Activates all gateway simulator functions with either the user's saved parameters or the default parameter values if the user has never started a given simulator function.</td>
                     </tr>
                 </tbody>
             </table>
@@ -449,7 +532,7 @@
                             <input name="serial" value="7500000019">
                         </tags:nameValue>
                         <tags:nameValue name="GWY-800">
-                            <input name="isGateway2" type="checkbox">
+                            <input name="returnGwy800Model" type="checkbox">
                         </tags:nameValue>
                     </tags:nameValueContainer>
                     <cti:button label="Create" type="submit"/>
@@ -468,7 +551,7 @@
                             <input name="serial" value="7500000019">
                         </tags:nameValue>
                         <tags:nameValue name="GWY-800">
-                            <input name="isGateway2" type="checkbox">
+                            <input name="returnGwy800Model" type="checkbox">
                         </tags:nameValue>
                     </tags:nameValueContainer>
                     <cti:button label="Send" type="submit"/>

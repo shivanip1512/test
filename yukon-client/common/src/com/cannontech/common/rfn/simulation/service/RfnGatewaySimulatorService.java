@@ -5,12 +5,13 @@ import com.cannontech.common.rfn.simulation.SimulatedFirmwareReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedFirmwareVersionReplySettings;
 import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.SimulatedUpdateReplySettings;
+import com.cannontech.simulators.AutoStartableSimulator;
 
 /**
  * This is a development testing service that is intended to act as a replacement for Network Manager
  * in handling RF Gateway messaging.
  */
-public interface RfnGatewaySimulatorService {
+public interface RfnGatewaySimulatorService extends AutoStartableSimulator{
     
     /**
      * The simulator begins automatically processing GatewayDataRequests and sending GatewayDataResponses.
@@ -143,5 +144,15 @@ public interface RfnGatewaySimulatorService {
      * Get the current settings for gateway firmware version replies.
      * @return the settings if the thread is running, otherwise null.
      */
-    public SimulatedFirmwareVersionReplySettings getFirmwareVersionSettings();    
+    public SimulatedFirmwareVersionReplySettings getFirmwareVersionSettings();
+
+    boolean isAutoDataReplyStopping();
+
+    boolean isAutoCertificateUpgradeReplyStopping();    
+
+    boolean isAutoUpdateReplyStopping();
+    
+    boolean isAutoFirmwareReplyStopping();
+    
+    boolean isAutoFirmwareVersionReplyStopping();
 }

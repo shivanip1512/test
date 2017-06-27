@@ -17,6 +17,11 @@ public class GatewaySimulatorStatusResponse extends SimulatorResponseBase {
     private SimulatedCertificateReplySettings certificateSettings;
     private SimulatedFirmwareReplySettings firmwareSettings;
     private SimulatedFirmwareVersionReplySettings firmwareVersionSettings;
+    private boolean autoDataReplyActive;
+    private boolean autoUpdateReplyActive;
+    private boolean autoCertificateUpgradeReplyActive;
+    private boolean autoFirmwareReplyActive;
+    private boolean autoFirmwareVersionReplyActive;
     
     public SimulatedGatewayDataSettings getDataSettings() {
         return dataSettings;
@@ -58,24 +63,44 @@ public class GatewaySimulatorStatusResponse extends SimulatorResponseBase {
         this.firmwareVersionSettings = firmwareVersionSettings;
     }
     
+    public void setDataReplyActive(boolean autoDataReplyActive) {
+        this.autoDataReplyActive = autoDataReplyActive;
+    }
+    
+    public void setUpdateReplyActive(boolean autoUpdateReplyActive) {
+        this.autoUpdateReplyActive = autoUpdateReplyActive;
+    }
+    
+    public void setCertificateReplyActive(boolean autoCertificateUpgradeReplyActive) {
+        this.autoCertificateUpgradeReplyActive = autoCertificateUpgradeReplyActive;
+    }
+    
+    public void setFirmwareReplyActive(boolean autoFirmwareReplyActive) {
+        this.autoFirmwareReplyActive = autoFirmwareReplyActive;
+    }
+    
+    public void setFirmwareVersionReplyActive(boolean autoFirmwareVersionReplyActive) {
+        this.autoFirmwareVersionReplyActive = autoFirmwareVersionReplyActive;
+    }
+    
     public boolean isDataReplyActive() {
-        return dataSettings != null;
+        return autoDataReplyActive;
     }
     
     public boolean isUpdateReplyActive() {
-        return updateSettings != null;
+        return autoUpdateReplyActive;
     }
     
     public boolean isCertificateReplyActive() {
-        return certificateSettings != null;
+        return autoCertificateUpgradeReplyActive;
     }
     
     public boolean isFirmwareReplyActive() {
-        return firmwareSettings != null;
+        return autoFirmwareReplyActive;
     }
     
     public boolean isFirmwareVersionReplyActive() {
-        return firmwareVersionSettings != null;
+        return autoFirmwareVersionReplyActive;
     }
     
     public int getNumberOfSimulatorsRunning() {

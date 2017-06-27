@@ -70,12 +70,6 @@ public class SimulatorSettings implements Serializable {
         this.reportingInterval = reportingInterval;
     }
 
-    public SimulatorSettings(String paoType, int percentOfDuplicates, ReportingInterval reportingInterval, boolean runOnStartup) {
-        this.paoType = paoType;
-        this.percentOfDuplicates = percentOfDuplicates;
-        this.reportingInterval = reportingInterval;
-    }
-
     public SimulatorSettings(int deviceId) {
         this.setDeviceId(deviceId);
     }
