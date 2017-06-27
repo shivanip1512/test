@@ -218,25 +218,14 @@ void CtiCCTwoWayPoints::dumpDynamicData(Cti::Database::DatabaseConnection& conn,
 
 LitePoint CtiCCTwoWayPoints::getPointByAttribute( const Attribute & attribute ) const
 {
-    if ( boost::optional<LitePoint> lookup = Cti::mapFind( _attributes, attribute ) )
-    {
-        return *lookup;
-    }
-    throw MissingAttribute( _paoid, attribute, _paotype );
+    static const LitePoint  invalidPoint;   // <-- return this guy if lookup fails - pointID == 0
+
+    return Cti::mapFindOrDefault( _attributes, attribute, invalidPoint );
 }
 
 long CtiCCTwoWayPoints::getPointIdByAttribute( const Attribute & attribute ) const
-try
 {
     return getPointByAttribute( attribute ).getPointId();
-}
-catch ( const MissingAttribute & missingAttribute )
-{
-    if ( _CC_DEBUG & CC_DEBUG_ATTRIBUTE_LOOKUP )
-    {
-        CTILOG_EXCEPTION_WARN( dout, missingAttribute );
-    }
-    return 0;
 }
 
 double CtiCCTwoWayPoints::getPointValueByAttribute( const Attribute & attribute, const double sentinel ) const
