@@ -2,20 +2,26 @@ package com.cannontech.infrastructure.dao.impl;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.pao.PaoIdentifier;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.infrastructure.dao.InfrastructureWarningsDao;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
+import com.cannontech.infrastructure.model.InfrastructureWarningDeviceCategory;
 import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
+import com.cannontech.infrastructure.model.InfrastructureWarningSummary;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.google.common.collect.Lists;
 
@@ -58,20 +64,114 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
     
     @Override
     public List<InfrastructureWarning> getWarnings() {
+        return jdbcTemplate.query(selectAllInfrastructureWarnings(), infrastructureWarningRowMapper);
+    }
+
+    @Override
+    public InfrastructureWarningSummary getWarningsSummary() {
+        //TODO
+        
+         SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT");
+        
+        sql.append("(");
+        sql.append(  "SELECT COUNT(DISTINCT PaObjectId)");
+        sql.append(  "FROM YukonPaObject");
+        sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.GATEWAY.getPaoTypes());
+        sql.append(") AS Gateways,");
+        
+        sql.append("(");
+        sql.append(  "SELECT COUNT(DISTINCT PaObjectId)");
+        sql.append(  "FROM YukonPaObject");
+        sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.RELAY.getPaoTypes());
+        sql.append(") AS Relays,");
+        
+        sql.append("(");
+        sql.append(  "SELECT COUNT(DISTINCT PaObjectId)");
+        sql.append(  "FROM YukonPaObject");
+        sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.CCU.getPaoTypes());
+        sql.append(") AS Ccus,");
+        
+        sql.append("(");
+        sql.append(  "SELECT COUNT(DISTINCT PaObjectId)");
+        sql.append(  "FROM YukonPaObject");
+        sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.REPEATER.getPaoTypes());
+        sql.append(") AS Repeaters,");
+        
+        sql.append("(");
+        sql.append(  "SELECT COUNT(DISTINCT PaoId)");
+        sql.append(  "FROM InfrastructureWarnings iw");
+        sql.append(  "JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
+        sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.GATEWAY.getPaoTypes());
+        sql.append(") AS WarningGateways,");
+        
+        sql.append("(");
+        sql.append(  "SELECT COUNT(DISTINCT PaoId)");
+        sql.append(  "FROM InfrastructureWarnings iw");
+        sql.append(  "JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
+        sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.RELAY.getPaoTypes());
+        sql.append(") AS WarningRelays,");
+        
+        sql.append("(");
+        sql.append(  "SELECT COUNT(DISTINCT PaoId)");
+        sql.append(  "FROM InfrastructureWarnings iw");
+        sql.append(  "JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
+        sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.CCU.getPaoTypes());
+        sql.append(") AS WarningCcus,");
+        
+        sql.append("(");
+        sql.append(  "SELECT COUNT(DISTINCT PaoId)");
+        sql.append(  "FROM InfrastructureWarnings iw");
+        sql.append(  "JOIN YukonPaObject ypo ON iw.PaoId = ypo.PAObjectID");
+        sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.REPEATER.getPaoTypes());
+        sql.append(") AS WarningRepeaters");
+        
+        return jdbcTemplate.queryForObject(sql, warningSummaryRowMapper);
+    }
+
+    @Override
+    public List<InfrastructureWarning> getWarnings(InfrastructureWarningDeviceCategory... categories) {
+        // Get all PaoTypes included in these categories
+        Set<PaoType> types = Arrays.stream(categories)
+                                   .map(category -> category.getPaoTypes())
+                                   .flatMap(Set::stream)
+                                   .collect(Collectors.toSet());
+        
+        SqlStatementBuilder sql = selectAllInfrastructureWarnings();
+        sql.append("WHERE Type").in_k(types);
+        
+        return jdbcTemplate.query(sql, infrastructureWarningRowMapper);
+    }
+    
+    private static SqlStatementBuilder selectAllInfrastructureWarnings() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT PaoId, Type, WarningType, Severity, Argument1, Argument2, Argument3");
         sql.append("FROM InfrastructureWarnings iw");
         sql.append("JOIN YukonPaObject ypo ON ypo.PaObjectId = iw.PaoId");
-        
-        return jdbcTemplate.query(sql, (YukonResultSet rs) -> {
-                PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PaoId", "Type");
-                InfrastructureWarningType warningType = rs.getEnum("WarningType", InfrastructureWarningType.class);
-                InfrastructureWarningSeverity severity = rs.getEnum("Severity", InfrastructureWarningSeverity.class);
-                Object[] arguments = getWarningArguments(rs);
-                
-                return new InfrastructureWarning(paoIdentifier, warningType, severity, arguments);
-        });
+        return sql;
     }
+    
+    private static final YukonRowMapper<InfrastructureWarningSummary> warningSummaryRowMapper = (YukonResultSet rs) -> {
+        InfrastructureWarningSummary summary = new InfrastructureWarningSummary();
+        summary.setTotalGateways(rs.getInt("Gateways"));
+        summary.setTotalRelays(rs.getInt("Relays"));
+        summary.setTotalCcus(rs.getInt("Ccus"));
+        summary.setTotalRepeaters(rs.getInt("Repeaters"));
+        summary.setWarningGateways(rs.getInt("WarningGateways"));
+        summary.setWarningRelays(rs.getInt("WarningRelays"));
+        summary.setWarningCcus(rs.getInt("WarningCcus"));
+        summary.setWarningRepeaters(rs.getInt("WarningRepeaters"));
+        return summary;
+    };
+    
+    private static final YukonRowMapper<InfrastructureWarning> infrastructureWarningRowMapper = (YukonResultSet rs) -> {
+        PaoIdentifier paoIdentifier = rs.getPaoIdentifier("PaoId", "Type");
+        InfrastructureWarningType warningType = rs.getEnum("WarningType", InfrastructureWarningType.class);
+        InfrastructureWarningSeverity severity = rs.getEnum("Severity", InfrastructureWarningSeverity.class);
+        Object[] arguments = getWarningArguments(rs);
+        
+        return new InfrastructureWarning(paoIdentifier, warningType, severity, arguments);
+    };
     
     private static Object[] getWarningArguments(YukonResultSet rs) throws SQLException {
         List<String> arguments = new ArrayList<>();
