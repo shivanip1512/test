@@ -125,11 +125,6 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
             proccessResult(state, null, message, replyType);
             
         }
-
-        public void addError(MessageSourceResolvable message, RfnMeterDisconnectConfirmationReplyType replyType) {
-            log.debug("RFN addError");
-
-        }
         
         @Override
         public void processingExceptionOccured(MessageSourceResolvable message) {

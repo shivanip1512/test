@@ -1192,7 +1192,7 @@
     <error code="1029">
         <category>Network Manager</category>
         <porter>No load side voltage detected while connected.</porter>
-        <description>No oad side voltage detected while connected.</description>
+        <description>No load side voltage detected while connected.</description>
     </error>
     <error code="2000">
         <category>Yukon System</category>
