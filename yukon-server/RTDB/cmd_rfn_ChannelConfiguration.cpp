@@ -138,10 +138,14 @@ const MetricInfo metricInfos[] = {
         { 162,  TouRates,  "PF Phase A"                            },
         { 163,  TouRates,  "PF Phase B"                            },
         { 164,  TouRates,  "PF Phase C"                            },
+        
+        { 184,  TouRates,  "Sum Peak kVAr"                         },
 
         { 200,  TouRates,  "Watts"                                 },
         { 201,  TouRates,  "Var"                                   },
         { 202,  TouRates,  "VA"                                    },
+
+        { 210,  TouRates,  "Sum Peak kVA"                          },
 
         { 240,  TouRates,  "Peak Demand Daily"                     },
 
