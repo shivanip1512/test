@@ -11,7 +11,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.web.input.EnumPropertyEditor;
 import com.cannontech.web.input.type.BaseEnumType;
 import com.cannontech.web.input.type.BooleanType;
-import com.cannontech.web.input.type.DoubleType;
 import com.cannontech.web.input.type.EnumInputType;
 import com.cannontech.web.input.type.InputOption;
 import com.cannontech.web.input.type.InputOptionProvider;
