@@ -74,11 +74,6 @@ public interface DashboardDao {
     List<LiteDashboard> getAllOwnerless();
 
     /**
-     * Retrieves dashboards by visibility and type.
-     */
-    Dashboard getDashboard(Visibility visibility, DashboardPageType dashboardType);
-
-    /**
      * Retrieves dashboards by visibility.
      */
     List<LiteDashboard> getDashboardsByVisibility(Visibility... visibility);

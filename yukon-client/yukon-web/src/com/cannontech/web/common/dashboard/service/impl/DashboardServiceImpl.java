@@ -29,7 +29,7 @@ public class DashboardServiceImpl implements DashboardService {
     public Dashboard getAssignedDashboard(int userId, DashboardPageType dashboardType) {
         Dashboard dashboard = dashboardDao.getDashboard(userId, dashboardType);
         if (dashboard == null) {
-            dashboard = dashboardDao.getDashboard(Visibility.SYSTEM, dashboardType);
+            dashboard = dashboardDao.getDashboard(dashboardType.getDefaultDashboardId());
         }
         return dashboard;
     }

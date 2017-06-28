@@ -77,24 +77,7 @@ public class DashboardDaoImpl implements DashboardDao {
         addWidgets(dashboard);
         return dashboard;
     }
-    
-    @Override
-    public Dashboard getDashboard(Visibility visibility, DashboardPageType dashboardType){
         
-        SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
-        dashboardSql.append(baseDashboardSql.getSql());
-        dashboardSql.append("JOIN UserDashboard ud ON d.DashboardId = ud.DashboardId");
-        dashboardSql.append("WHERE Visibility").eq_k(visibility);
-        dashboardSql.append("AND ud.PageAssignment").eq_k(dashboardType);
-        try {
-            Dashboard dashboard = jdbcTemplate.queryForObject(dashboardSql, dashboardRowMapper);
-            addWidgets(dashboard);
-            return dashboard;
-        } catch (EmptyResultDataAccessException e) {
-            return null;
-        }
-    }
-    
     /**
      * Adds widgets to dashboard
      */
