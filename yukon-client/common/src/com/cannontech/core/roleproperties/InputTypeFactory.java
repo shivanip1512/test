@@ -35,7 +35,6 @@ public class InputTypeFactory {
     private static final InputType<Boolean> booleanType = new BooleanType(true);
     private static final InputType<Integer> integerType = new IntegerType();
     private static final InputType<Long> longType = new LongType();
-    private static final InputType<Double> doubleType = new DoubleType();
     private static final InputType<Integer> userType = new UserType();
 
     public static <T extends Enum<T>> EnumInputType<T> enumType(final Class<T> enumClass) {
@@ -91,10 +90,6 @@ public class InputTypeFactory {
     
     public static InputType<Long> longType() {
         return longType;
-    }
-    
-    public static InputType<Double> doubleType() {
-        return doubleType;
     }
     
     public static InputType<Integer> userType() {

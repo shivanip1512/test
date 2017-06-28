@@ -9,7 +9,7 @@ public enum YukonSimulatorSettingsKey {
     DATA_STREAMING_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType()),
 
     //SimulatedGatewayDataSettings
-    GATEWAY_SIMULATOR_DATA_STREAMING_LOADING(50, InputTypeFactory.doubleType()),
+    GATEWAY_SIMULATOR_DATA_STREAMING_LOADING(50, InputTypeFactory.longType()),
     GATEWAY_SIMULATOR_RETURN_GWY800_MODEL(false, InputTypeFactory.booleanType()),
     GATEWAY_SIMULATOR_NUM_NOT_READY_NODES(500, InputTypeFactory.integerType()),
     GATEWAY_SIMULATOR_NUM_READY_NODES(1000, InputTypeFactory.integerType()),
