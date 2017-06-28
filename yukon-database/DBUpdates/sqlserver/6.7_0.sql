@@ -1242,6 +1242,26 @@ INSERT INTO Widget VALUES (-6, 'AMI_ACTIONS', -2, 201);
 INSERT INTO Widget VALUES (-7, 'GATEWAY_STREAMING_CAPACITY', -2, 202);
 /* End YUK-16640 */
 
+/* Start YUK-16825 */
+UPDATE GlobalSetting SET Value='(AUTO_ENCRYPTED)' + Value 
+    WHERE Name LIKE 'ECOBEE_PASSWORD' AND Value NOT LIKE '(AUTO_ENCRYPTED)%';
+
+UPDATE GlobalSetting SET Value='(AUTO_ENCRYPTED)' + Value 
+    WHERE Name LIKE 'ECOBEE_USERNAME' AND Value NOT LIKE '(AUTO_ENCRYPTED)%';
+
+UPDATE GlobalSetting SET Value='(AUTO_ENCRYPTED)' + Value 
+    WHERE Name LIKE 'RFN_FIRMWARE_UPDATE_SERVER_USER' AND Value NOT LIKE '(AUTO_ENCRYPTED)%';
+
+UPDATE GlobalSetting SET Value='(AUTO_ENCRYPTED)' + Value 
+    WHERE Name LIKE 'RFN_FIRMWARE_UPDATE_SERVER_PASSWORD' AND Value NOT LIKE '(AUTO_ENCRYPTED)%';
+
+UPDATE GlobalSetting SET Value='(AUTO_ENCRYPTED)' + Value 
+    WHERE Name LIKE 'HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING' AND Value NOT LIKE '(AUTO_ENCRYPTED)%';
+
+UPDATE GlobalSetting SET Value='(AUTO_ENCRYPTED)' + Value 
+    WHERE Name LIKE 'HONEYWELL_WIFI_SERVICE_BUS_QUEUE' AND Value NOT LIKE '(AUTO_ENCRYPTED)%';
+/* End YUK-16825 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
