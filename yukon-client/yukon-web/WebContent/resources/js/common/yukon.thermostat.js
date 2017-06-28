@@ -689,7 +689,6 @@ yukon.ThermostatManualEditor = {
     
     onBlurTemperatureDisplay: function(event) {
         if (isNaN(parseFloat(this.value))) {
-            this.value = "";
             return false;
         }
         if(yukon.ThermostatManualEditor.thermostat.assignDegreesOrSnapToLimit(parseFloat(this.value), this.getAttribute("data-temperatureMode"))){
@@ -1235,19 +1234,24 @@ yukon.Thermostat = function(args){
     this._init();
 };
 
-/* Validate if the temperature value is blank*/
+/* Validate the temperature value */
 $(document).on("click", "#sendSettingsSubmit", function () {
-    if ($("div.coolDiv").is(":visible") && ($("div.coolDiv input[name='temperature_display']").val() == "")) {
-        $("div.coolDiv input[name='temperature_display']").addClass("error");
-    } else {
-        $("div.coolDiv input[name='temperature_display']").removeClass("error");
+    if ($("div.coolDiv").is(":visible")) {
+        var coolTemp = $("div.coolDiv input[name='temperature_display']").val();
+        if (isNaN(parseFloat(coolTemp))) {
+            $("div.coolDiv input[name='temperature_display']").addClass("error");
+        } else {
+            $("div.coolDiv input[name='temperature_display']").removeClass("error");
+        }
     }
-
-    if ($("div.heatDiv").is(":visible") && ($("div.heatDiv input[name='temperature_display']").val()) == "") {
-        $("div.heatDiv input[name='temperature_display']").addClass("error");
-    } else {
-        $("div.heatDiv input[name='temperature_display']").removeClass("error");
-    }
+    if ($("div.heatDiv").is(":visible")) {
+        var heatTemp = $("div.heatDiv input[name='temperature_display']").val();
+        if (isNaN(parseFloat(heatTemp))) {
+            $("div.heatDiv input[name='temperature_display']").addClass("error");
+        } else {
+            $("div.heatDiv input[name='temperature_display']").removeClass("error");
+        }
+    } 
 
     if ($("div.heatDiv input[name='temperature_display']").hasClass("error") || 
             $("div.coolDiv input[name='temperature_display']").hasClass("error")) {

@@ -16,7 +16,7 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 
 <div id="validationMessage" class="user-message error dn">
-    <i:inline key="yukon.web.modules.operator.thermostatManual.temperature.blank"/>
+    <i:inline key="yukon.web.modules.operator.thermostatManual.temperature.invalid"/>
 </div>
 
 <div class="titled-container box-container manualThermostat box fl">
