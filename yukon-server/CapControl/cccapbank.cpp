@@ -2138,9 +2138,14 @@ void CtiCCCapBank::handlePointData( const CtiPointDataMsg & message )
     heartbeat._policy->updatePointData( message );
 }
 
-void CtiCCCapBank::submitHeartbeatCommands( Cti::CapControl::Policy::Actions & actions )
+bool CtiCCCapBank::submitHeartbeatCommands( Cti::CapControl::Policy::Actions & actions )
 {
-    for ( auto & action : actions )
+    if ( actions.empty() )
+    {
+        return false;
+    }
+
+    for (auto &action : actions )
     {
         auto & signal  = action.first;
         auto & request = action.second;
@@ -2152,6 +2157,8 @@ void CtiCCCapBank::submitHeartbeatCommands( Cti::CapControl::Policy::Actions & a
 
         CtiCapController::getInstance()->manualCapBankControl( request.release() );
     }
+
+    return true;
 }
 
 void CtiCCCapBank::executeSendHeartbeat( const std::string & user )
@@ -2176,9 +2183,14 @@ catch ( FailedAttributeLookup & missingAttribute )
 void CtiCCCapBank::executeStopHeartbeat( const std::string & user )
 try
 {
-    CTILOG_DEBUG( dout, "Disabling CBC Heartbeat for bank: " << getPaoName() );
+    if ( submitHeartbeatCommands( heartbeat._policy->StopHeartbeat() ) )
+    {
+        // next time we try to send a heartbeat we want the command to go out right away, not
+        //  wait on a timing boundary.
+        heartbeat._sendTime = CtiTime::neg_infin;
 
-    submitHeartbeatCommands( heartbeat._policy->StopHeartbeat() );
+        CTILOG_DEBUG(dout, "Disabling CBC Heartbeat for bank: " << getPaoName());
+    }
 }
 catch ( FailedAttributeLookup & missingAttribute )
 {

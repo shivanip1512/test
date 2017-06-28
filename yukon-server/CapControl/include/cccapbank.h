@@ -281,7 +281,7 @@ public:
 
     void handlePointData( const CtiPointDataMsg & message );
 
-    void submitHeartbeatCommands( Cti::CapControl::Policy::Actions & actions );
+    bool submitHeartbeatCommands( Cti::CapControl::Policy::Actions & actions );
 
     void executeSendHeartbeat( const std::string & user );
     void executeStopHeartbeat( const std::string & user );
