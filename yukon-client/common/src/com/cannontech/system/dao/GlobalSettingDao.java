@@ -1,5 +1,8 @@
 package com.cannontech.system.dao;
 
+import java.util.List;
+import java.util.Map;
+
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.model.GlobalSetting;
@@ -104,4 +107,9 @@ public interface GlobalSettingDao {
      * 
      */
     public void valueChanged();
+    
+    /**
+     * Returns GlobalSetting value for the passed GlobalSettingType
+     */
+    Map<GlobalSettingType, GlobalSetting> getGlobalSettingsValue(List<GlobalSettingType> types);
 }

@@ -1,5 +1,8 @@
 package com.cannontech.common.mock;
 
+import java.util.List;
+import java.util.Map;
+
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.MethodNotImplementedException;
 import com.cannontech.system.GlobalSettingType;
@@ -43,6 +46,11 @@ public class GlobalSettingDaoAdapter implements GlobalSettingDao {
         throw new MethodNotImplementedException();
     }
 
+    @Override
+    public Map<GlobalSettingType, GlobalSetting> getGlobalSettingsValue(List<GlobalSettingType> types) {
+        throw new MethodNotImplementedException();
+    }
+    
     @Override
     public Integer getNullableInteger(GlobalSettingType type) {
         throw new MethodNotImplementedException();

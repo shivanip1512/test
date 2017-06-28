@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.nio.channels.FileLock;
 
 import org.apache.commons.codec.DecoderException;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.jdom2.JDOMException;
 
@@ -14,10 +13,9 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.BootstrapUtils;
 import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 
-public class MasterConfigCryptoUtils {
+public class MasterConfigCryptoUtils extends ConfigCryptoUtils {
     private static Logger log = YukonLogManager.getLogger(MasterConfigCryptoUtils.class);
 
-    private static final String encryptionDesignation = "(AUTO_ENCRYPTED)";
     private static AESPasswordBasedCrypto encrypter;
 
     static {
@@ -59,17 +57,11 @@ public class MasterConfigCryptoUtils {
 
     /**
      * Decrypts the input string and returns the plain text value
-     * 
-     * Decrypts the text following "(AUTO_ENCRYPTED)" in the string value
-     * sent in. This will return the plain text as it was originally
-     * 
      */
     public static String decryptValue(String encryptedText) throws CryptoException {
         String plainText = null;
         try {
-            encryptedText = StringUtils.deleteWhitespace(encryptedText);
-            String hexStr = encryptedText.substring(encryptionDesignation.length());
-            plainText = encrypter.decryptHexStr(hexStr);
+            plainText = decryptValue(encryptedText, encrypter);
         } catch (DecoderException | CryptoException e) {
         	throw new CryptoException("Unable to decrypt master.cfg encrypted value.", e);
         }
@@ -78,35 +70,9 @@ public class MasterConfigCryptoUtils {
 
     /**
      * Encrypts the input string and returns the encrypted value
-     * 
-     * The encrypted value will be encrypted using AES and will have
-     * "(AUTO_ENCRYPTED)" appended to the value so the master.cfg parsers
-     * can tell its encrypted. The rest of the value returned is the encrypted
-     * data in hex format.
      */
     public static String encryptValue(String valuePlaintext) throws CryptoException {
-        valuePlaintext = StringUtils.deleteWhitespace(valuePlaintext);
-        String encryptedValue = encryptionDesignation + encrypter.encryptToHexStr(valuePlaintext);
+        String encryptedValue = encryptValue(valuePlaintext, encrypter);
         return encryptedValue;
-    }
-
-    /**
-     *  Checks a value to determine if it is encrypted
-     *  
-     *  Checks for "(AUTO_ENCRYPTED)" to be the start of the value
-     *  and returns true if this is found. This method is null safe and will
-     *  return false if value is null
-     *  
-     *  @return true if value is encrypted, false if not encrypted or null
-     */
-    public static boolean isEncrypted(String value) {
-        value = StringUtils.deleteWhitespace(value); // null safe
-        if (StringUtils.isEmpty(value) // check for "" or Null
-                || value.length() <= encryptionDesignation.length() // Ensure the next line doesn't throw indexOutOfBounds
-                || !value.substring(0, encryptionDesignation.length()).equals(encryptionDesignation)) {
-            return false;
-        } else {
-            return true;
-        }
     }
 }

@@ -1,6 +1,8 @@
 package com.cannontech.system.dao.impl;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -20,11 +22,10 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.encryption.CryptoException;
-import com.cannontech.encryption.CryptoUtils;
-import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
 import com.cannontech.message.DbChangeManager;
 import com.cannontech.message.dispatch.message.DbChangeCategory;
 import com.cannontech.message.dispatch.message.DbChangeType;
+import com.cannontech.system.GlobalSettingCryptoUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
@@ -59,7 +60,9 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
             Object value = setting.getValue();
             if (value != null && setting.getType().isSensitiveInformation()) {
                 try {
-                    value = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey()).encryptToHexStr((String) value);
+                    if (!GlobalSettingCryptoUtils.isEncrypted((String) value)) {
+                        value = GlobalSettingCryptoUtils.encryptValue((String) value);
+                    }
                 } catch (CryptoException | IOException | JDOMException e) {
                     throw new RuntimeException("Unable to encrypt value for setting " + setting.getType(), e);
                 }
@@ -69,6 +72,17 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
             parameterHolder.addValue("LastChangedDate", setting.getLastChanged());
         }
     };
+    
+    /**
+     * On startup encrypt the sensitive information which is not already encrypted.
+     */
+    private void encryptSensitiveInformation() {
+        List<GlobalSettingType> sensitiveInformation = GlobalSettingType.getSensitiveSettings();
+        Map<GlobalSettingType, GlobalSetting> map = globalSettingDao.getGlobalSettingsValue(sensitiveInformation);
+        if (!map.isEmpty()) {
+            updateSettings(map.values(), null);
+        }
+    }
 
     @Transactional
     @Override
@@ -171,6 +185,8 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
         insertTemplate.setFieldMapper(fieldMapper);
         insertTemplate.setPrimaryKeyField("GlobalSettingId");
         insertTemplate.setPrimaryKeyValidOver(0);
+        
+        encryptSensitiveInformation();
     }
 
 }

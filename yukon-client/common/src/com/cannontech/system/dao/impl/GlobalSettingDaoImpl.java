@@ -2,6 +2,8 @@ package com.cannontech.system.dao.impl;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.codec.DecoderException;
 import org.apache.log4j.Logger;
@@ -17,11 +19,11 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
 import com.cannontech.encryption.CryptoException;
-import com.cannontech.encryption.CryptoUtils;
-import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
+import com.cannontech.system.GlobalSettingCryptoUtils;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.model.GlobalSetting;
+import com.google.common.collect.Maps;
 
 /**
  * The class handles Yukon System wide settings.
@@ -114,7 +116,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
 
         if (setting == null) {
             // Not in cache, Look in Db
-            setting = findSetting(type);
+            setting = findSetting(type, settingMapper);
             if (setting == null) {
                 // Not in Db. Need to create one for cache
                 setting = new GlobalSetting(type, type.getDefaultValue());
@@ -140,7 +142,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
         return returnType.cast(getSetting(setting).getValue());
     }
 
-    private GlobalSetting findSetting(GlobalSettingType setting) {
+    private GlobalSetting findSetting(GlobalSettingType setting, YukonRowMapper<GlobalSetting> mapper) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT GlobalSettingId, Value, Name, Comments, LastChangedDate");
         sql.append("FROM GlobalSetting");
@@ -148,7 +150,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
 
         GlobalSetting settingDb = null;
         try {
-            settingDb = yukonJdbcTemplate.queryForObject(sql, settingMapper);
+            settingDb = yukonJdbcTemplate.queryForObject(sql, mapper);
         } catch (EmptyResultDataAccessException e) {
             log.debug("Setting missing from the database: " + setting.name());
             return null;
@@ -172,8 +174,11 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
             Object value = rs.getObjectOfInputType("Value", type.getType());
             if (value != null && type.isSensitiveInformation()) {
                 try {
-                    value = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey()).decryptHexStr((String) value);
-                } catch (CryptoException | IOException | JDOMException |DecoderException e) {
+                    if (GlobalSettingCryptoUtils.isEncrypted((String) value)) {
+                        value = GlobalSettingCryptoUtils.decryptValue((String) value);
+                    }
+
+                } catch (CryptoException | IOException | JDOMException | DecoderException e) {
                     value = type.getDefaultValue();
                     log.error("Unable to decrypt value for setting " + type + ". Using the default value");
                 }
@@ -187,4 +192,47 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
             return setting;
         }
     };
+
+    /*
+     * Mapper to find unencrypted Sensitive global settings on startup
+     */
+    private final YukonRowMapper<GlobalSetting> encryptMapper = new YukonRowMapper<GlobalSetting>() {
+
+        @Override
+        public GlobalSetting mapRow(YukonResultSet rs) throws SQLException {
+            GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
+            GlobalSetting setting = null;
+
+            Object value = rs.getObjectOfInputType("Value", type.getType());
+            if (value != null && type.isSensitiveInformation()) {
+                try {
+                    if (!GlobalSettingCryptoUtils.isEncrypted((String) value)) {
+                        value = GlobalSettingCryptoUtils.encryptValue((String) value);
+
+                        setting = new GlobalSetting(type, value);
+                        setting.setId(rs.getInt("GlobalSettingId"));
+                        setting.setComments(rs.getString("Comments"));
+                        setting.setLastChanged(rs.getInstant("LastChangedDate"));
+                    }
+                } catch (CryptoException | IOException | JDOMException e) {
+                    value = type.getDefaultValue();
+                    log.error("Unable to decrypt value for setting " + type + ". Using the default value");
+                }
+            }
+            return setting;
+        }
+    };
+    
+    @Override
+    public Map<GlobalSettingType, GlobalSetting> getGlobalSettingsValue(List<GlobalSettingType> types) {
+        final Map<GlobalSettingType, GlobalSetting> settings = Maps.newHashMap();
+
+        types.stream().forEach(type -> {
+            GlobalSetting setting = findSetting(type, encryptMapper);
+            if (setting != null) {
+                settings.put(type, setting);
+            }
+        });
+        return settings;
+    }
 }

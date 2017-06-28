@@ -18,8 +18,7 @@ import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowCallbackHandler;
 import com.cannontech.encryption.CryptoException;
-import com.cannontech.encryption.CryptoUtils;
-import com.cannontech.encryption.impl.AESPasswordBasedCrypto;
+import com.cannontech.system.GlobalSettingCryptoUtils;
 import com.cannontech.system.GlobalSettingSubCategory;
 import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingEditorDao;
@@ -53,7 +52,9 @@ public class GlobalSettingEditorDaoImpl implements GlobalSettingEditorDao {
                 Object value = InputTypeFactory.convertPropertyValue(type.getType(), rs.getString("Value"));
                 if (value != null && type.isSensitiveInformation()) {
                     try {
-                        value = new AESPasswordBasedCrypto(CryptoUtils.getSharedPasskey()).decryptHexStr((String) value);
+                        if (GlobalSettingCryptoUtils.isEncrypted((String) value)) {
+                            value = GlobalSettingCryptoUtils.decryptValue((String) value);
+                        }
                     } catch (CryptoException | IOException | JDOMException | DecoderException e) {
                         value = type.getDefaultValue();
                         log.error("Unable to decrypt value for setting " + type + ". Using the default value. ", e);

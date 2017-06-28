@@ -18,6 +18,7 @@ import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.core.roleproperties.MspPaoNameAliasEnum;
 import com.cannontech.core.roleproperties.MultispeakMeterLookupFieldEnum;
 import com.cannontech.web.input.type.InputType;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.ImmutableSetMultimap.Builder;
 
@@ -174,6 +175,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     private final InputType<?> type;
     private final  Object defaultValue;
     private final  GlobalSettingSubCategory category;
+    private final static ImmutableList<GlobalSettingType> sensitiveSettings;
 
     static {
         final Builder<GlobalSettingSubCategory, GlobalSettingType> b = ImmutableSetMultimap.builder();
@@ -181,6 +183,20 @@ public enum GlobalSettingType implements DisplayableEnum {
             b.put(globalSettingType.getCategory(), globalSettingType);
         }
         categoryMapping = b.build();
+        
+        sensitiveSettings = ImmutableList.of(
+            ECOBEE_PASSWORD,
+            ECOBEE_USERNAME,
+            RFN_FIRMWARE_UPDATE_SERVER_USER,
+            RFN_FIRMWARE_UPDATE_SERVER_PASSWORD,
+            HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING,
+            HONEYWELL_WIFI_SERVICE_BUS_QUEUE,
+            HONEYWELL_CLIENTID,
+            HONEYWELL_SECRET,
+            OADR_KEYSTORE_PASSWORD,
+            OADR_TRUSTSTORE_PASSWORD,
+            SMTP_USERNAME,
+            SMTP_PASSWORD);
     }
 
     private GlobalSettingType(GlobalSettingSubCategory category, InputType<?> type, Object defaultValue) {
@@ -194,18 +210,7 @@ public enum GlobalSettingType implements DisplayableEnum {
     }
 
     public boolean isSensitiveInformation() {
-        return this == ECOBEE_PASSWORD || 
-               this == ECOBEE_USERNAME || 
-               this == RFN_FIRMWARE_UPDATE_SERVER_USER || 
-               this == RFN_FIRMWARE_UPDATE_SERVER_PASSWORD ||
-               this == HONEYWELL_WIFI_SERVICE_BUS_CONNECTION_STRING ||
-               this == HONEYWELL_WIFI_SERVICE_BUS_QUEUE ||
-               this == HONEYWELL_CLIENTID ||
-               this == HONEYWELL_SECRET ||
-               this == OADR_KEYSTORE_PASSWORD || 
-               this == OADR_TRUSTSTORE_PASSWORD || 
-               this == SMTP_USERNAME || 
-               this == SMTP_PASSWORD;
+        return sensitiveSettings.contains(this);
     }
 
     public Object getDefaultValue() {
@@ -227,6 +232,10 @@ public enum GlobalSettingType implements DisplayableEnum {
 
     public static Set<GlobalSettingType> getSettingsForCategory(GlobalSettingSubCategory category) {
         return categoryMapping.get(category);
+    }
+
+    public static ImmutableList<GlobalSettingType> getSensitiveSettings() {
+        return sensitiveSettings;
     }
 
 }
