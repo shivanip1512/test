@@ -23,5 +23,7 @@
             <a href="${waterLeakReportUrl}"><i:inline key=".waterLeakReport"/></a><br/>
         </cti:checkRolesAndProperties>
     </c:if>
-    <a href="${usageThresholdReportUrl}"><i:inline key=".usageThresholdReport"/></a><br/>
+    <cti:checkRolesAndProperties value="USAGE_THRESHOLD_REPORT">
+        <a href="${usageThresholdReportUrl}"><i:inline key=".usageThresholdReport"/></a><br/>
+    </cti:checkRolesAndProperties>
 </div>

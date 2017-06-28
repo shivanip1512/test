@@ -44,6 +44,7 @@ import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.pao.attribute.model.AttributeGroup;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
+import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService;
@@ -59,11 +60,13 @@ import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFilter;
 import com.cannontech.web.amr.usageThresholdReport.service.ThresholdReportService;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
 import com.google.common.collect.Lists;
 
 @Controller
 @RequestMapping("/usageThresholdReport/*")
+@CheckRoleProperty(YukonRoleProperty.USAGE_THRESHOLD_REPORT)
 public class UsageThresholdReportController {
     
     private final static String baseKey = "yukon.web.modules.amr.usageThresholdReport.results.";

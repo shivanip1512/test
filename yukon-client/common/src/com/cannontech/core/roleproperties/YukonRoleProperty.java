@@ -272,7 +272,8 @@ public enum YukonRoleProperty {
     ALLOW_DISCONNECT_CONTROL(METERING, METERING.getBasePropertyId() - 20, booleanType()),
     DEVICE_DATA_MONITORING(METERING, METERING.getBasePropertyId() - 21, booleanType()),
     WATER_LEAK_REPORT(METERING, METERING.getBasePropertyId() - 22, booleanType()),
-    
+    USAGE_THRESHOLD_REPORT(METERING, METERING.getBasePropertyId() - 23, booleanType()),
+
     ODDS_FOR_CONTROL_ROLE_EXISTS(ODDS_FOR_CONTROL, ODDS_FOR_CONTROL.getBasePropertyId(), booleanType()),
     
     ENABLE_DISABLE_SCRIPTS(SCHEDULER, SCHEDULER.getBasePropertyId(), booleanType()),
