@@ -300,6 +300,7 @@
     <entry key="yukon.web.modules.dev.rfnTest.mappingSimulator.settingsUpdated">Settings have been updated.</entry>
     
     <!-- IVVC -->
+    <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.pageName">IVVC Test</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.title">IVVC Simulator</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.increasedSpeedMode">Increased Speed Mode</entry>
     <entry key="yukon.web.modules.dev.ivvc.ivvcSimulator.increasedSpeedMode.label">Increased Speed Mode</entry>

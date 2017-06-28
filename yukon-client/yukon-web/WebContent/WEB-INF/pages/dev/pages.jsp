@@ -115,6 +115,7 @@ dt, dd { font-size: 16px; }
                     &lt;page name=&quot;bulkPointInjection&quot; type=&quot;BASIC&quot;/&gt;
                     &lt;page name=&quot;setupDatabase&quot; type=&quot;BASIC&quot;/&gt;
                     &lt;page name=&quot;miscellaneousMethod&quot; type=&quot;BASIC&quot;/&gt;
+                    &lt;page name=&quot;ivvc.ivvcSimulator&quot; type=&quot;BASIC&quot;/&gt;
                     &lt;page name=&quot;rfnTest&quot; type=&quot;BASIC&quot;&gt;
                         &lt;link&gt;/dev/rfn/viewBase&lt;/link&gt;
                         &lt;pages&gt;
