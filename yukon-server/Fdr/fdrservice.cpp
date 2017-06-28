@@ -184,6 +184,8 @@ void CtiFDRService::ParseArgs( DWORD argc, LPTSTR *argv )
 
 void CtiFDRService::OnStop( )
 {
+    Cti::Messaging::BaseConnection::stopReconnects();
+
     // change state
     SetStatus( SERVICE_STOP_PENDING,
                33,       // check point??

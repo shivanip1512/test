@@ -10,6 +10,7 @@ using namespace std;
 #include "dllbase.h"
 #include "portglob.h"
 #include "utility.h"
+#include "connection_base.h"
 
 #include <boost/thread.hpp>
 
@@ -75,6 +76,8 @@ void CtiPorterService::OnStop()
 
    _quit = true;
    PorterQuit = TRUE;
+
+   Cti::Messaging::BaseConnection::stopReconnects();
 
    SetStatus( SERVICE_STOP_PENDING, 1, 10000 );
 }

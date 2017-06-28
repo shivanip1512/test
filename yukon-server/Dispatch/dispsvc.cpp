@@ -2,6 +2,7 @@
 
 #include "dispsvc.h"
 #include "dlldefs.h"
+#include "connection_base.h"
 
 #include <boost/thread.hpp>
 
@@ -80,6 +81,9 @@ void CtiDispatchService::OnStop()
 {
     _quit = true;
     bGCtrlC = TRUE;
+
+    Cti::Messaging::BaseConnection::stopReconnects();
+
     SetStatus( SERVICE_STOP_PENDING, 33, 10000 );
 }
 

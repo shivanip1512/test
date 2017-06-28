@@ -28,8 +28,6 @@
 
 using namespace std;
 
-//extern CtiConnection VanGoghConnection;
-
 static char StatusPointNames50[][40] = {
     {"Local Operation   "},
     {"Alarm State       "},

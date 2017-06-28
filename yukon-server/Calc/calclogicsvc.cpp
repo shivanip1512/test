@@ -534,6 +534,8 @@ void CtiCalcLogicService::Run( )
             }
         }
 
+        Cti::Messaging::BaseConnection::stopReconnects();
+
         SetStatus(SERVICE_STOP_PENDING, 50, 5000 );
 
         //  tell Dispatch we're going away, then leave

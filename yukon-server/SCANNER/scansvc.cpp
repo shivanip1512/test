@@ -2,6 +2,7 @@
 
 #include "scanner_syncs.h"
 #include "scansvc.h"
+#include "connection_base.h"
 
 #include <boost/thread.hpp>
 
@@ -68,6 +69,8 @@ void CtiScannerService::DeInit()
 
 void CtiScannerService::OnStop()
 {
+   Cti::Messaging::BaseConnection::stopReconnects();
+
    SetStatus( SERVICE_STOP_PENDING, 1, 20000 );
    _quit = true;
    ScannerQuit = true;

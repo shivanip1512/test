@@ -74,7 +74,6 @@ CTI_alpha_class   APlusClasses[] = {
 
 };
 
-// DLLIMPORT extern CtiConnection VanGoghConnection;
 DOUBLE PPlusBCDtoDouble(UCHAR* buffer, USHORT len);
 
 INT CtiDeviceAlphaPPlus::allocateDataBins  (OUTMESS *outMess)

@@ -131,7 +131,7 @@ void CtiConnection::outThreadFunc()
                 CTILOG_DEBUG(dout, who() << " - Establishing connection");
                 if(!establishConnection())
                 {
-                    _bQuit = _dontReconnect;
+                    _bQuit = ! canReconnect();
 
                     if( !_bQuit )
                     {
@@ -193,7 +193,7 @@ void CtiConnection::outThreadFunc()
                 receiveAllMessages();
 
                 _bConnected = false;
-                _bQuit      = _dontReconnect;
+                _bQuit      = ! canReconnect();
 
                 checkInterruption();
             }
@@ -397,6 +397,11 @@ void CtiConnection::setupAdvisoryListener()
             "producerCount <> 1" );
 
     _advisoryConsumer->setMessageListener(_advisoryListener.get());
+}
+
+bool CtiConnection::canReconnect() const
+{
+    return ! (_dontReconnect || _stopping);
 }
 
 /**
@@ -650,10 +655,10 @@ bool CtiConnection::isConnectionUsable()
             {
                 if( getDebugLevel() & DEBUGLEVEL_CONNECTION )
                 {
-                    CTILOG_DEBUG(dout, who() << " - has exited." << (_dontReconnect?"":" May restart."));
+                    CTILOG_DEBUG(dout, who() << " - has exited." << (canReconnect()?" May restart.":""));
                 }
 
-                if( ! _dontReconnect )
+                if( canReconnect() )
                 {
                     // if the connection can reconnect, try to restart the thread
                     _outthread.start();
@@ -705,7 +710,7 @@ void CtiConnection::triggerReconnect()
         return;
     }
 
-    if( _dontReconnect )
+    if( ! canReconnect() )
     {
         // if this connection will not attempt to reconnect, flag this no longer viable so it will be close by the parent thread.
         // connection will keep sending messages to the peer connection, but prevent further messages from being added to the outQueue.
@@ -888,7 +893,7 @@ CtiConnection::Que_t & CtiConnection::getInQueueHandle()
  */
 bool CtiConnection::isViable() const
 {
-    return ((_valid || !_dontReconnect) && !_noLongerViable);
+    return ((_valid || canReconnect()) && !_noLongerViable);
 }
 
 /**

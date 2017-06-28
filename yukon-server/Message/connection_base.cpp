@@ -15,6 +15,8 @@ CtiMutex g_mux;
 
 } // anonymous
 
+std::atomic_bool BaseConnection::_stopping { false };
+
 BaseConnection::BaseConnection()
 {
     CtiLockGuard<CtiMutex> guard(g_mux);
@@ -39,19 +41,22 @@ void BaseConnection::closeAll()
 {
     CtiLockGuard<CtiMutex> guard(g_mux);
 
-    typedef std::set<BaseConnection*>::iterator iterator_t;
-
-    for(iterator_t itr=g_connections.begin(); itr!=g_connections.end(); ++itr)
+    for( auto connection : g_connections )
     {
         try
         {
-            (*itr)->close();
+            connection->close();
         }
         catch(...)
         {
 
         }
     }
+}
+
+void BaseConnection::stopReconnects()
+{
+    _stopping = true;
 }
 
 }

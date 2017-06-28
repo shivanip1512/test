@@ -109,14 +109,14 @@ bool CtiClientConnection::establishConnection()
 
     try
     {
-        while( !_valid && !_dontReconnect )
+        while( !_valid && canReconnect() )
         {
             try
             {
                 {
                     CtiLockGuard<CtiMutex> lock(_abortConnMux);
 
-                    if( _dontReconnect )
+                    if( ! canReconnect() )
                     {
                         return false;
                     }
@@ -157,7 +157,7 @@ bool CtiClientConnection::establishConnection()
                 // Create consumer for inbound traffic
                 _consumer = createTempQueueConsumer( *_sessionIn );
 
-                while( !_valid && !_dontReconnect && _connection->verifyConnection() )
+                while( !_valid && canReconnect() && _connection->verifyConnection() )
                 {
                     // create an empty message for handshake
                     auto_ptr<cms::Message> outMessage( _sessionOut->createMessage() );
@@ -210,7 +210,7 @@ bool CtiClientConnection::establishConnection()
             }
             catch( cms::CMSException& e )
             {
-                if( !_dontReconnect )
+                if( canReconnect() )
                 {
                     CTILOG_EXCEPTION_ERROR(dout, e, who() <<" - caught CMS exception while trying to establish connection");
 
@@ -219,7 +219,7 @@ bool CtiClientConnection::establishConnection()
             }
             catch( ConnectionException& e )
             {
-                if( !_dontReconnect )
+                if( canReconnect() )
                 {
                     CTILOG_EXCEPTION_WARN(dout, e, who() <<" - unable to connect to the broker at \"" << _connection->getBrokerUri() << "\", reconnecting..");
                 }
@@ -229,7 +229,7 @@ bool CtiClientConnection::establishConnection()
             checkInterruption();
         }
 
-        if( _dontReconnect )
+        if( ! canReconnect() )
         {
             CTILOG_INFO(dout, who() << " - has closed.");
             return false;

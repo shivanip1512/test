@@ -152,6 +152,8 @@ void CtiMCService::Run()
     WaitForSingleObject( hShutdown, INFINITE );
     CloseHandle(hShutdown);
 
+    Cti::Messaging::BaseConnection::stopReconnects();
+
     SetStatus( SERVICE_STOP_PENDING, 2, 5000 );
 
     _mc_server->interrupt( CtiThread::SHUTDOWN );

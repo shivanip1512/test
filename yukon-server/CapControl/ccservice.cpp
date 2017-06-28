@@ -115,6 +115,8 @@ void CtiCCService::DeInit()
 
 void CtiCCService::OnStop()
 {
+    Cti::Messaging::BaseConnection::stopReconnects();
+
     SetStatus(SERVICE_STOP_PENDING, 2, 5000 );
 
     if( _CC_DEBUG & CC_DEBUG_STANDARD )

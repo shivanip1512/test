@@ -26,8 +26,6 @@ using std::string;
 using std::endl;
 using std::list;
 
-// DLLIMPORT extern CtiConnection VanGoghConnection;
-
 CtiDeviceDavis::CtiDeviceDavis()
 {}
 

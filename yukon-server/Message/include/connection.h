@@ -100,6 +100,7 @@ protected:
     };
 
     std::atomic<bool> _closed;
+    bool canReconnect() const;
 
     std::atomic<time_t> _sendStart { 0 };
 
@@ -119,7 +120,6 @@ protected:
     void threadInitiate   (); // This function starts the execution of the next two, which are threads.
     void cleanConnection  ();
     void forceTermination ();
-    void destroyDestIn    ();
     void triggerReconnect ();
     void resetPeer        ( const std::string &peerName );
 
@@ -130,17 +130,17 @@ protected:
 
     std::unique_ptr<Cti::Messaging::ActiveMQ::DestinationProducer> _producer;
     std::unique_ptr<Cti::Messaging::ActiveMQ::TempQueueConsumer>   _consumer;
-    boost::scoped_ptr<cms::MessageListener>                          _messageListener;
+    std::unique_ptr<cms::MessageListener>                          _messageListener;
 
     std::unique_ptr<Cti::Messaging::ActiveMQ::TopicConsumer> _advisoryConsumer;
-    boost::scoped_ptr<cms::MessageListener>                    _advisoryListener;
+    std::unique_ptr<cms::MessageListener>                    _advisoryListener;
 
     void onMessage         ( const cms::Message* message );
     void onAdvisoryMessage ( const cms::Message* message );
 
     void setupAdvisoryListener();
 
-    boost::scoped_ptr<CtiMessage> _outMessage;
+    std::unique_ptr<CtiMessage> _outMessage;
 
 public:
 

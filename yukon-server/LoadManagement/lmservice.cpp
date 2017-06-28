@@ -156,6 +156,8 @@ void CtiLMService::DeInit()
 
 void CtiLMService::OnStop()
 {
+    Cti::Messaging::BaseConnection::stopReconnects();
+
     SetStatus(SERVICE_STOP_PENDING, 2, 5000 );
 
     if( _LM_DEBUG & LM_DEBUG_STANDARD )
