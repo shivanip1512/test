@@ -178,7 +178,7 @@ yukon.flot = (function () {
                     contents + "</div>").css(pos).appendTo("body").fadeIn(200);
         },
         _getTooltipMapKey = function(x, y) {
-            return x + "" + y;
+            return x;
         },
         _getFilteredGraphData = function(chartId) {
             return mod.charts[chartId].data_with_meta;
