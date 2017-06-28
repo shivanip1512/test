@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.common.i18n.DisplayableEnum;
@@ -24,8 +25,10 @@ import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.infrastructure.dao.InfrastructureWarningsDao;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
+import com.cannontech.infrastructure.model.InfrastructureWarningSummary;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
+import com.cannontech.web.infrastructure.service.InfrastructureWarningsRefreshService;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
@@ -35,12 +38,14 @@ import com.google.common.collect.Lists;
 public class InfrastructureWarningsController {
     
     @Autowired private InfrastructureWarningsDao infrastructureWarningsDao;
+    @Autowired private InfrastructureWarningsRefreshService infrastructureWarningsRefreshService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private IDatabaseCache cache;
     private List<PaoType> deviceTypes = new ImmutableList.Builder<PaoType>()
             .add(PaoType.GWY800)
             .add(PaoType.RFN_GATEWAY)
             .add(PaoType.RFN_RELAY)
+            .add(PaoType.REPEATER)
             .build();
 
     private final static String baseKey = "yukon.web.widgets.infrastructureWarnings.";
@@ -49,9 +54,21 @@ public class InfrastructureWarningsController {
     @RequestMapping("forceUpdate")
     public @ResponseBody Map<String, Object> forceUpdate() {
         Map<String, Object> json = new HashMap<>();
-        //TODO: call service to collect data
+        infrastructureWarningsRefreshService.initiateRecalculation();
         json.put("success", true);
         return json;
+    }
+    
+    @RequestMapping(value="updateWidget", method=RequestMethod.GET)
+    public String updateWidget(ModelMap model) {
+        InfrastructureWarningSummary summary = infrastructureWarningsDao.getWarningsSummary();
+        model.addAttribute("summary", summary);
+        List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings();
+        Comparator<InfrastructureWarning> comparator = (o1, o2) -> o1.getSeverity().name().compareTo(o2.getSeverity().name());
+        Collections.sort(warnings, comparator);
+        warnings = warnings.subList(0,  10);
+        model.addAttribute("warnings",  warnings);
+        return "infrastructureWarnings/widgetView.jsp";
     }
     
     @RequestMapping("detail")

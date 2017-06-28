@@ -166,6 +166,8 @@
             <li>CCU disconnected</li>
             <li>Repeater disconnected</li>
         </ul>
+        The Refresh button will force an update of the infrastructure warnings (if data has not been updated within 5 minutes). 
+        The date/time displays the date/time that the warnings were last updated.
 ]]></entry>
 
 

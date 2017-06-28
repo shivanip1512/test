@@ -12,6 +12,16 @@ yukon.widget.infrastructureWarnings = (function () {
     
     var
     _initialized = false,
+    _updateInterval = 6000,
+    
+    _update = function () {
+        $.ajax({
+            url: yukon.url('/stars/infrastructureWarnings/updateWidget'),
+        }).done(function (data) {
+            $('#widgetView').html(data);
+        });  
+        setTimeout(_update, _updateInterval)
+    },
     
     mod = {
         
@@ -20,8 +30,10 @@ yukon.widget.infrastructureWarnings = (function () {
             
             if (_initialized) return;
             
-            $(document).on('click', '.js-force-update', function () {
-                $.ajax(yukon.url('/dashboards/infrastructureWarnings/forceUpdate'));
+            _update();
+            
+            $(document).on('click', '.js-update-infrastructure-warnings', function () {
+                $.ajax(yukon.url('/stars/infrastructureWarnings/forceUpdate'));
             });
 
             _initialized = true;

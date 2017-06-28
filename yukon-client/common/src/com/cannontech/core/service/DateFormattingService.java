@@ -36,6 +36,7 @@ public interface DateFormattingService {
         FULL(MidnightMode.NORMAL), 
         DATEHM(MidnightMode.NORMAL), 
         DATEHM_12(MidnightMode.NORMAL), 
+        DATEHMS_12(MidnightMode.NORMAL), 
         DATEH(MidnightMode.NORMAL),
         HOUR(MidnightMode.NORMAL),
         DATE_MIDNIGHT_PREV(MidnightMode.INCLUDES_MIDNIGHT),

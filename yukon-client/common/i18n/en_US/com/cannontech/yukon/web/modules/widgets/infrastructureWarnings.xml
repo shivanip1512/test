@@ -23,12 +23,29 @@
     <entry key="yukon.web.widgets.infrastructureWarnings.name">Name</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.type">Type</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.status">Status</entry>
+       
+    <entry key="yukon.web.widgets.infrastructureWarnings.noRecentWarnings">No recent warnings found.</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.noWarnings">No warnings found.</entry>
     
     <!-- Detail Page -->
     <entry key="yukon.web.modules.operator.infrastructureWarnings.pageName">Infrastructure Warnings</entry>
     
     <entry key="yukon.web.widgets.infrastructureWarnings.filters.title">Filters</entry>
     <entry key="yukon.web.widgets.infrastructureWarnings.deviceTypes">Device Types</entry>
-    
-
+   
+    <entry key="yukon.web.widgets.infrastructureWarnings.detail.helpTitle">Infrastructure Warnings Detail Help</entry>
+    <entry key="yukon.web.widgets.infrastructureWarnings.detail.helpText"><![CDATA[
+            Select any device types to filter the list.<br/>
+            Displays Infrastructure Warnings for the following conditions:
+            <ul>
+                <li>Gateway connection down</li>
+                <li>Gateway duplicate colors</li>
+                <li>Gateway more connected nodes than recommended</li>
+                <li>Gateway data streaming load</li>
+                <li>Gatway ready nodes has decreased</li>
+                <li>Relay outage</li>
+                <li>CCU disconnected</li>
+                <li>Repeater disconnected</li>
+            </ul>
+    ]]></entry>
 </properties>
