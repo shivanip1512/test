@@ -8,12 +8,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.PersistedSystemValueDao;
+import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.database.YukonJdbcTemplate;
 import com.cannontech.database.YukonResultSet;
 import com.cannontech.database.YukonRowMapper;
@@ -27,6 +30,7 @@ import com.google.common.collect.Lists;
 
 public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao {
     @Autowired YukonJdbcTemplate jdbcTemplate;
+    @Autowired PersistedSystemValueDao persistedSystemValueDao;
     
     @Override
     @Transactional
@@ -69,9 +73,7 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
 
     @Override
     public InfrastructureWarningSummary getWarningsSummary() {
-        //TODO
-        
-         SqlStatementBuilder sql = new SqlStatementBuilder();
+        SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT");
         
         sql.append("(");
@@ -126,7 +128,12 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
         sql.append(  "WHERE Type").in(InfrastructureWarningDeviceCategory.REPEATER.getPaoTypes());
         sql.append(") AS WarningRepeaters");
         
-        return jdbcTemplate.queryForObject(sql, warningSummaryRowMapper);
+        InfrastructureWarningSummary summary = jdbcTemplate.queryForObject(sql, warningSummaryRowMapper);
+        
+        Instant lastRun = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME);
+        summary.setLastRun(lastRun);
+        
+        return summary;
     }
 
     @Override

@@ -1,5 +1,7 @@
 package com.cannontech.infrastructure.model;
 
+import org.joda.time.Instant;
+
 /**
  * A summary, containing the total number of each warnable device category in the system, and the number of each that
  * actually have warnings.
@@ -13,6 +15,7 @@ public class InfrastructureWarningSummary {
     private int warningCcus;
     private int totalRepeaters;
     private int warningRepeaters;
+    private Instant lastRun;
     
     public int getTotalGateways() {
         return totalGateways;
@@ -77,13 +80,21 @@ public class InfrastructureWarningSummary {
     public void setWarningRepeaters(int warningRepeaters) {
         this.warningRepeaters = warningRepeaters;
     }
-
+    
+    public Instant getLastRun() {
+        return lastRun;
+    }
+    
+    public void setLastRun(Instant lastRun) {
+        this.lastRun = lastRun;
+    }
+    
     @Override
     public String toString() {
         return "InfrastructureWarningSummary [totalGateways=" + totalGateways + ", warningGateways=" + warningGateways
                + ", totalRelays=" + totalRelays + ", warningRelays=" + warningRelays + ", totalCcus=" + totalCcus
                + ", warningCcus=" + warningCcus + ", totalRepeaters=" + totalRepeaters + ", warningRepeaters="
-               + warningRepeaters + "]";
+               + warningRepeaters + ", lastRun=" + lastRun + "]";
     }
-
+    
 }
