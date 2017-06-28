@@ -57,7 +57,6 @@ import com.cannontech.common.pao.meter.model.MeterTypeHelper;
 import com.cannontech.common.pao.service.PointService;
 import com.cannontech.common.rfn.dataStreaming.DataStreamingAttributeHelper;
 import com.cannontech.common.rfn.message.RfnIdentifier;
-import com.cannontech.common.rfn.model.RfnGateway;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.JsonUtils;
 import com.cannontech.core.dao.DeviceDao;
@@ -81,11 +80,12 @@ import com.cannontech.system.GlobalSettingType;
 import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.meter.service.MspMeterSearchService;
+import com.cannontech.web.common.dashboard.model.Dashboard;
+import com.cannontech.web.common.dashboard.model.DashboardPageType;
+import com.cannontech.web.common.dashboard.service.DashboardService;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.pao.service.PaoDetailUrlHelper;
 import com.cannontech.web.common.sort.SortableColumn;
-import com.cannontech.web.rfn.dataStreaming.DataStreamingConfigException;
-import com.cannontech.web.rfn.dataStreaming.service.DataStreamingService;
 import com.cannontech.web.security.annotation.CheckPermissionLevel;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.widget.meterInfo.model.CreateMeterModel;
@@ -116,7 +116,6 @@ public class MeterController {
     @Autowired private RolePropertyDao rolePropertyDao;
     @Autowired private YukonUserContextMessageSourceResolver messageResolver;
     @Autowired private DataStreamingAttributeHelper dataStreamingAttributeHelper;
-    @Autowired private DataStreamingService dataStreamingService;
     @Autowired private ConfigurationSource configurationSource;
     @Autowired private PaoDao paoDao;
     @Autowired private MeterValidator meterValidator;
@@ -125,23 +124,16 @@ public class MeterController {
     @Autowired private MeterTypeHelper meterTypeHelper;
     @Autowired private MeterDao meterDao;
     @Autowired private DeviceUpdateService deviceUpdateService;
-    
+    @Autowired private DashboardService dashboardService;
+
     private static final Logger log = YukonLogManager.getLogger(MeterController.class); 
 
     private static final String baseKey = "yukon.web.modules.amr.meterSearchResults";
     
     @RequestMapping("start")
-    public String start(ModelMap model) {
-        boolean dataStreamingEnabled = configurationSource.getBoolean(MasterConfigBoolean.RF_DATA_STREAMING_ENABLED, false);
-        if (dataStreamingEnabled) {
-            List<RfnGateway> overloadedGateways = new ArrayList<>();
-            try {
-                overloadedGateways = dataStreamingService.getOverloadedGateways();
-            } catch (DataStreamingConfigException e) {}
-        
-            model.addAttribute("showOverloadedGatewaysWidget", overloadedGateways.size() > 0 ? true : false);
-        }
-        return "start.jsp";
+    public String start(ModelMap model, YukonUserContext userContext) {
+        Dashboard amiDashboard = dashboardService.getAssignedDashboard(userContext.getYukonUser().getUserID(), DashboardPageType.AMI);
+        return "redirect:/dashboards/" + amiDashboard.getDashboardId() + "/view";
     }
         
     @CheckRole({ YukonRole.METERING })
