@@ -36,21 +36,21 @@ public interface RecentEventParticipationDao {
     void insertDeviceControlEvent(int eventId, int loadGroupId, Instant eventTime);
 
     /**
-     * Retrieves as a list of ControlAuditSummary associated with the specified event IDs.
+     * Retrieves as a list of RecentEventParticipationSummary associated with the specified event IDs.
      */
 
     List<RecentEventParticipationSummary> getRecentEventParticipationSummary(int numberOfEvents);
 
     /**
-     * Returned as a list of ControlAuditStats associated with the specified range and based on paging parameters
+     * Returned as a list of RecentEventParticipationStats associated with the specified range and based on paging parameters
      */
 
     List<RecentEventParticipationStats> getRecentEventParticipationStats(Range<Instant> range, PagingParameters pagingParameters);
 
     /**
-     * Returns ControlAuditDetail for specified event
+     * Returns List of RecentEventParticipationDetail for specified event
      */
-    RecentEventParticipationDetail getRecentEventParticipationDetail(int eventId);
+    List<RecentEventParticipationDetail> getRecentEventParticipationDetail(int eventId);
 
     /**
      * Returns list of RecentEventParticipationDetail for specified date range

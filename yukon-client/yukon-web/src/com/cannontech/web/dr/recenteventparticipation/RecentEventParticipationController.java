@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.joda.time.Duration;
 import org.joda.time.Instant;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -22,6 +23,8 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.Range;
 import com.cannontech.core.roleproperties.YukonRole;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.dr.recenteventparticipation.model.ControlDeviceDetail;
 import com.cannontech.dr.recenteventparticipation.model.RecentEventParticipationDetail;
@@ -42,6 +45,7 @@ public class RecentEventParticipationController {
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired RecentEventParticipationService recentEventParticipationService;
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
+    @Autowired private DateFormattingService dateFormattingService;
 
     @RequestMapping(value = "/recenteventparticipation/auditReport", method = RequestMethod.GET)
     public String statistics(ModelMap model, LiteYukonUser user) {
@@ -104,51 +108,34 @@ public class RecentEventParticipationController {
             to = new Instant();
         }
         Instant toFullDay = to.plus(Duration.standardDays(1)).toDateTime().withTimeAtStartOfDay().toInstant();
-
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         List<RecentEventParticipationDetail> recentEventParticipationDetails =
             recentEventParticipationService.getRecentEventParticipationDetails(Range.inclusiveExclusive(from, toFullDay));
-
-        List<String> columnNames = Lists.newArrayList();
-
-        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.eventID"));
-        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.program"));
-        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.group"));
-        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.startTime"));
-        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.stopTime"));
-        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.accountNumber"));
-        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.deviceName"));
-        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.eventPhase"));
-        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.participationState"));
-        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.serialNumber"));
-        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.optOutStatus"));
-
-        List<List<String>> dataGrid = getGrid(recentEventParticipationDetails, accessor);
-
+        List<String> columnNames = getColumnNames(userContext);
+        List<List<String>> dataGrid = getGrid(recentEventParticipationDetails);
         WebFileUtils.writeToCSV(response, columnNames, dataGrid, "RecentEventParticipationReport" + ".csv");
     }
 
     @RequestMapping("/recenteventparticipation/download")
     private void downloadAuditReportForEvent(@RequestParam("eventId") int eventId, YukonUserContext userContext,
             HttpServletResponse response) throws IOException {
-        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-        RecentEventParticipationDetail recentEventParticipationDetail =
+
+        List<RecentEventParticipationDetail> recentEventParticipationDetails =
             recentEventParticipationService.getRecentEventParticipationDetail(eventId);
-        List<String> columnNames = getColumnNames(accessor);
-        List<List<String>> dataGrid = getGrid(recentEventParticipationDetail, accessor);
+        List<String> columnNames = getColumnNames(userContext);
+        List<List<String>> dataGrid = getGrid(recentEventParticipationDetails);
         WebFileUtils.writeToCSV(response, columnNames, dataGrid, "RecentEventParticipationReport_" + eventId + ".csv");
     }
 
-    private List<String> getColumnNames(MessageSourceAccessor accessor) {
+    private List<String> getColumnNames(YukonUserContext userContext) {
         List<String> columnNames = Lists.newArrayList();
-
+        MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.eventID"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.program"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.group"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.startTime"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.stopTime"));
-        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.accountNumber"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.deviceName"));
+        columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.accountNumber"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.eventPhase"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.participationState"));
         columnNames.add(accessor.getMessage("yukon.web.modules.dr.recentEventParticipation.details.serialNumber"));
@@ -156,42 +143,19 @@ public class RecentEventParticipationController {
         return columnNames;
     }
 
-    private List<List<String>> getGrid(RecentEventParticipationDetail recentEventParticipationDetail,
-            MessageSourceAccessor accessor) {
+    private List<List<String>> getGrid(List<RecentEventParticipationDetail> recentEventParticipationDetails) {
         List<List<String>> lists = new ArrayList<>();
-
-        for (ControlDeviceDetail controlDeviceDetail : recentEventParticipationDetail.getDeviceDetails()) {
-            List<String> row = new ArrayList<>();
-            row.add(new Integer(recentEventParticipationDetail.getControlEventId()).toString());
-            row.add(recentEventParticipationDetail.getProgramName());
-            row.add(recentEventParticipationDetail.getGroupName());
-            row.add(recentEventParticipationDetail.getStartTime().toString());
-            row.add(recentEventParticipationDetail.getStopTime().toString());
-            row.add(recentEventParticipationDetail.getAccountNumber());
-            row.add(controlDeviceDetail.getDeviceName());
-            row.add(controlDeviceDetail.getEventPhase());
-            row.add(controlDeviceDetail.getParticipationState());
-            row.add(controlDeviceDetail.getSerialNumber());
-            row.add(controlDeviceDetail.getOptOutStatus().name());
-            lists.add(row);
-        }
-
-        return lists;
-    }
-
-    private List<List<String>> getGrid(List<RecentEventParticipationDetail> recentEventParticipationDetails,
-            MessageSourceAccessor accessor) {
-        List<List<String>> lists = new ArrayList<>();
+        DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.BOTH, YukonUserContext.system);
         for (RecentEventParticipationDetail recentEventParticipationDetail : recentEventParticipationDetails) {
             for (ControlDeviceDetail controlDeviceDetail : recentEventParticipationDetail.getDeviceDetails()) {
                 List<String> row = new ArrayList<>();
                 row.add(new Integer(recentEventParticipationDetail.getControlEventId()).toString());
                 row.add(recentEventParticipationDetail.getProgramName());
                 row.add(recentEventParticipationDetail.getGroupName());
-                row.add(recentEventParticipationDetail.getStartTime().toString());
-                row.add(recentEventParticipationDetail.getStopTime().toString());
-                row.add(recentEventParticipationDetail.getAccountNumber());
+                row.add(recentEventParticipationDetail.getStartTime().toString(formatter));
+                row.add(recentEventParticipationDetail.getStopTime().toString(formatter));
                 row.add(controlDeviceDetail.getDeviceName());
+                row.add(controlDeviceDetail.getAccountNumber());
                 row.add(controlDeviceDetail.getEventPhase());
                 row.add(controlDeviceDetail.getParticipationState());
                 row.add(controlDeviceDetail.getSerialNumber());

@@ -53,10 +53,12 @@ public class RecentEventParticipationServiceImpl implements RecentEventParticipa
     }
 
     @Override
-    public RecentEventParticipationDetail getRecentEventParticipationDetail(int eventId) {
-        RecentEventParticipationDetail recentEventParticipationDetail = recentEventParticipationDao.getRecentEventParticipationDetail(eventId);
-        recentEventParticipationDetail.setDeviceDetails(recentEventParticipationDao.getControlEventDeviceData(eventId));
-        return recentEventParticipationDetail;
+    public List<RecentEventParticipationDetail> getRecentEventParticipationDetail(int eventId) {
+        List<RecentEventParticipationDetail> recentEventParticipationDetails = recentEventParticipationDao.getRecentEventParticipationDetail(eventId);
+        for (RecentEventParticipationDetail recentEventParticipationDetail : recentEventParticipationDetails) {
+            recentEventParticipationDetail.setDeviceDetails(recentEventParticipationDao.getControlEventDeviceData(eventId));
+        }
+        return recentEventParticipationDetails;
     }
 
     @Override

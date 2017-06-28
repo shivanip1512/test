@@ -37,12 +37,12 @@ public interface RecentEventParticipationService {
     List<RecentEventParticipationStats> getRecentEventParticipationStats(Range<Instant> range, PagingParameters pagingParameters);
 
     /**
-     * Returns RecentEventParticipationDetail for specified event
+     * Returns List of RecentEventParticipationDetail for specified event
      */
-    RecentEventParticipationDetail getRecentEventParticipationDetail(int eventId);
+    List<RecentEventParticipationDetail> getRecentEventParticipationDetail(int eventId);
 
     /**
-     * Returns list of ControlAuditDetail for specified date range
+     * Returns list of RecentEventParticipationDetail for specified date range
      */
     List<RecentEventParticipationDetail> getRecentEventParticipationDetails(Range<Instant> range);
 

@@ -220,7 +220,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("          JOIN YukonPAObject dypo ON dypo.PAObjectId = ced.DeviceId");
         sql.append("          JOIN InventoryBase inv ON inv.DeviceId = ced.DeviceId");
         sql.append("          JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryId = inv.InventoryId");
-        sql.append("          JOIN yukonPAObject lgypo on lgypo.PAObjectId = lmhcg.LMGroupId");
+        sql.append("          JOIN yukonPAObject lgypo on lgypo.PAObjectId = ce.GroupId");
         sql.append("          JOIN LMProgramWebPublishing lmpwp ON lmpwp.ProgramId = lmhcg.ProgramId");
         sql.append("          JOIN yukonPAObject pgypo on pgypo.PAObjectId = lmpwp.DeviceId");
         sql.append("        WHERE  NOT lmhcg.GroupEnrollStart IS NULL");
@@ -247,20 +247,19 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
                 String groupName = rs.getString("LoadGroup");
                 Instant startTime = rs.getInstant("StartTime");
                 Instant stopTime = rs.getInstant("StopTime");
-                String accountNumber = rs.getString("AccountNumber");
                 RecentEventParticipationDetail recentEventParticipationDetail =
-                    new RecentEventParticipationDetail(eventId, programName, groupName, startTime, stopTime, accountNumber, null);
+                    new RecentEventParticipationDetail(eventId, programName, groupName, startTime, stopTime, null);
                 return recentEventParticipationDetail;
             }
         };
 
     @Override
-    public RecentEventParticipationDetail getRecentEventParticipationDetail(int eventId) {
+    public List<RecentEventParticipationDetail> getRecentEventParticipationDetail(int eventId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.appendFragment(getControlAuditBaseQuery());
         sql.append("AND ce.ControlEventId").eq_k(eventId);
-        RecentEventParticipationDetail recentEventParticipationDetail = jdbcTemplate.queryForObject(sql, recentEventParticipationDetailRowMapper);
-        return recentEventParticipationDetail;
+        List<RecentEventParticipationDetail> recentEventParticipationDetails = jdbcTemplate.query(sql, recentEventParticipationDetailRowMapper);
+        return recentEventParticipationDetails;
     }
 
     @Override
@@ -312,14 +311,13 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     private SqlFragmentSource getControlAuditBaseQuery() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT DISTINCT ce.ControlEventId AS EventId, ce.StartTime, ce.ScheduledStopTime AS StopTime, ");
-        sql.append("lgypo.PAOName AS LoadGroup, pgypo.PAOName AS ProgramName, ca.AccountNumber");
+        sql.append("lgypo.PAOName AS LoadGroup, pgypo.PAOName AS ProgramName");
         sql.append("FROM ControlEvent ce");
         sql.append("  JOIN ControlEventDevice ced ON ced.ControlEventId = ce.ControlEventId");
         sql.append("  JOIN YukonPAObject dypo ON dypo.PAObjectId = ced.DeviceId");
         sql.append("  JOIN InventoryBase inv ON inv.DeviceId = ced.DeviceId");
-        sql.append("  JOIN CustomerAccount ca ON ca.AccountId = inv.AccountId");
         sql.append("  JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryId = inv.InventoryId");
-        sql.append("  JOIN YukonPAObject lgypo on lgypo.PAObjectId = lmhcg.LMGroupId");
+        sql.append("  JOIN YukonPAObject lgypo on lgypo.PAObjectId = ce.GroupId");
         sql.append("  JOIN LMProgramWebPublishing lmpwp ON lmpwp.ProgramId = lmhcg.ProgramId");
         sql.append("  JOIN YukonPAObject pgypo on pgypo.PAObjectId = lmpwp.DeviceId");
         sql.append("WHERE NOT lmhcg.GroupEnrollStart IS NULL ");
@@ -333,6 +331,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
             @Override
             public ControlDeviceDetail mapRow(YukonResultSet rs) throws SQLException {
                 String deviceName = rs.getString("DeviceName");
+                String accountNumber = rs.getString("AccountNumber");
                 String serialNumber = rs.getString("SerialNumber");
                 String result = rs.getString("Result");
                 String eventPhase = ControlEventDeviceStatus.valueOf(result).getEventPhase() == null ? "Unknown"
@@ -341,7 +340,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
                         ControlEventDeviceStatus.valueOf(result).getEventPhase() == null ? "Unreported" : "Confirmed";
                 ControlOptOutStatus optOutStatus = ControlOptOutStatus.valueOf(rs.getString("OptoutStatus"));
                 ControlDeviceDetail controlDeviceDetail =
-                    new ControlDeviceDetail(deviceName, serialNumber, participationState, eventPhase, optOutStatus);
+                    new ControlDeviceDetail(deviceName, accountNumber, serialNumber, participationState, eventPhase, optOutStatus);
                 return controlDeviceDetail;
             }
         };
@@ -349,7 +348,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     @Override
     public List<ControlDeviceDetail> getControlEventDeviceData(int eventId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT dypo.PAOName AS DeviceName, ced.Result, lmbh.ManufacturerSerialNumber AS SerialNumber,");
+        sql.append("SELECT dypo.PAOName AS DeviceName, ca.AccountNumber, ced.Result, lmbh.ManufacturerSerialNumber AS SerialNumber,");
         sql.append("  CASE WHEN ced.OptOutEventId IS NULL THEN").appendArgument_k(ControlOptOutStatus.NONE);
         sql.append("       WHEN ced.OptOutEventId IS NOT NULL THEN");
         sql.append("         CASE WHEN (SELECT StartDate");
@@ -363,8 +362,12 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("  JOIN ControlEventDevice ced ON ced.ControlEventId = ce.ControlEventId");
         sql.append("  JOIN YukonPAObject dypo ON dypo.PAObjectID = ced.DeviceId");
         sql.append("  JOIN InventoryBase inv ON inv.DeviceID = ced.DeviceId");
+        sql.append("  JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryId = inv.InventoryId");
+        sql.append("  JOIN CustomerAccount ca ON ca.AccountId = inv.AccountId");
         sql.append("  JOIN LMHardwareBase lmbh ON lmbh.InventoryID= inv.InventoryID");
         sql.append("WHERE ce.ControlEventId").eq_k(eventId);
+        sql.append("  AND NOT lmhcg.GroupEnrollStart IS NULL");
+        sql.append("  AND lmhcg.GroupEnrollStop IS NULL");
         List<ControlDeviceDetail> controlDeviceDetails = jdbcTemplate.query(sql, controlDeviceDetailMapper);
         return controlDeviceDetails;
     }
@@ -372,9 +375,19 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
     @Override
     public int getNumberOfEvents(Range<Instant> range) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("  SELECT count(*) FROM ControlEvent ");
+        sql.append("SELECT COUNT(DISTINCT(ce.ControlEventId))");
+        sql.append("FROM ControlEvent ce");
+        sql.append("  JOIN ControlEventDevice ced ON ced.ControlEventId = ce.ControlEventId");
+        sql.append("  JOIN YukonPAObject dypo ON dypo.PAObjectId = ced.DeviceId");
+        sql.append("  JOIN InventoryBase inv ON inv.DeviceId = ced.DeviceId");
+        sql.append("  JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryId = inv.InventoryId");
+        sql.append("  JOIN yukonPAObject lgypo on lgypo.PAObjectId = lmhcg.LMGroupId ");
+        sql.append("  JOIN LMProgramWebPublishing lmpwp ON lmpwp.ProgramId = lmhcg.ProgramId");
+        sql.append("  JOIN yukonPAObject pgypo on pgypo.PAObjectId = lmpwp.DeviceId");
+        sql.append("WHERE NOT lmhcg.GroupEnrollStart IS NULL");
+        sql.append("  AND lmhcg.GroupEnrollStop IS NULL");
         if (range != null) {
-            sql.append("      WHERE StartTime").gt(range.getMin());
+            sql.append("      AND StartTime").gt(range.getMin());
             sql.append("      AND StartTime").lt(range.getMax());
         }
         return jdbcTemplate.queryForInt(sql);
