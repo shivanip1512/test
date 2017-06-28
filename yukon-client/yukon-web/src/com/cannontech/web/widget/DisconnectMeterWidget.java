@@ -176,15 +176,17 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
 
             @Override
             public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state, RfnMeterDisconnectConfirmationReplyType replyType) {
-                errors.add(new SpecificDeviceErrorDescription(errorDescription, message));
                 if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT) {
                     errors.add(new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT),
                                                                   YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.loadSideVoltageDetectedWhileDisconnected")));
+                    return;
                 }
-                else if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT) {
+                if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT) {
                     errors.add(new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT), 
                                                                   YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.noLoadSideVoltageDetectedWhileConnected")));
+                    return;
                 }
+                errors.add(new SpecificDeviceErrorDescription(errorDescription, message));
             }
 
 			public Set<SpecificDeviceErrorDescription> getErrors() {

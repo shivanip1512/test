@@ -161,17 +161,23 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
                     YukonMessageSourceResolvable.createSingleCodeWithArguments(
                         "yukon.web.widgets.disconnectMeterWidget.rfn.sendCommand.confirmError", state);
             }
-            if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT) {
-                callback.failed(meter, new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT),
-                                                                          YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.loadSideVoltageDetectedWhileDisconnected")));
-            }
-            else if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT) {
-                callback.failed(meter, new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT), 
-                                                                          YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.noLoadSideVoltageDetectedWhileConnected")));
-            }
+            
+            int errorCode = 0;
             DeviceErrorDescription errorDescription = deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE);
             SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, message);
-            int errorCode = 0;
+
+            if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT) {
+                error = new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT),
+                                                           YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.loadSideVoltageDetectedWhileDisconnected"));
+                callback.failed(meter, error);
+                errorCode = error.getErrorCode();
+            }
+            else if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT) {
+                error = new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_NO_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_CONNECT), 
+                                                           YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.noLoadSideVoltageDetectedWhileConnected"));
+                callback.failed(meter, error);
+                errorCode = error.getErrorCode();
+            }
             if (state == null) {
                 callback.failed(meter, error);
                 errorCode = error.getErrorCode();
