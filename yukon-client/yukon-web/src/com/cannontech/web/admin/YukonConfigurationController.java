@@ -87,13 +87,14 @@ public class YukonConfigurationController {
         b.put(GlobalSettingSubCategory.WEATHER, "icon-32-cloud2");
         b.put(GlobalSettingSubCategory.SECURITY, "icon-32-key");
         b.put(GlobalSettingSubCategory.DASHBOARD_ADMIN, "icon-32-home");
+        b.put(GlobalSettingSubCategory.DASHBOARD_WIDGET, "icon-32-window");
         iconMap = b.build();
     }
     
     private MappedPropertiesHelper<GlobalSetting> getHelper(GlobalSettingSubCategory category) {
         Map<GlobalSettingType, GlobalSetting> settings = globalSettingEditorDao.getSettingsForCategory(category);
         
-        MappedPropertiesHelper<GlobalSetting> mappedPropertiesHelper = new MappedPropertiesHelper<GlobalSetting>("values");
+        MappedPropertiesHelper<GlobalSetting> mappedPropertiesHelper = new MappedPropertiesHelper<>("values");
         for (GlobalSetting setting : settings.values()) {
             GlobalSettingType type = setting.getType();
             mappedPropertiesHelper.add(type.name(), setting, type.getType());
@@ -132,6 +133,7 @@ public class YukonConfigurationController {
         List<Pair<GlobalSettingSubCategory, String>> application = Lists.newArrayList();
         application.add(Pair.of(GlobalSettingSubCategory.DATA_EXPORT, iconMap.get(GlobalSettingSubCategory.DATA_EXPORT)));
         application.add(Pair.of(GlobalSettingSubCategory.GRAPHING, iconMap.get(GlobalSettingSubCategory.GRAPHING)));
+        application.add(Pair.of(GlobalSettingSubCategory.DASHBOARD_WIDGET, iconMap.get(GlobalSettingSubCategory.DASHBOARD_WIDGET)));
         Collections.sort(application, sorter);
         
         List<Pair<GlobalSettingSubCategory, String>> integration = Lists.newArrayList();

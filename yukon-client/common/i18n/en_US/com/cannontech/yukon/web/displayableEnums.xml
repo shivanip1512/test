@@ -169,7 +169,8 @@
     <entry key="yukon.common.setting.subcategory.SECURITY.description">Demand Response Encrypted Routes and Keys</entry>
     <entry key="yukon.common.setting.subcategory.DASHBOARD_ADMIN">Dashboard Administration</entry>
     <entry key="yukon.common.setting.subcategory.DASHBOARD_ADMIN.description">Administration page for Dashboards</entry>
-    
+    <entry key="yukon.common.setting.subcategory.DASHBOARD_WIDGET">Dashboard Widgets</entry>
+    <entry key="yukon.common.setting.subcategory.DASHBOARD_WIDGET.description">System-wide dashboard widget settings</entry>
     
     <!-- YukonSettingCategory -->
     <entry key="yukon.common.setting.category.APPLICATION">Application</entry>
@@ -396,6 +397,13 @@
     
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS">Data Availability Window</entry>
     <entry key="yukon.common.setting.DATA_AVAILABILITY_WINDOW_IN_DAYS.description">Window for minimum number of days required for a device's data to be considered available.</entry>
+    
+    <entry key="yukon.common.setting.GATEWAY_CONNECTION_WARNING_MINUTES">Infrastructure Warnings: Gateway connection warning minutes</entry>
+    <entry key="yukon.common.setting.GATEWAY_CONNECTION_WARNING_MINUTES.description">The number of minutes a gateway must be disconnected to generate a warning.</entry>
+    <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD">Infrastructure Warnings: Gateway connected nodes warning threshold</entry>
+    <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD.description">The number of connected nodes a gateway must have to generate a warning.</entry>
+    <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD">Infrastructure Warnings: Gateway connected nodes critical threshold</entry>
+    <entry key="yukon.common.setting.GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD.description">The number of connected nodes a gateway must have to generate a critical warning.</entry>
     
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS">Admin Email Address</entry>
     <entry key="yukon.common.energyCompanySetting.ADMIN_EMAIL_ADDRESS.description">Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.</entry>

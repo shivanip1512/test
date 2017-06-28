@@ -17,6 +17,8 @@ import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningSeverity;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningEvaluator;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 /**
  * Evaluates all RF Gateways. Warns for each gateway whose total connected node count exceeds the warning limit.
@@ -25,9 +27,8 @@ import com.cannontech.services.infrastructure.service.InfrastructureWarningEvalu
  */
 public class GatewayConnectedNodesEvaluator implements InfrastructureWarningEvaluator {
     private static final Logger log = YukonLogManager.getLogger(GatewayConnectedNodesEvaluator.class);
-    private static final int connectedNodesWarningLimit = 3500;
-    private static final int connectedNodesHighWarningLimit = 5000;
     @Autowired RfnGatewayService rfnGatewayService;
+    @Autowired GlobalSettingDao globalSettingDao;
     
     @Override
     public Set<PaoType> getSupportedTypes() {
@@ -37,6 +38,11 @@ public class GatewayConnectedNodesEvaluator implements InfrastructureWarningEval
     @Override
     public List<InfrastructureWarning> evaluate() {
         log.debug("Running RF Gateway connected nodes evaluator");
+        
+        int connectedNodesWarningLimit = globalSettingDao.getInteger(GlobalSettingType.GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD);
+        log.debug("Warning threshold: " + connectedNodesWarningLimit + " nodes.");
+        int connectedNodesHighWarningLimit = globalSettingDao.getInteger(GlobalSettingType.GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD);
+        log.debug("Critical threshold: " + connectedNodesHighWarningLimit + " nodes.");
         
         Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
         

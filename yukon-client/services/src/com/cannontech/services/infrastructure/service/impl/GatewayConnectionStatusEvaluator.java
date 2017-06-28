@@ -22,13 +22,14 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
 import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.cannontech.services.infrastructure.service.InfrastructureWarningEvaluator;
+import com.cannontech.system.GlobalSettingType;
+import com.cannontech.system.dao.GlobalSettingDao;
 
 public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEvaluator {
     private static final Logger log = YukonLogManager.getLogger(GatewayConnectionStatusEvaluator.class);
     private static final DateFormat df = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
     private static final int CONNECTED = 0;
-    private static final int WARNABLE_TIME_IN_MINUTES = 60;
-    private static final Duration warnableDuration = Duration.standardMinutes(WARNABLE_TIME_IN_MINUTES);
+    @Autowired GlobalSettingDao globalSettingDao;
     @Autowired RfnGatewayService rfnGatewayService;
     @Autowired private RawPointHistoryDao rphDao;
     
@@ -40,10 +41,15 @@ public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEv
     @Override
     public List<InfrastructureWarning> evaluate() {
         log.debug("Running RF Gateway Connection status evaluator");
+        
+        int warnableTimeMinutes = globalSettingDao.getInteger(GlobalSettingType.GATEWAY_CONNECTION_WARNING_MINUTES);
+        Duration warnableDuration = Duration.standardMinutes(warnableTimeMinutes);
+        log.debug("Required disconnected minutes to warn: " + warnableTimeMinutes);
+        
         Map<PaoIdentifier, PointValueQualityHolder> pao = rphDao.getSingleAttributeData(
             rfnGatewayService.getAllGateways(), BuiltInAttribute.COMM_STATUS, false, null, null);
 
-        return pao.keySet().stream().filter(gateway -> isWarnable(pao.get(gateway))).
+        return pao.keySet().stream().filter(gateway -> isWarnable(pao.get(gateway), warnableDuration)).
                 map(gateway -> {
                     return new InfrastructureWarning(gateway, 
                         InfrastructureWarningType.GATEWAY_CONNECTION_STATUS,
@@ -52,9 +58,9 @@ public class GatewayConnectionStatusEvaluator implements InfrastructureWarningEv
     }
     
     /**
-     * Returns true is warning should be generated.
+     * Returns true if warning should be generated.
      */
-    private boolean isWarnable(PointValueQualityHolder point) {
+    private boolean isWarnable(PointValueQualityHolder point, Duration warnableDuration) {
         if (point.getValue() == CONNECTED
             || new Instant(point.getPointDataTimeStamp()).plus(warnableDuration).isAfterNow()) {
             return false;

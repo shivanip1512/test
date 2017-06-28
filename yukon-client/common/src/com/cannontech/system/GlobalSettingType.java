@@ -1,9 +1,6 @@
 package com.cannontech.system;
 
-import static com.cannontech.core.roleproperties.InputTypeFactory.booleanType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.integerType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.stringType;
-import static com.cannontech.core.roleproperties.InputTypeFactory.userType;
+import static com.cannontech.core.roleproperties.InputTypeFactory.*;
 
 import java.math.RoundingMode;
 import java.util.Set;
@@ -99,7 +96,6 @@ public enum GlobalSettingType implements DisplayableEnum {
     RFN_FIRMWARE_UPDATE_SERVER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "https://127.0.0.1:8443/updateserver/latest/"),
     RFN_FIRMWARE_UPDATE_SERVER_USER(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "gateway"),
     RFN_FIRMWARE_UPDATE_SERVER_PASSWORD(GlobalSettingSubCategory.YUKON_SERVICES, stringType(), "gwupdate"),
-    
 
     // DR
     BATCHED_SWITCH_COMMAND_TOGGLE(GlobalSettingSubCategory.DR, stringType(), "auto"),
@@ -161,14 +157,18 @@ public enum GlobalSettingType implements DisplayableEnum {
     HOME_DIRECTORY(GlobalSettingSubCategory.MISC, stringType(), "c:\\yukon\\client\\webgraphs\\"),
     RUN_INTERVAL(GlobalSettingSubCategory.MISC, integerType(), 900),
     
-    //Trending
+    // Trending
     TRENDS_HISTORICAL_MONTHS(GlobalSettingSubCategory.GRAPHING, integerType(), 24),
     TRENDS_READING_PER_POINT(GlobalSettingSubCategory.GRAPHING, integerType(), 70080), // 15min interval data x 2 years.
     
     // Voice Server
     CALL_RESPONSE_TIMEOUT(GlobalSettingSubCategory.VOICE, integerType(), 240),
     CALL_PREFIX(GlobalSettingSubCategory.VOICE, stringType(), null),
-
+    
+    // Dashboard Widgets
+    GATEWAY_CONNECTION_WARNING_MINUTES(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 60),
+    GATEWAY_CONNECTED_NODES_WARNING_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 3500),
+    GATEWAY_CONNECTED_NODES_CRITICAL_THRESHOLD(GlobalSettingSubCategory.DASHBOARD_WIDGET, integerType(), 5000),
     ;
 
     private static final ImmutableSetMultimap<GlobalSettingSubCategory, GlobalSettingType> categoryMapping;

@@ -7,6 +7,7 @@ public enum GlobalSettingSubCategory implements DisplayableEnum {
 
     DATA_EXPORT(GlobalSettingCategory.APPLICATION),
     GRAPHING(GlobalSettingCategory.APPLICATION),
+    DASHBOARD_WIDGET(GlobalSettingCategory.APPLICATION, YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS),
     
     MULTISPEAK(GlobalSettingCategory.INTEGRATION),
     VOICE(GlobalSettingCategory.INTEGRATION),
