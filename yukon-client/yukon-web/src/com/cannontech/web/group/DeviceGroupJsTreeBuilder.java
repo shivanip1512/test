@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.commons.lang3.StringEscapeUtils;
-
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.util.JsTreeBuilderUtil;
@@ -40,7 +38,7 @@ public class DeviceGroupJsTreeBuilder {
         DeviceGroupTreeUtils.setupNodeAttributes(node, deviceGroup, nodeId, rootName, "javascript:void(0);");
         
         // add group name to the list of items in the node's "info" attribute
-        JsTreeNode.addToNodeInfo(node, "groupName", StringEscapeUtils.escapeXml11(deviceGroup.getFullName()));
+        JsTreeNode.addToNodeInfo(node, "groupName", deviceGroup.getFullName());
         
         // recursively add child groups
         for (DeviceGroupHierarchy d : dgh.getChildGroupList()) {
