@@ -658,22 +658,27 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         return autoFirmwareVersionReplyActive;
     }
     
+    @Override
     public boolean isAutoDataReplyStopping() {
         return autoDataReplyStopping;
     }
     
+    @Override
     public boolean isAutoUpdateReplyStopping() {
         return autoUpdateReplyStopping;
     }
     
+    @Override
     public boolean isAutoCertificateUpgradeReplyStopping() {
         return autoCertificateUpgradeReplyStopping;
     }
     
+    @Override
     public boolean isAutoFirmwareReplyStopping() {
         return autoFirmwareReplyStopping;
     }
     
+    @Override
     public boolean isAutoFirmwareVersionReplyStopping() {
         return autoFirmwareVersionReplyStopping;
     }
@@ -711,7 +716,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     public SimulatedGatewayDataSettings getGatewayDataSettings() {
         if (gatewayDataSettings == null) {
             SimulatedGatewayDataSettings settings = new SimulatedGatewayDataSettings();
-            settings.setCurrentDataStreamingLoading(yukonSimulatorSettingsDao.getLongValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_DATA_STREAMING_LOADING));
+            settings.setCurrentDataStreamingLoading(yukonSimulatorSettingsDao.getDoubleValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_DATA_STREAMING_LOADING));
             settings.setReturnGwy800Model(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_RETURN_GWY800_MODEL));
             settings.setNumberOfNotReadyNodes(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_NUM_NOT_READY_NODES));
             settings.setNumberOfReadyNodes(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_NUM_READY_NODES));
