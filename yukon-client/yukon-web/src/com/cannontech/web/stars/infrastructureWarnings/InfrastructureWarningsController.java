@@ -20,17 +20,16 @@ import com.cannontech.common.model.DefaultSort;
 import com.cannontech.common.model.Direction;
 import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
-import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.infrastructure.dao.InfrastructureWarningsDao;
 import com.cannontech.infrastructure.model.InfrastructureWarning;
+import com.cannontech.infrastructure.model.InfrastructureWarningDeviceCategory;
 import com.cannontech.infrastructure.model.InfrastructureWarningSummary;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.infrastructure.service.InfrastructureWarningsRefreshService;
 import com.cannontech.yukon.IDatabaseCache;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 @Controller
@@ -41,12 +40,6 @@ public class InfrastructureWarningsController {
     @Autowired private InfrastructureWarningsRefreshService infrastructureWarningsRefreshService;
     @Autowired protected YukonUserContextMessageSourceResolver messageSourceResolver;
     @Autowired private IDatabaseCache cache;
-    private List<PaoType> deviceTypes = new ImmutableList.Builder<PaoType>()
-            .add(PaoType.GWY800)
-            .add(PaoType.RFN_GATEWAY)
-            .add(PaoType.RFN_RELAY)
-            .add(PaoType.REPEATER)
-            .build();
 
     private final static String baseKey = "yukon.web.widgets.infrastructureWarnings.";
 
@@ -59,6 +52,7 @@ public class InfrastructureWarningsController {
         return json;
     }
     
+    
     @RequestMapping(value="updateWidget", method=RequestMethod.GET)
     public String updateWidget(ModelMap model) {
         InfrastructureWarningSummary summary = infrastructureWarningsDao.getWarningsSummary();
@@ -66,18 +60,20 @@ public class InfrastructureWarningsController {
         List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings();
         Comparator<InfrastructureWarning> comparator = (o1, o2) -> o1.getSeverity().name().compareTo(o2.getSeverity().name());
         Collections.sort(warnings, comparator);
-        warnings = warnings.subList(0,  10);
+        if (warnings.size() > 10) {
+            warnings = warnings.subList(0,  10);
+        }
         model.addAttribute("warnings",  warnings);
         return "infrastructureWarnings/widgetView.jsp";
     }
     
     @RequestMapping("detail")
     public String detail(@DefaultSort(dir=Direction.asc, sort="name") SortingParameters sorting, PagingParameters paging, 
-                         PaoType[] types, ModelMap model, YukonUserContext userContext) {
+                         InfrastructureWarningDeviceCategory[] types, ModelMap model, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
-        //TODO: get warnings based on type selected
-        List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings();
+        types = types != null ? types : InfrastructureWarningDeviceCategory.values();
+        List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings(types);
         
         SearchResults<InfrastructureWarning> searchResult = new SearchResults<>();
         int startIndex = paging.getStartIndex();
@@ -116,8 +112,8 @@ public class InfrastructureWarningsController {
         
         model.addAttribute("warnings", searchResult);
         
-        model.addAttribute("deviceTypes", deviceTypes);
-        model.addAttribute("selectedTypes", types != null ? Lists.newArrayList(types) : deviceTypes);
+        model.addAttribute("deviceTypes", InfrastructureWarningDeviceCategory.values());
+        model.addAttribute("selectedTypes", Lists.newArrayList(types));
 
         return "infrastructureWarnings/detail.jsp";
     }

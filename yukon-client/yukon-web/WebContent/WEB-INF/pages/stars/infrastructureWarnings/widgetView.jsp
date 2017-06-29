@@ -7,10 +7,10 @@
 
     <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/>
     <table class="compact-results-table">
-        <th class="fwn PB0"><a href="${allWarningsUrl}"><cti:msg2 key=".gateways"/></a></th>
-        <th class="fwn PB0"><a href="${allWarningsUrl}"><cti:msg2 key=".relays"/></a></th>
-        <th class="fwn PB0"><a href="${allWarningsUrl}"><cti:msg2 key=".CCUs"/></a></th>
-        <th class="fwn PB0"><a href="${allWarningsUrl}"><cti:msg2 key=".repeaters"/></a></th>
+        <th class="fwn PB0"><a href="${allWarningsUrl}?types=GATEWAY" target="_blank"><cti:msg2 key=".gateways"/></a></th>
+        <th class="fwn PB0"><a href="${allWarningsUrl}?types=RELAY" target="_blank"><cti:msg2 key=".relays"/></a></th>
+        <th class="fwn PB0"><a href="${allWarningsUrl}?types=CCU" target="_blank"><cti:msg2 key=".CCUs"/></a></th>
+        <th class="fwn PB0"><a href="${allWarningsUrl}?types=REPEATER" target="_blank"><cti:msg2 key=".repeaters"/></a></th>
         <tr>
             <td class="PT0">
                 <span class="label label-success" style="margin-right:5px;">${summary.totalGateways - summary.warningGateways}</span>

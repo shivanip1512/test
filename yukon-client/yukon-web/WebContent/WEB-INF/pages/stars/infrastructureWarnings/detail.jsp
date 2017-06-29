@@ -24,7 +24,8 @@
                                 <c:if test="${fn:contains(selectedTypes, type)}">
                                     <c:set var="selected" value="${true}"/>
                                 </c:if>
-                                <tags:check name="types" classes="M0" value="${type}" label="${type.paoTypeName}" checked="${selected}"></tags:check>
+                                <cti:msg2 var="deviceType" key=".category.${type}"/>
+                                <tags:check name="types" classes="M0" value="${type}" label="${deviceType}" checked="${selected}"></tags:check>
                             </c:forEach>
                         </div>
                     </tags:nameValue2>
