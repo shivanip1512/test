@@ -97,4 +97,17 @@ public class InfrastructureWarningSummary {
                + warningRepeaters + ", lastRun=" + lastRun + "]";
     }
     
+    public InfrastructureWarningSummary copy() {
+        InfrastructureWarningSummary copy = new InfrastructureWarningSummary();
+        copy.setLastRun(lastRun);
+        copy.setTotalCcus(totalCcus);
+        copy.setTotalGateways(totalGateways);
+        copy.setTotalRelays(totalRelays);
+        copy.setTotalRepeaters(totalRepeaters);
+        copy.setWarningCcus(warningCcus);
+        copy.setWarningGateways(warningGateways);
+        copy.setWarningRelays(warningRelays);
+        copy.setWarningRepeaters(warningRepeaters);
+        return copy;
+    }
 }
