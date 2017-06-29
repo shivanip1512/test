@@ -1,6 +1,7 @@
 <%@ tag trimDirectiveWhitespaces="true" dynamic-attributes="linkParameters" %>
 
 <%@ attribute name="method" required="true" %>
+<%@ attribute name="title" %>
 <%@ attribute name="icon" description="Icon to use for the button." %>
 <%@ attribute name="container" required="true" %>
 <%@ attribute name="nameKey" required="true" %>
@@ -31,10 +32,10 @@
     <c:choose>
         <c:when test="${type == 'button'}">
             <c:if test="${not empty pageScope.icon}">
-                <cti:button nameKey="${nameKey}" id="${buttonId}" icon="${icon }" renderMode="${renderMode}" classes="${pageScope.classes}" busy="true"/>
+                <cti:button nameKey="${nameKey}" id="${buttonId}" icon="${icon }" renderMode="${renderMode}" classes="${pageScope.classes}" busy="true" title="${title}"/>
             </c:if>
             <c:if test="${empty icon}">
-                <cti:button nameKey="${nameKey}" id="${buttonId}" renderMode="${renderMode}" classes="${pageScope.classes}" busy="true"/>
+                <cti:button nameKey="${nameKey}" id="${buttonId}" renderMode="${renderMode}" classes="${pageScope.classes}" busy="true" title="${title}"/>
             </c:if>
         </c:when>
         <c:otherwise>

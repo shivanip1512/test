@@ -17,7 +17,8 @@ public enum DeviceRequestType {
     METER_READINGS_WIDGET_ATTRIBUTE_READ("Meter Readings Widget Attribute Read", "Reads all meter attributes that are displayed in the Meter Readings Widget.", false),
     SIMPLE_ATTRIBUTES_WIDGET_ATTRIBUTE_READ("Simple Attributes Widget Attribute Read", "Reads a set of attributes for the Simple Attributes Widget.", false),
     TOU_WIDGET_ATTRIBUTE_READ("TOU Widget Attribute Read", "Reads TOU attributes for the TOU Widget.", false),
-    DISCONNECT_STATUS_ATTRIBUTE_READ("Disconnect Status Attribute Read", "Disconnect Status Attribute Read", false),
+    DISCONNECT_STATUS_ATTRIBUTE_READ("Disconnect Status Attribute Read", "Disconnect Status Attribute Read", false), 
+    DISCONNECT_COLLAR_PUT_CONFIG_COMMAND("Disconnect Collar Configuration Upload Command", "Sends Disconnect Collar Configuration to the meter", false),
     
     GROUP_COMMAND("Group Command", "A command sent to a group of devices.", false),
     GROUP_COMMAND_VERIFY("Group Command Verify", "A command sent to a group of devices to verify.", false),

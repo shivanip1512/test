@@ -43,6 +43,8 @@ import com.cannontech.amr.rfn.service.RfnMeterDisconnectCallback;
 import com.cannontech.amr.rfn.service.RfnMeterDisconnectService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
@@ -87,6 +89,8 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     @Autowired private DeviceAttributeReadService deviceAttributeReadService;
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired MeterService meterService;
+    @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
+
 
     private final Set<BuiltInAttribute> disconnectAttribute = Sets.newHashSet(BuiltInAttribute.DISCONNECT_STATUS);
     private final static String baseKey = "yukon.web.widgets.disconnectMeterWidget.";
@@ -392,6 +396,19 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
         flash.setMessage(new YukonMessageSourceResolvable("yukon.web.widgets.disconnectMeterWidget.delete.successful",
             args), FlashScopeMessageType.SUCCESS);
         return "disconnectMeterWidget/render.jsp";
+    }
+    
+    @RequestMapping("uploadConfig")
+    public String uploadConfig(ModelMap model, LiteYukonUser user, int deviceId) throws Exception {
+        
+        YukonMeter meter = meterDao.getForId(deviceId);
+        CommandResultHolder result =
+            commandRequestDeviceExecutor.execute(meter, "putconfig emetcon disconnect",
+                DeviceRequestType.DISCONNECT_COLLAR_PUT_CONFIG_COMMAND, user);
+
+        model.addAttribute("result", result);
+        model.addAttribute("errors", result.getErrors());
+        return "common/meterReadingsResult.jsp";
     }
 
     public static class CollarAddressEditorBean {

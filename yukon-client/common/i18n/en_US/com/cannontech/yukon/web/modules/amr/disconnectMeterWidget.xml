@@ -36,6 +36,8 @@
     <entry key="yukon.web.widgets.disconnectMeterWidget.DISCONNECT.success">Disconnect Successful</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.read.success">Read Successful</entry>
     <entry key="yukon.web.widgets.disconnectMeterWidget.query.success">Query Successful</entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.upload.configure.button.title">Upload meter disconnect address configuration.</entry>
+    <entry key="yukon.web.widgets.disconnectMeterWidget.remove.configure.button.title">Remove meter disconnect address configuration.</entry>
     
     <!-- DisconnectMeterWidget helpInfo.jsp -->
     <entry key="yukon.web.widgets.disconnectMeterWidget.connectedMsg">The meter is connected to service.</entry>
