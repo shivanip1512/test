@@ -32,7 +32,6 @@ import com.google.common.collect.ImmutableList;
 public class InfrastructureWarningsServiceImpl implements InfrastructureWarningsService {
     private static final Logger log = YukonLogManager.getLogger(InfrastructureWarningsServiceImpl.class);
     private static final int initialDelayMinutes = 5;
-    private static final int minimumMinutesBetweenRuns = 5;
     private static final int runFrequencyMinutes = 15;
     private static AtomicBoolean isRunning = new AtomicBoolean();
     private MessageSourceAccessor systemMessageSourceAccessor;
@@ -125,7 +124,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
     
     private boolean minimumTimeBetweenRunsExceeded() {
         Instant lastRun = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME);
-        Duration minTimeBetweenRuns = Duration.standardMinutes(minimumMinutesBetweenRuns);
+        Duration minTimeBetweenRuns = Duration.standardMinutes(InfrastructureWarningsDao.minimumMinutesBetweenCalculations);
         
         if (lastRun.plus(minTimeBetweenRuns).isBeforeNow()) {
             return true;

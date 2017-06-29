@@ -8,13 +8,16 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.apache.log4j.Logger;
 import org.joda.time.Instant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.pao.PaoIdentifier;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.PersistedSystemValueDao;
 import com.cannontech.core.dao.PersistedSystemValueKey;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -29,8 +32,12 @@ import com.cannontech.infrastructure.model.InfrastructureWarningType;
 import com.google.common.collect.Lists;
 
 public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao {
-    @Autowired YukonJdbcTemplate jdbcTemplate;
-    @Autowired PersistedSystemValueDao persistedSystemValueDao;
+    private static final Logger log = YukonLogManager.getLogger(InfrastructureWarningsDaoImpl.class);
+    private static List<InfrastructureWarning> cachedWarnings;
+    private static InfrastructureWarningSummary cachedSummary;
+    private static Instant lastRun;
+    @Autowired private YukonJdbcTemplate jdbcTemplate;
+    @Autowired private PersistedSystemValueDao persistedSystemValueDao;
     
     @Override
     @Transactional
@@ -68,11 +75,22 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
     
     @Override
     public List<InfrastructureWarning> getWarnings() {
-        return jdbcTemplate.query(selectAllInfrastructureWarnings(), infrastructureWarningRowMapper);
+        if (cachedWarnings != null && !TimeUtil.isXMinutesBeforeNow(minimumMinutesBetweenCalculations, getLastRun())) {
+            log.debug("Warnings were updated in the last " + minimumMinutesBetweenCalculations + " minutes, returning cached warnings");
+            return cachedWarnings;
+        }
+        
+        cachedWarnings = jdbcTemplate.query(selectAllInfrastructureWarnings(), infrastructureWarningRowMapper);
+        return cachedWarnings;
     }
 
     @Override
     public InfrastructureWarningSummary getWarningsSummary() {
+        if (cachedSummary != null && !TimeUtil.isXMinutesBeforeNow(minimumMinutesBetweenCalculations, getLastRun())) {
+            log.debug("Warnings were updated in the last " + minimumMinutesBetweenCalculations + " minutes, returning cached summary");
+            return cachedSummary;
+        }
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT");
         
@@ -129,11 +147,10 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
         sql.append(") AS WarningRepeaters");
         
         InfrastructureWarningSummary summary = jdbcTemplate.queryForObject(sql, warningSummaryRowMapper);
+        summary.setLastRun(getLastRun());
+        cachedSummary = summary;
         
-        Instant lastRun = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME);
-        summary.setLastRun(lastRun);
-        
-        return summary;
+        return cachedSummary;
     }
 
     @Override
@@ -195,5 +212,12 @@ public class InfrastructureWarningsDaoImpl implements InfrastructureWarningsDao 
             arguments.add(argument3);
         }
         return arguments.toArray();
+    }
+    
+    private Instant getLastRun() {
+        if (lastRun == null || TimeUtil.isXMinutesBeforeNow(minimumMinutesBetweenCalculations, lastRun)) {
+            lastRun = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME);
+        }
+        return lastRun;
     }
 }

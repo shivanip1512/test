@@ -13,6 +13,12 @@ import com.cannontech.infrastructure.model.InfrastructureWarningSummary;
 public interface InfrastructureWarningsDao {
     
     /**
+     * The minimum amount of time that has to pass between recalculating warnings. This is used to determine if a
+     * recalc request initiates a recalculation, and to determine how often to refresh cached data.
+     */
+    public static final int minimumMinutesBetweenCalculations = 5;
+    
+    /**
      * Replace the previously saved infrastructure warnings with new warnings.
      */
     public void insert(Collection<InfrastructureWarning> warnings);

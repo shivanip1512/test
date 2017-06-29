@@ -17,6 +17,7 @@ import org.joda.time.Interval;
 import org.joda.time.LocalDate;
 import org.joda.time.Period;
 import org.joda.time.PeriodType;
+import org.joda.time.ReadableInstant;
 import org.joda.time.format.PeriodFormatter;
 import org.joda.time.format.PeriodFormatterBuilder;
 
@@ -364,5 +365,12 @@ public static int differenceMinutes(Date from, Date to) {
             return time2;
         }
         return time1;
+    }
+    
+    /**
+     * @return True if the value is at least the specified number of minutes before now.
+     */
+    public static boolean isXMinutesBeforeNow(int minutes, ReadableInstant value) {
+        return value.isBefore(Instant.now().minus(Duration.standardMinutes(minutes)));
     }
 }
