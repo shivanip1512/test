@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.cannontech.common.bulk.collection.DeviceIdListCollectionProducer;
 import com.cannontech.common.bulk.collection.device.DeviceCollectionFactory;
@@ -49,6 +50,7 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.amr.usageThresholdReport.dao.ThresholdReportDao.SortBy;
@@ -59,6 +61,7 @@ import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportCriteria
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportDetail;
 import com.cannontech.web.amr.usageThresholdReport.model.ThresholdReportFilter;
 import com.cannontech.web.amr.usageThresholdReport.service.ThresholdReportService;
+import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.sort.SortableColumn;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.util.WebFileUtils;
@@ -95,17 +98,20 @@ public class UsageThresholdReportController {
         criteria.setStartDate(yesterday);
         criteria.setEndDate(yesterday);
         criteria.setAttribute(BuiltInAttribute.USAGE);
+        Object criteriaObj = model.get("criteria");
+        if (criteriaObj instanceof ThresholdReportCriteria) {
+            criteria = (ThresholdReportCriteria) model.get("criteria");
+        }
         model.addAttribute("criteria", criteria);
         return "usageThresholdReport/report.jsp";
     }
-    
 
     @RequestMapping(value="report", method = RequestMethod.POST)
     public String runReport(@ModelAttribute ThresholdReportCriteria criteria, ModelMap model, HttpServletRequest request, 
-                            @RequestParam String minDate, @RequestParam String maxDate, YukonUserContext userContext) throws Exception {
+                            @RequestParam String minDate, @RequestParam String maxDate, YukonUserContext userContext, 
+                            FlashScope flashScope, RedirectAttributes redirectAtts) throws Exception {
         model.addAttribute("dataAvailabilityOptions", DataAvailability.values());
         model.addAttribute("thresholdOptions", ThresholdDescriptor.values());
-        DeviceCollection collection = deviceCollectionFactory.createDeviceCollection(request);
         DateTimeFormatter formatter = dateFormattingService.getDateTimeFormatter(DateFormatEnum.DATE, userContext);
         DateTimeZone timeZone = userContext.getJodaTimeZone();
         DateTime startDateTime = formatter.parseDateTime(minDate).withTimeAtStartOfDay().withZone(timeZone);
@@ -113,16 +119,26 @@ public class UsageThresholdReportController {
         criteria.setStartDate(startDateTime.toInstant());
         criteria.setEndDate(endDateTime.toInstant());
         criteria.setRunTime(new Instant());
-        if (collection.getCollectionType() == DeviceCollectionType.group) {
-            String groupName = collection.getCollectionParameters().get("group.name");
-            DeviceGroup grp = deviceGroupService.resolveGroupName(groupName);
-            criteria.setDescription(grp.getName());
-        } else {
-            criteria.setDescription(collection.getDeviceCount() + " devices");
+        DeviceCollection collection = null;
+        try {
+            collection = deviceCollectionFactory.createDeviceCollection(request);
+        } catch (Exception e) {
+            flashScope.setError(new YukonMessageSourceResolvable("yukon.web.modules.amr.usageThresholdReport.report.criteria.invalidDevicesSelected"));
+            redirectAtts.addFlashAttribute("criteria", criteria);
+            return "redirect:/amr/usageThresholdReport/report";
+        }
+        if (collection != null) {
+            if (collection.getCollectionType() == DeviceCollectionType.group) {
+                String groupName = collection.getCollectionParameters().get("group.name");
+                DeviceGroup grp = deviceGroupService.resolveGroupName(groupName);
+                criteria.setDescription(grp.getName());
+            } else {
+                criteria.setDescription(collection.getDeviceCount() + " devices");
+            }
+            int reportId = reportService.createThresholdReport(criteria, collection.getDeviceList());
+            criteria.setReportId(reportId);
         }
         model.addAttribute("filter", new ThresholdReportFilter());
-        int reportId = reportService.createThresholdReport(criteria, collection.getDeviceList());
-        criteria.setReportId(reportId);
         model.addAttribute("criteria", criteria);
         return "usageThresholdReport/results.jsp";
     }
