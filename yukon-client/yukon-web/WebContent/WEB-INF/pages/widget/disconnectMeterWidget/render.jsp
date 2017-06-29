@@ -128,9 +128,8 @@
                       <tags:widgetActionRefresh method="arm" nameKey="arm" showConfirm="true" classes="M0"/>
                     </c:if>
                     <tags:widgetActionRefresh method="disconnect" nameKey="disconnect" showConfirm="true"/>
-                < </cti:checkRolesAndProperties>
+                </cti:checkRolesAndProperties>
             </div>
         </c:if>
-        
     </div>
 </cti:msgScope>

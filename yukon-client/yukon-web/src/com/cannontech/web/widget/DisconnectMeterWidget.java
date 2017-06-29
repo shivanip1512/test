@@ -33,6 +33,7 @@ import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.SimpleMeter;
 import com.cannontech.amr.meter.model.YukonMeter;
 import com.cannontech.amr.meter.service.MeterService;
 import com.cannontech.amr.rfn.message.disconnect.RfnMeterDisconnectConfirmationReplyType;
@@ -66,6 +67,7 @@ import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.mbean.ServerDatabaseCache;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -90,6 +92,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     @Autowired private RfnMeterDisconnectService rfnMeterDisconnectService;
     @Autowired MeterService meterService;
     @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
+    @Autowired private ServerDatabaseCache serverDatabaseCache;
 
 
     private final Set<BuiltInAttribute> disconnectAttribute = Sets.newHashSet(BuiltInAttribute.DISCONNECT_STATUS);
@@ -400,8 +403,8 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     
     @RequestMapping("uploadConfig")
     public String uploadConfig(ModelMap model, LiteYukonUser user, int deviceId) throws Exception {
-        
-        YukonMeter meter = meterDao.getForId(deviceId);
+
+        SimpleMeter meter = serverDatabaseCache.getAllMeters().get(deviceId);
         CommandResultHolder result =
             commandRequestDeviceExecutor.execute(meter, "putconfig emetcon disconnect",
                 DeviceRequestType.DISCONNECT_COLLAR_PUT_CONFIG_COMMAND, user);
