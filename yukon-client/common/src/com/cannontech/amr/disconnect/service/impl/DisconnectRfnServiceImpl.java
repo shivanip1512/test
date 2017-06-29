@@ -178,7 +178,7 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
                 callback.failed(meter, error);
                 errorCode = error.getErrorCode();
             }
-            if (state == null) {
+            else if (state == null) {
                 callback.failed(meter, error);
                 errorCode = error.getErrorCode();
             } else {
