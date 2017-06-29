@@ -143,7 +143,6 @@
     <entry key="yukon.common.attribute.builtInAttribute.AVERAGE_VOLTAGE_PHASE_B">Average Voltage (Phase B)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.AVERAGE_VOLTAGE_PHASE_C">Average Voltage (Phase C)</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OVER_VOLTAGE">Over Voltage</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.OVER_VOLTAGE_MEASURED">Over Voltage Measured</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OVER_VOLTAGE_THRESHOLD">Over Voltage Threshold</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OUTAGE_LOG">Outage Log</entry>
     <entry key="yukon.common.attribute.builtInAttribute.OUTAGE_STATUS">Outage Status</entry>
@@ -209,7 +208,6 @@
     <entry key="yukon.common.attribute.builtInAttribute.TEMPERATURE">Temperature</entry>
     <entry key="yukon.common.attribute.builtInAttribute.TEMPERATURE_DEVICE">Temperature of Device</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE">Under Voltage</entry>
-    <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE_MEASURED">Under Voltage Measured</entry>
     <entry key="yukon.common.attribute.builtInAttribute.UNDER_VOLTAGE_THRESHOLD">Under Voltage Threshold</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE">Usage Reading</entry>
     <entry key="yukon.common.attribute.builtInAttribute.USAGE_FROZEN">Usage Frozen</entry>

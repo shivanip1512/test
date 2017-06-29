@@ -885,30 +885,6 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVARH"/>
         <decimalplaces value="3"/>
     </point>
-    <point offset="216" type="Analog">
-        <name>Over Voltage Measured</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="217" type="Analog">
-        <name>Over Voltage Threshold</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="218" type="Analog">
-        <name>Under Voltage Measured</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="3"/>
-    </point>
-    <point offset="219" type="Analog">
-        <name>Under Voltage Threshold</name>
-        <multiplier value="1"/>
-        <unitofmeasure value="VOLTS"/>
-        <decimalplaces value="3"/>
-    </point>
     <point offset="220" type="Analog">
         <name>Forward Inductive kVArh</name>
         <multiplier value="1"/>

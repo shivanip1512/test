@@ -107,7 +107,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     OUT_OF_VOLTAGE_FLAG("Out of Voltage", AttributeGroup.STATUS, false),   //440 types only
     VOLTAGE_OUT_OF_LIMITS_FLAG("Voltage Out of Limits", AttributeGroup.STATUS, false),   //440 types only
     OVER_VOLTAGE("Over Voltage", AttributeGroup.RFN_HARDWARE_EVENT, false),
-    OVER_VOLTAGE_MEASURED("Over Voltage Measured", AttributeGroup.RFN_HARDWARE_EVENT, false),
     OVER_VOLTAGE_THRESHOLD("Over Voltage Threshold", AttributeGroup.RFN_HARDWARE_EVENT, false),
     PEAK_DEMAND("Peak Demand", AttributeGroup.DEMAND),
     PEAK_DEMAND_DAILY("Peak Demand Daily", AttributeGroup.DEMAND),
@@ -216,7 +215,6 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
     TOTAL_LUF_COUNT("Total LUF Event Count", AttributeGroup.OTHER),
     TOTAL_LUV_COUNT("Total LUV Event Count", AttributeGroup.OTHER),
     UNDER_VOLTAGE("Under Voltage", AttributeGroup.RFN_HARDWARE_EVENT, false),
-    UNDER_VOLTAGE_MEASURED("Under Voltage Measured", AttributeGroup.RFN_HARDWARE_EVENT, false),
     UNDER_VOLTAGE_THRESHOLD("Under Voltage Threshold", AttributeGroup.RFN_HARDWARE_EVENT, false),
     USAGE("Usage Reading", AttributeGroup.USAGE),
     USAGE_FROZEN("Usage Frozen", AttributeGroup.USAGE),
@@ -594,10 +592,8 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
         // rfn "events" that are analog, not status
         rfnEventAnalogTypes = ImmutableSet.of(
-                OVER_VOLTAGE_MEASURED,
                 OVER_VOLTAGE_THRESHOLD,
                 TEMPERATURE_DEVICE,
-                UNDER_VOLTAGE_MEASURED,
                 UNDER_VOLTAGE_THRESHOLD);
 
         nonIntervalAttributes = ImmutableSet.of(

@@ -71,8 +71,6 @@
         <pointInfo name="Outage Status" init="true" attributes="OUTAGE_STATUS"/>
         <pointInfo name="Outages" init="true" attributes="OUTAGE_LOG"/>
         <pointInfo name="Over Voltage" attributes="OVER_VOLTAGE"/>
-        <pointInfo name="Over Voltage Measured" attributes="OVER_VOLTAGE_MEASURED"/>
-        <pointInfo name="Over Voltage Threshold" attributes="OVER_VOLTAGE_THRESHOLD"/>
         <pointInfo name="Password Table Crc Error" attributes="PASSWORD_TABLE_CRC_ERROR"/>
         <pointInfo name="Peak kW" init="true"/>
         <pointInfo name="Potential Indicator Warning" attributes="POTENTIAL_INDICATOR_WARNING"/>
@@ -112,8 +110,6 @@
         <pointInfo name="TOU Schedule Change" attributes="TOU_SCHEDULE_CHANGE"/>
         <pointInfo name="Unconfigured" attributes="UNCONFIGURED"/>
         <pointInfo name="Under Voltage" attributes="UNDER_VOLTAGE"/>
-        <pointInfo name="Under Voltage Measured" attributes="UNDER_VOLTAGE_MEASURED"/>
-        <pointInfo name="Under Voltage Threshold" attributes="UNDER_VOLTAGE_THRESHOLD"/>
         <pointInfo name="Unprogrammed" attributes="UNPROGRAMMED"/>
         <pointInfo name="User Programmable Temperature Threshold Exceeded" attributes="USER_PROGRAMMABLE_TEMPERATURE_THRESHOLD_EXCEEDED"/>
         <pointInfo name="Voltage Alerts" attributes="VOLTAGE_ALERTS"/>
