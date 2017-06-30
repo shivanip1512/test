@@ -5,6 +5,13 @@
 
 <cti:msgScope paths="widgets.infrastructureWarnings">
 
+<style>
+.summaryNumbers {
+    font-size:85%;
+    margin-right:3px;
+}
+</style>
+
     <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/>
     <table class="compact-results-table">
         <th class="fwn PB0"><a href="${allWarningsUrl}?types=GATEWAY" target="_blank"><cti:msg2 key=".gateways"/></a></th>
@@ -13,20 +20,20 @@
         <th class="fwn PB0"><a href="${allWarningsUrl}?types=REPEATER" target="_blank"><cti:msg2 key=".repeaters"/></a></th>
         <tr>
             <td class="PT0">
-                <span class="label label-success" style="margin-right:5px;">${summary.totalGateways - summary.warningGateways}</span>
-                <span class="label label-warning">${summary.warningGateways}</span>
+                <span class="label label-success summaryNumbers">${summary.totalGateways - summary.warningGateways}</span>
+                <span class="label label-warning summaryNumbers">${summary.warningGateways}</span>
             </td>
             <td class="PT0">
-                <span class="label label-success" style="margin-right:5px;">${summary.totalRelays - summary.warningRelays}</span>
-                <span class="label label-warning">${summary.warningRelays}</span>
+                <span class="label label-success summaryNumbers">${summary.totalRelays - summary.warningRelays}</span>
+                <span class="label label-warning summaryNumbers">${summary.warningRelays}</span>
             </td>
             <td class="PT0">
-                <span class="label label-success" style="margin-right:5px;">${summary.totalCcus - summary.warningCcus}</span>
-                <span class="label label-warning">${summary.warningCcus}</span>
+                <span class="label label-success summaryNumbers">${summary.totalCcus - summary.warningCcus}</span>
+                <span class="label label-warning summaryNumbers">${summary.warningCcus}</span>
             </td>
             <td class="PT0">
-                <span class="label label-success" style="margin-right:5px;">${summary.totalRepeaters - summary.warningRepeaters}</span>
-                <span class="label label-warning">${summary.warningRepeaters}</span>
+                <span class="label label-success summaryNumbers">${summary.totalRepeaters - summary.warningRepeaters}</span>
+                <span class="label label-warning summaryNumbers">${summary.warningRepeaters}</span>
             </td>
         </tr>
     </table>  
