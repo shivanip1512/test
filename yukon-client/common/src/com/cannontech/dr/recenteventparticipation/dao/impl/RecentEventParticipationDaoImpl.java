@@ -111,7 +111,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("      AND ooe.EventState").eq_k(OptOutEventState.START_OPT_OUT_SENT);
         sql.append("      JOIN YukonPAObject ypo on ypo.PaobjectId = inv.DeviceId");
         sql.append("    WHERE lmhcg.LMGroupId").eq(loadGroupId);
-        sql.append("      AND NOT lmhcg.GroupEnrollStart IS NULL");
+        sql.append("      AND lmhcg.GroupEnrollStart IS NOT NULL");
         sql.append("      AND lmhcg.GroupEnrollStop IS NULL");
         sql.append("   )");
         jdbcTemplate.update(sql);
@@ -177,9 +177,8 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("      JOIN InventoryBase inv ON inv.DeviceId = ced.DeviceId");
         sql.append("      JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryId = inv.InventoryId");
         sql.append("      JOIN LMProgramWebPublishing lmpwp ON lmpwp.ProgramId = lmhcg.ProgramId");
-        sql.append("      JOIN yukonPAObject pgypo on pgypo.PAObjectId = lmpwp.DeviceId");
-        sql.append("    WHERE  NOT lmhcg.GroupEnrollStart IS NULL");
-        sql.append("      AND lmhcg.GroupEnrollStop IS NULL");
+        sql.append("      JOIN YukonPAObject pgypo on pgypo.PAObjectId = lmpwp.DeviceId");
+        sql.append("    WHERE lmhcg.GroupEnrollStart < ce.StartTime AND (lmhcg.GroupEnrollStop > ce.StartTime  OR lmhcg.GroupEnrollStop IS NULL)");
         sql.append("      GROUP BY pgypo.PAOName, ce.StartTime) AS tbl");
         sql.append("WHERE tbl.RowNumber").lte(numberOfEvents);
         List<RecentEventParticipationSummary> recentEventParticipationSummaries = jdbcTemplate.query(sql, recentEventParticipationSummaryRowMapper);
@@ -220,11 +219,10 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("          JOIN YukonPAObject dypo ON dypo.PAObjectId = ced.DeviceId");
         sql.append("          JOIN InventoryBase inv ON inv.DeviceId = ced.DeviceId");
         sql.append("          JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryId = inv.InventoryId");
-        sql.append("          JOIN yukonPAObject lgypo on lgypo.PAObjectId = ce.GroupId");
+        sql.append("          JOIN YukonPAObject lgypo on lgypo.PAObjectId = ce.GroupId");
         sql.append("          JOIN LMProgramWebPublishing lmpwp ON lmpwp.ProgramId = lmhcg.ProgramId");
-        sql.append("          JOIN yukonPAObject pgypo on pgypo.PAObjectId = lmpwp.DeviceId");
-        sql.append("        WHERE  NOT lmhcg.GroupEnrollStart IS NULL");
-        sql.append("          AND lmhcg.GroupEnrollStop IS NULL");
+        sql.append("          JOIN YukonPAObject pgypo on pgypo.PAObjectId = lmpwp.DeviceId");
+        sql.append("        WHERE lmhcg.GroupEnrollStart < ce.StartTime AND (lmhcg.GroupEnrollStop > ce.StartTime  OR lmhcg.GroupEnrollStop IS NULL)");
         if (range != null) {
             sql.append("      AND StartTime").gt(range.getMin());
             sql.append("      AND StartTime").lt(range.getMax());
@@ -320,8 +318,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("  JOIN YukonPAObject lgypo on lgypo.PAObjectId = ce.GroupId");
         sql.append("  JOIN LMProgramWebPublishing lmpwp ON lmpwp.ProgramId = lmhcg.ProgramId");
         sql.append("  JOIN YukonPAObject pgypo on pgypo.PAObjectId = lmpwp.DeviceId");
-        sql.append("WHERE NOT lmhcg.GroupEnrollStart IS NULL ");
-        sql.append("  AND lmhcg.GroupEnrollStop IS NULL");
+        sql.append("WHERE lmhcg.GroupEnrollStart < ce.StartTime AND (lmhcg.GroupEnrollStop > ce.StartTime  OR GroupEnrollStop IS NULL)");
         return sql;
     }
 
@@ -362,12 +359,9 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("  JOIN ControlEventDevice ced ON ced.ControlEventId = ce.ControlEventId");
         sql.append("  JOIN YukonPAObject dypo ON dypo.PAObjectID = ced.DeviceId");
         sql.append("  JOIN InventoryBase inv ON inv.DeviceID = ced.DeviceId");
-        sql.append("  JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryId = inv.InventoryId");
         sql.append("  JOIN CustomerAccount ca ON ca.AccountId = inv.AccountId");
         sql.append("  JOIN LMHardwareBase lmbh ON lmbh.InventoryID= inv.InventoryID");
         sql.append("WHERE ce.ControlEventId").eq_k(eventId);
-        sql.append("  AND NOT lmhcg.GroupEnrollStart IS NULL");
-        sql.append("  AND lmhcg.GroupEnrollStop IS NULL");
         List<ControlDeviceDetail> controlDeviceDetails = jdbcTemplate.query(sql, controlDeviceDetailMapper);
         return controlDeviceDetails;
     }
@@ -378,16 +372,8 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         sql.append("SELECT COUNT(DISTINCT(ce.ControlEventId))");
         sql.append("FROM ControlEvent ce");
         sql.append("  JOIN ControlEventDevice ced ON ced.ControlEventId = ce.ControlEventId");
-        sql.append("  JOIN YukonPAObject dypo ON dypo.PAObjectId = ced.DeviceId");
-        sql.append("  JOIN InventoryBase inv ON inv.DeviceId = ced.DeviceId");
-        sql.append("  JOIN LMHardwareControlGroup lmhcg ON lmhcg.InventoryId = inv.InventoryId");
-        sql.append("  JOIN yukonPAObject lgypo on lgypo.PAObjectId = lmhcg.LMGroupId ");
-        sql.append("  JOIN LMProgramWebPublishing lmpwp ON lmpwp.ProgramId = lmhcg.ProgramId");
-        sql.append("  JOIN yukonPAObject pgypo on pgypo.PAObjectId = lmpwp.DeviceId");
-        sql.append("WHERE NOT lmhcg.GroupEnrollStart IS NULL");
-        sql.append("  AND lmhcg.GroupEnrollStop IS NULL");
         if (range != null) {
-            sql.append("      AND StartTime").gt(range.getMin());
+            sql.append("      WHERE StartTime").gt(range.getMin());
             sql.append("      AND StartTime").lt(range.getMax());
         }
         return jdbcTemplate.queryForInt(sql);
