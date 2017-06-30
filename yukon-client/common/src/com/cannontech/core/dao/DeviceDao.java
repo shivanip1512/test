@@ -147,4 +147,9 @@ public interface DeviceDao {
      */
     List<SimpleDevice> getYukonDeviceObjectByIds(Iterable<Integer> ids);
 
+    /**
+     * Returns a list of {@link SimpleDevice} objects for a list of pao types.
+     */
+    List<SimpleDevice> getDevicesForPaoTypes(Iterable<PaoType> types);
+
 }

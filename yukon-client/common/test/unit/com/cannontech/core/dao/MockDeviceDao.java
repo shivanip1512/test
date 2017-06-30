@@ -154,5 +154,8 @@ public class MockDeviceDao implements DeviceDao {
         throw new MethodNotImplementedException();
     }
 
-
+    @Override
+    public List<SimpleDevice> getDevicesForPaoTypes(Iterable<PaoType> types) {
+        throw new MethodNotImplementedException();
+    }
 }

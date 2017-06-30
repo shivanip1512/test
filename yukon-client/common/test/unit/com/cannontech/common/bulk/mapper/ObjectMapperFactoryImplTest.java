@@ -5,8 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import junit.framework.TestCase;
-
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.model.DeviceCollectionReportDevice;
 import com.cannontech.common.device.model.SimpleDevice;
@@ -26,6 +24,8 @@ import com.cannontech.core.service.impl.PaoLoader;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+
+import junit.framework.TestCase;
 
 /**
  * Test class for ObjectMapperFactoryImpl
@@ -480,6 +480,11 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
         @Override
         public List<SimpleDevice> getYukonDeviceObjectByIds(Iterable<Integer> ids) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public List<SimpleDevice> getDevicesForPaoTypes(Iterable<PaoType> types) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
