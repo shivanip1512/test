@@ -1316,9 +1316,9 @@ UPDATE JobProperty SET Value = REPLACE(Value, 'OVER_VOLTAGE_THRESHOLD,', '') WHE
 UPDATE JobProperty SET Value = REPLACE(Value, ',OVER_VOLTAGE_THRESHOLD', '') WHERE Name = 'attributes' AND Value LIKE '%,OVER_VOLTAGE_THRESHOLD%';
 UPDATE JobProperty SET Value = REPLACE(Value, 'OVER_VOLTAGE_THRESHOLD', '') WHERE Name = 'attributes' AND Value = 'OVER_VOLTAGE_THRESHOLD';
 
-UPDATE JobProperty SET Value = REPLACE(Value, 'UNDER_VOLTAGE_MEASURED,', '') WHERE Name = 'attributes' AND Value LIKE '%UNDER_VOLTAGE_MEASURED,%';
-UPDATE JobProperty SET Value = REPLACE(Value, ',UNDER_VOLTAGE_MEASURED', '') WHERE Name = 'attributes' AND Value LIKE '%,UNDER_VOLTAGE_MEASURED%';
-UPDATE JobProperty SET Value = REPLACE(Value, 'UNDER_VOLTAGE_MEASURED', '') WHERE Name = 'attributes' AND Value = 'UNDER_VOLTAGE_MEASURED';
+UPDATE JobProperty SET Value = REPLACE(Value, 'OVER_VOLTAGE_MEASURED,', '') WHERE Name = 'attributes' AND Value LIKE '%OVER_VOLTAGE_MEASURED,%';
+UPDATE JobProperty SET Value = REPLACE(Value, ',OVER_VOLTAGE_MEASURED', '') WHERE Name = 'attributes' AND Value LIKE '%,OVER_VOLTAGE_MEASURED%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'OVER_VOLTAGE_MEASURED', '') WHERE Name = 'attributes' AND Value = 'OVER_VOLTAGE_MEASURED';
 
 UPDATE JobProperty SET Value = REPLACE(Value, 'UNDER_VOLTAGE_THRESHOLD,', '') WHERE Name = 'attributes' AND Value LIKE '%UNDER_VOLTAGE_THRESHOLD,%';
 UPDATE JobProperty SET Value = REPLACE(Value, ',UNDER_VOLTAGE_THRESHOLD', '') WHERE Name = 'attributes' AND Value LIKE '%,UNDER_VOLTAGE_THRESHOLD%';
