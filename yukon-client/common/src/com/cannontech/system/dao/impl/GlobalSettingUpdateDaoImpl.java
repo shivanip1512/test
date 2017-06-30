@@ -1,8 +1,9 @@
 package com.cannontech.system.dao.impl;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import javax.annotation.PostConstruct;
 
@@ -16,9 +17,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.events.loggers.SystemEventLogService;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.FieldMapper;
 import com.cannontech.database.SimpleTableAccessTemplate;
 import com.cannontech.database.YukonJdbcTemplate;
+import com.cannontech.database.YukonResultSet;
+import com.cannontech.database.YukonRowMapper;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.encryption.CryptoException;
@@ -31,6 +35,7 @@ import com.cannontech.system.dao.GlobalSettingDao;
 import com.cannontech.system.dao.GlobalSettingUpdateDao;
 import com.cannontech.system.model.GlobalSetting;
 import com.cannontech.user.UserUtils;
+import com.cannontech.user.YukonUserContext;
 
 public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
 
@@ -74,13 +79,45 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
     };
     
     /**
-     * On startup encrypt the sensitive information which is not already encrypted.
+     * Helper method to find sensitive global setting values that should be encrypted but aren't yet.
+     * Perform the encryption and update database with new values
      */
-    private void encryptSensitiveInformation() {
-        List<GlobalSettingType> sensitiveInformation = GlobalSettingType.getSensitiveSettings();
-        Map<GlobalSettingType, GlobalSetting> map = globalSettingDao.getGlobalSettingsValue(sensitiveInformation);
-        if (!map.isEmpty()) {
-            updateSettings(map.values(), null);
+    private void encryptUnencryptedSensitiveSettings() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT GlobalSettingId, Value, Name, Comments, LastChangedDate");
+        sql.append("FROM GlobalSetting");
+        sql.append("WHERE Name").in(GlobalSettingType.getSensitiveSettings());
+
+        List<GlobalSetting> settingsToUpdate = new ArrayList<>();
+        yukonJdbcTemplate.query(sql, new YukonRowMapper<GlobalSetting>() {
+
+            @Override
+            public GlobalSetting mapRow(YukonResultSet rs) throws SQLException {
+                GlobalSettingType type = rs.getEnum(("Name"), GlobalSettingType.class);
+                Object value = rs.getObjectOfInputType("Value", type.getType());
+                if (value != null && type.isSensitiveInformation()) {
+                    try {
+                        if (!GlobalSettingCryptoUtils.isEncrypted((String) value)) { // only load unencrypted values
+                            value = GlobalSettingCryptoUtils.encryptValue((String) value);
+                            
+                            GlobalSetting setting = new GlobalSetting(type, value);
+                            setting.setId(rs.getInt("GlobalSettingId"));
+                            setting.setComments(rs.getString("Comments"));
+                            setting.setLastChanged(rs.getInstant("LastChangedDate"));
+                            settingsToUpdate.add(setting);
+                        }
+                    } catch (CryptoException | IOException | JDOMException e) {
+                        log.warn("Unable to encrypt value for setting " + type + ". Skipping attempt to auto-encrypt.");
+                    }
+                }
+                return null;
+            }
+        });
+
+        if (!settingsToUpdate.isEmpty()) {
+            updateSettings(settingsToUpdate, YukonUserContext.system.getYukonUser());
+            log.info("Encrypted " + settingsToUpdate.size() + " sensitive values that were not"
+                + " previously encrypted in database. Value may already be encrypted.");
         }
     }
 
@@ -186,7 +223,7 @@ public class GlobalSettingUpdateDaoImpl implements GlobalSettingUpdateDao {
         insertTemplate.setPrimaryKeyField("GlobalSettingId");
         insertTemplate.setPrimaryKeyValidOver(0);
         
-        encryptSensitiveInformation();
+        encryptUnencryptedSensitiveSettings();
     }
 
 }

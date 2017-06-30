@@ -45,11 +45,6 @@ public class GlobalSettingDaoAdapter implements GlobalSettingDao {
     public void valueChanged() {
         throw new MethodNotImplementedException();
     }
-
-    @Override
-    public Map<GlobalSettingType, GlobalSetting> getGlobalSettingsValue(List<GlobalSettingType> types) {
-        throw new MethodNotImplementedException();
-    }
     
     @Override
     public Integer getNullableInteger(GlobalSettingType type) {
