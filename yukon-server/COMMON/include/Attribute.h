@@ -90,7 +90,6 @@ public:
     static const Attribute  OutofVoltage;
     static const Attribute  VoltageOutofLimits;
     static const Attribute  OverVoltage;
-    static const Attribute  OverVoltageMeasured;
     static const Attribute  OverVoltageThreshold;
     static const Attribute  PeakDemand;
     static const Attribute  PeakDemandDaily;
@@ -199,7 +198,6 @@ public:
     static const Attribute  TotalLUFEventCount;
     static const Attribute  TotalLUVEventCount;
     static const Attribute  UnderVoltage;
-    static const Attribute  UnderVoltageMeasured;
     static const Attribute  UnderVoltageThreshold;
     static const Attribute  UsageReading;
     static const Attribute  UsageFrozen;

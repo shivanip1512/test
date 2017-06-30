@@ -592,9 +592,7 @@ public enum BuiltInAttribute implements Attribute, DisplayableEnum {
 
         // rfn "events" that are analog, not status
         rfnEventAnalogTypes = ImmutableSet.of(
-                OVER_VOLTAGE_THRESHOLD,
-                TEMPERATURE_DEVICE,
-                UNDER_VOLTAGE_THRESHOLD);
+                TEMPERATURE_DEVICE);
 
         nonIntervalAttributes = ImmutableSet.of(
                 PEAK_DEMAND,
