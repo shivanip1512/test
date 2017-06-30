@@ -1365,18 +1365,25 @@ DELETE FROM POINT WHERE POINTID IN (
     'RFN-430A3K', 'RFN-430A3R', 'RFN-430A3T', 'RFN-430KV', 'RFN-510fL', 'RFN-520fAX', 'RFN-520fAXD', 'RFN-520fRX','RFN-520fRXD', 
     'RFN-530fAX', 'RFN-530fRX', 'RFN-530S4eAX','RFN-530S4eAXR', 'RFN-530S4eRX', 'RFN-530S4eRXR', 'RFN-530S4x'));
 
-UPDATE JobProperty SET Value = REPLACE(Value, 'OVER_VOLTAGE_MEASURED,', '') WHERE Name = 'attributes' AND Value LIKE '%OVER_VOLTAGE_MEASURED%';
-UPDATE JobProperty SET Value = REPLACE(Value, 'OVER_VOLTAGE_THRESHOLD,', '') WHERE Name = 'attributes' AND Value LIKE '%OVER_VOLTAGE_THRESHOLD%';
-UPDATE JobProperty SET Value = REPLACE(Value, 'UNDER_VOLTAGE_MEASURED,', '') WHERE Name = 'attributes' AND Value LIKE '%UNDER_VOLTAGE_MEASURED%';
-UPDATE JobProperty SET Value = REPLACE(Value, 'UNDER_VOLTAGE_THRESHOLD,', '') WHERE Name = 'attributes' AND Value LIKE '%UNDER_VOLTAGE_THRESHOLD%';
-UPDATE JobProperty SET Value = REPLACE(Value, ',OVER_VOLTAGE_MEASURED', '') WHERE Name = 'attributes' AND Value LIKE '%OVER_VOLTAGE_MEASURED%';
-UPDATE JobProperty SET Value = REPLACE(Value, ',OVER_VOLTAGE_THRESHOLD', '') WHERE Name = 'attributes' AND Value LIKE '%OVER_VOLTAGE_THRESHOLD%';
-UPDATE JobProperty SET Value = REPLACE(Value, ',UNDER_VOLTAGE_MEASURED', '') WHERE Name = 'attributes' AND Value LIKE '%UNDER_VOLTAGE_MEASURED%';
-UPDATE JobProperty SET Value = REPLACE(Value, ',UNDER_VOLTAGE_THRESHOLD', '') WHERE Name = 'attributes' AND Value LIKE '%UNDER_VOLTAGE_THRESHOLD%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'OVER_VOLTAGE_MEASURED,', '') WHERE Name = 'attributes' AND Value LIKE '%OVER_VOLTAGE_MEASURED,%';
+UPDATE JobProperty SET Value = REPLACE(Value, ',OVER_VOLTAGE_MEASURED', '') WHERE Name = 'attributes' AND Value LIKE '%,OVER_VOLTAGE_MEASURED%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'OVER_VOLTAGE_MEASURED', '') WHERE Name = 'attributes' AND Value = 'OVER_VOLTAGE_MEASURED';
+
+UPDATE JobProperty SET Value = REPLACE(Value, 'OVER_VOLTAGE_THRESHOLD,', '') WHERE Name = 'attributes' AND Value LIKE '%OVER_VOLTAGE_THRESHOLD,%';
+UPDATE JobProperty SET Value = REPLACE(Value, ',OVER_VOLTAGE_THRESHOLD', '') WHERE Name = 'attributes' AND Value LIKE '%,OVER_VOLTAGE_THRESHOLD%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'OVER_VOLTAGE_THRESHOLD', '') WHERE Name = 'attributes' AND Value = 'OVER_VOLTAGE_THRESHOLD';
+
+UPDATE JobProperty SET Value = REPLACE(Value, 'UNDER_VOLTAGE_MEASURED,', '') WHERE Name = 'attributes' AND Value LIKE '%UNDER_VOLTAGE_MEASURED,%';
+UPDATE JobProperty SET Value = REPLACE(Value, ',UNDER_VOLTAGE_MEASURED', '') WHERE Name = 'attributes' AND Value LIKE '%,UNDER_VOLTAGE_MEASURED%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'UNDER_VOLTAGE_MEASURED', '') WHERE Name = 'attributes' AND Value = 'UNDER_VOLTAGE_MEASURED';
+
+UPDATE JobProperty SET Value = REPLACE(Value, 'UNDER_VOLTAGE_THRESHOLD,', '') WHERE Name = 'attributes' AND Value LIKE '%UNDER_VOLTAGE_THRESHOLD,%';
+UPDATE JobProperty SET Value = REPLACE(Value, ',UNDER_VOLTAGE_THRESHOLD', '') WHERE Name = 'attributes' AND Value LIKE '%,UNDER_VOLTAGE_THRESHOLD%';
+UPDATE JobProperty SET Value = REPLACE(Value, 'UNDER_VOLTAGE_THRESHOLD', '') WHERE Name = 'attributes' AND Value = 'UNDER_VOLTAGE_THRESHOLD';
 /* End YUK-16844 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-/*INSERT INTO CTIDatabase VALUES ('6.7', '04-JAN-2017', 'Latest Update', 0, SYSDATE);*/
+INSERT INTO CTIDatabase VALUES ('6.7', '30-JUN-2017', 'Latest Update', 0, SYSDATE);
