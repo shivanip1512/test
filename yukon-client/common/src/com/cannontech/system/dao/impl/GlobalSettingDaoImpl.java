@@ -113,7 +113,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
 
         if (setting == null) {
             // Not in cache, Look in Db
-            setting = findSetting(type, settingMapper);
+            setting = findSetting(type);
             if (setting == null) {
                 // Not in Db. Need to create one for cache
                 setting = new GlobalSetting(type, type.getDefaultValue());
@@ -139,7 +139,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
         return returnType.cast(getSetting(setting).getValue());
     }
 
-    private GlobalSetting findSetting(GlobalSettingType setting, YukonRowMapper<GlobalSetting> mapper) {
+    private GlobalSetting findSetting(GlobalSettingType setting) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT GlobalSettingId, Value, Name, Comments, LastChangedDate");
         sql.append("FROM GlobalSetting");
@@ -147,7 +147,7 @@ public class GlobalSettingDaoImpl implements GlobalSettingDao {
 
         GlobalSetting settingDb = null;
         try {
-            settingDb = yukonJdbcTemplate.queryForObject(sql, mapper);
+            settingDb = yukonJdbcTemplate.queryForObject(sql, settingMapper);
         } catch (EmptyResultDataAccessException e) {
             log.debug("Setting missing from the database: " + setting.name());
             return null;
