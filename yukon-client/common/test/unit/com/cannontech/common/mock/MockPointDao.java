@@ -54,6 +54,12 @@ public class MockPointDao implements PointDao {
             return new LitePoint(1, "demand1", 3, 1, 1, 0, 0, 0);
         case 4:
             return new LitePoint(1, "pulse2", 2, 1, 4, 0, 0, 0);
+        case 1000:
+            return new LitePoint(1, "Outage Status", 0, 1, 1000, 0, 0, 0);
+        case 2000:
+            return new LitePoint(1, "Comm Status", 0, 1, 2000, 0, 0, 0);
+        case 20:
+            return new LitePoint(1, "Blink Count", 2, 1, 20, 0, 0, 0);
         }
         throw new NotFoundException("point not found");
     }
@@ -87,6 +93,8 @@ public class MockPointDao implements PointDao {
 
         switch (pointType) {
 
+        case 0:
+            return pointOffset;
         case 1:
             return 1;
         case 2:
@@ -130,6 +138,7 @@ public class MockPointDao implements PointDao {
         points.add(getPoint(2, pao, PointType.PulseAccumulator, 20, "Blink Count"));
         points.add(getPoint(3, pao, PointType.PulseAccumulator, 1, "kWh"));
         points.add(getPoint(4, pao, PointType.DemandAccumulator, 4, "Voltage"));
+        points.add(getPoint(5, pao, PointType.DemandAccumulator, 102, "Comm Status"));
         return points;
     }
     
