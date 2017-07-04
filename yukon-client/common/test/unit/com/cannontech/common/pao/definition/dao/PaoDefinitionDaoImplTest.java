@@ -52,8 +52,8 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.Sets;
 
 public class PaoDefinitionDaoImplTest {
-    private PaoDefinitionDao dao = null;
-    private SimpleDevice device = null;
+    private PaoDefinitionDao dao;
+    private SimpleDevice device;
 
     public static PaoDefinitionDao getTestPaoDefinitionDao() {
         ApplicationContext ctx = new ClassPathXmlApplicationContext();

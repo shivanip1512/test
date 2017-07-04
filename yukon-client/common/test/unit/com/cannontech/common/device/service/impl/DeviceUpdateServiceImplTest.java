@@ -31,7 +31,7 @@ import com.google.common.collect.Collections2;
 public class DeviceUpdateServiceImplTest {
 
     @Autowired private DefinitionLoaderServiceImpl loaderServiceImpl;
-    private DeviceUpdateServiceImpl service = null;
+    private DeviceUpdateServiceImpl service;
 
     @Before
     public void setUp() {

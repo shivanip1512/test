@@ -27,10 +27,10 @@ import com.cannontech.database.data.lite.LitePoint;
 
 public class AttributeServiceImplTest {
 
-    private AttributeServiceImpl service = null;
-    private PaoDefinitionDao paoDefinitionDao = null;
-    private MockPointDao pointDao = null;
-    private SimpleDevice device = null;
+    private AttributeServiceImpl service;
+    private PaoDefinitionDao paoDefinitionDao;
+    private MockPointDao pointDao;
+    private SimpleDevice device;
 
     @Before
     public void setUp() {

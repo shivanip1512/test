@@ -17,7 +17,7 @@ import com.google.common.collect.Sets;
 public class PaoDefinitionDaoImplCommandsExistTest {
 
     public static Set<PaoType> exclusivePaoTypes;
-    private PaoDefinitionDao paoDefinitionDao = null;
+    private PaoDefinitionDao paoDefinitionDao;
 
     @Before
     public void setup() {

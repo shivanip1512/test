@@ -32,12 +32,12 @@ import com.cannontech.database.incrementer.NextValueHelper;
 
 public class PaoDefinitionServiceImplTest {
 
-    private PaoDefinitionServiceImpl service = null;
-    private PointServiceImpl pointService = null;
-    private PointCreationServiceImpl pointCreationService = null;
-    private SimpleDevice device = null;
-    private PaoDefinitionDao paoDefinitionDao = null;
-    private AttributeServiceImpl attributeService = null;
+    private PaoDefinitionServiceImpl service;
+    private PointServiceImpl pointService;
+    private PointCreationServiceImpl pointCreationService;
+    private SimpleDevice device;
+    private PaoDefinitionDao paoDefinitionDao;
+    private AttributeServiceImpl attributeService;
     private PointDao pointDao;
 
     @Before
