@@ -1383,7 +1383,7 @@
                 <modifier>Harmonic</modifier>   <!-- Received kVA on other paoTypes do not have this modifier -->
             </modifiers>
         </point>
-        <point name="Sum kVAh">
+        <point name="kVAh Sum">
             <uom>VAh</uom>
             <multiplier value=".001"/>
             <parseSiPrefix/>

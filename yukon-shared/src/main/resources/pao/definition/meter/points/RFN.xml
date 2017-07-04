@@ -531,6 +531,12 @@ Note: Look at BuiltInAttribute as that follows the same convention.
         <unitofmeasure value="KVAH"/>
         <decimalplaces value="3"/>
     </point>
+    <point offset="152" type="Analog">
+        <name>kVAh Sum</name>
+        <multiplier value="1"/>
+        <unitofmeasure value="KVAH"/>
+        <decimalplaces value="3"/>
+    </point>
     <point offset="153" type="Analog">
         <name>Phase A kVAr</name>
         <multiplier value="1"/>

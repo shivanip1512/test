@@ -57,7 +57,7 @@
         <pointInfo name="Improper Meter Engine Operation Warning" attributes="IMPROPER_METER_ENGINE_OPERATION_WARNING"/>
         <pointInfo name="Internal Communication Error" attributes="INTERNAL_COMMUNICATION_ERROR"/>
         <pointInfo name="Invalid Service" attributes="INVALID_SERVICE"/>
-        <pointInfo name="Sum kVAh" attributes="SUM_KVAH"/>
+        <pointInfo name="kVAh Sum" attributes="SUM_KVAH"/>
         <pointInfo name="Line Frequency Warning" attributes="LINE_FREQUENCY_WARNING"/>
         <pointInfo name="Load Side Voltage Is Missing" attributes="LOAD_SIDE_VOLTAGE_IS_MISSING"/>
         <pointInfo name="Loss Of All Current" attributes="LOSS_OF_ALL_CURRENT"/>
