@@ -6931,7 +6931,7 @@ bool CtiCCSubstationBus::areAllMonitorPointsInVoltageRange(CtiCCMonitorPointPtr 
                             << " - Limits: [" << lowerBound << ", " << upperBound << "]" ); 
 
             // Return the first point that we find that is ABOVE the lower limit immediately, regardless
-            //  if we've found an BELOW the limit point.
+            //  if we've found a BELOW the limit point.
             oorPoint = point;
             break;
         }
