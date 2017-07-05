@@ -1,6 +1,11 @@
 package com.cannontech.infrastructure.model;
 
+import java.util.Map;
+import java.util.function.IntSupplier;
+
 import org.joda.time.Instant;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * A summary, containing the total number of each warnable device category in the system, and the number of each that
@@ -16,6 +21,30 @@ public class InfrastructureWarningSummary {
     private int totalRepeaters;
     private int warningRepeaters;
     private Instant lastRun;
+    
+    private final Map<InfrastructureWarningDeviceCategory, IntSupplier> deviceCategoryTotalSuppliers = 
+        ImmutableMap.of(
+            InfrastructureWarningDeviceCategory.GATEWAY, this::getTotalGateways,
+            InfrastructureWarningDeviceCategory.RELAY, this::getTotalRelays,
+            InfrastructureWarningDeviceCategory.CCU, this::getTotalCcus,
+            InfrastructureWarningDeviceCategory.REPEATER, this::getTotalRepeaters
+        );
+    
+    private final Map<InfrastructureWarningDeviceCategory, IntSupplier> deviceCategoryWarningSuppliers = 
+        ImmutableMap.of(
+            InfrastructureWarningDeviceCategory.GATEWAY, this::getWarningGateways,
+            InfrastructureWarningDeviceCategory.RELAY, this::getWarningRelays,
+            InfrastructureWarningDeviceCategory.CCU, this::getWarningCcus,
+            InfrastructureWarningDeviceCategory.REPEATER, this::getWarningRepeaters
+        );
+    
+    public int getTotalDevices(InfrastructureWarningDeviceCategory category) {
+        return deviceCategoryTotalSuppliers.get(category).getAsInt();
+    }
+    
+    public int getWarningDevices(InfrastructureWarningDeviceCategory category) {
+        return deviceCategoryWarningSuppliers.get(category).getAsInt();
+    }
     
     public int getTotalGateways() {
         return totalGateways;

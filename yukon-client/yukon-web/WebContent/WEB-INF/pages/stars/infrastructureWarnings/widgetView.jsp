@@ -14,27 +14,43 @@
 
     <cti:url var="allWarningsUrl" value="/stars/infrastructureWarnings/detail"/>
     <table class="compact-results-table">
-        <th class="fwn PB0"><a href="${allWarningsUrl}?types=GATEWAY" target="_blank"><cti:msg2 key=".gateways"/></a></th>
-        <th class="fwn PB0"><a href="${allWarningsUrl}?types=RELAY" target="_blank"><cti:msg2 key=".relays"/></a></th>
-        <th class="fwn PB0"><a href="${allWarningsUrl}?types=CCU" target="_blank"><cti:msg2 key=".CCUs"/></a></th>
-        <th class="fwn PB0"><a href="${allWarningsUrl}?types=REPEATER" target="_blank"><cti:msg2 key=".repeaters"/></a></th>
+        <c:if test="${summary.totalGateways != 0}">
+            <th class="fwn PB0"><a href="${allWarningsUrl}?types=GATEWAY" target="_blank"><cti:msg2 key=".gateways"/></a></th>
+        </c:if>
+        <c:if test="${summary.totalRelays != 0}">
+            <th class="fwn PB0"><a href="${allWarningsUrl}?types=RELAY" target="_blank"><cti:msg2 key=".relays"/></a></th>
+        </c:if>
+        <c:if test="${summary.totalCcus != 0}">
+            <th class="fwn PB0"><a href="${allWarningsUrl}?types=CCU" target="_blank"><cti:msg2 key=".CCUs"/></a></th>
+        </c:if>
+        <c:if test="${summary.totalRepeaters != 0}">
+            <th class="fwn PB0"><a href="${allWarningsUrl}?types=REPEATER" target="_blank"><cti:msg2 key=".repeaters"/></a></th>
+        </c:if>
         <tr>
-            <td class="PT0">
-                <span class="label label-success summaryNumbers">${summary.totalGateways - summary.warningGateways}</span>
-                <span class="label label-warning summaryNumbers">${summary.warningGateways}</span>
-            </td>
-            <td class="PT0">
-                <span class="label label-success summaryNumbers">${summary.totalRelays - summary.warningRelays}</span>
-                <span class="label label-warning summaryNumbers">${summary.warningRelays}</span>
-            </td>
-            <td class="PT0">
-                <span class="label label-success summaryNumbers">${summary.totalCcus - summary.warningCcus}</span>
-                <span class="label label-warning summaryNumbers">${summary.warningCcus}</span>
-            </td>
-            <td class="PT0">
-                <span class="label label-success summaryNumbers">${summary.totalRepeaters - summary.warningRepeaters}</span>
-                <span class="label label-warning summaryNumbers">${summary.warningRepeaters}</span>
-            </td>
+            <c:if test="${summary.totalGateways != 0}">
+                <td class="PT0">
+                    <span class="label label-success summaryNumbers">${summary.totalGateways - summary.warningGateways}</span>
+                    <span class="label label-warning summaryNumbers">${summary.warningGateways}</span>
+                </td>
+            </c:if>
+            <c:if test="${summary.totalRelays != 0}">
+                <td class="PT0">
+                    <span class="label label-success summaryNumbers">${summary.totalRelays - summary.warningRelays}</span>
+                    <span class="label label-warning summaryNumbers">${summary.warningRelays}</span>
+                </td>
+            </c:if>
+            <c:if test="${summary.totalCcus != 0}">
+                <td class="PT0">
+                    <span class="label label-success summaryNumbers">${summary.totalCcus - summary.warningCcus}</span>
+                    <span class="label label-warning summaryNumbers">${summary.warningCcus}</span>
+                </td>
+            </c:if>
+            <c:if test="${summary.totalRepeaters != 0}">
+                <td class="PT0">
+                    <span class="label label-success summaryNumbers">${summary.totalRepeaters - summary.warningRepeaters}</span>
+                    <span class="label label-warning summaryNumbers">${summary.warningRepeaters}</span>
+                </td>
+            </c:if>
         </tr>
     </table>  
     <span class="fr"><a href="${allWarningsUrl}" target="_blank"><cti:msg2 key=".seeAll"/></a></span>
@@ -43,7 +59,6 @@
     <tags:sectionContainer2 nameKey="recentIssues">
         <table class="compact-results-table">
             <th><cti:msg2 key=".name"/></th>
-            <th><cti:msg2 key=".type"/></th>
             <th><cti:msg2 key=".status"/></th>
         
         <c:choose>
@@ -55,7 +70,6 @@
                                 <cti:deviceName deviceId="${warning.paoIdentifier.paoId}"/>
                             </cti:paoDetailUrl>
                         </td>
-                        <td class="wsnw">${warning.paoIdentifier.paoType.paoTypeName}</td>
                         <td>
                             <c:set var="warningColor" value="warning"/>
                             <c:if test="${warning.severity == 'HIGH'}">

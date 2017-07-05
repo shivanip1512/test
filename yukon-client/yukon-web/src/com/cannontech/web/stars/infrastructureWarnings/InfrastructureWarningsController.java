@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.infrastructureWarnings;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -67,12 +68,19 @@ public class InfrastructureWarningsController {
         return "infrastructureWarnings/widgetView.jsp";
     }
     
+    private InfrastructureWarningDeviceCategory[] getTypesInSystem() {
+        InfrastructureWarningSummary summary = infrastructureWarningsDao.getWarningsSummary();
+        return Arrays.stream(InfrastructureWarningDeviceCategory.values())
+                     .filter(category -> summary.getTotalDevices(category) != 0)
+                     .toArray(InfrastructureWarningDeviceCategory[]::new);
+    }
+    
     @RequestMapping("detail")
     public String detail(@DefaultSort(dir=Direction.asc, sort="name") SortingParameters sorting, PagingParameters paging, 
                          InfrastructureWarningDeviceCategory[] types, ModelMap model, YukonUserContext userContext) {
         MessageSourceAccessor accessor = messageSourceResolver.getMessageSourceAccessor(userContext);
 
-        types = types != null ? types : InfrastructureWarningDeviceCategory.values();
+        types = types != null ? types : getTypesInSystem();
         List<InfrastructureWarning> warnings = infrastructureWarningsDao.getWarnings(types);
         
         SearchResults<InfrastructureWarning> searchResult = new SearchResults<>();
@@ -112,7 +120,7 @@ public class InfrastructureWarningsController {
         
         model.addAttribute("warnings", searchResult);
         
-        model.addAttribute("deviceTypes", InfrastructureWarningDeviceCategory.values());
+        model.addAttribute("deviceTypes", getTypesInSystem());
         model.addAttribute("selectedTypes", Lists.newArrayList(types));
 
         return "infrastructureWarnings/detail.jsp";
