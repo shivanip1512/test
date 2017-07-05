@@ -1386,4 +1386,4 @@ UPDATE JobProperty SET Value = REPLACE(Value, 'UNDER_VOLTAGE_THRESHOLD', '') WHE
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */
 /**************************************************************/
-INSERT INTO CTIDatabase VALUES ('6.7', '30-JUN-2017', 'Latest Update', 0, SYSDATE);
+INSERT INTO CTIDatabase VALUES ('6.7', '05-JUL-2017', 'Latest Update', 0, SYSDATE);
