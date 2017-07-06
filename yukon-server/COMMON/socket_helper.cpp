@@ -100,7 +100,7 @@ IM_EX_CTIBASE std::string getIpAddressFromSocketAddress(const SOCKADDR *addr, in
             << addr6->sin6_port
         );
 
-        //  If the address is an IPv4-mapped address, 
+        //  If the address is an IPv4-mapped address...
         if( IN6_IS_ADDR_V4MAPPED(&addr6->sin6_addr) )
         {
             v4mapped.sin_family = AF_INET;
@@ -108,6 +108,8 @@ IM_EX_CTIBASE std::string getIpAddressFromSocketAddress(const SOCKADDR *addr, in
             v4mapped.sin_addr.S_un.S_un_b.s_b2 = addr6->sin6_addr.u.Byte[13];
             v4mapped.sin_addr.S_un.S_un_b.s_b3 = addr6->sin6_addr.u.Byte[14];
             v4mapped.sin_addr.S_un.S_un_b.s_b4 = addr6->sin6_addr.u.Byte[15];
+            
+            //  override addr and addrlen with the v4 version
             addr = reinterpret_cast<const SOCKADDR *>(&v4mapped);
             addrlen = sizeof(SOCKADDR_IN);
         }
