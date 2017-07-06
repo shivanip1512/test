@@ -1,12 +1,10 @@
 package com.cannontech.tdc;
 
-/**
- * Insert the type's description here.
- * Creation date: (2/2/00 4:31:00 PM)
- * @author: 
- */
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 import com.cannontech.clientutils.tags.IAlarmDefs;
 import com.cannontech.common.gui.util.Colors;
@@ -41,8 +39,6 @@ public class PointValues
 	private String pointState = null;
 	private Integer decimalPlaces = null;
 
-	private String previuosText = null;
-	
 	private int currentForegroundColor = Colors.WHITE_ID;
 	private int currentBackgroundColor = Colors.BLACK_ID;
 
@@ -100,23 +96,15 @@ public PointValues( Signal signal_, int ptType )
 	updateSignal( signal_ );
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (2/2/00 4:59:47 PM)
- * @param i int
- */
 public String[] getAllText() 
 {
-	LiteStateGroup lpgrp = getLiteStateGroup();
-	if( lpgrp == null )
-		return new String[0];
-	
-	String[] messages = new String[ lpgrp.getStatesList().size() ];
-	
-	for( int i = 0; i < lpgrp.getStatesList().size(); i++ )
-		messages[i] =  lpgrp.getStatesList().get(i).toString();
-
-	return messages;
+    return Optional.ofNullable(getLiteStateGroup())
+                   .map(LiteStateGroup::getStatesList)
+                   .map(List::stream)
+                   .orElse(Stream.empty())
+                   .filter(ls -> ls.getStateRawState() >= 0)  //  filter the negative states, such as ANY (-1)
+                   .map(LiteState::getStateText)
+                   .toArray(k -> new String[k]);
 }
 /**
  * Insert the method's description here.
@@ -257,26 +245,18 @@ public String getPointState() {
 public String getText(int rawState ) 
 {
 	LiteStateGroup lpgrp = getLiteStateGroup();
-	if( lpgrp == null )
-		return "DUMMY";	
-			
-			
-	String[] messages = new String[ lpgrp.getStatesList().size() ];
-	
-	for( int i = 0; i < lpgrp.getStatesList().size(); i++ )
-	{
-		if( rawState >= 0 && rawState <= lpgrp.getStatesList().size() )		
-		{
-			previuosText = 
-					lpgrp.getStatesList().get(rawState).getStateText();
-
-			return previuosText;
-		}		
+	if( lpgrp == null ) {
+		return "DUMMY";
 	}
-	
-	throw new IllegalArgumentException(
-			"Unable to find the state for the RawState=" 
-			+ rawState + " on pointID=" + getPointID() );
+
+    return lpgrp.getStatesList().stream()
+            .filter(ls -> ls.getStateRawState() == rawState)
+            .findFirst()
+            .map(LiteState::getStateText)
+            .orElseThrow(() -> 
+                new IllegalArgumentException(
+                    "Unable to find the state for the RawState=" 
+                    + rawState + " on pointID=" + getPointID()));
 }
 
 /**
@@ -336,9 +316,8 @@ public void setCurrentRowColor( int value )
 	if( lpgrp == null )
 		return;
 
-	for( int i = 0; i < lpgrp.getStatesList().size(); i++ )
+	for( LiteState lState : lpgrp.getStatesList() )
 	{
-		LiteState lState = lpgrp.getStatesList().get(i);
 		if( lState.getStateRawState() == value )
 		{
 			currentForegroundColor = new Integer( lState.getFgColor() ).intValue();
@@ -348,23 +327,6 @@ public void setCurrentRowColor( int value )
 	}
 }
 
-/**
- * Insert the method's description here.
- * Creation date: (2/2/00 4:59:47 PM)
- * @param i int
- *
- *	Sets the row color to the colors of fg and bg.  Then assigns
- *	the previousText value to the newest text
- */
-public void setCurrentRowColor( String fg, String bg, String text ) 
-{
-	currentForegroundColor = new Integer( fg ).intValue();
-	currentBackgroundColor = new Integer( bg ).intValue();
-	
-	originalBackgroundColor = new Integer( bg ).intValue();
-	
-	previuosText = new String(text);
-}
 /**
  * Insert the method's description here.
  * Creation date: (12/19/2000 11:33:35 AM)
