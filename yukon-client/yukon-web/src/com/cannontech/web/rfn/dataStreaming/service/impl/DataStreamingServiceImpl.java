@@ -701,7 +701,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         if (isValidPorterConnection()) {
             DeviceCollection deviceCollection = createDeviceCollectionForIds(Lists.newArrayList(deviceId));
             int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
-            sendConfiguration(user, deviceCollection, null, requestSeqNumber, result, CommandType.READ);
+            sendConfiguration(user, new DeviceSummary(deviceCollection), requestSeqNumber, result, CommandType.READ);
         }else {
             return createEmptyResult(createDeviceCollectionForIds(Lists.newArrayList(deviceId)), "Porter connection is invalid.");
         }
@@ -762,7 +762,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             }
             saveBehaviorReports(deviceIdToBehaviorReport);
             DeviceCollection deviceCollection = createDeviceCollectionForIds(deviceIds);
-            sendConfiguration(user, deviceCollection, null, requestSeqNumber, result, CommandType.SEND);
+            sendConfiguration(user, new DeviceSummary(deviceCollection), requestSeqNumber, result, CommandType.SEND);
             return result;
         } else {
             return createEmptyResult(createDeviceCollectionForIds(deviceIds), "Porter connection is invalid.");
@@ -784,64 +784,89 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         deviceIdToBehaviorReport.values()
             .forEach(deviceBehaviorDao::saveBehaviorReport);
     }
-
+    
     @Override
     public DataStreamingConfigResult unassignDataStreamingConfig(DeviceCollection deviceCollection, LiteYukonUser user)
             throws DataStreamingConfigException {
 
         if (isValidPorterConnection()) {
-
-            DataStreamingConfigResult result= createUncompletedResult();
-            logService.unassignAttempted(user, result.getResultsId(), deviceCollection.getDeviceCount());
-            
-            List<Integer> deviceIds = asDeviceIds(getSupportedDevices(deviceCollection));
-
-            log.info("Unassign data streaming config from devices=" + deviceIds);
-
-            Map<Integer, Behavior> deviceIdToBehavior =
-                deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, deviceIds);
-
-            // filter out devices that do not have behaviors
-            List<Integer> devicesIdsWithoutBehaviors = new ArrayList<>();
-            devicesIdsWithoutBehaviors.addAll(deviceIds);
-            devicesIdsWithoutBehaviors.removeAll(deviceIdToBehavior.keySet());
-
-            if (deviceIds.size() == devicesIdsWithoutBehaviors.size()) {
-                // none of the devices have behavior assigned
-                List<SimpleDevice> allDevices = deviceCollection.getDeviceList();
-                deviceGroupMemberEditorDao.addDevices(result.getAllDevicesGroup(), allDevices);
-                // mark devices as "success"
-                addDevicesToGroup(devicesIdsWithoutBehaviors, result.getSuccessGroup());
-                List<Integer> unsupportedDeviceIds = removeDataStreamingUnsupportedDevices(
-                    deviceCollection.getDeviceList());
-               // mark devices as "unsupported"
-                addDevicesToGroup(unsupportedDeviceIds, result.getUnsupportedGroup());
-                result.complete();
-                
-                logService.completedResults(result.getResultsId(), deviceCollection.getDeviceCount(),
-                    result.getSuccessCount(), 0, result.getUnsupportedCount());
-                
-                return result;
-            }
-            
             int requestSeqNumber = nextValueHelper.getNextValue("DataStreaming");
+            Map<Integer, SimpleDevice> devices = Maps.uniqueIndex(deviceCollection.getDeviceList(), device -> device.getDeviceId());
+  
+            log.info("Unassign data streaming config from devices=" + devices.keySet());
+            DataStreamingConfigResult result = createUncompletedResult();
 
-            // only unassign devices that have behavior assigned
-            deviceIds.remove(devicesIdsWithoutBehaviors);
+            logService.unassignAttempted(user, result.getResultsId(), deviceCollection.getDeviceCount());
 
-            sendNmConfigurationRemove(deviceIds, requestSeqNumber);
+            List<Integer> deviceIds = asDeviceIds(getSupportedDevices(deviceCollection));
+            List<Integer> unsupportedDeviceIds = new ArrayList<>(devices.keySet());
+            // remove supported devices
+            unsupportedDeviceIds.removeAll(deviceIds);
+            log.info("Unsupported=" + unsupportedDeviceIds);
+            Set<Integer> devicesIdsWithoutBehavior = Sets.newHashSet();
+            List<Integer> failedVerificationDevices = new ArrayList<>();
 
-            Map<Integer, BehaviorReport> deviceIdToBehaviorReport = initPendingReports(deviceIds);
-            saveBehaviorReports(deviceIdToBehaviorReport);
+            if (!deviceIds.isEmpty()) {
+                Map<Integer, Behavior> deviceIdToBehavior = deviceBehaviorDao.getBehaviorsByTypeAndDeviceIds(TYPE, deviceIds);
+                devicesIdsWithoutBehavior.addAll(deviceIds);
+                // remove devices with behavior
+                devicesIdsWithoutBehavior.removeAll(deviceIdToBehavior.keySet());
+                log.info("Devices without behaviors=" + devicesIdsWithoutBehavior);
+                deviceIds.removeAll(devicesIdsWithoutBehavior);
+                if (!deviceIds.isEmpty()) {
+                    failedVerificationDevices.addAll(getAllFailedVerificationDevices(deviceIdToBehavior, devices));
+                    deviceIds.removeAll(failedVerificationDevices);
+                    log.info("Devices failed NM verifications=" + failedVerificationDevices);
+                    unsupportedDeviceIds.addAll(failedVerificationDevices);
+                    log.info("Unsupported (Unsupported+failed NM verifications)=" + unsupportedDeviceIds);
+                    
+                    if(!deviceIds.isEmpty()){
+                        sendNmConfigurationRemove(deviceIds, requestSeqNumber); 
+                        Map<Integer, BehaviorReport> deviceIdToBehaviorReport = initPendingReports(deviceIds);
+                        saveBehaviorReports(deviceIdToBehaviorReport);
+                        deviceBehaviorDao.unassignBehavior(TYPE, deviceIds);
+                    }
+                }
+            }
 
-            deviceBehaviorDao.unassignBehavior(TYPE, deviceIds);
-            sendConfiguration(user, deviceCollection, null, requestSeqNumber, result, CommandType.SEND);
-            // mark devices as "success"
-            addDevicesToGroup(devicesIdsWithoutBehaviors, result.getSuccessGroup());
+            sendConfiguration(user, new DeviceSummary(deviceCollection, deviceIds, unsupportedDeviceIds), requestSeqNumber,
+                result, CommandType.SEND);
+            if (!devicesIdsWithoutBehavior.isEmpty()) {
+                addDevicesToGroup(new ArrayList<>(devicesIdsWithoutBehavior), result.getSuccessGroup());
+                // mark devices without behavior as "not configured".
+                commandRequestExecutionResultDao.saveUnsupported(
+                    new HashSet<>(getDeviceSubset(devices, new ArrayList<>(devicesIdsWithoutBehavior))),
+                    result.getExecution().getId(), CommandRequestUnsupportedType.NOT_CONFIGURED);
+            }
+                    
             return result;
         } else {
             return createEmptyResult(deviceCollection, "Porter connection is invalid.");
         }
+    }
+    
+    private List<SimpleDevice> getDeviceSubset(Map<Integer, SimpleDevice> devices, List<Integer> devicesIds) {
+        return devicesIds.stream().map(id -> devices.get(id)).collect(Collectors.toList());
+    }
+    
+    private List<Integer> getAllFailedVerificationDevices(Map<Integer, Behavior> deviceIdToBehavior, Map<Integer, SimpleDevice> devices ) {
+        List<Integer> failedVerificationDevices = new ArrayList<>();
+        Map<Integer, DataStreamingConfig> allConfigs = Maps.uniqueIndex(getAllDataStreamingConfigurations(), config -> config.getId());
+        Set<Integer> configIds = deviceIdToBehavior.values().stream()
+                    .map(behavior -> behavior.getId())
+                    .collect(Collectors.toSet());
+        configIds.forEach(configId -> {
+            DataStreamingConfig config = allConfigs.get(configId);
+            List<SimpleDevice> devicesForConfig = deviceIdToBehavior.keySet().stream()
+                    .filter(id -> deviceIdToBehavior.get(id).getId() == configId)
+                    .map(id -> devices.get(id))
+                    .collect(Collectors.toList());
+            config.setSelectedConfiguration(config.getId());
+            VerificationInformation verfication = verifyConfiguration(config, devicesForConfig);
+            failedVerificationDevices.addAll(verfication.getFailedVerificationDevices());
+        });
+            
+        return failedVerificationDevices;
     }
 
     @Override
@@ -932,7 +957,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             
             result.setConfig(config);
 
-            sendConfiguration(user, deviceCollection, devicesSupportingNoAttributes, requestSeqNumber, result, CommandType.SEND);
+            sendConfiguration(user, new DeviceSummary(deviceCollection, devicesSupportingNoAttributes), requestSeqNumber, result, CommandType.SEND);
             return result;
         } else {
             return createEmptyResult(deviceCollection, "Porter connection is invalid.");
@@ -1108,9 +1133,13 @@ public class DataStreamingServiceImpl implements DataStreamingService {
         processConfigResponse(response);
     }
 
-    private void sendConfiguration(LiteYukonUser user, DeviceCollection deviceCollection, Set<Integer> devicesSupportingNoAttributes,
-            int requestSeqNumber, DataStreamingConfigResult result, CommandType commandType) {
-        log.info("Attempting to "+commandType+" configuration command to " + deviceCollection.getDeviceCount() + " devices.");
+    private void sendConfiguration(LiteYukonUser user, DeviceSummary summary, int requestSeqNumber,
+            DataStreamingConfigResult result, CommandType commandType) {
+        List<SimpleDevice> unsupportedDevices = summary.unsupportedDevices;
+        List<SimpleDevice> supportedDevices = summary.supportedDevices;
+        DeviceCollection deviceCollection = summary.deviceCollection;
+        
+        log.info("Attempting to " + commandType + " configuration command to " + deviceCollection.getDeviceCount() + " devices.");
 
         CommandRequestExecution execution = commandRequestExecutionDao.createStartedExecution(CommandRequestType.DEVICE,
             DeviceRequestType.DATA_STREAMING_CONFIG, 0, user);
@@ -1122,13 +1151,6 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             new DataStreamingConfigCallbackImpl(result, execution, deviceCollection.getDeviceList(), requestSeqNumber);
 
         result.setConfigCallback(callback);
-        List<SimpleDevice> unsupportedDevices = new ArrayList<>();
-        List<SimpleDevice> supportedDevices = getSupportedDevices(deviceCollection);
-        if (devicesSupportingNoAttributes != null) {
-            supportedDevices.removeIf(d -> devicesSupportingNoAttributes.contains(d.getDeviceId()));
-        }
-        unsupportedDevices.addAll(allDevices);
-        unsupportedDevices.removeAll(supportedDevices);
         if (!unsupportedDevices.isEmpty()) {
             log.info(unsupportedDevices.size() + " devices are unsupported.");
             deviceGroupMemberEditorDao.addDevices(result.getUnsupportedGroup(), unsupportedDevices);
@@ -1142,6 +1164,34 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             porterConn.sendConfiguration(commands, result, user);
         }
         updateRequestCount(execution, supportedDevices.size());
+    }
+    
+    private class DeviceSummary{
+        List<SimpleDevice> unsupportedDevices = new ArrayList<>();
+        List<SimpleDevice> supportedDevices  = new ArrayList<>();
+        DeviceCollection deviceCollection;
+        
+        public DeviceSummary(DeviceCollection deviceCollection, List<Integer> supported, List<Integer> unsupported) {
+            Map<Integer, SimpleDevice> devices =
+                Maps.uniqueIndex(deviceCollection.getDeviceList(), device -> device.getDeviceId());
+            supportedDevices.addAll(getDeviceSubset(devices, supported));
+            unsupportedDevices.addAll(getDeviceSubset(devices, unsupported));
+            this.deviceCollection = deviceCollection;
+        }
+        
+        public DeviceSummary(DeviceCollection deviceCollection) {
+            this(deviceCollection, null);
+        }
+
+        public DeviceSummary(DeviceCollection deviceCollection, Set<Integer> devicesSupportingNoAttributes) {
+            this.deviceCollection = deviceCollection;
+            supportedDevices.addAll(getSupportedDevices(deviceCollection));
+            if (devicesSupportingNoAttributes != null) {
+                supportedDevices.removeIf(d -> devicesSupportingNoAttributes.contains(d.getDeviceId()));
+            }
+            unsupportedDevices.addAll(deviceCollection.getDeviceList());
+            unsupportedDevices.removeAll(supportedDevices);
+        } 
     }
     
     /**
