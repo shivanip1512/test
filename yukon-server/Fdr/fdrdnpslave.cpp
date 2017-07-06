@@ -184,7 +184,7 @@ CtiFDRClientServerConnectionSPtr DnpSlave::createNewConnection(SOCKET newSocket)
         return CtiFDRClientServerConnectionSPtr();
     }
 
-    const std::string ipString = peerAddr.toString();
+    const std::string ipString = peerAddr.getIpAddress();
 
     ServerNameMap::const_iterator iter = _serverNameLookup.find(ipString);
 

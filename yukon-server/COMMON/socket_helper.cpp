@@ -69,6 +69,8 @@ IM_EX_CTIBASE std::string socketAddressToString(const SOCKADDR *addr, int addrle
 //-----------------------------------------------------------------------------
 IM_EX_CTIBASE std::string getIpAddressFromSocketAddress(const SOCKADDR *addr, int addrlen)
 {
+    SOCKADDR_IN v4mapped{};
+
     char host[INET6_ADDRSTRLEN]; // array of byte that can contain the largest IP address (IPV6)
     if (addr->sa_family == AF_INET)
     {
@@ -97,6 +99,18 @@ IM_EX_CTIBASE std::string getIpAddressFromSocketAddress(const SOCKADDR *addr, in
             << addr6->sin6_addr.u.Word[7] << "]:"
             << addr6->sin6_port
         );
+
+        //  If the address is an IPv4-mapped address, 
+        if( IN6_IS_ADDR_V4MAPPED(&addr6->sin6_addr) )
+        {
+            v4mapped.sin_family = AF_INET;
+            v4mapped.sin_addr.S_un.S_un_b.s_b1 = addr6->sin6_addr.u.Byte[12];
+            v4mapped.sin_addr.S_un.S_un_b.s_b2 = addr6->sin6_addr.u.Byte[13];
+            v4mapped.sin_addr.S_un.S_un_b.s_b3 = addr6->sin6_addr.u.Byte[14];
+            v4mapped.sin_addr.S_un.S_un_b.s_b4 = addr6->sin6_addr.u.Byte[15];
+            addr = reinterpret_cast<const SOCKADDR *>(&v4mapped);
+            addrlen = sizeof(SOCKADDR_IN);
+        }
     }
 
     if (getnameinfo(addr, addrlen, host, sizeof(host), 0, 0, NI_NUMERICHOST) != 0)
