@@ -90,6 +90,18 @@ bool CtiFDRScadaHelper<T>::handleUpdate(const T& id, double rawValue, int qualit
             continue;
         }
 
+        // If we are "Receive for control" we don't want to change the value of the point.
+        if ( point->isControllable() )
+        {
+            if ( _parent->getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL )
+            {
+                CTILOG_ERROR( dout, _parent->logNow() << "Foreign control point " << id << " was mapped to "
+                                        << dest << ", which is configured for control" );
+            }
+
+            continue;
+        }
+
         double value = rawValue;
 
         if( checkValueType( point->getPointType() ) ) // is this correct???

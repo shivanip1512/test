@@ -673,7 +673,7 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
     // see if the point exists
     flag = findTranslationNameInList (translationName, getReceiveFromList(), point);
 
-    if ((flag == true) && (point.getPointType() == StatusPointType))
+    if ((flag == true) && (point.getPointType() == StatusPointType) && (!point.isControllable()))
     {
         // assign last stuff
         quality = ForeignToYukonQuality (data->Status.Quality);
@@ -771,6 +771,23 @@ int CtiFDR_ACS::processStatusMessage(CHAR *aData)
                           ntohs(data->Status.PointNumber));
                 logEvent (desc,string (action));
             }
+        }
+        else if ( point.isControllable() )
+        {
+            CTILOG_ERROR(dout, "Status point "<<
+                    " Remote: " << ntohs(data->Status.RemoteNumber) <<
+                    " Category: " << data->Status.CategoryCode <<
+                    " Point: " << ntohs(data->Status.PointNumber) <<
+                    " from " << getInterfaceName() <<
+                    " was configured receive for control for point " << point.getPointID());
+
+            desc = getInterfaceName() + string (" control point is configured to receive controls");
+            _snprintf(action,60,"Remote:%d Category:%c Point:%d for pointID %d",
+                      ntohs(data->Status.RemoteNumber),
+                      data->Status.CategoryCode,
+                      ntohs(data->Status.PointNumber),
+                      point.getPointID());
+            logEvent (desc,string (action));
         }
         else
         {
