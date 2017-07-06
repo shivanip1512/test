@@ -40,6 +40,8 @@ import com.cannontech.common.rfn.simulation.SimulatedGatewayDataSettings;
 import com.cannontech.common.rfn.simulation.service.DataStreamingSimulatorService;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.cannontech.common.stream.StreamUtils;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.google.common.collect.Lists;
 
 public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulatorService {
@@ -52,6 +54,7 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
     @Autowired private RfnDeviceDao rfnDeviceDao;
     @Autowired private RfnGatewayService gatewayService;
     @Autowired private RfnGatewaySimulatorService gatewaySimulatorService;
+    @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     
     private JmsTemplate jmsTemplate;
     
@@ -67,6 +70,7 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
     
     @Override
     public void setSettings(SimulatedDataStreamingSettings settings) {
+        saveSettings(settings);
         this.settings = settings;
     }
     
@@ -89,7 +93,43 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
     
     @Override
     public SimulatedDataStreamingSettings getSettings() {
+        SimulatedDataStreamingSettings settings = new SimulatedDataStreamingSettings();
+        //verification
+        settings.setDeviceErrorOnVerification(DeviceDataStreamingConfigError.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_VER)));
+        settings.setDeviceErrorOnVerificationEnabled(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_VER_ENABLED));
+        settings.setOverloadGatewaysOnVerification(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_OVERLOAD_VER));
+        settings.setNetworkManagerFailOnVerification(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_FAIL_VER));
+        settings.setNumberOfDevicesToErrorOnVerification(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_NUM_DEV_ERR_VER));
+        //config
+        settings.setNetworkManagerFailOnConfig(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_FAIL_CON));
+        settings.setOverloadGatewaysOnConfig(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_OVERLOAD_CON));
+        settings.setDeviceErrorOnConfig(DeviceDataStreamingConfigError.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_CON)));
+        settings.setDeviceErrorOnConfigEnabled(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_CON_ENABLED));
+        settings.setNumberOfDevicesToErrorOnConfig(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_NUM_DEV_ERR_CON));
+        settings.setAcceptedWithError(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_ACCEPTED_ERR));
         return settings;
+    }
+    
+    public void saveSettings(SimulatedDataStreamingSettings settings) {
+        //only save these settings if a Device Error has been selected for verification
+        if (settings.getDeviceErrorOnVerification() != null) {
+            yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_VER, settings.getDeviceErrorOnVerification());
+            yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_NUM_DEV_ERR_VER, settings.getNumberOfDevicesToErrorOnVerification());
+        }
+        //only save these settings if a Device Error has been selected for config
+        if (settings.getDeviceErrorOnConfig() != null) {
+            yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_CON, settings.getDeviceErrorOnConfig());
+            yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_NUM_DEV_ERR_CON, settings.getNumberOfDevicesToErrorOnConfig());
+        }
+        //verification
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_VER_ENABLED, settings.isDeviceErrorOnVerificationEnabled());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_OVERLOAD_VER, settings.isOverloadGatewaysOnVerification());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_FAIL_VER, settings.isNetworkManagerFailOnVerification());
+        //config
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_FAIL_CON, settings.isNetworkManagerFailOnConfig());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_OVERLOAD_CON, settings.isOverloadGatewaysOnConfig());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_CON_ENABLED, settings.isDeviceErrorOnConfigEnabled());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_ACCEPTED_ERR, settings.isAcceptedWithError());
     }
     
     @Override
@@ -306,6 +346,12 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
         }
         
         return response;
+    }
+
+    @Override
+    public void startSimulatorWithCurrentSettings() {
+        settings = getSettings();
+        start();
     }
     
 }

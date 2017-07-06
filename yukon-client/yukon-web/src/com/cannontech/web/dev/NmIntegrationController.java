@@ -10,7 +10,6 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
@@ -803,32 +802,8 @@ public class NmIntegrationController {
     }
     
     @RequestMapping("startDataStreamingSimulator")
-    public String startDataStreamingSimulator(Boolean isOverloadGatewaysOnVerification, 
-                                              Boolean isNetworkManagerFailOnVerification,
-                                              Boolean isDeviceErrorOnVerification,
-                                              @RequestParam(required=false) DeviceDataStreamingConfigError deviceErrorOnVerification, 
-                                              @RequestParam(defaultValue="0") Integer numberOfDevicesToErrorOnVerification,
-                                              Boolean isOverloadGatewaysOnConfig,
-                                              Boolean isNetworkManagerFailOnConfig,
-                                              Boolean isDeviceErrorOnConfig,
-                                              Boolean isAcceptedWithError,
-                                              @RequestParam(required=false) DeviceDataStreamingConfigError deviceErrorOnConfig,
-                                              @RequestParam(defaultValue="0") Integer numberOfDevicesToErrorOnConfig,
-                                              FlashScope flash) {
-        try {
-            SimulatedDataStreamingSettings settings = new SimulatedDataStreamingSettings();
-            settings.setOverloadGatewaysOnVerification(Optional.ofNullable(isOverloadGatewaysOnVerification).orElse(false));
-            settings.setNetworkManagerFailOnVerification(Optional.ofNullable(isNetworkManagerFailOnVerification).orElse(false));
-            settings.setDeviceErrorOnVerification(isDeviceErrorOnVerification != null ? deviceErrorOnVerification : null);
-            settings.setNumberOfDevicesToErrorOnVerification(numberOfDevicesToErrorOnVerification);
-            
-            settings.setOverloadGatewaysOnConfig(Optional.ofNullable(isOverloadGatewaysOnConfig).orElse(false));
-            settings.setNetworkManagerFailOnConfig(Optional.ofNullable(isNetworkManagerFailOnConfig).orElse(false));
-            settings.setDeviceErrorOnConfig(isDeviceErrorOnConfig != null ? deviceErrorOnConfig : null);
-            settings.setNumberOfDevicesToErrorOnConfig(numberOfDevicesToErrorOnConfig);
-            
-            settings.setAcceptedWithError(Optional.ofNullable(isAcceptedWithError).orElse(false));
-            
+    public String startDataStreamingSimulator(SimulatedDataStreamingSettings settings, FlashScope flash) {
+        try {            
             ModifyDataStreamingSimulatorRequest request = new ModifyDataStreamingSimulatorRequest();
             request.setSettings(settings);
             SimulatorResponseBase response = simulatorsCommunicationService.sendRequest(request, SimulatorResponseBase.class);

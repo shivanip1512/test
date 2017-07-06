@@ -45,9 +45,8 @@ public class DataStreamingSimulatorMessageHandler extends SimulatorMessageHandle
     
     private DataStreamingSimulatorStatusResponse getStatus() {
         DataStreamingSimulatorStatusResponse response = new DataStreamingSimulatorStatusResponse();
-        if (simulator.isRunning()) {
-            response.setSettings(simulator.getSettings());
-        }
+        response.setSettings(simulator.getSettings());
+        response.setRunning(simulator.isRunning());
         return response;
     }
     

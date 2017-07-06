@@ -12,11 +12,13 @@ public class SimulatedDataStreamingSettings implements Serializable {
     
     private boolean overloadGatewaysOnVerification;
     private DeviceDataStreamingConfigError deviceErrorOnVerification;
+    private boolean deviceErrorOnVerificationEnabled;
     private boolean networkManagerFailOnVerification;
     private int numberOfDevicesToErrorOnVerification;
     
     private boolean overloadGatewaysOnConfig;
     private DeviceDataStreamingConfigError deviceErrorOnConfig;
+    private boolean deviceErrorOnConfigEnabled;
     private boolean networkManagerFailOnConfig;
     private int numberOfDevicesToErrorOnConfig;
     
@@ -54,6 +56,14 @@ public class SimulatedDataStreamingSettings implements Serializable {
 
     public void setNumberOfDevicesToErrorOnVerification(int numberOfDevicesToErrorOnVerification) {
         this.numberOfDevicesToErrorOnVerification = numberOfDevicesToErrorOnVerification;
+    }
+    
+    public void setDeviceErrorOnVerificationEnabled(boolean deviceErrorOnVerificationEnabled) {
+        this.deviceErrorOnVerificationEnabled = deviceErrorOnVerificationEnabled;
+    }
+    
+    public boolean isDeviceErrorOnVerificationEnabled() {
+        return deviceErrorOnVerificationEnabled;
     }
     
     //CONFIG
@@ -97,5 +107,13 @@ public class SimulatedDataStreamingSettings implements Serializable {
 
     public void setAcceptedWithError(boolean acceptedWithError) {
         this.acceptedWithError = acceptedWithError;
+    }
+    
+    public void setDeviceErrorOnConfigEnabled(boolean deviceErrorOnConfigEnabled) {
+        this.deviceErrorOnConfigEnabled = deviceErrorOnConfigEnabled;
+    }
+    
+    public boolean isDeviceErrorOnConfigEnabled() {
+        return deviceErrorOnConfigEnabled;
     }
 }

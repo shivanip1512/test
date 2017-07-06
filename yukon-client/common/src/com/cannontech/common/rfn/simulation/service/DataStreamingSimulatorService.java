@@ -1,12 +1,13 @@
 package com.cannontech.common.rfn.simulation.service;
 
 import com.cannontech.common.rfn.simulation.SimulatedDataStreamingSettings;
+import com.cannontech.simulators.AutoStartableSimulator;
 
 /**
  * This service simulates Network Manager for the purposes of Data Streaming. When running, it pulls data streaming
  * related messages from queues and replies to them, just like Network Manager would.
  */
-public interface DataStreamingSimulatorService {
+public interface DataStreamingSimulatorService extends AutoStartableSimulator {
     
     /**
      * Updates the settings for the simulator, changing how it replies to messages.

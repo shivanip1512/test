@@ -4,6 +4,7 @@ import com.cannontech.common.rfn.simulation.SimulatedDataStreamingSettings;
 
 public class DataStreamingSimulatorStatusResponse extends SimulatorResponseBase {
     private SimulatedDataStreamingSettings settings;
+    private boolean running;
     
     public void setSettings(SimulatedDataStreamingSettings settings) {
         this.settings = settings;
@@ -13,7 +14,11 @@ public class DataStreamingSimulatorStatusResponse extends SimulatorResponseBase 
         return settings;
     }
     
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
+    
     public boolean isRunning() {
-        return settings != null;
+        return running;
     }
 }

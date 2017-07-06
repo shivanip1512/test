@@ -14,6 +14,7 @@ import org.springframework.jms.core.JmsTemplate;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
+import com.cannontech.common.rfn.simulation.service.DataStreamingSimulatorService;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
 import com.cannontech.dr.rfn.service.RfnMeterDataSimulatorService;
 import com.cannontech.simulators.AutoStartableSimulator;
@@ -38,6 +39,7 @@ public class SimulatorsService {
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private SimulatorStartupSettingsService simulatorStartupSettingsService;
     @Autowired private RfnGatewaySimulatorService rfnGatewaySimulatorService;
+    @Autowired private DataStreamingSimulatorService dataStreamingSimulatorService;
     @Autowired private RfnMeterDataSimulatorService rfnMeterDataSimulatorService;
     @Autowired private IvvcSimulatorService ivvcSimulatorService;
     @Autowired private ConnectionFactory connectionFactory;
@@ -96,6 +98,7 @@ public class SimulatorsService {
         jmsTemplate.setReceiveTimeout(incomingMessageWaitMillis); // TODO: does this need to be set?
         simulatorTypeToSimulator = new ImmutableMap.Builder<SimulatorType, AutoStartableSimulator>()
             .put(SimulatorType.GATEWAY, rfnGatewaySimulatorService)
+            .put(SimulatorType.DATA_STREAMING, dataStreamingSimulatorService)
             .put(SimulatorType.RFN_METER, rfnMeterDataSimulatorService)
             .put(SimulatorType.IVVC, ivvcSimulatorService)
             .build();

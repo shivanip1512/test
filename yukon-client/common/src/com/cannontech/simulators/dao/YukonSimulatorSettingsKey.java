@@ -5,9 +5,22 @@ import com.cannontech.web.input.type.InputType;
 
 public enum YukonSimulatorSettingsKey {
     AMR_CREATION_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType()),
-
+    
+    //SimulatedDataStreamingSettings
+    DATA_STREAMING_SIMULATOR_OVERLOAD_VER(false, InputTypeFactory.booleanType()),
+    DATA_STREAMING_SIMULATOR_DEV_ERR_VER("GATEWAY_OVERLOADED", InputTypeFactory.stringType()),
+    DATA_STREAMING_SIMULATOR_DEV_ERR_VER_ENABLED(false, InputTypeFactory.booleanType()),
+    DATA_STREAMING_SIMULATOR_FAIL_VER(false, InputTypeFactory.booleanType()),
+    DATA_STREAMING_SIMULATOR_NUM_DEV_ERR_VER(1, InputTypeFactory.integerType()),
+    DATA_STREAMING_SIMULATOR_OVERLOAD_CON(false, InputTypeFactory.booleanType()),
+    DATA_STREAMING_SIMULATOR_DEV_ERR_CON("GATEWAY_OVERLOADED", InputTypeFactory.stringType()),
+    DATA_STREAMING_SIMULATOR_DEV_ERR_CON_ENABLED(false, InputTypeFactory.booleanType()),
+    DATA_STREAMING_SIMULATOR_FAIL_CON(false, InputTypeFactory.booleanType()),
+    DATA_STREAMING_SIMULATOR_NUM_DEV_ERR_CON(1, InputTypeFactory.integerType()),
+    DATA_STREAMING_SIMULATOR_ACCEPTED_ERR(false, InputTypeFactory.booleanType()),
     DATA_STREAMING_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType()),
 
+    //Gateway Data Simulator
     //SimulatedGatewayDataSettings
     GATEWAY_SIMULATOR_DATA_STREAMING_LOADING(50.0, InputTypeFactory.doubleType()),
     GATEWAY_SIMULATOR_RETURN_GWY800_MODEL(false, InputTypeFactory.booleanType()),
@@ -32,14 +45,16 @@ public enum YukonSimulatorSettingsKey {
 
     RFN_LCR_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType()),
 
+    //RFN Meter Simulator Settings (SimulatorSettings)
     RFN_METER_SIMULATOR_METER_TYPE("ALL RFN Type", InputTypeFactory.stringType()),
     RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE(10, InputTypeFactory.integerType()),
-    RFN_METER_SIMULATOR_REPORTING_INTERVAL("REPORTING_INTERVAL_1_HOURS", InputTypeFactory
-        .stringType()),
+    RFN_METER_SIMULATOR_REPORTING_INTERVAL("REPORTING_INTERVAL_1_HOURS", InputTypeFactory.stringType()),
     RFN_METER_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType()),
 
+    //RFN Network Simulator (SimulatorSettings)
     RFN_NETWORK_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType()),
 
+    //IvvcSimulatorSettings
     IVVC_SIMULATOR_INCREASED_SPEED_MODE(false, InputTypeFactory.booleanType()),
     IVVC_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType()),
     ;
