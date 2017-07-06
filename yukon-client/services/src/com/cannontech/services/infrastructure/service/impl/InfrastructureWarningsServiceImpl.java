@@ -126,7 +126,7 @@ public class InfrastructureWarningsServiceImpl implements InfrastructureWarnings
         Instant lastRun = persistedSystemValueDao.getInstantValue(PersistedSystemValueKey.INFRASTRUCTURE_WARNINGS_LAST_RUN_TIME);
         Duration minTimeBetweenRuns = Duration.standardMinutes(InfrastructureWarningsDao.minimumMinutesBetweenCalculations);
         
-        if (lastRun.plus(minTimeBetweenRuns).isBeforeNow()) {
+        if (lastRun == null || lastRun.plus(minTimeBetweenRuns).isBeforeNow()) {
             return true;
         }
         return false;
