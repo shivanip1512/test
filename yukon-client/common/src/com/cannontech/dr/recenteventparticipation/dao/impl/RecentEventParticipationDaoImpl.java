@@ -291,7 +291,7 @@ public class RecentEventParticipationDaoImpl implements RecentEventParticipation
         selectSql.append("FROM ControlEvent ce, ControlEventDevice ced");
         selectSql.append("WHERE ce.ControlEventId = ced.ControlEventId");
         selectSql.append("  AND StartTime").gte(startDate);
-        selectSql.append("  AND ScheduledStopTime").lte(endDate);
+        selectSql.append("  AND StartTime").lte(endDate);
         selectSql.append("GROUP BY DeviceId");
 
         final Map<Integer, Integer> deviceStatus = Maps.newHashMap();
