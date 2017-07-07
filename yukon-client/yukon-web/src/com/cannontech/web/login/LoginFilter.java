@@ -133,6 +133,11 @@ public class LoginFilter implements Filter {
             log.info("User " + user.getUsername() + " logged out due to inactivity");
             loginService.invalidateSession(request, "TIMEOUT");
             doLoginRedirect(isAjaxRequest, request, response);
+            
+            // If rememberMe option is selected by user and session gets expired, let the user be logged in
+            // then using credentials from rememberMeCookie instead of creating separate session for each ajax
+            // request.
+            doRememberMeCookieLogin(request, response);
             return;
         }
 
