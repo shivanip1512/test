@@ -2,7 +2,19 @@
 /**** SQL Server DBupdates             ****/
 /******************************************/
 
-/* No Updates */
+/* Start YUK-16542 */
+UPDATE Point 
+SET PointName = 'Sum kVAh', PointOffset = 263
+WHERE PointType = 'Analog' 
+AND PointOffset = 152
+AND PointName = 'kVAh Sum'
+AND PaobjectId IN (
+    SELECT DISTINCT PaobjectId 
+    FROM YukonPaobject
+    WHERE Type IN ('RFN-430KV','RFN-430A3K')
+);
+GO
+/* End YUK-16542 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
