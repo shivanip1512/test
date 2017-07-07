@@ -147,7 +147,7 @@ bool DnpSlave::readConfig()
             const std::string &serverAddress = name_address[0],
                               &serverName    = name_address[1];
 
-            _serverNameLookup[serverName] = serverAddress;
+            _serverNameLookup[serverAddress] = serverName;
 
             if (getDebugLevel () & STARTUP_FDR_DEBUGLEVEL)
             {
@@ -186,9 +186,7 @@ CtiFDRClientServerConnectionSPtr DnpSlave::createNewConnection(SOCKET newSocket)
 
     const std::string ipString = peerAddr.getIpAddress();
 
-    ServerNameMap::const_iterator iter = _serverNameLookup.find(ipString);
-
-    const std::string connName = (iter == _serverNameLookup.end())? ipString : iter->second;
+    const std::string connName = Cti::mapFindOrDefault(_serverNameLookup, ipString, ipString);
 
     CtiFDRClientServerConnectionSPtr newConnection(new CtiFDRClientServerConnection(connName.c_str(),newSocket,this));
     newConnection->setRegistered(true); //DNPSLAVE doesn't have a separate registration message
