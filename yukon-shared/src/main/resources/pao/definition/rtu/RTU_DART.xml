@@ -5,11 +5,7 @@
     </pointFiles>
     <tags>
         <tag name="COMMANDER_REQUESTS"/>
-        <tag name="DEVICE_CONFIGURATION"/>
     </tags>
-    <configuration>
-        <category type="dnp"/>
-    </configuration>
     <pointInfos>
         <pointInfo name="Device Reset Indicator"/>
     </pointInfos>
