@@ -8,7 +8,7 @@
 <cti:msgScope paths="modules.dr.recentEventParticipation.details">
 
 
-    <table class="compact-results-table row-highlighting stacked has-alerts">
+    <table class="compact-results-table has-alerts has-actions row-highlighting">
         <thead>
             <tr>
                 <th nowrap="nowrap"><i:inline key=".eventID" /></th>
@@ -41,7 +41,7 @@
                         </div> 
                     </td>
                     <td>
-                    <cm:dropdown triggerClasses="fr" menuClasses="no-icons">
+                    <cm:dropdown icon="icon-cog">
                             <cti:url var="mapNetworkUrl" value="/dr/recenteventparticipation/download?eventId=${recentEventParticipationStats.controlEventId}"/>
                             <cm:dropdownOption icon="icon-download" key=".download" href="${mapNetworkUrl}"/>
                     </cm:dropdown>
