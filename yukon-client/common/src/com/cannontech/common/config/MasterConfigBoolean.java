@@ -35,6 +35,7 @@ public enum MasterConfigBoolean {
     USER_FEEDBACK_ENABLED,
     VIRTUAL_PROGRAMS,
     HONEYWELL_SUPPORT_ENABLED,
+    DISABLE_RFN_TEMPLATE_AUTO_CREATION,
     ;
     
 }

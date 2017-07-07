@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.config.MasterConfigString;
 import com.cannontech.common.device.creation.BadTemplateDeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationException;
@@ -291,12 +292,15 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             return retrieveExistingDeviceByTemplate(templateYukonDevice);
 
         } catch (IncorrectResultSizeDataAccessException e) {
-            SimpleDevice templateYukonDevice = createDeviceForTemplate(templateName);
-            if (templateYukonDevice != null) {
-                return retrieveExistingDeviceByTemplate(templateYukonDevice);
-            } else {
-                throw new BadTemplateDeviceCreationException(templateName);
+            boolean disableTemplateAutoCreation =
+                configurationSource.getBoolean(MasterConfigBoolean.DISABLE_RFN_TEMPLATE_AUTO_CREATION, false);
+            if (!disableTemplateAutoCreation) {
+                SimpleDevice templateYukonDevice = createDeviceForTemplate(templateName);
+                if (templateYukonDevice != null) {
+                    return retrieveExistingDeviceByTemplate(templateYukonDevice);
+                }
             }
+            throw new BadTemplateDeviceCreationException(templateName);
         } catch (PersistenceException e) {
             throw new DeviceCreationException("Could not load template device from database: " + templateName,
                                               "invalidTemplateDevice",
