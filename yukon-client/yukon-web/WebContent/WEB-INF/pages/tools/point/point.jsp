@@ -49,8 +49,13 @@
 
                     <tags:nameValue2 nameKey=".parent">
                         <form:hidden path="pointBase.point.paoID"/>
-                        <cti:url var="parentLink" value="${parentLink}" />
-                        <a href="${parentLink}">${parentName}</a>
+                            <cti:url var="parentLink" value="${parentLink}" />
+                            <c:if test="${empty parentLink }">
+                                <span>${parentName}</span>
+                            </c:if>
+                            <c:if test="${not empty parentLink }">
+                                <a href="${parentLink}">${parentName}</a>
+                            </c:if>
                     </tags:nameValue2>
 
                     <tags:nameValue2 nameKey=".timingGroup">
