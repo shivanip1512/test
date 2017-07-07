@@ -5,6 +5,82 @@
 
 <cti:standardPage module="dev" page="rfnTest.viewDataSimulator">
 <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
+<script>
+        $(function() {
+            //Script for SimulatorStartupSettings functionality
+            var simType = "RFN_LCR";
+            $('#enable-startup, #disable-startup').click(_updateStartup);
+            _checkStartupStatus(null, {simulatorType: simType});
+        
+            function _updateStartup(event) {
+                var startupData = {simulatorType: simType};
+                if ($(this).attr('id') === 'enable-startup') {
+                    startupData.runOnStartup = true;
+                    $.ajax({
+                        url: yukon.url('/dev/rfn/updateStartup'),
+                        type: 'post',
+                        data: startupData
+                    }).done(function(data) {
+                        if (data.hasError) {
+                            _checkStartupStatus(data.errorMessage, startupData);
+                        } else {
+                            yukon.ui.removeAlerts();
+                        }
+                    }).fail(function() {
+                        _checkStartupStatus("The simulator startup settings update request to the controller failed.", startupData);
+                    });
+                } else if ($(this).attr('id') === 'disable-startup') {
+                    startupData.runOnStartup = false;
+                    $.ajax({
+                        url: yukon.url('/dev/rfn/updateStartup'),
+                        type: 'post',
+                        data: startupData
+                    }).done(function(data) {
+                        if (data.hasError) {
+                            _checkStartupStatus(data.errorMessage, startupData);
+                        } else {
+                            yukon.ui.removeAlerts();
+                        }
+                    }).fail(function() {
+                        _checkStartupStatus("The simulator startup settings update request to the controller failed.", startupData);
+                    });
+                }
+            }
+             
+            function _checkStartupStatus(prevErrorMessage, startupData) {
+                $.ajax({
+                    url: yukon.url('/dev/rfn/existingStartupStatus'),
+                    type: 'post',
+                    data: startupData
+                }).done(function(data) {
+                    if (data.hasError) {
+                        yukon.ui.alertError(prevErrorMessage + " " + data.errorMessage + " Refresh the page to try again.");
+                        $('#enable-startup').attr("disabled", "true");
+                        $('#disable-startup').attr("disabled", "true");
+                        $('#enable-startup').removeClass('on');
+                        $('#disable-startup').removeClass('on');
+                    } else {
+                        if (prevErrorMessage) {
+                            yukon.ui.alertError(prevErrorMessage);
+                        }
+                        if (data.runOnStartup) {
+                            $('#enable-startup').addClass('on');
+                            $('#disable-startup').removeClass('on');
+                        } else {
+                            $('#enable-startup').removeClass('on');
+                            $('#disable-startup').addClass('on');
+                        }
+                    }
+                }).fail(function() {
+                    yukon.ui.alertError(prevErrorMessage + " Error communicating with NmIntegrationController. Refresh the page to try again.");
+                    $('#enable-startup').attr("disabled", "true");
+                    $('#disable-startup').attr("disabled", "true");
+                    $('#enable-startup').removeClass('on');
+                    $('#disable-startup').removeClass('on');
+                });
+            }
+        });
+    </script>
     <script>
     yukon.namespace('yukon.dev.dataSimulator');
 
@@ -206,10 +282,16 @@
         </tags:nameValue2>
     </tags:nameValueContainer2>
     </div>
+    <br>
     <div>
         <cti:button id="start-simulator" nameKey="startSimulator" />
         <cti:button id="stop-simulator" nameKey="stopSimulator" classes="dn"/>
     </div>
+        <div class="button-group button-group-toggle">
+        <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
+        <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+    </div>
+    <br><br>
     <div>
         <cti:button id="send-message" nameKey="sendLcrDeviceMessages"/>
         <cti:button id="stop-send-message" nameKey="stopSendingLcrDeviceMessages" classes="dn"/>

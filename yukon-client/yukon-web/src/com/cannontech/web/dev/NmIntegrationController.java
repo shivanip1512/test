@@ -569,9 +569,7 @@ public class NmIntegrationController {
         if(response == null){
             return "rfn/dataSimulator.jsp";
         }
-        if (response.getStatusByRange().isRunning().get()) {
-            model.addAttribute("currentSettings", response.getSettings());
-        }
+        model.addAttribute("currentSettings", response.getSettings());
 
         model.addAttribute("dataSimulatorStatus", buildSimulatorStatusJson(response.getStatusByRange()));
         model.addAttribute("existingDataSimulatorStatus", buildSimulatorStatusJson(response.getAllDevicesStatus()));

@@ -47,6 +47,8 @@ import com.cannontech.dr.rfn.model.jaxb.DRReport.Relays.Relay.IntervalData.Inter
 import com.cannontech.dr.rfn.model.jaxb.ObjectFactory;
 import com.cannontech.dr.rfn.service.ExiParsingService;
 import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.SetMultimap;
 
@@ -58,6 +60,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     @Autowired private @Qualifier("main") ThreadCachingScheduledExecutorService executor;
     @Autowired private ExiParsingService exiParsingService;
     @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     
     private static final JAXBContext jaxbContext = initJaxbContext();
     
@@ -124,7 +127,7 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
             allDevicesStatus = new RfnDataSimulatorStatus();
             allDevicesStatus.setRunning(new AtomicBoolean(true));
             allDevicesStatus.setStartTime(new Instant());
-            if(this.settings == null){
+            if (this.settings == null) {
                 this.settings = settings;
             }
             List<RfnDevice> devices = rfnDeviceDao.getDevicesByPaoTypes(PaoType.getRfLcrTypes());
@@ -148,7 +151,8 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
             rangeDevicesStatus = new RfnDataSimulatorStatus();
             rangeDevicesStatus.setRunning(new AtomicBoolean(true));
             rangeDevicesStatus.setStartTime(new Instant());
-            if(this.settings == null){
+            saveSettings(settings);
+            if (this.settings == null) {
                 this.settings = settings;
             }
             createDevicesByRange(settings.getLcr6200serialFrom(), settings.getLcr6200serialTo(),
@@ -178,14 +182,14 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     @Override
     @PreDestroy
     public synchronized void stopRangeSimulator() {
-        log.info("RFN LCR data simulator shutting down...");
+        log.info("RFN_LCR range simulator shutting down...");
         stopSimulator(rangeDevicesStatus, rangeDevices);
     }
 
     @Override
     @PreDestroy
     public synchronized void stopAllDeviceSimulator() {
-        log.info("RFN LCR message simulator shutting down...");
+        log.info("RFN_LCR all device simulator shutting down...");
         stopSimulator(allDevicesStatus, allDevices);
     }
     
@@ -225,7 +229,26 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
     
     @Override
     public SimulatorSettings getCurrentSettings() {
+        if (settings == null) {
+            log.debug("Getting RFN_LCR SimulatorSettings from db.");
+            SimulatorSettings simulatorSettings = new SimulatorSettings();
+            simulatorSettings.setLcr6200serialFrom(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6200_SERIAL_FROM));
+            simulatorSettings.setLcr6200serialTo(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6200_SERIAL_TO));
+            simulatorSettings.setLcr6600serialFrom(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6600_SERIAL_FROM));
+            simulatorSettings.setLcr6600serialTo(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6600_SERIAL_TO));
+            simulatorSettings.setPercentOfDuplicates(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_DUPLICATE_PERCENTAGE));
+            settings = simulatorSettings;
+        }
         return settings;
+    }
+    
+    public void saveSettings(SimulatorSettings settings) {
+        log.debug("Saving RFN_LCR settings to the YukonSimulatorSettings table.");
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6200_SERIAL_FROM, settings.getLcr6200serialFrom());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6200_SERIAL_TO, settings.getLcr6200serialTo());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6600_SERIAL_FROM, settings.getLcr6600serialFrom());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_6600_SERIAL_TO, settings.getLcr6600serialTo());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_LCR_SIMULATOR_DUPLICATE_PERCENTAGE, settings.getPercentOfDuplicates());
     }
 
     /**
@@ -458,5 +481,10 @@ public class RfnLcrDataSimulatorServiceImpl extends RfnDataSimulatorService  imp
         relay.setAmpType((short) 0);
         relay.getIntervalData().add(intervalData);
         return relay;
+    }
+
+    @Override
+    public void startSimulatorWithCurrentSettings() {
+        sendMessagesByRange(getCurrentSettings());
     }
 }

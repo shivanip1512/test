@@ -43,6 +43,12 @@ public enum YukonSimulatorSettingsKey {
     //Run on startup for Gateway
     GATEWAY_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType()),
 
+    //LCR Meter Simulator Settings (SimulatorSettings)
+    RFN_LCR_SIMULATOR_6200_SERIAL_FROM(100000, InputTypeFactory.integerType()),
+    RFN_LCR_SIMULATOR_6200_SERIAL_TO(200000, InputTypeFactory.integerType()),
+    RFN_LCR_SIMULATOR_6600_SERIAL_FROM(300000, InputTypeFactory.integerType()),
+    RFN_LCR_SIMULATOR_6600_SERIAL_TO(320000, InputTypeFactory.integerType()),
+    RFN_LCR_SIMULATOR_DUPLICATE_PERCENTAGE(10, InputTypeFactory.integerType()),
     RFN_LCR_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType()),
 
     //RFN Meter Simulator Settings (SimulatorSettings)

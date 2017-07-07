@@ -16,6 +16,7 @@ import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.common.rfn.simulation.service.DataStreamingSimulatorService;
 import com.cannontech.common.rfn.simulation.service.RfnGatewaySimulatorService;
+import com.cannontech.dr.rfn.service.RfnLcrDataSimulatorService;
 import com.cannontech.dr.rfn.service.RfnMeterDataSimulatorService;
 import com.cannontech.simulators.AutoStartableSimulator;
 import com.cannontech.simulators.SimulatorType;
@@ -39,6 +40,7 @@ public class SimulatorsService {
     @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
     @Autowired private SimulatorStartupSettingsService simulatorStartupSettingsService;
     @Autowired private RfnGatewaySimulatorService rfnGatewaySimulatorService;
+    @Autowired private RfnLcrDataSimulatorService rfnLcrDataSimulatorService;
     @Autowired private DataStreamingSimulatorService dataStreamingSimulatorService;
     @Autowired private RfnMeterDataSimulatorService rfnMeterDataSimulatorService;
     @Autowired private IvvcSimulatorService ivvcSimulatorService;
@@ -101,6 +103,7 @@ public class SimulatorsService {
             .put(SimulatorType.DATA_STREAMING, dataStreamingSimulatorService)
             .put(SimulatorType.RFN_METER, rfnMeterDataSimulatorService)
             .put(SimulatorType.IVVC, ivvcSimulatorService)
+            .put(SimulatorType.RFN_LCR, rfnLcrDataSimulatorService)
             .build();
     }
 

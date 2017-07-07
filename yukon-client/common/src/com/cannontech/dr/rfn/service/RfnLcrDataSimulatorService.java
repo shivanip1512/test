@@ -2,6 +2,7 @@ package com.cannontech.dr.rfn.service;
 
 import com.cannontech.dr.rfn.model.RfnDataSimulatorStatus;
 import com.cannontech.dr.rfn.model.SimulatorSettings;
+import com.cannontech.simulators.AutoStartableSimulator;
 
 /**
  * This is a service that simulates a network of RFN-6200 and RFN-6600 RF mesh LCR devices for use
@@ -15,7 +16,7 @@ import com.cannontech.dr.rfn.model.SimulatorSettings;
  * configurable by the user at startup.  The simulator can not be started automatically at launch and must
  * be initiated manually by the user.
  */
-public interface RfnLcrDataSimulatorService {
+public interface RfnLcrDataSimulatorService extends AutoStartableSimulator {
     /**
      * Starts the RFN LCR data simulator.
      * @param settings Defines the parameters of the simulation, particularly the device serial number ranges.
