@@ -54,7 +54,9 @@ public class DataStreamingAttributeHelperTest {
         }
     }
 
-    //Validates points against specific device type xmls
+    /**
+     * Validates points against specific device type xmls
+     */
     private void testDeviceTypeXMLs() {
         for (DataStreamingPaoAttributes dspa : DataStreamingPaoAttributes.values()) {
             String deviceTypeName = dspa.getPaoType().name();
@@ -131,7 +133,9 @@ public class DataStreamingAttributeHelperTest {
         System.out.println("----------------------------------------------------------------------------------");
     }
 
-    //Validates points against rfnPointMapping.xml
+    /**
+     * Validates points against rfnPointMapping.xml
+     */
     private void testSupportedPointsRfnMappingXML() {
         Map<String, Set<String>> map = new HashMap<>();
         Set<String> pointSet = null;
@@ -204,7 +208,9 @@ public class DataStreamingAttributeHelperTest {
         System.out.println("-----------------------------------------------------------------------------------------------------------------");
     }
 
-  //Validates points against RFN.xml
+    /**
+     * Validates points against RFN.xml
+     */
     private void testSupportedPointsRfnXML() {
         Set<String> pointSet = new HashSet<>();
         try {
