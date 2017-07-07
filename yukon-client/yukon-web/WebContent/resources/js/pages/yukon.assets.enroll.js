@@ -30,6 +30,7 @@ yukon.assets.enroll = (function () {
                 }, function () {
                     popup.dialog({
                         width: 500,
+                        modal: true,
                         title: popup.data('removeTitle'),
                         buttons: yukon.ui.buttons({
                             event: 'yukon_assets_unenroll_confirm'
@@ -40,9 +41,18 @@ yukon.assets.enroll = (function () {
             
             /** Ok button clicked on the unenroll confirmation popup. */
             $(document).on('yukon_assets_unenroll_confirm', function (ev) {
-                $('#enroll-popup').find('form').ajaxSubmit({
+                var popup = $('#enroll-popup'),
+                btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                primary = btns.find('.js-primary-action');
+                
+                yukon.ui.busy(primary);
+                popup.find('form').ajaxSubmit({
                     success: function(data, status, xhr, $form) {
+                        popup.dialog('close');
                         window.location.href = window.location.href;
+                    },
+                    complete: function () {
+                        yukon.ui.unbusy(primary);
                     }
                 });
                 
@@ -63,6 +73,7 @@ yukon.assets.enroll = (function () {
                     popup.dialog({
                         width: 500,
                         title: popup.data('editTitle'),
+                        modal: true,
                         buttons: yukon.ui.buttons({
                             okText: yg.text.save,
                             event: 'yukon_assets_enroll_save'
@@ -79,6 +90,7 @@ yukon.assets.enroll = (function () {
                         .html(xhr.responseText)
                         .dialog({
                             width: 500,
+                            modal: true,
                             buttons: yukon.ui.buttons({
                                 okText: yg.text.save,
                                 event: 'yukon_assets_enroll_save_confirm'
@@ -92,9 +104,18 @@ yukon.assets.enroll = (function () {
             
             /** Save button clicked on the enrollment edit confirmation popup. */
             $(document).on('yukon_assets_enroll_save_confirm', function (ev) {
-                $('#enroll-popup').find('form').ajaxSubmit({
+                var popup = $('#enroll-popup'),
+                btns = popup.closest('.ui-dialog').find('.ui-dialog-buttonset'),
+                primary = btns.find('.js-primary-action');
+                
+                yukon.ui.busy(primary);
+                popup.find('form').ajaxSubmit({
                     success: function(data, status, xhr, $form) {
+                        popup.dialog('close');
                         window.location.href = window.location.href;
+                    },
+                    complete: function () {
+                        yukon.ui.unbusy(primary);
                     }
                 });
                 
@@ -129,6 +150,7 @@ yukon.assets.enroll = (function () {
                 var isSaveDisabled = (disableString === 'true');
                 popup.dialog({
                     width: 500,
+                    modal: true,
                     title: popup.data('addTitle'),
                     buttons: yukon.ui.buttons({
                         okText: yg.text.save,
