@@ -215,7 +215,7 @@ const std::vector<std::string> ErrorStrings = boost::assign::list_of<std::string
     //  270
     ("Verify SSPEC/Firmware Revision")
     ("Invalid future data rejected")
-    ("Device Not Supported")
+    ("Device not supported by Porter")
     ("Port not initialized")
     ("Command already in progress")
     ("No connection to device")

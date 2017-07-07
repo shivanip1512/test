@@ -942,6 +942,12 @@
             Verify the time settings in the remote device.
         </troubleshooting>
     </error>
+	<error code="272">
+		<category>Yukon System</category>
+		<porter>Device not supported by Porter</porter>
+		<description>Porter does not load the specified device type.</description>
+		<troubleshooting>Confirm that the command is supported by the device type.</troubleshooting>
+	</error>
     <error code="273">
         <category>Bulk Communications</category>
         <porter>Port is not initialized</porter>
