@@ -52,11 +52,15 @@
 #include "resolvers.h"
 #include "desolvers.h"
 #include "utility.h"
+#include "coroutine_util.h"
+
+#include <boost/range/algorithm/set_algorithm.hpp>
 
 using namespace Cti;  //  in preparation for moving devices to their own namespace
 using namespace std;
 using Cti::Database::DatabaseConnection;
 using Cti::Database::DatabaseReader;
+using Cti::Logging::Set::operator<<;
 
 // prevent any devB (proximity excluded device) which may be seleced to execute from interfereing with devA's next evaluation time.
 static void applyExecutionGrantExpiresIsEvaluateNext(const long key, CtiDeviceSPtr devB, void* devSelect)
@@ -326,6 +330,13 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortMasterSlaveTypeEqual (
     return p;
 }
 
+bool CtiDeviceManager::isPaoId(long id)
+{
+    coll_type::reader_lock_guard_t guard(getLock());
+
+    return _paoIds.count(id);
+}
+
 CtiDeviceManager::ptr_type CtiDeviceManager::getDeviceByID (LONG Dev)
 {
     ptr_type p;
@@ -489,20 +500,6 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetEqualbyName (const string 
     return p;
 }
 
-CtiDeviceManager::CtiDeviceManager() :
-_dberrorcode(0)
-{
-}
-
-CtiDeviceManager::~CtiDeviceManager()
-{
-}
-
-void CtiDeviceManager::deleteList(void)
-{
-    _smartMap.removeAll(NULL, 0);
-}
-
 void CtiDeviceManager::refreshDeviceByID(LONG paoID, string category, string devicetype)
 {
     if( ! paoID )
@@ -616,7 +613,7 @@ bool CtiDeviceManager::loadDeviceType(Cti::Database::id_set &paoids, const strin
 }
 
 
-void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LONG deviceType)
+void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const long deviceType)
 {
     using Devices::MctDevice;
 
@@ -652,93 +649,81 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
 
     int max_ids_per_select = gConfigParms.getValueAsInt("MAX_IDS_PER_DEVICE_SELECT", 256);
 
+    for( const auto& id_chunk : Cti::Coroutines::chunked(paoids, max_ids_per_select) )
     {
-        Cti::Database::id_set_itr paoid_itr = paoids.begin();
+        std::set<long> paoid_subset { id_chunk.begin(), id_chunk.end() };
 
-        //  I don't really like the do-while construct, but this loop must happen at least once even if no paoids were passed in
-        do
+        if( deviceTemplate )
         {
-            int subset_size = min(distance(paoid_itr, paoids.end()), max_ids_per_select);
+            //  type-specific directed load
+            rowFound |= loadDeviceType(paoid_subset, "directed load", *deviceTemplate);
+        }
+        else
+        {
+            rowFound |= loadDeviceType(paoid_subset, "DLC devices", Devices::CarrierDevice(), "LCR-3102", false);
+            rowFound |= loadDeviceType(paoid_subset, "LCR-3102 devices", Devices::Lcr3102Device(), "LCR-3102", true);
 
-            //  note the iterator difference/addition - requires a random-access iterator...
-            //    trait tags could be useful here except that VC6 doesn't support template member functions
-            Cti::Database::id_set_itr subset_end = paoid_itr;
-            advance(subset_end, subset_size);
-            Cti::Database::id_set paoid_subset(paoid_itr, subset_end);
-
-            if( deviceTemplate )
+            if( !MctDevice::isMct410(deviceType) )
             {
-                //  type-specific directed load
-                rowFound |= loadDeviceType(paoid_subset, "directed load", *deviceTemplate);
+                rowFound |= loadDeviceType(paoid_subset, "Grid Advisor devices",   CtiDeviceGridAdvisor());
+
+                rowFound |= loadDeviceType(paoid_subset, "Sixnet IEDs",            CtiDeviceIED(),         "SIXNET");
+                rowFound |= loadDeviceType(paoid_subset, "Meters and IEDs",        CtiDeviceMeter());
+
+                //  prevent the LMI from being loaded twice
+                rowFound |= loadDeviceType(paoid_subset, "DNP/ION devices",        Devices::DnpDevice(),          "RTU-LMI", false);
+                rowFound |= loadDeviceType(paoid_subset, "LMI RTUs",               CtiDeviceLMI());
+                rowFound |= loadDeviceType(paoid_subset, "RTM devices",            CtiDeviceIED(),         "RTM");
+
+                rowFound |= loadDeviceType(paoid_subset, "TAP devices",            Devices::DevicePaging());
+                rowFound |= loadDeviceType(paoid_subset, "TNPP devices",           CtiDeviceTnppPagingTerminal());
+                rowFound |= loadDeviceType(paoid_subset, "RDS devices",            Devices::RDSTransmitter(),     "RDS TERMINAL");
+
+                //  exclude the CCU 721
+                rowFound |= loadDeviceType(paoid_subset, "IDLC target devices",    CtiDeviceIDLC(),        "CCU-721", false);
+                rowFound |= loadDeviceType(paoid_subset, "CCU-721 devices",        Devices::Ccu721Device());
+
+                rowFound |= loadDeviceType(paoid_subset, "MCT broadcast devices",  Devices::MctBroadcastDevice());
+
+                rowFound |= loadDeviceType(paoid_subset, "Repeater 800 devices",   Devices::DlcBaseDevice(),     "REPEATER 800");
+                rowFound |= loadDeviceType(paoid_subset, "Repeater 801 devices",   Devices::DlcBaseDevice(),     "REPEATER 801");
+                rowFound |= loadDeviceType(paoid_subset, "Repeater 850 devices",   Devices::DlcBaseDevice(),     "REPEATER 850");
+                rowFound |= loadDeviceType(paoid_subset, "Repeater 900 devices",   Devices::DlcBaseDevice(),     "REPEATER");
+                rowFound |= loadDeviceType(paoid_subset, "Repeater 902 devices",   Devices::DlcBaseDevice(),     "REPEATER 902");
+                rowFound |= loadDeviceType(paoid_subset, "Repeater 921 devices",   Devices::DlcBaseDevice(),     "REPEATER 921");
+
+                rowFound |= loadDeviceType(paoid_subset, "RFN devices",            Devices::RfnDevice());
+
+                rowFound |= loadDeviceType(paoid_subset, "CBC devices",            CtiDeviceCBC());
+                rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
+
+                rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());
+                rowFound |= loadDeviceType(paoid_subset, "Versacom groups",        CtiDeviceGroupVersacom());
+                rowFound |= loadDeviceType(paoid_subset, "Expresscom groups",      CtiDeviceGroupExpresscom());
+                rowFound |= loadDeviceType(paoid_subset, "RFN Expresscom groups",  CtiDeviceGroupRfnExpresscom());
+                rowFound |= loadDeviceType(paoid_subset, "Ripple groups",          CtiDeviceGroupRipple());
+
+                rowFound |= loadDeviceType(paoid_subset, "MCT load groups",        CtiDeviceGroupMCT());
+
+                rowFound |= loadDeviceType(paoid_subset, "105 groups",             CtiDeviceGroupSA105());
+                rowFound |= loadDeviceType(paoid_subset, "205 groups",             CtiDeviceGroupSA205());
+                rowFound |= loadDeviceType(paoid_subset, "305 groups",             CtiDeviceGroupSA305());
+                rowFound |= loadDeviceType(paoid_subset, "SA Digital groups",      CtiDeviceGroupSADigital());
+                rowFound |= loadDeviceType(paoid_subset, "Golay groups",           CtiDeviceGroupGolay());
+
+                rowFound |= loadDeviceType(paoid_subset, "Macro devices",          CtiDeviceMacro());
+
+                //  should not be done in Scanner
+                rowFound |= refreshPointGroups(paoid_subset);
+
+                rowFound |= loadDeviceType(paoid_subset, "System devices",         CtiDeviceBase(),        "SYSTEM");
             }
-            else
-            {
-                rowFound |= loadDeviceType(paoid_subset, "DLC devices", Devices::CarrierDevice(), "LCR-3102", false);
-                rowFound |= loadDeviceType(paoid_subset, "LCR-3102 devices", Devices::Lcr3102Device(), "LCR-3102", true);
+        }
 
-                if( !MctDevice::isMct410(deviceType) )
-                {
-                    rowFound |= loadDeviceType(paoid_subset, "Grid Advisor devices",   CtiDeviceGridAdvisor());
+        // Now load the device properties onto the devices
+        refreshDeviceProperties(paoid_subset, deviceType);
 
-                    rowFound |= loadDeviceType(paoid_subset, "Sixnet IEDs",            CtiDeviceIED(),         "SIXNET");
-                    rowFound |= loadDeviceType(paoid_subset, "Meters and IEDs",        CtiDeviceMeter());
-
-                    //  prevent the LMI from being loaded twice
-                    rowFound |= loadDeviceType(paoid_subset, "DNP/ION devices",        Devices::DnpDevice(),          "RTU-LMI", false);
-                    rowFound |= loadDeviceType(paoid_subset, "LMI RTUs",               CtiDeviceLMI());
-                    rowFound |= loadDeviceType(paoid_subset, "RTM devices",            CtiDeviceIED(),         "RTM");
-
-                    rowFound |= loadDeviceType(paoid_subset, "TAP devices",            Devices::DevicePaging());
-                    rowFound |= loadDeviceType(paoid_subset, "TNPP devices",           CtiDeviceTnppPagingTerminal());
-                    rowFound |= loadDeviceType(paoid_subset, "RDS devices",            Devices::RDSTransmitter(),     "RDS TERMINAL");
-
-                    //  exclude the CCU 721
-                    rowFound |= loadDeviceType(paoid_subset, "IDLC target devices",    CtiDeviceIDLC(),        "CCU-721", false);
-                    rowFound |= loadDeviceType(paoid_subset, "CCU-721 devices",        Devices::Ccu721Device());
-
-                    rowFound |= loadDeviceType(paoid_subset, "MCT broadcast devices",  Devices::MctBroadcastDevice());
-
-                    rowFound |= loadDeviceType(paoid_subset, "Repeater 800 devices",   Devices::DlcBaseDevice(),     "REPEATER 800");
-                    rowFound |= loadDeviceType(paoid_subset, "Repeater 801 devices",   Devices::DlcBaseDevice(),     "REPEATER 801");
-                    rowFound |= loadDeviceType(paoid_subset, "Repeater 850 devices",   Devices::DlcBaseDevice(),     "REPEATER 850");
-                    rowFound |= loadDeviceType(paoid_subset, "Repeater 900 devices",   Devices::DlcBaseDevice(),     "REPEATER");
-                    rowFound |= loadDeviceType(paoid_subset, "Repeater 902 devices",   Devices::DlcBaseDevice(),     "REPEATER 902");
-                    rowFound |= loadDeviceType(paoid_subset, "Repeater 921 devices",   Devices::DlcBaseDevice(),     "REPEATER 921");
-
-                    rowFound |= loadDeviceType(paoid_subset, "RFN devices",            Devices::RfnDevice());
-
-                    rowFound |= loadDeviceType(paoid_subset, "CBC devices",            CtiDeviceCBC());
-                    rowFound |= loadDeviceType(paoid_subset, "RTC devices",            CtiDeviceRTC());
-
-                    rowFound |= loadDeviceType(paoid_subset, "Emetcon groups",         CtiDeviceGroupEmetcon());
-                    rowFound |= loadDeviceType(paoid_subset, "Versacom groups",        CtiDeviceGroupVersacom());
-                    rowFound |= loadDeviceType(paoid_subset, "Expresscom groups",      CtiDeviceGroupExpresscom());
-                    rowFound |= loadDeviceType(paoid_subset, "RFN Expresscom groups",  CtiDeviceGroupRfnExpresscom());
-                    rowFound |= loadDeviceType(paoid_subset, "Ripple groups",          CtiDeviceGroupRipple());
-
-                    rowFound |= loadDeviceType(paoid_subset, "MCT load groups",        CtiDeviceGroupMCT());
-
-                    rowFound |= loadDeviceType(paoid_subset, "105 groups",             CtiDeviceGroupSA105());
-                    rowFound |= loadDeviceType(paoid_subset, "205 groups",             CtiDeviceGroupSA205());
-                    rowFound |= loadDeviceType(paoid_subset, "305 groups",             CtiDeviceGroupSA305());
-                    rowFound |= loadDeviceType(paoid_subset, "SA Digital groups",      CtiDeviceGroupSADigital());
-                    rowFound |= loadDeviceType(paoid_subset, "Golay groups",           CtiDeviceGroupGolay());
-
-                    rowFound |= loadDeviceType(paoid_subset, "Macro devices",          CtiDeviceMacro());
-
-                    //  should not be done in Scanner
-                    rowFound |= refreshPointGroups(paoid_subset);
-
-                    rowFound |= loadDeviceType(paoid_subset, "System devices",         CtiDeviceBase(),        "SYSTEM");
-                }
-            }
-
-            // Now load the device properties onto the devices
-            refreshDeviceProperties(paoid_subset, deviceType);
-
-            advance(paoid_itr, subset_size);
-
-        } while( paoid_itr != paoids.end() );
+        refreshPaoIds(paoid_subset);
     }
 
     if( deviceTemplate )
@@ -788,6 +773,70 @@ void CtiDeviceManager::refreshList(const Cti::Database::id_set &paoids, const LO
                 _smartMap.remove(evictedDevice->getID());
             }
         }
+    }
+}
+
+
+void CtiDeviceManager::refreshPaoIds(const Cti::Database::id_set &ids)
+{
+    bool print_bounds = DebugLevel & 0x00020000;
+
+    Timing::DebugTimer timer("refreshing pao IDs", print_bounds);
+
+    std::string sql = "SELECT PaObjectId FROM YukonPaObject Y";
+    
+    if( ! ids.empty() )
+    {
+        sql += " WHERE " + Cti::Database::createIdInClause("Y", "PaObjectId", ids.size());
+    }
+
+    DatabaseConnection connection;
+    DatabaseReader rdr(connection, sql);
+
+    if( !ids.empty() )
+    {
+        rdr << ids;
+    }
+
+    rdr.execute();
+
+    std::set<long> newPaoIds;
+
+    while( rdr() )
+    {
+        newPaoIds.insert(rdr.as<long>());
+    }
+
+    if( ! rdr.isValid() )
+    {
+        CTILOG_ERROR(dout, "Failed reading pao IDs for set " << ids);
+
+        return;
+    }
+
+    if( ids.empty() )
+    {
+        coll_type::writer_lock_guard_t guard(getLock());
+
+        _paoIds.swap(newPaoIds);
+
+        return;
+    }
+
+    std::vector<long> toDelete, toAdd;
+
+    boost::range::set_difference(ids, newPaoIds, std::back_inserter(toDelete));
+    boost::range::set_intersection(ids, newPaoIds, std::back_inserter(toAdd));
+
+    {
+        coll_type::writer_lock_guard_t guard(getLock());
+
+        for( auto id : toDelete )
+        {
+            _paoIds.erase(id);
+        }
+
+        _paoIds.insert(toAdd.begin(), toAdd.end());
     }
 }
 

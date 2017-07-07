@@ -5,6 +5,7 @@
 
 #include "boost/optional/optional.hpp"
 #include <boost/range/iterator_range.hpp>
+#include <boost/range/algorithm/copy.hpp>
 
 #include <iostream>
 #include <iomanip>
@@ -148,6 +149,24 @@ int clamp(int input)
 }
 
 namespace Logging {
+namespace Set {
+
+inline std::ostream &operator<<(std::ostream &logger, const std::set<long> &long_set)
+{
+    logger << "{";
+    if( long_set.empty() )
+    {
+        logger << "<empty>";
+    }
+    else
+    {
+        boost::range::copy(long_set, std::ostream_iterator<long>{ logger, "," });
+    }
+    return logger << "}";
+}
+
+}
+    
 namespace Vector {
 namespace Hex {
 

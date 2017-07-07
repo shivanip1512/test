@@ -115,6 +115,14 @@ public:
     }
 
     template<class ValueT>
+    StreamBufferT& operator<< (const std::set<ValueT>& s)
+    {
+        initSStream();
+        *_osstream << s;
+        return static_cast<StreamBufferT&>(*this);
+    }
+
+    template<class ValueT>
     StreamBufferT& operator<< (const boost::iterator_range<ValueT>& vec)
     {
         initSStream();

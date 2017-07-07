@@ -614,6 +614,8 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
     {
         FormattedList logItems;
 
+        const auto error = DeviceManager->isPaoId(InMessage.DeviceID) ? ClientErrors::UnsupportedDevice : ClientErrors::IdNotFound;
+
         logItems.add("Device ID")        << InMessage.DeviceID;
         logItems.add("Port listed as")   << InMessage.Port;
         logItems.add("Remote listed as") << InMessage.Remote;
@@ -625,8 +627,8 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
             new CtiReturnMsg(
                     InMessage.DeviceID,
                     InMessage.Return.CommandStr,
-                    "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(InMessage.DeviceID),
-                    ClientErrors::IdNotFound,
+                    GetErrorString(error) + " / ID = " + CtiNumStr(InMessage.DeviceID),
+                    error,
                     InMessage.Return.RouteID,
                     InMessage.Return.RetryMacroOffset,
                     InMessage.Return.Attempt,
@@ -1064,7 +1066,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
     if( !pReq->DeviceId() && _currentParse.isKeyValid(str_system_message) )
     {
         //This message is a system request for porter, send it to the porter system thread, not a device.
-        std::auto_ptr<CtiRequestMsg> tempReqMsg(
+        std::unique_ptr<CtiRequestMsg> tempReqMsg(
            static_cast<CtiRequestMsg *>(pReq->replicateMessage()));
 
         tempReqMsg->setConnectionHandle(pReq->getConnectionHandle());
@@ -1230,7 +1232,9 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
                 logItems.add("Command")   << pExecReq->CommandString();
                 logItems.add("Device ID") << pExecReq->DeviceId();
 
-                CTILOG_ERROR(dout, "Device unknown, unselected, or DB corrupt"<<
+                const auto error = DeviceManager->isPaoId(pExecReq->DeviceId()) ? ClientErrors::UnsupportedDevice : ClientErrors::IdNotFound;
+                
+                CTILOG_ERROR(dout, GetErrorString(error) <<
                         logItems);
 
                 if( CtiServer::ptr_type ptr = findConnectionManager(pExecReq->getConnectionHandle()) )
@@ -1238,8 +1242,8 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
                     CtiConnectionManager *CM = (CtiConnectionManager *)ptr.get();
                     CtiReturnMsg *pcRet = CTIDBG_new CtiReturnMsg(pExecReq->DeviceId(),
                                                                   pExecReq->CommandString(),
-                                                                  "Device unknown, unselected, or DB corrupt. ID = " + CtiNumStr(pExecReq->DeviceId()),
-                                                                  ClientErrors::IdNotFound,
+                                                                  GetErrorString(error) + " / ID = " + CtiNumStr(pExecReq->DeviceId()),
+                                                                  error,
                                                                   pExecReq->RouteId(),
                                                                   pExecReq->MacroOffset(),
                                                                   pExecReq->AttemptNum(),

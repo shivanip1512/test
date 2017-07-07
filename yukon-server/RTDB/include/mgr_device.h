@@ -29,12 +29,13 @@ public:
 
 private:
 
-    int _dberrorcode;
+    int _dberrorcode{ 0 };
 
     coll_type        _smartMap;
     coll_type        _exclusionMap;         // This is a map of the devices which HAVE exclusions.
     coll_type        _portExclusions;       // This is a map of the devices the port has added - when a DB reload occurs, it clears
                                             //   _exclusionMap, so these need to be retained and reinserted from a seperate list
+    std::set<long>   _paoIds;
 
     typedef std::map<long, std::set<long> > port_devices_t;
     typedef std::map<int,  std::set<long> > type_devices_t;
@@ -52,6 +53,7 @@ private:
     bool refreshDevices(Cti::RowReader& rdr);
 
     bool loadDeviceType(Cti::Database::id_set &paoids, const std::string &device_name, const CtiDeviceBase &device, std::string type=std::string(), const bool include_type=true);
+    void refreshPaoIds(const Cti::Database::id_set &ids);
 
     void addAssociations   (const CtiDeviceBase &dev);
     void removeAssociations(const CtiDeviceBase &dev);
@@ -83,8 +85,7 @@ protected:
 
 public:
 
-    CtiDeviceManager();
-    virtual ~CtiDeviceManager();
+    virtual ~CtiDeviceManager() = default;
 
     coll_type::lock_t &getLock();
 
@@ -110,7 +111,7 @@ public:
     void refreshGroupHierarchy(LONG paoID = 0);
     bool refreshPointGroups(void);
 
-    void deleteList(void);
+    bool isPaoId(long id);
 
     virtual ptr_type getDeviceByID(LONG Remote);
     void     getDevicesByPortID(long portid, std::vector<ptr_type> &devices);

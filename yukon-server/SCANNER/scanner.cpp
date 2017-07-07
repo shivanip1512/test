@@ -937,8 +937,6 @@ void ScannerCleanUp ()
 {
     ScannerQuit = TRUE;
 
-    ScannerDeviceManager.deleteList();
-
     VanGoghConnection.WriteConnQue(CTIDBG_new CtiCommandMsg(CtiCommandMsg::ClientAppShutdown, 15), CALLSITE);
     Sleep(2000);
     VanGoghConnection.close();
