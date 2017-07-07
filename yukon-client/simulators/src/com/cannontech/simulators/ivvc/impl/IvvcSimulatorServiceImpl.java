@@ -66,19 +66,19 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     private volatile boolean isCurrentlyExecuting = false; // This is used to ensure only one timed execution happens at a time
     private boolean tapPositionsPreloaded = false;
     
-    private Map<Integer, Integer> regulatorTapPositions = new HashMap<>();
+    private final Map<Integer, Integer> regulatorTapPositions = new HashMap<>();
     private int keepAliveIncrementingValue = 0;
     private Instant lastRegulatorEvaluationTime;
     private ScheduledFuture<?> ivvcSimulationFuture;
-    private List<PointData> messagesToSend = new ArrayList<>();
+    private final List<PointData> messagesToSend = new ArrayList<>();
     
     private final int END_OF_LINE = 40000;
     private final int INITIAL_TAP_POSITION = 3;
     
     private class PointTypeValue {
-        private int pointId;
-        private PointType type;
-        private double value;
+        private final int pointId;
+        private final PointType type;
+        private final double value;
         
         PointTypeValue(int id, PointType pointType, double pointValue) {
             pointId = id;
@@ -86,17 +86,17 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
             value = pointValue;
         };
     }
-    private List<Integer> cbcPointsLoaded = new ArrayList<>();
-    private List<PointTypeValue> cbcPointCache = new ArrayList<>();
+    private final List<Integer> cbcPointsLoaded = new ArrayList<>();
+    private final List<PointTypeValue> cbcPointCache = new ArrayList<>();
     
     @Override
     public boolean start(IvvcSimulatorSettings settings) {
         if (isRunning) {
             return false;
         } else {
-            saveSettings(settings);
             lastRegulatorEvaluationTime = Instant.now();
             ivvcSimulationFuture = executor.scheduleAtFixedRate(this::getSimulatorThread, 0, 30, TimeUnit.SECONDS);
+            saveSettings(settings);
             log.info("IVVC simulator thread starting up.");
             isRunning = true;
             return true;
@@ -554,13 +554,13 @@ public class IvvcSimulatorServiceImpl implements IvvcSimulatorService {
     }
     
     private void saveSettings(IvvcSimulatorSettings settings) {
-        log.debug("Saving IvvcSimulatorSettings to YukonSimulatorSettings table.");
+        log.debug("Saving IVVC settings to YukonSimulatorSettings table.");
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_INCREASED_SPEED_MODE, settings.isIncreasedSpeedMode());
     }
     
     @Override
     public IvvcSimulatorSettings getCurrentSettings() {
-        log.debug("Getting IvvcSimulatorSettings from db.");
+        log.debug("Getting IVVC settings from db.");
         IvvcSimulatorSettings settings = new IvvcSimulatorSettings(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.IVVC_SIMULATOR_INCREASED_SPEED_MODE));
         return settings;
     }

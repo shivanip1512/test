@@ -84,12 +84,11 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     @Override
     public synchronized void startSimulator(SimulatorSettings settings) {
         if (!status.isRunning().get()) {
-            saveSettings(settings);
-            
             log.debug("Start simulator");
             status = new RfnDataSimulatorStatus();
             status.setRunning(new AtomicBoolean(true));
             status.setStartTime(new Instant());
+            saveSettings(settings);
             if (this.settings == null) {
                 this.settings = settings;
             }
@@ -180,7 +179,7 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     }
 
     public void saveSettings(SimulatorSettings settings) {
-        log.debug("Saving RfnMeterDataSimulatorSettings to YukonSimulatorSettings table.");
+        log.debug("Saving RFN_METER settings to the YukonSimulatorSettings table.");
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_METER_TYPE, settings.getPaoType());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE, settings.getPercentOfDuplicates());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_REPORTING_INTERVAL, settings.getReportingInterval());
@@ -188,11 +187,14 @@ public class RfnMeterDataSimulatorServiceImpl extends RfnDataSimulatorService im
     
     @Override
     public SimulatorSettings getCurrentSettings() {
-        SimulatorSettings settings = new SimulatorSettings();
-        log.debug("Getting RFN_METER SimulatorSettings from db.");
-        settings.setPaoType(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_METER_TYPE));
-        settings.setPercentOfDuplicates(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE));
-        settings.setReportingInterval(ReportingInterval.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_REPORTING_INTERVAL)));
+        if (settings == null) {
+            log.debug("Getting RFN_METER SimulatorSettings from db.");
+            SimulatorSettings simulatorSettings = new SimulatorSettings();
+            simulatorSettings.setPaoType(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_METER_TYPE));
+            simulatorSettings.setPercentOfDuplicates(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_DUPLICATE_PERCENTAGE));
+            simulatorSettings.setReportingInterval(ReportingInterval.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_METER_SIMULATOR_REPORTING_INTERVAL)));
+            settings = simulatorSettings;
+        }
         return settings;
     }
 

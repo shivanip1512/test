@@ -105,7 +105,6 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         if (autoDataReplyActive) {
             return false;
         } else {
-            saveSettings(settings);
             Set<RfnGateway> gateways = rfnGatewayService.getAllGateways();
             gateways.forEach(gateway -> {
                 GatewayDataResponse response = setUpDataResponse(gateway.getRfnIdentifier(), settings);
@@ -113,6 +112,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             });
             Thread autoDataThread = getAutoDataRunnerThread(settings);
             autoDataThread.start();
+            saveSettings(settings);
             gatewayDataSettings = settings;
             autoDataReplyActive = true;
             return true;
@@ -132,9 +132,9 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         if (autoUpdateReplyActive) {
             return false;
         } else {
-            saveSettings(settings);
             Thread autoUpdateThread = getAutoUpdateThread(settings);
             autoUpdateThread.start();
+            saveSettings(settings);
             updateReplySettings = settings;
             autoUpdateReplyActive = true;
             return true;
@@ -154,9 +154,9 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         if (autoCertificateUpgradeReplyActive) {
             return false;
         } else {
-            saveSettings(settings);
             Thread autoCertificateThread = getAutoCertificateThread(settings);
             autoCertificateThread.start();
+            saveSettings(settings);
             certificateSettings = settings;
             autoCertificateUpgradeReplyActive = true;
             return true;
@@ -176,9 +176,9 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         if (autoFirmwareReplyActive) {
             return false;
         } else {
-            saveSettings(settings);
             Thread autoFirmwareThread = getAutoFirmwareThread(settings);
             autoFirmwareThread.start();
+            saveSettings(settings);
             firmwareSettings = settings;
             autoFirmwareReplyActive = true;
             return true;
@@ -198,9 +198,9 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
         if (autoFirmwareVersionReplyActive) {
             return false;
         } else {
-            saveSettings(settings);
             Thread autoFirmwareVersionThread = getAutoFirmwareVersionThread(settings);
             autoFirmwareVersionThread.start();
+            saveSettings(settings);
             firmwareVersionSettings = settings;
             autoFirmwareVersionReplyActive = true;
             return true;
@@ -684,6 +684,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     }
     
     public void saveSettings(SimulatedGatewayDataSettings settings) {
+        log.debug("Saving RFN_GATEWAY data settings to the YukonSimulatorSettings table.");
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_DATA_STREAMING_LOADING, settings.getCurrentDataStreamingLoading());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_RETURN_GWY800_MODEL, settings.isReturnGwy800Model());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_NUM_NOT_READY_NODES, settings.getNumberOfNotReadyNodes());
@@ -693,21 +694,25 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     }
     
     public void saveSettings(SimulatedUpdateReplySettings settings) {
+        log.debug("Saving RFN_GATEWAY update settings to the YukonSimulatorSettings table.");
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_CREATE_RESULT, settings.getCreateResult());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_EDIT_RESULT, settings.getEditResult());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_DELETE_RESULT, settings.getDeleteResult());
     }
     
     public void saveSettings(SimulatedCertificateReplySettings settings) {
+        log.debug("Saving RFN_GATEWAY certificate settings to the YukonSimulatorSettings table.");
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_ACK_TYPE, settings.getAckType());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_STATUS_TYPE, settings.getDeviceUpdateStatus());
     }
     
     public void saveSettings(SimulatedFirmwareReplySettings settings) {
+        log.debug("Saving RFN_GATEWAY firmware settings to the YukonSimulatorSettings table.");
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_FIRWARE_RESULT_TYPE, settings.getResultType());
     }
     
     public void saveSettings(SimulatedFirmwareVersionReplySettings settings) {
+        log.debug("Saving RFN_GATEWAY firmware version settings to the YukonSimulatorSettings table.");
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_FIRWARE_REPLY_TYPE, settings.getResult());
         yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_FIRWARE_VERSION, settings.getVersion());
     }
@@ -715,6 +720,7 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
     @Override
     public SimulatedGatewayDataSettings getGatewayDataSettings() {
         if (gatewayDataSettings == null) {
+            log.debug("Getting RFN_GATEWAY data settings from db.");
             SimulatedGatewayDataSettings settings = new SimulatedGatewayDataSettings();
             settings.setCurrentDataStreamingLoading(yukonSimulatorSettingsDao.getDoubleValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_DATA_STREAMING_LOADING));
             settings.setReturnGwy800Model(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_RETURN_GWY800_MODEL));
@@ -722,58 +728,57 @@ public class RfnGatewaySimulatorServiceImpl implements RfnGatewaySimulatorServic
             settings.setNumberOfReadyNodes(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_NUM_READY_NODES));
             settings.setFailsafeMode(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_FAILSAFE_MODE));
             settings.setConnectionStatus(ConnectionStatus.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_CONNECTION_STATUS)));
-            return settings;
-        } else {
-            return gatewayDataSettings;
+            gatewayDataSettings = settings;
         }
+        return gatewayDataSettings;
     }
     
     @Override
     public SimulatedUpdateReplySettings getGatewayUpdateSettings() {
         if (updateReplySettings == null) {
+            log.debug("Getting RFN_GATEWAY update settings from db.");
             SimulatedUpdateReplySettings settings = new SimulatedUpdateReplySettings();
             settings.setCreateResult(GatewayUpdateResult.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_CREATE_RESULT)));
             settings.setEditResult(GatewayUpdateResult.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_EDIT_RESULT)));
             settings.setDeleteResult(GatewayUpdateResult.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_DELETE_RESULT)));
-            return settings;
-        } else {
-            return updateReplySettings;
+            updateReplySettings = settings;
         }
+        return updateReplySettings;
     }
     
     @Override
     public SimulatedCertificateReplySettings getCertificateSettings() {
         if (certificateSettings == null) {
+            log.debug("Getting RFN_GATEWAY certificate settings from db.");
             SimulatedCertificateReplySettings settings = new SimulatedCertificateReplySettings();
             settings.setAckType(RfnGatewayUpgradeRequestAckType.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_ACK_TYPE)));
             settings.setDeviceUpdateStatus(GatewayCertificateUpdateStatus.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_UPDATE_STATUS_TYPE)));
-            return settings;
-        } else {
-            return certificateSettings;
+            certificateSettings = settings;
         }
+        return certificateSettings;
     }
 
     @Override
     public SimulatedFirmwareReplySettings getFirmwareSettings() {
         if (firmwareSettings == null) {
+            log.debug("Getting RFN_GATEWAY firmware settings from db.");
             SimulatedFirmwareReplySettings settings = new SimulatedFirmwareReplySettings();
             settings.setResultType(GatewayFirmwareUpdateRequestResult.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_FIRWARE_RESULT_TYPE)));
-            return settings;
-        } else {
-            return firmwareSettings;
+            firmwareSettings = settings;
         }
+        return firmwareSettings;
     }
 
     @Override
     public SimulatedFirmwareVersionReplySettings getFirmwareVersionSettings() {
         if (firmwareVersionSettings == null) {
-        SimulatedFirmwareVersionReplySettings settings = new SimulatedFirmwareVersionReplySettings();
-        settings.setResult(RfnUpdateServerAvailableVersionResult.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_FIRWARE_REPLY_TYPE)));
-        settings.setVersion(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_FIRWARE_VERSION));
-        return settings;
-        } else {
-            return firmwareVersionSettings;
+            log.debug("Getting RFN_GATEWAY firmware version settings from db.");
+            SimulatedFirmwareVersionReplySettings settings = new SimulatedFirmwareVersionReplySettings();
+            settings.setResult(RfnUpdateServerAvailableVersionResult.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_FIRWARE_REPLY_TYPE)));
+            settings.setVersion(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.GATEWAY_SIMULATOR_FIRWARE_VERSION));
+            firmwareVersionSettings = settings;
         }
+        return firmwareVersionSettings;
     }
 
     @Override
