@@ -5,46 +5,48 @@
 #include "dlldefs.h"
 
 namespace Cti {
-    namespace Messaging {
-    namespace LoadManagement {
+namespace Messaging {
+namespace LoadManagement {
 
-        class IM_EX_MSG LMHoneywellCyclingControlMessage : public StreamableMessage
-        {
-        public:
+class IM_EX_MSG LMHoneywellCyclingControlMessage : public StreamableMessage
+{
+public:
 
-            LMHoneywellCyclingControlMessage(int  groupId,
-                                             int  dutyCycle,
-                                             int  startTime,
-                                             int  controlDuration,
-                                             bool rampInOut);
+    LMHoneywellCyclingControlMessage( const int  programId,
+                                      const int  groupId,
+                                      const int  dutyCycle,
+                                      const int  startTime,
+                                      const int  controlDuration,
+                                      const bool rampInOut );
 
-            void streamInto(cms::StreamMessage & message) const;
+    void streamInto(cms::StreamMessage & message) const;
 
-        private:
+private:
 
-            int  _groupId;
-            bool _rampingOption;
-            char _dutyCycle;
-            int  _startTime;
-            int  _stopTime;
-        };
+    int  _programId;
+    int  _groupId;
+    bool _rampingOption;
+    char _dutyCycle;
+    int  _startTime;
+    int  _stopTime;
+};
 
-        class IM_EX_MSG LMHoneywellRestoreMessage : public StreamableMessage
-        {
-        public:
+class IM_EX_MSG LMHoneywellRestoreMessage : public StreamableMessage
+{
+public:
 
-            LMHoneywellRestoreMessage(int groupId,
-                                      int restoreTime);
+    LMHoneywellRestoreMessage( const int groupId,
+                               const int restoreTime );
 
-            void streamInto(cms::StreamMessage & message) const;
+    void streamInto(cms::StreamMessage & message) const;
 
-        private:
+private:
 
-            int _groupId;
-            int _restoreTime;
-        };
+    int _groupId;
+    int _restoreTime;
+};
 
-    }
-    }
+}
+}
 }
 

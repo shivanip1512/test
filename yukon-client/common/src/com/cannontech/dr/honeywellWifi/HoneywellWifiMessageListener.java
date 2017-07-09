@@ -111,15 +111,17 @@ public class HoneywellWifiMessageListener {
      * HoneywellWifiDutyCycleDrParameters object.
      *
      * Load Management sends
-     * 1. Group ID : signed int (32 bits)
-     * 2. Duty Cycle : signed char (8 bits)
-     * 3. Ramping option : signed char (8 bits) bitmask:[ 0x01 == ramp out, 0x02 == ramp in ]
-     * 4. Start time : signed int (32 bits) [seconds from 1970.01.01:UTC]
-     * 5. End time : signed int (32 bits) [seconds from 1970.01.01:UTC]
+     * 1. Program ID : signed int (32 bits) [0 if no program]
+     * 2. Group ID : signed int (32 bits)
+     * 3. Duty Cycle : signed char (8 bits)
+     * 4. Ramping option : signed char (8 bits) bitmask:[ 0x01 == ramp out, 0x02 == ramp in ]
+     * 5. Start time : signed int (32 bits) [seconds from 1970.01.01:UTC]
+     * 6. End time : signed int (32 bits) [seconds from 1970.01.01:UTC]
      */
     private HoneywellWifiDutyCycleDrParameters buildDutyCycleDrParameters(StreamMessage message)
             throws JMSException {
         // Get the raw values
+        int programId = message.readInt();
         int groupId = message.readInt();
         int controlCyclePercent = message.readByte();
         byte rampingOptions = message.readByte();

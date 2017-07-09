@@ -25,9 +25,10 @@ CtiLMGroupBase* LMGroupHoneywell::replicate() const
     return new LMGroupHoneywell(*this);
 }
 
-bool LMGroupHoneywell::sendCycleControl(long dutyCycle,
-                                        long controlDurationSeconds,
-                                        bool rampInOutOption)
+bool LMGroupHoneywell::sendCycleControl( const long programID,
+                                         const long dutyCycle,
+                                         const long controlDurationSeconds,
+                                         const bool rampInOutOption )
 {
     using namespace Cti::Messaging;
     using namespace Cti::Messaging::LoadManagement;
@@ -38,6 +39,7 @@ bool LMGroupHoneywell::sendCycleControl(long dutyCycle,
     ActiveMQConnectionManager::enqueueMessage(
         OutboundQueue::HoneywellCyclingControl,
         std::make_unique<LMHoneywellCyclingControlMessage>(
+            programID,
             getPAOId(),
             dutyCycle,
             static_cast<int>(now.seconds()),
@@ -104,6 +106,7 @@ bool LMGroupHoneywell::sendShedControl(long controlMinutes)
     ActiveMQConnectionManager::enqueueMessage(
         OutboundQueue::HoneywellCyclingControl,
         std::make_unique<LMHoneywellCyclingControlMessage>(
+            0,      // no program
             getPAOId(),
             100,
             static_cast<int>(now.seconds()),

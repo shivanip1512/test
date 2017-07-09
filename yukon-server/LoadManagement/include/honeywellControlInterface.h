@@ -8,9 +8,10 @@ namespace LoadManagement {
 
 struct HoneywellControlInterface
 {
-    virtual bool sendCycleControl(long dutyCycle,
-                                    long controlDurationSeconds,
-                                    bool rampInOutOption) = 0;
+    virtual bool sendCycleControl( const long programID,
+                                   const long dutyCycle,
+                                   const long controlDurationSeconds,
+                                   const bool rampInOutOption ) = 0;
 };
 
 typedef boost::shared_ptr<HoneywellControlInterface> HoneywellControlInterfacePtr;

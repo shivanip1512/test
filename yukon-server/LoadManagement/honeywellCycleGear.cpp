@@ -32,7 +32,7 @@ bool HoneywellCycleGear::attemptControl( CtiLMGroupPtr currentLMGroup,
 
         const bool rampInOut = ciStringEqual( getFrontRampOption(), CtiLMProgramDirectGear::RandomizeRandomOptionType );
 
-        return controllableGroup->sendCycleControl( getMethodRate(), controlSeconds, rampInOut );
+        return controllableGroup->sendCycleControl( getProgramPAOId(), getMethodRate(), controlSeconds, rampInOut );
     }
 
     CTILOG_WARN( dout, "Group does not implement honeywell control interface: " << currentLMGroup->getPAOName() );
