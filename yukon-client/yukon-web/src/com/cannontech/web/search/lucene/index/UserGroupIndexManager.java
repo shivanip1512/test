@@ -28,6 +28,7 @@ public class UserGroupIndexManager extends SimpleIndexManager {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT *");
         sql.append("FROM UserGroup");
+        sql.append("WHERE Name <> '(none)'");
         sql.append("ORDER BY Name");
         return sql;
     }

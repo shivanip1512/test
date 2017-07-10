@@ -48,8 +48,7 @@
         
         <cti:msg2 var="none" key="yukon.common.none.choice"/>
         <tags:selectNameValue nameKey=".userGroup" items="${userGroups}" itemValue="userGroupId" 
-            itemLabel="userGroupName" path="userGroupId" 
-            defaultItemLabel="${none}" defaultItemValue=""/>
+            itemLabel="userGroupName" path="userGroupId"/>
         
         <tags:nameValue2 nameKey="yukon.common.energyCompany">
             <tags:selectWithItems path="energyCompanyId" items="${companies}"
