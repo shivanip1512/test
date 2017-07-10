@@ -23,14 +23,12 @@
 
     <cti:url var="action" value="/tools/points/${pointModel.pointBase.point.pointType}" />
     <form:form id="point-form" commandName="pointModel" action="${action}" method="POST" data-view-mode="${viewMode}">
-
+        <form:hidden path="pointBase.point.pointID" id="pointId"/>
         <cti:csrfToken />
 
         <cti:tabs containerName="yukon:da:point:fields:tab">
             <cti:msg2 var="general" key=".tab.general" />
             <cti:tab title="${general}">
-                <form:hidden path="pointBase.point.pointID"/>
-
                 <tags:nameValueContainer2 tableClass="${nameValueClass} stacked-md">
 
                     <tags:nameValue2 nameKey=".name">

@@ -289,7 +289,7 @@ yukon.tools.point = (function () {
     var addCalc = function () {
         var calcTable = $('#calculationTable'),
             rows = calcTable.find('tr').length - 1,
-            pointId = calcTable.find('.js-point-id').val();
+            pointId = $('#pointId').val();
 
         $.ajax(yukon.url('/tools/calculationRow/add?nextIndex=' + rows + '&pointId=' + pointId))
         .done(function (data) {
