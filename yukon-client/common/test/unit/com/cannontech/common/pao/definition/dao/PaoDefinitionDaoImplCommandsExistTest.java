@@ -25,6 +25,12 @@ public class PaoDefinitionDaoImplCommandsExistTest {
 
     }
 
+    /**
+     * Test which look for all paos having the readable attributes that do not have command identified for
+     * them.
+     * 
+     * @throws Exception
+     */
     @Test
     public void testValidateCommandExistsForEveryReadableAttributes() throws Exception {
         if (paoDefinitionDao != null) {

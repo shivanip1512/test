@@ -18,6 +18,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.mock.MockPointDao;
+import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.attribute.model.Attribute;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.definition.dao.PaoDefinitionDao;
@@ -41,11 +42,11 @@ public class AttributeServiceImplTest {
         pointDao = new MockPointDao();
         ReflectionTestUtils.setField(pointService, "pointDao", pointDao);
         ReflectionTestUtils.setField(service, "pointService", pointService);
-        device = new SimpleDevice(1, 1019);
+        device = new SimpleDevice(1, PaoType.MCT310.getDeviceTypeId());
     }
 
     @Test
-    public void testGetPointForAttribute() {
+    public void test_getPointForAttribute() {
         // Test for existing device / attribute
         LitePoint expectedPoint = pointDao.getLitePoint(1);
         LitePoint actualPoint = service.getPointForAttribute(device, BuiltInAttribute.USAGE);
@@ -53,39 +54,37 @@ public class AttributeServiceImplTest {
     }
 
     @Test
-    public void testGetAllExistingAtributes() {
-        // Test for existing device with existing attributes
-        Set<Attribute> expectedAtributes = new HashSet<Attribute>();
-        expectedAtributes.add(BuiltInAttribute.OUTAGE_STATUS);
-        expectedAtributes.add(BuiltInAttribute.BLINK_COUNT);
-        expectedAtributes.add(BuiltInAttribute.USAGE);
-        expectedAtributes.add(BuiltInAttribute.COMM_STATUS);
-        Set<Attribute> actualAtributes = service.getExistingAttributes(device, expectedAtributes);
-        assertEquals("Existing attributes aren't as expected", expectedAtributes, actualAtributes);
+    public void test_getAllExistingAttributes_deviceWithAttributes() {
+        Set<Attribute> expectedAttributes = new HashSet<>();
+        expectedAttributes.add(BuiltInAttribute.OUTAGE_STATUS);
+        expectedAttributes.add(BuiltInAttribute.BLINK_COUNT);
+        expectedAttributes.add(BuiltInAttribute.USAGE);
+        expectedAttributes.add(BuiltInAttribute.COMM_STATUS);
+        Set<Attribute> actualAttributes = service.getExistingAttributes(device, expectedAttributes);
+        assertEquals("Existing attributes aren't as expected", expectedAttributes, actualAttributes);
+    }
 
-        // Test for device with no attributes
-        expectedAtributes = new HashSet<Attribute>();
-        device = new SimpleDevice(1, 1036);
-        actualAtributes = service.getExistingAttributes(device, expectedAtributes);
-        assertEquals("There shouldn't be any attributes", expectedAtributes, actualAtributes);
+    @Test
+    public void test_getAllExistingAttributes_deviceWithNoAttributes() {
+        Set<Attribute> expectedAttributes = new HashSet<Attribute>();
+        device = new SimpleDevice(1, PaoType.MCT318L.getDeviceTypeId());
+        Set<Attribute> actualAttributes = service.getExistingAttributes(device, expectedAttributes);
+        assertEquals("There shouldn't be any attributes", expectedAttributes, actualAttributes);
+    }
 
-        // Test with invalid device
-        try {
-            SimpleDevice invalidDevice = new SimpleDevice(1, 99);
-            fail("Exception - An invalid device : " + invalidDevice);
-        } catch (Exception e) {
-            // expected an exception
-        }
+    @Test(expected = IllegalArgumentException.class)
+    public void test_getAllExistingAttributes_withInvalidDevice() {
+        SimpleDevice invalidDevice = new SimpleDevice(1, 99);
     }
 
     /**
      * Test BuiltInAttribute Enum values if matched with points.xml
      */
     @Test
-    public void testValidateAllPointMessages() {
+    public void test_validateAllPointMessages() {
 
         Properties prop = new Properties();
-        List<String> missingKeyList = new ArrayList<String>();
+        List<String> missingKeyList = new ArrayList<>();
         String path = (AttributeServiceImplTest.class.getProtectionDomain().getCodeSource().getLocation()).toString();
 
         path = path.replace("/bin/", "/");

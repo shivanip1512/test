@@ -256,7 +256,7 @@ public class DeviceChngTypesPanel extends DataInputPanel implements ListSelectio
         
         DeviceBase device = getCurrentDevice();
         
-        PointsToProcess pointsToProcess = deviceUpdateService.getPointsToProccess(device, paoDefinition.getType());
+        PointsToProcess pointsToProcess = deviceUpdateService.getPointsToProcess(device, paoDefinition.getType());
 
         // Add text for point additions
         Set<PointTemplate> addTemplates = pointsToProcess.getPointsToAdd();

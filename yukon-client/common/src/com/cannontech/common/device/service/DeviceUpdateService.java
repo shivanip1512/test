@@ -116,7 +116,7 @@ public interface DeviceUpdateService {
      * marked to be added.
      * User created points are ignored.
      */
-    PointsToProcess getPointsToProccess(DeviceBase oldDevice, PaoType newType);
+    PointsToProcess getPointsToProcess(DeviceBase oldDevice, PaoType newType);
     /**
      * Should be used to disableDevice versus using the deviceDao directly since it will deleteLocation of the global settings allow for it.
      */

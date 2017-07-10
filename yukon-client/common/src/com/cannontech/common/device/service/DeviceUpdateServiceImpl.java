@@ -385,7 +385,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     }
 
     @Override
-    public PointsToProcess getPointsToProccess(DeviceBase oldDevice, PaoType newType) {
+    public PointsToProcess getPointsToProcess(DeviceBase oldDevice, PaoType newType) {
 
         Map<PaoType, Map<Attribute, AttributeDefinition>> definitionMap =
             paoDefinitionDao.getPaoAttributeAttrDefinitionMap();
@@ -523,7 +523,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     private void updatePoints(DeviceBase oldDevice, PaoType newType) throws PersistenceException {
 
         log.debug("Updating points");
-        PointsToProcess pointsToProcess = getPointsToProccess(oldDevice, newType);
+        PointsToProcess pointsToProcess = getPointsToProcess(oldDevice, newType);
         deletePoints(pointsToProcess.getPointsToDelete());
         updatePointName(pointsToProcess.getPointsToTransfer());
         addPoints(pointsToProcess.getPointsToAdd(), oldDevice);

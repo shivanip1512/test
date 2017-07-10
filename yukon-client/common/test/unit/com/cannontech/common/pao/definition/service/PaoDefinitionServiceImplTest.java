@@ -2,7 +2,6 @@ package com.cannontech.common.pao.definition.service;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,13 +66,9 @@ public class PaoDefinitionServiceImplTest {
         device = new SimpleDevice(1, DeviceTypes.MCT310);
     }
 
-    /**
-     * Test createDefaultPointsForDevice()
-     */
     @Test
-    public void testCreateDefaultPointsForPao() {
-        // Test with supported device
-        List<PointBase> expectedPoints = new ArrayList<PointBase>();
+    public void test_createDefaultPointsForPao_forSupportedDevice() {
+        List<PointBase> expectedPoints = new ArrayList<>();
         expectedPoints.add(pointCreationService.createPoint(2, "kWh", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 1,
             0, 0, 3, StatusControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
         expectedPoints.add(pointCreationService.createPoint(2, "Blink Count", new PaoIdentifier(1, PaoType.MCT310), 1,
@@ -86,44 +81,32 @@ public class PaoDefinitionServiceImplTest {
         List<PointBase> actualPoints = service.createDefaultPointsForPao(device);
 
         assertEquals("Default points weren't as expected", expectedPoints, actualPoints);
-
-        // Test with unsupported device
-        try {
-            device = new SimpleDevice(1, 9999999);
-            fail("new SimpleDevice should've thrown an exception");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        }
     }
 
-    /**
-     * Test isPaoTypeChangeable()
-     */
+    @Test(expected = IllegalArgumentException.class)
+    public void test_createDefaultPointsForPao_forUnSupportedDevice() {
+        device = new SimpleDevice(1, 9999999);
+    }
+
     @Test
-    public void testIsPaoTypeChangeable() {
+    public void test_isPaoTypeChangeable_forSupportedDevice() {
         // Test with changeable device
         assertTrue("device1 is changeable", service.isPaoTypeChangeable(device));
 
         // Test with device that is not changeable
         device = new SimpleDevice(1, DeviceTypes.MCT318L);
         assertTrue("device3 is not changeable", service.isPaoTypeChangeable(device));
-
-        // Test with unsupported device
-        try {
-            device = new SimpleDevice(1, 999999);
-            fail("new SimpleDevice should've thrown an exception");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        }
     }
 
-    /**
-     * Test getChangeablePaos()
-     */
+    @Test(expected = IllegalArgumentException.class)
+    public void test_isPaoTypeChangeable_forUnupportedDevice() {
+        device = new SimpleDevice(1, 999999);
+        service.isPaoTypeChangeable(device);
+    }
+
     @Test
-    public void testGetChangeablePaos() {
+    public void test_getChangeablePaos() {
         // Test with changeable device
-        // Set<PaoDefinition> expectedPaos = new HashSet<PaoDefinition>();
         SimpleDevice device1 = new SimpleDevice(11, DeviceTypes.MCT370);
         PaoDefinition paoDefinition = paoDefinitionDao.getPaoDefinition(device1.getDeviceType());
 
@@ -141,13 +124,10 @@ public class PaoDefinitionServiceImplTest {
         assertTrue("Should be empty set", actualDevices2.isEmpty());
     }
 
-    /**
-     * Test createAllPointsForPao()
-     */
     @Test
-    public void testCreateAllPointsForPao() {
+    public void test_createAllPointsForPao() {
         // Test with supported device
-        List<PointBase> expectedPoints = new ArrayList<PointBase>();
+        List<PointBase> expectedPoints = new ArrayList<>();
         expectedPoints.add(pointCreationService.createPoint(2, "kWh", new PaoIdentifier(1, PaoType.MCT310), 1, 1.0, 0,
             0, 0, 3, StatusControlType.NONE, PointArchiveType.NONE, PointArchiveInterval.ZERO));
         expectedPoints.add(pointCreationService.createPoint(2, "Blink Count", new PaoIdentifier(1, PaoType.MCT310), 1,
