@@ -482,6 +482,7 @@ void DatalinkLayer::recvPacket( DatalinkLayer::packet_t &packet, CtiXfer &xfer )
     xfer.setInBuffer((unsigned char *)&packet + _in_recv);
     xfer.setInCountExpected(_in_expected);
     xfer.setInCountActual(&_in_actual);
+    xfer.setInTimeout(1);  //  Give a minimum of at least 1 second for the receive, even if the bitrate is high and the data size is small.
 
     xfer.setOutBuffer(NULL);
     xfer.setOutCount(0);
