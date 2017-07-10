@@ -217,8 +217,21 @@ public class StrategyValidator extends SimpleValidator<CapControlStrategy> {
                     errors.rejectValue("targetSettings[" + entry.getKey() + "].offPeakValue",
                         "yukon.web.error.themes.isNotValidKVRValue");
                 }
-                
-                
+            }
+            
+            if (entry.getKey().equals(TargetSettingType.MAX_CONSECUTIVE_BANK_OPERATIONS)) {
+                double bankOperationPeakValue =
+                    targetSettings.get(TargetSettingType.MAX_CONSECUTIVE_BANK_OPERATIONS).getPeakValue();
+                double bankOperationOffPeakValue =
+                    targetSettings.get(TargetSettingType.MAX_CONSECUTIVE_BANK_OPERATIONS).getOffPeakValue();
+                if (bankOperationPeakValue < 0 || bankOperationPeakValue % 1 != 0) {
+                    errors.rejectValue("targetSettings[" + entry.getKey() + "].peakValue",
+                        "yukon.web.error.isNotPositiveInt");
+                }
+                if (bankOperationOffPeakValue < 0 || bankOperationOffPeakValue % 1 != 0) {
+                    errors.rejectValue("targetSettings[" + entry.getKey() + "].offPeakValue",
+                        "yukon.web.error.isNotPositiveInt");
+                }
             }
         }
     }
