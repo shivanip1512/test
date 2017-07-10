@@ -60,7 +60,6 @@ import com.cannontech.stars.dr.hardware.dao.LMHardwareConfigurationDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommand;
-import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
@@ -126,6 +125,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
             boolean trackAddressing = ecSettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, ec.getId());
             boolean autoConfig = ecSettingDao.getBoolean(EnergyCompanySettingType.AUTOMATIC_CONFIGURATION, ec.getId());
+            boolean suppressMessages = ecSettingDao.getBoolean(EnergyCompanySettingType.SUPPRESS_IN_OUT_SERVICE_MESSAGES, ec.getId());
 
             LiteAccountInfo liteAccount = starsCustAccountInformationDao.getByAccountId(accountId);
             List<LiteStarsLMProgram> previouslyEnrolledPrograms = liteAccount.getPrograms();
@@ -177,7 +177,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                 lmHardwareCommandService.sendConfigCommand(command);
                             }
                         } else if (inventoryBaseDao.getDeviceStatus(liteHw.getInventoryID())
-                                == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
+                                == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL && !suppressMessages) {
                             LmHardwareCommand command = new LmHardwareCommand();
                             command.setDevice(liteHw);
                             command.setType(LmHardwareCommandType.IN_SERVICE);
@@ -185,8 +185,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
                             lmHardwareCommandService.sendInServiceCommand(command);
                         }
-                    } else {
-                      LmHardwareCommand command = new LmHardwareCommand();
+                    } else if (!suppressMessages) {
+                        LmHardwareCommand command = new LmHardwareCommand();
                         command.setDevice(liteHw);
                         command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
                         command.setUser(user);

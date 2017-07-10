@@ -49,6 +49,7 @@ import com.cannontech.stars.dr.thermostat.model.AccountThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
 import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.EnergyCompany;
 import com.google.common.collect.ImmutableMap;
@@ -127,7 +128,8 @@ public class LmHardwareCommandServiceImpl implements LmHardwareCommandService {
         boolean forceInService = forceInServiceParam != null && forceInServiceParam == true;
         boolean unavailable = inventoryBaseDao.getDeviceStatus(inventoryId) == unavailableStatus;
         
-        boolean sendInService = supportsInService && (forceInService || unavailable);
+        boolean suppressMessages = ecSettingDao.getBoolean(EnergyCompanySettingType.SUPPRESS_IN_OUT_SERVICE_MESSAGES, ec.getId());
+        boolean sendInService = supportsInService && (forceInService || (unavailable && !suppressMessages));
         
         if (sendInService) {
             // Send an in service command first, schedule config command for 5 min later.

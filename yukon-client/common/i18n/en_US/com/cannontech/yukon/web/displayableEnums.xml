@@ -457,6 +457,8 @@
     <entry key="yukon.common.energyCompanySetting.SERIAL_NUMBER_VALIDATION.description">Treat serial numbers as numeric or alphanumeric. Possible values (Numeric, Alphanumeric)</entry>
     <entry key="yukon.common.energyCompanySetting.SINGLE_ENERGY_COMPANY">Single Energy Company</entry>
     <entry key="yukon.common.energyCompanySetting.SINGLE_ENERGY_COMPANY.description">Indicates whether this is a single energy company system.</entry>
+    <entry key="yukon.common.energyCompanySetting.SUPPRESS_IN_OUT_SERVICE_MESSAGES">Suppress In and Out Of Service messages</entry>
+    <entry key="yukon.common.energyCompanySetting.SUPPRESS_IN_OUT_SERVICE_MESSAGES.description">When true, suppresses In and Out of Service messages.</entry>
     <entry key="yukon.common.energyCompanySetting.TRACK_HARDWARE_ADDRESSING">Track Hardware Addressing</entry>
     <entry key="yukon.common.energyCompanySetting.TRACK_HARDWARE_ADDRESSING.description">Controls whether to track the hardware addressing information.</entry>
     <entry key="yukon.common.energyCompanySetting.METER_MCT_BASE_DESIGNATION">Meter Mct Base Designation</entry>

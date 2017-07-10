@@ -48,6 +48,8 @@ import com.cannontech.stars.dr.hardware.model.LmHardwareCommandParam;
 import com.cannontech.stars.dr.hardware.model.LmHardwareCommandType;
 import com.cannontech.stars.dr.hardware.service.LmHardwareCommandService;
 import com.cannontech.stars.dr.hardware.service.impl.PorterExpressComCommandBuilder;
+import com.cannontech.stars.energyCompany.EnergyCompanySettingType;
+import com.cannontech.stars.energyCompany.dao.EnergyCompanySettingDao;
 import com.cannontech.stars.energyCompany.model.YukonEnergyCompany;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.InventoryUtils;
@@ -118,7 +120,8 @@ public class InventoryManagerUtil {
 
         try {
             LiteLmHardwareBase liteHw = (LiteLmHardwareBase) inventoryBaseDao.getByInventoryId(cmd.getInventoryID());
-
+            EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
+            boolean suppressMessage = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.SUPPRESS_IN_OUT_SERVICE_MESSAGES, energyCompany.getEnergyCompanyId());
             // Parameter options corresponds to the infoString field of the switch command queue.
             // It takes the format of "GroupID:XX;RouteID:XX"
             Integer optGroupId = null;
@@ -146,7 +149,9 @@ public class InventoryManagerUtil {
                     command.setDevice(liteHw);
                     command.setType(LmHardwareCommandType.CONFIG);
                     command.setUser(energyCompany.getUser());
-                    command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
+                    if (!suppressMessage) {
+                        command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
+                    }
                     if (optGroupId != null) {
                         command.getParams().put(LmHardwareCommandParam.OPTIONAL_GROUP_ID, optGroupId);
                     }

@@ -36,6 +36,7 @@ public enum EnergyCompanySettingType implements DisplayableEnum {
     INVENTORY_CHECKING_CREATE(HARDWARE, booleanType(), true),
     METER_MCT_BASE_DESIGNATION(HARDWARE, InputTypeFactory.enumType(MeteringType.class), MeteringType.stars),
     SERIAL_NUMBER_VALIDATION(HARDWARE, InputTypeFactory.enumType(SerialNumberValidation.class), SerialNumberValidation.NUMERIC),
+    SUPPRESS_IN_OUT_SERVICE_MESSAGES(HARDWARE, booleanType(), false),
     TRACK_HARDWARE_ADDRESSING(HARDWARE, booleanType(), false),
     WORK_ORDER_NUMBER_AUTO_GEN(HARDWARE, booleanType(), false),
 

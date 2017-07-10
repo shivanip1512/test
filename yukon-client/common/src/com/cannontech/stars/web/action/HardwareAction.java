@@ -396,7 +396,8 @@ public class HardwareAction {
     
         EnergyCompanySettingDao energyCompanySettingDao = YukonSpringHook.getBean(EnergyCompanySettingDao.class);
         boolean useHardwareAddressing = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.TRACK_HARDWARE_ADDRESSING, energyCompany.getEnergyCompanyId());
-    
+        boolean suppressMessage = energyCompanySettingDao.getBoolean(EnergyCompanySettingType.SUPPRESS_IN_OUT_SERVICE_MESSAGES, energyCompany.getEnergyCompanyId());
+        
         for (int i = 0; i < hwsToConfig.size(); i++) {
             LiteLmHardwareBase lHw = hwsToConfig.get(i);
     
@@ -419,15 +420,17 @@ public class HardwareAction {
                         command.setDevice(liteHw);
                         command.setType(LmHardwareCommandType.CONFIG);
                         command.setUser(energyCompany.getUser());
-                        command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
                         
+                        if (!suppressMessage) {
+                            command.getParams().put(LmHardwareCommandParam.FORCE_IN_SERVICE, true);
+                        }
                         commandService.sendConfigCommand(command);
-                    } else {
+                    } else if (!suppressMessage) {
                         LmHardwareCommand command = new LmHardwareCommand();
                         command.setDevice(liteHw);
                         command.setType(LmHardwareCommandType.OUT_OF_SERVICE);
                         command.setUser(energyCompany.getUser());
-                        
+
                         commandService.sendOutOfServiceCommand(command);
                     }
                 }
