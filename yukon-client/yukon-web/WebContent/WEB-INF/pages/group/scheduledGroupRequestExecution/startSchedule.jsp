@@ -16,7 +16,7 @@ $(function () {
 });
 </script>
 
-    <form id="startScheduleForm">
+    <form id="startScheduleForm-${jobId}">
     
     <div id="errorMsg" class="error">${error}</div>
 
@@ -26,7 +26,7 @@ $(function () {
             
                 <input type="hidden" name="${jobId}_CRONEXP_FREQ" value="ONETIME" />
 
-                <tags:switchButton id="nowlater" name="nowlater" onNameKey="yukon.common.later"
+                <tags:switchButton name="nowlater" onNameKey="yukon.common.later"
                     offNameKey="yukon.common.now" offClasses="M0" color="false" toggleGroup="later"
                     toggleAction="hide" />
 

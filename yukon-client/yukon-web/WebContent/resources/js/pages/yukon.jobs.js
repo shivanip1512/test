@@ -19,9 +19,17 @@ yukon.jobs = (function () {
         errors.html(errorMessages);
     }
     
-    var _initialized = false,
+    function enableDisableField (field, disable) {
+        field.attr('disabled', disable);
+        field.find('*').attr('disabled', disable);
+        if (disable) {
+            field.css('pointer-events', 'none');
+        } else {
+            field.css('pointer-events', 'auto');
+        }
+    }
     
-    mod = {};
+    var _initialized = false,
 
     mod = {
         
@@ -45,7 +53,7 @@ yukon.jobs = (function () {
                     } else {
                         window.location.reload();
                     }
-                });;
+                });
             });
             
             $(".js-schedule-start-now").click(function(e){
@@ -104,9 +112,10 @@ yukon.jobs = (function () {
                 var dateTimeVisible = $('#' + jobId + '-cron-exp-one-time').is(":visible"); 
                 var futureStart = dateTimeVisible ? true : false;
                 $('#' + jobId + '_future-start').val(futureStart);
+                var data = $('#startScheduleForm-' + jobId).serialize();
                 //submit job start request
                 $.ajax({
-                     url: yukon.url('/group/scheduledGroupRequestExecution/startJob?' + $('#startScheduleForm').serialize()),
+                     url: yukon.url('/group/scheduledGroupRequestExecution/startJob?' + data),
                      dataType: 'json',
                      data: { 'toggleJobId': jobId} 
                 }).done(function (data) {
@@ -116,7 +125,7 @@ yukon.jobs = (function () {
                     } else {
                         //close the dialog
                         var dialog = $("#startScheduleDialog-" + jobId);
-                        dialog.dialog('close');
+                        dialog.dialog('destroy');
                     }
                 });
             });
@@ -133,51 +142,56 @@ yukon.jobs = (function () {
                 
                 var jobRow = '#tr_' + jobId,
                     nextRun = $(jobRow).find('.nextRunDate').text().trim(),
-                    state = data.state;
+                    state = data.state,
+                    jobRunning = $('#jobRunningSpan_' + jobId),
+                    jobNotRunning = $('#jobNotRunningSpan_' + jobId),
+                    enableSchedule = $('#enable-schedule-' + jobId),
+                    disableSchedule = $('#disable-schedule-' + jobId),
+                    startScheduleNow = $('#start-schedule-' + jobId),
+                    cancelJobButton = $('#cancel-job-btn-' + jobId),
+                    startScheduleButton = $('#startScheduleButton-' + jobId),
+                    cancelScheduleButton = $('#cancel-scheduled-job-btn-' + jobId);
                 
                 $(jobRow).removeClass('success subtle');
+                cancelScheduleButton.hide();
+                cancelJobButton.show();
                 if (state === 'Disabled') {
                     $(jobRow).addClass('subtle');
-                    $('#toggle_' + jobId).removeAttr("disabled");
-                    
-                    $('#jobRunningSpan_' + jobId).hide();
-                    $('#jobNotRunningSpan_' + jobId).show();
-                    //show enable and hide other options
-                    $('#enable-schedule-' + jobId).show();
-                    $('#disable-schedule-' + jobId).hide();
-                    $('#startScheduleButton-' + jobId).hide();
-                    $('#start-schedule-' + jobId).hide();
-                    $('#cancel-job-btn-' + jobId).hide();
-                    $('#cancel-scheduled-job-btn-' + jobId).hide();
+                    jobRunning.hide();
+                    jobNotRunning.show();
+                    //allow enable and disable other options
+                    enableDisableField(startScheduleNow, true);
+                    enableDisableField(enableSchedule, false);
+                    enableDisableField(disableSchedule, true);
+                    enableDisableField(cancelJobButton, true);
+                    enableDisableField(startScheduleButton, true);
+                    //enableDisableField(cancelScheduleButton, true);
                 } else if (state === 'Running') {
                     $(jobRow).addClass('success');
-                    $('#toggle_' + jobId).attr("disabled", true);
-                    
-                    $('#jobRunningSpan_' + jobId).show();
-                    $('#jobNotRunningSpan_' + jobId).hide();
-                    //hide start, enable/disable and show cancel
-                    $('#enable-schedule-' + jobId).hide();
-                    $('#disable-schedule-' + jobId).hide();
-                    $('#startScheduleButton-' + jobId).hide();
-                    $('#start-schedule-' + jobId).hide();
-                    $('#cancel-scheduled-job-btn-' + jobId).hide();
-                    $('#cancel-job-btn-' + jobId).show();
+                    jobRunning.show();
+                    jobNotRunning.hide();
+                    //disable start, enable/disable and enable cancel
+                    enableDisableField(startScheduleNow, true);
+                    enableDisableField(enableSchedule, true);
+                    enableDisableField(disableSchedule, true);
+                    enableDisableField(cancelJobButton, false);
+                    enableDisableField(startScheduleButton, true);
+                    //enableDisableField(cancelScheduleButton, true);
                 } else if (state === 'Scheduled') {
-                    $('#toggle_' + jobId).removeAttr("disabled");
-                    
-                    $('#jobRunningSpan_' + jobId).hide();
-                    $('#jobNotRunningSpan_' + jobId).show();
-                    //show start and disable, hide other options
-                    $('#startScheduleButton-' + jobId).show();
-                    $('#start-schedule-' + jobId).show();
-                    $('#cancel-scheduled-job-btn-' + jobId).hide();
+                    jobRunning.hide();
+                    jobNotRunning.show();
+                    //enable start and disable, disable other options
+                    enableDisableField(startScheduleNow, false);
+                    enableDisableField(enableSchedule, true);
+                    enableDisableField(disableSchedule, false);
+                    enableDisableField(cancelJobButton, true);
+                    enableDisableField(startScheduleButton, false);
                     //allow users to cancel scheduled manual jobs
-                    if(nextRun != 'N/A') {
-                        $('#cancel-scheduled-job-btn-' + jobId).show();
+                    if (nextRun != 'N/A') {
+                        cancelJobButton.hide();
+                        cancelScheduleButton.show();
+                        enableDisableField(cancelScheduleButton, false);
                     }
-                    $('#cancel-job-btn-' + jobId).hide();
-                    $('#enable-schedule-' + jobId).hide();
-                    $('#disable-schedule-' + jobId).show();
                 }
             };
         },
