@@ -1545,7 +1545,7 @@ public class MultispeakMeterServiceImpl extends MultispeakMeterServiceBase imple
             // PROBLEM, types do not match!
             // Attempt to change type
             try {
-                updateDeviceType(templateMeter, existingMeter, serialOrAddress, mspMethod, mspVendor);
+                existingMeter = updateDeviceType(templateMeter, existingMeter, serialOrAddress, mspMethod, mspVendor);
             } catch (ProcessingException | NumberFormatException e) {
                 ErrorObject errorObject =
                     mspObjectDao.getErrorObject(existingMeter.getMeterNumber(), "Error: " + e.getMessage(), "Meter",
