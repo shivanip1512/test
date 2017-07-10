@@ -802,7 +802,7 @@ public class DataStreamingServiceImpl implements DataStreamingService {
             List<Integer> unsupportedDeviceIds = new ArrayList<>(devices.keySet());
             // remove supported devices
             unsupportedDeviceIds.removeAll(deviceIds);
-            log.info("Unsupported=" + unsupportedDeviceIds);
+            log.debug("Unsupported=" + unsupportedDeviceIds);
             Set<Integer> devicesIdsWithoutBehavior = Sets.newHashSet();
             List<Integer> failedVerificationDevices = new ArrayList<>();
 
@@ -811,14 +811,14 @@ public class DataStreamingServiceImpl implements DataStreamingService {
                 devicesIdsWithoutBehavior.addAll(deviceIds);
                 // remove devices with behavior
                 devicesIdsWithoutBehavior.removeAll(deviceIdToBehavior.keySet());
-                log.info("Devices without behaviors=" + devicesIdsWithoutBehavior);
+                log.debug("Devices without behaviors=" + devicesIdsWithoutBehavior);
                 deviceIds.removeAll(devicesIdsWithoutBehavior);
                 if (!deviceIds.isEmpty()) {
                     failedVerificationDevices.addAll(getAllFailedVerificationDevices(deviceIdToBehavior, devices));
                     deviceIds.removeAll(failedVerificationDevices);
-                    log.info("Devices failed NM verifications=" + failedVerificationDevices);
+                    log.debug("Devices failed NM verifications=" + failedVerificationDevices);
                     unsupportedDeviceIds.addAll(failedVerificationDevices);
-                    log.info("Unsupported (Unsupported+failed NM verifications)=" + unsupportedDeviceIds);
+                    log.debug("Unsupported (Unsupported+failed NM verifications)=" + unsupportedDeviceIds);
                     
                     if(!deviceIds.isEmpty()){
                         sendNmConfigurationRemove(deviceIds, requestSeqNumber); 
