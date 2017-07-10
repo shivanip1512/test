@@ -81,6 +81,8 @@ struct Test_PilServer : Cti::Pil::PilServer
     {}
 
     using PilServer::handleRfnDeviceResult;
+    using PilServer::analyzeWhiteRabbits;
+    using RequestQueue = PilServer::RequestQueue;
 
     std::vector<long> getDeviceGroupMembers(std::string groupname) const override
     {
@@ -127,9 +129,9 @@ struct pilEnvironment
 {
     Test_PilServer testPilServer;
 
-    std::vector<std::unique_ptr<CtiRequestMsg>> execList;
+    Test_PilServer::RequestQueue execList;
     std::list<CtiMessage *> retList;
-    boost::ptr_deque<CtiRequestMsg> groupRequests;
+    Test_PilServer::RequestQueue groupRequests;
 
     ~pilEnvironment()
     {
@@ -357,45 +359,46 @@ BOOST_AUTO_TEST_CASE(test_analyzeWhiteRabbits_select_group_pi)
     BOOST_CHECK(execList.empty());
     BOOST_REQUIRE_EQUAL(groupRequests.size(), 10);
 
-    boost::ptr_deque<CtiRequestMsg>::auto_type groupRequest;
+    auto itr = groupRequests.begin();
+    CtiRequestMsg* groupRequest;
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "trancendental numbers select group '/pi'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 3);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "trancendental numbers select group '/pi'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 1);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "trancendental numbers select group '/pi'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 4);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "trancendental numbers select group '/pi'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 1);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "trancendental numbers select group '/pi'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 5);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "trancendental numbers select group '/pi'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 9);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "trancendental numbers select group '/pi'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 2);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "trancendental numbers select group '/pi'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 6);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "trancendental numbers select group '/pi'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 5);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "trancendental numbers select group '/pi'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 3);
 
@@ -415,25 +418,26 @@ BOOST_AUTO_TEST_CASE(test_analyzeWhiteRabbits_select_group_old_style)
 
     BOOST_REQUIRE_EQUAL(groupRequests.size(), 5);
 
-    boost::ptr_deque<CtiRequestMsg>::auto_type groupRequest;
+    auto itr = groupRequests.begin();
+    CtiRequestMsg* groupRequest;
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select group 'testing old-style group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 1);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select group 'testing old-style group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 2);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select group 'testing old-style group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 3);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select group 'testing old-style group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 4);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select group 'testing old-style group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 5);
 
@@ -453,25 +457,26 @@ BOOST_AUTO_TEST_CASE(test_analyzeWhiteRabbits_select_altgroup_old_style)
 
     BOOST_REQUIRE_EQUAL(groupRequests.size(), 5);
 
-    boost::ptr_deque<CtiRequestMsg>::auto_type groupRequest;
+    auto itr = groupRequests.begin();
+    CtiRequestMsg* groupRequest;
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select altgroup 'testing old-style alternate group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 8);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select altgroup 'testing old-style alternate group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 7);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select altgroup 'testing old-style alternate group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 6);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select altgroup 'testing old-style alternate group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 5);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select altgroup 'testing old-style alternate group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 4);
 
@@ -491,25 +496,26 @@ BOOST_AUTO_TEST_CASE(test_analyzeWhiteRabbits_select_billgroup_old_style)
 
     BOOST_REQUIRE_EQUAL(groupRequests.size(), 5);
 
-    boost::ptr_deque<CtiRequestMsg>::auto_type groupRequest;
+    auto itr = groupRequests.begin();
+    CtiRequestMsg* groupRequest;
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select billgroup 'testing old-style billing group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 10);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select billgroup 'testing old-style billing group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 11);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select billgroup 'testing old-style billing group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 12);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select billgroup 'testing old-style billing group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 13);
 
-    groupRequest = groupRequests.pop_front();
+    groupRequest = (*itr++).get();
     BOOST_CHECK_EQUAL(groupRequest->CommandString(), "getvalue kwh select billgroup 'testing old-style billing group'");
     BOOST_CHECK_EQUAL(groupRequest->DeviceId(), 14);
 

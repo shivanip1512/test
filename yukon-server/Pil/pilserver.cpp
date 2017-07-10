@@ -227,8 +227,8 @@ void PilServer::mainThread()
                         {
                             const CtiRequestMsg *req = static_cast<const CtiRequestMsg *>(MsgPtr);
 
-                            auto_ptr<CtiReturnMsg> expiredRequestError(
-                                new CtiReturnMsg(
+                            auto expiredRequestError = 
+                                std::make_unique<CtiReturnMsg>(
                                         req->DeviceId(),
                                         req->CommandString(),
                                         GetErrorString(ClientErrors::RequestExpired),
@@ -238,7 +238,7 @@ void PilServer::mainThread()
                                         req->AttemptNum(),
                                         req->GroupMessageId(),
                                         req->UserMessageId(),
-                                        req->getSOE()));
+                                        req->getSOE());
 
                             requestingClient->WriteConnQue( expiredRequestError.release(), CALLSITE );
                         }
@@ -623,8 +623,8 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
         CTILOG_WARN(dout, "InMessage received from unknown device" <<
                 logItems);
 
-        std::auto_ptr<CtiReturnMsg> idnf_msg(
-            new CtiReturnMsg(
+        auto idnf_msg =
+            std::make_unique<CtiReturnMsg>(
                     InMessage.DeviceID,
                     InMessage.Return.CommandStr,
                     GetErrorString(error) + " / ID = " + CtiNumStr(InMessage.DeviceID),
@@ -634,7 +634,7 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
                     InMessage.Return.Attempt,
                     InMessage.Return.GrpMsgID,
                     InMessage.Return.UserID,
-                    InMessage.Return.SOE));
+                    InMessage.Return.SOE);
 
         retList.push_back(idnf_msg.release());
     }
@@ -657,7 +657,7 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
             CTILOG_UNKNOWN_EXCEPTION_ERROR(dout, "Process Result FAILED "<< DeviceRecord->getName());
         }
 
-        for each( OUTMESS *OutMessage in imrp.outList )
+        for( OUTMESS *OutMessage : imrp.outList )
         {
             OutMessage->MessageFlags |= MessageFlag_ApplyExclusionLogic;
             _porterOMQueue.putQueue(OutMessage);
@@ -676,7 +676,7 @@ void PilServer::handleInMessageResult(const INMESS &InMessage)
         CtiCommandParser parse( cmdstr );
         if(parse.getFlags() & CMD_FLAG_UPDATE)
         {
-            for each( CtiMessage *pMsg in retList )
+            for( CtiMessage *pMsg : retList )
             {
                 if(InMessage.Priority > 0)
                 {
@@ -717,8 +717,8 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
 
     YukonError_t execute(Devices::RfnDevice &dev)
     {
-        std::auto_ptr<CtiReturnMsg> retMsg(
-                new CtiReturnMsg(
+        auto retMsg =
+                std::make_unique<CtiReturnMsg>(
                         result.request.deviceId,
                         result.request.commandString,
                         result.commandResult.description,
@@ -727,24 +727,24 @@ struct RfnDeviceResultProcessor : Devices::DeviceHandler
                         MacroOffset::none,
                         0,
                         result.request.groupMessageId,
-                        result.request.userMessageId));
+                        result.request.userMessageId);
 
         std::ostringstream pointDataDescription;
 
-        for each( const Devices::Commands::DeviceCommand::point_data &pd in result.commandResult.points )
+        for( const auto& pd : result.commandResult.points )
         {
             pointDataDescription << "\n";
 
             if( const CtiPointSPtr p = dev.getDevicePointOffsetTypeEqual(pd.offset, pd.type) )
             {
-                std::auto_ptr<CtiPointDataMsg> pdMsg(
-                        new CtiPointDataMsg(
+                auto pdMsg =
+                        std::make_unique<CtiPointDataMsg>(
                                 p->getID(),
                                 pd.value,
                                 pd.quality,
                                 p->getType(),
                                 pd.description,
-                                pd.tags));
+                                pd.tags);
 
                 pdMsg->setTime(pd.time);
 
@@ -804,12 +804,12 @@ void PilServer::handleRfnDeviceResult(const RfnDeviceResult &result)
         CTILOG_ERROR(dout, "RFN result received from unknown device" <<
                 logItems);
 
-        std::auto_ptr<CtiReturnMsg> idnf_msg(
-                new CtiReturnMsg(
+        auto idnf_msg =
+                std::make_unique<CtiReturnMsg>(
                         result.request.deviceId,
                         result.request.commandString,
                         "Device lookup failed. ID = " + CtiNumStr(result.request.deviceId),
-                        ClientErrors::IdNotFound));
+                        ClientErrors::IdNotFound);
 
         idnf_msg->setGroupMessageId(result.request.groupMessageId);
         idnf_msg->setUserMessageId (result.request.userMessageId);
@@ -843,7 +843,7 @@ void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase
 {
     try
     {
-        for each( CtiMessage *pRet in retList )
+        for( CtiMessage *pRet : retList )
         {
             if( priority > 0)
             {
@@ -888,7 +888,7 @@ void PilServer::sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase
         }
         retList.clear();
 
-        for each( CtiMessage *vgMsg in vgList )
+        for( CtiMessage *vgMsg : vgList )
         {
             VanGoghConnection.WriteConnQue(vgMsg, CALLSITE);
         }
@@ -911,7 +911,7 @@ void PilServer::nexusThread()
         /* perform the wait loop forever */
         for( ; !bServerClosing ; )
         {
-            std::auto_ptr<INMESS> InMessage(new INMESS); // INMESS set to zero in the constructor
+            auto InMessage = std::make_unique<INMESS>(); // INMESS set to zero in the constructor
 
             try
             {
@@ -1041,7 +1041,7 @@ struct RequestExecuter : Devices::DeviceHandler
             retList.push_back( returnMsgList.pop_front().release() );
         }
 
-        for each( const Devices::Commands::RfnCommandSPtr &command in commands )
+        for( const Devices::Commands::RfnCommandSPtr &command : commands )
         {
             req.command = command;
 
@@ -1131,18 +1131,18 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
     list< CtiMessage* >  retList;
     list< OUTMESS* >     outList;
 
-    std::vector<std::unique_ptr<CtiRequestMsg>> execList;
+    RequestQueue execList;
 
     try
     {
-        boost::ptr_deque<CtiRequestMsg> groupRequests;
+        RequestQueue groupRequests;
 
         // Note that any and all arguments into this method may be altered on exit!
         analyzeWhiteRabbits(*pReq, _currentParse, execList, groupRequests, retList);
 
-        while( ! groupRequests.empty() )
+        for( auto& groupRequest : groupRequests )
         {
-            _groupQueue.insert(groupRequests.pop_front().release());
+            _groupQueue.insert(groupRequest.release());
         }
     }
     catch(...)
@@ -1197,7 +1197,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
 
                 _rfnRequestId = _rfnManager.submitRequests(executer.rfnRequests, _rfnRequestId);
 
-                for each( CtiMessage *msg in executer.retList )
+                for( CtiMessage *msg : executer.retList )
                 {
                     //  smuggle any request messages back out to the scheduler queue
                     if( msg && msg->isA() == MSG_PCREQUEST )
@@ -1270,32 +1270,43 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
         CTILOG_DEBUG(dout, "Submitting "<< retList.size() <<" CtiReturnMsg objects to client");
     }
 
-    for each( CtiReturnMsg *pcRet in retList )
+    for( CtiMessage* msg : retList )
     {
-        //  Note that this sends all responses to the initial request message's connection -
-        //    even if any other return messages were generated by another ExecuteRequest invoked
-        //    from the original and have their ConnectionHandle set to 0!
-        CtiServer::ptr_type ptr = findConnectionManager(pReq->getConnectionHandle());
-
-        if(ptr)
+        if( msg->isA() == MSG_PCRETURN )
         {
-            CtiConnectionManager *CM = (CtiConnectionManager *)ptr.get();
-            if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
-            {
-                CTILOG_DEBUG(dout, *pcRet);
-            }
+            auto pcRet = static_cast<CtiReturnMsg*>(msg);
 
-            CM->WriteConnQue(pcRet, CALLSITE);
+            //  Note that this sends all responses to the initial request message's connection -
+            //    even if any other return messages were generated by another ExecuteRequest invoked
+            //    from the original and have their ConnectionHandle set to 0!
+            CtiServer::ptr_type ptr = findConnectionManager(pReq->getConnectionHandle());
+
+            if(ptr)
+            {
+                CtiConnectionManager *CM = (CtiConnectionManager *)ptr.get();
+                if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
+                {
+                    CTILOG_DEBUG(dout, *pcRet);
+                }
+
+                CM->WriteConnQue(pcRet, CALLSITE);
+            }
+            else
+            {
+                if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
+                {
+                    CTILOG_DEBUG(dout, "Notice: Request Message did not indicate return path - Response will be discarded."<<
+                        endl <<"Command: "<< pcRet->CommandString());
+                }
+
+                delete pcRet;
+            }
         }
         else
         {
-            if(DebugLevel & DEBUGLEVEL_PIL_INTERFACE)
-            {
-                CTILOG_DEBUG(dout, "Notice: Request Message did not indicate return path - Response will be discarded."<<
-                        endl <<"Command: "<< pcRet->CommandString());
-            }
+            CTILOG_WARN(dout, "Message was not a CtiReturnMsg:" << msg);
 
-            delete pcRet;
+            delete msg;
         }
     }
     retList.clear();
@@ -1305,7 +1316,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
         CTILOG_DEBUG(dout, "Submitting " << outList.size() << " CtiOutMessage objects to porter");
     }
 
-    for each( OUTMESS *OutMessage in outList )
+    for( OUTMESS *OutMessage : outList )
     {
         _porterOMQueue.putQueue(OutMessage);
     }
@@ -1316,7 +1327,7 @@ YukonError_t PilServer::executeRequest(const CtiRequestMsg *pReq)
         CTILOG_DEBUG(dout, "Submitting " << vgList.size() << " CtiMessage objects to dispatch");
     }
 
-    for each( CtiMessage *pVg in vgList )
+    for( CtiMessage *pVg : vgList )
     {
         VanGoghConnection.WriteConnQue(pVg, CALLSITE);
     }
@@ -1531,7 +1542,7 @@ vector<long> PilServer::getDeviceGroupMembers( string groupname ) const
         Cti::Database::DatabaseReader rdr(connection, sql.str());
 
         //  Fill in the parameters
-        for each( const string &groupSegment in groupSegments )
+        for( const string &groupSegment : groupSegments )
         {
             rdr << groupSegment;
         }
@@ -1557,7 +1568,7 @@ vector<long> PilServer::getDeviceGroupMembers( string groupname ) const
 }
 
 
-void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &parse, std::vector<std::unique_ptr<CtiRequestMsg>>& execList, boost::ptr_deque<CtiRequestMsg> &groupRequests, list< CtiMessage* > & retList)
+void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &parse, RequestQueue& execList, RequestQueue& groupRequests, list< CtiMessage* > & retList)
 {
     std::unique_ptr<CtiRequestMsg> pReq(static_cast<CtiRequestMsg *>(Req.replicateMessage()));
     pReq->setConnectionHandle( Req.getConnectionHandle() );
@@ -1662,7 +1673,7 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
          std::string group_key, group_prefix;
 
         //  look for a group key we know about
-        for each( const GroupKeyAndPrefix group_info in ordered_group_parse_keys )
+        for( const GroupKeyAndPrefix group_info : ordered_group_parse_keys )
         {
             boost::tie(group_key, group_prefix) = group_info;
 
@@ -1683,17 +1694,17 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
 
                 const std::vector<long> deviceGroupMemberIds = getDeviceGroupMembers(group_name);
 
-                for each( const long deviceid in deviceGroupMemberIds )
+                for( const long deviceid : deviceGroupMemberIds )
                 {
                     //   Note that we're going to let PIL fail us on a failed device lookup to save us the device lookup here
                     pReq->setDeviceId(deviceid);
 
                     // Create a message for this one!
-                    std::auto_ptr<CtiRequestMsg> pNew(static_cast<CtiRequestMsg *>(pReq->replicateMessage()));
+                    std::unique_ptr<CtiRequestMsg> pNew{ static_cast<CtiRequestMsg *>(pReq->replicateMessage()) };
                     pNew->setConnectionHandle(pReq->getConnectionHandle());
 
                     //  put it on the group queue to be processed in order
-                    groupRequests.push_back(pNew);
+                    groupRequests.push_back(std::move(pNew));
                 }
 
                 CTILOG_INFO(dout, group_name <<" found "<< deviceGroupMemberIds.size() <<" target devices.");
@@ -1797,7 +1808,7 @@ void PilServer::analyzeWhiteRabbits(const CtiRequestMsg& Req, CtiCommandParser &
 
                 CtiToLower(groupname);
 
-                for each( const long deviceid in getDeviceGroupMembers(groupname) )
+                for( const long deviceid : getDeviceGroupMembers(groupname) )
                 {
                     if( CtiDeviceSPtr device = DeviceManager->getDeviceByID(deviceid) )
                     {
@@ -1859,7 +1870,7 @@ void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager
     return;
 }
 
-INT PilServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, std::vector<std::unique_ptr<CtiRequestMsg>>& execList, list< CtiMessage* > & retList)
+INT PilServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RequestQueue& execList, list< CtiMessage* > & retList)
 {
     INT status = ClientErrors::None;
     int i;
@@ -1934,7 +1945,7 @@ INT PilServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, std:
 }
 
 
-INT PilServer::analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, std::vector<std::unique_ptr<CtiRequestMsg>>& execList, list< CtiMessage* > & retList)
+INT PilServer::analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, RequestQueue& execList, list< CtiMessage* > & retList)
 {
     CtiDeviceManager::coll_type::reader_lock_guard_t guard(DeviceManager->getLock());  //  I don't think we need this, but I'm leaving it until we prove that out
 
@@ -2135,7 +2146,7 @@ void PilServer::periodicActionThread()
 
             DeviceManager->getDevicesByType( TYPE_RDS, rdsDevices );
 
-            for each ( CtiDeviceSPtr device in rdsDevices )
+            for( CtiDeviceSPtr device : rdsDevices )
             {
                 if( ! device->isInhibited() &&
                     device->timeToPerformPeriodicAction( CtiTime::now() ) )
@@ -2162,7 +2173,7 @@ void PilServer::periodicActionThread()
 
             DeviceManager->getDevicesByType( TYPE_RFN1200, rfDaDevices );
 
-            for each( CtiDeviceSPtr device in rfDaDevices )
+            for( CtiDeviceSPtr device : rfDaDevices )
             {
                 if( ! device->isInhibited() &&
                     ! device->hasDynamicInfo(CtiTableDynamicPaoInfo::Key_RF_DA_DnpSlaveAddress) )

@@ -73,12 +73,18 @@ class IM_EX_CTIPIL PilServer : public CtiServer
 
 protected:
 
+   using RequestQueue = std::deque<std::unique_ptr<CtiRequestMsg>>;
+
    virtual void sendResults(CtiDeviceBase::CtiMessageList &vgList, CtiDeviceBase::CtiMessageList &retList, const int priority, const ConnectionHandle connectionHandle);
 
    virtual std::vector<long> getDeviceGroupMembers( std::string groupname ) const;
 
    void handleInMessageResult(const INMESS &InMessage);
    void handleRfnDeviceResult(const RfnDeviceResult &result);
+
+   void analyzeWhiteRabbits(const CtiRequestMsg& pReq, CtiCommandParser &parse, RequestQueue& execList, RequestQueue& groupRequests, std::list< CtiMessage* > & retList);
+   int  analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, RequestQueue& execList, std::list< CtiMessage* > & retList);
+   int  analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse, RequestQueue& execList, std::list< CtiMessage* > & retList);
 
 public:
 
@@ -101,10 +107,6 @@ public:
    void  vgConnThread();
    void  schedulerThread();
    void  periodicActionThread();
-
-   void analyzeWhiteRabbits(const CtiRequestMsg& pReq, CtiCommandParser &parse, std::vector<std::unique_ptr<CtiRequestMsg>>& execList, boost::ptr_deque<CtiRequestMsg> &groupRequests, std::list< CtiMessage* > & retList);
-   INT  analyzeAutoRole    (CtiRequestMsg& Req, CtiCommandParser &parse, std::vector<std::unique_ptr<CtiRequestMsg>>& execList, std::list< CtiMessage* > & retList);
-   INT  analyzePointGroup  (CtiRequestMsg& Req, CtiCommandParser &parse, std::vector<std::unique_ptr<CtiRequestMsg>>& execList, std::list< CtiMessage* > & retList);
 
    void putQueue(CtiMessage *Msg);
 
