@@ -580,13 +580,32 @@ DELETE FROM POINT WHERE POINTID IN (
 /* End YUK-16470 */
 
 /* Start YUK-16502 */
+/* @start-block */
 IF (SELECT DISTINCT 1 FROM CTIDatabase WHERE 6.7 <= (SELECT MAX(version) FROM CTIDatabase)) IS NULL
 BEGIN
-	UPDATE RAWPOINTHISTORY SET TIMESTAMP = DATEADD(SECOND, -VALUE, TIMESTAMP)
-	WHERE pointid IN (SELECT pointid FROM point p JOIN YukonPAObject ypo ON p.PAObjectID = ypo.PAObjectID 
-	AND PointType = 'Analog' AND POINTOFFSET = 100
-	AND Type LIKE 'RFN%')
+    DELETE FROM RAWPOINTHISTORY 
+    WHERE pointid IN (
+        SELECT p.pointid 
+        FROM point p 
+        JOIN YukonPAObject ypo 
+            ON p.PAObjectID = ypo.PAObjectID 
+        WHERE p.PointType = 'Analog' 
+        AND p.POINTOFFSET = 100
+        AND ypo.Type LIKE 'RFN%')
+    AND VALUE > 2147483647; /* This is the max value of a signed int */
+
+    UPDATE RAWPOINTHISTORY 
+    SET TIMESTAMP = DATEADD(SECOND, -VALUE, TIMESTAMP)
+    WHERE pointid IN (
+        SELECT p.pointid 
+        FROM point p 
+        JOIN YukonPAObject ypo 
+            ON p.PAObjectID = ypo.PAObjectID 
+        WHERE p.PointType = 'Analog' 
+        AND p.POINTOFFSET = 100
+        AND ypo.Type LIKE 'RFN%')
 END;
+/* @end-block */
 /* End YUK-16502 */
 
 /* Start YUK-16618 */

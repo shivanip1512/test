@@ -577,14 +577,34 @@ DELETE FROM POINT WHERE POINTID IN (
 DECLARE
     v_exists NUMBER;
 BEGIN
-  SELECT CASE WHEN (SELECT DISTINCT 1  FROM CTIDatabase WHERE 6.7 <= (SELECT MAX(version) FROM CTIDatabase)) IS NULL THEN 0 ELSE 1  END 
-    AS temp INTO v_exists FROM dual;
-        IF v_exists != 1 THEN
-            UPDATE RAWPOINTHISTORY SET TIMESTAMP = TIMESTAMP - numtodsinterval(VALUE, 'SECOND') 
-            WHERE pointid IN (SELECT pointid FROM point p JOIN YukonPAObject ypo ON p.PAObjectID = ypo.PAObjectID 
-            AND PointType = 'Analog' AND POINTOFFSET = 100
+    SELECT CASE WHEN (SELECT DISTINCT 1 FROM CTIDatabase WHERE 6.7 <= (SELECT MAX(version) FROM CTIDatabase)) IS NULL 
+        THEN 0 
+        ELSE 1 
+    END AS temp INTO v_exists FROM dual;
+
+    IF v_exists != 1 THEN
+        DELETE FROM RAWPOINTHISTORY 
+        WHERE pointid IN (
+            SELECT p.pointid 
+            FROM point p 
+            JOIN YukonPAObject ypo 
+                ON p.PAObjectID = ypo.PAObjectID 
+            WHERE p.PointType = 'Analog' 
+            AND p.POINTOFFSET = 100
+            AND ypo.Type LIKE 'RFN%')
+        AND VALUE > 2147483647; /* This is the max value of a signed int */
+
+        UPDATE RAWPOINTHISTORY 
+        SET TIMESTAMP = TIMESTAMP - numtodsinterval(VALUE, 'SECOND') 
+        WHERE pointid IN (
+            SELECT pointid 
+            FROM point p 
+            JOIN YukonPAObject ypo 
+                ON p.PAObjectID = ypo.PAObjectID 
+            WHERE PointType = 'Analog' 
+            AND POINTOFFSET = 100
             AND Type LIKE 'RFN%');
-        END IF;
+    END IF;
 END;
 /
 /* @end-block */
