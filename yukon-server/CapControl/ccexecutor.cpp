@@ -1413,7 +1413,6 @@ void CtiCCCommandExecutor::disableTimeControl(long bankId,std::vector<CtiSignalM
         seasonOneValue &= 0xfe;
 
         //Send point update message with new value.
-        CtiRequestMsg* reqMsg = NULL;
         string commandStringOne = "putvalue analog " + CtiNumStr(offsetOne).toString() + " " + CtiNumStr((int)seasonOneValue).toString();
         reqMsg = createPorterRequestMsg(controllerId,commandStringOne);
         reqMsg->setSOE(5);
