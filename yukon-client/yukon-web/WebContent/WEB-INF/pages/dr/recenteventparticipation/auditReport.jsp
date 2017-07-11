@@ -34,11 +34,11 @@
                                 <div class="progress" style="width: 80px; float: left;">
                                     <div class="progress-bar progress-bar-success" role="progressbar"
                                         aria-valuenow="${recentEventParticipationSummary.eventStats.percentConfirmed}%"
-                                        title="${recentEventParticipationSummary.numConfirmed} <i:inline key=".confirmed" />"
+                                        title="<i:inline key=".confirmed" arguments="${recentEventParticipationSummary.numConfirmed}"/>"
                                         aria-valuemin="0" aria-valuemax="100" style="width: ${successWidth}%"></div>
                                     <div class="progress-bar progress-bar-warning" role="progressbar"
                                         aria-valuenow="${recentEventParticipationSummary.eventStats.percentUnknown}%"
-                                        title="${recentEventParticipationSummary.numUnknowns} <i:inline key=".unreported" />"
+                                        title="<i:inline key=".unreported" arguments="${recentEventParticipationSummary.numUnknowns}" />"
                                         aria-valuemin="0" aria-valuemax="100" style="width: ${failedWidth}%">
                                     </div>
                                 </div>
