@@ -18,7 +18,7 @@
     <tags:nameValue2 nameKey=".schedule.season">
         <form:select path="seasonSchedule" cssClass="js-season-schedule-select">
             <c:forEach var="schedule" items="${seasonSchedules}">
-                <form:option value="${schedule.scheduleId}" label="${fn:escapeXml(schedule.scheduleName)}"/>
+                <form:option value="${schedule.scheduleId}" label="${schedule.scheduleName}"/>
             </c:forEach>
         </form:select>
     </tags:nameValue2>
@@ -40,7 +40,7 @@
                     <form:select path="seasonAssignments[${status.index}].strategyId">
                         <form:option value="-1"><cti:msg2 key="yukon.common.none.choice"/></form:option>
                         <c:forEach var="strategy" items="${strategies}">
-                            <form:option value="${strategy.id}" label="${fn:escapeXml(strategy.name)}"/>
+                            <form:option value="${strategy.id}" label="${strategy.name}"/>
                         </c:forEach>
                     </form:select>
                 </td>
@@ -54,7 +54,7 @@
     <tags:nameValue2 nameKey=".schedule.holiday">
         <form:select path="holidaySchedule" cssClass="js-holiday-schedule-select">
             <c:forEach var="schedule" items="${holidaySchedules}">
-                <form:option value="${schedule.holidayScheduleId}" label="${fn:escapeXml(schedule.holidayScheduleName)}"/>
+                <form:option value="${schedule.holidayScheduleId}" label="${schedule.holidayScheduleName}"/>
             </c:forEach>
         </form:select>
     </tags:nameValue2>
@@ -62,7 +62,7 @@
     <tags:nameValue2 nameKey=".strategy" rowClass="js-holiday-strat ${clazz}">
         <form:select path="holidayStrategy">
             <c:forEach var="strategy" items="${strategies}">
-                <form:option value="${strategy.id}" label="${fn:escapeXml(strategy.name)}"/>
+                <form:option value="${strategy.id}" label="${strategy.name}"/>
             </c:forEach>
         </form:select>
     </tags:nameValue2>
