@@ -84,7 +84,7 @@ public class DashboardUsersPicker extends DatabasePicker<UltraLightYukonUser> {
 
                 @Override
                 public String getUserGroupName() {
-                    return userGroupName;
+                    return userGroupName == null ? "" : userGroupName;
                 }
 
                 @Override
