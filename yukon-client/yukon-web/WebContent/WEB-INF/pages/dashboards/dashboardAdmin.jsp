@@ -75,7 +75,8 @@
                             </c:otherwise>
                         </c:choose>
                         <li class="dropdown-option">
-                            <tags:pickerDialog type="dashboardUsersPicker" id="dashboardUsers_${dashboardId}" extraArgs="${dashboardId}" allowEmptySelection="true">
+                            <cti:uniqueIdentifier var="id" />
+                            <tags:pickerDialog type="dashboardUsersPicker" id="dashboardUsers_${id}" extraArgs="${dashboardId}" allowEmptySelection="true">
                                 <cti:icon icon="icon-group"/>                                
                                 <cti:msg2 key=".viewUsers" />
                             </tags:pickerDialog>
