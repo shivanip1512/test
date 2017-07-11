@@ -56,9 +56,10 @@ yukon.dashboards = (function () {
             
             /** Assign Users  */
             $(document).on('yukon:dashboard:assignUsers', function (ev) {
-                var selectedUsers = yukon.pickers['dashboardUsersPicker'].selectedItems,
-                    dashboardId = $('#dashboardId').val(),
-                    dashboardType = $('#dashboardType').val(),
+                var dialog = $(ev.target),
+                    selectedUsers = yukon.pickers['dashboardUsersPicker'].selectedItems,
+                    dashboardId = dialog.find('#dashboardId').val(),
+                    dashboardType = dialog.find('#dashboardType').val(),
                     users = selectedUsers.map(function (item) { return item.userId; });
                 
                 var data = {
