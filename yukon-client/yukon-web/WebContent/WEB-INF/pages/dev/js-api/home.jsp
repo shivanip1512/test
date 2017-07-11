@@ -139,7 +139,7 @@ yukon.my.nested.object = { foo: 'bar' };
     <a target="_blank" href="https://en.wikipedia.org/wiki/Immediately-invoked_function_expression">IIFE</a> which provides
      a closure to house module data.
     Modules return an object usually named <span class="label label-attr">mod</span> which is the public api of that module. 
-    Yukon modules usually have an public <span class="label label-attr">init</span> function to do any intitializing work 
+    Yukon modules usually have a public <span class="label label-attr">init</span> function to do any intitializing work 
     which is called after the function and wrapped in a jquery 'document ready' event handler.<br>
     <span class="label label-info">Note:</span>  All properties of the <span class="label label-attr">mod</span> object 
     are public.  All variables and functions declared outside of <span class="label label-attr">mod</span> are private 
@@ -1580,7 +1580,7 @@ $(document).on(&#39;click&#39;, &#39;.js-adjust-movers-example .js-up, .js-adjus
 
 <h3>Class: .js-with-movables, .js-move-up, .js-move-down</h3>
 <p class="description">
-    <span class="label label-attr">yukon.ui.movables</span> is a module that handles moving items in an list of things.
+    <span class="label label-attr">yukon.ui.movables</span> is a module that handles moving items in a list of things.
     It works by listening for clicks on <span class="label label-attr">.js-move-up</span> and 
     <span class="label label-attr">.js-move-down</span> elements inside of a container with 
     <span class="label label-attr">.js-with-movables</span>.  It is meant to work with any type of elements, not just
@@ -1994,7 +1994,7 @@ $(&#39;.js-jq-disable-btn-2&#39;).click(function () {
 <h3 id="add-msg-ex">$.addMessage, $.removeMessages</h3>
 <p class="description">
     <span class="label label-attr">$.addMessage</span> adds an alert to a container element and 
-    <span class="label label-attr">$.addMessage</span> removes all alerts from a container element.
+    <span class="label label-attr">$.removeMessages</span> removes all alerts from a container element.
 </p>
 <h4 class="subtle">Example:</h4>
 <div class="clearfix">
