@@ -133,6 +133,7 @@ public class MeterController {
     @RequestMapping("start")
     public String start(ModelMap model, YukonUserContext userContext) {
         Dashboard amiDashboard = dashboardService.getAssignedDashboard(userContext.getYukonUser().getUserID(), DashboardPageType.AMI);
+        model.addAttribute("dashboardPageType", DashboardPageType.AMI);
         return "redirect:/dashboards/" + amiDashboard.getDashboardId() + "/view";
     }
         

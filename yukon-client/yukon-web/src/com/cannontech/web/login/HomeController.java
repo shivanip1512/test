@@ -53,6 +53,7 @@ public class HomeController {
     @RequestMapping("/dashboard")
     public String dashboard(ModelMap model, YukonUserContext userContext) {
         Dashboard mainDashboard = dashboardService.getAssignedDashboard(userContext.getYukonUser().getUserID(), DashboardPageType.MAIN);
+        model.addAttribute("dashboardPageType", DashboardPageType.MAIN);
         return "redirect:/dashboards/" + mainDashboard.getDashboardId() + "/view";
     }
 

@@ -5,6 +5,14 @@
 
 <cti:standardPage module="dashboard" page="view">
 
+    <cti:breadCrumbs>
+        <cti:crumbLink url="/dashboard" title="Home" />
+        <c:if test="${dashboardPageType == 'AMI'}">
+            <cti:crumbLink url="/meter/start" title="AMI" />
+        </c:if>
+        <cti:crumbLink>${dashboard.name}</cti:crumbLink>
+    </cti:breadCrumbs>
+
 <tags:setFormEditMode mode="${mode}"/>
 <cti:yukonUser var="user"/>
 
@@ -12,7 +20,7 @@
         <c:if test="${ownedDashboards.size() > 0}">
             <c:forEach var="ownedDashboard" items="${ownedDashboards}" varStatus="status">
                 <c:if test="${ownedDashboard.dashboardId != dashboard.dashboardId && status.index <= 10}">
-                    <cti:url var="dashboardUrl" value="/dashboards/${ownedDashboard.dashboardId}/view"/>
+                    <cti:url var="dashboardUrl" value="/dashboards/${ownedDashboard.dashboardId}/view?dashboardPageType=${dashboardPageType}"/>
                     <cm:dropdownOption label="${ownedDashboard.name}" href="${dashboardUrl}"/>
                 </c:if>
             </c:forEach>
@@ -24,6 +32,14 @@
         </c:if>
         <cti:url var="manageDashboardsUrl" value="/dashboards/manage"/>
         <cm:dropdownOption key=".manageDashboards" href="${manageDashboardsUrl}"/>
+        <c:if test="${dashboardPageType == 'AMI'}">
+            <cti:checkRolesAndProperties value="ENDPOINT_PERMISSION" level="CREATE">
+                <cti:msg2 key="yukon.web.modules.amr.create" var="popupTitle"/>
+                <div id="contentPopup" class="dn" data-create-title="${popupTitle}"></div>
+                <li class="divider"/>
+                <cm:dropdownOption key="yukon.web.modules.amr.create" classes="js-create-meter" data-popup-title="${popupTitle}"/>
+            </cti:checkRolesAndProperties>
+        </c:if>
     </div>
 
     <div class="column-12-12">
@@ -47,5 +63,9 @@
     <c:forEach var="widgetCssLink" items="${widgetCss}">
         <cti:includeScript link="${widgetCssLink}"/>
     </c:forEach>
+    
+    <c:if test="${dashboardPageType == 'AMI'}">
+        <cti:includeScript link="/resources/js/pages/yukon.ami.meter.details.js"/>
+    </c:if>
     
 </cti:standardPage>

@@ -274,12 +274,14 @@ public class DashboardsController {
     }
     
     @RequestMapping("{id}/view")
-    public String viewDashboard(@PathVariable int id, ModelMap model, YukonUserContext userContext, FlashScope flash) {
+    public String viewDashboard(@PathVariable int id, @RequestParam(value="dashboardPageType", required=false) DashboardPageType dashboardPageType, ModelMap model, 
+                                YukonUserContext userContext, FlashScope flash) {
         Dashboard dashboard = dashboardService.getDashboard(id);
         boolean adminDashboards = rolePropertyDao.checkProperty(YukonRoleProperty.ADMIN_MANAGE_DASHBOARDS, userContext.getYukonUser());
         if (adminDashboards || dashboardService.isVisible(userContext.getYukonUser().getUserID(), id)) {
             model.addAttribute("mode", PageEditMode.VIEW);
             model.addAttribute("dashboard", dashboard);
+            model.addAttribute("dashboardPageType", dashboardPageType);
             Set<String> widgetJavascript = dashboard.getAllWidgets()
                                                     .stream()
                                                     .map(widget -> widget.getType().getRequiredJavascript())
