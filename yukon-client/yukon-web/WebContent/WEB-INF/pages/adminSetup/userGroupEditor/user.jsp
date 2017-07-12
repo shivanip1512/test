@@ -43,7 +43,7 @@
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <tags:selectNameValue nameKey=".userGroup" items="${userGroups}" itemValue="userGroupId" 
                             itemLabel="userGroupName" path="userGroupId"
-                            defaultItemLabel="${none}" defaultItemValue""/>
+                            defaultItemLabel="${none}" defaultItemValue=""/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
                         <tags:nameValue2 nameKey=".userGroup">
