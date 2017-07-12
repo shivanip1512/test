@@ -1084,6 +1084,8 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
                 continue;
             }
 
+            analog.value *= dnpId.Multiplier;
+
             if( fdrPoint.isControllable() )
             {
                 if( isDnpDeviceId( fdrPoint.getPaoID() ) )
