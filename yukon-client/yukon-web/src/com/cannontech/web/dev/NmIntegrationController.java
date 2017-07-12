@@ -77,7 +77,6 @@ import com.cannontech.dr.rfn.model.SimulatorSettings;
 import com.cannontech.dr.rfn.model.SimulatorSettings.ReportingInterval;
 import com.cannontech.dr.rfn.service.RfnPerformanceVerificationService;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.simulators.SimulatorType;
 import com.cannontech.simulators.message.request.DataStreamingSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.GatewaySimulatorStatusRequest;
 import com.cannontech.simulators.message.request.ModifyDataStreamingSimulatorRequest;
@@ -123,8 +122,6 @@ public class NmIntegrationController {
     @Autowired private RfnGatewayDataCache gatewayCache;
     @Autowired private RfnGatewaySimulatorService gatewaySimService;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
-    @Autowired private SimulatorStartupSettingsControlUtils simulatorStartupSettingsControlUtils;
-
     SimulatorSettings lcrCurrentSettings = new SimulatorSettings(100000, 200000, 300000, 320000, 10,
         ReportingInterval.REPORTING_INTERVAL_24_HOURS);
 
@@ -482,7 +479,7 @@ public class NmIntegrationController {
         return "rfn/viewLcrReadArchive.jsp";
     }
 
-    @RequestMapping("stopMetersArchieveRequest")
+    @RequestMapping("stopMetersArchiveRequest")
     public void stopRfnMeterSimulator(FlashScope flash) {
         try {
             simulatorsCommunicationService.sendRequest(new RfnMeterDataSimulatorStopRequest(),
@@ -516,18 +513,6 @@ public class NmIntegrationController {
             flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
                 "Unable to send message to Simulator Service: " + e.getMessage()));
         }
-    }
-    
-    @RequestMapping("updateStartup")
-    @ResponseBody
-    public Map<String, Object> updateStartup(SimulatorType simulatorType, boolean runOnStartup, FlashScope flash) {
-        return simulatorStartupSettingsControlUtils.updateStartup(simulatorType, runOnStartup, flash);
-    }
-    
-    @RequestMapping("existingStartupStatus")
-    @ResponseBody
-    public Map<String, Object> existingStartupStatus(SimulatorType simulatorType, FlashScope flash) {
-        return simulatorStartupSettingsControlUtils.existingStartupStatus(simulatorType, flash);
     }
 
     @RequestMapping("existing-rfnMetersimulator-status")

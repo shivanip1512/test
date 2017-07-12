@@ -4,99 +4,6 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="dev" page="rfnTest.viewGatewayDataSimulator">
-    <script>
-        $(function() {
-            //Script for SimulatorStartupSettings functionality
-            var simType = "GATEWAY";
-            $('#enable-startup, #disable-startup').click(_updateStartup);
-            _checkStartupStatus(null, {simulatorType: simType});   
-        
-            function _updateStartup(event) {
-                var startupData = {simulatorType: simType};
-                if ($(this).attr('id') === 'enable-startup') {
-                    startupData.runOnStartup = true;
-                    $.ajax({
-                        url: yukon.url('/dev/rfn/updateStartup'),
-                        type: 'post',
-                        data: startupData
-                    }).done(function(data) {
-                        if (data.hasError) {
-                            _checkStartupStatus(data.errorMessage, startupData);
-                        } else {
-                            yukon.ui.removeAlerts();
-                        }
-                    }).fail(function() {
-                        _checkStartupStatus("The simulator startup settings update request to the controller failed.", startupData);
-                    });
-                } else if ($(this).attr('id') === 'disable-startup') {
-                    startupData.runOnStartup = false;
-                    $.ajax({
-                        url: yukon.url('/dev/rfn/updateStartup'),
-                        type: 'post',
-                        data: startupData
-                    }).done(function(data) {
-                        if (data.hasError) {
-                            _checkStartupStatus(data.errorMessage, startupData);
-                        } else {
-                            yukon.ui.removeAlerts();
-                        }
-                    }).fail(function() {
-                        _checkStartupStatus("The simulator startup settings update request to the controller failed.", startupData);
-                    });
-                }
-            }
-             
-            function _checkStartupStatus(prevErrorMessage, startupData) {
-                $.ajax({
-                    url: yukon.url('/dev/rfn/existingStartupStatus'),
-                    type: 'post',
-                    data: startupData
-                }).done(function(data) {
-                    if (data.hasError) {
-                        yukon.ui.alertError(prevErrorMessage + " " + data.errorMessage + " Refresh the page to try again.");
-                        $('#enable-startup').attr("disabled", "true");
-                        $('#disable-startup').attr("disabled", "true");
-                        $('#enable-startup').removeClass('on');
-                        $('#disable-startup').removeClass('on');
-                    } else {
-                        if (prevErrorMessage) {
-                            yukon.ui.alertError(prevErrorMessage);
-                        }
-                        if (data.runOnStartup) {
-                            $('#enable-startup').addClass('on');
-                            $('#disable-startup').removeClass('on');
-                        } else {
-                            $('#enable-startup').removeClass('on');
-                            $('#disable-startup').addClass('on');
-                        }
-                    }
-                }).fail(function() {
-                    yukon.ui.alertError(prevErrorMessage + " Error communicating with NmIntegrationController. Refresh the page to try again.");
-                    $('#enable-startup').attr("disabled", "true");
-                    $('#disable-startup').attr("disabled", "true");
-                    $('#enable-startup').removeClass('on');
-                    $('#disable-startup').removeClass('on');
-                });
-            }
-        });
-    </script>
-    <script type="text/javascript">
-        $(function() {
-            $('#tabs').tabs();  
-        });
-        function enableAll() {
-            var formData = $("form").serializeArray();
-            console.log(formData);
-            $.ajax({
-                url: yukon.url('enableAll'),
-                type: 'post',
-                data: formData
-            }).done(function() {
-                window.location.href = yukon.url('/dev/rfn/gatewaySimulator');
-            });
-        };
-    </script>
-    
     <div id="data-parameters-popup" class="dn" data-title="Gateway Data Simulation Parameters" data-width="800">
         <tags:nameValueContainer tableClass="natural-width">
             <tags:nameValue name="Always Return GWY-800 Model">
@@ -502,12 +409,13 @@
                         </td>
                         <td colspan="2">
                             <c:if test="${numberOfSimulatorsRunning lt maxSimulators}">
-                                <cti:button label="Enable All" type="button" onclick="enableAll()"/>
+                                <cti:button id="enable-all" label="Enable All" type="button"/>
                             </c:if>
                             <c:if test="${numberOfSimulatorsRunning gt 0}">
                                 <cti:button label="Disable All" type="button" href="disableAll"/>
                             </c:if>
                             <div class="button-group button-group-toggle">
+                                <div class="js-sim-startup" data-simulator-type="GATEWAY"></div>
                                 <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
                                 <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
                             </div>
@@ -559,4 +467,6 @@
             </tags:sectionContainer>
         </div>
     </div>
+    <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.gatewayDataSimulator.events.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.simulatorStartup.js"/>
 </cti:standardPage>

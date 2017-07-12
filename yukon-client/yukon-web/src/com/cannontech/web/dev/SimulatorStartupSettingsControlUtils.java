@@ -5,14 +5,22 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.config.MasterConfigBoolean;
 import com.cannontech.simulators.SimulatorType;
 import com.cannontech.simulators.message.request.SimulatorStartupSettingsRequest;
 import com.cannontech.simulators.message.request.SimulatorStartupSettingsStatusRequest;
 import com.cannontech.simulators.message.response.SimulatorStartupSettingsResponse;
 import com.cannontech.web.common.flashScope.FlashScope;
-import com.cannontech.web.dev.SimulatorsCommunicationService;
+import com.cannontech.web.security.annotation.CheckCparm;
+
+@Controller
+@RequestMapping("/*")
+@CheckCparm(MasterConfigBoolean.DEVELOPMENT_MODE)
 
 /**
  * This class is used by simulator controllers to communicate with the SimulatorsService about the
@@ -23,25 +31,6 @@ public class SimulatorStartupSettingsControlUtils {
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
    
     private static final Logger log = YukonLogManager.getLogger(SimulatorStartupSettingsControlUtils.class);
-    
-    public Map<String, Object> updateStartup(SimulatorType simulatorType, boolean runOnStartup, FlashScope flash) {
-        SimulatorStartupSettingsResponseOrError startupResponse = getSimulatorStartupSettingsResponse(runOnStartup, simulatorType);
-        if (startupResponse.response == null) {
-            return startupResponse.errorJson;
-        }
-        return null; 
-    }
-    
-    public Map<String, Object> existingStartupStatus(SimulatorType simulatorType, FlashScope flash) {
-        SimulatorStartupSettingsResponseOrError startupResponse = getSimulatorStartupSettingsResponse(simulatorType);
-        if (startupResponse.response == null) {
-            return startupResponse.errorJson;
-        }
-        Map<String, Object> json = new HashMap<>();
-        json.put("hasError", false);
-        json.put("runOnStartup", startupResponse.response.isRunOnStartup());
-        return json;
-    }
 
     public SimulatorStartupSettingsResponseOrError getSimulatorStartupSettingsResponse(boolean runOnStartup, SimulatorType affectedSimulator) {
         try {
@@ -89,5 +78,28 @@ public class SimulatorStartupSettingsControlUtils {
             json.put("errorMessage", "Unable to send message to Simulator Service: " + e.getMessage());
             return new SimulatorStartupSettingsResponseOrError(json);
         }
+    }
+    
+    @RequestMapping("updateStartup")
+    @ResponseBody
+    public Map<String, Object> updateStartup(SimulatorType simulatorType, boolean runOnStartup, FlashScope flash) {
+        SimulatorStartupSettingsResponseOrError startupResponse = getSimulatorStartupSettingsResponse(runOnStartup, simulatorType);
+        if (startupResponse.response == null) {
+            return startupResponse.errorJson;
+        }
+        return null; 
+    }
+    
+    @RequestMapping("existingStartupStatus")
+    @ResponseBody
+    public Map<String, Object> existingStartupStatus(SimulatorType simulatorType, FlashScope flash) {
+        SimulatorStartupSettingsResponseOrError startupResponse = getSimulatorStartupSettingsResponse(simulatorType);
+        if (startupResponse.response == null) {
+            return startupResponse.errorJson;
+        }
+        Map<String, Object> json = new HashMap<>();
+        json.put("hasError", false);
+        json.put("runOnStartup", startupResponse.response.isRunOnStartup());
+        return json;
     }
 }

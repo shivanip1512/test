@@ -4,326 +4,71 @@
 <%@ taglib prefix="i" tagdir="/WEB-INF/tags/i18n"%>
 
 <cti:standardPage module="dev" page="rfnTest.viewDataSimulator">
-<cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
-<script>
-        $(function() {
-            //Script for SimulatorStartupSettings functionality
-            var simType = "RFN_LCR";
-            $('#enable-startup, #disable-startup').click(_updateStartup);
-            _checkStartupStatus(null, {simulatorType: simType});
-        
-            function _updateStartup(event) {
-                var startupData = {simulatorType: simType};
-                if ($(this).attr('id') === 'enable-startup') {
-                    startupData.runOnStartup = true;
-                    $.ajax({
-                        url: yukon.url('/dev/rfn/updateStartup'),
-                        type: 'post',
-                        data: startupData
-                    }).done(function(data) {
-                        if (data.hasError) {
-                            _checkStartupStatus(data.errorMessage, startupData);
-                        } else {
-                            yukon.ui.removeAlerts();
-                        }
-                    }).fail(function() {
-                        _checkStartupStatus("The simulator startup settings update request to the controller failed.", startupData);
-                    });
-                } else if ($(this).attr('id') === 'disable-startup') {
-                    startupData.runOnStartup = false;
-                    $.ajax({
-                        url: yukon.url('/dev/rfn/updateStartup'),
-                        type: 'post',
-                        data: startupData
-                    }).done(function(data) {
-                        if (data.hasError) {
-                            _checkStartupStatus(data.errorMessage, startupData);
-                        } else {
-                            yukon.ui.removeAlerts();
-                        }
-                    }).fail(function() {
-                        _checkStartupStatus("The simulator startup settings update request to the controller failed.", startupData);
-                    });
-                }
-            }
-             
-            function _checkStartupStatus(prevErrorMessage, startupData) {
-                $.ajax({
-                    url: yukon.url('/dev/rfn/existingStartupStatus'),
-                    type: 'post',
-                    data: startupData
-                }).done(function(data) {
-                    if (data.hasError) {
-                        yukon.ui.alertError(prevErrorMessage + " " + data.errorMessage + " Refresh the page to try again.");
-                        $('#enable-startup').attr("disabled", "true");
-                        $('#disable-startup').attr("disabled", "true");
-                        $('#enable-startup').removeClass('on');
-                        $('#disable-startup').removeClass('on');
-                    } else {
-                        if (prevErrorMessage) {
-                            yukon.ui.alertError(prevErrorMessage);
-                        }
-                        if (data.runOnStartup) {
-                            $('#enable-startup').addClass('on');
-                            $('#disable-startup').removeClass('on');
-                        } else {
-                            $('#enable-startup').removeClass('on');
-                            $('#disable-startup').addClass('on');
-                        }
-                    }
-                }).fail(function() {
-                    yukon.ui.alertError(prevErrorMessage + " Error communicating with NmIntegrationController. Refresh the page to try again.");
-                    $('#enable-startup').attr("disabled", "true");
-                    $('#disable-startup').attr("disabled", "true");
-                    $('#enable-startup').removeClass('on');
-                    $('#disable-startup').removeClass('on');
-                });
-            }
-        });
-    </script>
-    <script>
-    yukon.namespace('yukon.dev.dataSimulator');
-
-    yukon.dev.dataSimulator = (function() {
-        var _initialized = false,
-        _checkStatusTime = 2500,
-
-        _startButtonClick = function(event) {
-            var formData = $('#dataSimulatorForm').serialize();
-            if($(this).attr('id') === 'start-simulator') {
-                $(this).attr("disabled", "disabled");
-                    $.ajax({
-                    url: yukon.url('/dev/rfn/startDataSimulator'),
-                    type: 'post',
-                    data: formData 
-                }).done(function(data) {
-                    $('#stop-simulator').show();
-                    $('#start-simulator').hide();
-                    $('#start-simulator').removeAttr("disabled");
-                    _checkStatus(true);
-                }).fail(function(data) {
-                    $('#start-simulator').removeAttr("disabled");
-                    if (data.hasError) {
-                        $('#taskStatusMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
-                    } else {
-                        $('#taskStatusMessage').hide();
-                    }
-                });
-            };
-            
-            if($(this).attr('id') === 'stop-simulator') {
-                $.ajax({
-                    url: yukon.url('/dev/rfn/stopDataSimulator'),
-                    type: 'GET'
-                    });
-                _checkStatus(true);
-                $(this).hide();
-                $(this).siblings('button').show();
-            };
-
-        
-        },
-        
-        _sendMessageButtonClick = function(event) {
-            var formData = $('#dataSimulatorForm').serialize();
-            if($(this).attr('id') === 'send-message') {
-                $(this).attr("disabled", "disabled");
-                    $.ajax({
-                    url: yukon.url('/dev/rfn/sendLcrDeviceMessages'),
-                    type: 'post',
-                    data: formData 
-                }).done(function(data) {
-                    $('#stop-send-message').show();
-                    $('#send-message').hide();
-                    $('#send-message').removeAttr("disabled");
-                    _checkStatus(true);
-                }).fail(function(data) {
-                    $('#send-message').removeAttr("disabled");
-                    if (data.hasError) {
-                        $('#existingDeviceTaskStatusMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
-                    } else {
-                        $('#existingDeviceTaskStatusMessage').hide();
-                    }
-                });
-            };
-                
-            if($(this).attr('id') === 'stop-send-message') {
-                $.ajax({
-                    url: yukon.url('/dev/rfn/stopSendingLcrDeviceMessages'),
-                    type: 'GET'
-                    });
-                _checkExistingDeviceStatus(true);
-                $(this).hide();
-                $(this).siblings('button').show();
-            };
-        },
-
-        _checkStatus = function(extraCheck) {
-            if (!extraCheck) {
-                $.ajax({
-                    url: yukon.url('datasimulator-status'),
-                    type: 'get'
-                }).done(function(data) {
-                    if (data.hasError) {
-                        $('#taskStatusMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
-                    } else {
-                        $('#taskStatusMessage').hide();
-                    }
-                    if (data.running) {
-                        $('#stop-simulator').show();
-                        $('#start-simulator').hide();
-                        $("#lcrForm :input").prop("disabled", true);
-                    } else {
-                        $('#stop-simulator').hide();
-                        $('#start-simulator').show();
-                        $("#lcrForm :input").prop("disabled", false);
-                    }
-                    $('#status-start-time').text(data.startTime);
-                    $('#status-stop-time').text(data.stopTime);
-                    $('#status-num-success').text(data.success);
-                    $('#status-num-failed').text(data.failure);
-            var running = "Not Running";
-            if (data.running) {
-            running = "Running";
-            }
-                    $('#status-running').text(running);
-                    $('#status-last-injection-time').text(data.lastInjectionTime);
-                    yukon.ui.alertError
-                    if (!extraCheck) {
-                        setTimeout(_checkStatus, _checkStatusTime);
-                    }
-                }).fail(function(data) {
-                    if (!extraCheck) {
-                        setTimeout(_checkStatus, _checkStatusTime);
-                    }
-                    if (data.hasError) {
-                        $('#taskStatusMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
-                    } else {
-                        $('#taskStatusMessage').hide();
-                    }
-                });
-              }
-        },
-        
-        _checkExistingDeviceStatus = function(extraCheck) {
-            if (!extraCheck) {
-                $.ajax({
-                    url: yukon.url('existing-datasimulator-status'),
-                    type: 'get'
-                }).done(function(data) {
-                    if (data.hasError) {
-                        $('#existingDeviceTaskStatusMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
-                    } else {
-                        $('#existingDeviceTaskStatusMessage').hide();
-                    }
-                    if (data.running) {
-                        $('#stop-send-message').show();
-                        $('#send-message').hide();
-                    } else {
-                        $('#stop-send-message').hide();
-                        $('#send-message').show();
-                    } 
-                    $('#existing-status-start-time').text(data.startTime);
-                    $('#existing-status-stop-time').text(data.stopTime);
-                    $('#existing-status-num-success').text(data.success);
-                    $('#existing-status-num-failed').text(data.failure);
-            var running = "Not Running";
-            if (data.running) {
-            running = "Running";
-            }
-                    $('#existing-status-running').text(running);
-                    $('#existing-status-last-injection-time').text(data.lastInjectionTime);
-                    if (!extraCheck) setTimeout(_checkExistingDeviceStatus, _checkStatusTime);
-                }).fail(function(data) {
-                    if (!extraCheck) setTimeout(_checkExistingDeviceStatus, _checkStatusTime);
-                    if (data.hasError) {
-                        $('#existingDeviceTaskStatusMessage').addMessage({message:data.errorMessage, messageClass:'error'}).show();
-                    } else {
-                        $('#existingDeviceTaskStatusMessage').hide();
-                    }
-                });
-            }
-          },
-
-        mod = {
-            init : function() {
-                if (_initialized) return;
-                $('#start-simulator, #stop-simulator').click(_startButtonClick);
-                $('#send-message, #stop-send-message').click(_sendMessageButtonClick);
-                _checkStatus();
-                _checkExistingDeviceStatus();
-                _initialized = true;
-            },
-
-        };
-        return mod;
-    }());
-
-    $(function() {
-        yukon.dev.dataSimulator.init();
-    });
-    </script>
-<div class="column-12-12 clearfix">
-<div class="column one">
-<form id='dataSimulatorForm'>
-<tags:sectionContainer2 nameKey="lcrDataSimulator">
-    <div id='lcrForm'>
-    <tags:nameValueContainer2>
-        <tags:nameValue2 nameKey=".lcrDataSimulator.serialNumberRangeLcr6200">
-            <input id="lcr6200serialFrom" name="lcr6200serialFrom" type="text" value=${currentSettings.lcr6200serialFrom}> <i:inline key="yukon.common.to"/>
-            <input id="lcr6200serialTo" name="lcr6200serialTo" type="text" value=${currentSettings.lcr6200serialTo}> 
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".lcrDataSimulator.serialNumberRangeLcr6600">
-            <input id="lcr6600serialFrom" name="Lcr6600serialFrom" type="text" value=${currentSettings.lcr6600serialFrom}> <i:inline key="yukon.common.to"/> 
-            <input id="lcr6600serialTo" name="lcr6600serialTo" type="text" value=${currentSettings.lcr6600serialTo}>
-        </tags:nameValue2>
-        <tags:nameValue2 nameKey=".lcrDataSimulator.duplicates">
-            <input id="percentOfDuplicates" name="percentOfDuplicates" type="text" value=${currentSettings.percentOfDuplicates} maxlength="3" size="3"> %
-        </tags:nameValue2>
-    </tags:nameValueContainer2>
-    </div>
-    <br>
-    <div>
-        <cti:button id="start-simulator" nameKey="startSimulator" />
-        <cti:button id="stop-simulator" nameKey="stopSimulator" classes="dn"/>
-    </div>
+    <div class="column-12-12 clearfix">
+    <div class="column one">
+    <form id='dataSimulatorForm'>
+    <tags:sectionContainer2 nameKey="lcrDataSimulator">
+        <div id='lcrForm'>
+        <tags:nameValueContainer2>
+            <tags:nameValue2 nameKey=".lcrDataSimulator.serialNumberRangeLcr6200">
+                <input id="lcr6200serialFrom" name="lcr6200serialFrom" type="text" value=${currentSettings.lcr6200serialFrom}> <i:inline key="yukon.common.to"/>
+                <input id="lcr6200serialTo" name="lcr6200serialTo" type="text" value=${currentSettings.lcr6200serialTo}> 
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".lcrDataSimulator.serialNumberRangeLcr6600">
+                <input id="lcr6600serialFrom" name="Lcr6600serialFrom" type="text" value=${currentSettings.lcr6600serialFrom}> <i:inline key="yukon.common.to"/> 
+                <input id="lcr6600serialTo" name="lcr6600serialTo" type="text" value=${currentSettings.lcr6600serialTo}>
+            </tags:nameValue2>
+            <tags:nameValue2 nameKey=".lcrDataSimulator.duplicates">
+                <input id="percentOfDuplicates" name="percentOfDuplicates" type="text" value=${currentSettings.percentOfDuplicates} maxlength="3" size="3"> %
+            </tags:nameValue2>
+        </tags:nameValueContainer2>
+        </div>
+        <br/>
+        <div>
+            <cti:button id="start-simulator" nameKey="startSimulator" />
+            <cti:button id="stop-simulator" nameKey="stopSimulator" classes="dn"/>
+        </div>
         <div class="button-group button-group-toggle">
-        <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
-        <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+            <div class="js-sim-startup" data-simulator-type="RFN_LCR"></div>
+            <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
+            <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+        </div>
+        <br><br>
+        <div>
+            <cti:button id="send-message" nameKey="sendLcrDeviceMessages"/>
+            <cti:button id="stop-send-message" nameKey="stopSendingLcrDeviceMessages" classes="dn"/>
+        </div>
+    </tags:sectionContainer2>
+    </form>
     </div>
-    <br><br>
-    <div>
-        <cti:button id="send-message" nameKey="sendLcrDeviceMessages"/>
-        <cti:button id="stop-send-message" nameKey="stopSendingLcrDeviceMessages" classes="dn"/>
+    <div id="taskStatusDiv" class="column two nogutter">
+        <tags:sectionContainer title="Simulation status by range">
+         <div id="taskStatusMessage"></div>
+                    <div>
+                        <div><span id="status-running" style="font-size:12pt;color:blue;">${dataSimulatorStatus.running}</span></div>
+                        <div>Start Time: <span id="status-start-time">${dataSimulatorStatus.startTime}</span></div>
+                        <div>Stop Time: <span id="status-stop-time">${dataSimulatorStatus.stopTime}</span></div>
+                        <div>Success:  <span id="status-num-success" class="success">${dataSimulatorStatus.success}</span></div>
+                        <div>Failure:  <span id="status-num-failed" class="error">${dataSimulatorStatus.failure}</span></div>
+                        <div>Last Injection Time: <span id="status-last-injection-time">${dataSimulatorStatus.lastInjectionTime}</span></div>
+                    </div>
+           </div>
+        </tags:sectionContainer>
+        <div id="existingDeviceTaskStatusDiv" class="column two nogutter">
+        <tags:sectionContainer title="Simulation status for all RFN LCRs">
+         <div id="existingDeviceTaskStatusMessage"></div>
+                    <div>
+                        <div><span id="existing-status-running" style="font-size:12pt;color:blue;">${existingDataSimulatorStatus.running}</span></div>
+                        <div>Start Time: <span id="existing-status-start-time">${existingDataSimulatorStatus.startTime}</span></div>
+                        <div>Stop Time: <span id="existing-status-stop-time">${existingDataSimulatorStatus.stopTime}</span></div>
+                        <div>Success:  <span id="existing-status-num-success" class="success">${existingDataSimulatorStatus.success}</span></div>
+                        <div>Failure:  <span id="existing-status-num-failed" class="error">${existingDataSimulatorStatus.failure}</span></div>
+                        <div>Last Injection Time: <span id="existing-status-last-injection-time">${existingDataSimulatorStatus.lastInjectionTime}</span></div>
+                    </div>
+                    </div>
+        </tags:sectionContainer>
     </div>
-</tags:sectionContainer2>
-</form>
-</div>
-<div id="taskStatusDiv" class="column two nogutter">
-    <tags:sectionContainer title="Simulation status by range">
-     <div id="taskStatusMessage"></div>
-                <div>
-                    <div><span id="status-running" style="font-size:12pt;color:blue;">${dataSimulatorStatus.running}</span></div>
-                    <div>Start Time: <span id="status-start-time">${dataSimulatorStatus.startTime}</span></div>
-                    <div>Stop Time: <span id="status-stop-time">${dataSimulatorStatus.stopTime}</span></div>
-                    <div>Success:  <span id="status-num-success" class="success">${dataSimulatorStatus.success}</span></div>
-                    <div>Failure:  <span id="status-num-failed" class="error">${dataSimulatorStatus.failure}</span></div>
-                    <div>Last Injection Time: <span id="status-last-injection-time">${dataSimulatorStatus.lastInjectionTime}</span></div>
-                </div>
-       </div>
-    </tags:sectionContainer>
-    <div id="existingDeviceTaskStatusDiv" class="column two nogutter">
-    <tags:sectionContainer title="Simulation status for all RFN LCRs">
-     <div id="existingDeviceTaskStatusMessage"></div>
-                <div>
-                    <div><span id="existing-status-running" style="font-size:12pt;color:blue;">${existingDataSimulatorStatus.running}</span></div>
-                    <div>Start Time: <span id="existing-status-start-time">${existingDataSimulatorStatus.startTime}</span></div>
-                    <div>Stop Time: <span id="existing-status-stop-time">${existingDataSimulatorStatus.stopTime}</span></div>
-                    <div>Success:  <span id="existing-status-num-success" class="success">${existingDataSimulatorStatus.success}</span></div>
-                    <div>Failure:  <span id="existing-status-num-failed" class="error">${existingDataSimulatorStatus.failure}</span></div>
-                    <div>Last Injection Time: <span id="existing-status-last-injection-time">${existingDataSimulatorStatus.lastInjectionTime}</span></div>
-                </div>
-                </div>
-    </tags:sectionContainer>
-</div>
+    <cti:includeScript link="/resources/js/common/yukon.ui.progressbar.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.dataSimulator.js"/>
+    <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.simulatorStartup.js"/>
 </cti:standardPage>

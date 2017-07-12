@@ -23,7 +23,6 @@ import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.ivvc.model.IvvcSimulatorSettings;
 import com.cannontech.ivvc.model.IvvcSimulatorStatus;
-import com.cannontech.simulators.SimulatorType;
 import com.cannontech.simulators.message.request.IvvcSimulatorStartRequest;
 import com.cannontech.simulators.message.request.IvvcSimulatorStatusRequest;
 import com.cannontech.simulators.message.request.IvvcSimulatorStopRequest;
@@ -42,11 +41,9 @@ public class IvvcSimulatorController {
     
     @Autowired private DatePropertyEditorFactory datePropertyEditorFactory;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
-    @Autowired private SimulatorStartupSettingsControlUtils simulatorStartupSettingsControlUtils;
-    
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
-    private IvvcSimulatorSettings ivvcSimulatorSettings = new IvvcSimulatorSettings(false);
+    private final IvvcSimulatorSettings ivvcSimulatorSettings = new IvvcSimulatorSettings(false);
     
     @RequestMapping("ivvcSimulator")
     public String ivvcSimulator(ModelMap model) {
@@ -92,18 +89,6 @@ public class IvvcSimulatorController {
             flash.setError(YukonMessageSourceResolvable.createDefaultWithoutCode(
                 "Unable to send message to Simulator Service: " + e.getMessage()));
         }
-    }
-    
-    @RequestMapping("updateStartup")
-    @ResponseBody
-    public Map<String, Object> updateStartup(SimulatorType simulatorType, boolean runOnStartup, FlashScope flash) {
-        return simulatorStartupSettingsControlUtils.updateStartup(simulatorType, runOnStartup, flash);
-    }
-    
-    @RequestMapping("existingStartupStatus")
-    @ResponseBody
-    public Map<String, Object> existingStartupStatus(SimulatorType simulatorType, FlashScope flash) {
-        return simulatorStartupSettingsControlUtils.existingStartupStatus(simulatorType, flash);
     }
     
     private IvvcSimResponseOrError getIvvcSimulatorStatusResponse() {

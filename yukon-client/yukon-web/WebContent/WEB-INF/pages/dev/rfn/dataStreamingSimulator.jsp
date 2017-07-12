@@ -4,109 +4,6 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
 <cti:standardPage module="dev" page="rfnTest.viewDataStreamingSimulator">
-    <script>
-        $(function() {
-            //Script for SimulatorStartupSettings functionality
-            var simType = "DATA_STREAMING";
-            $('#enable-startup, #disable-startup').click(_updateStartup);
-            _checkStartupStatus(null, {simulatorType: simType});
-        
-            function _updateStartup(event) {
-                var startupData = {simulatorType: simType};
-                if ($(this).attr('id') === 'enable-startup') {
-                    startupData.runOnStartup = true;
-                    $.ajax({
-                        url: yukon.url('/dev/rfn/updateStartup'),
-                        type: 'post',
-                        data: startupData
-                    }).done(function(data) {
-                        if (data.hasError) {
-                            _checkStartupStatus(data.errorMessage, startupData);
-                        } else {
-                            yukon.ui.removeAlerts();
-                        }
-                    }).fail(function() {
-                        _checkStartupStatus("The simulator startup settings update request to the controller failed.", startupData);
-                    });
-                } else if ($(this).attr('id') === 'disable-startup') {
-                    startupData.runOnStartup = false;
-                    $.ajax({
-                        url: yukon.url('/dev/rfn/updateStartup'),
-                        type: 'post',
-                        data: startupData
-                    }).done(function(data) {
-                        if (data.hasError) {
-                            _checkStartupStatus(data.errorMessage, startupData);
-                        } else {
-                            yukon.ui.removeAlerts();
-                        }
-                    }).fail(function() {
-                        _checkStartupStatus("The simulator startup settings update request to the controller failed.", startupData);
-                    });
-                }
-            }
-             
-            function _checkStartupStatus(prevErrorMessage, startupData) {
-                $.ajax({
-                    url: yukon.url('/dev/rfn/existingStartupStatus'),
-                    type: 'post',
-                    data: startupData
-                }).done(function(data) {
-                    if (data.hasError) {
-                        yukon.ui.alertError(prevErrorMessage + " " + data.errorMessage + " Refresh the page to try again.");
-                        $('#enable-startup').attr("disabled", "true");
-                        $('#disable-startup').attr("disabled", "true");
-                        $('#enable-startup').removeClass('on');
-                        $('#disable-startup').removeClass('on');
-                    } else {
-                        if (prevErrorMessage) {
-                            yukon.ui.alertError(prevErrorMessage);
-                        }
-                        if (data.runOnStartup) {
-                            $('#enable-startup').addClass('on');
-                            $('#disable-startup').removeClass('on');
-                        } else {
-                            $('#enable-startup').removeClass('on');
-                            $('#disable-startup').addClass('on');
-                        }
-                    }
-                }).fail(function() {
-                    yukon.ui.alertError(prevErrorMessage + " Error communicating with NmIntegrationController. Refresh the page to try again.");
-                    $('#enable-startup').attr("disabled", "true");
-                    $('#disable-startup').attr("disabled", "true");
-                    $('#enable-startup').removeClass('on');
-                    $('#disable-startup').removeClass('on');
-                });
-            }
-        });
-    </script>
-    <script>
-        $(function() {
-            //handle enabling and disabling of Device Error fields for verification
-            $("#verification-checkbox").attr("data-toggle", "resp-device-error");
-            $("#verification-select").attr("data-toggle-group", "resp-device-error");
-            $("#verification-number").attr("data-toggle-group", "resp-device-error");
-            if ($("#verification-checkbox")[0].hasAttribute("checked")) {
-                $("#verification-select").removeAttr("disabled");
-                $("#verification-number").removeAttr("disabled");
-            } else {
-                $("#verification-select").attr("disabled", "true");
-                $("#verification-number").attr("disabled", "true");
-            }
-            
-            //handle enabling and disabling of Device Error fields for config
-            $("#config-checkbox").attr("data-toggle", "conf-device-error");
-            $("#config-select").attr("data-toggle-group", "conf-device-error");
-            $("#config-number").attr("data-toggle-group", "conf-device-error");
-            if ($("#config-checkbox")[0].hasAttribute("checked")) {
-                $("#config-select").removeAttr("disabled");
-                $("#config-number").removeAttr("disabled");
-            } else {
-                $("#config-select").attr("disabled", "true");
-                $("#config-number").attr("disabled", "true");
-            }
-        });
-    </script>
     <c:if test="${not simulatorRunning}">
         <form action="startDataStreamingSimulator" method="POST">
             <cti:csrfToken/>
@@ -160,7 +57,10 @@
         <cti:button label="Stop Simulator" href="stopDataStreamingSimulator"/>
     </c:if>
     <div class="button-group button-group-toggle">
+        <div class="js-sim-startup" data-simulator-type="DATA_STREAMING"></div>
         <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
         <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
     </div>
+    <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.dataStreamingSimulator.js" />
+    <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.simulatorStartup.js" />
 </cti:standardPage>

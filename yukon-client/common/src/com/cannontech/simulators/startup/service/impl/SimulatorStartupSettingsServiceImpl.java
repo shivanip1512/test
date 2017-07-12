@@ -19,22 +19,22 @@ public class SimulatorStartupSettingsServiceImpl implements SimulatorStartupSett
 
     @Override
     public boolean isRunOnStartup(SimulatorType simulatorType) {
-        for (YukonSimulatorSettingsKey key : YukonSimulatorSettingsKey.values()) {
-            if (key.name().equals(simulatorType.name() + "_SIMULATOR_RUN_ON_STARTUP")) {
-                return yukonSimulatorSettingsDao.getBooleanValue(key);
-            }
+        try {
+            YukonSimulatorSettingsKey key = YukonSimulatorSettingsKey.valueOf(simulatorType.name() + "_SIMULATOR_RUN_ON_STARTUP");
+            return yukonSimulatorSettingsDao.getBooleanValue(key);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid SimulatorType passed to SimulatorStartupSettingsService, unable to get SimulatorStartupSettings for: " + simulatorType.name(), e); 
         }
-        throw new IllegalArgumentException("Invalid SimulatorType passed to SimulatorStartupSettingsService, unable to get SimulatorStartupSettings for: " + simulatorType.name());
     }
 
     @Override
     public void saveStartupSettings(boolean runOnStartup, SimulatorType simulatorType) {
-        for (YukonSimulatorSettingsKey key : YukonSimulatorSettingsKey.values()) {
-            if (key.name().equals(simulatorType.name() + "_SIMULATOR_RUN_ON_STARTUP")) {
+        try {
+            YukonSimulatorSettingsKey key = YukonSimulatorSettingsKey.valueOf(simulatorType.name() + "_SIMULATOR_RUN_ON_STARTUP");
                 yukonSimulatorSettingsDao.setValue(key, runOnStartup);
                 return;
-            }
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid SimulatorType passed to SimulatorStartupSettingsService, unable to update SimulatorStartupSettings for: " + simulatorType);
         }
-        throw new IllegalArgumentException("Invalid SimulatorType passed to SimulatorStartupSettingsService, unable to update SimulatorStartupSettings for: " + simulatorType);
     }
 }

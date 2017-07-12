@@ -92,24 +92,22 @@ public class DataStreamingSimulatorServiceImpl implements DataStreamingSimulator
     
     @Override
     public SimulatedDataStreamingSettings getSettings() {
-        if (settings == null) {
-            log.debug("Getting DATA_STREAMING SimulatorSettings from db.");
-            SimulatedDataStreamingSettings simulatedDataStreamingSettings = new SimulatedDataStreamingSettings();
-            //verification
-            simulatedDataStreamingSettings.setDeviceErrorOnVerification(DeviceDataStreamingConfigError.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_VER)));
-            simulatedDataStreamingSettings.setDeviceErrorOnVerificationEnabled(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_VER_ENABLED));
-            simulatedDataStreamingSettings.setOverloadGatewaysOnVerification(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_OVERLOAD_VER));
-            simulatedDataStreamingSettings.setNetworkManagerFailOnVerification(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_FAIL_VER));
-            simulatedDataStreamingSettings.setNumberOfDevicesToErrorOnVerification(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_NUM_DEV_ERR_VER));
-            //config
-            simulatedDataStreamingSettings.setNetworkManagerFailOnConfig(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_FAIL_CON));
-            simulatedDataStreamingSettings.setOverloadGatewaysOnConfig(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_OVERLOAD_CON));
-            simulatedDataStreamingSettings.setDeviceErrorOnConfig(DeviceDataStreamingConfigError.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_CON)));
-            simulatedDataStreamingSettings.setDeviceErrorOnConfigEnabled(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_CON_ENABLED));
-            simulatedDataStreamingSettings.setNumberOfDevicesToErrorOnConfig(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_NUM_DEV_ERR_CON));
-            simulatedDataStreamingSettings.setAcceptedWithError(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_ACCEPTED_ERR));
-            settings = simulatedDataStreamingSettings;
-        }
+        log.debug("Getting DATA_STREAMING SimulatorSettings from db.");
+        SimulatedDataStreamingSettings simulatedDataStreamingSettings = new SimulatedDataStreamingSettings();
+        //verification
+        simulatedDataStreamingSettings.setDeviceErrorOnVerification(DeviceDataStreamingConfigError.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_VER)));
+        simulatedDataStreamingSettings.setDeviceErrorOnVerificationEnabled(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_VER_ENABLED));
+        simulatedDataStreamingSettings.setOverloadGatewaysOnVerification(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_OVERLOAD_VER));
+        simulatedDataStreamingSettings.setNetworkManagerFailOnVerification(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_FAIL_VER));
+        simulatedDataStreamingSettings.setNumberOfDevicesToErrorOnVerification(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_NUM_DEV_ERR_VER));
+        //config
+        simulatedDataStreamingSettings.setNetworkManagerFailOnConfig(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_FAIL_CON));
+        simulatedDataStreamingSettings.setOverloadGatewaysOnConfig(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_OVERLOAD_CON));
+        simulatedDataStreamingSettings.setDeviceErrorOnConfig(DeviceDataStreamingConfigError.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_CON)));
+        simulatedDataStreamingSettings.setDeviceErrorOnConfigEnabled(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_DEV_ERR_CON_ENABLED));
+        simulatedDataStreamingSettings.setNumberOfDevicesToErrorOnConfig(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_NUM_DEV_ERR_CON));
+        simulatedDataStreamingSettings.setAcceptedWithError(yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.DATA_STREAMING_SIMULATOR_ACCEPTED_ERR));
+        settings = simulatedDataStreamingSettings;
         return settings;
     }
     
