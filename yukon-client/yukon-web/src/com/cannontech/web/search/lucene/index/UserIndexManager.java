@@ -44,7 +44,7 @@ public class UserIndexManager extends SimpleIndexManager {
     private SqlStatementBuilder getQueryGuts() {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("from yukonuser yu");
-        sql.append("join usergroup ug on ug.UserGroupId = yu.UserGroupId");
+        sql.append("left join usergroup ug on ug.UserGroupId = yu.UserGroupId");
         sql.append("where userid > " + UserUtils.USER_NONE_ID);
         return sql;
     }
@@ -63,6 +63,7 @@ public class UserIndexManager extends SimpleIndexManager {
         int userIDInt = rs.getInt("userid");
         String userID = Integer.toString(userIDInt);
         String userGroupName = rs.getString("Name");
+        userGroupName = userGroupName == null ? "" : userGroupName;
         //will not be setting password here; no need for it
         
         String all = userName + " " + userID + " " + userGroupName;

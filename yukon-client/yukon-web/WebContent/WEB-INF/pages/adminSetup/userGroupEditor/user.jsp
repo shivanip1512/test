@@ -42,7 +42,8 @@
                     
                     <cti:displayForPageEditModes modes="EDIT,CREATE">
                         <tags:selectNameValue nameKey=".userGroup" items="${userGroups}" itemValue="userGroupId" 
-                            itemLabel="userGroupName" path="userGroupId"/>
+                            itemLabel="userGroupName" path="userGroupId"
+                            defaultItemLabel="${none}" defaultItemValue""/>
                     </cti:displayForPageEditModes>
                     <cti:displayForPageEditModes modes="VIEW">
                         <tags:nameValue2 nameKey=".userGroup">
@@ -199,9 +200,4 @@
     </div>
     
 </div>
-<style>
-a[href="/yukon/admin/user-groups/-9999"] {
-    display: none;
-}
-</style>
 </cti:standardPage>
