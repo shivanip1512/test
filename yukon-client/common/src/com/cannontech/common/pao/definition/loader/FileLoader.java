@@ -69,6 +69,7 @@ import com.cannontech.common.pao.definition.model.PaoTag;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.roleproperties.InputTypeFactory;
 import com.cannontech.database.data.point.UnitOfMeasure;
+import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 
 public class FileLoader {
@@ -107,13 +108,13 @@ public class FileLoader {
                     loadPao(resource, paoXsd);
                 }
             }
-            paoTypeToPoints.putAll(
-                paos.stream()
-                .filter(p -> p.getPointFiles() != null)
-                .collect(
-                    Collectors.toMap(
-                        Pao::getPaoType, 
-                        p -> fileNameToPoints.get(p.getPointFiles().getPointFile()))));
+            paos.forEach(pao -> {
+                if (pao.getPointFiles() != null) {
+                    String file = pao.getPointFiles().getPointFile();
+                    paoTypeToPoints.put(pao.getPaoType(), new ArrayList<>(fileNameToPoints.get(file)));
+                }
+            });
+            
         } catch (IOException e) {
             throw new PaoConfigurationException("Unable to load resorces from " + classpath, e);
         }
@@ -448,6 +449,7 @@ public class FileLoader {
             if (pointInfoExists) {
                 removeExistingPointInfo(pao, override, action);
             }
+            removeMappedAttribute(pao, pointInfo, action); 
             if(pao.getPointInfos() == null){
                 pao.setPointInfos(new PointInfosType()); 
             }
@@ -458,6 +460,41 @@ public class FileLoader {
                 "New pointInfo is invalid. Check that the point exist in the point file or in override file and the point is enabled.",
                 Level.ERROR);
         }
+    }
+    
+    /**
+     * Looks if an attribute is on other pointInfo and attempts to remove it.
+     * Specific attribute can be mapped to exactly one point for the same device.
+     */
+    private void removeMappedAttribute(Pao pao, PointInfoType newPointInfo, Action action) {
+        if (newPointInfo.getAttributes() == null) {
+            return;
+        }
+        List<String> newAttributes = new ArrayList<>(Arrays.asList(newPointInfo.getAttributes().split(",")));
+        pao.getPointInfos().getPointInfo().forEach(pointInfo -> {
+            if (pointInfo.getAttributes() != null) {
+                List<String> attributes = new ArrayList<>(Arrays.asList(pointInfo.getAttributes().split(",")));
+                // common attributes
+                List<String> common = attributes.stream().filter(newAttributes::contains).collect(Collectors.toList());
+                if (!common.isEmpty()) {
+                    // remove all common attributes from the existing attributes list
+                    attributes.removeAll(common);
+                    log.info("^^^^^^" + action.name() + log(pao, newPointInfo));
+                    log.info("^^^^^^Found another point with attribute:" + common + log(pao, pointInfo));
+                    // override the list of existing attributes
+                    pointInfo.setAttributes(attributes.isEmpty() ? null : Joiner.on(",").join(attributes));
+                    log.info("^^^^^^Removed attribute:" + common + " from" + log(pao, pointInfo));
+                }
+            }
+        });
+    }
+    
+    /**
+     * logs pao type, point name and attribute.
+     */
+    private String log(Pao pao, PointInfoType pointInfo) {
+        return " paoType:" + pao.getPaoType() + " point:(" + pointInfo.getName() + ") attributes:"
+            + pointInfo.getAttributes();
     }
 
     private PointInfoType createPointInfo(Pao pao, OverridePointInfo overridePointInfo) {
