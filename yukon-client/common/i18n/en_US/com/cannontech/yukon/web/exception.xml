@@ -56,6 +56,7 @@
 <entry key="yukon.exception.processingException.disconnectAddressNotAccepted">Device type does not accept disconnect addresses.</entry>
 <entry key="yukon.exception.processingException.invalidRouteName">Invalid route name: {0}.</entry>
 <entry key="yukon.exception.processingException.processingError">Processing Error.</entry>
+<entry key="yukon.exception.processingException.deviceRequiresConfig">Device type: {0} cannot be unassigned from a configuration.</entry>
 <entry key="yukon.exception.processingException.SUCCESS">Success - {0} succeeded for "{1}".</entry>
 <entry key="yukon.exception.processingException.INVALID_IMPORT_ACTION">Invalid Import Action - Cannot perform action "{0}" for "{1}"</entry>
 <entry key="yukon.exception.processingException.OBJECT_EXISTS">Object Already Exists - {0} failed on "{1}"</entry>

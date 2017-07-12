@@ -41,7 +41,7 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
                     String deviceName = dbCache.getAllPaosMap().get(device.getPaoIdentifier().getPaoId()).getPaoName();
                     deviceConfigurationService.unassignConfig(device, user, deviceName);
                 } catch (InvalidDeviceTypeException e) {
-                    throw new ProcessingException(e.getMessage(), "invalidDeviceType", e);
+                    throw new ProcessingException(e.getMessage(), "deviceRequiresConfig", e, device.getDeviceType());
                 }
             }
         };
