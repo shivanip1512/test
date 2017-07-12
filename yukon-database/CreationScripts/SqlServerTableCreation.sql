@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     6/27/2017 11:06:23 AM                        */
+/* Created on:     7/12/2017 4:51:11 AM                         */
 /*==============================================================*/
 
 
@@ -2016,6 +2016,7 @@ create table ControlEvent (
    ScheduledStopTime    datetime             not null,
    GroupId              numeric              not null,
    LMControlHistoryId   numeric              null,
+   ProgramId            numeric              not null default 0,
    constraint PK_ControlEvent primary key (ControlEventId)
 )
 go
@@ -12110,6 +12111,11 @@ go
 alter table ContactNotification
    add constraint FK_Cnt_CntNot foreign key (ContactID)
       references Contact (ContactID)
+go
+
+alter table ControlEvent
+   add constraint FK_CONTROLEVENT_YUKONPAOBJECT foreign key (ProgramId)
+      references YukonPAObject (PAObjectID)
 go
 
 alter table ControlEvent

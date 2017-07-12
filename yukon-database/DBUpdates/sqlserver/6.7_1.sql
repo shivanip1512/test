@@ -16,6 +16,32 @@ AND PaobjectId IN (
 GO
 /* End YUK-16542 */
 
+/* Start YUK-16894 */
+ALTER TABLE ControlEvent ADD ProgramId NUMERIC NOT NULL DEFAULT 0;
+GO
+
+ALTER TABLE ControlEvent
+   ADD CONSTRAINT FK_CONTROLEVENT_YUKONPAOBJECT FOREIGN KEY (ProgramId)
+      REFERENCES YukonPAObject (PAObjectID);
+GO
+
+/* @start-block */
+MERGE INTO ControlEvent CE
+USING (
+    SELECT DeviceId, LMGroupId
+    FROM LMHardwareControlGroup lmhcg 
+        JOIN LMProgramWebPublishing lmpwb ON lmpwb.ProgramID = lmhcg.ProgramID
+    WHERE lmhcg.ControlEntryId IN ((SELECT MAX(ControlEntryId) FROM LMHardwareControlGroup WHERE LMGroupId != -9999 
+        GROUP BY LMGroupId)) 
+    ) DLG
+    ON CE.GroupId = DLG.LMGroupId
+    WHEN MATCHED THEN
+    UPDATE
+    SET ProgramId = DLG.DeviceId;
+GO
+/* @end-block */
+/* End YUK-16894 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/27/2017 11:05:31 AM                        */
+/* Created on:     7/12/2017 4:50:03 AM                         */
 /*==============================================================*/
 
 
@@ -1888,6 +1888,7 @@ create table ControlEvent  (
    ScheduledStopTime    DATE                            not null,
    GroupId              NUMBER                          not null,
    LMControlHistoryId   NUMBER,
+   ProgramId            NUMERIC                        default 0 not null,
    constraint PK_ControlEvent primary key (ControlEventId)
 );
 
@@ -11345,6 +11346,10 @@ alter table ContactNotifGroupMap
 alter table ContactNotification
    add constraint FK_Cnt_CntNot foreign key (ContactID)
       references Contact (ContactID);
+
+alter table ControlEvent
+   add constraint FK_CONTROLEVENT_YUKONPAOBJECT foreign key (ProgramId)
+      references YukonPAObject (PAObjectID);
 
 alter table ControlEvent
    add constraint FK_ContEvent_LMContHist foreign key (LMControlHistoryId)
