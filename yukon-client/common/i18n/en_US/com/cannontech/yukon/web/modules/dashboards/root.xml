@@ -86,7 +86,7 @@
     <entry key="yukon.web.modules.dashboard.widgetType.SYSTEM_MESSAGING.description">Displays messaging statistics between services running on your system.</entry>  
     <entry key="yukon.web.modules.dashboard.widgetType.DATA_COLLECTION.name">Data Collection</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.DATA_COLLECTION.description">Displays data collection information for a selected device group.</entry>  
-    <entry key="yukon.web.modules.dashboard.widgetType.INFRASTRUCTURE_WARNINGS.name">Infrastrucure Warnings</entry>
+    <entry key="yukon.web.modules.dashboard.widgetType.INFRASTRUCTURE_WARNINGS.name">Infrastructure Warnings</entry>
     <entry key="yukon.web.modules.dashboard.widgetType.INFRASTRUCTURE_WARNINGS.description">Displays warnings for Gateways, Relays, CCUs and Repeaters.</entry>  
     
     <!-- Widget Parameters -->
