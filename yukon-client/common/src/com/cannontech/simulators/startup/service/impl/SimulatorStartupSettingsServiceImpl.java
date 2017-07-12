@@ -34,7 +34,7 @@ public class SimulatorStartupSettingsServiceImpl implements SimulatorStartupSett
                 yukonSimulatorSettingsDao.setValue(key, runOnStartup);
                 return;
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid SimulatorType passed to SimulatorStartupSettingsService, unable to update SimulatorStartupSettings for: " + simulatorType);
+            throw new IllegalArgumentException("Invalid SimulatorType passed to SimulatorStartupSettingsService, unable to update SimulatorStartupSettings for: " + simulatorType.name(), e);
         }
     }
 }
