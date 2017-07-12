@@ -1084,15 +1084,13 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
                 continue;
             }
 
-            analog.value *= dnpId.Multiplier;
-
             if( fdrPoint.isControllable() )
             {
                 if( isDnpDeviceId( fdrPoint.getPaoID() ) )
                 {
-                    analog.status = tryPorterAnalogOutput( analog, fdrPoint.getPointID() );
+                    analog.status = tryPorterAnalogOutput(analog, fdrPoint.getPointID(), dnpId.Multiplier);
                 }
-                else if( tryDispatchAnalogOutput( analog, fdrPoint.getPointID() ) )
+                else if( tryDispatchAnalogOutput(analog, fdrPoint.getPointID(), dnpId.Multiplier) )
                 {
                     analog.status = ControlStatus::Success;
                 }
@@ -1102,7 +1100,7 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
                 auto pData = 
                     std::make_unique<CtiPointDataMsg>(
                         fdrPoint.getPointID(),
-                        analog.value,
+                        analog.value * dnpId.Multiplier,
                         NormalQuality,
                         fdrPoint.getPointType());
 
@@ -1117,7 +1115,9 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
 
                     l.add("Point ID") << fdrPoint.getPointID();
                     l.add("Pao ID") << fdrPoint.getPaoID();
-                    l.add("Value") << analog.value;
+                    l.add("Incoming value") << analog.value;
+                    l.add("FDR multiplier") << dnpId.Multiplier;
+                    l.add("Resulting value") << analog.value;
 
                     CTILOG_DEBUG(dout, "Sending analog point update to Dispatch:" << l);
                 }
@@ -1155,7 +1155,7 @@ std::string describeAnalogOutputRequest(const Protocols::DnpSlave::analog_output
 }
 
 
-ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog, long pointId)
+ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog, long pointId, double multiplier)
 {
     auto point = lookupPointById(pointId);
 
@@ -1193,14 +1193,14 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
         case AnalogOutput::AO_16Bit:
         case AnalogOutput::AO_32Bit:
         {
-            commandString += std::to_string(static_cast<long>(analog.value));
+            commandString += std::to_string(static_cast<long>(analog.value * multiplier));
             break;
         }
 
         case AnalogOutput::AO_SingleFloat:
         case AnalogOutput::AO_DoubleFloat:
         {
-            commandString += std::to_string(analog.value);
+            commandString += std::to_string(analog.value * multiplier);
             break;
         }
     }
@@ -1226,11 +1226,11 @@ ControlStatus DnpSlave::tryPorterAnalogOutput(const Protocols::DnpSlave::analog_
 }
 
 
-bool DnpSlave::tryDispatchAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog, long pointid)
+bool DnpSlave::tryDispatchAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog, long pointid, double multiplier)
 {
     std::string translationName = "DNP offset " + std::to_string(analog.offset);
 
-    CtiCommandMsg *aoMsg = createAnalogOutputMessage(pointid, translationName, analog.value);
+    CtiCommandMsg *aoMsg = createAnalogOutputMessage(pointid, translationName, analog.value * multiplier);
 
     return sendMessageToDispatch(aoMsg);
 }
@@ -1366,7 +1366,7 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
     }
     else
     {
-        dnpId.Multiplier = std::stof(dnpMultiplier);
+        dnpId.Multiplier = std::stod(dnpMultiplier);
     }
     dnpId.valid = true;
 

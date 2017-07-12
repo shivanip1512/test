@@ -2698,7 +2698,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_receive )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(false);  //  no controls will be sent
 
-        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:1", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:1;Multiplier:2", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -2736,7 +2736,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_receive )
 
     BOOST_CHECK_EQUAL(msg->getId(),      43);
     BOOST_CHECK_EQUAL(msg->getQuality(), 5);
-    BOOST_CHECK_EQUAL(msg->getValue(),   67305985);
+    BOOST_CHECK_EQUAL(msg->getValue(),   134611970);
     BOOST_CHECK_EQUAL(msg->getType(),    AnalogPointType);
 }
 
@@ -2768,7 +2768,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_dispatch )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:1", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:1:Multiplier:3", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -2839,7 +2839,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_controloffset )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:1", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:1;Multiplier:1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -2903,7 +2903,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_controloffset )
 }
 
 
-BOOST_AUTO_TEST_CASE( test_analog_output_porter_analogoutput )
+BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput)
 {
     Test_FdrDnpSlave dnpSlave;
 
@@ -2930,7 +2930,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_analogoutput )
         fdrPoint->setValue(0);
         fdrPoint->setControllable(true);
 
-        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:17", "Test Destination");
+        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:17;Multiplier:4.1", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -2966,7 +2966,7 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_analogoutput )
         BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 19 67305985");  //  aka 0x04030201
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 19 275954538");  //  aka floor(0x04030201 * 4.1)
     }
 
     //  Failure from device
@@ -2989,7 +2989,100 @@ BOOST_AUTO_TEST_CASE( test_analog_output_porter_analogoutput )
         BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
         BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
 
-        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 19 67305985");  //  aka 0x04030201
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 19 275954538");  //  aka floor(0x04030201 * 4.1)
+    }
+}
+
+
+BOOST_AUTO_TEST_CASE(test_analog_output_porter_analogoutput_double)
+{
+    Test_FdrDnpSlave dnpSlave;
+
+    CtiFDRManager *fdrManager = new CtiFDRManager("DNP slave, but this is just a test");
+
+    CtiFDRPointList fdrPointList;
+
+    fdrPointList.setPointList(fdrManager);
+
+    dnpSlave.getReceiveFromList().deletePointList();
+    dnpSlave.setReceiveFromList(fdrPointList);
+
+    //  fdrPointList's destructor will try to delete the point list, but it is being used by dnpSlave - so null it out
+    fdrPointList.setPointList(0);
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(43);
+        fdrPoint->setPaoID(153);
+        fdrPoint->setOffset(10017);
+        fdrPoint->setPointType(AnalogPointType);
+        fdrPoint->setValue(0);
+        fdrPoint->setControllable(true);
+
+        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:1000;SlaveId:11;POINTTYPE:Analog;Offset:17;Multiplier:4.1", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, false);
+    }
+
+    dnpSlave.point.setPointOffset(10019);
+    dnpSlave.point.setPointId(43);
+
+    //  Success
+    {
+        const byte_str request(
+            "05 64 18 c4 0b 00 e8 03 c0 25 "
+            "c4 c3 05 29 04 28 01 00 10 00 4a d8 12 4d fb 21 ff f7 "
+            "09 40 00 ac 80");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.returnString = "Jimmy / Control result (0): Request accepted, initiated, or queued.";
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+            "05 64 1a 44 e8 03 0b 00 6b e2 "
+            "c0 c3 81 00 00 29 04 28 01 00 10 00 4a d8 12 4d 8a a0 "
+            "fb 21 09 40 00 31 92");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 19 12.880530");  //  aka 3.1415926 * 4.1, to 6 digits
+    }
+
+    //  Failure from device
+    {
+        const byte_str request(
+            "05 64 18 c4 0b 00 e8 03 c0 25 "
+            "c4 c3 05 29 04 28 01 00 10 00 4a d8 12 4d fb 21 ff f7 "
+            "09 40 00 ac 80");
+
+        Test_ServerConnection connection;
+
+        dnpSlave.returnString = "Jimmy / Control result (4): Request not accepted because a control operation is not supported for this point.";
+
+        dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
+
+        const byte_str expected(
+            "05 64 1a 44 e8 03 0b 00 6b e2 "
+            "c0 c3 81 00 00 29 04 28 01 00 10 00 4a d8 12 4d 8a a0 "
+            "fb 21 09 40 04 49 4b");
+
+        BOOST_REQUIRE_EQUAL(connection.messages.size(), 1);
+        BOOST_CHECK_EQUAL_RANGES(expected, connection.messages.front());
+
+        BOOST_CHECK_EQUAL(dnpSlave.lastRequestMsg->CommandString(), "putvalue analog 19 12.880530");  //  aka 3.1415926 * 4.1, to 6 digits
     }
 }
 

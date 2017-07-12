@@ -29,7 +29,7 @@ struct DnpId : public Cti::Loggable
     USHORT SlaveId;
     UINT   PointType;
     USHORT Offset;
-    FLOAT  Multiplier;
+    double Multiplier;
     BOOL valid;
 
     CtiFDRClientServerConnection::Destination MasterServerName;
@@ -106,8 +106,8 @@ class IM_EX_FDRDNPSLAVE DnpSlave : public CtiFDRSocketServer
         auto tryPorterControl  (const Protocols::DnpSlave::control_request &control, const long pointId) -> Protocols::DNP::ControlStatus;
         bool tryDispatchControl(const Protocols::DnpSlave::control_request &control, const long pointId);
 
-        auto tryPorterAnalogOutput  (const Protocols::DnpSlave::analog_output_request &analog, const long pointId) -> Protocols::DNP::ControlStatus;
-        bool tryDispatchAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog, const long pointId);
+        auto tryPorterAnalogOutput  (const Protocols::DnpSlave::analog_output_request &analog, const long pointId, const double multiplier) -> Protocols::DNP::ControlStatus;
+        bool tryDispatchAnalogOutput(const Protocols::DnpSlave::analog_output_request &analog, const long pointId, const double multiplier);
 
         auto waitForResponse(const long userMessageId) -> Protocols::DNP::ControlStatus;
 
