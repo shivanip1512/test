@@ -61,7 +61,11 @@ yukon.assets.dashboard = (function () {
             
             if (_initialized) return;
             
-            _updateRecentActions();
+            var recentActions = $('.js-recent-actions');
+            //check if recent actions div exists
+            if (recentActions.length) {
+                _updateRecentActions();
+            }
             
             _initialized = true;
             
