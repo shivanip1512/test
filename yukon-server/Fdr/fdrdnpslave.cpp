@@ -1117,7 +1117,7 @@ int DnpSlave::processAnalogOutputRequest (ServerConnection& connection, const Ob
                     l.add("Pao ID") << fdrPoint.getPaoID();
                     l.add("Incoming value") << analog.value;
                     l.add("FDR multiplier") << dnpId.Multiplier;
-                    l.add("Resulting value") << analog.value;
+                    l.add("Resulting value") << analog.value * dnpId.Multiplier;
 
                     CTILOG_DEBUG(dout, "Sending analog point update to Dispatch:" << l);
                 }
