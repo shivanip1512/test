@@ -50,7 +50,7 @@ public class HoneywellWifiMessageListener {
 
             // Send DR message to HoneywellWifi server
             honeywellCommunicationService.sendDREventForGroup(parameters);
-            recentEventParticipationService.createDeviceControlEvent(parameters.getEventId(), parameters.getGroupId(),
+            recentEventParticipationService.createDeviceControlEvent(parameters.getProgramId(), parameters.getEventId(), parameters.getGroupId(),
                 parameters.getStartTime(), parameters.getEndTime());
             // Store the most recent dr handle for each group, so we can cancel
             groupToEventIdMap.put(parameters.getGroupId(), parameters.getEventId());
@@ -143,7 +143,8 @@ public class HoneywellWifiMessageListener {
         log.trace("Parsed duty cycle dr parameters. Start time: " + startTime + " (" + utcStartTimeSeconds + ")"
                 + " End time: " + endTime + " (" + utcEndTimeSeconds + ") Ramp in-out: " + rampInOut);
 
-        return new HoneywellWifiDutyCycleDrParameters(eventId,
+        return new HoneywellWifiDutyCycleDrParameters(programId,
+                                                      eventId,
                                                       startTime,
                                                       endTime,
                                                       dutyCyclePercent,

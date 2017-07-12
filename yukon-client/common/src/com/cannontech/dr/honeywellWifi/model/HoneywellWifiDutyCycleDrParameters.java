@@ -7,6 +7,7 @@ import org.joda.time.Instant;
  * event for HoneywellWifi.
  */
 public class HoneywellWifiDutyCycleDrParameters {
+    private final int programId;
     private final int eventId;
     private final Instant startTime;
     private final Instant endTime;
@@ -15,8 +16,9 @@ public class HoneywellWifiDutyCycleDrParameters {
     private final int groupId;
     private final int durationSeconds;
 
-    public HoneywellWifiDutyCycleDrParameters(int eventId, Instant startTime, Instant endTime,
+    public HoneywellWifiDutyCycleDrParameters(int programId, int eventId, Instant startTime, Instant endTime,
             int dutyCyclePercent, int randomizationInterval, int groupId, int durationSeconds) {
+        this.programId = programId;
         this.eventId = eventId;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -52,5 +54,9 @@ public class HoneywellWifiDutyCycleDrParameters {
 
     public int getDurationSeconds() {
         return durationSeconds;
+    }
+
+    public int getProgramId() {
+        return programId;
     }
 }

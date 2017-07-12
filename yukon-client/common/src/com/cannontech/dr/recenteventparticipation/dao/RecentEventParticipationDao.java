@@ -16,9 +16,9 @@ import com.cannontech.dr.recenteventparticipation.model.RecentEventParticipation
 
 public interface RecentEventParticipationDao {
     /**
-     * Creates new control event associated with the specified load group
+     * Creates new control event associated with the specified load program & group
      */
-    public void createNewEventMapping(int eventId, int groupId, Instant startTime, Instant stopTime);
+    public void createNewEventMapping(int programId, int eventId, int groupId, Instant startTime, Instant stopTime);
 
     /**
      * Update device status (({@link ControlEventDeviceStatus}, deviceRecievedTime)) for which response is
