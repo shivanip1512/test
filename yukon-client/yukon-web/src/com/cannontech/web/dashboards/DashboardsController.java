@@ -249,7 +249,7 @@ public class DashboardsController {
             model.addAttribute("mode", PageEditMode.EDIT);
             List<Visibility> reducedVisibility = new ArrayList<>();
             List<Visibility> visibilityOptions = Arrays.asList(Visibility.values());
-            if (dashboardDao.getAllUsersForDashboard(id).size() >= 1) {
+            if (hasOtherUsers(userContext, id)) {
                 //only allow making visibility more visible if there are users
                 List<Visibility> reversedOptions = Lists.reverse(visibilityOptions);
                 for (Visibility visibility : reversedOptions) {
@@ -389,14 +389,14 @@ public class DashboardsController {
     }
     
     @RequestMapping("{id}/delete")
-    public void deleteDashboard(FlashScope flash, @PathVariable int id, LiteYukonUser user, HttpServletResponse resp) {
+    public void deleteDashboard(FlashScope flash, @PathVariable int id, YukonUserContext userContext, HttpServletResponse resp) {
         Dashboard dashboard = dashboardService.getDashboard(id);
         LiteYukonUser owner = dashboard.getOwner();
         if (dashboard.getVisibility() == Visibility.SYSTEM) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.system", dashboard.getName()));
-        } else if (dashboardDao.getAllUsersForDashboard(id).size() > 1) {
+        } else if (hasOtherUsers(userContext, id)) {
             flash.setError(new YukonMessageSourceResolvable(baseKey + "delete.exception.currentInUse", dashboard.getName()));
-        } else if (owner == null || owner.getUserID() == user.getUserID()) {
+        } else if (owner == null || isDashboardOwner(userContext, dashboard)) {
             dashboardService.delete(id);
             flash.setConfirm(new YukonMessageSourceResolvable(baseKey + "delete.success", dashboard.getName()));
         } else {
@@ -407,6 +407,11 @@ public class DashboardsController {
     
     private boolean isDashboardOwner(YukonUserContext userContext, Dashboard dashboard) {
         return (userContext.getYukonUser().getUserID() == dashboard.getOwner().getUserID());
+    }
+    
+    private boolean hasOtherUsers(YukonUserContext userContext, int dashboardId) {
+        List<Integer> dashboardUsers = dashboardDao.getAllUsersForDashboard(dashboardId);
+        return !(dashboardUsers.size() == 0 || (dashboardUsers.size() == 1 && dashboardUsers.get(0) == userContext.getYukonUser().getUserID()));
     }
     
     public enum DashboardSortBy implements DisplayableEnum {
