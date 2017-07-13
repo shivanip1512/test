@@ -14,7 +14,7 @@
         <cti:url value="/dashboards/create" var="action"/>
     </cti:displayForPageEditModes>
     
-    <form:form id="dashboard-details" commandName="dashboard" action="${action}" method="POST">
+    <form:form id="dashboard-details" commandName="dashboard" action="${action}" method="POST" onsubmit="yukon.dashboards.saveFormDetails();return false;">
      <cti:csrfToken/>
      
        <cti:displayForPageEditModes modes="EDIT">
