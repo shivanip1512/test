@@ -1888,7 +1888,7 @@ create table ControlEvent  (
    ScheduledStopTime    DATE                            not null,
    GroupId              NUMBER                          not null,
    LMControlHistoryId   NUMBER,
-   ProgramId            NUMERIC                        default 0 not null,
+   ProgramId            NUMBER                         default 0 not null,
    constraint PK_ControlEvent primary key (ControlEventId)
 );
 
