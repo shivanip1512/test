@@ -59,15 +59,6 @@ public class UserGroupPaoPermissionDaoImpl implements PaoPermissionDao<LiteUserG
     }
 
     @Override
-    public void removeAllPaoPermissions(int paoId) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("DELETE FROM GroupPaoPermission");
-        sql.append("WHERE PaoId").eq(paoId);
-
-        yukonJdbcTemplate.update(sql);
-    }
-
-    @Override
     public void removeAllPermissions(int userGroupId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("DELETE FROM GroupPaoPermission");

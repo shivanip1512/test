@@ -9,7 +9,6 @@ import java.util.Vector;
 import com.cannontech.common.pao.PaoType;
 import com.cannontech.common.pao.service.LocationService;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.authorization.service.PaoPermissionService;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
@@ -67,9 +66,6 @@ public abstract class YukonPAObject extends DBPersistent implements CTIDbChange 
         delete("DynamicLMControlHistory", "PAObjectID", getPAObjectID());
         delete("PAOOwner", "ChildID", getPAObjectID());
         delete("ControlEvent", "ProgramId", getPAObjectID());
-        // Remove pao permissions
-        PaoPermissionService paoPermissionService = YukonSpringHook.getBean(PaoPermissionService.class);
-        paoPermissionService.removeAllPaoPermissions(getPAObjectID());
 
         delete("DynamicPAOInfo", "PAObjectID", getPAObjectID());
 

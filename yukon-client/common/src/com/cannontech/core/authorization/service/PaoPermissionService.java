@@ -61,9 +61,4 @@ public interface PaoPermissionService {
      */
     public Set<Integer> getPaoIdsForUserPermission(LiteYukonUser user, Permission permission);
 
-    /**
-     * Method to remove all user and userGroup permissions for a given pao
-     * @param paoId - Id of pao to remove permissions for
-     */
-    public void removeAllPaoPermissions(int paoId);
 }

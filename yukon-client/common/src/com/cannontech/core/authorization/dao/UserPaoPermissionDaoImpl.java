@@ -57,12 +57,6 @@ public class UserPaoPermissionDaoImpl implements PaoPermissionDao<LiteYukonUser>
     }
 
     @Override
-    public void removeAllPaoPermissions(int paoId) {
-        String sql = "delete from UserPaoPermission where paoid = ?";
-        jdbcTemplate.update(sql, new Object[] { paoId });
-    }
-
-    @Override
     public void removeAllPermissions(int userId) {
         String sql = "delete from UserPaoPermission where userid = ?";
         jdbcTemplate.update(sql, new Object[] { userId });

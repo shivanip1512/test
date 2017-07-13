@@ -109,12 +109,6 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
         return paoIdSet;
     }
 
-    @Override
-    public void removeAllPaoPermissions(int paoId) {
-        userPaoPermissionDao.removeAllPaoPermissions(paoId);
-        userGroupPaoPermissionDao.removeAllPaoPermissions(paoId);
-    }
-
     private void validatePermission(Permission permission) {
         if (!permission.isSettablePerPao()) {
             throw new IllegalArgumentException("Permission not settable per pao.");

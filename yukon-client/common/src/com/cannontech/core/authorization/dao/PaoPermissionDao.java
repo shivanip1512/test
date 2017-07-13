@@ -108,11 +108,4 @@ public interface PaoPermissionDao<T> {
      */
     public void removeAllPermissions(int id);
 
-    /**
-     * Method to remove all paoPermissions for a given pao related to the type
-     * <T> of this dao
-     * @param paoId - Id of pao to remove permissions for
-     */
-    public void removeAllPaoPermissions(int paoId);
-
 }
