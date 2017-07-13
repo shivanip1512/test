@@ -8,6 +8,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.dashboard.dao.DashboardDao;
@@ -89,7 +90,7 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional
-    public int create(DashboardBase dashboardBase) {
+    public int create(DashboardBase dashboardBase) throws DuplicateException {
         int dashboardId = dashboardDao.create(dashboardBase);
         if (dashboardBase instanceof Dashboard) {
             Dashboard dashboard = (Dashboard) dashboardBase;
@@ -113,12 +114,14 @@ public class DashboardServiceImpl implements DashboardService {
 
     @Override
     @Transactional
-    public Dashboard copy(int dashboardId, int userId) {
+    public int copy(int dashboardId, String name, String description, Visibility visibility,int userId) throws DuplicateException{
         Dashboard dashboard = getDashboard(dashboardId);
         dashboard.setOwner(userDao.getLiteYukonUser(userId));
         dashboard.setDashboardId(0);
-        int newDashboardId = create(dashboard);
-        return getDashboard(newDashboardId);
+        dashboard.setDescription(description);
+        dashboard.setName(name);
+        dashboard.setVisibility(visibility);
+        return create(dashboard);
     }
 
     @Override

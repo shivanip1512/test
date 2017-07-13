@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.database.SqlParameterSink;
 import com.cannontech.database.TypeRowMapper;
 import com.cannontech.database.YukonJdbcTemplate;
@@ -197,9 +198,22 @@ public class DashboardDaoImpl implements DashboardDao {
     }
     
     @Override
-    public int create(DashboardBase dashboard) {
+    public int create(DashboardBase dashboard) throws DuplicateException {
         int dashboardId = dashboard.getDashboardId();
         if (dashboardId == 0) {
+            SqlStatementBuilder dupSql = new SqlStatementBuilder();
+            dupSql.append("SELECT Name");
+            dupSql.append("FROM Dashboard");
+            dupSql.append("WHERE OwnerId").eq(dashboard.getOwner().getLiteID());
+            dupSql.append("AND Name").eq(dashboard.getName());
+            String dashboardName = null;
+            try {
+                dashboardName = jdbcTemplate.queryForString(dupSql);
+                throw new DuplicateException("Dashboard with the name " + dashboardName + " is already created by "
+                    + dashboard.getOwner().getUsername());
+            } catch (EmptyResultDataAccessException e) {
+                // dashboard doesn't exist, continue with dashboard creation.
+            }
             dashboardId = nextValueHelper.getNextValue("Dashboard");
         }
         SqlStatementBuilder dashboardSql = new SqlStatementBuilder();
@@ -210,7 +224,7 @@ public class DashboardDaoImpl implements DashboardDao {
         dashboardSink.addValue("OwnerId", dashboard.getOwner().getUserID());
         dashboardSink.addValue("Visibility", dashboard.getVisibility());
         jdbcTemplate.update(dashboardSql);
-        
+
         return dashboardId;
     }
     

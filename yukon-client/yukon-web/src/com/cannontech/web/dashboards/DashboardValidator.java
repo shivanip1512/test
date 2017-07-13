@@ -37,7 +37,5 @@ public class DashboardValidator extends SimpleValidator<Dashboard> {
             }
         }
         YukonValidationUtils.checkExceedsMaxLength(errors, "name", dashboard.getName(), 100);
-        
-        //TODO: check if name already exists
     }
 }

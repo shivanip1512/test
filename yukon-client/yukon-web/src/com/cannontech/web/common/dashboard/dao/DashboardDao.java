@@ -2,6 +2,7 @@ package com.cannontech.web.common.dashboard.dao;
 
 import java.util.List;
 
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardBase;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
@@ -37,11 +38,14 @@ public interface DashboardDao {
     List<Integer> getAllUsersForDashboard(int dashboardId);
     
     /**
-     * Creates a dashboard. Any widgets associated with the dashboard will need to be added separately, via 
+     * Creates a dashboard. Any widgets associated with the dashboard will need to be added separately, via
      * <code>insertWidgets</code>.
+     * 
      * @return The id of the newly created dashboard.
+     * @throws DuplicateException if attempt to create a dashboard with the same name by the same user is
+     *         made.
      */
-    int create(DashboardBase dashboard);
+    int create(DashboardBase dashboard) throws DuplicateException;
     
     /**
      * Inserts widgets for the specified dashboard.

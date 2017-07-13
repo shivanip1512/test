@@ -3,11 +3,13 @@ package com.cannontech.web.common.dashboard.service;
 import java.util.List;
 import java.util.Optional;
 
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.common.dashboard.model.Dashboard;
 import com.cannontech.web.common.dashboard.model.DashboardBase;
 import com.cannontech.web.common.dashboard.model.DashboardPageType;
 import com.cannontech.web.common.dashboard.model.LiteDashboard;
+import com.cannontech.web.common.dashboard.model.Visibility;
 
 /**
  * This service handles dashboard create, update and delete actions, as well as miscellaneous actions relating to
@@ -51,7 +53,7 @@ public interface DashboardService {
     /**
      * @return The ID of the newly created dashboard.
      */
-    int create(DashboardBase dashboard);
+    int create(DashboardBase dashboard) throws DuplicateException;
     
     /**
      * @return The ID of the modified dashboard.
@@ -61,8 +63,10 @@ public interface DashboardService {
     /**
      * Copy a dashboard, saving the new copy to the database with the specified owner.
      * @return the copy.
+     * @throws DuplicateException if attempt to create a dashboard with the same name by the same user is
+     *         made.
      */
-    Dashboard copy(int dashboardId, int userId);
+    int copy(int dashboardId, String name, String description, Visibility visibility, int userId) throws DuplicateException;
     
     /**
      * Delete a dashboard.

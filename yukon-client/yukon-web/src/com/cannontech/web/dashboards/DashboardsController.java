@@ -31,6 +31,7 @@ import com.cannontech.common.model.PagingParameters;
 import com.cannontech.common.model.SortingParameters;
 import com.cannontech.common.search.result.SearchResults;
 import com.cannontech.common.util.JsonUtils;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -224,15 +225,16 @@ public class DashboardsController {
             setupDashboardDetailsModel(model, userContext);
             return "dashboardDetails.jsp";
         }
-        if (id != 0) {
-            Dashboard copyDashboard = dashboardService.copy(dashboard.getDashboardId(), userContext.getYukonUser().getUserID());
-            copyDashboard.setName(dashboard.getName());
-            copyDashboard.setDescription(dashboard.getDescription());
-            copyDashboard.setVisibility(dashboard.getVisibility());
-            id = dashboardService.update(copyDashboard);
-        } else {
-            dashboard.setOwner(userContext.getYukonUser());
-            id = dashboardService.create(dashboard);
+        try {
+            if (id != 0) {
+                id = dashboardService.copy(dashboard.getDashboardId(), dashboard.getName(), dashboard.getDescription(),
+                    dashboard.getVisibility(), userContext.getYukonUser().getUserID());
+            } else {
+                dashboard.setOwner(userContext.getYukonUser());
+                id = dashboardService.create(dashboard);
+            }
+        } catch (DuplicateException e) {
+            throw e;
         }
         // Success
         model.clear();
