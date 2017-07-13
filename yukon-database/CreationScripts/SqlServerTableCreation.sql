@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2005                    */
-/* Created on:     7/12/2017 4:51:11 AM                         */
+/* Created on:     7/13/2017 4:40:46 AM                         */
 /*==============================================================*/
 
 
@@ -13088,6 +13088,7 @@ go
 alter table GroupPaoPermission
    add constraint FK_GroupPaoPerm_PAO foreign key (PaoId)
       references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table GroupPaoPermission
@@ -14453,6 +14454,7 @@ go
 alter table UserPaoPermission
    add constraint FK_USERPAOP_REF_YUKPA_YUKONPAO foreign key (PaoID)
       references YukonPAObject (PAObjectID)
+         on delete cascade
 go
 
 alter table UserPreference

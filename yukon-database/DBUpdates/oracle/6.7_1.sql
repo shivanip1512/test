@@ -36,6 +36,15 @@ USING (
     SET ProgramId = DLG.DeviceId;
 /* End YUK-16894 */
 
+/* Start YUK-16606 */
+ALTER TABLE UserPaoPermission DROP CONSTRAINT FK_USERPAOP_REF_YUKPA_YUKONPAO;
+
+ALTER TABLE UserPaoPermission
+   ADD CONSTRAINT FK_USERPAOP_REF_YUKPA_YUKONPAO FOREIGN KEY (PaoID)
+      REFERENCES YukonPAObject (PAObjectID)
+      ON DELETE CASCADE;
+/* End YUK-16606 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /* Inserted when update script is run                         */

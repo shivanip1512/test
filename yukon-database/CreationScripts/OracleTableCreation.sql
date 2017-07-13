@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     7/12/2017 4:50:03 AM                         */
+/* Created on:     7/13/2017 4:41:39 AM                         */
 /*==============================================================*/
 
 
@@ -12140,7 +12140,8 @@ alter table GraphCustomerList
 
 alter table GroupPaoPermission
    add constraint FK_GroupPaoPerm_PAO foreign key (PaoId)
-      references YukonPAObject (PAObjectID);
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table GroupPaoPermission
    add constraint FK_GroupPaoPerm_UserGroup foreign key (UserGroupId)
@@ -13248,7 +13249,8 @@ alter table UserPaoPermission
 
 alter table UserPaoPermission
    add constraint FK_USERPAOP_REF_YUKPA_YUKONPAO foreign key (PaoID)
-      references YukonPAObject (PAObjectID);
+      references YukonPAObject (PAObjectID)
+      on delete cascade;
 
 alter table UserPreference
    add constraint FK_UserPreference_YukonUser foreign key (UserId)
