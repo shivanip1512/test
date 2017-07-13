@@ -113,9 +113,15 @@ public class CategoryEditValidator extends SimpleValidator<CategoryEditBean> {
                     if (field.getValidator() != null) {
                         try {
                             if (field.getClass() == IntegerField.class) {
-                                IntegerField intField = (IntegerField) field;
-                                InputValidator<Integer> validator = intField.getValidator();
-                                validator.validate(path, field.getDisplayName(), Integer.valueOf(value), errors);
+                                try {
+                                    IntegerField intField = (IntegerField) field;
+                                    InputValidator<Integer> validator = intField.getValidator();
+                                    validator.validate(path, field.getDisplayName(), Integer.valueOf(value), errors);
+                                } catch (NumberFormatException nfe) {
+                                    //  Failed parsing as an int - if it parses as a float, reject it
+                                    Float.parseFloat(value);
+                                    errors.rejectValue(path, baseKey + ".integer");
+                                }
                             } else if (field.getClass() == FloatField.class) {
                                 FloatField floatField = (FloatField) field;
                                 InputValidator<Float> validator = floatField.getValidator();

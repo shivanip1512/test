@@ -608,6 +608,7 @@
     <entry key="yukon.web.modules.tools.configs.category.deleteSuccess">Device configuration category was successfully removed from the database.</entry>
     <entry key="yukon.web.modules.tools.configs.category.emptyName">Category name must not be empty.</entry>
     <entry key="yukon.web.modules.tools.configs.category.nonNumber">A non-number value was submitted for this field.</entry>
+    <entry key="yukon.web.modules.tools.configs.category.integer">This field must be an integer with no decimal digits.</entry>
     <entry key="yukon.web.modules.tools.configs.category.decimalDigits">Too many digits following the decimal place were specified. Please limit the value to {0} digit(s) after the decimal.</entry>
     <entry key="yukon.web.modules.tools.configs.category.emptyValue">No value was supplied for this field.</entry>
     <entry key="yukon.web.modules.tools.configs.category.assignments.title">Assignments</entry>
