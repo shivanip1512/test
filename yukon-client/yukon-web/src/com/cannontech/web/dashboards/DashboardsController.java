@@ -234,7 +234,11 @@ public class DashboardsController {
                 id = dashboardService.create(dashboard);
             }
         } catch (DuplicateException e) {
-            throw e;
+            result.rejectValue("name", "yukon.web.error.nameConflict");
+            resp.setStatus(HttpStatus.BAD_REQUEST.value());
+            model.addAttribute("mode", PageEditMode.CREATE);
+            setupDashboardDetailsModel(model, userContext);
+            return "dashboardDetails.jsp";
         }
         // Success
         model.clear();
