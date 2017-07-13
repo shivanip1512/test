@@ -361,6 +361,7 @@ public class DashboardsController {
             dashboard.setColumn2Widgets(existingDashboard.getColumn2Widgets());
             validator.validate(dashboard, result);
             if (result.hasErrors()) {
+                resp.setStatus(HttpStatus.BAD_REQUEST.value());
                 model.addAttribute("mode", PageEditMode.EDIT);
                 setupDashboardDetailsModel(model, userContext);
                 return "dashboardDetails.jsp";
