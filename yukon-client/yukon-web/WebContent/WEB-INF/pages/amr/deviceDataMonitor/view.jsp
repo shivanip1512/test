@@ -74,7 +74,10 @@
                 </cm:dropdown>
             </tags:nameValue2>
             <tags:nameValue2 nameKey=".violationsGroup">
-                ${violationsGroup}
+                <cti:url var="deviceGroupUrl" value="/group/editor/home">
+                <cti:param name="groupName">${violationsDeviceGroupPath}</cti:param>
+                    </cti:url>
+                <a href="${deviceGroupUrl}">${fn:escapeXml(violationsDeviceGroupPath)}</a>
                 <cm:dropdown triggerClasses="vv">
                     <cm:dropdownOption icon="icon-folder-explore" key=".view.label" href="${htmlReportUrl}"/>
                     <cti:url var="mapUrl" value="/tools/map/dynamic">

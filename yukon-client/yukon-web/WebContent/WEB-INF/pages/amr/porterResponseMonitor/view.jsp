@@ -107,8 +107,8 @@ $(function () {
                 <cti:url var="deviceGroupUrl" value="/group/editor/home">
                     <cti:param name="groupName">${fn:escapeXml(monitorDto.groupName)}</cti:param>
                 </cti:url>
-                <a href="${deviceGroupUrl}" class="fl" style="margin-right: 10px;">${fn:escapeXml(monitorDto.groupName)}</a>
-                <cm:dropdown triggerClasses="fl vv">
+                <a href="${deviceGroupUrl}" >${fn:escapeXml(monitorDto.groupName)}</a>
+                <cm:dropdown triggerClasses="vv">
                     <cti:url var="groupReportUrl" value="/amr/reports/groupDevicesReport">
                         <cti:param name="groupName" value="${monitorDto.groupName}"/>
                     </cti:url>

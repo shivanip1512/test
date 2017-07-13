@@ -32,8 +32,8 @@
                 <cti:url var="deviceGroupUrl" value="/group/editor/home">
                     <cti:param name="groupName">${fn:escapeXml(statusPointMonitor.groupName)}</cti:param>
                 </cti:url>
-                <a href="${deviceGroupUrl}" class="fl" style="margin-right: 10px;">${fn:escapeXml(statusPointMonitor.groupName)}</a>
-                <cm:dropdown triggerClasses="fl vv">
+                <a href="${deviceGroupUrl}">${fn:escapeXml(statusPointMonitor.groupName)}</a>
+                <cm:dropdown triggerClasses="vv">
                     <cti:url var="statusPointGroupReportUrl" value="/amr/reports/groupDevicesReport">
                         <cti:param name="groupName" value="${statusPointMonitor.groupName}"/>
                     </cti:url>
