@@ -224,7 +224,7 @@ public class DashboardsController {
             setupDashboardDetailsModel(model, userContext);
             return "dashboardDetails.jsp";
         }
-        if (id > 0) {
+        if (id != 0) {
             Dashboard copyDashboard = dashboardService.copy(dashboard.getDashboardId(), userContext.getYukonUser().getUserID());
             copyDashboard.setName(dashboard.getName());
             copyDashboard.setDescription(dashboard.getDescription());
