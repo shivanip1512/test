@@ -43,6 +43,13 @@ ALTER TABLE UserPaoPermission
    ADD CONSTRAINT FK_USERPAOP_REF_YUKPA_YUKONPAO FOREIGN KEY (PaoID)
       REFERENCES YukonPAObject (PAObjectID)
       ON DELETE CASCADE;
+
+ALTER TABLE GroupPaoPermission DROP CONSTRAINT FK_GroupPaoPerm_PAO;
+
+ALTER TABLE GroupPaoPermission
+   ADD CONSTRAINT FK_GroupPaoPerm_PAO FOREIGN KEY (PaoId)
+      REFERENCES YukonPAObject (PAObjectID)
+      ON DELETE CASCADE;
 /* End YUK-16606 */
 
 /**************************************************************/
