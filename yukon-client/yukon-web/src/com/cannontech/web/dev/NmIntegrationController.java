@@ -4,13 +4,11 @@ import java.beans.PropertyEditor;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 
 import javax.jms.ConnectionFactory;
@@ -50,13 +48,10 @@ import com.cannontech.common.rfn.message.gateway.GatewayFirmwareUpdateRequestRes
 import com.cannontech.common.rfn.message.gateway.GatewayUpdateResult;
 import com.cannontech.common.rfn.message.gateway.RfnGatewayUpgradeRequestAckType;
 import com.cannontech.common.rfn.message.gateway.RfnUpdateServerAvailableVersionResult;
-import com.cannontech.common.rfn.message.network.NeighborData;
 import com.cannontech.common.rfn.message.network.NeighborFlagType;
-import com.cannontech.common.rfn.message.network.ParentData;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnParentReplyType;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
-import com.cannontech.common.rfn.message.network.RouteData;
 import com.cannontech.common.rfn.message.network.RouteFlagType;
 import com.cannontech.common.rfn.service.RfnGatewayDataCache;
 import com.cannontech.common.rfn.simulation.SimulatedCertificateReplySettings;
@@ -829,51 +824,8 @@ public class NmIntegrationController {
         NmNetworkSimulatorRequest simRequest = new NmNetworkSimulatorRequest(Action.GET_SETTINGS);
         SimulatorResponseBase response = sendRequest(simRequest, null, flash);  
         
-        SimulatedNmMappingSettings settings = null;
-        if (response != null) {
-            settings = ((NmNetworkSimulatorResponse) response).getSettings();
-            model.addAttribute("simulatorRunning", true);
-        }
-        if (settings == null) {
-            settings = new SimulatedNmMappingSettings();
-            NeighborData neighborData = new NeighborData();
-            neighborData.setEtxBand((short) 3);
-            neighborData.setLastCommTime(new Date().getTime());
-            neighborData.setLinkPower("125 mWatt");
-            neighborData.setLinkRate("4x");
-            neighborData.setNeighborAddress("00:14:08:03:FA:A2");
-            neighborData.setNeighborDataTimestamp(new Date().getTime());
-            Set<NeighborFlagType> types = new HashSet<>();
-            types.add(NeighborFlagType.BN);
-            types.add(NeighborFlagType.IN);
-            neighborData.setNeighborFlags(types);
-            neighborData.setNeighborLinkCost(new Float(3));
-            neighborData.setNextCommTime(new Date().getTime());
-            neighborData.setNumSamples(1);
-            neighborData.setSerialNumber("123");
-            settings.setNeighborData(neighborData);
-
-            RouteData routeData = new RouteData();
-            routeData.setDestinationAddress("00:14:08:03:FA:A2");
-            routeData.setHopCount((short)1);
-            routeData.setNextHopAddress("00:14:08:03:FA:A2");
-            routeData.setRouteColor((short)1);
-            routeData.setRouteDataTimestamp(new Date().getTime());
-            Set<RouteFlagType> routeTypes = new HashSet<>();
-            routeTypes.add(RouteFlagType.BR);
-            routeTypes.add(RouteFlagType.GC);
-            routeData.setRouteFlags(routeTypes);
-            routeData.setRouteTimeout(new Date().getTime());
-            routeData.setSerialNumber("101");
-            routeData.setTotalCost((short)2);
-            settings.setRouteData(routeData);
-
-            ParentData parentData = new ParentData();
-            parentData.setNodeMacAddress("17:14:08:03:FA:A2");
-            parentData.setNodeSN("123");
-            settings.setParentData(parentData);
-            model.addAttribute("simulatorRunning", false);
-        }
+        SimulatedNmMappingSettings settings = ((NmNetworkSimulatorResponse) response).getSettings();
+        model.addAttribute("simulatorRunning", ((NmNetworkSimulatorResponse) response).isRunning());
 
         model.addAttribute("currentSettings", settings);
         return "rfn/mappingSimulator.jsp";

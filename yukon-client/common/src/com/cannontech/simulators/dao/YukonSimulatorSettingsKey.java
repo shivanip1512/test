@@ -59,6 +59,42 @@ public enum YukonSimulatorSettingsKey {
     RFN_METER_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_METER),
 
     //RFN Network Simulator (SimulatorSettings)
+    //NeighborData
+    RFN_NETWORK_SIMULATOR_NEIGHB_ADDR("00:14:08:03:FA:A2", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_NEIGHB_PRIM_FORW_ROUTE(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_NEIGHB_PRIM_REV_ROUTE(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_NEIGHB_SEC_ALT_GATEWAY(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_NEIGHB_FLOAT_NEIGHB(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_NEIGHB_IGNORED_NEIGHB(true, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_NEIGHB_BATTERY_NEIGHB(true, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_SEC_SERV_GATEWAY(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_NEIGHB_LINK_COST(3.0, InputTypeFactory.doubleType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_NEIGHB_NUM_SAMPLES(1, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_NEIGHB_EXT_BAND(3, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
+    RFN_NETWORK_SIMULATOR_NEIGHB_LINK_RATE("4x", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_NEIGHB_LINK_POW("125 mWatt", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_NEIGHBOR_DATA_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+
+    //RouteData
+    RFN_NETWORK_SIMULATOR_ROUTE_DEST_ADDR("00:14:08:03:FA:A2", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_ROUTE_HOP_ADDR("00:14:08:03:FA:A2", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_ROUTE_COST(2, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
+    RFN_NETWORK_SIMULATOR_ROUTE_HOP_COUNT(1, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
+    RFN_NETWORK_SIMULATOR_PRIM_FORW_ROUTE(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_PRIM_REV_ROUTE(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_PRIM_BATTERY_ROUTE(true, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_PRIM_START_GC(true, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_PRIM_REM_UPDATE(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_PRIM_IGNORED_ROUTE(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_PRIM_VALID_ROUTE(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_PRIM_TIMED_OUT(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_ROUTE_COLOR(1, InputTypeFactory.integerType(), SimulatorType.RFN_NETWORK), //must cast this to short when adding it to settings
+    RFN_NETWORK_SIMULATOR_PRIMARY_DATA_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+
+    //ParentData
+    RFN_NETWORK_SIMULATOR_PARENT_SN("123", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_PARENT_MAC_ADDR("17:14:08:03:FA:A2", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
+    RFN_NETWORK_SIMULATOR_PARENT_REPLY_TYPE("OK", InputTypeFactory.stringType(), SimulatorType.RFN_NETWORK),
     RFN_NETWORK_SIMULATOR_RUN_ON_STARTUP(false, InputTypeFactory.booleanType(), SimulatorType.RFN_NETWORK),
 
     //IvvcSimulatorSettings

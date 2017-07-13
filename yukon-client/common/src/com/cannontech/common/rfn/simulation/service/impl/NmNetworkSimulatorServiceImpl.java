@@ -1,6 +1,7 @@
 package com.cannontech.common.rfn.simulation.service.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,18 +41,25 @@ import com.cannontech.common.rfn.message.metadata.RfnMetadataReplyType;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataRequest;
 import com.cannontech.common.rfn.message.metadata.RfnMetadataResponse;
 import com.cannontech.common.rfn.message.network.NeighborData;
+import com.cannontech.common.rfn.message.network.NeighborFlagType;
 import com.cannontech.common.rfn.message.network.ParentData;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataReply;
+import com.cannontech.common.rfn.message.network.RfnNeighborDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnNeighborDataRequest;
 import com.cannontech.common.rfn.message.network.RfnParentReply;
+import com.cannontech.common.rfn.message.network.RfnParentReplyType;
 import com.cannontech.common.rfn.message.network.RfnParentRequest;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReply;
+import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataReplyType;
 import com.cannontech.common.rfn.message.network.RfnPrimaryRouteDataRequest;
 import com.cannontech.common.rfn.message.network.RouteData;
+import com.cannontech.common.rfn.message.network.RouteFlagType;
 import com.cannontech.common.rfn.model.RfnDevice;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 import com.cannontech.common.rfn.simulation.service.NmNetworkSimulatorService;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsDao;
+import com.cannontech.simulators.dao.YukonSimulatorSettingsKey;
 import com.cannontech.yukon.IDatabaseCache;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -72,12 +80,15 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private static final double DISTANCE_IN_MILES = 10;
                 
     private SimulatedNmMappingSettings settings;
+    
+    private volatile boolean isRunning;
         
     @Autowired private ConnectionFactory connectionFactory;
     @Autowired private PaoLocationDao paoLocationDao;
     @Autowired private LocationService locationService;
     @Autowired private IDatabaseCache cache;
     @Autowired private RfnDeviceDao rfnDeviceDao;
+    @Autowired private YukonSimulatorSettingsDao yukonSimulatorSettingsDao;
  
     private JmsTemplate jmsTemplate;
     
@@ -111,7 +122,8 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     
     @Override
     public void start(SimulatedNmMappingSettings settings) {
-        this.settings = settings;
+        updateSettings(settings);
+        isRunning = true;
         this.task = scheduler.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -169,16 +181,152 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     public void stop() {
         log.info("Stopping NM Network Simulator");
         task.cancel(true);
-        updateSettings(null);
+        isRunning = false;
     }
 
     @Override
     public void updateSettings(SimulatedNmMappingSettings settings) {
         this.settings = settings;
+        saveSettings(settings);
+    }
+
+    private void saveSettings(SimulatedNmMappingSettings settings) {
+        //NeighborData
+        NeighborData neighborData = settings.getNeighborData();
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_ADDR, neighborData.getNeighborAddress());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_PRIM_FORW_ROUTE, neighborData.getNeighborFlags().contains(NeighborFlagType.PF));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_PRIM_REV_ROUTE, neighborData.getNeighborFlags().contains(NeighborFlagType.PR));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_SEC_ALT_GATEWAY, neighborData.getNeighborFlags().contains(NeighborFlagType.S2));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_FLOAT_NEIGHB, neighborData.getNeighborFlags().contains(NeighborFlagType.F));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_IGNORED_NEIGHB, neighborData.getNeighborFlags().contains(NeighborFlagType.IN));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_BATTERY_NEIGHB, neighborData.getNeighborFlags().contains(NeighborFlagType.BN));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_SEC_SERV_GATEWAY, neighborData.getNeighborFlags().contains(NeighborFlagType.S1));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_LINK_COST, neighborData.getNeighborLinkCost());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_NUM_SAMPLES, neighborData.getNumSamples());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_EXT_BAND, neighborData.getEtxBand());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_LINK_RATE, neighborData.getLinkRate());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_LINK_POW, neighborData.getLinkPower());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHBOR_DATA_REPLY_TYPE, settings.getNeighborReplyType());
+
+        //RouteData
+        RouteData routeData = settings.getRouteData();
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_DEST_ADDR, routeData.getDestinationAddress());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_HOP_ADDR, routeData.getNextHopAddress());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_COST, routeData.getTotalCost());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_HOP_COUNT, routeData.getHopCount());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_FORW_ROUTE, routeData.getRouteFlags().contains(RouteFlagType.PF));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_REV_ROUTE, routeData.getRouteFlags().contains(RouteFlagType.PR));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_BATTERY_ROUTE, routeData.getRouteFlags().contains(RouteFlagType.BR));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_START_GC, routeData.getRouteFlags().contains(RouteFlagType.GC));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_REM_UPDATE, routeData.getRouteFlags().contains(RouteFlagType.RU));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_IGNORED_ROUTE, routeData.getRouteFlags().contains(RouteFlagType.IR));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_VALID_ROUTE, routeData.getRouteFlags().contains(RouteFlagType.VR));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_TIMED_OUT, routeData.getRouteFlags().contains(RouteFlagType.TO));
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_COLOR, routeData.getRouteColor());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIMARY_DATA_REPLY_TYPE, settings.getRouteReplyType());
+        
+        //ParentData
+        ParentData parentData = settings.getParentData();
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PARENT_SN, parentData.getNodeSN());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PARENT_MAC_ADDR, parentData.getNodeMacAddress());
+        yukonSimulatorSettingsDao.setValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PARENT_REPLY_TYPE, settings.getParentReplyType());
+
     }
 
     @Override
     public SimulatedNmMappingSettings getSettings() {
+        SimulatedNmMappingSettings simulatedNmMappingSettings = new SimulatedNmMappingSettings();
+        
+        //NeighborData
+        NeighborData neighborData = new NeighborData();
+        neighborData.setNeighborAddress(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_ADDR));
+        neighborData.setEtxBand((short) yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_EXT_BAND));
+        neighborData.setLastCommTime(new Date().getTime());
+        neighborData.setLinkPower(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_LINK_POW));
+        neighborData.setLinkRate(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_LINK_RATE));
+        neighborData.setNeighborDataTimestamp(new Date().getTime());
+        
+        Set<NeighborFlagType> types = new HashSet<>();
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_PRIM_FORW_ROUTE)) {    
+            types.add(NeighborFlagType.PF);
+        }
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_PRIM_REV_ROUTE)) {    
+            types.add(NeighborFlagType.PR);
+        }
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_SEC_ALT_GATEWAY)) {    
+            types.add(NeighborFlagType.S2);
+        }
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_FLOAT_NEIGHB)) {    
+            types.add(NeighborFlagType.F);
+        }
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_IGNORED_NEIGHB)) {    
+            types.add(NeighborFlagType.IN);
+        }
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_BATTERY_NEIGHB)) {    
+            types.add(NeighborFlagType.BN);
+        }
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_SEC_SERV_GATEWAY)) {    
+            types.add(NeighborFlagType.S1);
+        }
+        neighborData.setNeighborFlags(types);
+        
+        neighborData.setNeighborLinkCost(yukonSimulatorSettingsDao.getFloatValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_LINK_COST));
+        neighborData.setNextCommTime(new Date().getTime());
+        neighborData.setNumSamples(yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHB_NUM_SAMPLES));
+        neighborData.setSerialNumber("123");
+        simulatedNmMappingSettings.setNeighborData(neighborData);
+
+        //RouteData
+        RouteData routeData = new RouteData();
+        routeData.setDestinationAddress(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_DEST_ADDR));
+        routeData.setHopCount((short) yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_HOP_COUNT));
+        routeData.setNextHopAddress(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_HOP_ADDR));
+        routeData.setRouteColor((short) yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_COLOR));
+        routeData.setRouteDataTimestamp(new Date().getTime());
+        
+        Set<RouteFlagType> routeTypes = new HashSet<>();
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_FORW_ROUTE)) {    
+            routeTypes.add(RouteFlagType.PF);
+        }
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_REV_ROUTE)) {    
+            routeTypes.add(RouteFlagType.PR);
+        }
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_BATTERY_ROUTE)) {    
+            routeTypes.add(RouteFlagType.BR);
+        }
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_START_GC)) {    
+            routeTypes.add(RouteFlagType.GC);
+        }
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_REM_UPDATE)) {    
+            routeTypes.add(RouteFlagType.RU);
+        }
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_IGNORED_ROUTE)) {    
+            routeTypes.add(RouteFlagType.IR);
+        }
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_VALID_ROUTE)) {    
+            routeTypes.add(RouteFlagType.VR);
+        }
+        if (yukonSimulatorSettingsDao.getBooleanValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIM_TIMED_OUT)) {    
+            routeTypes.add(RouteFlagType.TO);
+        }
+        routeData.setRouteFlags(routeTypes);
+        
+        routeData.setRouteTimeout(new Date().getTime());
+        routeData.setSerialNumber("101");
+        routeData.setTotalCost((short) yukonSimulatorSettingsDao.getIntegerValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_ROUTE_COST));
+        simulatedNmMappingSettings.setRouteData(routeData);
+
+        //ParentData
+        ParentData parentData = new ParentData();
+        parentData.setNodeMacAddress(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PARENT_MAC_ADDR));
+        parentData.setNodeSN(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PARENT_SN));
+        simulatedNmMappingSettings.setParentData(parentData);
+        
+        simulatedNmMappingSettings.setNeighborReplyType(RfnNeighborDataReplyType.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_NEIGHBOR_DATA_REPLY_TYPE)));
+        simulatedNmMappingSettings.setRouteReplyType(RfnPrimaryRouteDataReplyType.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PRIMARY_DATA_REPLY_TYPE)));
+        simulatedNmMappingSettings.setParentReplyType(RfnParentReplyType.valueOf(yukonSimulatorSettingsDao.getStringValue(YukonSimulatorSettingsKey.RFN_NETWORK_SIMULATOR_PARENT_REPLY_TYPE)));
+        
+        settings = simulatedNmMappingSettings;
         return settings;
     }
     
@@ -391,5 +539,15 @@ public class NmNetworkSimulatorServiceImpl implements NmNetworkSimulatorService 
     private int getRandomNumberInRange(int min, int max) {
         Random r = new Random();
         return r.nextInt((max - min) + 1) + min;
+    }
+    
+    @Override
+    public boolean isRunning() {
+        return isRunning;
+    }
+
+    @Override
+    public void startSimulatorWithCurrentSettings() {
+        start(getSettings());
     }
 }

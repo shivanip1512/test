@@ -3,7 +3,8 @@ package com.cannontech.simulators.message.response;
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
 
 public class NmNetworkSimulatorResponse extends SimulatorResponseBase {
-    private SimulatedNmMappingSettings settings;
+    private final SimulatedNmMappingSettings settings;
+    private boolean running;
     
     public NmNetworkSimulatorResponse(SimulatedNmMappingSettings settings) {
         super.success = true;
@@ -15,6 +16,10 @@ public class NmNetworkSimulatorResponse extends SimulatorResponseBase {
     }
     
     public boolean isRunning() {
-        return settings != null;
+        return running;
+    }
+    
+    public void setRunning(boolean running) {
+        this.running = running;
     }
 }

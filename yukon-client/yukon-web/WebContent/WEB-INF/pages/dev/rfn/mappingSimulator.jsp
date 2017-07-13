@@ -6,48 +6,6 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <cti:standardPage module="dev" page="rfnTest.viewMappingSimulator">
-
-<script>
-yukon.namespace('yukon.dev.mappingSimulator');
-
-yukon.dev.mappingSimulator = (function() {
-    var _initialized = false,
-
-    mod = {
-        init : function() {
-            if (_initialized) return;
-            
-            $(document).on('click', '#populateDatabase', function () {
-                var form = $('#mapping-form');
-                form.attr("action", "populateMappingDatabase");
-                form.submit();
-            });
-            
-            $(document).on('click', '#updateSettings', function () {
-                var form = $('#mapping-form');
-                form.attr("action", "updateMappingSettings");
-                form.submit();
-            });
-            
-            $(document).on('click', '#stopSimulator', function () {
-                var form = $('#mapping-form');
-                form.attr("action", "stopMappingSimulator");
-                form.submit();
-            });
-            
-            _initialized = true;
-        },
-
-    };
-    return mod;
-}());
-
-$(function() {
-    yukon.dev.mappingSimulator.init();
-});
-
-</script>
-
     <form:form id="mapping-form" action="startMappingSimulator" commandName="currentSettings" method="POST">
         <cti:csrfToken/>
     
@@ -142,11 +100,11 @@ $(function() {
     </div>
     </div>
 
-        <cti:button id="populateDatabase" busy="true" label="Populate Database"/>
-    
-        <c:if test="${simulatorRunning}">
-            <cti:button id="updateSettings" busy="true" label="Update Settings"/>
-        </c:if>
+    <cti:button id="populateDatabase" busy="true" label="Populate Database"/>
+
+    <c:if test="${simulatorRunning}">
+        <cti:button id="updateSettings" busy="true" label="Update Settings"/>
+    </c:if>
         
     <c:if test="${not simulatorRunning}">
         <cti:button label="Start Simulator" busy="true" type="submit"/>
@@ -157,4 +115,12 @@ $(function() {
     <c:if test="${simulatorRunning}">
         <cti:button id="stopSimulator" busy="true" label="Stop Simulator"/>
     </c:if>
+    
+    <div class="button-group button-group-toggle">
+        <div class="js-sim-startup" data-simulator-type="RFN_NETWORK"></div>
+        <cti:button id="enable-startup" nameKey="runSimulatorOnStartup.automatic" classes="yes"/>
+        <cti:button id="disable-startup" nameKey="runSimulatorOnStartup.manual" classes="no"/>  
+    </div>
+    <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.mappingSimulator.js" />
+    <cti:includeScript link="/resources/js/pages/yukon.dev.simulators.simulatorStartup.js" />
 </cti:standardPage>

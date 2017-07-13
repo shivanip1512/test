@@ -40,7 +40,9 @@ public class NmNetworkSimulatorMessageHandler extends SimulatorMessageHandler {
                 } else if (request.getAction() == Action.SETUP) {
                     service.setupLocations();
                 }
-                return new NmNetworkSimulatorResponse(service.getSettings());
+                NmNetworkSimulatorResponse response = new NmNetworkSimulatorResponse(service.getSettings());
+                response.setRunning(service.isRunning());
+                return response;
             } else {
                 throw new IllegalArgumentException(
                     "Unsupported request type received: " + simulatorRequest.getClass().getCanonicalName());

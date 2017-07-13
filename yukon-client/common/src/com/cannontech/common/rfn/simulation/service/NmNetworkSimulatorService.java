@@ -1,9 +1,10 @@
 package com.cannontech.common.rfn.simulation.service;
 
 import com.cannontech.common.rfn.simulation.SimulatedNmMappingSettings;
+import com.cannontech.simulators.AutoStartableSimulator;
 
 
-public interface NmNetworkSimulatorService {
+public interface NmNetworkSimulatorService extends AutoStartableSimulator {
     /**
      * -Deletes all location with an origin Simulator 
      * -Creates locations for all of the RF devices that do not have locations already creates
@@ -23,4 +24,6 @@ public interface NmNetworkSimulatorService {
      * Returns current settings
      */
     SimulatedNmMappingSettings getSettings();
+
+    boolean isRunning();
 }
