@@ -34,7 +34,7 @@ public class SmtpHelper {
     @Autowired private ConfigurationLoader configurationLoader;
 
     // Assuming there are no more than 100 other settings
-    // See https://javamail.java.net/nonav/docs/api/com/sun/mail/smtp/package-summary.html
+    // See https://javaee.github.io/javamail/docs/api/com/sun/mail/smtp/package-summary.html
     private Cache<String, String> smtpConfigSettings = CacheBuilder.newBuilder().maximumSize(100).build();
 
     // local helper copies of common properties
