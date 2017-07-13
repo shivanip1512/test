@@ -122,11 +122,6 @@ public class NmIntegrationController {
     @Autowired private RfnGatewayDataCache gatewayCache;
     @Autowired private RfnGatewaySimulatorService gatewaySimService;
     @Autowired private SimulatorsCommunicationService simulatorsCommunicationService;
-    SimulatorSettings lcrCurrentSettings = new SimulatorSettings(100000, 200000, 300000, 320000, 10,
-        ReportingInterval.REPORTING_INTERVAL_24_HOURS);
-
-    SimulatorSettings rfnCurrentSettings = new SimulatorSettings("ALL RFN Type", 10,
-        ReportingInterval.REPORTING_INTERVAL_24_HOURS);
     
     private JmsTemplate jmsTemplate;
     private static final Logger log = YukonLogManager.getLogger(NmIntegrationController.class);
@@ -527,16 +522,11 @@ public class NmIntegrationController {
 
     @RequestMapping("viewRfnMeterSimulator")
     public String viewRfnMeterSimulator(ModelMap model) {
-        model.addAttribute("currentSettings", rfnCurrentSettings);
-
         ImmutableSet<PaoType> paoTypes = PaoType.getRfMeterTypes();
         model.addAttribute("paoTypes", paoTypes);
         model.addAttribute("rfnMeterReportingIntervals",ReportingInterval.values());
 
         RfnMeterDataSimulatorStatusResponse response = getRfnMeterSimulatorStatusResponse().response;
-        if(response == null){
-            return "rfn/rfnMeterSimulator.jsp";
-        }
         model.addAttribute("currentSettings", response.getSettings());
         model.addAttribute("selectedReportingInterval", response.getSettings().getReportingInterval());
 
@@ -547,13 +537,7 @@ public class NmIntegrationController {
 
     @RequestMapping("viewLcrDataSimulator")
     public String viewLcrDataSimulator(ModelMap model) {
-
-        model.addAttribute("currentSettings", lcrCurrentSettings);
-
         RfnLcrSimulatorStatusResponse response = getRfnLcrSimulatorStatusResponse().response;
-        if(response == null){
-            return "rfn/dataSimulator.jsp";
-        }
         model.addAttribute("currentSettings", response.getSettings());
 
         model.addAttribute("dataSimulatorStatus", buildSimulatorStatusJson(response.getStatusByRange()));
