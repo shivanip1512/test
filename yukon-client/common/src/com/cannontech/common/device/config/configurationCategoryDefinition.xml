@@ -382,7 +382,7 @@
     
     <category type="cbcHeartbeat">
         <enum field="cbcHeartbeatMode" type="CBCHeartbeatMode" default="DISABLED" />
-        <float field="cbcHeartbeatPeriod" default="5" minValue="1.0" />
-        <integer field="cbcHeartbeatValue" default="15" minValue="1" />
+        <float field="cbcHeartbeatPeriod" default="5" minValue="1.0" maxValue="1440.0" />
+        <integer field="cbcHeartbeatValue" default="15" minValue="1" maxValue="9999" />
     </category>
 </deviceConfigurationCategories>
