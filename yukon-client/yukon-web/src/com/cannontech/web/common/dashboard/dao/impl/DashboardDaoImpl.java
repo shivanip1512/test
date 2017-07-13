@@ -151,7 +151,7 @@ public class DashboardDaoImpl implements DashboardDao {
         }
         Map<Integer, Integer> dashboardIdToUserCount = new HashMap<>();
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT DashboardId, count(UserId) as UserCount");
+        sql.append("SELECT DashboardId, count(distinct UserId) as UserCount");
         sql.append("FROM UserDashboard");
         sql.append("GROUP BY DashboardId");
         jdbcTemplate.query(sql, new YukonRowCallbackHandler() {
@@ -188,7 +188,7 @@ public class DashboardDaoImpl implements DashboardDao {
     @Override
     public List<Integer> getAllUsersForDashboard(int dashboardId) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT UserId");
+        sql.append("SELECT distinct UserId");
         sql.append("FROM UserDashboard");
         sql.append("WHERE DashboardId").eq(dashboardId);
         
