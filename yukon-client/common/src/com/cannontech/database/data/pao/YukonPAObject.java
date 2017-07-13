@@ -66,6 +66,7 @@ public abstract class YukonPAObject extends DBPersistent implements CTIDbChange 
         delete("LMControlHistory", "PAObjectID", getPAObjectID());
         delete("DynamicLMControlHistory", "PAObjectID", getPAObjectID());
         delete("PAOOwner", "ChildID", getPAObjectID());
+        delete("ControlEvent", "ProgramId", getPAObjectID());
         // Remove pao permissions
         PaoPermissionService paoPermissionService = YukonSpringHook.getBean(PaoPermissionService.class);
         paoPermissionService.removeAllPaoPermissions(getPAObjectID());
