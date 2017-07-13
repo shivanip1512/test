@@ -2219,7 +2219,7 @@ bool CtiCCCapBank::Heartbeat::isTimeToSend( const CtiTime & now )
 }
 
 CtiCCCapBank::Heartbeat::Heartbeat()
-    :   _period( 0 ),
+    :   _period( 0.0 ),
         _value( 0 ),
         _mode( "DISABLED" ),
         _policy( std::make_unique<NoCbcHeartbeatPolicy>() ),
@@ -2258,7 +2258,7 @@ void CtiCCCapBank::Heartbeat::initialize( CtiCCCapBank * bank )
     {
         using namespace std::string_literals;
 
-        _period = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatPeriod, 0L );
+        _period = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatPeriod, 0.0 );
         _value  = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatValue,  0L );
         _mode   = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatMode,   "DISABLED"s );
 

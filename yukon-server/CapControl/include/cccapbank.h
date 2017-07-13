@@ -290,8 +290,8 @@ public:
 
     struct Heartbeat
     {
-        long    _period,
-                _value;
+        double  _period;
+        long    _value;
 
         std::string _mode;
 
