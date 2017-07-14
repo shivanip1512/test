@@ -343,11 +343,57 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
 
         fdrPoint->setPointID(44);
         fdrPoint->setPaoID(54);
+        fdrPoint->setOffset(13);
+        fdrPoint->setPointType(StatusPointType);
+        fdrPoint->setValue(0);
+
+        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:2;SlaveId:30;POINTTYPE:CalcStatus;Offset:3", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, true);
+    }
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(45);
+        fdrPoint->setPaoID(55);
         fdrPoint->setOffset(11);
         fdrPoint->setPointType(AnalogPointType);
         fdrPoint->setValue(319);
 
         CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:2;SlaveId:30;POINTTYPE:Analog;Offset:4", "Test Destination");
+
+        vector<CtiFDRDestination> destinationList;
+
+        destinationList.push_back(pointDestination);
+
+        fdrPoint->setDestinationList(destinationList);
+
+        fdrManager->getMap().insert(std::make_pair(fdrPoint->getPointID(), fdrPoint));
+
+        dnpSlave.translateSinglePoint(fdrPoint, true);
+    }
+
+    {
+        //Initialize the interface to have a point in a group.
+        CtiFDRPointSPtr fdrPoint(new CtiFDRPoint());
+
+        fdrPoint->setPointID(46);
+        fdrPoint->setPaoID(56);
+        fdrPoint->setOffset(10);
+        fdrPoint->setPointType(AnalogPointType);
+        fdrPoint->setValue(320);
+
+        CtiFDRDestination pointDestination(fdrPoint->getPointID(), "MasterId:2;SlaveId:30;POINTTYPE:CalcAnalog;Offset:5", "Test Destination");
 
         vector<CtiFDRDestination> destinationList;
 
@@ -370,14 +416,15 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
     dnpSlave.processMessageFromForeignSystem(connection, request.char_data(), request.size());
 
     const byte_str expected(
-            "05 64 2a 44 02 00 1e 00 4f 36 "
-            "c0 ca 81 00 00 1e 01 28 01 00 03 00 00 3f 01 00 d9 f6 "
-            "00 01 02 28 01 00 01 00 00 14 01 28 01 00 00 00 57 a8 00 13 00 00 "
-            "00 99 52");
+        "05 64 34 44 02 00 1e 00 8b bf "
+        "c0 ca 81 00 00 1e 01 28 02 00 03 00 00 3f 01 00 ef cc 00 04 00 00 40 01 00 00 "
+        "01 02 28 02 00 01 00 00 4b 23 02 00 00 "
+        "14 01 28 01 00 00 00 00 13 00 00 00 "
+        "dc 34");
 
     /*
     05 64   - header bytes
-    27  - length 39
+    34  - length 52
     44  - DLC remote, DL request, FCB 0, FCB invalid?, user data
     02 00   - destination 2
     1e 00   - source 30
@@ -386,16 +433,24 @@ BOOST_AUTO_TEST_CASE( test_scan_request )
 
     ca  - application sequence 0, first, final, sequence 10
     81  - application response
-    0f  - class 0, 1, 2, 3, all stations
-    00  - no other IIN set
+    00 00 - no IIN set
 
-    1e 01  28 01 00 - 32-bit analog with flags, 2 byte count, 2 byte index, 1 object
-    00 03 - index 3
-    00 - no flags
+    1e 01  28 02 00 - 32-bit analog with flags, 2 byte count, 2 byte index, 2 objects
+    
+    03 00 - index 3
+    00 - state 0
     3f 01 00 00 - value 13f = 319
 
-    01 02  28 01 00 - binary input with status, 2 byte count, 2 byte index, 1 object
-    00 01 - index 1
+    04 00 - index 4
+    00 - state 0
+    40 01 00 00 - value 140 = 320
+
+    01 02  28 02 00 - binary input with status, 2 byte count, 2 byte index, 2 objects
+    
+    01 00 - index 1
+    00 - state 0
+
+    02 00 - index 2
     00 - state 0
 
     14 01  28 01 00 - 32-bit counter, 2 byte count, 2 byte index, 1 object

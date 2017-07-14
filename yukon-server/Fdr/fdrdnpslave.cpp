@@ -1323,6 +1323,7 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
     static const std::string dnpPointOffset                  = "Offset";
     static const std::string dnpPointStatusString            = "Status";
     static const std::string dnpPointAnalogString            = "Analog";
+    static const std::string dnpPointCalcStatusString        = "CalcStatus";
     static const std::string dnpPointCalcAnalogString        = "CalcAnalog";
     static const std::string dnpPointAccumulatorString       = "PulseAccumulator";
     static const std::string dnpPointDemandAccumulatorString = "DemandAccumulator";
@@ -1349,6 +1350,7 @@ DnpId DnpSlave::ForeignToYukonId(const CtiFDRDestination &pointDestination)
 
     static const std::map<std::string, CtiPointType_t> PointTypeNames {
         { to_lower_copy(dnpPointStatusString),            StatusPointType },
+        { to_lower_copy(dnpPointCalcStatusString),        StatusPointType },
         { to_lower_copy(dnpPointAnalogString),            AnalogPointType },
         { to_lower_copy(dnpPointCalcAnalogString),        AnalogPointType },
         { to_lower_copy(dnpPointAccumulatorString),       PulseAccumulatorPointType },
