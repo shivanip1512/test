@@ -8,7 +8,6 @@
 #include "loggable.h"
 #include "dlldefs.h"
 
-#include <boost/asio/ip/address.hpp>
 #include <boost/range/adaptor/map.hpp>
 
 //-----------------------------------------------------------------------------
@@ -132,9 +131,8 @@ IM_EX_CTIBASE std::string formatHostAndPort(const std::string& host, u_short por
 {
     std::ostringstream ostr;
 
-    const boost::asio::ip::address ipAddress = boost::asio::ip::address::from_string(host);
-
-    if (ipAddress.is_v6())
+    //  Contains a colon, so it's probably IPv6 - bracket the host as per RFC 3986: https://serverfault.com/a/205794
+    if( host.find(':', 0) != std::string::npos )
     {
         ostr << "[" << host << "]:" << port;
     }
