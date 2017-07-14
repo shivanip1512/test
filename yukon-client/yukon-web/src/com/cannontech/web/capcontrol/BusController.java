@@ -23,6 +23,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.cannontech.capcontrol.ScheduleCommand;
 import com.cannontech.capcontrol.dao.StrategyDao;
 import com.cannontech.capcontrol.dao.SubstationBusDao;
+import com.cannontech.capcontrol.dao.SubstationDao;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.core.dao.HolidayScheduleDao;
@@ -42,7 +43,6 @@ import com.cannontech.database.db.holiday.HolidaySchedule;
 import com.cannontech.database.db.season.SeasonSchedule;
 import com.cannontech.database.model.Season;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
-import com.cannontech.message.capcontrol.streamable.SubStation;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.PageEditMode;
 import com.cannontech.web.capcontrol.models.Assignment;
@@ -71,6 +71,7 @@ public class BusController {
     @Autowired private StrategyDao strategyDao;
     @Autowired private StrategyService strategyService;
     @Autowired private SubstationBusDao busDao;
+    @Autowired private SubstationDao substationDao;
     @Autowired private PaoScheduleDao paoScheduleDao;
     @Autowired private SubstationService substationService;
 
@@ -159,15 +160,22 @@ public class BusController {
             
             
             try {
-                ccCache.getSubBus(bus.getId());
+                Integer parentSubstationId = busDao.getParent(bus.getId());
+                if (parentSubstationId == null) {
+                    throw new NotFoundException("Substation not found " + parentSubstationId);
+                }
                 model.addAttribute("orphan", false);
 
-                SubStation substation = ccCache.getParentSubstation(bus.getId());
-                model.addAttribute("substationId", substation.getCcId());
-                model.addAttribute("substationName", substation.getCcName());
+                Map<Integer, LiteYukonPAObject> paobjects = dbCache.getAllPaosMap();
+                LiteYukonPAObject substation = paobjects.get(parentSubstationId);
+                model.addAttribute("substationId", substation.getLiteID());
+                model.addAttribute("substationName", substation.getPaoName());
 
-                int areaId = ccCache.getParentAreaId(bus.getId());
-                LiteYukonPAObject area = dbCache.getAllPaosMap().get(areaId);
+                Integer parentAreaID = substationDao.getParentAreaID(parentSubstationId);
+                if (parentAreaID == null) {
+                    throw new NotFoundException("Area not found " + parentAreaID);
+                }
+                LiteYukonPAObject area = paobjects.get(parentAreaID);
 
                 model.addAttribute("areaId", area.getLiteID());
                 model.addAttribute("areaName", area.getPaoName());
