@@ -114,6 +114,7 @@ public class GatewayControllerHelper {
                 json.put("type", accessor.getMessage(baseKey + "radioType." + radio.getType()));
                 String mac = com.cannontech.common.util.StringUtils.colonizeMacAddress(radio.getMacAddress());
                 json.put("mac", accessor.getMessage(baseKey + "macAddress", mac));
+                json.put("version", accessor.getMessage(baseKey + "version", radio.getVersion()));
                 json.put("timestamp", radio.getTimestamp());
                 radios.add(json);
             }

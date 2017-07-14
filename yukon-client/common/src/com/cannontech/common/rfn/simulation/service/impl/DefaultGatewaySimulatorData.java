@@ -52,6 +52,7 @@ public class DefaultGatewaySimulatorData {
     private static final AppMode mode = AppMode.NORMAL;
     private static final RadioType radioType = RadioType.EKANET_915;
     private static final String radioMacAddress = "01:23:45:67:89:ab";
+    private static final String commRadioVersion = "V_10_10";
     private static final int dataSequenceCompletionPercentage = 100;
     public static final double maxDataStreamingLoading = 100;
     
@@ -128,6 +129,7 @@ public class DefaultGatewaySimulatorData {
         radio.setType(radioType);
         radio.setTimestamp(Instant.now().getMillis());
         radio.setMacAddress(radioMacAddress);
+        radio.setVersion(commRadioVersion);
         radios.add(radio);
         response.setRadios(radios);
         

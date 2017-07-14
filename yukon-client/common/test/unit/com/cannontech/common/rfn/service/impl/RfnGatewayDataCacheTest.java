@@ -165,10 +165,12 @@ public class RfnGatewayDataCacheTest {
         radio1.setType(RadioType.EKANET_915);
         radio1.setTimestamp(1407776853);
         radio1.setMacAddress("01:23:45:67:89:ab");
+        radio1.setVersion("V_10_7");
         Radio radio2 = new Radio();
         radio2.setType(RadioType.BLUETOOTH);
         radio2.setTimestamp(1407776854);
         radio2.setMacAddress("01:23:45:67:89:ac");
+        radio2.setVersion("V_10_7");
         Set<Radio> radios = new HashSet<>();
         radios.add(radio1);
         radios.add(radio2);

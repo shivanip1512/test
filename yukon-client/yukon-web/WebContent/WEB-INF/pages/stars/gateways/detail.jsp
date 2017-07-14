@@ -113,6 +113,7 @@
                                 <div title="<cti:formatDate type="DATEHM" value="${radio.timestamp}"/>" class="stacked">
                                     <div><i:inline key=".radioType.${radio.type}"/></div>
                                     <div><i:inline key=".macAddress" arguments="${radio.macAddress}"/></div>
+                                    <div><i:inline key=".version" arguments="${radio.version}"/></div>
                                 </div>
                             </c:forEach>
                         </c:if>

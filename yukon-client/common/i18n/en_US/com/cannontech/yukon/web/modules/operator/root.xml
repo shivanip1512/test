@@ -194,6 +194,7 @@
     <entry key="yukon.web.modules.operator.gateways.radioType.MAX_STREAM_24">Max Stream 24 MHz</entry>
     <entry key="yukon.web.modules.operator.gateways.radioType.AEROCOMM_915">Aerocomm 915 MHz</entry>
     <entry key="yukon.web.modules.operator.gateways.macAddress">MAC Address: {0}</entry>
+    <entry key="yukon.web.modules.operator.gateways.version">Version: {0}</entry>
     <entry key="yukon.web.modules.operator.gateways.sequenceType.NODE_ALARMS">Node Alarms</entry>
     <entry key="yukon.web.modules.operator.gateways.sequenceType.NODE_DATA">Node Data</entry>
     <entry key="yukon.web.modules.operator.gateways.sequenceType.NODE_LOGS">Node Logs</entry>

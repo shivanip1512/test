@@ -115,6 +115,7 @@ yukon.assets.gateway.details = (function () {
                     div = $('<div>').addClass('stacked').attr('title', timestamp);
                 div.append('<div>' + radio.type + '</div>');
                 div.append('<div>' + radio.mac + '</div>');
+                div.append('<div>' + radio.version + '</div>');
                 $('.js-gw-radios').append(div);
             });
             comm.find('.js-gw-last-comm').text(data.lastCommText)
