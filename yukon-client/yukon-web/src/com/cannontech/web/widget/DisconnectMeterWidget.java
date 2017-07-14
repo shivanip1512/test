@@ -47,6 +47,7 @@ import com.cannontech.common.device.DeviceRequestType;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.events.loggers.DisconnectEventLogService;
 import com.cannontech.common.pao.attribute.model.BuiltInAttribute;
 import com.cannontech.common.pao.attribute.service.AttributeService;
 import com.cannontech.common.pao.attribute.service.IllegalUseOfAttribute;
@@ -68,6 +69,7 @@ import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.mbean.ServerDatabaseCache;
+import com.cannontech.user.UserUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.common.flashScope.FlashScope;
 import com.cannontech.web.common.flashScope.FlashScopeMessageType;
@@ -93,7 +95,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
     @Autowired MeterService meterService;
     @Autowired private CommandRequestDeviceExecutor commandRequestDeviceExecutor;
     @Autowired private ServerDatabaseCache serverDatabaseCache;
-
+    @Autowired private DisconnectEventLogService disconnectEventLogService;
 
     private final Set<BuiltInAttribute> disconnectAttribute = Sets.newHashSet(BuiltInAttribute.DISCONNECT_STATUS);
     private final static String baseKey = "yukon.web.widgets.disconnectMeterWidget.";
@@ -184,6 +186,7 @@ public class DisconnectMeterWidget extends AdvancedWidgetControllerBase {
             @Override
             public void receivedError(MessageSourceResolvable message, RfnMeterDisconnectState state, RfnMeterDisconnectConfirmationReplyType replyType) {
                 if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT) {
+                    disconnectEventLogService.loadSideVoltageDetectedWhileDisconnected(UserUtils.getYukonUser(), meter.getName());
                     errors.add(new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT),
                                                                   YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.loadSideVoltageDetectedWhileDisconnected")));
                     return;

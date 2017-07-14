@@ -30,9 +30,11 @@ import com.cannontech.clientutils.YukonLogManager.RfnLogger;
 import com.cannontech.common.device.commands.dao.CommandRequestExecutionResultDao;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
+import com.cannontech.common.events.loggers.DisconnectEventLogService;
 import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.yukon.IDatabaseCache;
 
 public class DisconnectRfnServiceImpl implements DisconnectRfnService {
     
@@ -41,6 +43,8 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
     @Autowired private CommandRequestExecutionResultDao commandRequestExecutionResultDao;
     @Autowired private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
     @Autowired @Qualifier("longRunning") private Executor executor;
+    @Autowired private DisconnectEventLogService disconnectEventLogService;
+    @Autowired private IDatabaseCache databaseCache;
     
     private static final Logger log = YukonLogManager.getLogger(DisconnectRfnServiceImpl.class);
     private static final RfnLogger rfnLogger = YukonLogManager.getRfnLogger();
@@ -167,6 +171,7 @@ public class DisconnectRfnServiceImpl implements DisconnectRfnService {
             SpecificDeviceErrorDescription error = new SpecificDeviceErrorDescription(errorDescription, message);
 
             if (replyType == RfnMeterDisconnectConfirmationReplyType.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT) {
+                disconnectEventLogService.loadSideVoltageDetectedWhileDisconnected(YukonUserContext.system.getYukonUser(), databaseCache.getAllPaosMap().get(meter.getDeviceId()).getPaoName());
                 error = new SpecificDeviceErrorDescription(deviceErrorTranslatorDao.translateErrorCode(DeviceError.FAILURE_LOAD_SIDE_VOLTAGE_DETECTED_AFTER_DISCONNECT),
                                                            YukonMessageSourceResolvable.createSingleCodeWithArguments("yukon.web.widgets.disconnectMeterWidget.error.loadSideVoltageDetectedWhileDisconnected"));
                 callback.failed(meter, error);
