@@ -80,9 +80,7 @@ public class DataStreamingAttributeHelperTest {
         RfnPointMappingDao rfnPointMappingDao = createNiceMock(RfnPointMappingDao.class);
 
         rfnPointMappingDao.getPointMappingFile();
-        expectLastCall().andAnswer(() -> {
-            return rfnPointMappingRes.getInputStream();
-        }).anyTimes();
+        expectLastCall().andAnswer(rfnPointMappingRes::getInputStream).anyTimes();
         ReflectionTestUtils.setField(unitOfMeasureToPointMapper, "paoDefinitionDao", paoDefinitionDao);
         ReflectionTestUtils.setField(unitOfMeasureToPointMapper, "rfnPointMappingDao", rfnPointMappingDao);
         replay(rfnPointMappingDao);
