@@ -15,15 +15,14 @@ yukon.dashboards = (function () {
     
     mod = {
             
-        saveFormDetails : function () {
-            $('#dashboard-details').ajaxSubmit({
+        saveFormDetails : function (form) {
+            form.ajaxSubmit({
                 success: function (result, status, xhr, $form) {
-                    $(this).closest('.js-dashboard-details-popup').dialog('close');
                     var dashboardId = result.dashboardId;
                     window.location.href = yukon.url('/dashboards/' + dashboardId + '/edit');
                 },
                 error: function (xhr, status, error, $form) {
-                    $('#dashboard-details').html(xhr.responseText);
+                    form.html(xhr.responseText);
                 }
             });
         },
@@ -35,7 +34,9 @@ yukon.dashboards = (function () {
             
             /** 'Save' button clicked on the dashboard details popup. */
             $(document).on('yukon:dashboard:details:save', function (ev) {
-                mod.saveFormDetails();
+                var dialog = $(ev.target),
+                    form = dialog.find('#dashboard-details');
+                mod.saveFormDetails(form);
             });
             
             $(document).on('yukon:dashboard:remove', function (ev) {
@@ -85,7 +86,12 @@ yukon.dashboards = (function () {
                 yukon.pickers['userPicker_' + dashboardId].show();
             });
 
-                        
+            $(document).on('submit', '#dashboard-details', function (ev) {
+                var form = $(ev.target);
+                yukon.dashboards.saveFormDetails(form);
+                return false;
+            });
+            
             _initialized = true;
         },
         
