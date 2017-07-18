@@ -102,6 +102,7 @@ struct cbc_heartbeat_fixture_core
         bank->setPaoClass( "CAPCONTROL" );
         bank->setPaoCategory( "DEVICE" );
         bank->setPaoType( "CAP BANK" );
+        bank->setControlDeviceType( "CBC 8024" );
 
         fixtureConfig->insertValue( "cbcHeartbeatPeriod",   "5" );      // message every 5 minutes
         fixtureConfig->insertValue( "cbcHeartbeatValue",    "15" );     // duration is 15 minutes
