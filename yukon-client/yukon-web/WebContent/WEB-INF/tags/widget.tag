@@ -25,6 +25,7 @@
 <%-- AUTHORIZE VISIBLITY BASED ON ROLE/ROLE PROPERTY --%>
 <cti:checkUserChecker var="authorized" userChecker="${beanInst.roleAndPropertiesChecker}"/>
 
+<%-- Do not affect how widgets currently display on pages other than dashboards...widgets should still be hidden in this case --%>
 <c:if test="${displayUnauthorizedMessage || authorized}">
 
 <!--  Widget: ${beanInst.shortName}  -->
@@ -70,12 +71,15 @@
                 helpUrl="${pageScope.helpUrl}">
             <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
                 <c:choose>
-                <c:when test="${beanInst.lazyLoad}">
-                    <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
-                </c:when>
-                <c:otherwise>
-                    <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
-                </c:otherwise>
+                    <c:when test="${!authorized}">
+                        <cti:msg2 key="widgets.notAuthorized"/>
+                    </c:when>
+                    <c:when test="${beanInst.lazyLoad}">
+                        <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
+                    </c:when>
+                    <c:otherwise>
+                        <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
+                    </c:otherwise>
                 </c:choose>
             </div>
         </tags:boxContainer>
@@ -88,12 +92,15 @@
                 helpUrl="${pageScope.helpUrl}">
             <div id="widget-container-${widgetParameters.widgetId}" style="height: ${widgetParameters.height};">
                 <c:choose>
-                <c:when test="${beanInst.lazyLoad}">
-                    <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
-                </c:when>
-                <c:otherwise>
-                    <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
-                </c:otherwise>
+                    <c:when test="${!authorized}">
+                        <cti:msg2 key="widgets.notAuthorized"/>
+                    </c:when>
+                    <c:when test="${beanInst.lazyLoad}">
+                        <img src="<cti:url value="/WebConfig/yukon/Icons/spinner.gif"/>">
+                    </c:when>
+                    <c:otherwise>
+                        <jsp:include flush="false" page="/widget/${beanInst.shortName}/render"/>
+                    </c:otherwise>
                 </c:choose>
             </div>
         </tags:sectionContainer>

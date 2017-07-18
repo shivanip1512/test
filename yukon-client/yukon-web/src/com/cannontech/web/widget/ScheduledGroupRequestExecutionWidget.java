@@ -18,6 +18,7 @@ import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupReques
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduleGroupRequestExecutionDaoPendingFilter;
 import com.cannontech.amr.scheduledGroupRequestExecution.dao.ScheduledGroupRequestExecutionDao;
 import com.cannontech.common.device.DeviceRequestType;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.roleproperties.YukonRole;
 import com.cannontech.core.roleproperties.YukonRoleProperty;
 import com.cannontech.core.roleproperties.dao.RolePropertyDao;
@@ -45,8 +46,11 @@ public class ScheduledGroupRequestExecutionWidget extends WidgetControllerBase {
 	@Autowired private JobManager jobManager;
 	@Autowired private RolePropertyDao rolePropertyDao;
 	
-	public ScheduledGroupRequestExecutionWidget() {
+    @Autowired
+	public ScheduledGroupRequestExecutionWidget(RoleAndPropertyDescriptionService roleAndPropertyDescriptionService) {
 	    setIdentityPath("common/deviceIdentity.jsp");
+        String checkRole = YukonRole.SCHEDULER.name();
+        setRoleAndPropertiesChecker(roleAndPropertyDescriptionService.compile(checkRole));
 	}
 	
     @Override

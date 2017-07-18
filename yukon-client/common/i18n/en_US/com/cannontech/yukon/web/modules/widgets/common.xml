@@ -171,5 +171,8 @@
         The date/time displays the date/time that the warnings were last updated.
 ]]></entry>
 
+<entry key="yukon.web.widgets.notAuthorized">You are not authorized to access this widget.</entry>
+
+
 
 </properties>
