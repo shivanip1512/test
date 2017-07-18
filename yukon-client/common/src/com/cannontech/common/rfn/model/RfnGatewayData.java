@@ -225,7 +225,27 @@ public final class RfnGatewayData {
     public double getDataStreamingLoadingPercent() {
         return (currentDataStreamingLoading / maxDataStreamingLoading) * 100;
     }
-    
+
+    public double getPercentForReadyNodes() {
+        int total = gwTotalReadyNodes + gwTotalNotReadyNodes;
+        if (total <= 0) {
+            return 0.0;
+        }
+        return (double) (gwTotalReadyNodes * 100) / total;
+    }
+
+    public double getPercentForNodesWithInfo() {
+        int total = gwTotalNodesWithInfo + gwTotalNodesNoInfo;
+        if (total <= 0) {
+            return 0.0;
+        }
+        return (double) (gwTotalNodesWithInfo * 100) / total;
+    }
+
+    public double getPercentForNodesWithSN() {
+        return  (gwTotalNodesWithSN * 100) / gwTotalNodes;
+    }
+
     public int getGwTotalNodes() {
         return gwTotalNodes;
     }

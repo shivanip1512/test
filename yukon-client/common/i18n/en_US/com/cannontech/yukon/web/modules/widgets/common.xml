@@ -135,6 +135,7 @@
 
 
 <entry key="yukon.web.widgets.gatewayInformationWidget">Gateway Information</entry>
+<entry key="yukon.web.widgets.gatewayNodeInformationWidget">Gateway Node Information</entry>
 
 <entry key="yukon.web.widgets.dataCollectionWidget">Data Collection</entry>
 <entry key="yukon.web.widgets.dataCollectionWidget.helpText"><![CDATA[

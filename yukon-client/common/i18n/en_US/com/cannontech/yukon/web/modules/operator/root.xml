@@ -72,6 +72,13 @@
     <entry key="yukon.web.modules.operator.gateways.detail.location.update.successful">Location updated Successfully.</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.schedule">Collection Schedule</entry>
     <entry key="yukon.web.modules.operator.gateways.detail.schedule.update.successful">Collection schedule updated Successfully.</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.gatewayNodeInfo.title">Gateway Node Information</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.readyNodes">Ready Nodes</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.tooltip.readyNodes">Ready: {0}; Not Ready: {1}</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.nodesWithInfo">Nodes with Info</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.nodesWithSNs">Nodes with Serial Numbers</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.tooltip.nodesWithInfo">Nodes with Info: {0}; Nodes Without Info: {1}</entry>
+    <entry key="yukon.web.modules.operator.gateways.detail.tooltip.nodesWithSNs">Nodes with Serial Numbers: {0}; Total Nodes: {1}</entry>
 
     <!-- Gateway Common Words -->
     <entry key="yukon.web.modules.operator.gateways.cert">Certificate</entry>
