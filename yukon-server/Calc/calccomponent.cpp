@@ -31,7 +31,7 @@ _calcpoint(NULL), _valid(0), _lastUseUpdateNum(0), _componentPointId(0)
 {
     _valid = TRUE;
 
-    if( componentPointId <= 0 && ciStringEqual(componentType,"operation" ) )
+    if( componentPointId == 0 && ciStringEqual(componentType,"operation" ) )
     {
         CTILOG_ERROR(dout, "Failed to create CtiCalcComponent - operation with ComponentPointID of 0 - setting invalid flag");
         _valid = FALSE;
