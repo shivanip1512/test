@@ -166,8 +166,7 @@ public class BusController {
                 }
                 model.addAttribute("orphan", false);
 
-                Map<Integer, LiteYukonPAObject> paobjects = dbCache.getAllPaosMap();
-                LiteYukonPAObject substation = paobjects.get(parentSubstationId);
+                LiteYukonPAObject substation = dbCache.getAllPaosMap().get(parentSubstationId);
                 model.addAttribute("substationId", substation.getLiteID());
                 model.addAttribute("substationName", substation.getPaoName());
 
@@ -175,7 +174,7 @@ public class BusController {
                 if (parentAreaID == null) {
                     throw new NotFoundException("Area not found " + parentAreaID);
                 }
-                LiteYukonPAObject area = paobjects.get(parentAreaID);
+                LiteYukonPAObject area = dbCache.getAllPaosMap().get(parentAreaID);
 
                 model.addAttribute("areaId", area.getLiteID());
                 model.addAttribute("areaName", area.getPaoName());
