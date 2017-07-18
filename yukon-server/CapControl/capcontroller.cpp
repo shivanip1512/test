@@ -850,9 +850,11 @@ void CtiCapController::controlLoop()
 
                 for ( auto & bus : *store->getCCSubstationBuses( CtiTime().seconds() ) )
                 {
-                    if ( bus->getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar )
+                    // skip busses with no strategy assigned, handle IVVC strategies elsewhere.
+                    if ( bus->getStrategy()->getUnitType() == ControlStrategy::IntegratedVoltVar
+                            || bus->getStrategy()->getUnitType() == ControlStrategy::None )
                     {
-                        continue;   // don't handle IVVC controlled busses here
+                        continue;
                     }
 
                     long stationID, areaID, spAreaID;
@@ -889,6 +891,13 @@ void CtiCapController::controlLoop()
                             }
                         }
                     }
+
+                    /*
+                        If we made it here we must have a strategy on our bus, that means we have one on our feeder as
+                            well because the bus one will cascade to the feeder if the feeder doesn't have one of
+                            its own.  So we don't need to check if:
+                                feeder->getStrategy()->getUnitType() == ControlStrategy::None
+                    */
 
                     if ( sendStop )     // someone up top was disabled so send a stop to all this busses capbanks
                     {
