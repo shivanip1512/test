@@ -307,6 +307,8 @@ public:
     }
     heartbeat;
 
+    bool supportsHeartbeat() const;
+
 private:
 
     const std::string& convertOperationalState( int num );

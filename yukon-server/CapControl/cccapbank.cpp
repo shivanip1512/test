@@ -2126,6 +2126,11 @@ void CtiCCCapBank::setDirty(const bool flag)
     _dirty = flag;
 }
 
+bool CtiCCCapBank::supportsHeartbeat() const
+{
+    return ( stringContainsIgnoreCase( getControlDeviceType(),"CBC DNP") ||
+             stringContainsIgnoreCase( getControlDeviceType(),"CBC 802") );
+}
 
 /* Public Static members */
 const string CtiCCCapBank::SwitchedOperationalState = "Switched";
@@ -2201,9 +2206,12 @@ catch ( FailedAttributeLookup & missingAttribute )
 
 void CtiCCCapBank::loadAttributes( AttributeService * service )
 {
-    heartbeat.initialize( this );
+    if ( supportsHeartbeat() )
+    {
+        heartbeat.initialize(this);
 
-    heartbeat._policy->loadAttributes( *service, getControlDeviceId() );
+        heartbeat._policy->loadAttributes( *service, getControlDeviceId() );
+    }
 }
 
 bool CtiCCCapBank::Heartbeat::isTimeToSend( const CtiTime & now )
@@ -2258,8 +2266,6 @@ void CtiCCCapBank::Heartbeat::initialize( CtiCCCapBank * bank )
     {
         using namespace std::string_literals;
 
-        _period = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatPeriod, 0.0 );
-        _value  = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatValue,  0L );
         _mode   = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatMode,   "DISABLED"s );
 
         static const std::map< std::string,
@@ -2280,6 +2286,12 @@ void CtiCCCapBank::Heartbeat::initialize( CtiCCCapBank * bank )
 
             CTILOG_DEBUG( dout, "Heartbeat Config error: Mode \"" << _mode
                                     << "\" not valid. Disabling CBC Heartbeat on Bank: " << bank->getPaoName() );
+        }
+
+        if ( _mode != "DISABLED" )
+        {
+            _period = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatPeriod, 0.0 );
+            _value  = retrieveConfigValue( deviceConfig, CbcStrings::cbcHeartbeatValue,  0L );
         }
     }
 }
