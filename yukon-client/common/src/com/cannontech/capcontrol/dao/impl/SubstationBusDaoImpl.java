@@ -330,8 +330,11 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         
         sql = new SqlStatementBuilder();
         ArrayList<Integer> busList = Lists.newArrayList(busIds);
-        sql.append(insertBuses(substationId, busList));
-        jdbcTemplate.update(sql);
+        SqlFragmentSource returnedSql = insertBuses(substationId, busList);
+        sql.append(returnedSql);
+        if (StringUtils.isNoneBlank(returnedSql.getSql())) {
+            jdbcTemplate.update(sql);
+        }
     }
     
     private SqlFragmentSource insertBuses(int substationId, ArrayList<Integer> busList) {
@@ -340,24 +343,24 @@ public class SubstationBusDaoImpl implements SubstationBusDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         
         int displayOrder = 1;
-          
-        if (isOracle) {
-            sql.append("INSERT ALL");
-        }        
-        for (Integer busId : busList) {
-            if (!isOracle) {
-                sql.append("INSERT");
+        if (!busList.isEmpty()) {
+            if (isOracle) {
+                sql.append("INSERT ALL");
             }
-            sql.append("INTO CCSUBSTATIONSUBBUSLIST");
-            sql.values(substationId, busId, displayOrder);
-            displayOrder++;
+            for (Integer busId : busList) {
+                if (!isOracle) {
+                    sql.append("INSERT");
+                }
+                sql.append("INTO CCSUBSTATIONSUBBUSLIST");
+                sql.values(substationId, busId, displayOrder);
+                displayOrder++;
+            }
+
+            if (isOracle) {
+                sql.append("SELECT 1 from dual");
+            }
         }
-        
-        if (isOracle) {
-            sql.append("SELECT 1 from dual");
-        }
-        
-        return sql;
+      return sql;
     }
     
     @Override
