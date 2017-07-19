@@ -78,13 +78,7 @@ public class ChartServiceImpl implements ChartService {
 
                 ChartValue<Double> chartValue = new ChartValue<>();
 
-                /*
-                 * jquery.flot.js v 0.7 does not support time zones and always displays UTC time
-                 * Here we fake it out by adding the server timezone offset to the timestamp
-                 * so the times line up between the plot and the data.
-                 */
                 long timeStamp = data.getPointDataTimeStamp().getTime();
-                timeStamp += TimeZone.getDefault().getOffset(timeStamp);
 
                 chartValue.setId(timeStamp);
                 chartValue.setTime(timeStamp); // x-axis
@@ -165,27 +159,39 @@ public class ChartServiceImpl implements ChartService {
 
             if (thisInterval != currentInterval) {
                 // New interval, add last intervals max
-                maxChartValues.add(currentMax);
+                ChartValue<Double> adjusted = adjustForFlotTimezone(currentMax);
+                maxChartValues.add(adjusted);
                 currentMax = thisValue;
                 currentInterval = thisInterval;
             } else if (thisValue.getValue() > currentMax.getValue()
-                || (currentMax.getValue() == thisValue.getValue() && thisValue.getTime() > currentMax.getTime())) {
+                || (currentMax.getValue().doubleValue() == thisValue.getValue().doubleValue() && thisValue.getTime() > currentMax.getTime())) {
                 
                 /* Need to modify thisValue (which will eventually be added to maxChartValues) 
                  * to have a time that is also normalized/modified down to interval, instead of it's actual time.
                  * This should only affect the graph'd data and not any raw data exports
                  * */
-                ChartValue<Double> modifiedDownToInterval = new ChartValue<>(thisValue);
-                modifiedDownToInterval.setTime(thisInterval);   //override from actual time to modified time
-                modifiedDownToInterval.setId(thisInterval);
-                log.debug("Changed chartValue interval due to interval normalization from " + thisValue.toString()+ " to " + modifiedDownToInterval.toString());
-                
-                currentMax = modifiedDownToInterval;
+                currentMax = thisValue;
+
             }
         }
         // Don't forget the last one
-        maxChartValues.add(currentMax);
+        ChartValue<Double> adjusted = adjustForFlotTimezone(currentMax);
+        maxChartValues.add(adjusted);
 
         return maxChartValues;
+    }
+    
+    /**
+     * jquery.flot.js v 0.7 does not support time zones and always displays UTC time
+     * Here we fake it out by adding the server timezone offset to the timestamp
+     * so the times line up between the plot and the data.
+     */
+    private ChartValue<Double> adjustForFlotTimezone(ChartValue<Double> originalChartValue) {
+        ChartValue<Double> adjusted = new ChartValue<Double>(originalChartValue);
+        long timeStamp = adjusted.getTime();
+        timeStamp += TimeZone.getDefault().getOffset(timeStamp);
+        adjusted.setTime(timeStamp);
+        adjusted.setId(timeStamp);
+        return adjusted;
     }
 }
