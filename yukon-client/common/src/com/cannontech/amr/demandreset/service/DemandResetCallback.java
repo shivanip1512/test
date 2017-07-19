@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.joda.time.Instant;
 
+import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.errors.model.SpecificDeviceErrorDescription;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
@@ -75,7 +76,7 @@ public interface DemandResetCallback {
     /**
      * This method should be called when it is known that all the sending and verification requests are completed
      */
-    void complete();
+    void complete(StrategyType type);
     
     /**
      * Returns true if the execution was canceled
@@ -98,5 +99,5 @@ public interface DemandResetCallback {
      * prevent the command from being sent to any devices (example: no porter connection)
      */
     void processingExceptionOccured(String reason);
-    
+
 }

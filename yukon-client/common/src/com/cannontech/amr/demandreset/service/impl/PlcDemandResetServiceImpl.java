@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.demandreset.service.DemandResetCallback.Results;
 import com.cannontech.amr.demandreset.service.PlcDemandResetService;
+import com.cannontech.amr.device.StrategyType;
 import com.cannontech.amr.errors.dao.DeviceError;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -83,7 +84,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
                                                                            final LiteYukonUser user) {
 
         // send demand reset command
-        Set<SimpleDevice> devices = new HashSet<SimpleDevice>(PaoUtils.asSimpleDeviceListFromPaos(paos));
+        Set<SimpleDevice> devices = new HashSet<>(PaoUtils.asSimpleDeviceListFromPaos(paos));
         List<CommandRequestDevice> initiatedCommands = getCommandRequests(devices, DEMAND_RESET_COMMAND);
         InitiatedCallback initiatedCallback = new InitiatedCallback(callback, paos);
 		commandRequestDeviceExecutor.createTemplateAndExecute(initiatedExecution, initiatedCallback, initiatedCommands,
@@ -105,9 +106,9 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
 
         // Callbacks returned from this method are needed for cancellation
         Set<CommandCompletionCallback<CommandRequestDevice>> callbacks =
-            new HashSet<CommandCompletionCallback<CommandRequestDevice>>();
+            new HashSet<>();
 
-        Set<SimpleDevice> devices = new HashSet<SimpleDevice>(PaoUtils.asSimpleDeviceListFromPaos(paos));
+        Set<SimpleDevice> devices = new HashSet<>(PaoUtils.asSimpleDeviceListFromPaos(paos));
 
         CommandCompletionCallback<CommandRequestDevice> initiatedCallback =
             sendDemandReset(initiatedExecution, paos, callback, user);
@@ -121,7 +122,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         
         Set<SimpleDevice> devicesWithoutPoint = Sets.difference(devices, deviceToPointKeySet);
         callbacks.add(initiatedCallback);
-        if (log.isDebugEnabled() && !devicesWithoutPoint.isEmpty()) {
+        if (!devicesWithoutPoint.isEmpty()) {
             log.error("Can't Verify:" + devicesWithoutPoint + " \"IED Demand Reset Count\" point is missing.");
         }
         for (SimpleDevice device : devicesWithoutPoint) {
@@ -197,8 +198,9 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         Set<SimpleDevice> meters = new HashSet<>();
         DateTime whenRequested;
         BiMap<PaoIdentifier, LitePoint> deviceToPoint;
-        
-        VerificationCallback(DemandResetCallback callback, BiMap<PaoIdentifier, LitePoint> deviceToPoint, DateTime whenRequested) {
+
+        VerificationCallback(DemandResetCallback callback, BiMap<PaoIdentifier, LitePoint> deviceToPoint,
+                DateTime whenRequested) {
             this.callback = callback;
             this.meters.addAll(PaoUtils.asSimpleDeviceList(deviceToPoint.keySet()));
             this.whenRequested = whenRequested;
@@ -208,36 +210,33 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
         @Override
         public void complete() {
             log.debug("PLC Complete (VerificationCallback)");
-            if(log.isDebugEnabled()){
-                log.debug("PLC Canceled:"+callback.isCanceled());
-            }
+
+            log.debug("PLC Canceled:" + callback.isCanceled());
+
             if (!callback.isCanceled()) {
                 log.debug("PLC Completed");
-                callback.complete();
-            }else{
-                if(log.isDebugEnabled()){
-                    log.debug("PLC Waiting for "+ minutesToWait + " minutes before completing");
-                }
+                callback.complete(StrategyType.PLC);
+            } else {
+                log.debug("PLC Waiting for " + minutesToWait + " minutes before completing");
             }
         }
 
         @Override
         public void cancel() {
             log.debug("PLC Cancel (VerificationCallback)");
-            if (log.isDebugEnabled()) {
-                log.debug("Wait " + minutesToWait + " minutes before proccessing cancelations.");
-            }
+
+            log.debug("Wait " + minutesToWait + " minutes before proccessing cancelations.");
+
             Runnable cancelationRunner = new Runnable() {
                 @Override
                 public void run() {
-                    if (log.isDebugEnabled()) {
-                        log.debug("Proccessing cancelations for meters:" + meters);
-                    }
+
+                    log.debug("Proccessing cancelations for PLC meters:" + meters);
                     for (SimpleDevice meter : meters) {
                         callback.canceled(meter);
                     }
                     log.debug("PLC Cancel Complete (VerificationCallback)");
-                    callback.complete();
+                    callback.complete(StrategyType.PLC);
                 }
             };
             refreshTimer.schedule(cancelationRunner, minutesToWait, TimeUnit.MINUTES);
@@ -245,10 +244,7 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
 
         @Override
         public void processingExceptionOccured(String reason) {
-            log.debug("PLC exception (VerificationCallback)");
-            if(log.isDebugEnabled()){
-                log.debug("Reason:" + reason);
-            }
+            log.debug("PLC exception (VerificationCallback):" + reason);
             callback.processingExceptionOccured(reason);
         }
 
@@ -265,10 +261,8 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
                     callback.cannotVerify(device, getError(DeviceError.NO_TIMESTAMP));
                 } else {
                     Instant resetTime = new Instant(value.getPointDataTimeStamp());
-                    if (log.isDebugEnabled()) {
-                        log.debug("pointDataDate: " + resetTime.toDate());
-                        log.debug("whenRequested: " + whenRequested.toDate());
-                    }
+                    log.debug("pointDataDate: " + resetTime.toDate());
+                    log.debug("whenRequested: " + whenRequested.toDate());
                     if (resetTime.isBefore(whenRequested.toInstant())) {
                         log.error("Failed:" + device);
                         callback.cannotVerify(device, getError(DeviceError.TIMESTAMP_OUT_OF_RANGE));
@@ -280,24 +274,25 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
                 meters.remove(command.getDevice());
             }
         }
-        
+
         @Override
         public void receivedLastError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
-            if (log.isDebugEnabled()) {
-                log.debug("PLC receivedLastError:" + command + " Error:" + error);
-            }
+            log.debug("PLC receivedLastError:" + command + " Error:" + error);
             callback.cannotVerify(command.getDevice(), error);
             meters.remove(command.getDevice());
         }
-        
-        @Override
-        public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {}
 
         @Override
-        public void receivedIntermediateResultString(CommandRequestDevice command, String value) {}
+        public void receivedIntermediateError(CommandRequestDevice command, SpecificDeviceErrorDescription error) {
+        }
 
         @Override
-        public void receivedLastResultString(CommandRequestDevice command, String value) {}
+        public void receivedIntermediateResultString(CommandRequestDevice command, String value) {
+        }
+
+        @Override
+        public void receivedLastResultString(CommandRequestDevice command, String value) {
+        }
     }
 
     @Override
@@ -321,10 +316,8 @@ public class PlcDemandResetServiceImpl implements PlcDemandResetService {
             
         List<CommandRequestDevice> commands =
             Lists.newArrayList(Iterables.transform(devices, toCommandRequestDevice));
-        if (log.isDebugEnabled()) {
-            for (CommandRequestDevice c : commands) {
-                log.debug("PLC send " + c);
-            }
+        for (CommandRequestDevice c : commands) {
+            log.debug("PLC send " + c);
         }
         return commands;
     }

@@ -4,8 +4,10 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.demandreset.model.DemandResetResult;
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.demandreset.service.PlcDemandResetService;
+import com.cannontech.amr.device.StrategyType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
@@ -48,12 +50,12 @@ public class DemandResetPlcStrategy implements DemandResetStrategy {
     }
 
     @Override
-    public void cancel(Set<CommandCompletionCallback<CommandRequestDevice>> toCancel, LiteYukonUser user) {
-        plcDemandResetService.cancel(toCancel, user);
+    public void cancel(DemandResetResult result, LiteYukonUser user) {
+        plcDemandResetService.cancel(result.getCommandCompletionCallbacks(), user);
     }
 
     @Override
-    public boolean cancellable() {
-        return true;
+    public StrategyType getType() {
+        return StrategyType.PLC;
     }
 }

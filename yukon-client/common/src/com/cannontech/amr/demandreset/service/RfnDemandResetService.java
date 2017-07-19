@@ -2,6 +2,7 @@ package com.cannontech.amr.demandreset.service;
 
 import java.util.Set;
 
+import com.cannontech.amr.demandreset.model.DemandResetResult;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
 import com.cannontech.common.device.model.SimpleDevice;
 import com.cannontech.common.pao.YukonPao;
@@ -33,4 +34,9 @@ public interface RfnDemandResetService {
      */
     void sendDemandResetAndVerify(CommandRequestExecution sendExecution, CommandRequestExecution verificationExecution,
                                   Set<? extends YukonPao> paos, DemandResetCallback callback, LiteYukonUser user);
+
+    /**
+     * Stops listening to point data. It is not possible to cancel Demand Reset for RF devices.
+     */
+    void cancel(DemandResetResult result);
 }

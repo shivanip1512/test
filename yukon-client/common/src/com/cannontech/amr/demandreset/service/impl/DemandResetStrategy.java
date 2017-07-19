@@ -2,7 +2,9 @@ package com.cannontech.amr.demandreset.service.impl;
 
 import java.util.Set;
 
+import com.cannontech.amr.demandreset.model.DemandResetResult;
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
+import com.cannontech.amr.device.StrategyType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
@@ -11,6 +13,7 @@ import com.cannontech.common.pao.YukonPao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface DemandResetStrategy {
+
     /**
      * Filter the given devices for devices which can be sent a demand reset using RF.
      */
@@ -39,12 +42,10 @@ public interface DemandResetStrategy {
     public Set<SimpleDevice> getVerifiableDevices(Set<? extends YukonPao> paos);
 
     /**
-     * Attempts to cancel the command
+     * Attempts to cancel the verification
      */
-    void cancel(Set<CommandCompletionCallback<CommandRequestDevice>> toCancel, LiteYukonUser user);
+ 
+    void cancel(DemandResetResult result, LiteYukonUser user);
     
-    /**
-     * Returns true is the strategy supports command cancellations
-     */
-    boolean cancellable();
+    StrategyType getType();
 }

@@ -36,10 +36,9 @@ public class DemandResetResult implements Completable, Comparable<DemandResetRes
     private DeviceCollection canceledCollection;
     
     private final Set<CommandCompletionCallback<CommandRequestDevice>> commandCompletionCallbacks =
-        new HashSet<CommandCompletionCallback<CommandRequestDevice>>();
+        new HashSet<>();
     private DemandResetCallback demandResetCallback;
-    private boolean cancellable;
-    
+
     //contains error
     private final Map<SimpleDevice, SpecificDeviceErrorDescription> errors = new ConcurrentHashMap<>(100, .75f, 1);
     
@@ -227,12 +226,7 @@ public class DemandResetResult implements Completable, Comparable<DemandResetRes
         if (initiatedExecution == null) {
             return false;
         }
-        return cancellable && verificationExecution != null
-               && verificationExecution.getCommandRequestExecutionStatus() == CommandRequestExecutionStatus.STARTED;
-    }
-
-    public void setCancellable(boolean cancellable) {
-        this.cancellable = cancellable;
+        return verificationExecution != null && verificationExecution.getCommandRequestExecutionStatus() == CommandRequestExecutionStatus.STARTED;
     }
 
     @Override

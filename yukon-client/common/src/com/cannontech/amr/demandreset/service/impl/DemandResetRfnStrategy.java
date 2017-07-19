@@ -4,8 +4,10 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.cannontech.amr.demandreset.model.DemandResetResult;
 import com.cannontech.amr.demandreset.service.DemandResetCallback;
 import com.cannontech.amr.demandreset.service.RfnDemandResetService;
+import com.cannontech.amr.device.StrategyType;
 import com.cannontech.common.device.commands.CommandCompletionCallback;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.dao.model.CommandRequestExecution;
@@ -52,12 +54,14 @@ public class DemandResetRfnStrategy implements DemandResetStrategy {
     }
 
     @Override
-    public void cancel(Set<CommandCompletionCallback<CommandRequestDevice>> toCancel, LiteYukonUser user) {
-        // For RF devices, it is not possible to cancel demand reset request
+    public void cancel(DemandResetResult result, LiteYukonUser user) {
+        rfnDemandResetService.cancel(result);
     }
 
+
+
     @Override
-    public boolean cancellable() {
-        return false;
+    public StrategyType getType() {
+        return StrategyType.RF;
     }
 }
