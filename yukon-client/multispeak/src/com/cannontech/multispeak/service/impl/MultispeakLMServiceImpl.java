@@ -192,6 +192,17 @@ public class MultispeakLMServiceImpl extends MultispeakLMServiceBase implements 
         }
     }
 
+    public static String getPointQualityLetter(PointQuality pointQuality) {
+
+        if (PointQuality.NonUpdated.equals(pointQuality)) {
+            return "F";
+        } else if (PointQuality.Manual.equals(pointQuality)) {
+            return "M";
+        } else {
+            return " ";
+        }
+    }
+    
     @Override
     public PointData buildPointData(int pointId, ScadaAnalog scadaAnalog, String userName) {
         PointData pointData = new PointData();

@@ -3,6 +3,7 @@ package com.cannontech.common.util;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map;
@@ -148,7 +149,7 @@ public class SimpleTemplateProcessor {
                         Function<Double, String> converter = specialConverters.get(extra);
                         result = converter.apply((Double) value);
                     } else {
-                        result = formatByType(value, extra);
+                        result = formatValue(value, extra);
                         if (result == null) {
                             result = "???Unknown data type???";
                             if (value != null) {
@@ -201,9 +202,32 @@ public class SimpleTemplateProcessor {
         return result;
     }
     
-	protected CharSequence formatByType(Object value, String extra) {
-		CharSequence result;
-		if (value instanceof Boolean) {
+    final protected CharSequence formatValue(Object value, String extra) {
+        try {
+            // see if custom format method exists
+            // split extra on last "."
+            int endIndex = extra.lastIndexOf(".");
+            if (endIndex > 0) {
+                String className = extra.substring(0, endIndex);
+                Class<?> theClassPart = Class.forName(className);
+                String methodName = extra.substring(endIndex+1);
+                Method method = theClassPart.getMethod(methodName, value.getClass());
+                Object formattedOuput = method.invoke(null, value);
+                CharSequence result = formattedOuput.toString();
+
+                return result;
+            }
+        } catch (Exception e) {
+            //Not a valid method name, fall through to type-based formatters
+        }
+        
+        CharSequence result = formatByType(value, extra);
+        return result;
+    }
+
+    protected CharSequence formatByType(Object value, String extra) {
+        CharSequence result;
+        if (value instanceof Boolean) {
             boolean showFirst = (Boolean) value;
             // split extra on the | character
             String[] strings = extra.split("\\|", 2);
