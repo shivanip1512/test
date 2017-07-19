@@ -103,11 +103,11 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
 
         {
             DataBuffer  configCategorySchema
-                = loadResourceFromLibrary( CONFIGCATEGORYDEFINITION_XSD_ID, "XSD", "yukon-resource.dll" );
+                = loadResourceFromLibrary( resourceIndex.right.at( "configurationcategorydefinition.xsd" ), "XSD", "yukon-resource.dll" );
 
             BufferPtr   configCategoryXsdBuffer( new xercesc::MemBufInputSource( reinterpret_cast<const XMLByte *>( &configCategorySchema[0] ),
                                                                                  configCategorySchema.size(),
-                                                                                 "configurationCategoryDefinition.xsd" ) );
+                                                                                 "configurationcategorydefinition.xsd" ) );
 
             DataBuffer  devConfigCategorySchema
                 = loadResourceFromLibrary( resourceIndex.right.at( "deviceconfigurationcategory.xsd" ), "XSD", "yukon-resource.dll" );
@@ -133,11 +133,11 @@ IM_EX_CTIBASE void parseXmlFiles( const std::string & yukonBase )
             reader->setErrorHandler( handler.get() );
 
             DataBuffer  configCategoryDefinitionXml
-                = loadResourceFromLibrary( CONFIGCATEGORYDEFINITION_XML_ID, "XML", "yukon-resource.dll" );
+                = loadResourceFromLibrary( resourceIndex.right.at( "configurationcategorydefinition.xml" ), "XML", "yukon-resource.dll" );
 
             BufferPtr   configCategoryDefinitionXmlBuffer( new xercesc::MemBufInputSource( reinterpret_cast<const XMLByte *>( &configCategoryDefinitionXml[0] ),
                                                                                            configCategoryDefinitionXml.size(),
-                                                                                           "configurationCategoryDefinition.xml" ) );
+                                                                                           "configurationcategorydefinition.xml" ) );
             try
             {
                 reader->parse( *configCategoryDefinitionXmlBuffer );
