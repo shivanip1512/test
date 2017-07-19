@@ -166,7 +166,7 @@
             <tags:widget bean="simpleAttributesWidget" title="${widgetTitle}" container="section" attributes="${attributes}" deviceId="${gateway.paoIdentifier.paoId}"/>
             <!-- Gateway node Information  -->
             <cti:msg2 var="nodeInfoTitle" key=".gatewayNodeInfo.title"/>
-            <tags:widget bean="gatewayNodeInformationWidget" title="${nodeInfoTitle}" container="section" attributes="${attributes}" deviceId="${gateway.paoIdentifier.paoId}"/>
+            <tags:widget bean="gatewayNodeInformationWidget" title="${nodeInfoTitle}" container="section" deviceId="${gateway.paoIdentifier.paoId}"/>
         </div>
     </div>
 </div>
