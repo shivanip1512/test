@@ -7,7 +7,7 @@
     <cti:pointValue format="UNIT" pointId="${pointId}"/>
 </td>
 <td class="tar">
-    <cti:pointValue format="{quality|com.cannontech.multispeak.service.impl.MultispeakLMServiceImpl.getPointQualityLetter}" 
+    <cti:pointValue format="{quality|com.cannontech.multispeak.service.impl.MultispeakLMServiceBase.getPointQualityLetter}" 
         pointId="${pointId}"/>
 </td>
 

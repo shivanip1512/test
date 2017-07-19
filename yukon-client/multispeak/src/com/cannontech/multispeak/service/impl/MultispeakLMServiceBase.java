@@ -7,6 +7,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.ProgramNotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -117,4 +118,17 @@ public abstract class MultispeakLMServiceBase {
         return controlledCount;
     }
 
+    /**
+     * Used to specially format a PointQuality for Power Supplier Loads (see valueQuality.tag) 
+     */
+    public static String getPointQualityLetter(PointQuality pointQuality) {
+
+        if (PointQuality.NonUpdated.equals(pointQuality)) {
+            return "F";
+        } else if (PointQuality.Manual.equals(pointQuality)) {
+            return "M";
+        } else {
+            return " ";
+        }
+    }
 }
