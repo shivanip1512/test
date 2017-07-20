@@ -25,7 +25,6 @@ yukon.tools.group.editor = (function () {
         retrieveGroupDetails : function(groupName) {
                 //remove all current dialogs so it doesn't use old content
                 $('.ui-dialog').remove();
-                $('.js-error').addClass('dn');
                 var groupNameEncoded = encodeURIComponent(groupName);
                 var url = yukon.url('/group/editor/selectedDeviceGroup?groupName=' + escape(groupName));
                 var redirectUrl = yukon.url('/group/editor/home?groupName=' + groupNameEncoded);
@@ -79,7 +78,7 @@ yukon.tools.group.editor = (function () {
         },
 
         init : function () {
-                        
+            var hideOnGroupLoad = false;           
             if (initialized) return;
             
             $(document).on('click', '.js-edit-grp-name', function () {
@@ -89,10 +88,13 @@ yukon.tools.group.editor = (function () {
             $(document).on('click', '.js-add-sub-grp', function () {
                 $("#addSubGroupPopup").dialog({width: 500});
             });
-            
             $('#groupName').on('change', function () {
+                if(hideOnGroupLoad == true) {
+                    $('.js-error').addClass('dn');
+                }
                 var groupName = $('#groupName').val();
                 yukon.tools.group.editor.retrieveGroupDetails(groupName);
+                hideOnGroupLoad = true;
             });
             
             initialized = true;
