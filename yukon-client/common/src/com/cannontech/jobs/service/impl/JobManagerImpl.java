@@ -68,14 +68,14 @@ public class JobManagerImpl implements JobManager {
     @Autowired private DbChangeManager dbChangeManager;
     
     private ConcurrentMap<YukonJob, YukonTask> currentlyRunning =
-            new ConcurrentHashMap<YukonJob, YukonTask>(10, .75f, 2);
+            new ConcurrentHashMap<>(10, .75f, 2);
     
     private static final Map<String, String> emptyPropertyMap = Collections.emptyMap();
 
     // JobId -> ScheduledJobInfoImpl
-    private ConcurrentMap<Integer, ScheduledInfo> scheduledJobs = new ConcurrentHashMap<Integer, ScheduledInfo>();
+    private ConcurrentMap<Integer, ScheduledInfo> scheduledJobs = new ConcurrentHashMap<>();
 
-    private static final CopyOnWriteArraySet <JobException> jobExceptions = new CopyOnWriteArraySet<JobException>();
+    private static final CopyOnWriteArraySet <JobException> jobExceptions = new CopyOnWriteArraySet<>();
     private AtomicInteger startOffsetMs = new AtomicInteger(5000);
     private int startOffsetIncrement = 1000;
 
@@ -337,7 +337,12 @@ public class JobManagerImpl implements JobManager {
             Runnable runnable = new BaseRunnableJob(job) {
                 @Override
                 protected void afterRun() {
-                    if (stopRescheduleForJob(job.getId()) && (JobDisabledStatus.N == getJobDisabledStatus(job.getId()))) {
+                    try{
+                        if (stopRescheduleForJob(job.getId()) && (JobDisabledStatus.N == getJobDisabledStatus(job.getId()))) {
+                            doScheduleScheduledJob(job, nextRuntime);
+                        }
+                    } catch (RuntimeException e) {
+                        //Keep rescheduling the job
                         doScheduleScheduledJob(job, nextRuntime);
                     }
                 }
@@ -648,7 +653,7 @@ public class JobManagerImpl implements JobManager {
         public void run() {
             // record startup in database
             try {
-                final JobStatus<YukonJob> status = new JobStatus<YukonJob>();
+                final JobStatus<YukonJob> status = new JobStatus<>();
                 transactionTemplate.execute(new TransactionCallback<Object>() {
                     @Override
                     public Object doInTransaction(TransactionStatus transactionStatus) {
@@ -717,20 +722,26 @@ public class JobManagerImpl implements JobManager {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             final ScheduledInfo other = (ScheduledInfo) obj;
-            if (jobId != other.jobId)
+            if (jobId != other.jobId) {
                 return false;
+            }
             if (time == null) {
-                if (other.time != null)
+                if (other.time != null) {
                     return false;
-            } else if (!time.equals(other.time))
+                }
+            } else if (!time.equals(other.time)) {
                 return false;
+            }
             return true;
         }
     }
@@ -763,20 +774,26 @@ public class JobManagerImpl implements JobManager {
 
         @Override
         public boolean equals(Object obj) {
-            if (this == obj)
+            if (this == obj) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
-            if (getClass() != obj.getClass())
+            }
+            if (getClass() != obj.getClass()) {
                 return false;
+            }
             final JobException other = (JobException) obj;
-            if (jobId != other.jobId)
+            if (jobId != other.jobId) {
                 return false;
+            }
             if (exception == null) {
-                if (other.exception != null)
+                if (other.exception != null) {
                     return false;
-            } else if (!exception.equals(other.exception))
+                }
+            } else if (!exception.equals(other.exception)) {
                 return false;
+            }
             return true;
         }
 
